@@ -3,15 +3,14 @@
  * Author: Heinrich Mellmann
  */
 
-#ifndef __DebugExecutor_h__
-#define  __DebugExecutor_h__
+#ifndef _DebugExecutor_h_
+#define _DebugExecutor_h_
 
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <DebugCommunication/DebugCommandManager.h>
 
-using namespace naoth;
 
 BEGIN_DECLARE_MODULE(DebugExecutor)
   REQUIRE(DebugMessageIn)
@@ -27,5 +26,5 @@ public:
   virtual void execute();
 };
 
-#endif  /* __DebugExecutor_h__ */
+#endif  /* _DebugExecutor_h_ */
 

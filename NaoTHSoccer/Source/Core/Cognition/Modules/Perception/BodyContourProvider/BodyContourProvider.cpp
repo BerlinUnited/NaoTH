@@ -14,6 +14,8 @@
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/DebugDrawings.h>
 
+using namespace std;
+
 BodyContourProvider::BodyContourProvider()
 {
   getBodyContour().stepSize = 20;

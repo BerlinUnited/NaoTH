@@ -8,8 +8,6 @@
 #ifndef _SERIALSENSORDATA_H
 #define _SERIALSENSORDATA_H
 
-#include "Tools/DataStructures/Streamable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector3.h"
 #include <vector>
@@ -18,7 +16,7 @@
 #define SERIALBUFFERLENGTH 1024
 #define SERIALSENSOR_INIT_COUNT 100
 
-class SerialSensorData : public naoth::Streamable, public naoth::PlatformInterchangeable, public naoth::Printable
+class SerialSensorData : public naoth::Printable
 {
   public:
     SerialSensorData();
@@ -45,7 +43,7 @@ class SerialSensorData : public naoth::Streamable, public naoth::PlatformInterch
     std::vector<int> ids;
 };
 
-class SerialSensorDataRequest : public naoth::Streamable, public naoth::PlatformInterchangeable
+class SerialSensorDataRequest
 {
 public:
   SerialSensorDataRequest() : receive(false) {}

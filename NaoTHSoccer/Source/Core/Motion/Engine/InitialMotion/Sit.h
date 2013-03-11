@@ -5,18 +5,35 @@
 */
 
 #ifndef _SIT_H
-#define  _SIT_H
+#define _SIT_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
-class Sit : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
+
+BEGIN_DECLARE_MODULE(Sit)
+  REQUIRE(RobotInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(Sit)
+
+class Sit : private SitBase, public AbstractMotion
 {
 public:
   Sit();
   
   virtual ~Sit(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  void execute();
 
 private:
   enum StatusID

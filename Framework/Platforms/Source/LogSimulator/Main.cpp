@@ -8,17 +8,20 @@
 #include <glib.h>
 #include <glib-object.h>
 
-
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/Stopwatch.h>
-
-#include "Cognition.h"
-#include "Motion.h"
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/ModuleCreator.h>
 
 #include <cstring>
 #include "Simulator.h"
 
 using namespace std;
+using namespace naoth;
+
+// kind of a HACK, needed by the logsimulator
+extern ModuleManager* getModuleManager(Cognition* c);
+//extern int main(int argc, char** argv);
 
 /*
  * 
@@ -75,13 +78,24 @@ int main(int argc, char** argv)
   // init the platform
   Platform::getInstance().init(&sim);
   
-  Cognition theCognition;
+  //init_agent(sim);
+  Cognition& theCognition = *createCognition();
+  Motion& theMotion = *createMotion();
 
-  // 
-  ModuleCreator<LogProvider>* theLogProvider = theCognition.registerModule<LogProvider>(std::string("LogProvider"));
+  // ACHTUNG: C-Cast (!)
+  ModuleManager* theCognitionManager = getModuleManager(&theCognition);
+  if(!theCognitionManager)
+  {
+    std::cerr << "ERROR: theCognition is not of type ModuleManager" << std::endl;
+    return (EXIT_FAILURE);
+  }
 
-  Motion theMotion;
-  sim.registerCallbacks(&theMotion, &theCognition);
+  // register a module to provide all the logged data
+  ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+
+  // register processes
+  sim.registerCognition((naoth::Callable*)(&theCognition));
+  sim.registerMotion((naoth::Callable*)(&theMotion));
  
   theLogProvider->setEnabled(true);
   theLogProvider->getModuleT()->init(sim.getRepresentations(), sim.getIncludedRepresentations());
@@ -91,7 +105,7 @@ int main(int argc, char** argv)
   sim.main();
   
   // dump some debug information
-  Stopwatch::getInstance().dump();
+  StopwatchManager::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main

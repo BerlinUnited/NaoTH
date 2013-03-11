@@ -2,7 +2,7 @@
 // File:   PlayerInfo.cpp
 // Author: thomas
 //
-// Created on 12. März 2008, 13:41
+// Created on 12. march 2008, 13:41
 //
 
 #include "PlayerInfo.h"

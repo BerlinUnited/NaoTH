@@ -1,53 +1,73 @@
 /**
-* @file KeyFrameMotionEngine.h
+* @file KeyFrameMotionFactory.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Declaration of class KeyFrameMotionEngine
+* Declaration of class KeyFrameMotionFactory
 */
 
-#ifndef __KeyFrameMotionEngine_h_
-#define __KeyFrameMotionEngine_h_
+#ifndef _KeyFrameMotionFactory_h_
+#define _KeyFrameMotionFactory_h_
 
-#include <Tools/Math/Common.h>
-#include <PlatformInterface/Platform.h>
-
-#include "Tools/MotionNetParser.h"
 #include "Tools/KeyFrameMotion.h"
-
 
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Motion/Engine/MotionFactory.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <fstream>
-//#include <dirent.h>
-#include <iostream>
+#include <string>
 
-using namespace std;
+/**
+* representation holding the loaded motion nets
+*/
+class MotionNets
+{
+private:
+  typedef std::map<std::string, MotionNet> MotionNetsRegistry;
+  MotionNetsRegistry registry;
+
+public:
+  MotionNet& operator[] (std::string name){ return registry[name]; }
+  bool exist(std::string name) const { return registry.find(name) != registry.end(); }
+  
+  const MotionNet* get(std::string name) const 
+  { 
+    MotionNetsRegistry::const_iterator iter = registry.find(name); 
+    if(iter != registry.end())
+      return &(iter->second);
+    else
+      return NULL;
+  }
+};
 
 
-class KeyFrameMotionEngine : public MotionFactory//TODO: , public DebugCommandExecutor
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(KeyFrameMotionFactory)
+  PROVIDE(MotionNets)
+END_DECLARE_MODULE(KeyFrameMotionFactory)
+
+
+class KeyFrameMotionFactory: public MotionFactory, private KeyFrameMotionFactoryBase //TODO: , public DebugCommandExecutor
 {
 public:
 
-  KeyFrameMotionEngine();
-  ~KeyFrameMotionEngine();
+  KeyFrameMotionFactory();
+  ~KeyFrameMotionFactory();
 
-  virtual AbstractMotion* createMotion(const MotionRequest& motionRequest);
+  Module* createMotion(const MotionRequest& motionRequest);
+
+  void execute(){} // dummy
 
   /*virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::stringstream &outstream);*/
 
 private:
-  KeyFrameMotion* currentMotion;
-  std::map<string, MotionNet> motionNets;
+  ModuleCreator<KeyFrameMotion>* keyFrameMotionCreator;
 
   // loading motion-nets
-  void loadMotionNetFromFile(const std::string& fileName, MotionNet& motionNet);
+  void loadMotionNetFromFile(const std::string& fileName, MotionNet& motionNet) const;
   bool loadMotionNet(const std::string& fileName, const std::string& motionNetName);
   void loadAvailableMotionNets(std::string directoryName);
 };
 
-#endif //__KeyFrameMotionEngine_h_
+#endif //_KeyFrameMotionFactory_h_

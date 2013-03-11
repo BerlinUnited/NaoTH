@@ -14,6 +14,7 @@
 
 
 using namespace naoth;
+using namespace std;
 
 void MotionSymbols2011::registerSymbols(xabsl::Engine& engine)
 {

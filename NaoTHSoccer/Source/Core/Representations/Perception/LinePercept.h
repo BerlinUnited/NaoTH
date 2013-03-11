@@ -18,7 +18,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 
-class LinePercept : public naoth::Printable//, public naoth::Streamable
+class LinePercept : public naoth::Printable
 { 
 public:
 

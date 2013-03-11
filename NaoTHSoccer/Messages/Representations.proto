@@ -1,0 +1,135 @@
+package naothmessages;
+option java_package= "de.naoth.rc.messages";
+
+import "CommonTypes.proto";
+import "Framework-Representations.proto";
+
+// Representations //
+
+message CameraMatrix {
+  required Pose3D pose = 1;
+  optional CameraID cameraID = 2 [default=bottom];
+  optional bool valid = 3;
+}
+
+message BallPercept {
+  optional bool ballWasSeen = 1;
+  optional DoubleVector2 centerInImage = 2;
+  optional double radiusInImage = 3;  
+  optional Color ballColor = 4;
+  optional DoubleVector2 bearingBasedOffsetOnField = 5;
+  optional FrameInfo frameInfoWhenBallWasSeen = 6;
+}
+
+message GoalPercept {
+  optional double angleToSeenGoal = 1;
+  optional DoubleVector3 goalCentroid = 2;
+  optional int32 numberOfSeenPosts = 3;
+  repeated GoalPost post = 4;
+}
+
+message HeadMotionRequest {
+  required uint32 id = 1;
+  required uint32 cameraID = 2;
+  optional DoubleVector2 targetJointPosition = 3;
+  optional DoubleVector2 targetPointInImage = 4;
+  optional DoubleVector3 targetPointInTheWorld = 5;
+  optional DoubleVector3 searchCenter = 6;
+  optional DoubleVector3 searchSize = 7;
+  optional bool searchDirection = 8;
+  optional DoubleVector2 targetPointOnTheGround = 9;
+  optional uint32 coordinate = 10;
+}
+
+message StepControlRequest
+{
+  required uint32 stepID = 1;
+  required bool moveLeftFoot = 2;
+  required Pose2D target = 3;
+  required uint32 time = 4;
+  required double speedDirection = 5;
+}
+
+message WalkRequest {
+  required uint32 coordinate = 1;
+  required double character = 2;
+  required Pose2D target = 3;
+  optional StepControlRequest stepControl = 4;
+  required Pose2D offset = 5;
+}
+
+message KickRequest {
+  required DoubleVector3 kickPoint = 1;
+  required double kickDirection = 2;
+  required int32 kickFoot = 3;
+  required bool finishKick = 4;
+}
+
+message MotionRequest {
+  required uint32 id = 1;
+  required uint32 time = 2;
+  required bool forced = 3;
+  optional WalkRequest walkRequest = 4;
+  optional bool starndardStand = 5;
+  optional KickRequest kickRequest = 6;
+  optional double standHeight = 7;
+  optional bool calibrateFootTouchDetector = 8;
+  optional uint32 cognitionFrameNumber = 9;
+}
+
+message LinePercept {
+  repeated FieldLineSegment lines = 1;
+  repeated Intersection intersections = 2;
+  optional DoubleVector2 middleCircleCenter = 3;
+}
+
+message ScanLineEndPoint {
+  required IntVector2 posInImage = 1;
+  required DoubleVector2 posOnField = 2;
+  required Color color = 3;
+  required uint32 ScanLineID = 4;
+}
+
+message ScanLineEdgelPercept {
+// TODO
+//  repeated Edgel scanLineEdgels = 1;
+  repeated ScanLineEndPoint endPoints = 2;
+}
+
+// TODO: this representation should not be in naoth-comm */
+message StepControlStatus
+{
+  required uint32 stepID = 1;
+  required uint32 moveableFoot =2;
+}
+
+message MotionStatus 
+{
+  required uint32 time = 1;
+  required uint32 lastMotion = 2;
+  required uint32 currentMotion = 3;
+  required uint32 headMotion = 4;
+  required uint32 currentMotionState = 5;
+  required Pose2D plannedMotionLeftFoot = 6;
+  required Pose2D plannedMotionRightFoot = 7;
+  required Pose2D plannedMotionHip = 8;
+  optional StepControlStatus stepControlStatus = 9;
+}
+
+message OdometryData
+{
+  required Pose2D pose = 1;
+}
+
+message CalibrationData
+{
+  optional DoubleVector2 inertialSensorOffset = 1;
+  optional DoubleVector2 gyroSensorOffset = 2;
+  optional DoubleVector3 accSensorOffset = 3;
+}
+
+message InertialModel
+{
+  optional DoubleVector2 orientation = 1;
+}
+

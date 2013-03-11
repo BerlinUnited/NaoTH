@@ -14,7 +14,7 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/DataConversion.h"
 
-
+using namespace std;
 
 VirtualVisionProcessor::VirtualVisionProcessor()
 {

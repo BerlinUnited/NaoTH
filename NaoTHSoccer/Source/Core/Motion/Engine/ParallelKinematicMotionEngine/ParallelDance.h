@@ -7,17 +7,33 @@
 #ifndef _ParallelDance_H
 #define	_ParallelDance_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
-class ParallelDance : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
+BEGIN_DECLARE_MODULE(ParallelDance)
+  REQUIRE(RobotInfo)
+  //REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(ParallelDance)
+
+class ParallelDance : private ParallelDanceBase, public AbstractMotion
 {
 public:
   ParallelDance();
   
   virtual ~ParallelDance(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  void execute();
   
 private:
   double radius; // current radius of the circle in mm

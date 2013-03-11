@@ -5,8 +5,8 @@
 * Definition of class ImageProcessor
 */
 
-#ifndef __ImageProcessor_H_
-#define __ImageProcessor_H_
+#ifndef _ImageProcessor_H_
+#define _ImageProcessor_H_
 
 // infrastructure
 #include <ModuleFramework/Representation.h>

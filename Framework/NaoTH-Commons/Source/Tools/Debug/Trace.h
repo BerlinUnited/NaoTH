@@ -21,7 +21,7 @@ class Trace : public naoth::Singleton<Trace>
 protected:
   friend class naoth::Singleton<Trace>;
   Trace(){}
-  ~Trace(){}
+  virtual ~Trace(){}
 
 private:
   /**

@@ -41,10 +41,7 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
-  
-private:
-  MessageWriter* theMotionRequestWriter;
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 };
 
 #endif	/* _ACTUACTOR_H */

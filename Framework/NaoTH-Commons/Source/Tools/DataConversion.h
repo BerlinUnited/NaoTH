@@ -7,7 +7,7 @@
 */
 
 #ifndef _DATACONVERSION_H
-#define  _DATACONVERSION_H
+#define _DATACONVERSION_H
 
 #include <cstring>
 #include <sstream>

@@ -26,6 +26,6 @@ void CameraMatrixCalculator::calculateCameraMatrix(
   // copy the result
   theCameraMatrix = pose;
 
-  theCameraMatrix.cameraNumber = (int)theCameraInfo.cameraID;
+  theCameraMatrix.cameraID = theCameraInfo.cameraID;
 }//end execute
 

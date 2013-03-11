@@ -59,8 +59,8 @@
 * this can consume some time, so DON'T use the OccupancyGrid as a local variable!!!
 */
 
-#ifndef __OccupancyGrid_h__
-#define __OccupancyGrid_h__
+#ifndef _OccupancyGrid_h_
+#define _OccupancyGrid_h_
 
 #include "Tools/Debug/NaoTHAssert.h"
 
@@ -211,4 +211,4 @@ private:
 
 };
 
-#endif //__OccupancyGrid_h__
+#endif //_OccupancyGrid_h_

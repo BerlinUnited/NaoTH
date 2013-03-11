@@ -81,13 +81,13 @@ public:
   double temperatureRightLeg;
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "fall_down_state = " << getName(fall_down_state) << endl;
-    stream << "fall_down_state_time = " << fall_down_state_time << endl;
-    stream << "standByLeftFoot = " << standByLeftFoot << endl;
-    stream << "standByRightFoot = " << standByRightFoot << endl;
-    stream << "foot_state_time = " << foot_state_time << endl;
+    stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
+    stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
+    stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
+    stream << "standByRightFoot = " << standByRightFoot << std::endl;
+    stream << "foot_state_time = " << foot_state_time << std::endl;
   }//end print
 };
 

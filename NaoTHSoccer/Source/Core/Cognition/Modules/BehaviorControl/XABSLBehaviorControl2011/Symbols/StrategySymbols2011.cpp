@@ -3,6 +3,8 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
+using namespace std;
+
 void StrategySymbols2011::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("attention.mi_point.x", &attentionModel.mostInterestingPoint.x );

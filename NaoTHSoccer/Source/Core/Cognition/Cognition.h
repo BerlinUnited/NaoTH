@@ -16,8 +16,6 @@
 #include "Tools/Packages/PackageLoader.h"
 #include <Tools/Debug/Stopwatch.h>
 
-#include "Tools/Debug/Logger.h"
-
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 class Cognition : public naoth::Callable, public ModuleManagerWithDebug
@@ -28,11 +26,11 @@ public:
 
   virtual void call();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 
 private:
   PackageLoader packageLoader;
-  StopwatchItem stopwatch;
+  Stopwatch stopwatch;
   
 };
 

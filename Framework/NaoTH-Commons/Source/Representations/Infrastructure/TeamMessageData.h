@@ -10,7 +10,6 @@
 
 #include <string>
 #include <vector>
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Communication/RCTC/TeamMessage.h"
 
@@ -47,26 +46,26 @@ public:
 };
 
 // message to other robots
-class TeamMessageDataOut: public PlatformInterchangeable, public Printable
+class TeamMessageDataOut: public Printable
 {
 public:
   std::string data;
 
   virtual void print(std::ostream& stream) const
   {
-    stream<<"size = "<<data.size()<<"\n";
+    stream << "size = " << data.size() << std::endl;
   }
 };
 
 // message from other robots
-class TeamMessageDataIn: public PlatformInterchangeable, public Printable
+class TeamMessageDataIn: public Printable
 {
 public:
   std::vector<std::string> data;
 
   virtual void print(std::ostream& stream) const
   {
-    stream<<"size = "<<data.size()<<"\n";
+    stream << "size = " << data.size() << std::endl;
   }
 };
 

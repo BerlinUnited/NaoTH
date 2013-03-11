@@ -2,7 +2,7 @@
  * File:   IRData.h
  * Author: Oliver Welter
  *
- * Created on 11. März 2009, 11:03
+ * Created on 11. march 2009, 11:03
  */
 
 #ifndef _IRData_H_
@@ -10,12 +10,11 @@
 
 #include <string>
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
-  class IRSendData : public PlatformInterchangeable
+  class IRSendData
   {
   private:
   public:
@@ -42,7 +41,7 @@ namespace naoth
     static std::string getIRSendName(IRSendID id);
   };
 
-  class IRReceiveData : public PlatformInterchangeable, public Printable
+  class IRReceiveData : public Printable
   {
   private:
   public:

@@ -12,6 +12,7 @@
 // Debug
 #include "Tools/Debug/DebugRequest.h"
 
+using namespace std;
 
 PlayersLocator::PlayersLocator()
 {

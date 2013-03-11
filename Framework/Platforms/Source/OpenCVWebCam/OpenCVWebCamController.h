@@ -35,7 +35,7 @@ using namespace cv;
 using namespace naoth;
 using namespace std;
 
-class OpenCVWebCamController : public PlatformInterface<OpenCVWebCamController>
+class OpenCVWebCamController : public PlatformInterface
 {
 public:
   

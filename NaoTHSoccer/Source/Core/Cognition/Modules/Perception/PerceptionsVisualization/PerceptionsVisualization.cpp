@@ -11,6 +11,8 @@
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 
+using namespace std;
+
 PerceptionsVisualization::PerceptionsVisualization()
 {
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:ball_percept", "draw ball percept", false);

@@ -2,18 +2,17 @@
  * File:   ButtonData.h
  * Author: thomas
  *
- * Created on 6. März 2009, 10:40
+ * Created on 6. march 2009, 10:40
  */
 
 #ifndef _BUTTONDATA_H
 #define _BUTTONDATA_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
-  class ButtonData : public PlatformInterchangeable, public Printable
+  class ButtonData : public Printable
   {
   public:
     ButtonData();

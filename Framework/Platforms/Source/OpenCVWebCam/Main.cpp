@@ -13,8 +13,6 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/Stopwatch.h>
 
-#include "Cognition.h"
-#include "Motion.h"
 
 void printUsage()
 {
@@ -36,9 +34,7 @@ int main(int argc, char** argv)
   // init the platform
   Platform::getInstance().init(&theController);
 
-  Cognition theCognition;
-  Motion theMotion;
-  theController.registerCallbacks(&theMotion, &theCognition);
+  naoth::init_agent(theController);
 
   theController.main();
 

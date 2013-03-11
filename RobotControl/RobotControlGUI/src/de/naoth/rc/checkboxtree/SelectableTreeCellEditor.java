@@ -17,57 +17,41 @@ import javax.swing.tree.TreeCellEditor;
  *
  * @author thomas
  */
-public class SelectableTreeCellEditor extends AbstractCellEditor 
-  implements TreeCellEditor, ActionListener
+public class SelectableTreeCellEditor 
+    extends AbstractCellEditor
+    implements TreeCellEditor, ActionListener
 {
-
   private SelectableTreeNode lastNode;
 
   @Override
-  public Object getCellEditorValue()
+  public Component getTreeCellEditorComponent(
+          JTree tree, Object value, boolean isSelected, 
+          boolean expanded, boolean leaf, int row)
   {
-    return lastNode;
-  }
-
-  @Override
-  public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row)
-  {
-    JCheckBox cb = new JCheckBox();
-    cb.addActionListener(this);
-    
-    cb.setBackground(tree.getBackground());
-
     if(value != null)
     {
       if( value instanceof SelectableTreeNode)
       {
         lastNode = (SelectableTreeNode) value;
-        cb.setText(lastNode.getText());
-        cb.setToolTipText(lastNode.getTooltip());
-        cb.setSelected(lastNode.isSelected());
-      }
-      else
-      {
-        lastNode = null;
-        cb.setText(value.toString());
+        JCheckBox cb = lastNode.getComponent();
+        cb.addActionListener(this);
+        return cb;
       }
     }
-    
-    return cb;
+    return null;
   }
-
+  
+  @Override
+  public Object getCellEditorValue()
+  {
+    return lastNode;
+  }
+  
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    if(e.getSource() instanceof JCheckBox)
-    {
-      JCheckBox cb = (JCheckBox) e.getSource();
-      if(lastNode != null)
-      {
-        lastNode.setSelected(cb.isSelected());
-      }
-      fireEditingStopped();
-    }
+    JCheckBox cb = (JCheckBox) e.getSource();
+    cb.removeActionListener(this);
+    fireEditingStopped();
   }
-
 }

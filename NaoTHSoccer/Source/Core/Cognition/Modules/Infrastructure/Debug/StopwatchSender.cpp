@@ -12,27 +12,29 @@
 
 StopwatchSender::StopwatchSender()
 {
-  REGISTER_DEBUG_COMMAND("stopwatch",
-    "get values of all the stopwatches in microseconds", this);
+  REGISTER_DEBUG_COMMAND("stopwatch", "get values of all the stopwatches in microseconds", this);
 
-  DEBUG_REQUEST_REGISTER("Plot:Stopwatch","Plot Stopwatches in ms (defined in Stopwatch.cpp)", false);
+  DEBUG_REQUEST_REGISTER("Plot:Stopwatch", "Plot Stopwatches in ms (defined in Stopwatch.cpp)", false);
+}
+
+StopwatchSender::~StopwatchSender()
+{
 }
 
 void StopwatchSender::execute()
 {
-  std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
-  std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
-  while (it != stopwatches.end())
-  {
-    const StopwatchItem& item =it->second;
-    
-    DEBUG_REQUEST("Plot:Stopwatch",
+  DEBUG_REQUEST("Plot:Stopwatch",
+    const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
+    StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
+    for (; it != stopwatches.end(); it++)
+    {
+      const Stopwatch& item = it->second;
+      
       std::stringstream s;
-      s << "SW:" << item.name;
-      PLOT_GENERIC(s.str(), getFrameInfo().getTime(), item.lastValue)
-      );
-    it++;
-  }//end while
+      s << "SW:" << it->first;
+      PLOT_GENERIC(s.str(), getFrameInfo().getTime(), item.lastValue);
+    }//end for
+  );
 }//end execute
 
 void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
@@ -40,27 +42,25 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
   if ("stopwatch" == command)
   {
     //g_debug("sending stopwatches");
-    std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
+    const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
+    
     naothmessages::Stopwatches all;
+    //all.mutable_stopwatches()->Reserve(stopwatches.size());
+
     // collect all values
-    std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
-    while (it != stopwatches.end())
+    StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
+    for (; it != stopwatches.end(); ++it)
     {
       const std::string& name = it->first;
-      const StopwatchItem& item = it->second;
+      const Stopwatch& item = it->second;
 
       naothmessages::StopwatchItem* s = all.add_stopwatches();
       s->set_name(name);
       s->set_time(item.lastValue);
-     
-      it++;
-    }//end while
+    }//end for
     
     google::protobuf::io::OstreamOutputStream buf(&outstream);
     all.SerializeToZeroCopyStream(&buf);
   }
 }//end executeDebugCommand
 
-StopwatchSender::~StopwatchSender()
-{
-}

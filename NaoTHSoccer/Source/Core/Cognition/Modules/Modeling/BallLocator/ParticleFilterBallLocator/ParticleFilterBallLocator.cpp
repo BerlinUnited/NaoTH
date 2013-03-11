@@ -158,7 +158,7 @@ ParticleFilterBallLocator::Sample ParticleFilterBallLocator::generateNewSample()
     // a must be older than b:
     if(timeDelta < 0)
     {
-      swap(a,b);
+      std::swap(a,b);
     }
 
     newSample.position = perceptBuffer[b].bearingBasedOffsetOnField;

@@ -1,27 +1,20 @@
--- local EXTERN_PATH = "../../../Extern"
-
 -- NaoTH controller for the webcam based "simulator"
 project "OpenCVImageLoader"
-  kind "ConsoleApp"
+  kind "StaticLib"
   language "C++"
    
   print("Generating files for OpenCVImageLoader")
+  
   includedirs {
 	"../Source/",
-	CORE_PATH,
-	"../../NaoTH-Tools/Source/",
-	EXTERN_PATH .. "/include/",
-	EXTERN_PATH .. "/include/glib-2.0/",
-	EXTERN_PATH .. "/lib/glib-2.0/include/",
-	EXTERN_PATH .. "/include/opencv2/core/include/",
-	EXTERN_PATH .. "/include/opencv2/imgproc/include/",
-	EXTERN_PATH .. "/include/opencv2/highgui/include/",
+	"../../NaoTH-Tools/Source/"
 	}
   
-  files{"../Source/OpenCVImageLoader/**.cpp","../Source/OpenCVImageLoader/**.h"}
+  files{
+	"../Source/OpenCVImageLoader/**.cpp",
+	"../Source/OpenCVImageLoader/**.h"}
   
-  links {CORE, 
-	"NaoTH-Commons",
+  links {
 	"glib-2.0",
 	"gio-2.0",
 	"gobject-2.0",
@@ -36,8 +29,4 @@ project "OpenCVImageLoader"
 	
   targetname "OpenCVImageLoader"
   
-  
-  configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
-
   -- END OpenCVImageLoader

@@ -24,7 +24,8 @@ namespace naoth
 
     ~VirtualVision();
 
-    std::map<std::string, Vector3<double> > data;
+    typedef std::map<std::string, Vector3<double> > PointMap;
+    PointMap data;
 
     struct Line
     {

@@ -14,6 +14,7 @@
 #include <Tools/Debug/Stopwatch.h>
 
 #include <Tools/SynchronizedFileWriter.h>
+#include <PlatformInterface/Platform.h>
 
 Debug::Debug() : cognitionLogger("CognitionLog")
 {   

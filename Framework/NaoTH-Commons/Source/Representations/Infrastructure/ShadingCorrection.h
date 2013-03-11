@@ -10,7 +10,7 @@
 
 #include <string>
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "PlatformInterface/Platform.h"
+
 
 namespace naoth
 {

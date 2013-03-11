@@ -11,7 +11,6 @@
 #include <fstream>
 #include <PlatformInterface/Platform.h>
 
-
 using namespace std;
 using namespace naoth;
 
@@ -25,9 +24,7 @@ Motion::KeyFrame::KeyFrame()
 }
 
 Motion::Motion():
-  theBlackBoard(MotionBlackBoard::getInstance()),
-  theTimeStep(20),
-  theMotionRequestReader(NULL)
+  theTimeStep(20)
 {
   string dir = "keyframes/";
   theKeyFrame[MotionRequest::stand] = loadKeyFrames(dir+"stand.txt");
@@ -38,24 +35,23 @@ Motion::Motion():
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theBlackBoard.theMotorJointData.stiffness[i] = 1.0;
+    getMotorJointData().stiffness[i] = 1.0;
   }
 }
 
-void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
+void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  theBlackBoard.init();
-  theBlackBoard.currentlyExecutedMotion = MotionRequest::stand;
+  getMotionStatus().currentlyExecutedMotion = MotionRequest::stand;
 
   // init robot info
-  theBlackBoard.theRobotInfo.platform = platformInterface.getName();
-  theBlackBoard.theRobotInfo.bodyNickName = platformInterface.getBodyNickName();
-  theBlackBoard.theRobotInfo.bodyID = platformInterface.getBodyID();
-  theBlackBoard.theRobotInfo.basicTimeStep = platformInterface.getBasicTimeStep();
+  getRobotInfo().platform = platform.getName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
 
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
-  platformInterface.registerMotionInput(theBlackBoard.the##R)
+  platformInterface.registerInput(get##R())
 
   REG_INPUT(SensorJointData);
   REG_INPUT(FrameInfo);
@@ -65,26 +61,17 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(GyrometerData);
 
 #define REG_OUTPUT(R)                                                   \
-  platformInterface.registerMotionOutput(theBlackBoard.the##R)
+  platformInterface.registerOutput(get##R())
 
   REG_OUTPUT(MotorJointData);
   REG_OUTPUT(LEDData);
 
-
-  theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
-
+  platformInterface.registerInputChanel(getMotionRequest());
 }//end init
 
 void Motion::call()
 {
-  while ( !theMotionRequestReader->empty() )
-  {
-    string msg = theMotionRequestReader->read();
-    stringstream ss(msg);
-    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
-  }
-
-  MotionRequest::MotionID theRequest = theBlackBoard.theMotionRequest.id;
+  MotionRequest::MotionID theRequest = getMotionRequest().id;
   if ( activeKeyFrame.empty() )
   {
     activeKeyFrame = theKeyFrame[theRequest];
@@ -95,8 +82,8 @@ void Motion::call()
   double dt = theTimeStep/frame.time;
   for(int i=0; i<JointData::numOfJoint; i++)
   {
-    theBlackBoard.theMotorJointData.position[i]
-        = (1.0-dt)*theBlackBoard.theMotorJointData.position[i] + dt*frame.position[i];
+    getMotorJointData().position[i]
+        = (1.0-dt)*getMotorJointData().position[i] + dt*frame.position[i];
   }
 
   frame.time -= theTimeStep;
@@ -108,8 +95,6 @@ void Motion::call()
 
 Motion::~Motion()
 {
-  if (theMotionRequestReader != NULL)
-      delete theMotionRequestReader;
 }
 
 std::list<Motion::KeyFrame> Motion::loadKeyFrames(const std::string& filename)

@@ -5,8 +5,8 @@
 * Declaration of class SampleSet
 */
 
-#ifndef __SampleSet_h_
-#define __SampleSet_h_
+#ifndef _SampleSet_h_
+#define _SampleSet_h_
 
 #include "Sample.h"
 #include <Tools/Math/Moments2.h>
@@ -14,18 +14,12 @@
 
 class SampleSet
 {
+
 public:
-  const unsigned int& numberOfParticles; /** TODO: make it as parameter */
-
-private:
-  unsigned int _numberOfParticles;
-
-public: 
   SampleSet(unsigned int n = 100)
-    : 
-    numberOfParticles(_numberOfParticles),
-    _numberOfParticles(n),
-    samples(n)
+    :
+    samples(n),
+    numberOfParticles(n)
   {
   }
 
@@ -63,13 +57,14 @@ public:
    */
   inline const Sample& operator[](int index) const {return samples[index];}
 
-
   Sample meanOfLargestCluster(Moments2<2>& moments);
 
   void drawCluster(unsigned int clusterId);
 
 private:
   void quicksort(int low, int high);
+
+  unsigned int numberOfParticles;
 };
 
-#endif //__SampleSet_h_
+#endif //_SampleSet_h_

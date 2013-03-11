@@ -97,7 +97,7 @@ private:
   void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
 
   //Tools
-  string convertIntToString(int number);
+  std::string convertIntToString(int number);
 
 };
 

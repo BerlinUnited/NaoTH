@@ -24,8 +24,14 @@ OdometryCalculator::~OdometryCalculator()
 {
 }
 
-void OdometryCalculator::calculateOdometry(OdometryData& od, const KinematicChain& kc, const FSRData& fsr)
+void OdometryCalculator::execute()
 {
+  // TODO: make it better
+  OdometryData& od = getOdometryData();
+  const KinematicChain& kc = getKinematicChainSensor();
+  const FSRData& fsr = getFSRData();
+
+
     static bool lastFootChoiceValid = true;
 
     // simple support foot detection: the foot which has greater force is the support foot.
@@ -97,5 +103,5 @@ void OdometryCalculator::calculateOdometry(OdometryData& od, const KinematicChai
     ASSERT(!Math::isNan(od.translation.x));
     ASSERT(!Math::isNan(od.translation.y));
     ASSERT(!Math::isNan(od.rotation));
- }
+ }//end execute
 

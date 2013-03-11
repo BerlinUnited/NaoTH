@@ -6,7 +6,7 @@
 */
 
 #ifndef _FootTouchCalibrator_h_
-#define  _FootTouchCalibrator_h_
+#define _FootTouchCalibrator_h_
 
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SupportPolygon.h"
@@ -33,7 +33,11 @@ private:
   RingBufferWithSum<Vector2<double>,100> predictionBuffer;
 
 public:
-  FootTouchCalibrator(const naoth::FSRData& theFSRData, const MotionStatus& theMotionStatus, const SupportPolygon& theSupportPolygon, const KinematicChain& theKinematicChain)
+  FootTouchCalibrator(
+    const naoth::FSRData& theFSRData, 
+    const MotionStatus& theMotionStatus, 
+    const SupportPolygon& theSupportPolygon, 
+    const KinematicChain& theKinematicChain)
     :
     theFSRData(theFSRData),
     theMotionStatus(theMotionStatus),

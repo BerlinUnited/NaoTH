@@ -8,9 +8,11 @@
 
 using namespace naoth;
 
-namespace Kinematics {
+namespace Kinematics 
+{
 
-  void ParallelKinematic::calculateLegs(const Pose& pose, JointData& jointData) {
+  void ParallelKinematic::calculateLegs(const Pose& pose, JointData& jointData) 
+  {
     double alpha = -0.5 * pose.alpha.z;
 
     // left leg
@@ -31,7 +33,8 @@ namespace Kinematics {
     jointData.position[JointData::RAnkleRoll] = pose.alpha.y + (pose.rotation.x / 2);
   }//end calculateLegs
 
-  void ParallelKinematic::calculateLegs(const Pose& poseLeft, const Pose& poseRight, JointData& jointData) {
+  void ParallelKinematic::calculateLegs(const Pose& poseLeft, const Pose& poseRight, JointData& jointData) 
+  {
     double alphaLeft = -0.5 * poseLeft.alpha.z;
 
     // left leg

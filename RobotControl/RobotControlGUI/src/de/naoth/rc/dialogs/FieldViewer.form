@@ -51,6 +51,7 @@
   <SubComponents>
     <Container class="javax.swing.JToolBar" name="jToolBar1">
       <Properties>
+        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
 
@@ -187,15 +188,14 @@
       <SubComponents>
         <Container class="de.naoth.rc.dialogs.panels.DynamicCanvasPanel" name="fieldCanvas">
           <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="null" type="code"/>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="f7" green="f7" red="f7" type="rgb"/>
             </Property>
             <Property name="componentPopupMenu" type="javax.swing.JPopupMenu" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="jPopupMenu"/>
             </Property>
             <Property name="offsetX" type="double" value="350.0"/>
             <Property name="offsetY" type="double" value="200.0"/>
-            <Property name="opaque" type="boolean" value="false"/>
             <Property name="scale" type="double" value="0.07"/>
           </Properties>
           <Constraints>

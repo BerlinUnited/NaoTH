@@ -12,7 +12,7 @@
 
 ParallelStepper::ParallelStepper() 
   :
-  AbstractMotion(motion::parallel_stepper),
+  AbstractMotion(motion::parallel_stepper, getMotionLock()),
   shift(0),
   speed(0),
   t(0)
@@ -20,11 +20,11 @@ ParallelStepper::ParallelStepper()
   
 }
 
-void ParallelStepper::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void ParallelStepper::execute()
 {
-  if(motionRequest.id != getId())
+  if(getMotionRequest().id != getId())
   {
-    currentState = motion::stopped;
+    setCurrentState(motion::stopped);
     return;
   }//end if
 
@@ -46,7 +46,7 @@ void ParallelStepper::execute(const MotionRequest& motionRequest, MotionStatus& 
   if (speed > max_shift_speed + speed_step) speed -= speed_step;
 
   // increase the current time
-  double s = speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  double s = speed*getRobotInfo().getBasicTimeStepInSecond();
   t += Math::fromDegrees(s);
 
 
@@ -97,8 +97,8 @@ void ParallelStepper::execute(const MotionRequest& motionRequest, MotionStatus& 
   PLOT("ParallelStepper:poseLeft.alpha.z",poseLeft.alpha.z);
 
   // apply parallel kinematics to calculate the leg joints
-  theParallelKinematic.calculateLegs(poseLeft, poseRight, theMotorJointData);
+  theParallelKinematic.calculateLegs(poseLeft, poseRight, getMotorJointData());
 
 
-  currentState = motion::running;
+  setCurrentState(motion::running);
 }//end execute

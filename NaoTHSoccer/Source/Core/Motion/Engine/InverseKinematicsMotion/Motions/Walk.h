@@ -15,13 +15,47 @@
 
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
-class Walk: public IKMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include <Representations/Infrastructure/GyrometerData.h>
+#include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/SupportPolygon.h"
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Motion/MotionStatus.h"
+
+
+BEGIN_DECLARE_MODULE(Walk)
+  REQUIRE(RobotInfo)
+  REQUIRE(GroundContactModel)
+  REQUIRE(InertialSensorData)
+  REQUIRE(MotionRequest)
+  REQUIRE(KinematicChainSensor)
+  REQUIRE(KinematicChainMotor)
+  REQUIRE(GyrometerData)
+  REQUIRE(InertialModel)
+  REQUIRE(SupportPolygon)
+  REQUIRE(SensorJointData)
+
+  REQUIRE(InverseKinematicsMotionEngineService)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotionStatus)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(Walk)
+
+class Walk: private WalkBase, public IKMotion
 {
 public:
   Walk();
   
   /** */
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
+  void execute();
 
 private:
   /** class describing a single step */
@@ -149,6 +183,7 @@ private:
   // a buffer of CoMFeetPoses requested in the past
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
+
 };
 
 #endif // _IK_MOTION_H_

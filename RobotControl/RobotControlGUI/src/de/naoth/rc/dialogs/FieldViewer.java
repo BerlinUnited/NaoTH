@@ -150,6 +150,7 @@ public class FieldViewer extends AbstractDialog
         });
         jPopupMenu.add(jMenuItemExport);
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         btReceiveDrawings.setText("Receive");
@@ -257,11 +258,10 @@ public class FieldViewer extends AbstractDialog
         drawingPanel.setBackground(new java.awt.Color(247, 247, 247));
         drawingPanel.setLayout(new java.awt.BorderLayout());
 
-        fieldCanvas.setBackground(null);
+        fieldCanvas.setBackground(new java.awt.Color(247, 247, 247));
         fieldCanvas.setComponentPopupMenu(jPopupMenu);
         fieldCanvas.setOffsetX(350.0);
         fieldCanvas.setOffsetY(200.0);
-        fieldCanvas.setOpaque(false);
         fieldCanvas.setScale(0.07);
 
         javax.swing.GroupLayout fieldCanvasLayout = new javax.swing.GroupLayout(fieldCanvas);
@@ -371,7 +371,7 @@ private void btReceiveTeamCommDrawingsActionPerformed(java.awt.event.ActionEvent
 
 private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
   int v = this.jSlider1.getValue();
-  this.drawingPanel.setBackground(new Color(v,v,v));
+  this.fieldCanvas.setBackground(new Color(v,v,v));
   this.drawingPanel.repaint();
 }//GEN-LAST:event_jSlider1StateChanged
 

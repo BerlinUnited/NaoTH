@@ -7,7 +7,8 @@
 
 #include "CameraDebug.h"
 #include <DebugCommunication/DebugCommandManager.h>
-
+#include <Representations/Infrastructure/Configuration.h>
+#include <PlatformInterface/Platform.h>
 
 CameraDebug::CameraDebug(): CameraDebugBase(),
   isAutoCalibratingCamera(false),

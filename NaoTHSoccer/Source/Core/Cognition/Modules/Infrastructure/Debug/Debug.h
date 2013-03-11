@@ -52,7 +52,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraSettingsRequest)
 END_DECLARE_MODULE(Debug)
 
-class Debug : public DebugBase, public DebugCommandExecutor
+class Debug : public DebugBase, virtual private BlackBoardInterface, public DebugCommandExecutor
 {
 public:
   Debug();
@@ -73,7 +73,7 @@ private:
 
   void registerLogableRepresentationList()
   {
-    const BlackBoard& blackBoard = getBlackBoard();
+    const BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
     BlackBoard::Registry::const_iterator iter;
 
     for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)

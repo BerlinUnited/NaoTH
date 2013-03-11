@@ -5,8 +5,8 @@
 * Declaration of class Representation
 */
 
-#ifndef __Representation_h_
-#define __Representation_h_
+#ifndef _Representation_h_
+#define _Representation_h_
 
 // standart
 #include <string>
@@ -16,12 +16,23 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/DataStructures/Printable.h"
 
-using namespace std;
-using namespace naoth;
+
+template<class T>
+class MsgIn
+{
+public: typedef std::istream type;
+};
+
+template<class T>
+class MsgOut
+{
+public: typedef std::ostream type;
+};
+
 
 class Module;
 
-class Representation : public Printable
+class Representation : public naoth::Printable
 {
 
 private:
@@ -29,14 +40,12 @@ private:
 
 protected:
   // pointers to the providing and requiring modules
-  list<const Module*> provided;
-  list<const Module*> used;
-  list<const Module*> required;
+  std::list<const Module*> provide;
+  std::list<const Module*> require;
 
   Representation(const std::string name)
     : name(name)
   {
-    //std::cout << "Load " << getModuleName() << endl;
   }
 
 
@@ -44,32 +53,31 @@ public:
   virtual ~Representation() {}
   const std::string& getName() const { return name; }
 
-  void registerProvidingModule(const Module& module)
+  void registerProvide(const Module& module)
   {
-    provided.push_back(&module);
-  }//end registerProvidingModule
+    provide.push_back(&module);
+  }
   
-  void unregisterProvidingModule(const Module& module)
+  void unregisterProvide(const Module& module)
   {
-    provided.remove(&module);
-  }//end unregisterProvidingModule
+    provide.remove(&module);
+  }
 
-
-  void registerRequiringModule(const Module& module)
+  void registerRequire(const Module& module)
   {
-    required.push_back(&module);
-  }//end registerRequiringModule
+    require.push_back(&module);
+  }
 
-  void unregisterRequiringModule(const Module& module)
+  void unregisterRequire(const Module& module)
   {
-    required.remove(&module);
-  }//end unregisterRequiringModule
+    require.remove(&module);
+  }
 
   /**
    * This method can be overwritten bei a particular
    * representation in order to stream out some specific (visible) data
    */
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     // use representation name as fallback
     stream << name;
@@ -77,8 +85,8 @@ public:
 
 
 
-  virtual void serialize(std::ostream& stream) const = 0;
-  virtual void deserialize(std::istream& stream) = 0;
+  virtual void serialize(MsgOut<Representation>::type& stream) const = 0;
+  virtual void deserialize(MsgIn<Representation>::type& stream) = 0;
 };
 
 /**
@@ -89,4 +97,4 @@ public:
  */ 
 //ostream& operator<<(ostream& stream, const Representation& representation);
 
-#endif //__Representation_h_
+#endif //_Representation_h_

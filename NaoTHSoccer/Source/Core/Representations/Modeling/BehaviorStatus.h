@@ -2,7 +2,7 @@
  * File:   BehaviorStatus.h
  * Author: thomas
  *
- * Created on 22. März 2010, 09:10
+ * Created on 22. march 2010, 09:10
  */
 
 #ifndef _BEHAVIORSTATUS_H
