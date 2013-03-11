@@ -17,9 +17,9 @@ class SampleSet
 
 public:
   SampleSet(unsigned int n = 100)
-    : 
-    numberOfParticles(n),
-    samples(n)
+    :
+    samples(n),
+    numberOfParticles(n)
   {
   }
 

@@ -51,7 +51,7 @@ bool DebugCommandManager::registerCommand(
 void DebugCommandManager::objectDestructed(DebugCommandExecutor* object)
 {
   // search all registered keys of the object
-  ExecutorMap::const_iterator iter = executorMap.begin();
+  ExecutorMap::iterator iter = executorMap.begin();
   while(iter != executorMap.end())
   {
     if ((*iter).second.executor == object) {
