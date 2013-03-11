@@ -83,6 +83,8 @@ public:
 
   virtual void execute() = 0;
   virtual std::string getName() const = 0;
+  virtual std::string getModulePath() const = 0; // experimental
+  virtual std::string getDescription() const = 0; // experimental
 
   const RepresentationMap& getRequire() const { return requiredMap; }
   const RepresentationMap& getProvide() const { return providedMap; }
@@ -159,18 +161,20 @@ public:
     if(!init) { IF<T>(); init = true; } 
     return registryProvide.registry; 
   }
+  static std::string description;
 };
 
 template<class T> bool StaticRegistry<T>::init = false;
 template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryRequire;
 template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvide;
-
+template<class T> std::string StaticRegistry<T>::description = "empty";
 
 /**
 * A default definition of a static interface of a module
 */
 template<class T> class IF : public StaticRegistry<T> {};
 
+std::string get_sub_core_module_path(std::string fullpath);
 
 /**
 * NOTE: an object of a 'registrator' class registers an interface for a 
@@ -200,8 +204,11 @@ template<class T> class IF : public StaticRegistry<T> {};
   public:                                                     \
     typedef M ModuleType;                                     \
     virtual const Module* getModule() const {                 \
-      assert(false); return NULL; \
-    }
+      assert(false); return NULL;                             \
+    }                                                         \
+    static std::string getName() { return #M; }               \
+    static std::string getModulePath() { return get_sub_core_module_path(__FILE__); }
+    
 
 /**
 * - autoregistration at construction time
@@ -239,7 +246,9 @@ template<class T> class IF : public StaticRegistry<T> {};
   }                                                           \
   public:                                                     \
     virtual const Module* getModule() const { return this; }  \
-    std::string getName() const { return #M; }                \
+    virtual std::string getName() const {return #M; }         \
+    virtual std::string getModulePath() const { return IF<M>::getModulePath(); } \
+    virtual std::string getDescription() const { return IF<M>::description; } \
   };
 
 #endif // _Module_h_

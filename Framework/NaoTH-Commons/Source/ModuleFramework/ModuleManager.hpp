@@ -27,6 +27,7 @@ ModuleCreator<T>* ModuleManager::registerModule(std::string name, bool enabled)
   {
     typedModule = createModule<T>(enabled);
     moduleExecutionList.push_back(name);
+    moduleModuleExecutionList.push_back(typedModule);
     m->second = typedModule;
   }
   else

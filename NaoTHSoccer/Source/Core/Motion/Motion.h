@@ -64,7 +64,7 @@ BEGIN_DECLARE_MODULE(Motion)
 END_DECLARE_MODULE(Motion)
 
 
-class Motion : public naoth::Callable, private MotionBase, public ModuleManager//WithDebug
+class Motion : public naoth::Callable, private MotionBase, public ModuleManagerWithDebug
 {
 public:
   Motion();

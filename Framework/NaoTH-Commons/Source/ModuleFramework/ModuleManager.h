@@ -56,10 +56,13 @@ public:
   const AbstractModuleCreator* getModule(const std::string& name) const;
 
 
-  const std::list<std::string>& getExecutionList() const
-  {
+  const std::list<std::string>& getExecutionList() const {
     return moduleExecutionList;
-  }//end getExecutionList  
+  }
+
+  const std::list<AbstractModuleCreator*>& getModuleExecutionList() const {
+    return moduleModuleExecutionList;
+  }
 
 
   virtual void print(std::ostream& stream) const
@@ -83,6 +86,7 @@ private:
 
   /** list of names of modules in the order of their registration */
   std::list<std::string> moduleExecutionList;
+  std::list<AbstractModuleCreator*> moduleModuleExecutionList;
 
 protected:
 

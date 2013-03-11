@@ -8,14 +8,11 @@
 #include "DebugRequest.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
-
 #include <Tools/Debug/NaoTHAssert.h>
-
-
 
 DebugRequest::DebugRequest() : requestMap()
 {
-  REGISTER_DEBUG_COMMAND("debug_request:list", 
+  REGISTER_DEBUG_COMMAND("debug_request:list",
     "return the debug request which where collected in the internal buffer", this);
 }
 
@@ -36,21 +33,21 @@ void DebugRequest::executeDebugCommand(
       iter++;
     }
   }
-  // search in the map if we know this command/request
-  else if(requestMap.find(command) != requestMap.end())
+  else
   {
-    // enable or disable depending on the command
-    if(arguments.find("off") != arguments.end())
+    // search in the map if we know this command/request
+    std::map<std::string, bool>::iterator iter = requestMap.find(command);
+    if(iter != requestMap.end())
     {
-      requestMap[command] = false;
+      // enable or disable depending on the command
+      if(arguments.find("off") != arguments.end()) {
+        iter->second = false;
+      } else if(arguments.find("on") != arguments.end()) {
+        iter->second = true;
+      }
+      // print result
+      outstream << command << (iter->second ? " is on" : " is off");
     }
-    else if(arguments.find("on") != arguments.end())
-    {
-      requestMap[command] = true;
-    }
-    
-    // print result
-    outstream << command << (requestMap[command] ? " is on" : " is off");
   }
 }//end executeDebugCommand
 
@@ -58,22 +55,28 @@ void DebugRequest::executeDebugCommand(
 const bool& DebugRequest::registerRequest(const std::string& name, const std::string& description, bool defaultValue = false)
 {
   // only add if not known already
-  if(requestMap.find(name) == requestMap.end())
+  std::map<std::string, bool>::iterator iter = requestMap.lower_bound(name);
+  if(iter == requestMap.end() || iter->first != name)
   {
-    // try to register
     std::string d =  description;
     d = d.append(" (debug request, usage: ");
     d = d.append(name);
     d = d.append(" [on|off|status]");
 
-    if(DebugCommandManager::getInstance().registerCommand(name, d, this))
-    {
-      requestMap[name] = defaultValue;
-      descriptionMap[name] = description;
-    }
-  }//end if
+    // there should not be any other command with the same name
+    ASSERT(DebugCommandManager::getInstance().registerCommand(name, d, this));
+    
+    iter = requestMap.insert(iter, std::make_pair(name, defaultValue));
+    descriptionMap[name] = description;
+  } else {
+    // TODO:
+    //some places use the fact that a debug request may be registered several times
+    //eg, when several instances of ImageProcessing/BlobFinder.cpp are created
+    //should we prohibit it?
+    //THROW( "[ERROR] there is already a request with the name \"" + name + "\"");
+  }
 
-  return requestMap.find(name)->second;
+  return iter->second;
 }//end registerRequest
 
 
@@ -86,9 +89,19 @@ bool DebugRequest::isActive(const std::string& name) const
 const bool& DebugRequest::getValueReference(const std::string& name) const
 {
   std::map<std::string, bool>::const_iterator iter = requestMap.find(name);
-  if(iter == requestMap.end())
-  {
+  if(iter == requestMap.end()) {
     THROW( "[ERROR] Could not find reference for debug request \"" + name + "\"");
   }
   return iter->second;
 }//end getValueReference
+
+
+std::string get_sub_core_path(std::string fullpath)
+{
+  unsigned p = fullpath.find("core");
+  if (p < fullpath.size()-5) {
+    return fullpath.substr(p+5); // size of "core/"
+  } else {
+    return fullpath;
+  }
+}

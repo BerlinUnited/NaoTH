@@ -16,6 +16,7 @@ include (COMPILER_PATH_NAO)
 solution "TestArchitecture"	  
   platforms {"Native"}
   configurations {"Debug","Release"}
+  localtion "../build"
   
   configuration "vs*"
 	defines {"WIN32", "NOMINMAX"}
@@ -31,9 +32,7 @@ solution "TestArchitecture"
      EXTERN_PATH .. "/lib/glib-2.0/include/"
   }
   
-  libdirs {
-      EXTERN_PATH .. "/lib"
-    }
+  libdirs { EXTERN_PATH .. "/lib" }
   
    -- debug configuration
   configuration { "Debug" }

@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMSYMBOLS2011_H
-#define  _TEAMSYMBOLS2011_H
+#define _TEAMSYMBOLS2011_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>

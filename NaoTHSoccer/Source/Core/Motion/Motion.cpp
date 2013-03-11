@@ -30,7 +30,8 @@
 using namespace naoth;
 
 Motion::Motion()
-  : motionLogger("MotionLog")
+  : ModuleManagerWithDebug("Motion"),
+    motionLogger("MotionLog")
 {
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);

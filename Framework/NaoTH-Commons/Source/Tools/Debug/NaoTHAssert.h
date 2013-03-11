@@ -11,11 +11,11 @@
 #ifndef _NaoTHAssert_h_
 #define _NaoTHAssert_h_
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 
 #include "Trace.h"
 

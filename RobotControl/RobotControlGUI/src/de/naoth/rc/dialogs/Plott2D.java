@@ -16,7 +16,6 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
-import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
 import info.monitorenter.gui.chart.IAxis;
@@ -50,7 +49,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -58,7 +56,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Heinrich Mellmann
  */
 @PluginImplementation
-public class SimpleValuePlotter  extends AbstractDialog
+public class Plott2D  extends AbstractDialog
   implements ObjectListener<Plots>
 {
 
@@ -67,11 +65,7 @@ public class SimpleValuePlotter  extends AbstractDialog
   @InjectPlugin
   public PlotDataManager plotDataManager;
 
-  @Init
-  public void init()
-  {
-  }//end init
-
+  
   private int maxNumberOfValues = 5000;
   private int numberOfValues = maxNumberOfValues;
   
@@ -82,7 +76,7 @@ public class SimpleValuePlotter  extends AbstractDialog
   private Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
     /** Creates new form SimpleValuePlotter */
-    public SimpleValuePlotter() {
+    public Plott2D() {
         initComponents();
 
         chart.setUseAntialiasing(false);
@@ -316,6 +310,14 @@ public class SimpleValuePlotter  extends AbstractDialog
             }
         });
         jToolBar1.add(btClearData);
+
+        cbDontScrollOnStaticRegionData.setSelected(true);
+        cbDontScrollOnStaticRegionData.setText("dont scroll in x-axis if on static data regions");
+        cbDontScrollOnStaticRegionData.setFocusable(false);
+        cbDontScrollOnStaticRegionData.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbDontScrollOnStaticRegionData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cbDontScrollOnStaticRegionData);
+
         jButton1.setText("Fit to Data");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -327,12 +329,6 @@ public class SimpleValuePlotter  extends AbstractDialog
         });
         jToolBar1.add(jButton1);
 
-        cbDontScrollOnStaticRegionData.setSelected(true);
-        cbDontScrollOnStaticRegionData.setText("dont scroll in x-axis if on static data regions");
-        cbDontScrollOnStaticRegionData.setFocusable(false);
-        cbDontScrollOnStaticRegionData.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        cbDontScrollOnStaticRegionData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(cbDontScrollOnStaticRegionData);
         cbShowGrid.setText("Show Grid");
         cbShowGrid.setFocusable(false);
         cbShowGrid.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -380,7 +376,7 @@ public class SimpleValuePlotter  extends AbstractDialog
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE))
+                .addComponent(jSplitPane))
         );
     }// </editor-fold>//GEN-END:initComponents
 

@@ -11,6 +11,7 @@
 
 #include "RotationMatrix.h"
 #include "Pose2D.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 /**
  * @class Pose3T

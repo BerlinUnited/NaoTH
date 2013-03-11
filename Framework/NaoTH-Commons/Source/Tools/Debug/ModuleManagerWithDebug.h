@@ -13,7 +13,7 @@
 class ModuleManagerWithDebug: public ModuleManager, public DebugCommandExecutor
 {
 public:
-  ModuleManagerWithDebug();
+  ModuleManagerWithDebug(const std::string& name);
   virtual ~ModuleManagerWithDebug();
 
   virtual void executeDebugCommand(const std::string& command, 
@@ -21,9 +21,23 @@ public:
                            std::ostream& outstream);
 
 private:
-  void printRepresentation(std::ostream& outstream, const std::string& name, bool binary);
+  std::string commandModulesList;
+  std::string commandModulesSet;
+  std::string commandModulesStore;
 
-  void printRepresentationList(std::ostream& outstream);
+  std::string commandRepresentationList;
+  std::string commandRepresentationGet;
+  std::string commandRepresentationGetbinary;
+
+  
+  
+  void modulesList(std::ostream& outstream);
+  void modulesStore(std::ostream& outstream);
+  void modulesSet( std::ostream& outstream,
+                   const std::map<std::string,std::string>& arguments);
+  
+  void printRepresentation(std::ostream& outstream, const std::string& name, bool binary);
+  void representationList(std::ostream& outstream);
 };
 
 #endif  /* _ModuleManagerWithDebug_h_ */

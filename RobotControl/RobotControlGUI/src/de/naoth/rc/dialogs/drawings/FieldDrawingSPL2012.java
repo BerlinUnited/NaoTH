@@ -66,7 +66,10 @@ public class FieldDrawingSPL2012 implements Drawable
     
     private Color fieldColor = new Color(0f, 0.8f, 0f, 0.5f);
     private Color goalColor = new Color(0.9f, 0.9f, 0f, 1f);
+    private Color goalNetColorOwn = new Color(0.5f, 0.5f, 0.7f, 0.5f);
+    private Color goalNetColorOpp = new Color(0.5f, 0.5f, 0.3f, 0.5f);
     private Color lineColor = Color.white;
+    
     
     public FieldDrawingSPL2012()
     {
@@ -109,9 +112,9 @@ public class FieldDrawingSPL2012 implements Drawable
         g2d.drawLine(xCrossPos, -crossSize/2, xCrossPos, crossSize/2);
 
 
-        // goal box
+        // goal box/net
         g2d.setStroke(new BasicStroke(1.0f));
-        g2d.setColor(Color.gray);
+        g2d.setColor(goalNetColorOwn);
         g2d.fillRect(-xLengthHalf-goalpostRadius/2 - goalDepth, -yGoalPostPos, goalDepth, goalWidth);
 
         // goal --- latte :)
@@ -129,9 +132,10 @@ public class FieldDrawingSPL2012 implements Drawable
         g2d.drawOval(-xLengthHalf-goalpostRadius-goalpostRadius/2, -yGoalPostPos-goalpostRadius, goalpostRadius*2, goalpostRadius*2);
 
 
-        // goal box
+        
+        // goal box/net
         g2d.setStroke(new BasicStroke(1.0f));
-        g2d.setColor(Color.gray);
+        g2d.setColor(goalNetColorOpp);
         g2d.fillRect(xLengthHalf+goalpostRadius/2, -yGoalPostPos, goalDepth, goalWidth);
 
         // goal --- latte :)
