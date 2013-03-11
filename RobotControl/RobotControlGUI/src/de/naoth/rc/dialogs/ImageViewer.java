@@ -4,19 +4,16 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.ExtendedFileChooser;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnImage;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -38,7 +35,7 @@ public class ImageViewer extends AbstractDialog
   public ImageManager imageManager;
   @InjectPlugin
   public DebugDrawingManager debugDrawingManager;
-  private ImagePanel imageCanvas;
+  //private ImagePanel imageCanvas;
   private long timestampOfTheLastImage;
   private ExtendedFileChooser fileChooser;
   // listeners
@@ -54,11 +51,7 @@ public class ImageViewer extends AbstractDialog
   @Init
   public void init()
   {
-
-    imageCanvas = new ImagePanel();
-    imageCanvas.setOpaque(false);
-    imageCanvas.setDoubleBuffered(true);
-    this.imagePanel.add(imageCanvas);
+    //this.imagePanel.add(imageCanvas);
 
     this.timestampOfTheLastImage = 0;
 
@@ -86,6 +79,7 @@ public class ImageViewer extends AbstractDialog
         jPopupMenuImagePanel = new javax.swing.JPopupMenu();
         jMenuItemSaveAs = new javax.swing.JMenuItem();
         imagePanel = new javax.swing.JPanel();
+        imageCanvas = new de.naoth.rc.dialogs.panels.ImagePanel();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveImages = new javax.swing.JToggleButton();
         btReceiveDrawings = new javax.swing.JToggleButton();
@@ -104,19 +98,27 @@ public class ImageViewer extends AbstractDialog
 
         imagePanel.setBackground(java.awt.Color.gray);
         imagePanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
-        imagePanel.setComponentPopupMenu(jPopupMenuImagePanel);
         imagePanel.setPreferredSize(new java.awt.Dimension(320, 240));
+        imagePanel.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout imagePanelLayout = new javax.swing.GroupLayout(imagePanel);
-        imagePanel.setLayout(imagePanelLayout);
-        imagePanelLayout.setHorizontalGroup(
-            imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 477, Short.MAX_VALUE)
+        imageCanvas.setBackground(java.awt.Color.gray);
+        imageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        imageCanvas.setComponentPopupMenu(jPopupMenuImagePanel);
+        imageCanvas.setDoubleBuffered(true);
+        imageCanvas.setOpaque(false);
+
+        javax.swing.GroupLayout imageCanvasLayout = new javax.swing.GroupLayout(imageCanvas);
+        imageCanvas.setLayout(imageCanvasLayout);
+        imageCanvasLayout.setHorizontalGroup(
+            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 476, Short.MAX_VALUE)
         );
-        imagePanelLayout.setVerticalGroup(
-            imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 227, Short.MAX_VALUE)
+        imageCanvasLayout.setVerticalGroup(
+            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 230, Short.MAX_VALUE)
         );
+
+        imagePanel.add(imageCanvas, java.awt.BorderLayout.CENTER);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -174,24 +176,24 @@ public class ImageViewer extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(348, Short.MAX_VALUE)
+                .addContainerGap(349, Short.MAX_VALUE)
                 .addComponent(jLabelResolution, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelFPS, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelFPS)
@@ -202,7 +204,7 @@ public class ImageViewer extends AbstractDialog
 
     if (btReceiveImages.isSelected())
     {
-      if (parent.checkConnected())
+      if (true || parent.checkConnected())
       {
         imageManager.addListener(this.imageListener);
       }
@@ -287,6 +289,7 @@ public class ImageViewer extends AbstractDialog
     private javax.swing.JToggleButton btReceiveImages;
     private javax.swing.JCheckBox cbPreserveAspectRatio;
     private javax.swing.JCheckBox cbStretch;
+    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvas;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JLabel jLabelFPS;
     private javax.swing.JLabel jLabelResolution;
@@ -295,102 +298,6 @@ public class ImageViewer extends AbstractDialog
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 
-  private class ImagePanel extends JPanel
-  {
-
-    private Image backgroundImage;
-    private boolean keepAspectRatio;
-    private boolean stretchImage;
-    private ArrayList<Drawable> drawigs;
-
-    public ImagePanel()
-    {
-      this.drawigs = new ArrayList<Drawable>();
-      this.keepAspectRatio = true;
-      this.stretchImage = true;
-    }
-
-    public void setImage(Image image)
-    {
-      this.backgroundImage = image;
-      this.setSize(imagePanel.getSize());
-      this.repaint();
-    }//end setImage
-
-    public void setKeepAspectRatio(boolean value)
-    {
-      this.keepAspectRatio = value;
-    }//end setKeepAspectRatio
-
-    public void setStretchImage(boolean value)
-    {
-      this.stretchImage = value;
-    }//end setStretchImage
-
-    public Image getImage()
-    {
-      return this.backgroundImage;
-    }//end getImage
-
-    public ArrayList<Drawable> getDrawingList()
-    {
-      return this.drawigs;
-    }//end getDrawingList
-
-    @Override
-    public void paint(Graphics g)
-    {
-      Graphics2D g2d = (Graphics2D) g;
-
-      if (backgroundImage != null)
-      {
-        double hPanel = (double) getHeight() - 2;
-        double wPanel = (double) getWidth() - 2;
-
-        double hImg = (double) backgroundImage.getHeight(this);
-        double wImg = (double) backgroundImage.getWidth(this);
-
-        double posX = 0.0;
-        double posY = 0.0;
-
-        double ratioH = hPanel / hImg;
-        double ratioW = wPanel / wImg;
-
-        if (!this.stretchImage)
-        {
-          posX = Math.round((wPanel - wImg) * 0.5);
-          posY = Math.round((hPanel - hImg) * 0.5);
-          ratioH = 1.0;
-          ratioW = 1.0;
-        }
-        else
-        {
-          if (this.keepAspectRatio)
-          {
-            double scale = Math.min(hPanel / hImg, wPanel / wImg);
-            posX = Math.round((wPanel - scale * wImg) * 0.5);
-            posY = Math.round((hPanel - scale * hImg) * 0.5);
-            ratioH = scale;
-            ratioW = scale;
-          }
-        }
-
-        g2d.translate((posX + 1), (posY + 1));
-        g2d.scale(ratioW, ratioH);
-
-        g2d.drawImage(backgroundImage, 0, 0, (int) wImg, (int) hImg, this);
-
-        for (Drawable d : drawigs)
-        {
-          d.draw(g2d);
-        }//end for
-
-        // transform the drawing-pane back (nessesary to draw the other components corect)
-        g2d.scale(1.0, 1.0);
-        g2d.translate(-(posX + 1), -(posY + 1));
-      }//end if
-    }//end paint
-  }//end class ImagePanel
 
   private void updateResolution(int x, int y)
   {
