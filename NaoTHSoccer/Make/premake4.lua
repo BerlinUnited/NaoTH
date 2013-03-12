@@ -15,9 +15,12 @@ dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
 
 -- include the Nao platform
-include (COMPILER_PATH_NAO)
+if COMPILER_PATH_NAO ~= nil
+	include (COMPILER_PATH_NAO)
+end
 
-print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
+-- test
+-- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 
 -- definition of the solution
