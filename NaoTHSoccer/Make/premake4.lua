@@ -15,7 +15,7 @@ dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
 
 -- include the Nao platform
-if COMPILER_PATH_NAO ~= nil
+if COMPILER_PATH_NAO ~= nil then
 	include (COMPILER_PATH_NAO)
 end
 
