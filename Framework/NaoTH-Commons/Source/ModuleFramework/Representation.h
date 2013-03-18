@@ -43,7 +43,7 @@ protected:
   std::list<const Module*> provide;
   std::list<const Module*> require;
 
-  Representation(const std::string name)
+  Representation(const std::string& name)
     : name(name)
   {
   }

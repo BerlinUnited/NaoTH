@@ -68,13 +68,13 @@ void ModuleManager::calculateExecutionList()
     iterations++;
 
 
-    for(std::list<std::string>::iterator it1=start; it1 != moduleExecutionList.end(); it1++)
+    for(std::list<std::string>::iterator it1=start; it1 != moduleExecutionList.end(); ++it1)
     {
       start = it1;
       if(!registeredModules[*it1]->isEnabled()) continue;
       Module* m1 = registeredModules[*it1]->getModule();
 
-      for(std::list<std::string>::iterator it2=it1; it2 != moduleExecutionList.end(); it2++)
+      for(std::list<std::string>::iterator it2=it1; it2 != moduleExecutionList.end(); ++it2)
       {
         if(!registeredModules[*it2]->isEnabled()) continue;
         Module* m2 = registeredModules[*it2]->getModule();
@@ -112,7 +112,7 @@ void ModuleManager::calculateExecutionList()
   std::cout << "automatic module execution list" << std::endl;
   std::cout << "-------------------------------" << std::endl;
   for(std::list<std::string>::const_iterator itExec = moduleExecutionList.begin(); 
-    itExec != moduleExecutionList.end(); itExec++
+    itExec != moduleExecutionList.end(); ++itExec
   )
   {
     std::cout << *itExec << std::endl;
@@ -140,7 +140,7 @@ void ModuleManager::calculateExecutionListOld()
       Module* m = it->second->getModule();
         
       for(RepresentationMap::const_iterator itProv = m->getProvide().begin();
-        itProv != m->getProvide().end(); itProv++)
+        itProv != m->getProvide().end(); ++itProv)
       {
         std::string repName = itProv->second->getName();
           
@@ -157,7 +157,7 @@ void ModuleManager::calculateExecutionListOld()
       }//end for
         
       for(RepresentationMap::const_iterator itReq = m->getRequire().begin();
-        itReq != m->getRequire().end(); itReq++)
+        itReq != m->getRequire().end(); ++itReq)
       {
         std::string repName = itReq->second->getName();
         required[it->first].push_back(repName);
@@ -217,7 +217,7 @@ void ModuleManager::calculateExecutionListOld()
   std::cout << "automatic module execution list" << std::endl;
   std::cout << "-------------------------------" << std::endl;
   for(std::list<std::string>::const_iterator itExec = moduleExecutionList.begin(); 
-    itExec != moduleExecutionList.end(); itExec++
+    itExec != moduleExecutionList.end(); ++itExec
   )
   {
     std::cout << *itExec << std::endl;
@@ -243,7 +243,7 @@ void ModuleManager::internalAddModuleToExecutionList(
       
     // add all provided representations of this module to our known set
     const RepresentationMap& provided = m->getProvide(); 
-    for(RepresentationMap::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+    for(RepresentationMap::const_iterator itProv=provided.begin(); itProv != provided.end(); ++itProv)
     {
       std::string repName = itProv->second->getName();
       if(availableRepresentations.find(repName) == availableRepresentations.end())
@@ -273,13 +273,13 @@ unsigned int ModuleManager::countExecutionListErrors(const std::vector<std::stri
     
   std::set<std::string> availableRepresentations;
     
-  for(std::vector<std::string>::const_iterator it = order.begin(); it != order.end(); it++)
+  for(std::vector<std::string>::const_iterator it = order.begin(); it != order.end(); ++it)
   {
     std::string module = *it;
     const std::list<std::string>& req = required[module];
     const std::list<std::string>& prov = provided[module];
       
-    for(std::list<std::string>::const_iterator itReq = req.begin(); itReq != req.end(); itReq++)
+    for(std::list<std::string>::const_iterator itReq = req.begin(); itReq != req.end(); ++itReq)
     {
       if(availableRepresentations.find(*itReq) == availableRepresentations.end())
       {
@@ -291,7 +291,7 @@ unsigned int ModuleManager::countExecutionListErrors(const std::vector<std::stri
       }
     }
       
-    for(std::list<std::string>::const_iterator itProv = prov.begin(); itProv != prov.end(); itProv++)
+    for(std::list<std::string>::const_iterator itProv = prov.begin(); itProv != prov.end(); ++itProv)
     {
       availableRepresentations.insert(*itProv);
     }

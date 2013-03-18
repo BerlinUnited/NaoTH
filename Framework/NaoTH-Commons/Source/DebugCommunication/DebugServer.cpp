@@ -282,7 +282,7 @@ void DebugServer::clearBothQueues()
 
 void* DebugServer::connection_thread_static(void* ref)
 {
-  ((DebugServer*) ref)->mainConnection();
+  static_cast<DebugServer*>(ref)->mainConnection();
   return NULL;
 }
 
