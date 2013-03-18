@@ -290,9 +290,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
         String name = n.getName();
         
         // treatement for the modules which are located outside of the process
-        if(!name.startsWith(processName.toLowerCase())) {
+        int k = name.toLowerCase().indexOf(processName.toLowerCase());
+        if(k == -1) {
             int i = name.lastIndexOf(':');
             name = processName.toLowerCase() + name.substring(i);
+        } else {
+            name = processName + name.substring(k + processName.length());
         }
         
         SelectableTreeNode node = moduleConfigTree.insertPath(name, ':');
@@ -331,7 +334,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
       }
     }//end for
 
-    moduleConfigTree.expandPath(processName.toLowerCase(), ':');
+    moduleConfigTree.expandPath(processName, ':');
     moduleConfigTree.repaint();
     
     simpleModuleView.setPreferredSize(new Dimension(600, 1000));
