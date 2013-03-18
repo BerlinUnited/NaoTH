@@ -12,7 +12,7 @@ end
 
 function table.append(t,s)
 	if s ~= nil then for _,v in pairs(s) do if v ~= nil then
-			table.insert(t, v)
+			table.insert(t, 1, v)
 	end end end
 end
 

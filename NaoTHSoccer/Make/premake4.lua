@@ -41,9 +41,8 @@ solution "NaoTHSoccer"
   -- global links ( needed by NaoTHSoccer )
   links {
     "opencv_core",
-	"opencv_ml",
-	"opencv_highgui",
-	"opencv_imgproc"
+    "opencv_ml",
+    "opencv_imgproc"
 	}
   
   -- set the remository information
@@ -107,7 +106,10 @@ solution "NaoTHSoccer"
 	 -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
 	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
+    -- may be needed for newer glib2 versions, remove if not needed
+    buildoptions {"-Wno-deprecated-declarations"}
     flags { "ExtraWarnings" }
+    links {"pthread"}
    end
   
   -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
