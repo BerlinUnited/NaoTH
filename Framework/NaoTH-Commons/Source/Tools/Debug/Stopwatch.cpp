@@ -90,7 +90,7 @@ void StopwatchManager::dump(std::string name) const
   std::stringstream outputStream;
   
   StopwatchMap::const_iterator it = stopwatches.begin();
-  for (; it != stopwatches.end(); it++)
+  for (; it != stopwatches.end(); ++it)
   {
     const std::string& name = it->first;
     const Stopwatch& item = it->second;

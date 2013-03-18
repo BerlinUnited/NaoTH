@@ -110,12 +110,11 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-deprecated-declarations"}
     flags { "ExtraWarnings" }
     links {"pthread"}
+	
+	-- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
+	linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
    end
-  
-  -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
-  configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
-      
+   
   -- base
   dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
   -- core

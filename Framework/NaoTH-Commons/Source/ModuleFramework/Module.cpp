@@ -52,7 +52,7 @@ std::ostream& operator <<(std::ostream &stream, const Module& module)
   }//end for
 
   i = module.getProvide().begin();
-  for(;i != module.getProvide().end(); i++)
+  for(;i != module.getProvide().end(); ++i)
   {
     stream << " < " << i->first << std::endl;
   }//end for

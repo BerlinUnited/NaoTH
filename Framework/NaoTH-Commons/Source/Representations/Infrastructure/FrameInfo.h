@@ -31,6 +31,7 @@ namespace naoth
     FrameInfo(unsigned int time, unsigned int frameNumber) 
       :
         time(time),
+        step(0),
         frameNumber(frameNumber)
     {}
 
