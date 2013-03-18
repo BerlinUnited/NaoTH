@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z "$DEFAULT" ]; then DEFAULT="y" ; fi
+if [ -z "$DEFAULT" ]; then DEFAULT="n" ; fi
 DEFSTRING="[Y/n]"
 if [ "$DEFAULT" = "n" ]; then 
   DEFSTRING="[y/N]"

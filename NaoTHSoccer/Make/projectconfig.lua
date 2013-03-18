@@ -12,11 +12,11 @@ end
 
 function table.append(t,s)
 	if s ~= nil then for _,v in pairs(s) do if v ~= nil then
-			table.insert(t, v)
+			table.insert(t, 1, v)
 	end end end
 end
 
-----------------------------------------
+--------------------------------------------------------------
 PATH = {}
 PATH.libs = {}
 PATH.includes = {}
@@ -40,7 +40,8 @@ function PATH:print()
 		printPath("> ",v)
 	end
 end
-----------------------------------------
+--------------------------------------------------------------
+
 
 
 -- load local user settings if available
@@ -88,17 +89,33 @@ end
 if WEBOTS_HOME == nil then
 	WEBOTS_HOME = os.getenv("WEBOTS_HOME")
 end
+
+--------------------------------------------------------------
+assert(FRAMEWORK_PATH ~= nil and os.isdir(FRAMEWORK_PATH), 
+	"a valid FRAMEWORK_PATH is needed for compilation.")
+dofile (FRAMEWORK_PATH .. "/LuaTools/ansicolors.lua")
+
+print("INFO: list raw path configuration")
+printPath("  FRAMEWORK_PATH = ", tostring(FRAMEWORK_PATH))
+printPath("  EXTERN_PATH_NATIVE = ", tostring(EXTERN_PATH_NATIVE))
+printPath("  NAO_CTC = ", tostring(NAO_CTC))
+printPath("  EXTERN_PATH_NAO = ", tostring(EXTERN_PATH_NAO))
+printPath("  COMPILER_PATH_NAO = ", tostring(COMPILER_PATH_NAO))
+printPath("  AL_DIR = ", tostring(AL_DIR))
+printPath("  WEBOTS_HOME = ", tostring(WEBOTS_HOME))
 --------------------------------------------------------------
 
 
 -- define pathes depending on the platform
 if PLATFORM == "Nao" then
+    assert(EXTERN_PATH_NAO ~= nil, "EXTERN_PATH_NAO is needed to be able to compile for nao.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NAO)
 	if AL_DIR ~= nil then
 		PATH:includedirs {AL_DIR .. "/include"}
 		PATH:libdirs {AL_DIR .. "/lib"}
 	end
 else
+	assert(EXTERN_PATH_NATIVE ~= nil, "EXTERN_PATH_NATIVE is need to be able to compile.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NATIVE)
 	if WEBOTS_HOME ~= nil then
 		PATH:includedirs {WEBOTS_HOME .. "/include/controller/c"}
@@ -118,16 +135,7 @@ PATH:includedirs {
 PATH:libdirs { EXTERN_PATH .. "/lib"}
 
 
------------------------
-dofile (FRAMEWORK_PATH .. "/LuaTools/ansicolors.lua")
-
-print("INFO: list path configuration")
-printPath("  FRAMEWORK_PATH = ", tostring(FRAMEWORK_PATH))
-printPath("  EXTERN_PATH = ", tostring(EXTERN_PATH))
-printPath("  NAO_CTC = ", tostring(NAO_CTC))
-printPath("  COMPILER_PATH_NAO = ", tostring(COMPILER_PATH_NAO))
-printPath("  AL_DIR = ", tostring(AL_DIR))
-printPath("  WEBOTS_HOME = ", tostring(WEBOTS_HOME))
+--------------------------------------------------------------
 PATH:print()
 print()
 

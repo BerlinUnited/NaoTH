@@ -315,7 +315,7 @@ public class RepresentationInspector extends AbstractDialog
   }//end dispose
   
   
-  private static Class<?> getClass(Class<?> parent, String name)
+  private static Class<?> getSubClass(Class<?> parent, String name)
     {
         Class<?>[] c = parent.getClasses();
         for(int i = 0; i < c.length; i++) {
@@ -333,7 +333,7 @@ public class RepresentationInspector extends AbstractDialog
         Class<?> protoClasses[] = {FrameworkRepresentations.class, Representations.class, Messages.class};
         
         for(int i = 0; i < protoClasses.length; i++) {
-            result = getClass(protoClasses[i], name);
+            result = getSubClass(protoClasses[i], name);
             if(result != null) {
                 break;
             }

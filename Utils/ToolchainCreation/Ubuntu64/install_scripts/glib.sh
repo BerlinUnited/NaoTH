@@ -7,7 +7,8 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d "/usr/include/glib-2.0/" -o -d "$EXTERN_DIR/include/glib-2.0" ]; then
+  # always default to local install
+  if [ -d "$EXTERN_DIR/include/glib-2.0" ]; then
     echo "n"
     exit 0
   else
