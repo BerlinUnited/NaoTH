@@ -394,7 +394,7 @@ bool OpenCVImageLoader::loadImage(Mat& image)
   IplImage* img = cvLoadImage(allFiles[currentPos].c_str());
   if(!img)
   {
-    printf("Could not load image file: %s\n",allFiles[currentPos]);
+    printf("Could not load image file: %s\n",allFiles[currentPos].c_str());
     return false;
   }
   Mat temp(img);
