@@ -21,7 +21,6 @@
 // submodules
 #include "ObjectDetectors/HistogramFieldDetector.h"
 #include "ObjectDetectors/ScanLineEdgelDetector.h"
-#include "ObjectDetectors/ScanLineEdgelDetectorDifferential.h"
 #include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
 #include "ObjectDetectors/LineDetector.h"
@@ -74,7 +73,6 @@ public:
 private:
   ModuleCreator<HistogramFieldDetector>* theHistogramFieldDetector;
   ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
-  ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
   ModuleCreator<BodyContourProvider>* theBodyContourProvider;
   ModuleCreator<FieldDetector>* theFieldDetector;
 

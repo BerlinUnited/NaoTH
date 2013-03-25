@@ -40,7 +40,6 @@
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
-#include "Modules/Perception/VisualCortex/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -50,6 +49,10 @@
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
 #include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
+
+// neo vision
+#include "Modules/Perception/NeoVision/NeoVision.h"
+
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -135,7 +138,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
@@ -143,6 +145,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(OpenCVDebug);
+  // neo vision
+  REGISTER_MODULE(NeoVision);
+
 
   // scene analysers 
   // (analyze the visual information seen in the image)
