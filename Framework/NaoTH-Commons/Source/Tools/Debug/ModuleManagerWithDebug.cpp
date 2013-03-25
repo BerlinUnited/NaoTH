@@ -104,13 +104,13 @@ void ModuleManagerWithDebug::modulesList(std::ostream& outstream)
 
       RepresentationMap::const_iterator iterRep;
       for (iterRep = module->getRequire().begin();
-        iterRep != module->getRequire().end(); iterRep++)
+        iterRep != module->getRequire().end(); ++iterRep)
       {
         m->add_usedrepresentations(iterRep->second->getName());
       }
 
       for (iterRep = module->getProvide().begin();
-        iterRep != module->getProvide().end(); iterRep++)
+        iterRep != module->getProvide().end(); ++iterRep)
       {
         m->add_providedrepresentations(iterRep->second->getName());
       }
@@ -126,7 +126,7 @@ void ModuleManagerWithDebug::modulesStore(std::ostream& outstream)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   for(std::list<std::string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); name++)
+    name != getExecutionList().end(); ++name)
   {
     config.setBool("modules", *name, getModule(*name)->isEnabled());
   }//end for
