@@ -5,6 +5,7 @@
 #include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/Printable.h>
 
+#include <Representations/Infrastructure/CameraInfo.h>
 #include "Grid/UniformGrid.h"
 
 
@@ -45,7 +46,7 @@ class ColoredGrid: public naoth::Printable
 {
 public:
 
-  ColoredGrid(unsigned int imageWidth=320, unsigned int imageHeight=240, unsigned int width=60, unsigned int height=40)
+  ColoredGrid(unsigned int imageWidth=naoth::IMAGE_WIDTH, unsigned int imageHeight=naoth::IMAGE_HEIGHT, unsigned int width=60, unsigned int height=40)
     : uniformGrid(imageWidth, imageHeight, width, height)
   {
     pointsColors.resize(uniformGrid.maxNumberOfPoints);
