@@ -127,6 +127,26 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   }//end removeDrawing
 
   @Override
+  public String getToolTipText(MouseEvent e)
+  {
+      Point.Double p = canvasCoordinatesToInternal(new Point.Double(e.getX(), e.getY()));
+      String s = String.format("%.0f;%.0f", p.x, p.y);
+      return s;
+  }
+
+  @Override
+  public Point getToolTipLocation(MouseEvent e)
+  {
+    Point p = e.getPoint();
+    p.y += 15;
+    return p;
+  }
+  
+  public void setShowCoordinates(boolean v) {
+      
+  }
+  
+  @Override
   public synchronized void paintComponent(Graphics g)
   {
     super.paintComponent(g);
