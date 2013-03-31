@@ -13,7 +13,7 @@ AbstractMotion::AbstractMotion(motion::MotionID id, MotionLock& lock)
   lock(lock),
   currentState(motion::stopped)
 {
-  assert(lock.state == motion::stopped);
+  //assert(lock.state == motion::stopped || id == motion::dead);
   // occupy lock
   lock.id = id;
   lock.state = currentState;
