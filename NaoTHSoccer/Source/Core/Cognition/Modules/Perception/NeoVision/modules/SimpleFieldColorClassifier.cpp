@@ -18,12 +18,12 @@ using namespace std;
 
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCr", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistY", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCb", " ", false);
+  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCr", " ", false);
+  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistY", " ", false);
+  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCb", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:mark_green", "", false);
 }
 
 void SimpleFieldColorClassifier::execute()
@@ -72,7 +72,7 @@ void SimpleFieldColorClassifier::execute()
   }
 
 
-  DEBUG_REQUEST("ImageProcessor:SimpleFieldColorClassifier:markCrClassification",
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:markCrClassification",
     for(unsigned int x = 0; x < getImage().width(); x++)
     {
       for(unsigned int y = 0; y < getImage().height(); y++)
@@ -170,7 +170,7 @@ void SimpleFieldColorClassifier::execute()
   double minY = 0;
   MODIFY("SimpleFieldColorClassifier:minY", minY);
 
-  DEBUG_REQUEST("ImageProcessor:SimpleFieldColorClassifier:mark_green",
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:mark_green",
     for(unsigned int x = 0; x < getImage().width(); x++)
     {
       for(unsigned int y = 0; y < getImage().height(); y++)

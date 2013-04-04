@@ -21,6 +21,11 @@ NeoVision::NeoVision()
 
 void NeoVision::execute()
 {
+  GT_TRACE("executing SimpleFieldColorClassifier");
+  STOPWATCH_START("SimpleFieldColorClassifier");
+  theSimpleFieldColorClassifier->execute();
+  STOPWATCH_STOP("SimpleFieldColorClassifier");
+
   GT_TRACE("executing ScanLineEdgelDetectorDifferential");
   STOPWATCH_START("ScanLineEdgelDetectorDifferential");
   theScanLineEdgelDetectorDifferential->execute();

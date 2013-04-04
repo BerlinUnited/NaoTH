@@ -94,6 +94,7 @@ public:
   {
     borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
     borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
+    range.set(0, 0, borderLeftV, maxY, maxU, borderRightV);
   }
 
   inline bool isFieldColorOld(const int& yy, const int& cb, const int& cr) const
@@ -101,7 +102,7 @@ public:
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }
 
-  inline bool isFieldColor(int y, int u, int v) const
+  inline bool isFieldColor(const int& y, const int& u, const int& v) const
   {
     return range.inside(y, u, v);
   }
