@@ -5,7 +5,9 @@ package de.naoth.rc.dialogs.drawings.three_dimension;
 
 import com.sun.j3d.loaders.Loader;
 import de.naoth.rc.Helper;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.DataFormatException;
@@ -16,7 +18,7 @@ import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
 
 public class Entity extends Drawable
 {
-  
+
   private static final String vrmlDir = "/de/naoth/rc/res/vrml/";
   private static final Loader loader = new VrmlLoader(Loader.LOAD_ALL);
   private static Map<String, BranchGroup> loadedEnities = new HashMap();
@@ -41,7 +43,7 @@ public class Entity extends Drawable
 
   private void create(String name)
   {
-     synchronized (loader)
+    synchronized (loader)
     {
       BranchGroup e = loadedEnities.get(name);
       if (e == null)
@@ -58,16 +60,19 @@ public class Entity extends Drawable
   private BranchGroup loadFromVRML(String name)
   {
     BranchGroup e = null;
+    
     String vrmlfile = vrmlDir + name + ".wrl";
-    URL vrlmURL = getClass().getResource(vrmlfile);
-
+    InputStream is = getClass().getResourceAsStream(vrmlfile);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    
     try
     {
-      com.sun.j3d.loaders.Scene vrmlScene = loader.load(vrlmURL);
+      loader.setBaseUrl(getClass().getResource(vrmlDir));
+      com.sun.j3d.loaders.Scene vrmlScene = loader.load(reader);
       e = vrmlScene.getSceneGroup();
     } catch (Exception ex)
     {
-      Helper.handleException("Could not load " + name + " with URL " + vrlmURL.toString(), ex);
+      Helper.handleException("Could not load " + name + " with URL " + getClass().getResource(vrmlfile).toString(), ex);
     }
     return e;
   }
