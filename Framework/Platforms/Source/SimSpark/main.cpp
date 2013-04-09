@@ -33,7 +33,7 @@ int main(int argc, char** argv)
   string server = "localhost";
   gchar* optServer = NULL;
   unsigned int port = 3100;
-  bool sync = false;
+  gboolean sync = false;
   
   GOptionEntry entries[] = {
     {"num",'n', 0, G_OPTION_ARG_INT, &num, "player number", "0"},
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   
   SimSparkController theController(MAKE_NAME(PLATFORM_NAME));
 
-  if (!theController.init(teamName, num, server, port, sync))
+  if (!theController.init(teamName, num, server, port, sync > 0))
   {
       cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
     return EXIT_FAILURE;
