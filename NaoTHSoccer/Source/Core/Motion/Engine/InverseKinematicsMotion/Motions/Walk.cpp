@@ -307,7 +307,7 @@ void Walk::plan(const MotionRequest& motionRequest)
     {
       stopWalking();
     }
-    else
+    else // stop as you are
     {
       stopWalkingWithoutStand();
     }
@@ -323,6 +323,7 @@ void Walk::addStep(const Step& step)
 
 void Walk::manageSteps(const WalkRequest& req)
 {
+  // first step
   if ( stepBuffer.empty() )
   {
     std::cout << "walk start" << std::endl;
@@ -348,7 +349,8 @@ void Walk::manageSteps(const WalkRequest& req)
     {
       getMotorJointData().stiffness[i] = theWalkParameters.stiffness;
     }
-  }
+  }// if ( stepBuffer.empty() )
+
 
   Step& planningStep = stepBuffer.back();
   if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
@@ -394,7 +396,8 @@ void Walk::manageSteps(const WalkRequest& req)
 
     addStep(step);
   }
-}
+}//end manageSteps
+
 
 void Walk::planStep()
 {
@@ -450,6 +453,8 @@ void Walk::planStep()
 CoMFeetPose Walk::executeStep()
 {
   // control the target com
+  // don't do anything until there are enough steps to plan the next com
+  // i.e., the PreviewController is ready
   Vector3d com;
   if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() )
   {

@@ -18,12 +18,16 @@ class PreviewController
 {
 public:
 
+  // precalculated values
+  Matrix3x3<double> A;
+  Vector3d b;
+  Vector3d c;
+
+  // loaded values
   struct Parameters
   {
+    static double length_f;
     // for preview control
-    Matrix3x3<double> A;
-    Vector3<double> b;
-    Vector3<double> c;
     double Ki;
     Vector3<double> K;
     std::list<double> f;
@@ -31,43 +35,53 @@ public:
 
   PreviewController();
 
-  void control(Vector3d& com, Vector2<double>& dcom, Vector2<double>& ddcom);
+  void loadParameter();
 
-  void clear();
-  
+  //
+  // state of the controller
+
   void init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom);
+  
+  void control(Vector3d& com, Vector2<double>& dcom, Vector2<double>& ddcom);
+  
+  size_t previewSteps() const { return parameters->f.size(); }  
+
+  bool ready() const;
+  
+  //
+  // input ZPM handling
 
   void push(const Vector3d& zmp);
-
   Vector3d front() const;
-
   Vector3d back() const;
-
-  size_t previewSteps() const
-  {
-    return parameters->f.size();
-  }
-  
-  bool ready() const;
-
   unsigned int count() const { return refZMPx.size(); }
+  void clear();
+
 
 private:
   void setHeight(double height);
-
   void update(const std::list<double>& ref, Vector3<double>&x, double& err) const;
 
-  const Parameters* parameters;
-  
+  // output: internal state of the contsoller
   Vector3<double> theX; // x, x', x''
   Vector3<double> theY; // y, y' ,y''
+  double theZ; // z
   Vector2<double> theErr;
+  
+  // input: reference ZMP
   std::list<double> refZMPx;
   std::list<double> refZMPy;
   std::list<double> refZMPz;
 
-  std::map<int, Parameters> loadedParameters;
-  unsigned int theHeight;
+
+  // parameters for diffent heights
+  typedef std::map<int, Parameters> ParameterMap;
+  ParameterMap loadedParameters;
+  // pinter to the parameters corresponding to the current height 
+  // i.e., parameters->loadedParameters[parameterHeight]
+  const Parameters* parameters;
+  // current height used for the parameters
+  unsigned int parameterHeight;
 };
 
 std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
