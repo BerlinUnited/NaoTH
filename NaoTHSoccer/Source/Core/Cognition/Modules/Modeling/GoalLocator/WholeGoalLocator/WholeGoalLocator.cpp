@@ -5,11 +5,9 @@
  * Implementation of class WholeGoalLocator
  */
 
-#include "Tools/Math/Pose2D.h"
 
 
 #include "WholeGoalLocator.h"
-#include "Cognition/Modules/Perception/VisualCortex/ObjectDetectors/FieldDetector.h"
 
 WholeGoalLocator::WholeGoalLocator()
 {
@@ -184,7 +182,7 @@ void WholeGoalLocator::correct_the_goal_percept(
        .rotateX(offset.x);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   CameraGeometry::imagePixelToFieldCoord(
       tmpCM,
@@ -218,7 +216,7 @@ double WholeGoalLocator::projectionError(
        .rotateX(offsetX);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   Vector2<double> leftPosition;
   CameraGeometry::imagePixelToFieldCoord(

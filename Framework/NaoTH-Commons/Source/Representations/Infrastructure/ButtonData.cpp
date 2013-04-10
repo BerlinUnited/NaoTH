@@ -2,7 +2,7 @@
  * File:   ButtonData.cpp
  * Author: thomas
  * 
- * Created on 6. März 2009, 10:40
+ * Created on 6. march 2009, 10:40
  */
 
 #include "ButtonData.h"
@@ -10,6 +10,7 @@
 #include <string>
 
 using namespace naoth;
+using namespace std;
 
 ButtonData::ButtonData() 
 {

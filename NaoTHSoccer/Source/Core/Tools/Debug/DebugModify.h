@@ -2,11 +2,11 @@
 // File:   DebugModify.h
 // Author: Heinrich Mellmann
 //
-// Created on 19. März 2008, 21:51
+// Created on 19. march 2008, 21:51
 //
 
 #ifndef _DebugModify_H
-#define  _DebugModify_H
+#define _DebugModify_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataConversion.h>
@@ -15,7 +15,8 @@
 /**
   Usage: just write 
     MODIFY("myvalue", d); 
-  where d is a double value (can be local). Then this value can be modified using the RC:
+  where d is a numeric value which can be casted to double with static_cast 
+  (can be local). Then this value can be modified using the RC.
  */
 class DebugModify : public naoth::Singleton<DebugModify>, public DebugCommandExecutor
 {
@@ -26,6 +27,9 @@ protected:
 
 public:
 
+  /**
+  * 
+  */
   class ModifyValue 
   {
   private:
@@ -38,14 +42,15 @@ public:
     bool modify;
 
   public:
-    void update(double& d)
+    template<class T>
+    void update(T& d)
     {
       if(modify)
-        d = value;
+        d = static_cast<T>(value);
       else
-        value = d;
+        value = static_cast<double>(d);
     }
-  };
+  };//end clas ModifyValue
 
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,

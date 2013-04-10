@@ -6,29 +6,31 @@
 */
 
 #ifndef SOCCERSTRATEGY_H
-#define  SOCCERSTRATEGY_H
+#define SOCCERSTRATEGY_H
 
 #include "Tools/Math/Vector2.h"
 
-class SoccerStrategy: public Printable
+class SoccerStrategy: public naoth::Printable
 {
 public:
   SoccerStrategy():timeToBall(std::numeric_limits<double>::max())
   {
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream<<"formation = "<<formation<<"\n";
     stream<<"attackDirection = "<<attackDirection<<"\n";
   }
 
-  Vector2<double> formation; // formation position
+  /** formation position */
+  Vector2<double> formation;
 
+  /** direction of the attack (based on potential field, see: PotentialFieldProvider) */
+  Vector2<double> attackDirection; 
 
-  Vector2<double> attackDirection; // direction of the attack (based on potential field, see: PotentialFieldProvider)
-
-  double timeToBall; // the shorest time that the robot reach the ball
+  /** the shorest time that the robot reach the ball */
+  double timeToBall;
 };
 
 

@@ -5,13 +5,11 @@
  * Definition of HeadMotionReqeuest
  */
 
-#ifndef __HeadMotionRequest_h_
-#define __HeadMotionRequest_h_
+#ifndef _HeadMotionRequest_h_
+#define _HeadMotionRequest_h_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "Tools/DataStructures/Streamable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
@@ -21,7 +19,7 @@
  * @class HeadMotionRequest
  * This describes the HeadMotionRequest
  */
-class HeadMotionRequest : public naoth::PlatformInterchangeable, public naoth::Printable
+class HeadMotionRequest : public naoth::Printable
 {
 public:
   
@@ -116,10 +114,8 @@ public:
   static HeadMotionID getId(const std::string& name);
 
 
-  virtual void print(ostream& stream) const
-  {
-    stream << "Current MotionRequest = " << getName(id) << endl;
-  }//end print
+  virtual void print(std::ostream& stream) const;
+
 };
 
 namespace naoth

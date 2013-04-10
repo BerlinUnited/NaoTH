@@ -16,6 +16,8 @@
 
 #include <Tools/SynchronizedFileWriter.h>
 
+using namespace std;
+
 Debug::Debug()
 {   
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);

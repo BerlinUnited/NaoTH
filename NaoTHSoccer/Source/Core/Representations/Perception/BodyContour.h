@@ -26,10 +26,10 @@ class BodyContour : public naoth::Printable
 {
 private:
  
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "BodyContour: lines: " << '\n';
-    for( vector<Line>::const_iterator iter=lines.begin();
+    for(std::vector<Line>::const_iterator iter=lines.begin();
       iter!=lines.end(); ++iter)
       {
         stream <<"Line number: " << iter->lineNumber << " First Point: " << " X coord: " << iter->p1.x << " Y coord: " << iter->p1.y << " Second Point: " << " X coord: " << iter->p2.x << " Y coord: " << iter->p2.y << " LineID: " << iter->id << '\n';
@@ -189,7 +189,11 @@ public:
   Vector2<int> cameraResolution;
 
   /** Default constructor. */
-  BodyContour() 
+  BodyContour()
+  :   
+    stepSize(1),
+    xDensity(1),
+    yDensity(1)
   {
     lines.reserve(100);
   }

@@ -2,7 +2,7 @@
  * File:   SituationStatus.h
  * Author: Paul & Michael
  *
- * Created on 01. März 2012
+ * Created on 01. march 2012
  */
 
 
@@ -26,7 +26,7 @@ void SituationStatus::fromDataStream(istream& stream)
 }
   */
 
-void SituationStatus::print(ostream& stream) const
+void SituationStatus::print(std::ostream& stream) const
 {
   stream << "In own half = " << ownHalf << std::endl
          << "Reactive ball model requested = " << reactiveBallModelNeeded << std::endl;

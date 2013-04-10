@@ -5,7 +5,6 @@
 * Implentation of the class SupportPolygonGenerator
 */
 #include <Tools/Math/ConvexHull.h>
-#include <Tools/Math/Pose3D.h>
 #include <Tools/NaoInfo.h>
 #include "SupportPolygonGenerator.h"
 #include "PlatformInterface/Platform.h"
@@ -13,20 +12,18 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 using namespace naoth;
+using namespace std;
 
 SupportPolygonGenerator::SupportPolygonGenerator()
 {
   //TODO
   REGISTER_DEBUG_COMMAND("CalibrateFootTouchDetector", "Calibrate Foot Touch Detector", this);
-}
 
-void SupportPolygonGenerator::init(const double* fsr,
-                                   const Vector3<double>* fsrPos,
-                                   const Kinematics::Link* link)
-{
-  theFSRData = fsr;
-  theFSRPos = fsrPos;
-  theLink = link;
+  // HACK: do remove ;)
+  theFSRData = getFSRData().force;
+  theFSRPos = getFSRPositions().pos;
+  theLink = getKinematicChainSensor().theLinks;
+
 
   string leftFootTouchDetectorCfg("1 1 1 1 -5");
   string rightFootTouchDetectorCfg("1 1 1 1 -5");
@@ -47,8 +44,11 @@ SupportPolygonGenerator::~SupportPolygonGenerator()
   
 }
 
-void SupportPolygonGenerator::calcSupportPolygon(SupportPolygon& sp)
+void SupportPolygonGenerator::execute()
 {
+  // TODO: make it better :)
+  SupportPolygon& sp = getSupportPolygon();
+
     // supoort mode
     bool leftSupportable = isFootSupportable(true);
     bool rightSupportable = isFootSupportable(false);

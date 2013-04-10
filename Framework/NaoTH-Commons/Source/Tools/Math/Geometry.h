@@ -84,7 +84,7 @@ public:
   static bool getIntersectionPointsOfLineAndRectangle(
     const Vector2<int>& bottomLeft, 
     const Vector2<int>& topRight,
-    const Math::Line line,
+    const Math::Line& line,
     Vector2<int>& point1, 
     Vector2<int>& point2);
 };

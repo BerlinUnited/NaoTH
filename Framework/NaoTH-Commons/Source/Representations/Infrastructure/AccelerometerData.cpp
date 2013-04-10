@@ -1,8 +1,9 @@
 #include "Representations/Infrastructure/AccelerometerData.h"
-#include "Messages/Representations.pb.h"
+#include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 AccelerometerData::AccelerometerData()
 {

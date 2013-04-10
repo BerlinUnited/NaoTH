@@ -10,7 +10,7 @@
 
 #include <ModuleFramework/Module.h>
 
-#include "Tools/DataStructures/RingBuffer.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools/Math/Vector3.h"
 
 // Representations
@@ -80,7 +80,7 @@ protected:
 
 private:
   FormationParameters theFormationParameters;
-  RingBuffer<Vector2<double>, 3> attackDirectionBuffer;
+  RingBufferWithSum<Vector2<double>, 3> attackDirectionBuffer;
 };
 
 #endif //__SoccerStrategyProvider_h_

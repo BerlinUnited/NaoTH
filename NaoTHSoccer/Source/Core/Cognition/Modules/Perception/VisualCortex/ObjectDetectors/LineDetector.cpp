@@ -5,14 +5,9 @@
 *
 */
 
-#include <vector>
 
 #include "LineDetector.h"
 
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/Stopwatch.h"
 
 
@@ -492,7 +487,7 @@ void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& sca
   {
     scanLine.getNext(linePoint);
 
-    if( !getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).isInside(linePoint) )
+    if( !getFieldPercept().getLargestValidPoly(getArtificialHorizon()).isInside(linePoint) )
     {
       scanLine.getLast(linePoint);
       break;

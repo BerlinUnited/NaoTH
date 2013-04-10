@@ -6,7 +6,6 @@
 
 
 #include "SoundSymbols.h"
-#include "LedSymbols.h"
 
 void SoundSymbols::registerSymbols(xabsl::Engine& engine)
 {

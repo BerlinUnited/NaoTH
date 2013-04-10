@@ -12,6 +12,16 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Configuration.h"
 
+
+class KinematicChainGeberic : public naoth::Printable
+{
+public:
+
+
+
+};//end class KinematicChainGeberic
+
+
 class KinematicChain : public naoth::Printable
 {
 public:
@@ -47,7 +57,11 @@ public:
 private:
   void initMassesInfo();
 
+  //
   void initJointsInfo(naoth::JointData& jointData);
+
+  //
+  void initJointsAxes();
 
   void initLinksInfo();
 
@@ -58,19 +72,24 @@ public:
   Kinematics::Link theLinks[numOfLinks];
   Vector3<double> CoM; // center of mass
 
+  inline Kinematics::Link& getLink(LinkID id)
+  {
+    return theLinks[id];
+  }
+
   KinematicChain();
   virtual ~KinematicChain();
-  static string getLinkName(const Kinematics::Link& node);
-  static string getLinkName(const Kinematics::Link *node);
-  static string getLinkName(LinkID link);
+  static std::string getLinkName(const Kinematics::Link& node);
+  static std::string getLinkName(const Kinematics::Link *node);
+  static std::string getLinkName(LinkID link);
 
-  string test(const Kinematics::Link& node) const;
+  std::string test(const Kinematics::Link& node) const;
   void init(naoth::JointData& jointData);
 
   void updateCoM();
   Vector2<double> calculateZMP() const;
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
   bool is_initialized() { return initialized; }
 
@@ -80,5 +99,9 @@ private:
 };
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);
+
+// TODO: two different representations in motion. is there a better place for them?
+class KinematicChainSensor: public KinematicChain {};
+class KinematicChainMotor: public KinematicChain {};
 
 #endif  /* _KINEMATICCHAIN_H */

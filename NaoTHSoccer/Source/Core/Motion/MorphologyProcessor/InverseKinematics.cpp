@@ -6,13 +6,10 @@
 * Implementation of Inverse Kinematics
 */
 
-#include "PlatformInterface/Platform.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
 // Tools
-#include "Tools/Math/Common.h"
-#include "Tools/Math/RotationMatrix.h"
 //#include "Tools/TemplateUtility.h"
 #include "Tools/NaoInfo.h"
 
@@ -22,6 +19,7 @@
 namespace Kinematics {
 
   using namespace naoth;
+  using namespace std;
   
 InverseKinematics::InverseKinematics(bool autoInit)
   : maxError(1.0)
@@ -220,7 +218,8 @@ double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3
       double theta = atan2(k3, k2 - k1) * wi;
 
       // apply correction and accumulate the error
-      (*(link->q)) += theta;
+      (*(link->q)) += theta; // modify the joint
+
       delta += fabs(theta);
 
       // new position of the effector

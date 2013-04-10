@@ -8,12 +8,9 @@
 #include "PerceptProjector.h"
 
 // debug
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/CameraGeometry.h"
-#include "Tools/Math/Line.h"
+
+using namespace std;
 
 PerceptProjector::PerceptProjector()
 {
@@ -84,9 +81,7 @@ void PerceptProjector::execute()
        .rotateX(offset.x);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
-
- 
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   // apply correction to goal post percept
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)

@@ -39,6 +39,7 @@ public class Arrow implements Drawable
         this.y1 = (int)(Double.parseDouble(args[4]));
     }
     
+    @Override
     public void draw(Graphics2D g2d)
     {
         BasicStroke stroke = (BasicStroke)g2d.getStroke();

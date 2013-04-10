@@ -1,3 +1,7 @@
+FRAMEWORK_PATH = path.getabsolute("../../Framework")
+EXTERN_PATH = "E:/RoboCup/Robot/toolchain_native/extern"
+
+
 dofile "helper/qtcreator.lua"
 
 solution "ExampleSoccerAgent" 
@@ -5,12 +9,17 @@ solution "ExampleSoccerAgent"
   configurations {"Debug", "Release"}
   targetdir "../"
   
+  libdirs {
+	EXTERN_PATH .. "/lib/"
+  }
   
-  naoth_path = {
-	extern = path.getabsolute("../../Extern"), 
-	framework = path.getabsolute("../../Framework")
-	}
-	
+  includedirs {
+    EXTERN_PATH .. "/include/",
+    EXTERN_PATH .. "/include/glib-2.0/",
+	EXTERN_PATH .. "/lib/glib-2.0/include/",
+	FRAMEWORK_PATH .. "/NaoTH-Commons/Source/"
+  }
+
   -- additional defines for windows
   if os.is("windows") then
 	defines {"WIN32", "NOMINMAX"}
@@ -20,30 +29,18 @@ solution "ExampleSoccerAgent"
 	links {"ws2_32"}
   end
   
-  libdirs {
-	naoth_path.extern .. "/lib/"
-  }
-  
-  includedirs {
-    naoth_path.extern .. "/include/",
-    naoth_path.extern .. "/include/glib-2.0/",
-	naoth_path.extern .. "/lib/glib-2.0/include/",
-	naoth_path.framework .. "/NaoTH-Commons/Source/"
-  }
-  
   -- debug configuration
   configuration { "Debug" }
 	defines { "DEBUG" }
 	flags { "Symbols" }
 
-  -- define the core
-  CORE_PATH = {
-    path.getabsolute("../Source/Cognition"),
-    path.getabsolute("../Source/Motion"),
-    path.getabsolute("../Source/")
-  }
-  CORE = "ExampleSoccerAgent"
-  
-  dofile (naoth_path.framework .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
-  dofile (naoth_path.framework .. "/Platforms/Make/SimSpark.lua")
+  -- include the projects:
+  -- Commons
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
+  -- Agent
   dofile "ExampleSoccerAgent.lua"
+  -- Platform
+  dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
+	  kind "ConsoleApp"
+	  links { "ExampleSoccerAgent", "NaoTH-Commons" }
+  

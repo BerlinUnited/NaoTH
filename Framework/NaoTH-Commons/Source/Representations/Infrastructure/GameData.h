@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/Configuration.h"
 
@@ -18,7 +17,7 @@
 namespace naoth
 {
 
-class GameData : public PlatformInterchangeable, public Printable
+class GameData : public Printable
 {
 public:
   enum GameState
@@ -89,7 +88,7 @@ public:
   static TeamColor teamColorFromString(const std::string& teamColor);
   static std::string teamColorToString(TeamColor teamColor);
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
   void loadFromCfg(Configuration& config);
 
   GameData();
@@ -129,7 +128,7 @@ public:
   unsigned int numOfPlayers;
 };
 
-class GameReturnData: public PlatformInterchangeable, public Printable
+class GameReturnData: public Printable
 {
 public:
   GameReturnData():message(alive){}
@@ -145,9 +144,9 @@ public:
 
   Message message;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << messageToString(message) << endl;
+    stream << messageToString(message) << std::endl;
   }
 };
 

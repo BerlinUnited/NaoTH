@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OpenCVImageLoader.cpp
  * Author: Kirill Yasinovskiy
  *
@@ -9,7 +9,6 @@
 #include <conio.h>
 #include <windows.h>
 #include <winbase.h>
-
 #else
 #include <unistd.h>
 #include <fcntl.h>
@@ -19,27 +18,29 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include <io.h>
 #include <algorithm>
 
 #include "PlatformInterface/Platform.h"
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/Math/Common.h"
 #include "Tools/NaoTime.h"
-#include <Messages/Representations.pb.h>
+#include "Messages/Framework-Representations.pb.h"
 
 #include "OpenCVImageLoader.h"
+
+#include <glib/gstdio.h>
 
 using namespace std;
 using namespace cv;
 using namespace naoth;
 
 OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
-:PlatformInterface<OpenCVImageLoader>("OpenCVImageLoader", CYCLE_TIME)
+:PlatformInterface("OpenCVImageLoader", CYCLE_TIME)
 {
   // register input
   directoryName = dirPath;
   //cvNamedWindow("ImageLoader");
+
   if(findFiles(dirPath))
   {
     currentPos = 0;
@@ -137,8 +138,8 @@ void OpenCVImageLoader::makeStep()
     if (loadImage(loadedImage))
     {
       time += getBasicTimeStep();
-      callCognition();
-      callMotion();
+      runCognition();
+      runMotion();
       imageLoaded = true;
     }//end if
     else
@@ -242,8 +243,8 @@ void OpenCVImageLoader::executeCognition()
   {
     cout << "cognition: just executing new cycle" << endl;
     time += getBasicTimeStep();
-    callCognition();
-    callMotion();
+    runCognition();
+    runMotion();
   }
   else
   {
@@ -256,8 +257,8 @@ void OpenCVImageLoader::play(bool onePictureMode)
   int c = -1;
   while
   (
-    c != 'a' && c != 'd' && c != 'A' && c != 'D' && 
-    c != '\n' && c != 'w' && c != 'q' && c !='x' && 
+    c != 'a' && c != 'd' && c != 'A' && c != 'D' &&
+    c != '\n' && c != 'w' && c != 'q' && c !='x' &&
     c !='s' && c !='r' && c !='p' && c !='P' && c !='l' && c !='h'
   )
   {
@@ -306,38 +307,31 @@ void OpenCVImageLoader::printHelp()
 
 bool OpenCVImageLoader::findFiles(const char* dirName)
 {
-  //which files do we want to find?
-  char* fileName = (char*) malloc(strlen(dirName));
-  char mask[20] = "*.*";
-  //path to the directory and files:
-  strcpy(fileName, (char*) dirName);
-  strcat(fileName, mask);
-  //struct, that contents all the information about
-  //the file
-  struct _finddata_t info_about_file;
-  long hFile;
-  if ((hFile = _findfirst(fileName, &info_about_file)) == -1L)
-  {
-    //we found no files
-    return false;
-  }
-  else
-  {
-    while(_findnext(hFile, &info_about_file) == 0)
+    int count = 0;
+
+    GDir* directory = g_dir_open(dirName, 0, NULL);
+
+    if(directory != NULL)
     {
-      if (info_about_file.attrib & _A_SUBDIR)
-      {
-        continue;
-      }//end if
-      else
-      {
-        allFiles.push_back(info_about_file.name);
-      }//end else
-    }//end file
-  }//end else
-  //release resources
-  _findclose(hFile);
-  return true;
+        const char* fileName = g_dir_read_name(directory);
+
+        while(fileName != NULL)
+        {
+            gchar* fileWithFullPath;
+            fileWithFullPath = g_build_filename(dirName, fileName, (gchar*)NULL);
+
+            if(g_file_test (fileWithFullPath, G_FILE_TEST_IS_REGULAR))
+            {
+                count++;
+                allFiles.push_back(fileWithFullPath);
+            }
+
+            fileName = g_dir_read_name(directory);
+        }
+
+        g_dir_close(directory);
+    }
+    return count > 0;
 }//end lisDir
 
 void OpenCVImageLoader::listFiles()
@@ -351,7 +345,8 @@ void OpenCVImageLoader::listFiles()
 
 void OpenCVImageLoader::get(Image& data)
 {
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
+  //ACHTUNG: this is set by the module CameraInfoSetter
+  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
   if (data.cameraInfo.resolutionWidth == 320)
   {
     copyImage(data, loadedImage);
@@ -396,19 +391,16 @@ void OpenCVImageLoader::copyImage(Image& image, Mat mat)
 bool OpenCVImageLoader::loadImage(Mat& image)
 {
   // Open the file.
-  char name[256];
-  strcpy(name, directoryName);
-  strcat(name, allFiles[currentPos].c_str());
-  IplImage* img = cvLoadImage(name);
+  IplImage* img = cvLoadImage(allFiles[currentPos].c_str());
   if(!img)
   {
-    printf("Could not load image file: %s\n",name);
+    printf("Could not load image file: %s\n",allFiles[currentPos].c_str());
     return false;
   }
   Mat temp(img);
-  if (temp.empty()) 
+  if (temp.empty())
   {
-    cout << "Couldn't open the image file :" << name << endl;
+    cout << "Couldn't open the image file :" << allFiles[currentPos] << endl;
     return false;
   }
   //did we load the image properly?
@@ -420,7 +412,7 @@ bool OpenCVImageLoader::loadImage(Mat& image)
 
   if(forwardCount == maxPictureStepCount && backwardCount == maxPictureStepCount)
   {
-    cout << endl << "loaded image: " << name << endl;
+    cout << endl << "loaded image: " << allFiles[currentPos] << endl;
   }
   else
   {

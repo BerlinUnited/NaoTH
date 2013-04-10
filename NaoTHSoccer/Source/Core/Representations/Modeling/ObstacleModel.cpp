@@ -10,9 +10,9 @@
 #include "ObstacleModel.h"
 
 
-void ObstacleModel::print(ostream& stream) const
+void ObstacleModel::print(std::ostream& stream) const
 {
-  stream << "== Obstacles ==" << endl;
+  stream << "== Obstacles ==" << std::endl;
   stream<<"leftDistance = "<< leftDistance << std::endl;
   stream<<"rightDistance = "<< rightDistance << std::endl;
   stream<<"frontDistance = "<< frontDistance << std::endl;

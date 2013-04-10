@@ -5,9 +5,10 @@
  * foot trajectory for walking
  */
 
-#include <list>
 
 #include "FootTrajectoryGenerator.h"
+
+using namespace std;
 
 Pose3D FootTrajectorGenerator::genTrajectory(
   const Pose3D& oldFoot, const Pose3D& targetFoot,

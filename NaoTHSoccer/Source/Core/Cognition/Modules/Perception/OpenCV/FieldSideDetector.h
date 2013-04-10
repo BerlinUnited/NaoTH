@@ -3,6 +3,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Perception/ArtificialHorizon.h>
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Perception/GoalPercept.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -15,6 +16,7 @@ BEGIN_DECLARE_MODULE(FieldSideDetector)
   REQUIRE(GoalPercept)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
+  REQUIRE(ArtificialHorizon)
 
   PROVIDE(FieldSidePercept)
 END_DECLARE_MODULE(FieldSideDetector)

@@ -6,7 +6,7 @@
  */
 
 #ifndef DebugCommandManager_H
-#define  DebugCommandManager_H
+#define DebugCommandManager_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
@@ -58,9 +58,22 @@ public:
     std::ostream& out);
 
 private:
+  class DebugCommand
+  {
+  public:
+    DebugCommand():executor(NULL){}
+    DebugCommand(DebugCommandExecutor* executor, const std::string& desctiption)
+      :
+      executor(executor),
+      desctiption(desctiption)
+    {}
+    DebugCommandExecutor* executor;
+    std::string desctiption;
+  };
+
   /** hash map with all registered callback function  */
-  std::map<std::string, DebugCommandExecutor*> executorMap;
-  std::map<std::string, std::string> descriptionMap;
+  typedef std::map<std::string, DebugCommand> ExecutorMap;
+  ExecutorMap executorMap;
 
 };
 

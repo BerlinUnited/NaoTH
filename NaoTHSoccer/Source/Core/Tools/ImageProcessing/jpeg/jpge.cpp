@@ -9,7 +9,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 
 #define JPGE_MAX(a,b) (((a)>(b))?(a):(b))
 #define JPGE_MIN(a,b) (((a)<(b))?(a):(b))
@@ -848,7 +847,69 @@ void jpeg_encoder::clear()
 }
 
 jpeg_encoder::jpeg_encoder()
+:
+  m_pStream(0),
+  m_num_components(0),
+  m_image_x(0),
+  m_image_y(0),
+  m_image_bpp(0),
+  m_image_bpl(0),
+  m_image_x_mcu(0),
+  m_image_y_mcu(0),
+  m_image_bpl_xlt(0),
+  m_image_bpl_mcu(0),
+  m_mcus_per_row(0),
+  m_mcu_x(0),
+  m_mcu_y(0),
+  m_mcu_y_ofs(0),
+  m_pOut_buf(0),
+  m_out_buf_left(0),
+  m_bit_buffer(0),
+  m_bits_in(0)
 {
+  m_params.m_quality = 100;
+  m_params.m_subsampling = jpge::H2V1;
+  m_params.m_no_chroma_discrim_flag = false;
+  m_params.m_two_pass_flag =  false;
+
+  for (int i = 0; i < 3; i++)
+  {
+    m_comp_h_samp[i] = 0;
+    m_comp_v_samp[i] = 0;
+    m_last_dc_val[i] = 0;
+  }
+  for (int i = 0; i < 16; i++)
+  {
+    m_mcu_lines[i] = 0;
+  }
+  for (int i = 0; i < 64; i++)
+  {
+    m_sample_array[i] = 0;
+    m_coefficient_array[i] = 0;
+    m_quantization_tables[0][i] = 0;
+    m_quantization_tables[1][i] = 0;
+  }
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 256; j++)
+    {
+      m_huff_codes[i][j] = 0;
+      m_huff_code_sizes[i][j] = 0;
+      m_huff_val[i][j] = 0;
+      m_huff_count[i][j] = 0;
+    }
+  }
+  for (int i = 0; i < 17; i++)
+  {
+    m_huff_bits[0][i] = 0;
+    m_huff_bits[1][i] = 0;
+    m_huff_bits[2][i] = 0;
+    m_huff_bits[3][i] = 0;
+  }
+  for (int i = 0; i < JPGE_OUT_BUF_SIZE; i++)
+  {
+    m_out_buf[i] = 0;
+  }
   clear();
 }
 

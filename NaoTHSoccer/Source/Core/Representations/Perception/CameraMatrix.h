@@ -9,6 +9,7 @@
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Line.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -19,25 +20,23 @@
 class CameraMatrix : public Pose3D, public naoth::Printable
 {
 public:
-  CameraMatrix() {}
-  CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraNumber(-1), valid(false) {}
+  CameraMatrix(): cameraID(naoth::CameraInfo::Bottom), valid(false) {}
+  CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraID(naoth::CameraInfo::Bottom), valid(false) {}
 
-  int cameraNumber;
-
-  Math::LineSegment horizon;
-
+  // TODO: does anybody need it?!
+  naoth::CameraInfo::CameraID cameraID;
   bool valid;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "camera = " << cameraNumber << endl;
-    stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << endl;
-    stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << endl;
-    stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << endl;
-    stream << "x-translation [mm] = " << translation.x << endl;
-    stream << "y-translation [mm] = " << translation.y << endl;
-    stream << "z-translation [mm] = " << translation.z << endl;
-    stream << "valid = " << valid << endl;
+    stream << "camera = " << cameraID << std::endl;
+    stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << std::endl;
+    stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << std::endl;
+    stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << std::endl;
+    stream << "x-translation [mm] = " << translation.x << std::endl;
+    stream << "y-translation [mm] = " << translation.y << std::endl;
+    stream << "z-translation [mm] = " << translation.z << std::endl;
+    stream << "valid = " << valid << std::endl;
   }//end print
 };
 

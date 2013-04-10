@@ -5,16 +5,13 @@
  * Created on 2. Januar 2009, 16:15
  */
 
-#ifndef _JOINTDATA_H
-#define _JOINTDATA_H
+#ifndef _JointData_H_
+#define _JointData_H_
 
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-
-using namespace std;
 
 namespace naoth
 {
@@ -50,11 +47,20 @@ class JointData
       LAnkleRoll,
       numOfJoint //error value
     };
+
+    // 'safe' cast operator for int
+    // it maps any int value outside the range to numOfJoint
+    static inline JointData::JointID getJointID (int n)
+    {
+      return (n >= 0 && n <= numOfJoint)?(JointID)n:numOfJoint;
+    }
+
     double position[numOfJoint];
     double stiffness[numOfJoint];
-    double dp[numOfJoint];
-    double ddp[numOfJoint];
+    double dp[numOfJoint]; // speed
+    double ddp[numOfJoint]; // acceleration
 
+    // joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 
@@ -62,9 +68,10 @@ class JointData
 
     virtual ~JointData(){}
 
-    void init();
+    //
+    static void loadJointLimitsFromConfig();
 
-    static string getJointName(JointID);
+    static std::string getJointName(JointID);
     static JointID jointIDFromName(std::string name);
 
     void mirror();
@@ -89,7 +96,7 @@ class JointData
     void mirrorFrom(const JointData& jointData);
   };
 
-  class SensorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class SensorJointData : public JointData, public Printable
   {
   public:
     SensorJointData();
@@ -98,17 +105,17 @@ class JointData
     double electricCurrent[numOfJoint];
     unsigned int timestamp;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
   };
 
-  class MotorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class MotorJointData : public JointData, public Printable
   {
   public:
     MotorJointData();
     ~MotorJointData();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
   
   template<>
@@ -128,5 +135,5 @@ class JointData
   };
 }
 
-#endif  /* _JOINTDATA_H */
+#endif  /* _JointData_H_ */
 

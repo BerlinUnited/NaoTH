@@ -2,24 +2,21 @@
  * File:   AccelerometerData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:47
+ * Created on 2. march 2009, 00:47
  */
 
-#ifndef _ACCELEROMETERDATA_H
-#define  _ACCELEROMETERDATA_H
+#ifndef _AccelerometerData_H_
+#define _AccelerometerData_H_
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/Serializer.h"
-
-using namespace std;
 
 namespace naoth
 {
 
-  class AccelerometerData : public Printable, public PlatformInterchangeable, public Streamable
+  class AccelerometerData : public Printable
   {
   public:
     // normalized to m/s^2
@@ -34,7 +31,7 @@ namespace naoth
 
     Vector3<double> getAcceleration() const;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
   
   template<>
@@ -46,5 +43,5 @@ namespace naoth
   };
   
 }
-#endif  /* _ACCELEROMETERDATA_H */
+#endif  /* _AccelerometerData_H_ */
 

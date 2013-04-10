@@ -25,9 +25,10 @@ public:
 
   /** */
   static void calculateKinematicChainAll(
-    const naoth::AccelerometerData& theAccelerometerData,
+    //const naoth::AccelerometerData& theAccelerometerData,
     //const InertialPercept& theInertialPercept,
     const Vector2<double>& theBodyRotation,
+    const Vector3<double>& theBodyAcceleration,
     KinematicChain& theKinematicChain,
     Vector3<double>* theFSRPos,
     const double deltaTime);
@@ -52,9 +53,10 @@ private:
 
   /** */
   static void calcChestAll(Link* theLinks,
-          const naoth::AccelerometerData& theAccelerometerData,
+          //const naoth::AccelerometerData& theAccelerometerData,
           //const InertialPercept& theInertialPercept,
           const Vector2<double>& theBodyRotation,
+          const Vector3<double>& theBodyAcceleration,
           const double deltaTime);
   
   /** */

@@ -46,12 +46,12 @@ public:
     return *this;
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "x = " << translation.x << endl;
-    stream << "y = " << translation.y << endl;
-    stream << "rotation = " << rotation << endl;
-    stream << "valid = " << isValid << endl;
+    stream << "x = " << translation.x << std::endl;
+    stream << "y = " << translation.y << std::endl;
+    stream << "rotation = " << rotation << std::endl;
+    stream << "valid = " << isValid << std::endl;
   }//end print
 
 };

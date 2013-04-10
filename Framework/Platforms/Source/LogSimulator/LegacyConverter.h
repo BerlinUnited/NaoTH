@@ -6,14 +6,14 @@
  */
 
 #ifndef _LEGACYCONVERTER_H
-#define  _LEGACYCONVERTER_H
+#define _LEGACYCONVERTER_H
 
 #include <iostream>
 
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Messages/CommonTypes.pb.h"
-#include "Messages/Representations.pb.h"
+#include "Messages/Framework-Representations.pb.h"
 
 using namespace naoth;
 
@@ -21,7 +21,7 @@ class LegacyConverter
 {
 public:
 
-  static naothmessages::SensorJointData sensorJointDatafromStream(istream& stream, size_t size)
+  static naothmessages::SensorJointData sensorJointDatafromStream(std::istream& stream, size_t size)
   {
     naothmessages::SensorJointData result;
 
@@ -54,7 +54,7 @@ public:
     return result;
   }//end sensorJointDatafromStream
 
-  static void floatVectorFromStream(naothmessages::DoubleVector3* v, istream& stream)
+  static void floatVectorFromStream(naothmessages::DoubleVector3* v, std::istream& stream)
   {
     char c;
 
@@ -64,13 +64,13 @@ public:
 
     stream >> x;
     stream.read(&c, 1);
-    if (c != ' ') cout << "Read Error x: " << c << endl;
+    if (c != ' ') std::cout << "Read Error x: " << c << std::endl;
     stream >> y;
     stream.read(&c, 1);
-    if (c != ' ') cout << "Read Error y: " << c << endl;
+    if (c != ' ') std::cout << "Read Error y: " << c << std::endl;
     stream >> z;
     stream.read(&c, 1);
-    if (c != ' ') cout << "Read Error z: " << c << endl;
+    if (c != ' ') std::cout << "Read Error z: " << c << std::endl;
 
     v->set_x(x);
     v->set_y(y);
@@ -78,7 +78,7 @@ public:
 
   }//end vectorToStream
 
-  static void doubleVectorFromStream(naothmessages::DoubleVector3* v, istream& stream)
+  static void doubleVectorFromStream(naothmessages::DoubleVector3* v, std::istream& stream)
   {
     double x = 0.0;
     double y = 0.0;
@@ -94,38 +94,41 @@ public:
 
   }
 
-  static naothmessages::CameraMatrix cameraMatrixfromStream(istream& stream,  bool isFloat)
-  {
-    naothmessages::CameraMatrix result;
+// TODO: since the CameraMatrix message no longer belongs to NaoTH-Commons
+// we can't have this LegacyConverter function any longer
 
-    for (int i = 0; i < 3; i++)
-    {
-      naothmessages::DoubleVector3* currentVec = result.mutable_pose()->add_rotation();
-      if(isFloat)
-      {
-        floatVectorFromStream(currentVec, stream);
-      }
-      else
-      {
-        doubleVectorFromStream(currentVec, stream);
-      }
-    }//end for
+//  static naothmessages::CameraMatrix cameraMatrixfromStream(std::istream& stream,  bool isFloat)
+//  {
+//    naothmessages::CameraMatrix result;
 
-    if(isFloat)
-    {
-      floatVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
-    }
-    else
-    {
-      doubleVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
-    }
+//    for (int i = 0; i < 3; i++)
+//    {
+//      naothmessages::DoubleVector3* currentVec = result.mutable_pose()->add_rotation();
+//      if(isFloat)
+//      {
+//        floatVectorFromStream(currentVec, stream);
+//      }
+//      else
+//      {
+//        doubleVectorFromStream(currentVec, stream);
+//      }
+//    }//end for
 
-    return result;
+//    if(isFloat)
+//    {
+//      floatVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
+//    }
+//    else
+//    {
+//      doubleVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
+//    }
 
-  }//end fromDataStream
+//    return result;
+
+//  }//end fromDataStream
 
 
-  static void oldRawImage(Image* image, istream& stream)
+  static void oldRawImage(Image* image, std::istream& stream)
   {
     for(unsigned int i=0; i < image->getIndexSize(); i++)
     {

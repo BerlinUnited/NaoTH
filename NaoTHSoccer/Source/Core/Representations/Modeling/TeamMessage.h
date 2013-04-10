@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMMESSAGE_H
-#define  _TEAMMESSAGE_H
+#define _TEAMMESSAGE_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
@@ -34,7 +34,7 @@ public:
   std::map<unsigned int, Data> data;
 
   // used for select opponent to send
-  map<unsigned int, unsigned int> lastFrameNumberHearOpp;
+  std::map<unsigned int, unsigned int> lastFrameNumberHearOpp;
 
   virtual ~TeamMessage() {}
 
@@ -44,33 +44,33 @@ public:
         i != data.end(); ++i)
     {
       const naothmessages::TeamCommMessage& message = i->second.message;
-      stream << "From " << i->first << " ["<< message.bodyid() <<"]"<< endl;
+      stream << "From " << i->first << " ["<< message.bodyid() <<"]"<< std::endl;
       i->second.frameInfo.print(stream);
-      stream << "Message: " << endl;
+      stream << "Message: " << std::endl;
       stream << "\tPos (x; y; rotation) = "
              << message.positiononfield().translation().x() << "; "
              << message.positiononfield().translation().y() << "; "
-             << message.positiononfield().rotation() << endl;
+             << message.positiononfield().rotation() << std::endl;
       stream << "\tBall (x; y) = "
              << message.ballposition().x() << "; "
-             << message.ballposition().y() << endl;
-      stream << "TimeSinceBallwasSeen: " << message.timesinceballwasseen() << endl;
-      stream << "TimeToBall: "<< message.timetoball() <<endl;
-      stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << endl;
-      stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << endl;
-      stream << "isFallenDown: " << (message.isfallendown() ? "yes" : "no") << endl;
+             << message.ballposition().y() << std::endl;
+      stream << "TimeSinceBallwasSeen: " << message.timesinceballwasseen() << std::endl;
+      stream << "TimeToBall: "<< message.timetoball() << std::endl;
+      stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << std::endl;
+      stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << std::endl;
+      stream << "isFallenDown: " << (message.isfallendown() ? "yes" : "no") << std::endl;
       if ( message.has_opponent() ) {
         stream << "opponent " << message.opponent().number() << " : "
                << message.opponent().poseonfield().translation().x() << "; "
                << message.opponent().poseonfield().translation().y() << "; "
                << message.opponent().poseonfield().rotation()
-               << "\n";
+               << std::endl;
       }
-      stream << "------------------------" << endl;
+      stream << "------------------------" << std::endl;
     }//end for
 
-    stream << "----------------------"  << endl;
-    stream << "active team-members: " << data.size() << endl;
+    stream << "----------------------"  << std::endl;
+    stream << "active team-members: " << data.size() << std::endl;
 
   }//end print
 };

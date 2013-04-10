@@ -2,13 +2,12 @@
  * File:   ScanLineEdgelDetector.cpp
  * Author: claas
  * 
- * Created on 14. März 2011, 14:22
+ * Created on 14. march 2011, 14:22
  */
 
 #include "ScanLineEdgelDetector.h"
 
 #include "Tools/CameraGeometry.h"
-#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
@@ -66,7 +65,7 @@ void ScanLineEdgelDetector::execute()
 void ScanLineEdgelDetector::integrated_edgel_detection()
 {
   // TODO: fix it
-  Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
+  Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getArtificialHorizon()).points[0];
   int scanLineID = 0;
 
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);

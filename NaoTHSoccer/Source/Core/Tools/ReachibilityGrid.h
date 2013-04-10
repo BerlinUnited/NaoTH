@@ -74,12 +74,12 @@ public:
 
   bool loadFromFile(std::string fileName)
   {
-    ifstream inputFileStream ( fileName.c_str() , ifstream::in | ifstream::binary );
+    std::ifstream inputFileStream ( fileName.c_str() , std::ifstream::in | std::ifstream::binary );
     
     if(inputFileStream.fail())
     {
       // could not open reachability grid
-      cerr<<"ReachibilityGrid cannot be load from " << fileName << ". No Configs found. Do you call ../bin/naoth from ~/naoqi?" << endl;
+      std::cerr << "ReachibilityGrid cannot be load from " << fileName << ". No Configs found. Do you call ../bin/naoth from ~/naoqi?" << std::endl;
       ASSERT(false);
       return false;
     }//end if

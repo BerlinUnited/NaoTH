@@ -1,12 +1,11 @@
 #include "FieldSideDetector.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 #include <DebugCommunication/DebugCommandManager.h>
 #include <PlatformInterface/Platform.h>
+
+using namespace std;
 
 FieldSideDetector::FieldSideDetector()
   : dtreeTrained(false), modelFileName("fieldsidedtree.yml")
@@ -42,8 +41,8 @@ void FieldSideDetector::execute()
 
   if(goalPercept.getNumberOfSeenPosts() > 1)
   {
-    Vector2<double> h1(getCameraMatrix().horizon.begin());
-    Vector2<double> h2(getCameraMatrix().horizon.end());
+    Vector2<double> h1(getArtificialHorizon().begin());
+    Vector2<double> h2(getArtificialHorizon().end());
     int heightOfHorizon = (int)((h1.y + h2.y) * 0.5 + 0.5);
 
     const GoalPercept::GoalPost& postLeft =

@@ -4,6 +4,7 @@
 #include <string>
 
 using namespace naoth;
+using namespace std;
 
 LEDData::LEDData()
 {
@@ -23,7 +24,7 @@ LEDData::LEDData()
   change = true;
 }
 
-void LEDData::print(ostream& stream) const
+void LEDData::print(std::ostream& stream) const
 {
   for(int i=0; i < numOfMonoLED; i++)
   {

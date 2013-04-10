@@ -7,7 +7,7 @@
 
 #ifndef WIN32
 #ifndef _MYCONIO_H
-#define  _MYCONIO_H
+#define _MYCONIO_H
 
 #ifdef  __cplusplus
 extern "C"
@@ -20,7 +20,7 @@ extern "C"
 #include <string.h>
 
 // Nachimplementierung der getch()-Funktion aus DOS-conio.h
-// für POSIX-Betriebsysteme
+// fuer POSIX-Betriebsysteme
 // Lizenz: Public domain
 
 int getch()

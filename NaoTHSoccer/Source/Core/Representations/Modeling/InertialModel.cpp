@@ -1,7 +1,6 @@
 
 
 #include "InertialModel.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/DataConversion.h"
 
 #include "Messages/Representations.pb.h"

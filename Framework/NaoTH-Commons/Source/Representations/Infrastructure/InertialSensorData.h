@@ -2,7 +2,6 @@
  * File:   InertialSensorData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:31
  */
 
 #ifndef _INERTIALSENSORDATA_H
@@ -11,7 +10,6 @@
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 #include "Tools/Math/Common.h"
@@ -20,13 +18,13 @@
 namespace naoth
 {
 
-  class InertialSensorData : public Streamable, public Printable, public PlatformInterchangeable
+  class InertialSensorData : public Printable
   {
   public:
 
     Vector2<double> data;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
   };
   

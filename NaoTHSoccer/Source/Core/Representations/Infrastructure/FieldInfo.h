@@ -18,7 +18,7 @@
 
 
 
-class FieldInfo : public ParameterList, public Printable
+class FieldInfo : public ParameterList, public naoth::Printable
 {
 private:
   void calculateValues();
@@ -32,7 +32,7 @@ private:
 public:
   FieldInfo();
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
 
   //colors
@@ -51,14 +51,18 @@ public:
   double xLength;
   double yLength;
 
-  double xPosOpponentPenaltyArea;
-  double yPosLeftPenaltyArea;
-  
+  // penalty area
+  double xPenaltyAreaLength;
+  double yPenaltyAreaLength;
+
   double centerCircleRadius;
   double fieldLinesWidth;
+  
+  // goal
   double goalWidth;
   double goalHeight;
   double goalpostRadius;
+
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;
@@ -67,10 +71,12 @@ public:
   double xPosOpponentGoal;
   double xPosOwnGroundline;
   double xPosOpponentGroundline;
+  double xPosOpponentPenaltyArea;
   double xPosOwnPenaltyArea;
   
   double yPosLeftSideline;
   double yPosRightSideline;
+  double yPosLeftPenaltyArea;
   double yPosRightPenaltyArea;
 
   double yPosRightGoalpost;

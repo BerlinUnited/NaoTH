@@ -4,8 +4,8 @@
  * Declaration of class Image
  */
 
-#ifndef __Image_h_
-#define __Image_h_
+#ifndef _Image_h_
+#define _Image_h_
 
 #include <cstring>
 #include <iostream>
@@ -15,11 +15,9 @@
 #include "Tools/Math/Vector3.h"
 #include "Tools/ImageProcessing/ImageDrawings.h"
 
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/ImageProcessing/ImagePrimitives.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ShadingCorrection.h"
@@ -31,7 +29,7 @@ namespace naoth
   /**
    * Platform independend definition of an image class
    */
-  class Image: public DrawingCanvas, public Streamable, public Printable, public PlatformInterchangeable
+  class Image: public DrawingCanvas, public Printable
   {
 
   public:
@@ -78,9 +76,9 @@ namespace naoth
 
     bool possibleImageStuck;
                              
-    virtual void print(ostream& stream) const;
-    virtual void toDataStream(ostream& stream) const;
-    virtual void fromDataStream(istream& stream);
+    virtual void print(std::ostream& stream) const;
+    virtual void toDataStream(std::ostream& stream) const;
+    virtual void fromDataStream(std::istream& stream);
     
     virtual void drawPoint
     (
@@ -276,7 +274,7 @@ namespace naoth
 
     inline unsigned int getIndexSize() const
     {
-      return cameraInfo.size;
+      return cameraInfo.getSize();
     }
 
     inline unsigned int getXOffsetFromIndex(const unsigned int i) const

@@ -2,11 +2,11 @@
 // File:   DebugCommandExecutor.h
 // Author: thomas
 //
-// Created on 8. März 2008, 11:52
+// Created on 8. march 2008, 11:52
 //
 
 #ifndef _DEBUGCOMMANDEXECUTOR_H
-#define  _DEBUGCOMMANDEXECUTOR_H
+#define _DEBUGCOMMANDEXECUTOR_H
 
 #include <map>
 #include <ostream>

@@ -5,18 +5,36 @@
 * Declaration of class KeyFrameMotion
 */
 
-#ifndef __KeyFrameMotion_h_
-#define __KeyFrameMotion_h_
+#ifndef _KeyFrameMotion_h_
+#define _KeyFrameMotion_h_
+
+#include "Motion/Engine/AbstractMotion.h"
+#include "Tools/DataStructures/Printable.h"
 
 #include "MotionNet.h"
 #include "Tools/Math/Common.h"
-#include "Motion/AbstractMotion.h"
-#include "Tools/DataStructures/Printable.h"
 
-class KeyFrameMotion: public AbstractMotion, public naoth::Printable
+
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
+BEGIN_DECLARE_MODULE(KeyFrameMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(KeyFrameMotion)
+
+class KeyFrameMotion: private KeyFrameMotionBase, public AbstractMotion, public naoth::Printable
 {
 private:
-  string name;
+  std::string name;
   MotionNet currentMotionNet;
 
   MotionNet::KeyFrame currentKeyFrame;
@@ -37,6 +55,14 @@ public:
 
   KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id);
   KeyFrameMotion();
+
+  void set(const MotionNet& currentMotionNet, motion::MotionID id)
+  {
+    this->setId(id);
+    this->name = motion::getName(id);
+    this->currentMotionNet = currentMotionNet;
+  }
+
 //  KeyFrameMotion(const KeyFrameMotion& other);
 
   // Zuweisungsoperator
@@ -46,13 +72,14 @@ public:
 
   // override
   virtual void init();
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+
+  void execute();
   
-  void print(ostream& stream) const;
+  void print(std::ostream& stream) const;
 
   void set(MotionNet& motionNet){currentMotionNet = motionNet;}
   MotionNet getCurrentMotionNet(){return currentMotionNet;}
   
 };
 
-#endif //__KeyFrameMotion_h_
+#endif // _KeyFrameMotion_h_

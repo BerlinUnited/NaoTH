@@ -11,6 +11,7 @@
 #include <string>
 
 using namespace naoth;
+using namespace std;
 
 VirtualVision::VirtualVision()
 {
@@ -36,14 +37,14 @@ void VirtualVision::print(ostream& stream) const
     return;
   }
 
-  for(map<string, Vector3<double> >::const_iterator iter=data.begin();
-    iter!=data.end(); ++iter){
-      stream<<iter->first<<" = ("<<iter->second<<")\n";
-    }
+  for(PointMap::const_iterator iter=data.begin(); iter!=data.end(); ++iter)
+  {
+    stream << iter->first << " = (" << iter->second << ")\n";
+  }
 
-  stream<<"\n"<<lines.size()<<" Lines:\n";
+  stream << "\n" << lines.size() << " Lines:\n";
   for(list<Line>::const_iterator iter=lines.begin(); iter!=lines.end(); ++iter)
   {
-    stream<<"("<<iter->p0<<") -- ("<<iter->p1<<")\n";
+    stream << "(" << iter->p0 << ") -- (" << iter->p1 << ")\n";
   }
 }

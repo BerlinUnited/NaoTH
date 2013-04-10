@@ -8,11 +8,19 @@
  */
 
 #ifndef _IKArmGrasping_H
-#define  _IKArmGrasping_H
+#define _IKArmGrasping_H
 
-#include "Motion/MotionBlackBoard.h"
-#include "Motion/AbstractMotion.h"
+#include <ModuleFramework/Module.h>
+
+//#include "Motion/AbstractMotion.h"
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Modeling/KinematicChain.h"
 
 // Tools
 #include "Tools/Math/Common.h"
@@ -20,8 +28,18 @@
 #include "Tools/NaoInfo.h"
 #include "Tools/ReachibilityGrid.h"
 
+BEGIN_DECLARE_MODULE(IKArmGrasping)
+  REQUIRE(RobotInfo)
+  REQUIRE(FrameInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  REQUIRE(KinematicChainMotor)
+  REQUIRE(InverseKinematicsMotionEngineService)
+  
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(IKArmGrasping)
 
-class IKArmGrasping: public AbstractMotion 
+class IKArmGrasping: public IKArmGraspingBase
 {
 
 public:
@@ -30,16 +48,20 @@ public:
   virtual ~IKArmGrasping();
 
   void calculateTrajectory(const MotionRequest& motionRequest);
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus);
+  virtual void execute();
 
 private:
-  InverseKinematicsMotionEngine& theEngine;
   int initialTime;
+
+  motion::State currentState;
   //ReachibilityGrid _pure_reachability_grid;
 
   //TransformedReachibilityGrid theReachibilityGridRight;
   //TransformedReachibilityGrid theReachibilityGridLeft;
 
+  InverseKinematicsMotionEngine& getEngine() const {
+    return getInverseKinematicsMotionEngineService().getEngine();
+  }
 
   static const Vector3<double> defaultGraspingCenter;
   Vector3<double> graspingCenter;

@@ -10,9 +10,8 @@
 #include "Walk/FootTrajectoryGenerator.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Math/MatrixBH.h>
 
-#include "Tools/Math/MatrixBH.h"
-#include "Tools/Math/MatrixBH.cpp"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -20,8 +19,8 @@ using namespace naoth;
 unsigned int Walk::theStepID = 0;
 
 Walk::Walk()
-  :IKMotion(motion::walk),
-  theWalkParameters(theParameters.walk),
+  :IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock()),
+  theWalkParameters(getEngine().getParameters().walk),
   theWaitLandingCount(0),
   theUnsupportedCount(0),
   isStopping(false),
@@ -29,7 +28,7 @@ Walk::Walk()
 {
 }
   
-void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
+void Walk::execute()
 {
   calculateError();
   updateComObserver();
@@ -37,7 +36,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   {
     if ( !theWalkParameters.enableWaitLanding || !waitLanding() )
     {
-      plan(motionRequest);
+      plan(getMotionRequest());
       theCoMFeetPose = executeStep();
     }
 
@@ -45,7 +44,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     commandPoseBuffer.add(theCoMFeetPose);
 
     bool solved = false;
-    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose, solved, true);
+    HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, true);
 
     PLOT("Walk:com.solved", solved);
     PLOT("Walk:c:hip.z",c.hip.translation.z);
@@ -70,31 +69,40 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     // apply online stabilization
     if(theWalkParameters.rotationStabilize)
     {
-      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
+      getEngine().rotationStabilize(
+        getRobotInfo(),
+        getGroundContactModel(),
+        getInertialSensorData(),
+        c.hip, c.feet.left, c.feet.right);
     }
 
-    theEngine.solveHipFeetIK(c);
+    getEngine().solveHipFeetIK(c);
 
-    theEngine.copyLegJoints(theMotorJointData.position);
+    getEngine().copyLegJoints(getMotorJointData().position);
     
     // move arms
-    theEngine.gotoArms(c, theMotorJointData.position);
+    //getEngine().autoArms(c, getMotorJointData().position);
+    getEngine().gotoArms(
+      getMotionStatus(),
+      getInertialModel(),
+      getRobotInfo(),
+      c, getMotorJointData().position);
 
     // force the hip joint
-    if (theMotorJointData.position[JointData::LHipRoll] < 0)
-      theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
+    if (getMotorJointData().position[JointData::LHipRoll] < 0)
+      getMotorJointData().position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
 
-    if (theMotorJointData.position[JointData::RHipRoll] > 0)
-      theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
+    if (getMotorJointData().position[JointData::RHipRoll] > 0)
+      getMotorJointData().position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
 
-    PLOT("Walk:RHipRoll",theMotorJointData.position[JointData::RHipRoll]);
-    PLOT("Walk:LHipRoll",theMotorJointData.position[JointData::LHipRoll]);
+    PLOT("Walk:RHipRoll",getMotorJointData().position[JointData::RHipRoll]);
+    PLOT("Walk:LHipRoll",getMotorJointData().position[JointData::LHipRoll]);
 
     if(theWalkParameters.stabilizeFeet)
-      feetStabilize(theMotorJointData.position);
+      feetStabilize(getMotorJointData().position);
   }
 
-  updateMotionStatus(motionStatus);
+  updateMotionStatus(getMotionStatus());
 }//end execute
 
 
@@ -133,8 +141,8 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 
 
 
-  const Vector2d& inertial = theBlackBoard.theInertialModel.orientation;
-  const Vector2d& gyro = theBlackBoard.theGyrometerData.data;
+  const Vector2d& inertial = getInertialModel().orientation;
+  const Vector2d& gyro = getGyrometerData().data;
 
 
   // HACK: small filter...
@@ -188,17 +196,17 @@ bool Walk::FSRProtection()
   // TODO: check current of leg joints
   // ==> stop walking
 
-  return !theBlackBoard.theGroundContactModel.leftGroundContactAverage && 
-         !theBlackBoard.theGroundContactModel.rightGroundContactAverage;
+  return !getGroundContactModel().leftGroundContactAverage && 
+         !getGroundContactModel().rightGroundContactAverage;
 
   static unsigned int noTouchCount = 0;
 
-  if ( theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+  if ( getSupportPolygon().mode == SupportPolygon::NONE
       && noTouchCount <= theWalkParameters.minFSRProtectionCount )
   {
     noTouchCount ++;
   }
-  else if ( theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE
+  else if ( getSupportPolygon().mode != SupportPolygon::NONE
            && noTouchCount > 0 )
   {
     noTouchCount --;
@@ -217,8 +225,8 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  if ( currentState != motion::running
-      || theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
+  if ( isStopped()
+      || getSupportPolygon().mode == SupportPolygon::NONE )
   {
     theUnsupportedCount = 0;
     return false;
@@ -232,8 +240,8 @@ bool Walk::waitLanding()
   // don't raise two feet
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
   
-  bool leftFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
-  bool rightFootSupportable = theBlackBoard.theSupportPolygon.isRightFootSupportable();
+  bool leftFootSupportable = getSupportPolygon().isLeftFootSupportable();
+  bool rightFootSupportable = getSupportPolygon().isRightFootSupportable();
 
   bool unSupporting = (raiseLeftFoot && !rightFootSupportable)
                       || (raiseRightFoot && !leftFootSupportable);
@@ -317,9 +325,9 @@ void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
   {
-    cout<<"walk start"<<endl;
-    theCoMFeetPose = theEngine.getCurrentCoMFeetPose();
-    ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
+    std::cout << "walk start" << std::endl;
+    theCoMFeetPose = getEngine().getCurrentCoMFeetPose();
+    ZMPFeetPose currentZMP = getEngine().getPlannedZMPFeetPose();
     
     // TODO: why in the left foot?!
     currentZMP.localInLeftFoot(); 
@@ -328,17 +336,17 @@ void Walk::manageSteps(const WalkRequest& req)
     Step zeroStep;
     updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
-    int prepareStep = theEngine.controlZMPstart(currentZMP);
+    int prepareStep = getEngine().controlZMPstart(currentZMP);
     zeroStep.numberOfCyclePerFootStep = prepareStep;
     zeroStep.planningCycle = prepareStep;
 
     addStep(zeroStep);
-    theFootStepPlanner.updateParameters(theParameters);
+    theFootStepPlanner.updateParameters(getEngine().getParameters());
 
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
     {
-      theMotorJointData.stiffness[i] = theWalkParameters.stiffness;
+      getMotorJointData().stiffness[i] = theWalkParameters.stiffness;
     }
   }
 
@@ -364,14 +372,14 @@ void Walk::manageSteps(const WalkRequest& req)
       break;
     }
 
-    theFootStepPlanner.updateParameters(theParameters);
+    theFootStepPlanner.updateParameters(getEngine().getParameters());
 
     if ( stepCtr && req.stepControl.stepID == theStepID )
     {
       // step control
       step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
       updateParameters(step, req.character);
-      step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
+      step.samplesSingleSupport = std::max(1, (int) (req.stepControl.time / getRobotInfo().basicTimeStep));
       step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
       step.stepControlling = true;
       step.speedDirection = req.stepControl.speedDirection;
@@ -393,7 +401,7 @@ void Walk::planStep()
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
   double zmpOffset = theWalkParameters.ZMPOffsetY + theWalkParameters.ZMPOffsetYByCharacter * (1-planningStep.character);
-  double zmpOffsetX = theParameters.hipOffsetX;
+  double zmpOffsetX = getEngine().getParameters().hipOffsetX;
 
 
   // EXPERIMENTAL: correct the ZMP
@@ -423,7 +431,7 @@ void Walk::planStep()
   // better ZMP?
   Vector2d zmp = ZMPPlanner::betterOne(
     planningStep.footStep, 
-    theParameters.hipOffsetX, 
+    getEngine().getParameters().hipOffsetX, 
     zmpOffset, 
     planningStep.planningCycle,
     planningStep.samplesDoubleSupport,
@@ -435,7 +443,7 @@ void Walk::planStep()
 
 
   // TODO: change the height?
-  theEngine.controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.comHeight));
+  getEngine().controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.comHeight));
   planningStep.planningCycle++;
 }
 
@@ -443,9 +451,9 @@ CoMFeetPose Walk::executeStep()
 {
   // control the target com
   Vector3d com;
-  if ( !theEngine.controlZMPpop(com) || stepBuffer.empty() )
+  if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() )
   {
-    return theEngine.getCurrentCoMFeetPose();
+    return getEngine().getCurrentCoMFeetPose();
   }
 
   PLOT("Walk:executeStep:com.x", com.x);
@@ -467,14 +475,14 @@ CoMFeetPose Walk::executeStep()
   {
     liftFoot = &result.feet.left;
     result.feet.right = exeFootStep.supFoot();
-    footSupporting = theBlackBoard.theGroundContactModel.rightGroundContact;//theBlackBoard.theSupportPolygon.isRightFootSupportable();
+    footSupporting = getGroundContactModel().rightGroundContact;//getSupportPolygon.isRightFootSupportable();
     break;
   }
   case FootStep::RIGHT:
   {
     liftFoot = &result.feet.right;
     result.feet.left = exeFootStep.supFoot();
-    footSupporting = theBlackBoard.theGroundContactModel.leftGroundContact;
+    footSupporting = getGroundContactModel().leftGroundContact;
     break;
   }
   case FootStep::NONE:
@@ -494,7 +502,7 @@ CoMFeetPose Walk::executeStep()
       double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
       if( executingStep.executingCycle > doubleSupportEnd ) // want to lift the foot
       {
-        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / theBlackBoard.theRobotInfo.basicTimeStep );
+        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / getRobotInfo().basicTimeStep );
         if( !footSupporting // but another foot can not support
             && executingStep.extendDoubleSupport < maxExtendSamples ) // allow to extend double support
         {
@@ -537,9 +545,9 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
                                                         theWalkParameters.stepHeight,
-                                                        0, //theBlackBoard.theInertialModel.orientation.y*footPitchOffset, // footPitchOffset
+                                                        0, //getInertialModel.orientation.y*footPitchOffset, // footPitchOffset
                                                         0, //footYawOffset
-                                                        0, //theBlackBoard.theInertialModel.orientation.x*footRollOffset, // footRollOffset
+                                                        0, //getInertialModel.orientation.x*footRollOffset, // footRollOffset
                                                         0  //theWalkParameters.curveFactor // not used right now
                                                         );
     }
@@ -580,7 +588,7 @@ void Walk::walk(const WalkRequest& req)
 {
   manageSteps(req);
   planStep();
-  currentState = motion::running;
+  setCurrentState(motion::running);
 }
 
 void Walk::stopWalking()
@@ -589,7 +597,7 @@ void Walk::stopWalking()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
-  if ( currentState == motion::stopped )
+  if ( isStopped() )
     return;
 
   if ( !isStopping ) // remember the stopping foot
@@ -640,11 +648,11 @@ void Walk::stopWalking()
     standPose.localInLeftFoot();
     Pose3D finalBody = finalLeftFoot * standPose.com;
     // wait for the com stops
-    if ( theEngine.controlZMPstop(finalBody.translation) )
+    if ( getEngine().controlZMPstop(finalBody.translation) )
     {
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
       stepBuffer.clear();
-      cout<<"walk stopped (standard)"<<endl;
+      std::cout<<"walk stopped (standard)"<<std::endl;
     }
     else
     {
@@ -663,7 +671,7 @@ void Walk::stopWalkingWithoutStand()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
-  if ( currentState == motion::stopped )
+  if ( isStopped() )
     return;
 
   if ( !isStopping ) // remember the stopping foot
@@ -700,11 +708,11 @@ void Walk::stopWalkingWithoutStand()
     Pose3D finalBody = calculateStableCoMByFeet(finalFeet, finalStep.bodyPitchOffset);
 
     // wait for the com stops
-    if ( theEngine.controlZMPstop(finalBody.translation) )
+    if ( getEngine().controlZMPstop(finalBody.translation) )
     {
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
       stepBuffer.clear();
-      cout<<"walk stopped"<<endl;
+      std::cout<<"walk stopped"<<std::endl;
     }
     else
     {
@@ -723,12 +731,12 @@ void Walk::updateParameters(Step& step, double character) const
   ASSERT(character>=0);
   step.character = character;
 
-  const unsigned int basicTimeStep = theBlackBoard.theRobotInfo.basicTimeStep;
+  const unsigned int basicTimeStep = getRobotInfo().basicTimeStep;
   
-  step.bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
-  step.samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
-  step.samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
-  int extendDoubleSupportByCharacter = max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
+  step.bodyPitchOffset = Math::fromDegrees(getEngine().getParameters().bodyPitchOffset);
+  step.samplesDoubleSupport = std::max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
+  step.samplesSingleSupport = std::max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
+  int extendDoubleSupportByCharacter = std::max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
                                                     *(1-character)));
 
   ASSERT(extendDoubleSupportByCharacter < step.samplesSingleSupport);
@@ -740,7 +748,7 @@ void Walk::updateParameters(Step& step, double character) const
 
 void Walk::calculateError()
 {
-  if ( currentState != motion::running )
+  if ( isStopped() )
     return;
 
 
@@ -757,20 +765,20 @@ void Walk::calculateError()
     const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
     requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
 
-    Pose3D footObs = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+    Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
     footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
-    observed_com = footObs.invert() * theBlackBoard.theKinematicChain.CoM;
+    observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   else
   {
     const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
     requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
 
-    Pose3D footObs = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+    Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
     footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
-    observed_com = footObs.invert() * theBlackBoard.theKinematicChain.CoM;
+    observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   
   currentComError = requested_com - observed_com;
@@ -807,7 +815,7 @@ void Walk::updateComObserver()
   }
 
   // observer
-  float deltaTime = (float)theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  float deltaTime = (float)getRobotInfo().getBasicTimeStepInSecond();
   static Matrix4x4f cov;
 
   static const Matrix2x4f c(Vector2f(1, 0), Vector2f(0, 1), Vector2f(), Vector2f());
@@ -850,7 +858,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   else
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
-    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(theParameters.bodyPitchOffset));
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;
@@ -888,8 +896,8 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
 
 Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 {
-  feet.left.translate(theParameters.hipOffsetX, 0 ,0);
-  feet.right.translate(theParameters.hipOffsetX, 0 ,0);
+  feet.left.translate(getEngine().getParameters().hipOffsetX, 0 ,0);
+  feet.right.translate(getEngine().getParameters().hipOffsetX, 0 ,0);
   Pose3D com;
   com.rotation = calculateBodyRotation(feet, pitch);
   com.translation = (feet.left.translation + feet.right.translation) * 0.5;
@@ -904,14 +912,14 @@ void Walk::adaptStepSize(FootStep& step) const
   if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
   {
     comRef = theCoMFeetPose.feet.right.invert() * theCoMFeetPose.com.translation;
-    const Pose3D& foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
-    comObs = foot.invert() * theBlackBoard.theKinematicChain.CoM;
+    const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+    comObs = foot.invert() * getKinematicChainSensor().CoM;
   }
   else
   {
     comRef = theCoMFeetPose.feet.left.invert() * theCoMFeetPose.com.translation;
-    const Pose3D& foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
-    comObs = foot.invert() * theBlackBoard.theKinematicChain.CoM;
+    const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
+    comObs = foot.invert() * getKinematicChainSensor().CoM;
   }
 
   Vector3<double> comErr = comRef - comObs;

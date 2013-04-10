@@ -21,7 +21,7 @@ RawAttackDirection::RawAttackDirection()
 }
 
 
-void RawAttackDirection::print(ostream &stream) const
+void RawAttackDirection::print(std::ostream &stream) const
 {
   stream << "x: " << attackDirection.x << " y: " << attackDirection.y << std::endl;
 }

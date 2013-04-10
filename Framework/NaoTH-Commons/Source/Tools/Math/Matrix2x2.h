@@ -262,6 +262,9 @@ public:
 };
 
 
+typedef Matrix2x2<double> Matrix2d;
+typedef Matrix2x2<float> Matrix2f;
+
 /**
 * Streaming operator that reads a Matrix2x2<V> from a stream.
 * @param stream The stream from which is read.

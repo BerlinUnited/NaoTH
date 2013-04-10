@@ -2,10 +2,12 @@
  * File:   BehaviorStatus.cpp
  * Author: thomas
  * 
- * Created on 22. März 2010, 09:10
+ * Created on 22. march 2010, 09:10
  */
 
 #include "BehaviorStatus.h"
+
+using namespace std;
 
 BehaviorStatus::BehaviorStatus() 
 {

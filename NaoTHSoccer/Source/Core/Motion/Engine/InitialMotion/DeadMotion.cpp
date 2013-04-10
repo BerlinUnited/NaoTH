@@ -5,10 +5,11 @@
 
 using namespace naoth;
 
-DeadMotion::DeadMotion():
-AbstractMotion(motion::dead)
+DeadMotion::DeadMotion()
+  :
+  AbstractMotion(motion::dead, getMotionLock())
 {
-  stiffness_increase = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() * 5;
+  stiffness_increase = getRobotInfo().getBasicTimeStepInSecond() * 5;
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -16,32 +17,32 @@ AbstractMotion(motion::dead)
   }
 }
 
-void DeadMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void DeadMotion::execute()
 {
-  if(motionRequest.id != getId())
+  if(getMotionRequest().id != getId())
   {
     // restore hardness
-    if ( setStiffness(oldStiffness, stiffness_increase) )
+    if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) )
     {
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
     }
     for (int i = 0; i < JointData::numOfJoint; i++)
     {
-      theMotorJointData.position[i] = theBlackBoard.theSensorJointData.position[i];
+      getMotorJointData().position[i] = getSensorJointData().position[i];
     }
 
     return;
-  }else if( currentState != motion::running ) // executed the first time
+  }else if( isStopped() ) // executed the first time
   {
     // store hardness
     for (int i = 0; i < JointData::numOfJoint; i++)
     {
-      oldStiffness[i] = theBlackBoard.theSensorJointData.stiffness[i];
+      oldStiffness[i] = getSensorJointData().stiffness[i];
     }//end for
   }
 
   // set joint free
-  setStiffness(freeStiffness, 10);
+  setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, 10);
 
-  currentState = motion::running;
+  setCurrentState(motion::running);
 }//end execute

@@ -5,13 +5,12 @@
  */
 
 #include "Sit.h"
-#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 
 Sit::Sit()
   :
-  AbstractMotion(motion::sit),
+  AbstractMotion(motion::sit, getMotionLock()),
   sitStatus(Move),
   movedTime(0)
 {
@@ -39,21 +38,21 @@ Sit::Sit()
   freeStiffness[JointData::RHipPitch] = 0.1;
 }
 
-void Sit::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void Sit::execute()
 {
   switch (sitStatus)
   {
     case Move:
       moveToSitPose();
-      currentState = motion::running;
+      setCurrentState(motion::running);
       break;
 
     case SitPoseReady:
-      freeJoint(motionRequest.id == getId());
+      freeJoint(getMotionRequest().id == getId());
       break;
 
     case Finish:
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
     break;
   }//end switch
 }//end execute
@@ -64,7 +63,7 @@ void Sit::moveToSitPose()
 
   if ( isStopped() )
   {
-    startJoints = theBlackBoard.theSensorJointData;
+    startJoints = getSensorJointData();
   }
 
   if (movedTime < sit_time)
@@ -72,10 +71,10 @@ void Sit::moveToSitPose()
     double t = movedTime / sit_time;
     for (int i = JointData::RHipYawPitch; i < JointData::numOfJoint; i++) // control legs only
     {
-      theMotorJointData.position[i] = (1 - t) * startJoints.position[i] + t * theSitJoints.position[i];
-      theMotorJointData.stiffness[i] = safeStiffness[i];
+      getMotorJointData().position[i] = (1 - t) * startJoints.position[i] + t * theSitJoints.position[i];
+      getMotorJointData().stiffness[i] = safeStiffness[i];
     }
-    movedTime += theBlackBoard.theRobotInfo.basicTimeStep;
+    movedTime += getRobotInfo().basicTimeStep;
   } else
   {
     sitStatus = SitPoseReady;
@@ -84,14 +83,18 @@ void Sit::moveToSitPose()
 
 void Sit::freeJoint(bool freely)
 {
-  double stiffDelta = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
   if (freely)
   {
-    setStiffness(freeStiffness, stiffDelta, JointData::RHipYawPitch, JointData::numOfJoint);
+    setStiffness(
+      getMotorJointData(), getSensorJointData(), 
+      freeStiffness, stiffDelta, JointData::RHipYawPitch, JointData::numOfJoint);
   }
   else
   {
-    if ( setStiffness(maxStiffness, stiffDelta*10, JointData::RHipYawPitch, JointData::numOfJoint) )
+    if ( setStiffness(
+          getMotorJointData(), getSensorJointData(), 
+          maxStiffness, stiffDelta*10, JointData::RHipYawPitch, JointData::numOfJoint) )
     {
       sitStatus = Finish;
     }

@@ -5,7 +5,7 @@
  */
 
 #ifndef _AttentionModel_H
-#define  _AttentionModel_H
+#define _AttentionModel_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
@@ -19,13 +19,13 @@ public:
 
   virtual ~AttentionModel() {}
 
-
+  // position of the most interesting point in robot coords
   Vector2<double> mostInterestingPoint;
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-   stream << "AttentionModel";
+    stream << "AttentionModel";
   }//end print
 };
 

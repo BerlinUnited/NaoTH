@@ -28,7 +28,7 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
 };
 

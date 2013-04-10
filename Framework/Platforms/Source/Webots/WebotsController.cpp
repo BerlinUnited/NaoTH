@@ -16,7 +16,7 @@ using namespace naoth;
 
 WebotsController::WebotsController()
   : 
-    PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+    PlatformInterface("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
     time(0),
     key(0),
     currentStiffness()
@@ -182,8 +182,8 @@ void WebotsController::main()
       key-='0';
     }
     time += getBasicTimeStep();
-    callCognition();
-    callMotion();
+    runCognition();
+    runMotion();
   }//end while
 
   cout << "Run finished" << endl;
@@ -228,7 +228,8 @@ void WebotsController::get(AccelerometerData& data)
  */
 void WebotsController::get(Image& data)
 {
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
+  //ACHTUNG: this is set by the module CameraInfoSetter
+  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
   const unsigned char *webotsImage = wb_camera_get_image(camera);
 
   //unsigned char *yuv422Image = transformRGBtoYUV422(webotsImage);
@@ -383,12 +384,12 @@ void WebotsController::get(FSRData& data)
 
 void WebotsController::get(InertialSensorData& data)
 {
-  // calculate the intertial sensor from GPS data
-  // it can be enabled for debuging
-  const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
-  data.data.x = asin(-gpsmatrix[6]);
-  data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
-  return;
+  //// calculate the intertial sensor from GPS data
+  //// it can be enabled for debuging
+  //const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
+  //data.data.x = asin(-gpsmatrix[6]);
+  //data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
+  //return;
 
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);
@@ -557,7 +558,7 @@ void WebotsController::set(const UltraSoundSendData& data)
 
 void WebotsController::getCognitionInput()
 {
-  PlatformInterface<WebotsController>::getCognitionInput();
+  PlatformInterface::getCognitionInput();
   //get(theGPSDataProvider.theGPSData);
 }
 

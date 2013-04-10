@@ -10,12 +10,8 @@
 
 
 //debugDrawings
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Math/Line.h"
 
 //debug
-#include "Tools/Debug/NaoTHAssert.h"
 
 
 void AStarNode::successor(std::vector<AStarNode>& searchTree,
@@ -206,7 +202,7 @@ void AStarSearch::drawAllNodesField()
 {
   FIELD_DRAWING_CONTEXT;
   std::vector<AStarNode>::const_iterator it = searchTree.begin();
-  for (;it != searchTree.end(); it++)
+  for (;it != searchTree.end(); ++it)
   {
     PEN("434343", 3);
     CIRCLE(it->getPosition().x, it->getPosition().y, 5);

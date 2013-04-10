@@ -12,12 +12,11 @@
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Math/Moments2.h"
 
 //MATH
 #include "Tools/Math/Probabilistics.h"
-#include "Representations/Modeling/GoalModel.h"
-#include <cmath>
+
+using namespace std;
 
 ActiveGoalLocator::ActiveGoalLocator()    :
     //canopyClustering(theSampleSet[1], parameters.thresholdCanopy),
@@ -33,7 +32,7 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
 
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", true);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", false);
 
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
 
@@ -201,11 +200,11 @@ void ActiveGoalLocator::execute() {
 
     for(unsigned int x = 0; x < 10; x++) {
 
-      double distError = 0;
-
       if (ccSamples[x].sampleSet.getIsValid()) {
 
-        for(unsigned int i = 0; i < 10; i++) {
+       double distError = 0;
+
+       for(unsigned int i = 0; i < 10; i++) {
 
             if (ccSamples[i].sampleSet.getIsValid()) {
 

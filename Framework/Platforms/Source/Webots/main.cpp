@@ -7,9 +7,6 @@
 
 #include <Webots/WebotsController.h>
 
-#include "Cognition.h"
-#include "Motion.h"
-
 #include <glib.h>
 #include <glib-object.h>
 
@@ -38,9 +35,7 @@ int main(int argc, char** argv)
 
   theController.init();
 
-  Cognition theCognition;
-  Motion theMotion;
-  theController.registerCallbacks(&theMotion, &theCognition);
+  naoth::init_agent(theController);
 
   theController.main();
 

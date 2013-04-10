@@ -7,13 +7,39 @@
  * Created on 27. Januar 2009, 16:43
  */
 
-#ifndef _HEADMOTIONENGINE_H
-#define  _HEADMOTIONENGINE_H
+#ifndef _HeadMotionEngine_H
+#define _HeadMotionEngine_H
 
 #include <Tools/Math/Vector2.h>
-#include "Motion/MotionBlackBoard.h"
+#include <Tools/Math/Vector3.h>
 
-class HeadMotionEngine
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/CameraInfo.h>
+#include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Perception/CameraMatrix.h>
+#include "Representations/Motion/MotionStatus.h"
+
+BEGIN_DECLARE_MODULE(HeadMotionEngine)
+  REQUIRE(RobotInfo)
+  REQUIRE(CameraInfo)
+  REQUIRE(InertialModel)
+  REQUIRE(KinematicChainSensor)
+  REQUIRE(HeadMotionRequest)
+  REQUIRE(SensorJointData)
+  REQUIRE(CameraMatrix)
+
+  PROVIDE(MotionStatus)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(HeadMotionEngine)
+
+
+class HeadMotionEngine: private HeadMotionEngineBase
 {
 public:
   /** constructor */
@@ -23,12 +49,9 @@ public:
   void execute();
 
 private:
-  const MotionBlackBoard& theBlackBoard;
 
-  naoth::MotorJointData& theMotorJointData;
+  // internal use
   naoth::JointData theJointData;
-
-  MotionStatus& theMotionStatus;
   KinematicChain theKinematicChain;
   
 
@@ -54,5 +77,5 @@ private:
   Vector3<double> g(double yaw, double pitch, const Vector3<double>& pointInWorld);
 };
 
-#endif  /* _HEADMOTIONENGINE_H */
+#endif  /* _HeadMotionEngine_H */
 

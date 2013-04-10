@@ -2,18 +2,17 @@
  * File:   ButtonData.h
  * Author: thomas
  *
- * Created on 6. März 2009, 10:40
+ * Created on 6. march 2009, 10:40
  */
 
 #ifndef _BUTTONDATA_H
 #define _BUTTONDATA_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
-  class ButtonData : public PlatformInterchangeable, public Printable
+  class ButtonData : public Printable
   {
   public:
     ButtonData();
@@ -29,7 +28,7 @@ namespace naoth
       numOfButtons
     };
 
-    static string getButtonName(ButtonID id);
+    static std::string getButtonName(ButtonID id);
 
     /** Whether the button is pressed in this frame. */
     bool isPressed[numOfButtons];
@@ -39,7 +38,7 @@ namespace naoth
      * in the first pressed frame. */
     int numOfFramesPressed[numOfButtons];
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   private:
 
   };

@@ -8,9 +8,6 @@
 #include "KalmanFilterBallLocator.h"
 
 // debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
 KalmanFilterBallLocator::KalmanFilterBallLocator()

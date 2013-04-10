@@ -8,10 +8,11 @@
 #include "KeyFrameMotion.h"
 
 using namespace naoth;
+using namespace std;
 
 KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id)
   : 
-  AbstractMotion(id),
+  AbstractMotion(id, getMotionLock()),
   name(motion::getName(id)),
   currentMotionNet(currentMotionNet),
   t(0.0),
@@ -21,7 +22,7 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
 
 KeyFrameMotion::KeyFrameMotion()
   :
-  AbstractMotion(motion::num_of_motions),
+  AbstractMotion(motion::num_of_motions, getMotionLock()),
   t(0.0),
   stiffness(0.7)
 {
@@ -60,7 +61,7 @@ void KeyFrameMotion::init()
   for(int joint = 0; joint < currentMotionNet.getNumOfJoints(); joint++)
   {
     JointData::JointID id = currentMotionNet.getJointID(joint);
-    lastMotorJointData.position[id] = theBlackBoard.theSensorJointData.position[id];
+    lastMotorJointData.position[id] = getSensorJointData().position[id];
     lastMotorJointData.stiffness[id] = stiffness;
     double joindDistance = fabs(Math::normalize(lastMotorJointData.position[id] - currentKeyFrame.jointData[joint]));
     distance = max(joindDistance, distance);
@@ -83,20 +84,20 @@ void KeyFrameMotion::init()
   t = currentTransition.duration;
 }//end init
 
-void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void KeyFrameMotion::execute()
 {
   std::string condition("stop");
-  if(motion::getName(motionRequest.id) == name)
+  if(motion::getName(getMotionRequest().id) == name)
   {
     condition = "run";
   }
 
-  double timeStep = theBlackBoard.theRobotInfo.basicTimeStep;
+  double timeStep = getRobotInfo().basicTimeStep;
 
-  if(currentState == motion::stopped)
+  if(isStopped())
   {
     init();
-    currentState = motion::running;
+    setCurrentState(motion::running);
   }//end if
 
   // skip frames if necessary
@@ -106,7 +107,7 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
     //get next transition
     getNextTransition(condition);
 
-    if(currentState == motion::stopped)
+    if(isStopped())
     {
       return;
     }//end if
@@ -121,8 +122,8 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
     lastMotorJointData.position[id] = (1.0-dt)*lastMotorJointData.position[id] + dt*currentKeyFrame.jointData[joint];
     
     // set the joint data (the only place where theMotorJointData is set)
-    theMotorJointData.stiffness[id] = stiffness;
-    theMotorJointData.position[id] = lastMotorJointData.position[id];
+    getMotorJointData().stiffness[id] = stiffness;
+    getMotorJointData().position[id] = lastMotorJointData.position[id];
   }//end for
 
   t -= timeStep;
@@ -158,7 +159,7 @@ void KeyFrameMotion::getNextTransition(std::string condition)
     t = currentTransition.duration;
   }else
   {
-    currentState = motion::stopped;
+    setCurrentState(motion::stopped);
   }
 
   //printf("Transition[%s]: %d --> %d(%s)\n",condition,transition.fromKeyFrame,transition.toKeyFrame,transition.toMotionNetName);

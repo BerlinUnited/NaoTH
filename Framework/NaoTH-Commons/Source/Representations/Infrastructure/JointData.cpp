@@ -5,17 +5,19 @@
 #include "Tools/Math/Common.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Messages/Representations.pb.h"
+#include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 double JointData::min[JointData::numOfJoint];
 double JointData::max[JointData::numOfJoint];
 
 JointData::JointData()
 {
-  for (int i = 0; i < numOfJoint; i++) {
+  for (int i = 0; i < numOfJoint; i++) 
+  {
     position[i] = 0;
     dp[i] = 0;
     ddp[i] = 0;
@@ -23,7 +25,7 @@ JointData::JointData()
   }
 }
 
-void JointData::init()
+void JointData::loadJointLimitsFromConfig()
 {
   const Configuration& cfg = Platform::getInstance().theConfiguration;
   for (int i = 0; i < JointData::numOfJoint; i++)
@@ -46,8 +48,8 @@ void JointData::init()
     {
       THROW("JointData: can not get " + jointName + " min angle");
     }
-  }
-}
+  }//enf for
+}//end init
 
 string JointData::getJointName(JointID joint)
 {

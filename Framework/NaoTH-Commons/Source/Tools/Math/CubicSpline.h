@@ -5,11 +5,12 @@
  * Cubic Spline Interpolation
  */
 
-#ifndef CUBICSPLINE_H
-#define  CUBICSPLINE_H
+#ifndef _CubicSpline_H_
+#define _CubicSpline_H_
 
 #include <vector>
 #include "Vector2.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 class CubicSpline
 {
@@ -26,7 +27,7 @@ public:
   {
     theSamples = samples;
     size_t n = samples.size();
-    vector<double> h(n-1), b(n-1);
+    std::vector<double> h(n-1), b(n-1);
     for (size_t i=0; i<n-1; i++)
     {
         h[i] = samples[i+1].x - samples[i].x;
@@ -34,7 +35,7 @@ public:
     }
 
     // Gaussian Elimination
-    vector<double> u(n, 0), v(n,0);
+    std::vector<double> u(n, 0), v(n,0);
     u[1] = 2*(h[0] + h[1] );
     v[1] = 6*(b[1] - b[0] );
     for (size_t i = 2; i < n - 1; i++) {
@@ -43,7 +44,7 @@ public:
     }
 
     // Back-substitution
-    theZ = vector<double>(n, 0);
+    theZ = std::vector<double>(n, 0);
     for ( int i=n-2; i>0; i--)
     {
       theZ[i] = (v[i] - h[i] * theZ[i+1] ) / u[i];
@@ -76,9 +77,9 @@ public:
   }
 
 private:
-  vector<Vector2<double> > theSamples;
-  vector<double> theZ;
+  std::vector<Vector2<double> > theSamples;
+  std::vector<double> theZ;
 };
 
-#endif  /* CUBICSPLINE_H */
+#endif  /* _CubicSpline_H_ */
 

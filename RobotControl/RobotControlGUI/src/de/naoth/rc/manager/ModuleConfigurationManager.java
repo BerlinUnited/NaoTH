@@ -12,5 +12,5 @@ import de.naoth.rc.dataformats.ModuleConfiguration;
  */
 public interface ModuleConfigurationManager extends Manager<ModuleConfiguration>
 {
-
+    abstract void setModuleOwner(String name);
 }

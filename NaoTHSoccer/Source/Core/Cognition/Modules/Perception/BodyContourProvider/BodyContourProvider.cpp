@@ -8,17 +8,13 @@
 */
 
 #include "BodyContourProvider.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
-#include "Tools/Math/ConvexHull.h"
-#include <vector>
+#include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/DebugDrawings3D.h>
+#include <Tools/Debug/DebugDrawings.h>
 
+using namespace std;
 
 BodyContourProvider::BodyContourProvider()
 {
@@ -121,7 +117,7 @@ void BodyContourProvider::execute()
   DEBUG_REQUEST("BodyContourProvider:draw_body_contour_lines",
     if (getBodyContour().lines.size() >= 2)
     {
-      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); iter++)
+      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
       {
         LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
       }// end for

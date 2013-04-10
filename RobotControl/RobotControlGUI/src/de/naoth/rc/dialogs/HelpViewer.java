@@ -60,6 +60,7 @@ public class HelpViewer extends AbstractDialog
         jScrollPane1 = new javax.swing.JScrollPane();
         jEditorPane = new javax.swing.JEditorPane();
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jToggleButtonRefresh.setText("Refresh");

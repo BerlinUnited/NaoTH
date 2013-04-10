@@ -5,8 +5,8 @@
 * @author <A href="mailto:mellmann@informatik.hu-berlin.de">Heinrch Mellmann</A>
 */
 
-#ifndef __ColorClasses_h__
-#define __ColorClasses_h__
+#ifndef _ColorClasses_h_
+#define _ColorClasses_h_
 
 class ColorClasses
 {
@@ -133,4 +133,4 @@ public:
   }//end colorClassToRGB
 };
 
-#endif //__ColorClasses_h_
+#endif //_ColorClasses_h_

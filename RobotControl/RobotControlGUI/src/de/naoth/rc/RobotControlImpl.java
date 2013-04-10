@@ -11,7 +11,7 @@ import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.frontend.MissingDockableStrategy;
 import bibliothek.gui.dock.station.split.SplitDockGrid;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.IMessageServerParent;
@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
@@ -73,7 +74,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     splashScreenMessage("Welcome to RobotControl");
     try
     {
-      UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
     catch(Exception ex)
     {

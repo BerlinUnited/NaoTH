@@ -6,8 +6,8 @@
  * Definition of the class MotionRequest
  */
 
-#ifndef __MotionRequest_h_
-#define __MotionRequest_h_
+#ifndef _MotionRequest_h_
+#define _MotionRequest_h_
 
 #include <string>
 
@@ -89,12 +89,12 @@ public:
     walkRequest = WalkRequest();
   }//end reset
 
-  virtual void print(ostream& stream) const 
+  virtual void print(std::ostream& stream) const 
   {
-    stream << "time = " << time << endl;
-    stream << "cognition frame = " << cognitionFrameNumber << endl;
-    stream << "MotionID = " << motion::getName(id) << endl;
-    stream << "standardStand = " << standardStand <<endl;
+    stream << "time = " << time << std::endl;
+    stream << "cognition frame = " << cognitionFrameNumber << std::endl;
+    stream << "MotionID = " << motion::getName(id) << std::endl;
+    stream << "standardStand = " << standardStand << std::endl;
     switch (id) {
       case motion::walk:
         walkRequest.print(stream);
@@ -103,7 +103,7 @@ public:
         kickRequest.print(stream);
         break;
       case motion::stand:
-        stream << "stand height = "<<standHeight<<"\n";
+        stream << "stand height = " << standHeight << std::endl;
         break;
       default:
         break;

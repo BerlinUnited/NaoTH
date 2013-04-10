@@ -76,12 +76,12 @@ public:
     valid = false;
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "valid = " << valid << endl;
-    stream << "position = " << position << endl;
-    stream << "speed = " << speed << endl;
-    stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << endl;
+    stream << "valid = " << valid << std::endl;
+    stream << "position = " << position << std::endl;
+    stream << "speed = " << speed << std::endl;
+    stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << std::endl;
   }//end print
 };
 

@@ -37,7 +37,6 @@
 #include <Tools/Communication/SocketStream/SocketStream.h>
 #include "TeamCommEncoder.h"
 
-#include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include "DebugCommunication/DebugServer.h"
@@ -47,15 +46,15 @@
 
 using namespace naoth;
 
-class SimSparkController : public PlatformInterface<SimSparkController>, DebugCommandExecutor
+class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
 private:
   GSocket* socket;
   PrefixedSocketStream theSocket;
 
   // sensor data
-  std::map<string, JointData::JointID> theJointSensorNameMap;
-  map<JointData::JointID, string> theJointMotorNameMap;
+  std::map<std::string, JointData::JointID> theJointSensorNameMap;
+  std::map<JointData::JointID, std::string> theJointMotorNameMap;
 
   char* theImageData;
   unsigned int theImageSize;
@@ -83,8 +82,8 @@ private:
   TeamMessageDataIn theTeamMessageDataIn; // message from other robots
   double theIMU[2];
 
-  list<MotorJointData> theMotorJointData;
-  string theSync;
+  std::list<MotorJointData> theMotorJointData;
+  std::string theSync;
   bool theSyncMode;
 
   TeamCommEncoder theTeamCommEncoder;
@@ -94,11 +93,11 @@ public:
 
   virtual ~SimSparkController();
 
-  virtual string getBodyID() const;
+  virtual std::string getBodyID() const;
 
-  virtual string getBodyNickName() const;
+  virtual std::string getBodyNickName() const;
 
-  virtual string getHeadNickName() const;
+  virtual std::string getHeadNickName() const;
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
@@ -176,7 +175,7 @@ private:
 
   bool updateFSR(const sexp_t* sexp);
 
-  bool updateSee(const string& preName, const sexp_t* sexp);
+  bool updateSee(const std::string& preName, const sexp_t* sexp);
 
   bool updateIMU(const sexp_t* sexp);
 

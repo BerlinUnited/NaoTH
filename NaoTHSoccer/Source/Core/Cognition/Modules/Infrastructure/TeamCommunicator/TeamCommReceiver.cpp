@@ -3,6 +3,8 @@
 
 #include <Tools/Debug/DebugRequest.h>
 
+using namespace std;
+
 TeamCommReceiver::TeamCommReceiver()
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",

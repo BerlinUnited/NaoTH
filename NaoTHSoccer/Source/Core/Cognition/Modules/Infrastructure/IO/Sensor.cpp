@@ -7,6 +7,7 @@
 
 Sensor::Sensor()
 {
+  std::cout << "Create Sensor" << std::endl;
 }
 
 Sensor::~Sensor()
@@ -16,18 +17,19 @@ Sensor::~Sensor()
 
 
 #define REG_INPUT(R) \
-  platformInterface.registerCognitionInput(get##R())
+  platformInterface.registerInput(get##R())
 
-void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
+void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
+  std::cout << "Init Sensor" << std::endl;
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
-  robot.platform = platformInterface.getName();
-  robot.headNickName = platformInterface.getHeadNickName();
-  robot.bodyNickName = platformInterface.getBodyNickName();
-  robot.bodyID = platformInterface.getBodyID();
-  robot.basicTimeStep = platformInterface.getBasicTimeStep();
-
+  robot.platform = platform.getName();
+  robot.headNickName = platform.getHeadNickName();
+  robot.bodyNickName = platform.getBodyNickName();
+  robot.bodyID = platform.getBodyID();
+  robot.basicTimeStep = platform.getBasicTimeStep();
+  
   // init player number, team number and etc.
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
@@ -47,13 +49,15 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(IRReceiveData);
   
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RCTCTeamMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
-  
-  platformInterface.registerCognitionInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
-  platformInterface.registerCognitionInputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
-  //platformInterface.registerCognitionInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());
-  platformInterface.registerCognitionInputChanel<InertialModel, Serializer<InertialModel> >(getInertialModel());
+
+  platformInterface.registerInputChanel(getCameraMatrix());
+  platformInterface.registerInputChanel(getMotionStatus());
+  platformInterface.registerInputChanel(getOdometryData());
+  //platformInterface.registerInputChanel(getCalibrationData());
+  platformInterface.registerInputChanel(getInertialModel());
 }//end init
 
 

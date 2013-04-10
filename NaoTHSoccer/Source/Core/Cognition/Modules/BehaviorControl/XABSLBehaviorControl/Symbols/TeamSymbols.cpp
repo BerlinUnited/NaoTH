@@ -6,12 +6,6 @@
  */
 
 #include "TeamSymbols.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/GoalModel.h"
-#include "Representations/Modeling/BodyState.h"
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Tools/Debug/DebugModify.h"
 
 void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 {

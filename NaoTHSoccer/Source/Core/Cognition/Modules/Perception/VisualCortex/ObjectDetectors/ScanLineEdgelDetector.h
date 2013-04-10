@@ -2,7 +2,7 @@
  * File:   ScanLineEdgelDetector.h
  * Author: claas
  *
- * Created on 14. März 2011, 14:22
+ * Created on 14. march 2011, 14:22
  */
 
 #ifndef _SCANLINEEDGELDETECTOR_H_
@@ -24,6 +24,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Infrastructure/CameraSettings.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
@@ -36,6 +37,8 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
   REQUIRE(BodyContour)
+  REQUIRE(ArtificialHorizon)
+
   PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
 

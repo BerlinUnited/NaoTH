@@ -1,4 +1,4 @@
-dofile "../../../Utils/tools.lua"
+dofile "../../LuaTools/tools.lua"
 
 newaction {
   trigger = "webots_copy",

@@ -5,8 +5,8 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */
 
-#ifndef __RobotPose_h_
-#define __RobotPose_h_
+#ifndef _RobotPose_h_
+#define _RobotPose_h_
 
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
@@ -63,14 +63,14 @@ public:
     return *this;
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "x = " << translation.x << endl;
-    stream << "y = " << translation.y << endl;
-    stream << "rotation = " << rotation << endl;
-    stream << "valid = " << isValid << endl;
+    stream << "x = " << translation.x << std::endl;
+    stream << "y = " << translation.y << std::endl;
+    stream << "rotation = " << rotation << std::endl;
+    stream << "valid = " << isValid << std::endl;
   }//end print
 
 };
 
-#endif// __RobotPose_h_
+#endif// _RobotPose_h_

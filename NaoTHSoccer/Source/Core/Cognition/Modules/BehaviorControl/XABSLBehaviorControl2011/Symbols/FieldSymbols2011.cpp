@@ -1,5 +1,4 @@
 #include "FieldSymbols2011.h"
-#include "Tools/Math/Common.h"
 
 void FieldSymbols2011::registerSymbols(xabsl::Engine& engine)
 {

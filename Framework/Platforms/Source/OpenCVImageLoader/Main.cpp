@@ -13,9 +13,6 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/Stopwatch.h>
 
-#include "Cognition.h"
-#include "Motion.h"
-
 #include <cstring>
 #include "OpenCVImageLoader.h"
 
@@ -47,15 +44,13 @@ int main(int argc, char** argv)
   // init the platform
   Platform::getInstance().init(&loader);
 
-  Cognition theCognition;
-  Motion theMotion;
-  loader.registerCallbacks(&theMotion, &theCognition);
+  naoth::init_agent(loader);
 
   // start the execution
   loader.main();
 
   // dump some debug information
-  Stopwatch::getInstance().dump();
+  StopwatchManager::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main

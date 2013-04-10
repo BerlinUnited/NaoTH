@@ -27,8 +27,8 @@
    };
 */
 
-#ifndef __Singleton_h__
-#define __Singleton_h__
+#ifndef _Singleton_h_
+#define _Singleton_h_
 
 #include <stdlib.h>
 

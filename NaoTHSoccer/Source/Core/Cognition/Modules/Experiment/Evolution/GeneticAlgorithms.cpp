@@ -4,16 +4,12 @@
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  */
 
-#include <cmath>
 #include <algorithm>
-#include <sstream>
 #include <fstream>
 #include "GeneticAlgorithms.h"
 #include "Tools/Math/Common.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include <glib.h>
 #include <glib/gstdio.h>
-#include <sys/stat.h>
 
 using namespace std;
 

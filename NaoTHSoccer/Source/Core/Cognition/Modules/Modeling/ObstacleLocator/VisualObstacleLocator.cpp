@@ -7,7 +7,8 @@
  */
 
 #include "VisualObstacleLocator.h"
-#include "Tools/CameraGeometry.h"
+
+#include <Tools/CameraGeometry.h>
 
 VisualObstacleLocator::VisualObstacleLocator()
 {

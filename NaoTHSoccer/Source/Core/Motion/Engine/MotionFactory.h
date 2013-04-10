@@ -6,17 +6,19 @@
 * Declaration of class MotionFactory
 */
 
-#ifndef __MotionFactory_h_
-#define __MotionFactory_h_
+#ifndef _MotionFactory_h_
+#define _MotionFactory_h_
 
-#include "Motion/AbstractMotion.h"
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
 
-class MotionFactory
+#include "Representations/Motion/Request/MotionRequest.h"
+
+class MotionFactory: protected ModuleManager
 {
 public:
   virtual ~MotionFactory(){}
-
-  virtual AbstractMotion* createMotion(const MotionRequest& motionRequest) = 0;
+  virtual Module* createMotion(const MotionRequest& motionRequest) = 0;
 };
 
-#endif //__MotionFactory_h_
+#endif //_MotionFactory_h_

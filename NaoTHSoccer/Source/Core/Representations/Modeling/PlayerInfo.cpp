@@ -2,15 +2,19 @@
 // File:   PlayerInfo.cpp
 // Author: thomas
 //
-// Created on 12. März 2008, 13:41
+// Created on 12. march 2008, 13:41
 //
 
 #include "PlayerInfo.h"
 
 using namespace naoth;
+using namespace std;
 
 PlayerInfo::PlayerInfo() 
-  :isPlayingStriker(false)
+:
+  timeSincePlayModeChanged(0),
+  timeSinceGameStateChanged(0),
+  isPlayingStriker(false)
 {
 }
 

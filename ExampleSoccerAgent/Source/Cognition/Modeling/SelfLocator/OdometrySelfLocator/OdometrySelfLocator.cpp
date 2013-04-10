@@ -6,7 +6,6 @@
 */
 
 #include "OdometrySelfLocator.h"
-#include "Tools/Math/Matrix.h"
 
 OdometrySelfLocator::OdometrySelfLocator()
 {

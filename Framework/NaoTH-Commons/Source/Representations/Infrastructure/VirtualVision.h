@@ -24,7 +24,8 @@ namespace naoth
 
     ~VirtualVision();
 
-    std::map<std::string, Vector3<double> > data;
+    typedef std::map<std::string, Vector3<double> > PointMap;
+    PointMap data;
 
     struct Line
     {
@@ -35,7 +36,7 @@ namespace naoth
 
     void clear();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 }
 

@@ -22,9 +22,11 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
         implements ModuleConfigurationManager
 {
 
-  public ModuleConfigurationManagerImpl()
-  {
-  }
+    private final String commandString = "modules:list";
+    private Command command = new Command(commandString);
+    
+    
+  public ModuleConfigurationManagerImpl(){}
 
   @Override
   public ModuleConfiguration convertByteArrayToType(byte[] result) throws IllegalArgumentException
@@ -36,7 +38,16 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
 
       for(Module m : list.getModulesList())
       {
-        Node moduleNode = new Node(m.getName(), ModuleConfiguration.NodeType.Module, m.getActive());
+        String str[] = m.getName().split("\\|"); // hack
+        String name = str[0];
+        
+        if(str.length > 1) {
+            String lower_name = name.toLowerCase();
+            String hname = str[1].replaceAll("\\\\|/", ":").replaceFirst("(?i):" + lower_name + ".*", "");
+            name = hname + ":" + name;
+        }
+        
+        Node moduleNode = new Node(name, ModuleConfiguration.NodeType.Module, m.getActive());
         moduleConfiguration.addVertex(moduleNode);
 
         for(String s : m.getProvidedRepresentationsList())
@@ -64,8 +75,16 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
   }//end convertByteArrayToType
 
   @Override
+  public void setModuleOwner(String name)
+  {
+      if(name != null && name.length() > 0){
+          command = new Command(name + ":" + commandString);
+      }
+  }
+  
+  @Override
   public Command getCurrentCommand()
   {
-    return new Command("modules:list");
+    return command;
   }//end getCurrentCommand
 }//end class ModuleConfigurationManager

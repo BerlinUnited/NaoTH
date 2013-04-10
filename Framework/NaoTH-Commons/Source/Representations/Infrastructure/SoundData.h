@@ -5,26 +5,23 @@
  * Created on 16. Juni 2009, 21:29
  */
 
-#ifndef _SOUNDDATA_H
-#define  _SOUNDDATA_H
+#ifndef _SoundData_H_
+#define _SoundData_H_
 
 #include <string>
 #include <iostream>
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/RingBuffer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-
-using namespace std;
 
 namespace naoth
 {
 
-  class SoundData : public PlatformInterchangeable, public Printable
+  class SoundData : public Printable
   {
   public:
     bool mute;
-    string soundFile;
-    string snd_ctl_dump;
+    std::string soundFile;
+    std::string snd_ctl_dump;
     int period_size;        /* auto */
     int periods;            /* auto */
 
@@ -34,7 +31,7 @@ namespace naoth
     SoundData();
     ~SoundData();
 
-    virtual void print(ostream& stream) const = 0;
+    virtual void print(std::ostream& stream) const = 0;
   };
 
   class SoundPlayData : public SoundData
@@ -52,7 +49,7 @@ namespace naoth
     SoundPlayData();
     ~SoundPlayData();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 
   class SoundCaptureData : public SoundData
@@ -74,9 +71,9 @@ namespace naoth
     SoundCaptureData();
     ~SoundCaptureData();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 }
 
-#endif  /* _SOUNDDATA_H */
+#endif  /* _SoundData_H_ */
 

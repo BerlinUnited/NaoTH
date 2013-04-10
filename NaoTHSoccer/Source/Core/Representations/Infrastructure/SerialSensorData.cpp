@@ -5,7 +5,6 @@
  * Created on 18. August 2010, 16:58
  */
 
-#include <vector>
 
 #include "SerialSensorData.h"
 
@@ -14,6 +13,7 @@
 
 #define FORCE_SENSOR_ZEROPOINT 5200
 
+using namespace std;
 
 SerialSensorData::SerialSensorData()
   : 

@@ -2,38 +2,34 @@
  * File:   GyrometerData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:46
  */
 
-#ifndef _GYROMETERDATA_H
-#define  _GYROMETERDATA_H
+#ifndef _GyrometerData_H_
+#define _GyrometerData_H_
 
 #include <string>
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/Math/Vector2.h"
 
-using namespace std;
 
 namespace naoth
 {
 
-  class GyrometerData : public PlatformInterchangeable, public Printable, public Streamable
+  class GyrometerData : public Printable
   {
   public:
-    double ref;
-    Vector2<double> data;
-    Vector2<double> rawData;
-    Vector2<double> rawZero;
-
     GyrometerData();
     ~GyrometerData();
 
-    void calibrate();
+    // the GyrRef provided by the robot (what is it for?)
+    double ref;
+    // raw data as provided by the sensors
+    Vector2<double> rawData;
+    // rawData scaled to radian/s
+    Vector2<double> data;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
   
   template<>
@@ -45,5 +41,5 @@ namespace naoth
   };
   
 }
-#endif  /* _GYROMETERDATA_H */
+#endif  /* _GyrometerData_H_ */
 

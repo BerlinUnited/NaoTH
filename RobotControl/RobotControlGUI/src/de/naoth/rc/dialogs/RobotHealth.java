@@ -17,6 +17,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.Command;
 import java.awt.Color;
@@ -231,7 +232,7 @@ public class RobotHealth extends AbstractDialog
         {
           try
           {
-            Representations.FSRData fsrData = Representations.FSRData.parseFrom(object);
+            FrameworkRepresentations.FSRData fsrData = FrameworkRepresentations.FSRData.parseFrom(object);
 
             for(int i = 0; i < theFSRStates.length; i++)
             {
@@ -251,7 +252,7 @@ public class RobotHealth extends AbstractDialog
     }//end class FSRDataListener
       
     
-    Representations.SensorJointData sensorJointData;
+    FrameworkRepresentations.SensorJointData sensorJointData;
     class SensorJointDataListener implements ObjectListener<byte[]>
     {
         @Override
@@ -264,7 +265,7 @@ public class RobotHealth extends AbstractDialog
         {
           try
           {
-            sensorJointData = Representations.SensorJointData.parseFrom(object);
+            sensorJointData = FrameworkRepresentations.SensorJointData.parseFrom(object);
             
             for(int i = 0; i < sensorJointData.getTemperatureCount(); i++)
             {
@@ -417,6 +418,7 @@ public class RobotHealth extends AbstractDialog
             }
         };
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         btReceiveDrawings.setText("Receive");

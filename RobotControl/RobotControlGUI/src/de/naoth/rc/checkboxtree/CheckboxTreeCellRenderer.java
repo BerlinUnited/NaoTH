@@ -5,11 +5,9 @@
 
 package de.naoth.rc.checkboxtree;
 
-import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JCheckBox;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 
 /**
@@ -24,29 +22,14 @@ public class CheckboxTreeCellRenderer implements TreeCellRenderer
   {
     if(value != null)
     {
-      JCheckBox cb = new JCheckBox();
-
-      cb.setBackground(tree.getBackground());
-
       if(value instanceof SelectableTreeNode)
       {
         SelectableTreeNode n = (SelectableTreeNode) value;
-
-        
-        cb.setText(n.getText());
-        cb.setToolTipText(n.getTooltip());
-        cb.setEnabled(true);
-
-        cb.setSelected(n.isSelected());
+        JCheckBox cb = n.getComponent();
+        cb.setBackground(tree.getBackground());
+        return cb;
       }
-      else
-      {
-        cb.setText(value.toString());
-        cb.setSelected(false);
-      }
-      return cb;
     }
     return null;
   }
-
 }

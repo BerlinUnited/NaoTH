@@ -62,12 +62,12 @@ public:
   GraspDistState graspDistState;
   GraspStiffState graspStiffState;
 
-  void print(ostream& stream) const 
+  void print(std::ostream& stream) const 
   {
-    stream << "graspingPoint: " << graspingPoint << endl;
-    stream << "graspingState: " << graspingState << endl;
-    stream << "graspDistState: " << graspDistState << endl;
-    stream << "graspStiffState: " << graspStiffState << endl;
+    stream << "graspingPoint: " << graspingPoint << std::endl;
+    stream << "graspingState: " << graspingState << std::endl;
+    stream << "graspDistState: " << graspDistState << std::endl;
+    stream << "graspStiffState: " << graspStiffState << std::endl;
   }//end print
 
 }; //end class GraspRequest

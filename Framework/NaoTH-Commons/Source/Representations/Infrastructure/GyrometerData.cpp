@@ -3,6 +3,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 GyrometerData::GyrometerData()
 {
@@ -11,14 +12,6 @@ GyrometerData::GyrometerData()
 GyrometerData::~GyrometerData()
 {
 }
-
-void GyrometerData::calibrate()
-{
-  rawZero = rawData;
-  data.x = 0.0;
-  data.y = 0.0;
-}
-
 
 void GyrometerData::print(ostream& stream) const
 {

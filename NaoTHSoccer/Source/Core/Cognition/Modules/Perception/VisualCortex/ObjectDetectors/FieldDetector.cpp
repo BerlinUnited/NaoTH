@@ -7,11 +7,11 @@
 #include "FieldDetector.h"
 
 #include <Tools/Math/ConvexHull.h>
-#include <Tools/Math/Polygon.h>
-#include <vector>
 
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugImageDrawings.h>
+
+using namespace std;
 
 FieldDetector::FieldDetector()
 {
@@ -54,7 +54,7 @@ void FieldDetector::execute()
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().setPoly(fieldPoly, getCameraMatrix().horizon);
+    getFieldPercept().setPoly(fieldPoly, getArtificialHorizon());
     if(fieldPoly.getArea() >= 5600)
     {
       getFieldPercept().setValid(true);

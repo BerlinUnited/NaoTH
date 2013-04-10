@@ -47,7 +47,11 @@ TEST_F(PotentialFieldProviderTest, StableOnMovedRobot)
   // deactivate the local model
   getLocalGoalModel().opponentGoalIsValid = false;
 
+  // the robot doesn't move
+  getBallModel().position = simulatedBall;
   getBallModel().positionPreview = simulatedBall;
+
+  // 
   getSelfLocGoalModel().goal.leftPost = simulatedLeftPost;
   getSelfLocGoalModel().goal.rightPost = simulatedRightPost;
 

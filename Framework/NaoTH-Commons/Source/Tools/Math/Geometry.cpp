@@ -42,7 +42,7 @@ Vector2<double> Geometry::relativeToFieldCoord(const Pose2D& robotPose, const Ve
 bool Geometry::getIntersectionPointsOfLineAndRectangle(
   const Vector2<int>& bottomLeft, 
   const Vector2<int>& topRight,
-  const Math::Line line,
+  const Math::Line& line,
   Vector2<int>& point1, 
   Vector2<int>& point2)
 {

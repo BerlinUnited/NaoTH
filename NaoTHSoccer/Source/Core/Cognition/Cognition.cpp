@@ -7,19 +7,10 @@
 
 #include "Cognition.h"
 
-#include <PlatformInterface/Platform.h>
 
-#include <Tools/Debug/DebugImageDrawings.h>
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-#include <Tools/Debug/Stopwatch.h>
-#include <Tools/Debug/Trace.h>
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/NaoTime.h"
 
 
-#include <glib.h>
 
 /////////////////////////////////////
 // Modules
@@ -37,12 +28,15 @@
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
+#include "Modules/Infrastructure/TeamCommunicator/RCTCHandler.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
+#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
+#include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -54,6 +48,7 @@
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
+#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -89,11 +84,11 @@
 //#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
-#include "Tools/NaoTime.h"
 
 using namespace std;
 
 Cognition::Cognition()
+  : ModuleManagerWithDebug("Cognition")
 {
 }
 
@@ -103,18 +98,18 @@ Cognition::~Cognition()
 
 
 #define REGISTER_MODULE(module) \
+  g_message("Register "#module);\
   registerModule<module>(std::string(#module));
 
 
-void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
+void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   g_message("Cognition register start");
   // register of the modules
 
-  // input
-  ModuleCreator<Sensor>* sensor = REGISTER_MODULE(Sensor);
-  sensor->setEnabled(true);
-  sensor->getModuleT()->init(platformInterface);
+  // input module
+  ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"), true);
+  sensor->getModuleT()->init(platformInterface, platform);
 
   /* 
    * to register a module use
@@ -127,13 +122,17 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // -- BEGIN MODULES --
 
   // infrastructure
+  REGISTER_MODULE(RCTCHandler);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(CameraInfoSetter);
 
   // perception
-  REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
+  REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(BaseColorClassifier);
@@ -197,10 +196,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // -- END MODULES --
 
-  // output
-  ModuleCreator<Actuator>* actuator = REGISTER_MODULE(Actuator);
-  actuator->setEnabled(true);
-  actuator->getModuleT()->init(platformInterface);
+  // output module
+  ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"), true);
+  actuator->getModuleT()->init(platformInterface, platform);
 
   // loat external modules
   //packageLoader.loadPackages("Packages/", *this);
@@ -209,17 +207,15 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
-  for(list<string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); ++name)
+  list<string>::const_iterator name = getExecutionList().begin();
+  for(;name != getExecutionList().end(); ++name)
   {
     bool active = false;
-    if(config.hasKey("modules", *name))
-    {    
+    if(config.hasKey("modules", *name)) {    
       active = config.getBool("modules", *name);      
     }
     setModuleEnabled(*name, active);
-    if(active)
-    {
+    if(active) {
       g_message("activating module %s", (*name).c_str());
     }
   }//end for
@@ -229,43 +225,38 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   g_message("Cognition register end");
 
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.start();
 }//end init
 
 
 void Cognition::call()
 {
   // BEGIN cognition frame rate measuring
-  Stopwatch::getInstance().notifyStop(stopwatch);
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.stop();
+  stopwatch.start();
   PLOT("_CognitionCycle", stopwatch.lastValue);
   // END cognition frame rate measuring
 
 
   STOPWATCH_START("CognitionExecute");
+  //GT_TRACE("beginning to iterate over all modules");
 
-
-  GT_TRACE("beginning to iterate over all modules");
   // execute all modules
-  list<string>::const_iterator iter;
-  for (iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
+  list<AbstractModuleCreator*>::const_iterator iter;
+  for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
     // get entry
-    AbstractModuleCreator* module = getModule(*iter);
+    AbstractModuleCreator* module = *iter;//getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
-      std::string name(*iter);
+      //std::string name(module->getModule()->getName());
 
-      stringstream s;
-      s << "executing " << name;
-      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
-      STOPWATCH_START_GENERIC(name);
+      //GT_TRACE("executing " << name);
       module->execute();
-      STOPWATCH_STOP_GENERIC(name);
     }//end if
   }//end for all modules
   
-  GT_TRACE("end module iteration");
+  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 

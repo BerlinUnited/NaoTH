@@ -1,16 +1,26 @@
 /**
-* @file KeyFrameMotionEngine.h
+* @file KeyFrameMotionFactory.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Implementation of class KeyFrameMotionEngine
+* Implementation of class KeyFrameMotionFactory
 */
 
 #include "KeyFrameMotionEngine.h"
 
+#include <Tools/Math/Common.h>
+#include <PlatformInterface/Platform.h>
+
+#include "Tools/MotionNetParser.h"
+
+#include <cstdio>
+#include <fstream>
+//#include <dirent.h>
+#include <iostream>
+
+
 using namespace naoth;
 
-KeyFrameMotionEngine::KeyFrameMotionEngine()
-:currentMotion(NULL)
+KeyFrameMotionFactory::KeyFrameMotionFactory()
 {
   /*REGISTER_DEBUG_COMMAND("reload:motion_net", 
     "reloads a particular motion net. Usage: reload:motion_net file=turn_right", this);
@@ -26,14 +36,16 @@ KeyFrameMotionEngine::KeyFrameMotionEngine()
   loadAvailableMotionNets(dirlocation + "scheme/" + scheme + "/" + motionnet);
   loadAvailableMotionNets(dirlocation + "robots/" + id + "/" + motionnet);
   loadAvailableMotionNets(dirlocation + "private/" + motionnet);
+
+  //
+  keyFrameMotionCreator = registerModule<KeyFrameMotion>("KeyFrameMotion");
 }
 
-KeyFrameMotionEngine::~KeyFrameMotionEngine()
+KeyFrameMotionFactory::~KeyFrameMotionFactory()
 {
-  delete currentMotion;
 }
 
-void KeyFrameMotionEngine::loadAvailableMotionNets(std::string dirlocation)
+void KeyFrameMotionFactory::loadAvailableMotionNets(std::string dirlocation)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
@@ -62,7 +74,7 @@ void KeyFrameMotionEngine::loadAvailableMotionNets(std::string dirlocation)
 }//end loadAvailableMotionNets
 
 
-void KeyFrameMotionEngine::loadMotionNetFromFile(const std::string& fileName, MotionNet& motionNet)
+void KeyFrameMotionFactory::loadMotionNetFromFile(const std::string& fileName, MotionNet& motionNet) const
 {
   ifstream inputFileStream ( fileName.c_str() , ifstream::in );
 
@@ -85,18 +97,18 @@ void KeyFrameMotionEngine::loadMotionNetFromFile(const std::string& fileName, Mo
 }//end loadMotionNetFromFile
 
 
-bool KeyFrameMotionEngine::loadMotionNet(const std::string& fileName, const std::string& motionNetName)
+bool KeyFrameMotionFactory::loadMotionNet(const std::string& fileName, const std::string& motionNetName)
 {
   try
   {
     MotionNet motionNet;
 
-    cout << "KeyFrameMotionEngine: load " << fileName;
+    cout << "KeyFrameMotionFactory: load " << fileName;
     loadMotionNetFromFile(fileName, motionNet);
     cout << "\tok" << endl;
 
     // loading successfull: copy to the map
-    motionNets[motionNetName] = motionNet;
+    getMotionNets()[motionNetName] = motionNet;
     return true;
   }
   catch(std::string e)
@@ -109,15 +121,20 @@ bool KeyFrameMotionEngine::loadMotionNet(const std::string& fileName, const std:
 }//end loadMotionNet
 
 
-AbstractMotion* KeyFrameMotionEngine::createMotion(const MotionRequest& motionRequest)
+Module* KeyFrameMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  std::string motionName = motion::getName(motionRequest.id);
+  keyFrameMotionCreator->setEnabled(false);
 
-  if(motionNets.find(motionName) != motionNets.end())
+  std::string motionName = motion::getName(motionRequest.id);
+  const MotionNet* net = getMotionNets().get(motionName);
+
+  if(net != NULL)
   {
-    delete currentMotion;
-    currentMotion = new KeyFrameMotion(motionNets.find(motionName)->second, motionRequest.id);
-    return currentMotion;
+    keyFrameMotionCreator->setEnabled(true);
+    KeyFrameMotion* motion = keyFrameMotionCreator->getModuleT();
+    motion->set(*net, motionRequest.id);
+
+    return keyFrameMotionCreator->getModule();
   }//end if
 
   return NULL;
@@ -125,7 +142,7 @@ AbstractMotion* KeyFrameMotionEngine::createMotion(const MotionRequest& motionRe
 
 /*
  * TODO
-void KeyFrameMotionEngine::executeDebugCommand(
+void KeyFrameMotionFactory::executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::stringstream &outstream)
 {  

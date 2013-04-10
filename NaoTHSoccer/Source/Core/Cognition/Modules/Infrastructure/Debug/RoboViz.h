@@ -45,14 +45,14 @@ class RoboViz: public RoboVizBase
   virtual void execute();
 
   protected:
-  void swapBuffers(const string& setName);
-  void drawCircle(const Vector2d& pos, double radius, double thickness, const Vector3<unsigned char>& color, const string& setName);
-  void drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3<unsigned char>& color, const string& setName);
-  void drawSphere(const Vector3d& pos, float radius, const Vector3<unsigned char>& color, const string& setName);
-  void drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned char>& color, unsigned char alpha, const string& setName);
-  void drawPoint(const Vector3d& p, double size, const Vector3<unsigned char>& color, const string& setName);
-  void drawAnnotation(const string& text, const Vector3d& pos, const Vector3<unsigned char>& color, const string& setName);
-  void drawAgentAnnotation(const string& text, const Vector3<unsigned char>& color);
+  void swapBuffers(const std::string& setName);
+  void drawCircle(const Vector2d& pos, double radius, double thickness, const Vector3<unsigned char>& color, const std::string& setName);
+  void drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3<unsigned char>& color, const std::string& setName);
+  void drawSphere(const Vector3d& pos, float radius, const Vector3<unsigned char>& color, const std::string& setName);
+  void drawPolygon(const std::list<Vector3d>& vertex, const Vector3<unsigned char>& color, unsigned char alpha, const std::string& setName);
+  void drawPoint(const Vector3d& p, double size, const Vector3<unsigned char>& color, const std::string& setName);
+  void drawAnnotation(const std::string& text, const Vector3d& pos, const Vector3<unsigned char>& color, const std::string& setName);
+  void drawAgentAnnotation(const std::string& text, const Vector3<unsigned char>& color);
   void cleanAgentAnnotation();
 
 
