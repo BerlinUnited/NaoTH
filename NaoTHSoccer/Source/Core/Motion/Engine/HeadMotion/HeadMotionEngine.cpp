@@ -271,6 +271,7 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
   CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
     getCameraInfo(),
     theKinematicChain);
+  cameraMatrix.timestamp = getSensorJointData().timestamp;
 
   // the point in the image which should point to the pointInWorld
   Vector2<double> projectionPointInImage(

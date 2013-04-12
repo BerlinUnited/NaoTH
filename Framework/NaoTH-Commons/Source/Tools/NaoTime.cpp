@@ -28,7 +28,7 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
   #else
   #ifdef NAO
     struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC ,&t);
+    clock_gettime(CLOCK_REALTIME ,&t);
     return ((unsigned long long)t.tv_sec) * long_million + ((unsigned long long)t.tv_nsec) / long_thousand;
   #else
     struct timeval t;

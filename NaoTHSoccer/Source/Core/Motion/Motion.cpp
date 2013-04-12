@@ -310,6 +310,7 @@ void Motion::updateCameraMatrix()
     getCameraInfo(),
     getKinematicChainSensor());
 
+  cameraMatrix.timestamp = getSensorJointData().timestamp;
   cameraMatrix.valid = true;
 
   MODIFY("CameraMatrix:translation:x", cameraMatrix.translation.x);

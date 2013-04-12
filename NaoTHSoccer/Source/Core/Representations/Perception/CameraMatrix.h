@@ -20,12 +20,13 @@
 class CameraMatrix : public Pose3D, public naoth::Printable
 {
 public:
-  CameraMatrix(): cameraID(naoth::CameraInfo::Bottom), valid(false) {}
+  CameraMatrix(): cameraID(naoth::CameraInfo::Bottom), valid(false), timestamp(0) {}
   CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraID(naoth::CameraInfo::Bottom), valid(false) {}
 
   // TODO: does anybody need it?!
   naoth::CameraInfo::CameraID cameraID;
   bool valid;
+  unsigned int timestamp;
 
   virtual void print(std::ostream& stream) const
   {
@@ -37,6 +38,7 @@ public:
     stream << "y-translation [mm] = " << translation.y << std::endl;
     stream << "z-translation [mm] = " << translation.z << std::endl;
     stream << "valid = " << valid << std::endl;
+    stream << "timestamp = " << timestamp << std::endl;
   }//end print
 };
 
