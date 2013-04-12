@@ -51,8 +51,8 @@ public class ImageViewer extends AbstractDialog
   {
     initComponents();
     
-    imageCanvas.setVisible(btReceiveImages.isEnabled());
-    secondaryImageCanvas.setVisible(btReceiveSecondary.isEnabled());
+    imageCanvas.setVisible(false);
+    secondaryImageCanvas.setVisible(false);
   }
 
   @Init
@@ -113,7 +113,7 @@ public class ImageViewer extends AbstractDialog
     imagePanel.setBackground(java.awt.Color.gray);
     imagePanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
     imagePanel.setPreferredSize(new java.awt.Dimension(320, 240));
-    imagePanel.setLayout(new java.awt.BorderLayout());
+    imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.PAGE_AXIS));
 
     secondaryImageCanvas.setBackground(java.awt.Color.gray);
     secondaryImageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -128,10 +128,10 @@ public class ImageViewer extends AbstractDialog
     );
     secondaryImageCanvasLayout.setVerticalGroup(
       secondaryImageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 0, Short.MAX_VALUE)
+      .addGap(0, 114, Short.MAX_VALUE)
     );
 
-    imagePanel.add(secondaryImageCanvas, java.awt.BorderLayout.NORTH);
+    imagePanel.add(secondaryImageCanvas);
 
     imageCanvas.setBackground(java.awt.Color.gray);
     imageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -146,10 +146,10 @@ public class ImageViewer extends AbstractDialog
     );
     imageCanvasLayout.setVerticalGroup(
       imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 152, Short.MAX_VALUE)
+      .addGap(0, 114, Short.MAX_VALUE)
     );
 
-    imagePanel.add(imageCanvas, java.awt.BorderLayout.SOUTH);
+    imagePanel.add(imageCanvas);
 
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
@@ -228,7 +228,7 @@ public class ImageViewer extends AbstractDialog
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+      .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 562, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -335,15 +335,15 @@ public class ImageViewer extends AbstractDialog
   private void btReceiveSecondaryActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveSecondaryActionPerformed
   {//GEN-HEADEREND:event_btReceiveSecondaryActionPerformed
     
-    if (btReceiveImages.isSelected())
+    if (btReceiveSecondary.isSelected())
     {
       secondaryImageCanvas.setVisible(true);
-      secondaryImageManager.addListener(this.imageListener);
+      secondaryImageManager.addListener(this.secondaryListener);
     }
     else
     {
       secondaryImageCanvas.setVisible(false);
-      secondaryImageManager.removeListener(this.imageListener);
+      secondaryImageManager.removeListener(this.secondaryListener);
     }
     
   }//GEN-LAST:event_btReceiveSecondaryActionPerformed
