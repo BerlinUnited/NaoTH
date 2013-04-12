@@ -57,7 +57,7 @@ unsigned long long NaoTime::getSystemTimeInMilliSeconds()
   #else
   #ifdef NAO
     struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC ,&t);
+    clock_gettime(CLOCK_REALTIME ,&t);
     return ((unsigned long long)t.tv_sec) * long_thousand + ((unsigned long long)t.tv_nsec) / long_million;
   #else
     struct timeval t;
