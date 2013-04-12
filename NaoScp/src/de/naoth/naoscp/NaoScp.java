@@ -1964,7 +1964,7 @@ public class NaoScp extends NaoScpMainFrame
 
     JFileChooser chooser = new JFileChooser();
     chooser.setCurrentDirectory(stdCtcDir);
-    chooser.setDialogTitle("Select CTC Staging Directory");
+    chooser.setDialogTitle("Select toolchain \"extern\" Directory");
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setAcceptAllFileFilterUsed(false);
     int ret = chooser.showOpenDialog(this);
@@ -1978,20 +1978,20 @@ public class NaoScp extends NaoScpMainFrame
 
       if(cfg.stagingLibDir != null)
       {
-        cfg.stagingLibDir += "/usr/lib";
-        File gioDir = new File(cfg.stagingLibDir + "/gio");
+        cfg.stagingLibDir += "/lib";
+        File gioFile = new File(cfg.stagingLibDir + "/libgio-2.0.so");
         File glibDir = new File(cfg.stagingLibDir + "/glib-2.0");
-        if(!gioDir.isDirectory() || !glibDir.isDirectory())
+        if(!gioFile.isFile() || !glibDir.isDirectory())
         {
           cfg.stagingLibDir = null;
-          chooser.setDialogTitle("CTC Staging Directory seems to be wrong. Try again");
+          chooser.setDialogTitle("toolchain \"extern\" Directory seems to be wrong. Try again");
           ret = chooser.showOpenDialog(this);
         }
       }
     }     
     if(cfg.stagingLibDir == null)
     {
-      actionInfo("no valid CTC Staging Directory selected");
+      actionInfo("no valid toolchain \"extern\" Directory selected");
       setFormEnabled(true);
       return;
     }

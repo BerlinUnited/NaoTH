@@ -90,6 +90,11 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
   
   private void setSemiselected(boolean value)
   {
+      if(value) {
+          this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
+      } else {
+          this.cb.setIcon(null);
+      }
       this.semiselected = value;
   }
   
@@ -256,6 +261,7 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
   
   public void setSelected(boolean selected)
   {
+    this.cb.setIcon(null);
     this.cb.setSelected(selected);
   }
 

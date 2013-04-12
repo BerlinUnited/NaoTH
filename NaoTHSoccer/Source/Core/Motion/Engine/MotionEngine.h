@@ -27,7 +27,8 @@
 
 BEGIN_DECLARE_MODULE(MotionEngine)
   REQUIRE(FrameInfo)
-  REQUIRE(MotionLock)
+
+  PROVIDE(MotionLock) // it's unlocked if a motion is forced
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

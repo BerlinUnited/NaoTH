@@ -211,11 +211,18 @@ public class BehaviorViewer extends AbstractDialog
         Object userObject = ((DefaultMutableTreeNode)path[path.length-1]).getUserObject();
         if(userObject instanceof Messages.XABSLAction)
         {
+          Messages.XABSLAction action = (Messages.XABSLAction)userObject;
+                    
           StringBuilder sb = new StringBuilder();
-          sb.append(((Messages.XABSLAction)userObject).getName())
+          sb.append(action.getName())
             .append(':')
-            .append(((Messages.XABSLAction)userObject).getActiveState());
+            .append(action.getActiveState());
+          
           System.out.println(sb.toString());
+          
+          if(!action.hasActiveState()) {
+              symbolsToWatch.add(action.getName());
+          }
         }
       }
     });
@@ -1013,10 +1020,11 @@ public class BehaviorViewer extends AbstractDialog
         checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
         SymbolId id = this.framePrototype.symbolRegistry.get(name);
-        if(id.io_type == SymbolId.IOType.input)
+        if(id.io_type == SymbolId.IOType.input) {
           this.inputSymbolsBoxPanel.add(checkBox);
-        else
+        } else {
           this.outputSymbolsBoxPanel.add(checkBox);
+        }
       }//end for
 
       sortSymbols(this.sortSymbolsTextInput.getText());

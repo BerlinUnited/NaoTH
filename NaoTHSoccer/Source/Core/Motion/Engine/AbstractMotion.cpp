@@ -13,7 +13,7 @@ AbstractMotion::AbstractMotion(motion::MotionID id, MotionLock& lock)
   lock(lock),
   currentState(motion::stopped)
 {
-  assert(lock.state == motion::stopped);
+  //assert(lock.state == motion::stopped || id == motion::dead);
   // occupy lock
   lock.id = id;
   lock.state = currentState;
@@ -41,16 +41,12 @@ bool AbstractMotion::setStiffness(
       d = Math::clamp(d, -delta, delta);
       theMotorJointData.stiffness[i] = theMotorJointData.stiffness[i] + d;
 
+      // ensure that we always get a valid stiffness, i.e, -1 or [0,1]
       if (theMotorJointData.stiffness[i] < 0) // -1 is the special case
       {
-        if ( d < 0 )
-        {
-          theMotorJointData.stiffness[i] = -1;
-        }
-        else
-        {
-          theMotorJointData.stiffness[i] = 0;
-        }
+        theMotorJointData.stiffness[i] = (d < 0)?-1:0;
+      } else {
+        theMotorJointData.stiffness[i] = std::min(theMotorJointData.stiffness[i],1.0);
       }
     }
   }//end for

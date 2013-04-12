@@ -80,7 +80,7 @@ void ModuleManager::calculateExecutionList()
         Module* m2 = registeredModules[*it2]->getModule();
 
         for(RepresentationMap::const_iterator itReq = m1->getRequire().begin();
-          itReq != m1->getRequire().end(); itReq++)
+          itReq != m1->getRequire().end(); ++itReq)
         {
           std::string repName = itReq->second->getName();
           for(RepresentationMap::const_iterator r = m2->getProvide().begin();
