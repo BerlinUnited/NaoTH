@@ -14,6 +14,8 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include <Tools/DataStructures/RingBuffer.h>
+
 /**
 * Matrix describing transformation from neck joint to camera.
 */
@@ -40,6 +42,24 @@ public:
     stream << "valid = " << valid << std::endl;
     stream << "timestamp = " << timestamp << std::endl;
   }//end print
+};
+
+class CameraMatrixBuffer : public RingBuffer<CameraMatrix, 10>, public naoth::Printable
+{
+public:
+
+  virtual void print(std::ostream& stream) const
+  {
+    for(int i=0; i < getNumberOfEntries(); i++)
+    {
+      stream << "entry " << i << std::endl;
+      stream << "=========" << std::endl;
+      getEntry(i).print(stream);
+      stream << std::endl;
+    }
+  }//end print
+
+  virtual ~CameraMatrixBuffer() {}
 };
 
 namespace naoth

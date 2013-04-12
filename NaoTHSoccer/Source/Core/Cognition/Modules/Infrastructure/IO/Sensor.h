@@ -72,7 +72,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
-  PROVIDE(CameraMatrix)
+  PROVIDE(CameraMatrixBuffer)
 
   //PROVIDE(CalibrationData)
   

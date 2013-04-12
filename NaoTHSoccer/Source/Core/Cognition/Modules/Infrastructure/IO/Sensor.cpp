@@ -54,7 +54,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
 
-  platformInterface.registerInputChanel(getCameraMatrix());
+  platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerInputChanel(getMotionStatus());
   platformInterface.registerInputChanel(getOdometryData());
   //platformInterface.registerInputChanel(getCalibrationData());
