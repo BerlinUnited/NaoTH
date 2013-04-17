@@ -61,6 +61,9 @@ private:
   double weightedHistV[COLOR_CHANNEL_VALUE_COUNT];
   int colorChannelHistogram[COLOR_CHANNEL_VALUE_COUNT];
 
+  double histU[COLOR_CHANNEL_VALUE_COUNT];
+  double histNormU[COLOR_CHANNEL_VALUE_COUNT];
+
   int sampleCount;
   int maxSampleCount;
 

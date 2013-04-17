@@ -30,6 +30,8 @@ protected:
   DebugBufferedOutput();
   ~DebugBufferedOutput();
 
+  static const int maxPlotStrokes = 1024;
+
 public:
 
   virtual void executeDebugCommand(
@@ -93,7 +95,7 @@ private:
 
   naothmessages::Plots plots;
 
-  std::map<std::string, RingBuffer<Vector2<double>, 100> > plotStrokes;
+  std::map<std::string, RingBuffer<Vector2<double>, maxPlotStrokes> > plotStrokes;
 
   GMutex* plotsMutex;
 };

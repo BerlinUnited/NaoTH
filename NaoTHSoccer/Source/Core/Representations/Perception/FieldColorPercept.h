@@ -46,6 +46,16 @@ class FieldColorPercept : public naoth::Printable
       max.v = maxV;
     }
 
+    PixelT<int> getMax() const
+    {
+      return max;
+    }
+
+    PixelT<int> getMin() const
+    {
+      return min;
+    }
+
     inline bool inside(const Pixel& pixel) const
     {
       return  min.y <= pixel.y && pixel.y <= max.y && 
@@ -64,14 +74,23 @@ class FieldColorPercept : public naoth::Printable
 
 public:
   bool valid;
+  double distY;
+  double distU;
   double distV;
+  int indexY;
+  int indexU;
   int indexV;
+
+  double maxRateY;
+  double maxRateU;
+  double maxRateV;
 
   int borderLeftV;
   int borderRightV;
 
   int maxY;
   int maxU;
+  int minU;
 
   FrameInfo lastUpdated;
   ColorRange range;
@@ -79,12 +98,22 @@ public:
   FieldColorPercept()  
   : 
   valid(false),
-  distV(5.0),
-  indexV(100),
+  distY(5),
+  distU(5),
+  distV(5),
+  maxRateY(0.0),
+  maxRateU(0.0),
+  maxRateV(0.0),
+  indexY(0),
+  indexU(0),
+  indexV(0),
+  //distV(5.0),
+  //indexV(100),
   borderLeftV(0),
   borderRightV(0),
   maxY(127),
-  maxU(127)
+  maxU(127),
+  minU(0)
   {}
 
   ~FieldColorPercept()
@@ -94,7 +123,7 @@ public:
   {
     borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
     borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
-    range.set(0, 0, borderLeftV, maxY, maxU, borderRightV);
+    range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
   inline bool isFieldColorOld(const int& yy, const int& cb, const int& cr) const

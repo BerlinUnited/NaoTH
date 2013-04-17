@@ -5,6 +5,8 @@
 #include <Representations/Infrastructure/ColorTable64.h>
 #include <Representations/Perception/FieldColorPercept.h>
 #include <Representations/Perception/BaseColorRegionPercept.h>
+#include <Representations/Perception/SimpleGoalColorPercept.h>
+#include <Representations/Perception/SimpleBallColorPercept.h>
 
 #include "Tools/Math/Common.h"
 #include <Tools/DataStructures/Printable.h>
@@ -64,6 +66,11 @@ public:
   void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
   void invalidateBaseColorRegionPercept();
 
+  void setSimpleGoalColorPercept(const SimpleGoalColorPercept& percept);
+  void invalidateSimpleGoalColorPercept();
+  void setSimpleBallColorPercept(const SimpleBallColorPercept& percept);
+  void invalidateSimpleBallColorPercept();
+
   inline ColorClasses::Color getColorClass(const Pixel& p) const
   {
     // green
@@ -110,7 +117,19 @@ public:
       //if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
       //{
       //  return ColorClasses::white;
-      //}
+     //}
+    }
+    else
+    {
+      if(simpleGoalColorPerceptValid && simpleGoalColorPercept.isInside(p))
+      {
+        return ColorClasses::yellow;
+      }
+
+      if(simpleBallColorPerceptValid && simpleBallColorPercept.isInside(p))
+      {
+        return ColorClasses::orange;
+      }
     }//end if
     
     
@@ -146,6 +165,14 @@ private:
   // detector for the other colors
   bool baseColorRegionPerceptValid;
   BaseColorRegionPercept baseColorRegionPercept;
+
+  // simple detector for goal colors
+  bool simpleGoalColorPerceptValid;
+  SimpleGoalColorPercept simpleGoalColorPercept;
+
+  // simple detector for ball colors
+  bool simpleBallColorPerceptValid;
+  SimpleBallColorPercept simpleBallColorPercept;
 
 
   // ...a hacked classifier

@@ -13,6 +13,8 @@
 // Representations
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
+#include <Representations/Perception/SimpleGoalColorPercept.h>
+#include <Representations/Perception/SimpleBallColorPercept.h>
 #include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -22,6 +24,8 @@
 BEGIN_DECLARE_MODULE(ColorProvider)
   REQUIRE(FieldColorPercept)
   REQUIRE(BaseColorRegionPercept)
+  REQUIRE(SimpleGoalColorPercept)
+  REQUIRE(SimpleBallColorPercept)
   REQUIRE(FrameInfo)
 
   PROVIDE(ColorTable64)
@@ -33,6 +37,7 @@ END_DECLARE_MODULE(ColorProvider)
 class ColorProvider : public ColorProviderBase
 {
 public:
+  FrameInfo lastFrameInfo;
 
   ColorProvider();
   virtual ~ColorProvider(){}

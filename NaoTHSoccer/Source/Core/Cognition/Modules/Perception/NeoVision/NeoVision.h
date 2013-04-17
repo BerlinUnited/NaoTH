@@ -13,7 +13,10 @@
 #include <ModuleFramework/ModuleManager.h>
 
 // submodules
+#include "modules/FieldColorClassifierFull.h"
 #include "modules/SimpleFieldColorClassifier.h"
+#include "modules/SimpleGoalColorClassifier.h"
+#include "modules/SimpleBallColorClassifier.h"
 #include "modules/ScanLineEdgelDetectorDifferential.h"
 
 #include <sstream>
@@ -31,7 +34,10 @@ public:
   virtual void execute();
 
 private:
+  ModuleCreator<FieldColorClassifierFull>* theFieldColorClassifierFull;
   ModuleCreator<SimpleFieldColorClassifier>* theSimpleFieldColorClassifier;
+  ModuleCreator<SimpleGoalColorClassifier>* theSimpleGoalColorClassifier;
+  ModuleCreator<SimpleBallColorClassifier>* theSimpleBallColorClassifier;
   ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
 
 };//end class NeoVision

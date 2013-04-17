@@ -33,3 +33,25 @@ void ColorClassificationModel::setBaseColorRegionPercept(const BaseColorRegionPe
   baseColorRegionPercept = percept;
   baseColorRegionPerceptValid = true;
 }
+
+void ColorClassificationModel::invalidateSimpleGoalColorPercept()
+{
+  simpleGoalColorPerceptValid = false;
+}
+
+void ColorClassificationModel::setSimpleGoalColorPercept(const SimpleGoalColorPercept& percept)
+{
+  simpleGoalColorPercept = percept;
+  simpleGoalColorPerceptValid = true;
+}
+
+void ColorClassificationModel::invalidateSimpleBallColorPercept()
+{
+  simpleBallColorPerceptValid = false;
+}
+
+void ColorClassificationModel::setSimpleBallColorPercept(const SimpleBallColorPercept& percept)
+{
+  simpleBallColorPercept = percept;
+  simpleBallColorPerceptValid = true;
+}

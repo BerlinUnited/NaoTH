@@ -20,9 +20,12 @@ ColorProvider::ColorProvider()
 
 void ColorProvider::execute()
 {
+  const unsigned int fcFrameNr = getFieldColorPercept().lastUpdated.getFrameNumber();
   if
   (
-    getFieldColorPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber()
+    fcFrameNr == getFrameInfo().getFrameNumber()
+    || 
+    fcFrameNr == lastFrameInfo.getFrameNumber()
   )
   {
     getColorClassificationModel().setFieldColorPercept(getFieldColorPercept());
@@ -32,7 +35,13 @@ void ColorProvider::execute()
     getColorClassificationModel().invalidateFieldColorPercept();
   }
 
-  if(getBaseColorRegionPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber())
+  const unsigned int bcFrameNr = getBaseColorRegionPercept().lastUpdated.getFrameNumber();
+  if
+  (
+    bcFrameNr == getFrameInfo().getFrameNumber()
+    || 
+    bcFrameNr == lastFrameInfo.getFrameNumber()
+  )
   {
     getColorClassificationModel().setBaseColorRegionPercept(getBaseColorRegionPercept());
   }
@@ -40,4 +49,36 @@ void ColorProvider::execute()
   {
     getColorClassificationModel().invalidateBaseColorRegionPercept();
   }
+
+  const unsigned int sgcFrameNr = getSimpleGoalColorPercept().lastUpdated.getFrameNumber();
+  if
+  (
+    sgcFrameNr == getFrameInfo().getFrameNumber()
+    || 
+    sgcFrameNr == lastFrameInfo.getFrameNumber()
+  )
+  {
+    getColorClassificationModel().setSimpleGoalColorPercept(getSimpleGoalColorPercept());
+  }
+  else
+  {
+    getColorClassificationModel().invalidateSimpleGoalColorPercept();
+  }
+
+  const unsigned int sbcFrameNr = getSimpleBallColorPercept().lastUpdated.getFrameNumber();
+  if
+  (
+    sbcFrameNr == getFrameInfo().getFrameNumber()
+    || 
+    sbcFrameNr == lastFrameInfo.getFrameNumber()
+  )
+  {
+    getColorClassificationModel().setSimpleBallColorPercept(getSimpleBallColorPercept());
+  }
+  else
+  {
+    getColorClassificationModel().invalidateSimpleBallColorPercept();
+  }
+
+  lastFrameInfo = getFrameInfo();
 }//end execute
