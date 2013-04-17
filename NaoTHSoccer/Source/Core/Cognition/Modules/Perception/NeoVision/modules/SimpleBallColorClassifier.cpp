@@ -19,6 +19,7 @@ using namespace std;
 SimpleBallColorClassifier::SimpleBallColorClassifier()
 {
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:enable_plots", "", false);
 }
 
 void SimpleBallColorClassifier::execute()
@@ -30,6 +31,22 @@ void SimpleBallColorClassifier::execute()
   getSimpleBallColorPercept().maxU = (int) ballParams.ballColorMax.u;
 
   getSimpleBallColorPercept().lastUpdated = getFrameInfo();;
+
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:enable_plots",
+    for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+    {
+      if(i > ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV )
+      {
+        histV[i] = getHistogram().colorChannelHistogramCr[i];
+      }
+      else
+      {
+        histV[i] = 0.0;
+      }
+      PLOT_GENERIC("SimpleBallColorClassifier:histVorg", i, getHistogram().colorChannelHistogramCr[i]);
+      PLOT_GENERIC("SimpleBallColorClassifier:histV", i, histV[i]);
+    }
+  );
 
   DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_orange",
     for(unsigned int x = 0; x < getImage().width(); x++)

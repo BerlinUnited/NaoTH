@@ -30,12 +30,6 @@
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
-
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifierFull)

@@ -46,6 +46,8 @@ END_DECLARE_MODULE(SimpleBallColorClassifier)
 class SimpleBallColorClassifier : public  SimpleBallColorClassifierBase
 {
 public:
+  double histV[COLOR_CHANNEL_VALUE_COUNT];
+
   SimpleBallColorClassifier();
   virtual ~SimpleBallColorClassifier(){}
 

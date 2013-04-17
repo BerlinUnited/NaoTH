@@ -7,19 +7,28 @@
 
 #include "FieldColorClassifierFull.h"
 
+// Debug
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+
 FieldColorClassifierFull::FieldColorClassifierFull()
 :
   justStarted(true)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Y_range", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Cb_range", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Cr_range", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Y_histogram", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Cb_histogram", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Cr_histogram", " ", false);
-//  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:set_in_colortable", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Y_range", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Cb_range", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_Cr_range", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Y_histogram", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Cb_histogram", " ", false);
+  //DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:show_weighted_Cr_histogram", " ", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:enable_plots", " ", false);
   DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:set_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:write_log", " ", false);  
+
+  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:fast_adapt", " ", false);  
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
@@ -161,16 +170,19 @@ void FieldColorClassifierFull::execute()
       maxWeightedIndexCb = i;
     }
 
-    double mY = max(0.0,meanFieldY - fabs(meanFieldY - (double) i));
-    double wY = mY / meanFieldY ;
-    weightedHistY[i] *= wY;
-    double smoothWeightedY = smoothRungeKutta4(i, weightedHistY);
-    weightedSmoothedHistY[i] = smoothWeightedY;
-    //search for max Y channel value with weight w
-    if(weightedSmoothedHistY[i] > maxWeightedY)
+    if(meanFieldY != 0.0)
     {
-      maxWeightedY = weightedSmoothedHistY[i];
-      maxWeightedIndexY = i;
+      double mY = max(0.0,meanFieldY - fabs(meanFieldY - (double) i));
+      double wY = mY / meanFieldY ;
+      weightedHistY[i] *= wY;
+      double smoothWeightedY = smoothRungeKutta4(i, weightedHistY);
+      weightedSmoothedHistY[i] = smoothWeightedY;
+      //search for max Y channel value with weight w
+      if(weightedSmoothedHistY[i] > maxWeightedY)
+      {
+        maxWeightedY = weightedSmoothedHistY[i];
+        maxWeightedIndexY = i;
+      }
     }
   }
 
@@ -234,8 +246,6 @@ void FieldColorClassifierFull::execute()
   double fCr = log((double) maxWeightedCr) / log(200.0);
   distCr = (unsigned int) (distCr * fCr) + fieldParams.minDistCr;
 
-
-
   STOPWATCH_STOP("FieldColorClassifierFull:Y_filtering");
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -250,7 +260,12 @@ void FieldColorClassifierFull::execute()
     distY =(meanRegionEndIndexY - meanRegionBeginIndexY + maxDistY + getFieldColorPercept().distY) / 4;
   }
 
-  if(maxWeightedCr >= fieldParams.minCrRate)
+  unsigned int minCrRate = fieldParams.minCrRate;
+  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+    minCrRate = 0;
+  );
+
+  if(maxWeightedCr >= minCrRate)
   {
     if(distY > fieldParams.maxDistY)
     {
@@ -289,6 +304,10 @@ void FieldColorClassifierFull::execute()
           || abs(IndexCbBuffer.getAverage() - (int) maxWeightedIndexCb) < getBaseColorRegionPercept().meanEnv.y / 10
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
+    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+      cbChanged = true;
+    );
+
     if(cbChanged)
     {
       if(maxWeightedCb > 0)
@@ -306,6 +325,10 @@ void FieldColorClassifierFull::execute()
     bool crChanged = IndexCrBuffer.getNumberOfEntries() < IndexCrBuffer.getMaxEntries() 
           || abs(IndexCrBuffer.getAverage() - (int) maxWeightedIndexCr) < getBaseColorRegionPercept().meanEnv.y / 20
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
+
+    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+      crChanged = true;
+    );
 
     if(crChanged)
     {
@@ -370,158 +393,98 @@ double FieldColorClassifierFull::smoothRungeKutta4(const unsigned int& idx, doub
 
 void FieldColorClassifierFull::runDebugRequests(int weightedMeanY, int meanY)
 {
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_weighted_Y_histogram",
-    LINE_PX
-    (
-      ColorClasses::gray,
-      0,
-      Math::clamp((int)getImage().cameraInfo.resolutionHeight - weightedMeanY, 0, (int)getImage().cameraInfo.resolutionHeight),
-      getImage().cameraInfo.resolutionWidth,
-      Math::clamp((int)getImage().cameraInfo.resolutionHeight - weightedMeanY, 0, (int)getImage().cameraInfo.resolutionHeight)
-    );
-
-    LINE_PX
-    (
-      ColorClasses::white,
-      0,
-      Math::clamp((int)getImage().cameraInfo.resolutionHeight - meanY, 0, (int)getImage().cameraInfo.resolutionHeight),
-      getImage().cameraInfo.resolutionWidth,
-      Math::clamp((int)getImage().cameraInfo.resolutionHeight - meanY, 0, (int)getImage().cameraInfo.resolutionHeight)
-    );
-
-    Vector2<int> last(0, Math::clamp((int) getImage().cameraInfo.resolutionHeight - (int) weightedHistY[0], 0, (int)getImage().cameraInfo.resolutionHeight));
-    for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
+  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:enable_plots",
+    for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i ++)
     {
-      LINE_PX
-      (
-        ColorClasses::gray,
-        last.x,
-        last.y,
-        x,
-         Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistY[x], 0, (int)getImage().cameraInfo.resolutionHeight)
-      );
-      last.x = x;
-      last.y = Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistY[x], 0, (int)getImage().cameraInfo.resolutionHeight);
-    }
-  );
-
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_weighted_Cb_histogram",
-    Vector2<int> last(0, Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCb[0], 0, (int)getImage().cameraInfo.resolutionHeight) );
-    for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
-    {
-      LINE_PX
-      (
-        ColorClasses::skyblue,
-        last.x,
-        last.y,
-        x,
-        Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCb[x], 0, (int)getImage().cameraInfo.resolutionHeight)
-      );
-      last.x = x;
-      last.y = Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCb[x], 0, (int)getImage().cameraInfo.resolutionHeight) ;
-    }
-  );
-
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_weighted_Cr_histogram",
-    Vector2<int> last(0, Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCr[0], 0, (int)getImage().cameraInfo.resolutionHeight) );
-    for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
-    {
-      LINE_PX
-      (
-        ColorClasses::orange,
-        last.x,
-        last.y,
-        x,
-        Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCr[x], 0, (int)getImage().cameraInfo.resolutionHeight)
-      );
-      last.x = x;
-      last.y = Math::clamp((int)getImage().cameraInfo.resolutionHeight - (int) weightedHistCr[x], 0, (int)getImage().cameraInfo.resolutionHeight) ;
+      PLOT_GENERIC("FieldColorClassifierFull:weighted_Y_histogram", i, weightedHistY[i]);
+      PLOT_GENERIC("FieldColorClassifierFull:weighted_Cb_histogram", i, weightedHistCb[i]);
+      PLOT_GENERIC("FieldColorClassifierFull:weighted_Cr_histogram", i, weightedHistCr[i]);
     }
   );
 
   int imageWidth = getImage().cameraInfo.resolutionWidth;
   int imageHeight = getImage().cameraInfo.resolutionHeight;
 
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Y_range",
-    LINE_PX
-    (
-      ColorClasses::white,
-      Math::clamp((int) (getFieldColorPercept().indexY - getFieldColorPercept().distY), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexY - getFieldColorPercept().distY), 0, imageWidth),
-      imageHeight
-    );
-    LINE_PX
-    (
-      ColorClasses::gray,
-      Math::clamp((int) getFieldColorPercept().indexY, 0, imageWidth),
-      imageHeight,
-      Math::clamp((int) getFieldColorPercept().indexY, 0, imageWidth),
-      Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateY, 0, imageHeight)
-    );
-    LINE_PX
-    (
-      ColorClasses::white,
-      Math::clamp((int) (getFieldColorPercept().indexY + getFieldColorPercept().distY), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexY + getFieldColorPercept().distY), 0, imageWidth),
-      imageHeight
-    );
-  );
+  //DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Y_range",
+  //  LINE_PX
+  //  (
+  //    ColorClasses::white,
+  //    Math::clamp((int) (getFieldColorPercept().indexY - getFieldColorPercept().distY), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexY - getFieldColorPercept().distY), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::gray,
+  //    Math::clamp((int) getFieldColorPercept().indexY, 0, imageWidth),
+  //    imageHeight,
+  //    Math::clamp((int) getFieldColorPercept().indexY, 0, imageWidth),
+  //    Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateY, 0, imageHeight)
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::white,
+  //    Math::clamp((int) (getFieldColorPercept().indexY + getFieldColorPercept().distY), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexY + getFieldColorPercept().distY), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //);
 
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Cb_range",
-    LINE_PX
-    (
-      ColorClasses::blue,
-      Math::clamp((int) (getFieldColorPercept().indexU - getFieldColorPercept().distU), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexU - getFieldColorPercept().distU), 0, imageWidth),
-      imageHeight
-    );
-    LINE_PX
-    (
-      ColorClasses::skyblue,
-      Math::clamp((int) getFieldColorPercept().indexU, 0, imageWidth),
-      imageHeight,
-      Math::clamp((int) getFieldColorPercept().indexU, 0, imageWidth),
-      Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateU, 0, imageHeight)
-    );
-    LINE_PX
-    (
-      ColorClasses::blue,
-      Math::clamp((int) (getFieldColorPercept().indexU + getFieldColorPercept().distU), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexU + getFieldColorPercept().distU), 0, imageWidth),
-      imageHeight
-    );
-  );
+  //DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Cb_range",
+  //  LINE_PX
+  //  (
+  //    ColorClasses::blue,
+  //    Math::clamp((int) (getFieldColorPercept().indexU - getFieldColorPercept().distU), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexU - getFieldColorPercept().distU), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::skyblue,
+  //    Math::clamp((int) getFieldColorPercept().indexU, 0, imageWidth),
+  //    imageHeight,
+  //    Math::clamp((int) getFieldColorPercept().indexU, 0, imageWidth),
+  //    Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateU, 0, imageHeight)
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::blue,
+  //    Math::clamp((int) (getFieldColorPercept().indexU + getFieldColorPercept().distU), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexU + getFieldColorPercept().distU), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //);
 
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Cr_range",
-    LINE_PX
-    (
-      ColorClasses::red,
-      Math::clamp((int) (getFieldColorPercept().indexV - getFieldColorPercept().distV), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexV - getFieldColorPercept().distV), 0, imageWidth),
-      imageHeight
-    );
-    LINE_PX
-    (
-      ColorClasses::orange,
-      Math::clamp((int) getFieldColorPercept().indexV, 0, imageWidth),
-      imageHeight,
-      Math::clamp((int) getFieldColorPercept().indexV, 0, imageWidth),
-      Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateV, 0, imageHeight)
-    );
-    LINE_PX
-    (
-      ColorClasses::red,
-      Math::clamp((int) (getFieldColorPercept().indexV + getFieldColorPercept().distV), 0, imageWidth),
-      0,
-      Math::clamp((int) (getFieldColorPercept().indexV + getFieldColorPercept().distV), 0, imageWidth),
-      imageHeight
-    );
-  );
+  //DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:show_Cr_range",
+  //  LINE_PX
+  //  (
+  //    ColorClasses::red,
+  //    Math::clamp((int) (getFieldColorPercept().indexV - getFieldColorPercept().distV), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexV - getFieldColorPercept().distV), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::orange,
+  //    Math::clamp((int) getFieldColorPercept().indexV, 0, imageWidth),
+  //    imageHeight,
+  //    Math::clamp((int) getFieldColorPercept().indexV, 0, imageWidth),
+  //    Math::clamp(imageHeight - (int) getFieldColorPercept().maxRateV, 0, imageHeight)
+  //  );
+  //  LINE_PX
+  //  (
+  //    ColorClasses::red,
+  //    Math::clamp((int) (getFieldColorPercept().indexV + getFieldColorPercept().distV), 0, imageWidth),
+  //    0,
+  //    Math::clamp((int) (getFieldColorPercept().indexV + getFieldColorPercept().distV), 0, imageWidth),
+  //    imageHeight
+  //  );
+  //);
 
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:set_in_image",
 
