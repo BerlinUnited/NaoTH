@@ -14,6 +14,7 @@ MotionEngine::MotionEngine()
 
   theHeadMotionEngine = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
   theIKArmGrasping = registerModule<IKArmGrasping>("IKArmGrasping", true);
+  theArmMotionEngine = registerModule<ArmMotionEngine>("ArmMotionEngine", true);
 
 
   theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
@@ -83,6 +84,7 @@ void MotionEngine::execute()
 
   // TODO: a good place to execute arms?
   theIKArmGrasping->execute();
+  theArmMotionEngine->execute();
 
   getMotionStatus().currentMotionState = getMotionLock().state;
 }//end execute

@@ -13,6 +13,7 @@
 #include "MotionFactory.h"
 #include "HeadMotion/HeadMotionEngine.h"
 #include "ArmMotion/IKArmGrasping.h"
+#include "ArmMotion/ArmMotionEngine.h"
 
 #include <list>
 
@@ -60,6 +61,7 @@ private:
   // submodules
   ModuleCreator<HeadMotionEngine>* theHeadMotionEngine;
   ModuleCreator<IKArmGrasping>* theIKArmGrasping;
+  ModuleCreator<ArmMotionEngine>* theArmMotionEngine;
 
   
   typedef std::list<MotionFactory*> MotionFactorieRegistry;

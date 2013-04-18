@@ -72,6 +72,18 @@ message GraspRequest {
   required uint32 graspStiffState = 4;
 }
 
+message ArmMotionRequest {
+  required uint32 id = 1;
+  optional DoubleVector2 lShoulderPosition = 2;
+  optional DoubleVector2 lShoulderStiffness = 3;
+  optional DoubleVector2 lElbowPosition = 4;
+  optional DoubleVector2 lElbowStiffness = 5;
+  optional DoubleVector2 rShoulderPosition = 6;
+  optional DoubleVector2 rShoulderStiffness = 7;
+  optional DoubleVector2 rElbowPosition = 8;
+  optional DoubleVector2 rElbowStiffness = 9;
+}
+
 message MotionRequest {
   required uint32 id = 1;
   required uint32 time = 2;
@@ -83,6 +95,7 @@ message MotionRequest {
   optional bool calibrateFootTouchDetector = 8;
   optional uint32 cognitionFrameNumber = 9;
   optional GraspRequest graspRequest = 10;
+  optional ArmMotionRequest armMotionRequest = 11;
 }
 
 message LinePercept {
