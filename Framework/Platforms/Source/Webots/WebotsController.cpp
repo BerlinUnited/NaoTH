@@ -156,12 +156,9 @@ void WebotsController::init()
 
   // calculate port
   unsigned short port = 5401;
-  if(isBlue)
-  {
+  if(isBlue) {
     port = 5500 + playerNumber;
-  }
-  else
-  {
+  } else {
     port = 5400 + playerNumber;
   }
 
@@ -386,11 +383,12 @@ void WebotsController::get(InertialSensorData& data)
 {
   //// calculate the intertial sensor from GPS data
   //// it can be enabled for debuging
-  //const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
-  //data.data.x = asin(-gpsmatrix[6]);
-  //data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
-  //return;
+  const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
+  data.data.x = asin(-gpsmatrix[6]);
+  data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
+  return;
 
+  //ACHTUNG: the following stuff has a strong drift
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);
   double time = getBasicTimeStep() * 1e-3;
