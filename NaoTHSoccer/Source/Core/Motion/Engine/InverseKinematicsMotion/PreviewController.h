@@ -9,6 +9,7 @@
 #define _PREVIEWCONTROLLER_H
 
 #include <list>
+#include <vector>
 #include <map>
 
 #include "Tools/Math/Matrix3x3.h"
@@ -22,15 +23,15 @@ public:
   Matrix3x3<double> A;
   Vector3d b;
   Vector3d c;
+  double timeStep;
 
   // loaded values
   struct Parameters
   {
-    static double length_f;
     // for preview control
     double Ki;
-    Vector3<double> K;
-    std::list<double> f;
+    Vector3d K;
+    std::vector<double> f;
   };
 
   PreviewController();
@@ -40,9 +41,9 @@ public:
   //
   // state of the controller
 
-  void init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom);
+  void init(const Vector3d& com, const Vector2d& dcom, const Vector2d& ddcom);
   
-  void control(Vector3d& com, Vector2<double>& dcom, Vector2<double>& ddcom);
+  void control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom);
   
   size_t previewSteps() const { return parameters->f.size(); }  
 
@@ -60,13 +61,13 @@ public:
 
 private:
   void setHeight(double height);
-  void update(const std::list<double>& ref, Vector3<double>&x, double& err) const;
+  void update(const std::list<double>& ref, Vector3d&x, double& err) const;
 
   // output: internal state of the contsoller
-  Vector3<double> theX; // x, x', x''
-  Vector3<double> theY; // y, y' ,y''
+  Vector3d theX; // x, x', x''
+  Vector3d theY; // y, y' ,y''
   double theZ; // z
-  Vector2<double> theErr;
+  Vector2d theErr;
   
   // input: reference ZMP
   std::list<double> refZMPx;
@@ -84,7 +85,7 @@ private:
   unsigned int parameterHeight;
 };
 
-std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
+//std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
 
 #endif  /* _PREVIEWCONTROLLER_H */
 
