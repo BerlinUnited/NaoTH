@@ -166,7 +166,6 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   }
 
 
-
   double bestError = std::numeric_limits<double>::max();
   int i = 0; // iteration
   double max_iter = 15; // max number of iretations
@@ -187,9 +186,9 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     // ... and the com
     theInverseKinematics.theKinematicChain.updateCoM();
 
-    Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
+    Vector3d obsCoM = theInverseKinematics.theKinematicChain.CoM;
 
-    Vector3<double> e = refCoM - obsCoM;
+    Vector3d e = refCoM - obsCoM;
 
     double error = e.x * e.x + e.y * e.y + e.z * e.z*(!fix_height);
 
@@ -208,7 +207,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     if (bestError < max_error /*&& i > 0*/)
     {
       // converge
-      result.hip.translation = theCoMControlResult;
+      assert(result.hip.translation.x == theCoMControlResult.x && 
+             result.hip.translation.y == theCoMControlResult.y &&
+             result.hip.translation.z == theCoMControlResult.z);
+      //result.hip.translation = theCoMControlResult;
       break;
     }
 
@@ -216,13 +218,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
     double maxAdjustment = 50;
     MODIFY("IK_COM_CTR_MAX", maxAdjustment);
-    Vector3<double> u;
-    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment)
-    {
+    Vector3d u;
+    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment) {
       sloved = false;
-    }
-    else
-    {
+    } else {
       sloved = true;
     }
     u.x = Math::clamp(e.x * step, -maxAdjustment, maxAdjustment);
@@ -232,13 +231,15 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     result.hip.translation += u;
   }//end for
   
-  if ( bestError > 1 )
-  {
+  if(!sloved) {
+    std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
+  }
+
+  if ( bestError > 1 ) {
     std::cerr<<"Warning: can not control CoM @ "<<bestError<<std::endl;
   }
 
-  if( i == max_iter )
-  {
+  if( i == max_iter ) {
     std::cerr<<"Warning: maximum iterations reached @ "<<bestError<<std::endl;
   }
   
@@ -262,12 +263,12 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
   Vector2<double> weight;
   weight.x = 
-      getParameters().walk.stabilizeFeetP.x * inertial.x
-    + getParameters().walk.stabilizeFeetD.x * filteredGyro.x;
+      getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
+    + getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
 
   weight.y = 
-      getParameters().walk.stabilizeFeetP.y * inertial.y
-    + getParameters().walk.stabilizeFeetD.y * filteredGyro.y;
+      getParameters().walk.stabilization.stabilizeFeetP.y * inertial.y
+    + getParameters().walk.stabilization.stabilizeFeetD.y * filteredGyro.y;
 
 
   // X axis
@@ -287,7 +288,7 @@ void InverseKinematicsMotionEngine::feetStabilize(
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
-  const InertialSensorData& theInertialSensorData,
+  const naoth::InertialSensorData& theInertialSensorData,
   Pose3D& hip, 
   const Pose3D& leftFoot, 
   const Pose3D& rightFoot)
@@ -398,8 +399,8 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   currentCoMPose.com *= trans;
 
   thePreviewControlCoM = currentCoMPose.com.translation;
-  thePreviewControldCoM = Vector2<double>(0,0);
-  thePreviewControlddCoM = Vector2<double>(0,0);
+  thePreviewControldCoM = Vector2d(0,0);
+  thePreviewControlddCoM = Vector2d(0,0);
   thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
   
   unsigned int previewSteps = thePreviewController.previewSteps() - 1;
@@ -633,7 +634,7 @@ void InverseKinematicsMotionEngine::gotoArms(
 
   // move the arm accoring to interial sensor -------------
   if (getParameters().arm.alwaysEnabled
-    || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.useArm))
+    || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.general.useArm))
   {
     // TODO: InertialSensorData may be better
     const InertialModel& isd = theInertialModel;
