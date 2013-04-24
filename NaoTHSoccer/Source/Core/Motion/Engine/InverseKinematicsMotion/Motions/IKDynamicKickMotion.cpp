@@ -706,7 +706,7 @@ inline const Pose3D& IKDynamicKickMotion::getStandFoot( const KickPose& kickPose
 
 inline double IKDynamicKickMotion::getStandHeight() const
 {
-  return getEngine().getParameters().walk.comHeight + theParameters.hipHeightOffset;
+  return getEngine().getParameters().walk.hip.comHeight + theParameters.hipHeightOffset;
 }//end getStandHeight
 
 inline const KickPose& IKDynamicKickMotion::getCurrentPose() const

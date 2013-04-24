@@ -23,13 +23,15 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Modeling/GroundContactModel.h"
-#include <Representations/Infrastructure/InertialSensorData.h>
+#include "Representations/Modeling/InertialModel.h"
 #include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
 
 BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
   REQUIRE(GroundContactModel)
+  REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
 
   REQUIRE(InverseKinematicsMotionEngineService)
@@ -61,7 +63,7 @@ public:
       standardStand = motionRequest.standardStand;
       // init pose
       height = motionRequest.standHeight;
-      double comHeight = (motionRequest.standHeight < 0.0) ? getEngine().getParameters().walk.comHeight : motionRequest.standHeight;
+      double comHeight = (motionRequest.standHeight < 0.0) ? getEngine().getParameters().walk.hip.comHeight : motionRequest.standHeight;
       comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       startPose = getEngine().getCurrentCoMFeetPose();
       targetPose = getStandPose(comHeight, standardStand);
