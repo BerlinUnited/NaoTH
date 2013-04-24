@@ -6,7 +6,7 @@
 */
 
 #ifndef _FOOT_STEP_PLANNER_H
-#define  _FOOT_STEP_PLANNER_H
+#define _FOOT_STEP_PLANNER_H
 
 #include "FootStep.h"
 #include "../IKParameters.h"
@@ -34,8 +34,10 @@ private:
   FootStep nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req);
 
   void restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const;
+  void restrictStepSizeSimple(Pose2D& step, const FootStep& lastStep, double character) const;
   
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
+  void restrictStepChangeNew(Pose2D& step, const Pose2D& lastStep) const;
   
   void addStep(FootStep& footStep, Pose2D step, const Pose2D& lastOffset, const Pose2D& offset) const;
   
@@ -52,6 +54,10 @@ private:
   double theMaxChangeTurn;
   double theMaxChangeX;
   double theMaxChangeY;
+
+  double theMaxCtrlTurn;
+  double theMaxCtrlLength;
+  double theMaxCtrlWidth;
 };
 
 #endif // _FOOT_STEP_PLANNER_H
