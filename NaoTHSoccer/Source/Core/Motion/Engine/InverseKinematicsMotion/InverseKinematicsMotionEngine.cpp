@@ -158,7 +158,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
 
   // copy the requested values for the head and arm joints
-  const double *sj = theMotorJointData.position;//theBlackBoard.theSensorJointData.position;
+  const double *sj = getSensorJointData().position; // theMotorJointData.position;
   double *j = theInverseKinematics.theJointData.position;
   for (int i = JointData::HeadPitch; i <= JointData::LElbowYaw; i++)
   {
@@ -527,8 +527,70 @@ void InverseKinematicsMotionEngine::autoArms(
   //----------------------------------------------
 }//end autoArms
 
+
+void InverseKinematicsMotionEngine::armsOnBack(
+  const RobotInfo& theRobotInfo,
+  const HipFeetPose& pose,
+  double (&position)[JointData::numOfJoint])
+{
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-90);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(90);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::RElbowRoll] = Math::fromDegrees(30);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
+  target[JointData::RElbowYaw] = Math::fromDegrees(-25);
+  target[JointData::LElbowYaw] = Math::fromDegrees(25);
+
+  // make sure the arms do not collide legs --------------
+  double diffR = target[JointData::RShoulderPitch] - position[JointData::RShoulderPitch];
+  double diffL = target[JointData::LShoulderPitch] - position[JointData::LShoulderPitch];
+
+  if( (diffR + diffL) / 2 <= 0.02)
+  {
+    // limit the max speed -----------------------------
+    double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    for (int i = JointData::RElbowRoll; i <= JointData::LElbowYaw; i++)
+    {
+      double s = target[i] - position[i];
+      s = Math::clamp(s, -max_speed, max_speed);
+      position[i] += s;
+    }
+    diffR = target[JointData::RElbowRoll] - position[JointData::RElbowRoll];
+    diffL = target[JointData::LElbowRoll] - position[JointData::LElbowRoll];
+    if( (diffR + diffL) / 2 <= 0.02)
+    {
+      target[JointData::RShoulderRoll] = 0.0;
+      target[JointData::LShoulderRoll] = 0.0;
+      for (int i = JointData::RShoulderRoll; i <= JointData::LShoulderRoll; i++)
+      {
+        double s = target[i] - position[i];
+        s = Math::clamp(s, -max_speed, max_speed);
+        position[i] += s;
+      }
+    }
+  }
+  else
+  {
+    target[JointData::RElbowRoll] = 0.0;
+    target[JointData::RElbowRoll] = 0.0;
+    // limit the max speed -----------------------------
+    double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+    {
+      double s = target[i] - position[i];
+      s = Math::clamp(s, -max_speed, max_speed);
+      position[i] += s;
+    }
+  }
+  //---------------------------------------------
+
+}//end armsOnBack
+
+
 // calculates the com of theKinematicChain in the coordinates of the link 
-Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(
+Vector3d InverseKinematicsMotionEngine::sensorCoMIn(
   const KinematicChainSensor& theKinematicChain,
   KinematicChain::LinkID link) const
 {
@@ -540,7 +602,7 @@ Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(
 
 // compares expected com and com from sensors
 // @return adjust applyed to hip
-Vector3<double> InverseKinematicsMotionEngine::balanceCoM(
+Vector3d InverseKinematicsMotionEngine::balanceCoM(
   const FrameInfo& theFrameInfo,
   const KinematicChainSensor& theKinematicChain,
   const Vector3d& lastReqCoM, 

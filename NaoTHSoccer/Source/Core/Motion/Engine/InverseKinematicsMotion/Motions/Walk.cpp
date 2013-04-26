@@ -82,24 +82,31 @@ void Walk::execute()
     
     // move arms
     //getEngine().autoArms(c, getMotorJointData().position);
-    getEngine().gotoArms(
-      getMotionStatus(),
-      getInertialModel(),
-      getRobotInfo(),
-      c, getMotorJointData().position);
+
+    if(getEngine().getParameters().arm.takeBack) {
+      getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
+    } else {
+      getEngine().gotoArms(
+        getMotionStatus(),
+        getInertialModel(),
+        getRobotInfo(),
+        c, getMotorJointData().position);
+    }
 
     // force the hip joint
-    if (getMotorJointData().position[JointData::LHipRoll] < 0)
+    if (getMotorJointData().position[JointData::LHipRoll] < 0) {
       getMotorJointData().position[JointData::LHipRoll] *= theWalkParameters.general.hipRollSingleSupFactorLeft;
-
-    if (getMotorJointData().position[JointData::RHipRoll] > 0)
+    }
+    if (getMotorJointData().position[JointData::RHipRoll] > 0) {
       getMotorJointData().position[JointData::RHipRoll] *= theWalkParameters.general.hipRollSingleSupFactorRight;
+    }
 
     PLOT("Walk:RHipRoll",getMotorJointData().position[JointData::RHipRoll]);
     PLOT("Walk:LHipRoll",getMotorJointData().position[JointData::LHipRoll]);
 
-    if(theWalkParameters.stabilization.stabilizeFeet)
+    if(theWalkParameters.stabilization.stabilizeFeet) {
       feetStabilize(getMotorJointData().position);
+    }
   }
 
   updateMotionStatus(getMotionStatus());

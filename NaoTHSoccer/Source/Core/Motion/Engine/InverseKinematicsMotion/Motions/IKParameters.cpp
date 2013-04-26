@@ -89,6 +89,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(arm.alwaysEnabled)  = false;
   PARAMETER_REGISTER(arm.kickEnabled) = true;
   PARAMETER_REGISTER(arm.walkEnabled) = true;
+  PARAMETER_REGISTER(arm.takeBack) = false;
 
   // kick parameter
   PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;

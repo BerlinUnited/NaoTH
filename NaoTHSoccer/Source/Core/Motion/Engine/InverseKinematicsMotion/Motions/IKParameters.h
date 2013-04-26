@@ -94,8 +94,8 @@ public:
       // enable the PD-control for the feet
       bool stabilizeFeet;
       // differential and proportional factors for rotation on x- and y- axes
-      Vector2<double> stabilizeFeetP;
-      Vector2<double> stabilizeFeetD;
+      Vector2d stabilizeFeetP;
+      Vector2d stabilizeFeetD;
 
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
@@ -105,8 +105,8 @@ public:
 
   struct RotationStabilize 
   {
-      Vector2<double> k;
-      Vector2<double> threshold;
+      Vector2d k;
+      Vector2d threshold;
   } rotationStabilize;
 
   struct Arm 
@@ -120,6 +120,7 @@ public:
     bool alwaysEnabled;
     bool kickEnabled;
     bool walkEnabled;
+    bool takeBack;
   } arm;
 
   struct KickParameters 

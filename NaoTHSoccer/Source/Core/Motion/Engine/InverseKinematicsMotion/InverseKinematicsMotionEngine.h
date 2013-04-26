@@ -156,6 +156,11 @@ public:
     const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
 
+  void armsOnBack(
+    const RobotInfo& theRobotInfo,
+    const InverseKinematic::HipFeetPose& pose, 
+    double (&position)[naoth::JointData::numOfJoint]);
+
 private:
   IKParameters theParameters;
 

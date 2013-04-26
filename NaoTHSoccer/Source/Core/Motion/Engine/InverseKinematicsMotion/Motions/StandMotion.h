@@ -113,8 +113,12 @@ public:
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
-    getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
 
+    if(getEngine().getParameters().arm.takeBack) {
+      getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
+    } else {
+      getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
+    }
 
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
