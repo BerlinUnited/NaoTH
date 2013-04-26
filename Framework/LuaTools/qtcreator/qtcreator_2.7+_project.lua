@@ -65,11 +65,6 @@
   
   function premake.qtcreator.footer()
    
-   _p("<data>")
-  _p(1,"<variable>ProjectExplorer.Project.Updater.EnvironmentId</variable>")
-  _p(1, "<value type=\"QString\">{fe4e41f2-fff5-415d-b64b-7cc87a11753f}</value>")
-  _p("</data>")
-		
   _p("<data>")
   _p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
   _p(1, "<value type=\"int\">12</value>")
@@ -217,13 +212,39 @@
 		local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 		
 		qc.header()
-		
+	  
+    -- we need to set a valid "kit" ID as ProjectConfiguration.Id, otherwise the QtCreator will stop loading the project
+    -- under *NIX-systems we can grab the configuration file
+    -- TODO: what to do on Windows?
+    local kitID = "{b699c497-eead-4e23-bb5c-bef17dc27c55}" -- dummy ID
+    local homeDir = os.getenv("HOME")
+    if(homeDir ~= nil) then
+      local profilePath = homeDir .. "/.config/QtProject/qtcreator/profiles.xml";
+      if os.isfile(profilePath) then
+        local isDefaultProfile = false
+        for line in io.lines(profilePath) do
+          if isDefaultProfile then
+            isDefaultProfile = false            
+            local m = string.match(line, "{[^}]+}")
+            if m then
+              kitID = m
+              break
+            end  
+          elseif string.find(line, "Profile.Default") then
+            isDefaultProfile = true
+          end
+          
+        end
+      end
+      
+    end
+    
 	  _p("<data>")
     _p(1, "<variable>ProjectExplorer.Project.Target.0</variable>")
     _p(1, "<valuemap type=\"QVariantMap\">")
     _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Desktop</value>")--, prj.name)
     _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">Desktop</value>")
-    _p(2, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">{b699c497-eead-4e23-bb5c-bef17dc27c55}</value>")
+    _p(2, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">" .. kitID .. "</value>")
     _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveBuildConfiguration\">0</value>")
     _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveDeployConfiguration\">0</value>")
     _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveRunConfiguration\">0</value>")
