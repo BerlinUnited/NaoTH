@@ -22,7 +22,7 @@ void WholeGoalLocator::execute()
 {
   // reset the model
   getSensingGoalModel().someGoalWasSeen = false;
-  getCameraMatrixOffset().offsetByGoalModel = Vector2<double>();
+  getCameraMatrixOffset().offsetByGoalModel = Vector2d();
 
   // negative odometry
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
@@ -36,7 +36,7 @@ void WholeGoalLocator::execute()
   //check for GoalPercept distance not near 30cm (for wrong projections)
   
 
-  // tray to find a pair of posts which forma goal
+  // try to find a pair of posts which form a goal
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts()-1; i++)
   {
     for (int j = i+1; j < getGoalPercept().getNumberOfSeenPosts(); j++)
@@ -52,7 +52,7 @@ void WholeGoalLocator::execute()
   //Draw GoalModel
   DEBUG_REQUEST("WholeGoalLocator:drawGoalModel",
     FIELD_DRAWING_CONTEXT;
-    Vector2<double> centerGoal = getSensingGoalModel().goal.calculateCenter();
+    Vector2d centerGoal = getSensingGoalModel().goal.calculateCenter();
     PEN(ColorClasses::colorClassToHex(getSensingGoalModel().goal.color), 50);
     CIRCLE(getSensingGoalModel().goal.leftPost.x, getSensingGoalModel().goal.leftPost.y, 50);
     CIRCLE(getSensingGoalModel().goal.rightPost.x, getSensingGoalModel().goal.rightPost.y, 50);
@@ -132,7 +132,7 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
 
 
 void WholeGoalLocator::correct_the_goal_percept(
-  Vector2<double>& offset,
+  Vector2d& offset,
   GoalPercept::GoalPost& post1,
   GoalPercept::GoalPost& post2)
 {
@@ -218,7 +218,7 @@ double WholeGoalLocator::projectionError(
   // project the goal posts
   const CameraInfo& cameraInfo = getCameraInfo();
 
-  Vector2<double> leftPosition;
+  Vector2d leftPosition;
   CameraGeometry::imagePixelToFieldCoord(
       tmpCM,
       cameraInfo,
@@ -227,7 +227,7 @@ double WholeGoalLocator::projectionError(
       0.0,
       leftPosition);
 
-  Vector2<double> rightPosition;
+  Vector2d rightPosition;
   CameraGeometry::imagePixelToFieldCoord(
       tmpCM,
       cameraInfo,
