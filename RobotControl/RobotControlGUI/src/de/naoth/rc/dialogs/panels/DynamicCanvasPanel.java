@@ -5,7 +5,10 @@
  */
 package de.naoth.rc.dialogs.panels;
 
+import de.naoth.rc.dialogs.drawings.Arrow;
 import de.naoth.rc.dialogs.drawings.Drawable;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -16,6 +19,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -30,6 +34,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   private double scale;
   private double rotation;
   private boolean mirrorXAxis = true;
+  private boolean showCoordinates = true; 
   private double dragOffsetX;
   private double dragOffsetY;
   private ArrayList<Drawable> drawingList;
@@ -109,8 +114,6 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
       oldWidth = this.getWidth();
       oldHeight = this.getHeight();
       
-      
-      
       this.repaint();
   }//GEN-LAST:event_formComponentResized
 
@@ -142,10 +145,6 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     return p;
   }
   
-  public void setShowCoordinates(boolean v) {
-      
-  }
-  
   @Override
   public synchronized void paintComponent(Graphics g)
   {
@@ -160,32 +159,72 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     }
 
     // transform the coordinate system to the mathematical one ;)
-
     g2d.translate(offsetX, offsetY);
-    g2d.rotate(rotation);
-    if(mirrorXAxis)
-    {
+    if(mirrorXAxis) {
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     }
+    g2d.rotate(rotation);
     g2d.scale(scale, scale);
 
-    synchronized (drawingList)
-    {
-      for (Drawable object : drawingList)
-      {
-        object.draw(g2d);
-      }
-    }//end synchronized
-
+    for (Drawable object : drawingList) {
+      object.draw(g2d);
+    }
+    
     // transform the drawing-pane back (nessesary to draw the other components corect)
     g2d.scale(1.0/scale, 1.0/scale);
-    if(mirrorXAxis)
-    {
+    g2d.rotate(-rotation);
+    if(mirrorXAxis) {
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     }
-    g2d.rotate(-rotation);
     g2d.translate(-offsetX, -offsetY);
+    
+    
+    if(this.showCoordinates) {
+        drawCoordinateSystem(g2d, this.getSize().width-30, this.getSize().height-30);
+    }
   }//end paintComponent
+  
+  void drawCoordinateSystem(Graphics2D g2d, int x, int y)
+  {
+    AffineTransform tx = new AffineTransform();
+    tx.translate(x, y);
+    if(mirrorXAxis) {
+        tx.scale(1.0f, -1.0f);
+    }
+    tx.rotate(rotation);
+    
+    Point2D p0 = tx.transform(new Point.Double(-20, -20), null);
+    Point2D p1 = tx.transform(new Point.Double(0, -20), null);
+    Point2D p2 = tx.transform(new Point.Double(-20, 0), null);
+    Point2D p3 = tx.transform(new Point.Double(10, -20), null);
+    Point2D p4 = tx.transform(new Point.Double(-20, 10), null);
+    
+    g2d.setStroke(new BasicStroke(2.0f));
+    g2d.setColor(Color.red);
+    g2d.drawString("X", (int)p3.getX(), (int)p3.getY());
+    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY());
+    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY(), 2.0f);
+    
+    g2d.setColor(Color.black);
+    g2d.drawString("Y", (int)p4.getX(), (int)p4.getY());
+    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY());
+    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY(), 2.0f);
+  }
+  
+  public Point.Double canvasCoordinatesToInternal(Point.Double p)
+  {
+    AffineTransform tx = new AffineTransform();
+    tx.rotate(-rotation);
+    tx.scale(1.0/scale, 1.0/scale);
+    if(mirrorXAxis) {
+        tx.scale(1.0f, -1.0f);
+    }
+    tx.translate(-offsetX, -offsetY);
+
+    Point.Double result = new Point.Double();
+    tx.transform(p, result);
+    return result;
+  }
 
   // <editor-fold defaultstate="collapsed" desc="Handling Mouse Events">
   @Override
@@ -249,15 +288,6 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
 
   // </editor-fold>
   // <editor-fold defaultstate="collapsed" desc="Getter and Setter">
-  
-  public Point.Double canvasCoordinatesToInternal(Point.Double p)
-  {
-    Point.Double result = new Point.Double();
-    result.x = (p.x - offsetX)/scale;
-    result.y = (p.y - offsetY)/scale;
-    return result;
-  }
-
   public void setOffsetX(double offsetX)
   {
     this.offsetX = offsetX;
@@ -322,6 +352,17 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   {
     this.mirrorXAxis = mirrorXAxis;
   }
+  
+  public boolean isShowCoordinates()
+  {
+    return showCoordinates;
+  }
+
+  public void setShowCoordinates(boolean showCoordinates)
+  {
+    this.showCoordinates = showCoordinates;
+  }
+    
   // </editor-fold>
 }//end DynamicCanvasPanel
 
