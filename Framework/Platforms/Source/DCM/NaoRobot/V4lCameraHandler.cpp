@@ -259,8 +259,8 @@ void V4lCameraHandler::initDevice()
   struct v4l2_format fmt;
   memset(&fmt, 0, sizeof (struct v4l2_format));
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 320;
-  fmt.fmt.pix.height = 240;
+  fmt.fmt.pix.width = naoth::IMAGE_WIDTH;
+  fmt.fmt.pix.height = naoth::IMAGE_HEIGHT;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
   VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
@@ -915,6 +915,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       usleep(1000);
     } // end if csConst was set
   } // end for each camera setting (in order
+
 
 }
 
