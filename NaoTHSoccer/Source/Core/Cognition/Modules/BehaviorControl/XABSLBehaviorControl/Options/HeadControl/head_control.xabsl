@@ -1,0 +1,69 @@
+/** The base option for the head control behavior */
+option head_control
+{
+  common decision
+  {
+    if (head.control_mode == none)
+      goto none;
+	else if (head.control_mode == stay_as_forced)
+      goto stay_as_forced;
+    else if (head.control_mode == look_straight_ahead)
+      goto look_straight_ahead;
+    else if (head.control_mode == search_for_ball)
+      goto search_for_ball;
+	else if (head.control_mode == search_for_goal)
+      goto search_for_goal;
+	else if (head.control_mode == look_around)
+      goto look_around;
+  }
+
+  initial state none
+  {
+    action
+    {
+    // do nothing
+    }
+  }
+  
+  state stay_as_forced
+  {
+    action
+    {
+      head.motion_type = hold;
+    }
+  }
+    
+  state look_straight_ahead
+  {
+    action
+    {
+      head.motion_type = look_straight_ahead;
+    }
+  }
+  
+  state search_for_ball
+  {
+    action
+    {
+      search_for_ball(force_ball_model_check = false);
+    }
+  }
+
+  state search_for_goal
+  {
+    action
+    {
+      search_for_goal(own = true, opp = true);
+    }
+  }
+
+  state look_around
+  {
+    action
+    {
+      look_around();
+    }
+  }
+
+}
+  
