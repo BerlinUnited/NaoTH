@@ -1,12 +1,14 @@
 /*** 
   Title: NaoTH Soccer
-  Platform: Aldebaran Nao V3 (RoboCup edition).
+  Platform: Aldebaran Nao V3.2~4 (RoboCup edition).
   Software-Environment: NaoTH2013
 */
 
 // Symbols
 include "Symbols/game_symbols.xabsl";
 include "Symbols/math_symbols.xabsl";
+include "Symbols/motion_symbols.xabsl";
+include "Symbols/ball_symbols.xabsl";
 
 // Common Skills
 

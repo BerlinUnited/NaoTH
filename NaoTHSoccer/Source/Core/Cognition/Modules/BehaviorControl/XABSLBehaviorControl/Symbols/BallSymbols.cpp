@@ -12,77 +12,54 @@
 
 void BallSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  engine.registerDecimalInputSymbol("ball.radius", &fieldInfo.ballRadius);
+  // constant
+  engine.registerDecimalInputSymbol("ball.radius", &getFieldInfo().ballRadius);
 
-  engine.registerDecimalInputSymbol("ball.x", &ballModel.position.x);
-  engine.registerDecimalInputSymbol("ball.y", &ballModel.position.y);
-  engine.registerDecimalInputSymbol("ball.preview.x", &ballModel.positionPreview.x);
-  engine.registerDecimalInputSymbol("ball.preview.y", &ballModel.positionPreview.y);
-  engine.registerDecimalInputSymbol("ball.left_foot.preview.x", &ballModel.positionPreviewInLFoot.x);
-  engine.registerDecimalInputSymbol("ball.left_foot.preview.y", &ballModel.positionPreviewInLFoot.y);
-  engine.registerDecimalInputSymbol("ball.right_foot.preview.x", &ballModel.positionPreviewInRFoot.x);
-  engine.registerDecimalInputSymbol("ball.right_foot.preview.y", &ballModel.positionPreviewInRFoot.y);
+  // percept
+  engine.registerDecimalInputSymbol("ball.percept.x", &getBallPercept().bearingBasedOffsetOnField.x);
+  engine.registerDecimalInputSymbol("ball.percept.y", &getBallPercept().bearingBasedOffsetOnField.y);
+  engine.registerBooleanInputSymbol("ball.was_seen", &getBallPercept().ballWasSeen);
 
-  engine.registerDecimalInputSymbol("ball.time_since_last_seen", &getBallTimeSinceLastSeen);
-  engine.registerDecimalInputSymbol("ball.time_seen", &getBallTimeSeen);
-  engine.registerDecimalInputSymbol("ball.speed.x", &ballModel.speed.x);
-  engine.registerDecimalInputSymbol("ball.speed.y", &ballModel.speed.y);
-  engine.registerDecimalInputSymbol("ball.speed", &getBallSpeed);
-  engine.registerDecimalInputSymbol("ball.future.x", &getFutureBallPosX);
-  engine.registerDecimalInputSymbolDecimalParameter("ball.future.x", "ball.future.x.t", &futureBallPosX_t);
-  engine.registerDecimalInputSymbol("ball.future.y", &getFutureBallPosY);
-  engine.registerDecimalInputSymbolDecimalParameter("ball.future.y", "ball.future.y.t", &futureBallPosY_t);
-  engine.registerDecimalInputSymbol("ball.future.distance", &getFutureBallDistance);
-  engine.registerDecimalInputSymbolDecimalParameter("ball.future.distance", "ball.future.distance.t", &futureBallDistance_t);
-
+  // model
+  engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
+  engine.registerDecimalInputSymbol("ball.y", &getBallModel().position.y);
   engine.registerDecimalInputSymbol("ball.distance", &getBallDistance);
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
-
-  engine.registerDecimalInputSymbol("ball.percept.x", &ballPercept.bearingBasedOffsetOnField.x);
-  engine.registerDecimalInputSymbol("ball.percept.y", &ballPercept.bearingBasedOffsetOnField.y);
-
-  engine.registerBooleanInputSymbol("ball.was_seen", &ballPercept.ballWasSeen);
-  engine.registerDecimalInputSymbol("ball.center_in_image.x", &ballPercept.centerInImage.x);
-  engine.registerDecimalInputSymbol("ball.center_in_image.y", &ballPercept.centerInImage.y);
-
-  engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
-  engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
-
-  engine.registerDecimalInputSymbol("ball.team.time_since_last_update", &getTeamBallTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.position.x", &teamBallModel.position.x);
-  engine.registerDecimalInputSymbol("ball.team.position.y", &teamBallModel.position.y);
-
-  engine.registerDecimalInputSymbol("ball.team.goalie.time_since_last_update", &getTeamBallGoalieTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.x", &teamBallModel.goaliePosition.x);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.y", &teamBallModel.goaliePosition.y);
-
-  engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.x", &teamBallModel.strikerPosition.x);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.y", &teamBallModel.strikerPosition.y);
-
+  engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
+  engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
+  
   engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
   engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
   engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
-
-  // "Pose behind the ball in attackdirection with distance"
-  engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointX", &goToPointX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointY", &goToPointY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceX",  &goToPointDistanceX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceY", &goToPointDistanceY);
-
-  engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointX", &goToPointX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointY", &goToPointY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceX",  &goToPointDistanceX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceY", &goToPointDistanceY);
   
-  engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointX", &goToPointX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointY", &goToPointY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceX",  &goToPointDistanceX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceY", &goToPointDistanceY);
+  // preview
+  engine.registerDecimalInputSymbol("ball.preview.x", &getBallModel().positionPreview.x);
+  engine.registerDecimalInputSymbol("ball.preview.y", &getBallModel().positionPreview.y);
+  engine.registerDecimalInputSymbol("ball.preview.left_foot.x", &getBallModel().positionPreviewInLFoot.x);
+  engine.registerDecimalInputSymbol("ball.preview.left_foot.y", &getBallModel().positionPreviewInLFoot.y);
+  engine.registerDecimalInputSymbol("ball.preview.right_foot.x", &getBallModel().positionPreviewInRFoot.x);
+  engine.registerDecimalInputSymbol("ball.preview.right_foot.y", &getBallModel().positionPreviewInRFoot.y);
+  
+  engine.registerDecimalInputSymbol("ball.time_since_last_seen", &getBallTimeSinceLastSeen);
+  engine.registerDecimalInputSymbol("ball.time_seen", &getBallTimeSeen);
+  
+  // global
+  engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
+  engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
+
+  // team
+  engine.registerDecimalInputSymbol("ball.team.time_since_last_update", &getTeamBallTimeSinceLastUpdate);
+  engine.registerDecimalInputSymbol("ball.team.position.x", &getTeamBallModel().position.x);
+  engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
+
+  engine.registerDecimalInputSymbol("ball.team.goalie.time_since_last_update", &getTeamBallGoalieTimeSinceLastUpdate);
+  engine.registerDecimalInputSymbol("ball.team.goalie.position.x", &getTeamBallModel().goaliePosition.x);
+  engine.registerDecimalInputSymbol("ball.team.goalie.position.y", &getTeamBallModel().goaliePosition.y);
+
+  engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
+  engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
+  engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
@@ -95,17 +72,17 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
 void BallSymbols::execute()
 {
   // calculate the global position of the ball on the field
-  ballPositionField = robotPose*ballModel.position;
+  ballPositionField = getRobotPose()*getBallModel().position;
 
   // transform the ball position into the feet coordinates
-  const Pose3D& lFoot = kinematicChain.theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = kinematicChain.theLinks[KinematicChain::RFoot].M;
+  const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
   
   Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
   Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
 
-  ballLeftFoot  = lFootPose/ballModel.position;
-  ballRightFoot = rFootPose/ballModel.position;
+  ballLeftFoot  = lFootPose/getBallModel().position;
+  ballRightFoot = rFootPose/getBallModel().position;
 
   DEBUG_REQUEST("XABSL:BallSymbols:ballLeftFoot", 
     FIELD_DRAWING_CONTEXT;
@@ -122,124 +99,37 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ballRightFoot:x", ballRightFoot.x);
     PLOT("XABSL:BallSymbols:ballRightFoot:y", ballRightFoot.y);
   );
-
-  // draw the position behind the ball (seen from attack direction)
-  //DEBUG_REQUEST("XABSL:StrategySymbols:draw_position_behind_ball",
-    //FIELD_DRAWING_CONTEXT;
-    //PEN("000000", 20);
-    // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
-    // ROTATION(getRobotPose().rotation);
-
-    // Vector2<double> targetDir = getRawAttackDirection().attackDirection;
-    // targetDir.normalize(200);
-
-    //ARROW(
-    //      posBehindBall.translation.x,
-    //      posBehindBall.translation.y,
-    //      getBallModel().positionPreview.x,
-    //      getBallModel().positionPreview.y
-    //      );
-
-    // ROTATION(-getRobotPose().rotation);
-    // TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
-  //);
-
 }//end update
 
 
 BallSymbols* BallSymbols::theInstance = NULL;
 
 
-double BallSymbols::getBallSpeed()
-{
-  return theInstance->ballModel.speed.abs();
+double BallSymbols::getBallDistance() {
+  return theInstance->getBallModel().position.abs();
 }
 
-double BallSymbols::getBallDistance()
-{
-  return theInstance->ballModel.position.abs();
-}//end getBallDistance
-
-double BallSymbols::getFutureBallPosX()
-{
-  int clipped = Math::clamp((int) theInstance->futureBallPosX_t, 0, BALLMODEL_MAX_FUTURE_SECONDS);
-  return theInstance->ballModel.futurePosition[clipped].x;
-}//end getBallDistance
-
-double BallSymbols::getFutureBallPosY()
-{
-  int clipped = Math::clamp((int) theInstance->futureBallPosX_t, 0, BALLMODEL_MAX_FUTURE_SECONDS);
-  return theInstance->ballModel.futurePosition[clipped].y;
-}//end getBallDistance
-
-double BallSymbols::getFutureBallDistance()
-{
-  int clipped = Math::clamp((int) theInstance->futureBallPosX_t, 0, BALLMODEL_MAX_FUTURE_SECONDS);
-  return theInstance->ballModel.futurePosition[clipped].abs();
-}//end getBallDistance
-
-double BallSymbols::getBallAngle()
-{
-  return Math::toDegrees(theInstance->ballModel.position.angle());
-}//end getBallAngle
-
-double BallSymbols::getBallTimeSinceLastSeen()
-{
-  return theInstance->frameInfo.getTimeSince(
-    theInstance->ballModel.frameInfoWhenBallWasSeen.getTime());
-}//end getBallTimeSinceLastSeen
-
-double BallSymbols::getBallTimeSeen()
-{
-  return theInstance->ballModel.timeBallIsSeen;
-}//end getBallTimeSeen
-
-double BallSymbols::getTeamBallTimeSinceLastUpdate()
-{
-  return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.time);
-}//end getTeamBallTimeSinceLastUpdate
-
-void BallSymbols::calculatePosBehindBallFuture()
-{
-  // for better readability
-  double gtpx = theInstance->goToPointX;
-  double gtpy = theInstance->goToPointY;
-  double distanceX = theInstance->goToPointDistanceX;
-  double distanceY = theInstance->goToPointDistanceY;
-
-  // ball.preview.x - 200*cos(angle=attack.direction), 
-  theInstance->posBehindBall.translation.x = gtpx - distanceX * cos(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX)));
-  
-  //  y = ball.preview.y - sin(angle = attack_direction)*200 // clip(value=attack.direction, min=-90 ,max=90)???
-  theInstance->posBehindBall.translation.y = gtpy - distanceY * (1+sin(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX))));
-
-  // rot = atan2(y = ball.preview.y + sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
-  theInstance->posBehindBall.rotation = Math::toDegrees(atan2(gtpy, gtpx));
+double BallSymbols::getBallAngle() {
+  return Math::toDegrees(theInstance->getBallModel().position.angle());
 }
 
-double BallSymbols::getPosBehindBallFutureX()
-{
-  calculatePosBehindBallFuture();
-  return theInstance->posBehindBall.translation.x;
-}
-double BallSymbols::getPosBehindBallFutureY()
-{
-  calculatePosBehindBallFuture();
-  return theInstance->posBehindBall.translation.x;
-}
-double BallSymbols::getPosBehindBallFutureRotation()
-{
-  calculatePosBehindBallFuture();
-  return Math::toDegrees(theInstance->posBehindBall.rotation);
+double BallSymbols::getBallTimeSinceLastSeen() {
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getBallModel().frameInfoWhenBallWasSeen.getTime());
 }
 
-double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate()
-{
-  return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.goalieTime);
-}//end getTeamBallGoalieTimeSinceLastUpdate
+double BallSymbols::getBallTimeSeen() {
+  return theInstance->getBallModel().timeBallIsSeen;
+}
 
-double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate()
-{
-  return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.strikerTime);
-}//end getTeamBallStrikerTimeSinceLastUpdate
+double BallSymbols::getTeamBallTimeSinceLastUpdate() {
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().time);
+}
+
+double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().goalieTime);
+}
+
+double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
+}
 
