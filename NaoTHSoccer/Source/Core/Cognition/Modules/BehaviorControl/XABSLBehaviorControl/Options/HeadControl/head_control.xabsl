@@ -11,8 +11,6 @@ option head_control
       goto look_straight_ahead;
     else if (head.control_mode == search_for_ball)
       goto search_for_ball;
-	else if (head.control_mode == search_for_goal)
-      goto search_for_goal;
 	else if (head.control_mode == look_around)
       goto look_around;
   }
@@ -46,14 +44,6 @@ option head_control
     action
     {
       search_for_ball(force_ball_model_check = false);
-    }
-  }
-
-  state search_for_goal
-  {
-    action
-    {
-      search_for_goal(own = true, opp = true);
     }
   }
 
