@@ -9,9 +9,22 @@ include "Symbols/game_symbols.xabsl";
 include "Symbols/math_symbols.xabsl";
 include "Symbols/motion_symbols.xabsl";
 include "Symbols/ball_symbols.xabsl";
+include "Symbols/strategy_symbols.xabsl";
+include "Symbols/sensor_symbols.xabsl";
+
+// Head Control
+include "Options/HeadControl/head_control.xabsl";
+include "Options/HeadControl/search_for_ball.xabsl";
+include "Options/HeadControl/look_around.xabsl";
 
 // Common Skills
+include "Options/Skills/fall_down_and_stand_up.xabsl";
+include "Options/Skills/stand_up.xabsl";
 
 // Soccer
+include "Options/Soccer/Strategy/decide_game_state.xabsl";
+include "Options/Soccer/spl_play_soccer.xabsl";
 
 // Test agents
+/** The soccer competition agent */
+agent spl_soccer("SPL Soccer", spl_play_soccer);

@@ -1,0 +1,50 @@
+option fall_down_and_stand_up
+{
+  initial state falling
+  {
+    decision
+    {
+      if (state_time > 2000)
+      { 
+        goto stand_up;
+      } else 
+        stay;
+    }
+    action
+    {
+      motion.execute_immediately = true;
+      motion.type= dead;
+    }
+  }
+
+  target state finished 
+  {
+    decision
+    {
+      if(abs(value=sensor.inertial.y)>20)
+        goto stand_up;
+      else 
+        stay;
+    }      
+    action
+    {
+      motion.type=stand;
+    }
+  }
+
+  state stand_up
+  {
+    decision
+    {
+      if(action_done)
+        goto finished;
+      else
+        stay;
+    }
+    action 
+    {
+      motion.execute_immediately = false;
+      stand_up();
+    }
+  }
+}
