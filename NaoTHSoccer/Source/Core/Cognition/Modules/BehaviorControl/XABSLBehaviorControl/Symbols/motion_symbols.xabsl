@@ -46,7 +46,7 @@ namespace motion_symbols("Motion Symbols") {
   enum head.control_mode internal 
   {
     none,
-	stay_as_forced,
+    stay_as_forced,
     look_straight_ahead,
     search_for_ball,
     search_for_goal,

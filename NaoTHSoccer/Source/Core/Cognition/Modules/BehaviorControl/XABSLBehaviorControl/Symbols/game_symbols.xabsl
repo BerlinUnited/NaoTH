@@ -20,6 +20,17 @@ namespace game_symbols("Game Control Symbols") {
     unknown
   };
 
+  enum game.internal_mode internal 
+  {
+    init,
+    ready,
+    set,
+    playing,
+    penalized,
+    finished,
+    unknown
+  };
+
   /* Enumeration for play mode */
   enum game.playmode
   {
@@ -45,6 +56,10 @@ namespace game_symbols("Game Control Symbols") {
 
   /* State of the game */
   enum game.state input game.state;
+
+  /* */
+  enum game.internal_mode internal game.current_mode;
+  enum game.internal_mode internal game.last_mode;
 
   /* Play mode of the game */
   enum game.playmode input game.playmode;
