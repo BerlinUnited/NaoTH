@@ -25,6 +25,12 @@ include "Options/Skills/stand_up.xabsl";
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 
+// Test
+include "Options/Test/test_walk_square.xabsl";
+include "Options/Test/walk/walk_square.xabsl";
+
 // Test agents
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
+
+agent test_walk_square("Test walk square", test_walk_square);

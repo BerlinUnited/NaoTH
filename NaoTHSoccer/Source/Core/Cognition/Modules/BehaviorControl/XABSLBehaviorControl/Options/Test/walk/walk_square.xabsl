@@ -1,0 +1,56 @@
+option walk_square
+{
+  initial state and_action
+  {
+    decision
+    {
+      if (state_time>3000 ){
+        goto walkforward;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  state walkforward
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto turn;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = fast;
+    }
+  }
+
+  state turn
+  {
+    decision{
+      if(state_time > 1500){
+        goto walkforward;
+      }
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.rot = 90;
+      motion.walk.style = fast;
+    }
+  }
+  
+}
