@@ -50,7 +50,7 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
     theDebugServer.start(5401, true);
     time = 0;
     //how ofter an image should be repeated before next one is loaded
-    maxPictureStepCount = 60;
+    maxPictureStepCount = 60000;
     //picturecount forward and backward
     forwardCount = maxPictureStepCount;
     backwardCount = maxPictureStepCount;
@@ -297,7 +297,7 @@ void OpenCVImageLoader::printHelp()
   cout << "A - one step backward to previous picture" << endl;
   cout << "s - jump to the first file" << endl;
   cout << "w - jump to specific file" << endl << endl;
-  cout << "p - play all files in directory, press 'p' to stop playing" << endl << "    show each picture for " << maxPictureStepCount << " steps";
+  cout << "p - play all files in directory, press 'p' to stop playing" << endl << "    show each picture for " << maxPictureStepCount << " steps" << endl;
   cout << "P - play all files in directory, press 'P' to stop playing" << endl << "    show each picture for one step" << endl;
 
   cout << "l - list all files in the directory" << endl;
