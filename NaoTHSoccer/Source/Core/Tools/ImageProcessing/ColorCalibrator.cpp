@@ -2,6 +2,16 @@
 
 ColorCalibrator::ColorCalibrator(string name, ColorClasses::Color color)
 :
+  strength(1.3),
+  name(name),
+  color(color)
+{
+  reset();
+}
+
+ColorCalibrator::ColorCalibrator(double strength, string name, ColorClasses::Color color)
+:
+  strength(strength),
   name(name),
   color(color)
 {
@@ -144,16 +154,27 @@ void ColorCalibrator::getAverageDistances
     calibRect.draw();
 
     int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
+    int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
+
     for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
     {
-      getAverageDistancesLoopBody(image, x, y);
+      for(int x = calibRect.lowerLeft.x; x <= calibRect.upperRight.x; x++)
+      {
+        getAverageDistancesLoopBody(image, x, y);
+      }
     }
 
-    int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
-    for(int x = calibRect.lowerLeft.x; x <= calibRect.upperRight.x; x++)
-    {
-      getAverageDistancesLoopBody(image, x, y);
-    }
+    //int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
+    //for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
+    //{
+    //  getAverageDistancesLoopBody(image, x, y);
+    //}
+
+    //int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
+    //for(int x = calibRect.lowerLeft.x; x <= calibRect.upperRight.x; x++)
+    //{
+    //  getAverageDistancesLoopBody(image, x, y);
+    //}
   }
 }
 
@@ -279,9 +300,9 @@ void ColorCalibrator::calculateRegions
   //ccdIdx.VminusU = (int) Math::clamp<double>(medianIdx.x, -255.0, 255.0);
   //ccdIdx.UminusY = (int) Math::clamp<double>(medianIdx.y, -255.0, 255.0);
   //ccdIdx.VminusY = (int) Math::clamp<double>(medianIdx.z, -255.0, 255.0); 
-  ccdDist.VminusU = (int) Math::clamp<double>(1.3 * sigma.x, -255.0, 255.0);
-  ccdDist.UminusY = (int) Math::clamp<double>(1.3 * sigma.y, -255.0, 255.0);
-  ccdDist.VminusY = (int) Math::clamp<double>(1.3 * sigma.z, -255.0, 255.0);
+  ccdDist.VminusU = (int) Math::clamp<double>(strength * sigma.x, -255.0, 255.0);
+  ccdDist.UminusY = (int) Math::clamp<double>(strength * sigma.y, -255.0, 255.0);
+  ccdDist.VminusY = (int) Math::clamp<double>(strength * sigma.z, -255.0, 255.0);
 
   m1.x = 0;
   m1.y = 0;
@@ -380,9 +401,9 @@ void ColorCalibrator::calculateRegions
   ccIdx.y = (int) Math::clamp<double>(medianIdx.x, 0.0, 255.0);
   ccIdx.u = (int) Math::clamp<double>(medianIdx.y, 0.0, 255.0);
   ccIdx.v = (int) Math::clamp<double>(medianIdx.z, 0.0, 255.0);
-  ccDist.y = (int) Math::clamp<double>(1.3 * sigma.x, 0.0, 255.0);
-  ccDist.u = (int) Math::clamp<double>(1.3 * sigma.y, 0.0, 255.0);
-  ccDist.v = (int) Math::clamp<double>(1.3 * sigma.z, 0.0, 255.0);
+  ccDist.y = (int) Math::clamp<double>(strength * sigma.x, 0.0, 255.0);
+  ccDist.u = (int) Math::clamp<double>(strength * sigma.y, 0.0, 255.0);
+  ccDist.v = (int) Math::clamp<double>(strength * sigma.z, 0.0, 255.0);
 }
 
 void ColorCalibrator::get(PixelT<int>& idx, PixelT<int>& dist)

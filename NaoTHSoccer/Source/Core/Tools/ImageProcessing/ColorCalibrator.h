@@ -33,6 +33,7 @@ class ColorCalibrator
 {
 public:
   ColorCalibrator(string name, ColorClasses::Color color);
+  ColorCalibrator(double strength, string name, ColorClasses::Color color);
   virtual ~ColorCalibrator(){};
 
   /** executes the module */
@@ -42,11 +43,17 @@ public:
   void get(PixelT<int>& idx, PixelT<int>& dist);  
   void get(colorPixel& idx, colorPixel& dist);
 
+  void setStrength(double value)
+  {
+    strength = value;
+  }
+
   void addCalibrationRect(CalibrationRect&);
   
   void drawCalibrationAreaRects();
 
 private:
+  double strength;
   string name;
   ColorClasses::Color color;
 
