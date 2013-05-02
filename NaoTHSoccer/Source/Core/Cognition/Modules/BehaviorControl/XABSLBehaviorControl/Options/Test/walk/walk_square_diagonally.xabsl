@@ -1,11 +1,11 @@
-option walk_square
+option walk_square_diagonally
 {
   initial state and_action
   {
     decision
     {
       if(executed_motion.type == stand){
-        goto forwards;
+        goto forwards_left;
       } else {
         stay;
       }
@@ -16,7 +16,7 @@ option walk_square
     }
   }
 
-  state forwards
+  state forwards_left
   {
     decision
     {
@@ -30,12 +30,13 @@ option walk_square
     {
       motion.type = walk;
       motion.walk_speed.x = 100;
+      motion.walk_speed.y = 100;
       motion.walk.style = fast;
-      test_walk.last_state=forwards;
+      test_walk.last_state = forwards_left;
     }
   }
 
-  state backwards
+  state backwards_right
   {
     decision
     {
@@ -49,12 +50,13 @@ option walk_square
     {
       motion.type = walk;
       motion.walk_speed.x = -100;
+      motion.walk_speed.y = -100;
       motion.walk.style = fast;
-      test_walk.last_state=backwards;
+      test_walk.last_state = backwards_right;
     }
   }
 
-  state sidewards_right
+  state forwards_right
   {
     decision{
       if(state_time > 5000){
@@ -67,14 +69,14 @@ option walk_square
     action
     {
       motion.type = walk;
-      motion.walk_speed.x = 0;
+      motion.walk_speed.x = 100;
       motion.walk_speed.y = -100;
       motion.walk.style = fast;
-      test_walk.last_state=sidewards_right;
+      test_walk.last_state = forwards_right;
     }
   }
 
-  state sidewards_left
+  state backwards_left
   {
     decision{
       if(state_time > 5000){
@@ -87,10 +89,10 @@ option walk_square
     action
     {
       motion.type = walk;
-      motion.walk_speed.x = 0;
+      motion.walk_speed.x = -100;
       motion.walk_speed.y = 100;
       motion.walk.style = fast;
-      test_walk.last_state=sidewards_left;
+      test_walk.last_state = backwards_left;
     }
   }
 
@@ -99,14 +101,14 @@ option walk_square
       if(!(executed_motion.type == stand)){
         stay;
       }
-      else if(test_walk.last_state==forwards){
-        goto sidewards_right;
+      else if(test_walk.last_state==forwards_left){
+        goto forwards_right;
       }
-      else if(test_walk.last_state==sidewards_right){
-        goto backwards;
+      else if(test_walk.last_state==forwards_right){
+        goto backwards_right;
       }
-      else if(test_walk.last_state==backwards){
-        goto sidewards_left;
+      else if(test_walk.last_state==backwards_right){
+        goto backwards_left;
       } else {
         stay;
       }
@@ -115,7 +117,6 @@ option walk_square
     {
       motion.type = stand;
     }
-  
   }
 
   target state stop

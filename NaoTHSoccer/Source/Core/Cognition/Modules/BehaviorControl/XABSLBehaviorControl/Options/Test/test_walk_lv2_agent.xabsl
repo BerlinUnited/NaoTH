@@ -1,26 +1,12 @@
 /** The root option of the soccer behavior */
-option test_walk_square {
-
-  initial state initialize {
-    decision {
-      if (game.state != _initial_)
-        goto stand;
-      else
-        stay;
-    }
-    action
-    {
-      head.control_mode = stay_as_forced;
-      motion.type = init;
-    }
-  }
+option test_walk_lv2_agent {
 
   // this is part of the initial precedure
   // to ensure that the robot stands before doing anything
-  state stand {
+  initial state stand {
     decision {
       if(executed_motion.type == stand)
-        goto play_soccer;
+        goto test;
       else
         stay;
     }
@@ -30,14 +16,7 @@ option test_walk_square {
     }
   }
 
-
-  state play_soccer {
-    decision {
-      if (game.state == _initial_)
-        goto initialize;
-      else
-        stay;
-    }
+  state test {    
     action {
     
       //IMPORTANT: reset some stuff(!)
@@ -57,7 +36,7 @@ option test_walk_square {
       // 
       fall_down_and_stand_up();
 
-      walk_square();
+      test_walk_lv2();
       
       // control head movement according to value of head.control_mode
       head_control();

@@ -20,17 +20,6 @@ namespace game_symbols("Game Control Symbols") {
     unknown
   };
 
-  enum game.internal_mode internal 
-  {
-    init,
-    ready,
-    set,
-    playing,
-    penalized,
-    finished,
-    unknown
-  };
-
   /* Enumeration for play mode */
   enum game.playmode
   {
@@ -57,10 +46,6 @@ namespace game_symbols("Game Control Symbols") {
   /* State of the game */
   enum game.state input game.state;
 
-  /* */
-  enum game.internal_mode internal game.current_mode;
-  enum game.internal_mode internal game.last_mode;
-
   /* Play mode of the game */
   enum game.playmode input game.playmode;
   
@@ -77,20 +62,5 @@ namespace game_symbols("Game Control Symbols") {
   bool input game.own_kickoff;
 
   float input game.msecsRemaining;
-
-  /* */
-  bool internal special_kickoff_done;
-
-  /* */
-  bool internal last_state_was_penalized;
-
-  /** Wether a situtation can be aborted */
-  bool internal situation.abortable;
-
-  /** Wether a common situation is allowed to interfere */
-  bool internal common_decision.allowed;
-
-  /** Will be set once to true if the ball was outside the center circle */
-  bool internal ball_was_outside_circle;
 
 }

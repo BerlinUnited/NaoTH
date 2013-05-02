@@ -1,11 +1,11 @@
-option walk_square
+option walk_circularly_x
 {
   initial state and_action
   {
     decision
     {
       if(executed_motion.type == stand){
-        goto forwards;
+        goto rot_forwards_left;
       } else {
         stay;
       }
@@ -16,7 +16,7 @@ option walk_square
     }
   }
 
-  state forwards
+  state rot_forwards_left
   {
     decision
     {
@@ -30,12 +30,33 @@ option walk_square
     {
       motion.type = walk;
       motion.walk_speed.x = 100;
+      motion.walk_speed.rot = 9;
       motion.walk.style = fast;
-      test_walk.last_state=forwards;
+      test_walk.last_state=rot_forwards_left;
     }
   }
 
-  state backwards
+  state rot_forwards_right
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.rot = -9;
+      motion.walk.style = fast;
+      test_walk.last_state=rot_forwards_right;
+    }
+  }
+
+  state rot_backwards_right
   {
     decision
     {
@@ -49,48 +70,29 @@ option walk_square
     {
       motion.type = walk;
       motion.walk_speed.x = -100;
+      motion.walk_speed.rot = 9;
       motion.walk.style = fast;
-      test_walk.last_state=backwards;
+      test_walk.last_state=rot_backwards_right;
     }
   }
 
-  state sidewards_right
+  state rot_backwards_left
   {
-    decision{
-      if(state_time > 5000){
-        goto stand;
-      }
-      else {
-        stay;
+    decision
+    {
+      if(state_time>5000){
+       goto stop;
+      } else {
+       stay;
       }
     }
     action
     {
       motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = -100;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.rot = -9;
       motion.walk.style = fast;
-      test_walk.last_state=sidewards_right;
-    }
-  }
-
-  state sidewards_left
-  {
-    decision{
-      if(state_time > 5000){
-        goto stop;
-      }
-      else {
-        stay;
-      }
-    }
-    action
-    {
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 100;
-      motion.walk.style = fast;
-      test_walk.last_state=sidewards_left;
+      test_walk.last_state=rot_backwards_left;
     }
   }
 
@@ -99,14 +101,14 @@ option walk_square
       if(!(executed_motion.type == stand)){
         stay;
       }
-      else if(test_walk.last_state==forwards){
-        goto sidewards_right;
+      else if(test_walk.last_state==rot_forwards_left){
+        goto rot_forwards_right;
       }
-      else if(test_walk.last_state==sidewards_right){
-        goto backwards;
+      else if(test_walk.last_state==rot_forwards_right){
+        goto rot_backwards_right;
       }
-      else if(test_walk.last_state==backwards){
-        goto sidewards_left;
+      else if(test_walk.last_state==rot_backwards_right){
+        goto rot_backwards_left;
       } else {
         stay;
       }

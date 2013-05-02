@@ -1,0 +1,57 @@
+/* Symbols for internal communication between states or options */
+namespace internal_symbols("Internal Symbols") {
+
+  /* game_symbols */
+  enum game.internal_mode internal 
+  {
+    init,
+    ready,
+    set,
+    playing,
+    penalized,
+    finished,
+    unknown
+  };
+  
+  enum game.internal_mode internal game.current_mode;
+  enum game.internal_mode internal game.last_mode;
+  /* */
+  bool internal special_kickoff_done;
+  /* */
+  bool internal last_state_was_penalized;
+  /** Wether a situtation can be aborted */
+  bool internal situation.abortable;
+  /** Wether a common situation is allowed to interfere */
+  bool internal common_decision.allowed;
+  /** Will be set once to true if the ball was outside the center circle */
+  bool internal ball_was_outside_circle;
+
+  /* motion_symbols */
+
+  /** The head motion control modes. This specifies how behavior should be moving the head. */
+  enum head.control_mode internal 
+  {
+    none,
+    stay_as_forced,
+    look_straight_ahead,
+    search_for_ball,
+    search_for_goal,
+    look_around
+  };
+
+  enum head.control_mode internal head.control_mode;
+
+  bool internal readyToWalk;
+
+  /* sensor_symbols */
+
+  bool internal need_calibrate;
+
+  /* strategy symbols*/
+
+  /** remembers the dircetion for turning for search (@see search_ball)*/
+  float internal search_ball.search_direction;
+  /** remembers the numbers of turns while search (@see search_ball)*/
+  float internal search_ball.turns_for_searching;
+
+}

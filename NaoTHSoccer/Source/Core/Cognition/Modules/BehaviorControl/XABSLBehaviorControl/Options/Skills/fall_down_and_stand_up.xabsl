@@ -1,6 +1,6 @@
 option fall_down_and_stand_up
 {
-  initial state falling
+  state falling
   {
     decision
     {
@@ -14,21 +14,23 @@ option fall_down_and_stand_up
     {
       motion.execute_immediately = true;
       motion.type= dead;
+      readyToWalk = false;
     }
   }
 
-  target state finished 
+  initial state stand
   {
     decision
     {
       if(abs(value=sensor.inertial.y)>20)
-        goto stand_up;
+        goto falling;
       else 
         stay;
     }      
     action
     {
       motion.type=stand;
+      readyToWalk = true;
     }
   }
 
@@ -37,7 +39,7 @@ option fall_down_and_stand_up
     decision
     {
       if(action_done)
-        goto finished;
+        goto stand;
       else
         stay;
     }
@@ -45,6 +47,7 @@ option fall_down_and_stand_up
     {
       motion.execute_immediately = false;
       stand_up();
+      readyToWalk = false;
     }
   }
 }

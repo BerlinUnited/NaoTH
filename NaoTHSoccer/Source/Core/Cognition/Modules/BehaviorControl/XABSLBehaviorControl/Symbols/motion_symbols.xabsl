@@ -41,20 +41,6 @@ namespace motion_symbols("Motion Symbols") {
   float output head.search.size.y [mm];
   float output head.search.size.z [mm];
   bool output head.search.direction;
-
-  /** The head motion control modes. This specifies how behavior should be moving the head. */
-  enum head.control_mode internal 
-  {
-    none,
-    stay_as_forced,
-    look_straight_ahead,
-    search_for_ball,
-    search_for_goal,
-    look_around
-  };
-
-  enum head.control_mode internal head.control_mode;
-
   
   enum motion.type 
   {
