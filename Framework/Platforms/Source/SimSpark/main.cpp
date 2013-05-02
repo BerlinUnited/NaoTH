@@ -9,6 +9,7 @@
 #include <glib-object.h>
 
 #include <SimSpark/SimSparkController.h>
+#include <sstream>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
   string server = "localhost";
   gchar* optServer = NULL;
   unsigned int port = 3100;
-  bool sync = false;
+  gboolean sync = false;
   
   GOptionEntry entries[] = {
     {"num",'n', 0, G_OPTION_ARG_INT, &num, "player number", "0"},
@@ -43,8 +44,24 @@ int main(int argc, char** argv)
     {NULL} // This NULL is very important!!!
   };
   
+  std::stringstream info;
+  info << "=========================================="  << std::endl;
+  info << " http://www.naoth.de " << std::endl;
+  info << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+  #ifdef REVISION
+  info << "Revision number: " << MAKE_STRING(REVISION) << std::endl;
+  #endif
+  #ifdef USER_NAME
+  info << "Owner: " << MAKE_STRING(USER_NAME) << std::endl;
+  #endif
+  #ifdef BRANCH_PATH
+  info << "Branch path: " << MAKE_STRING(BRANCH_PATH) << std::endl;
+  #endif
+  info << "==========================================\n"  << std::endl;
+
+
   GError *error = NULL;
-  GOptionContext *context = g_option_context_new("\n-------------------------------\n  http://www.naoth.de");
+  GOptionContext *context = g_option_context_new(info.str().c_str());
   g_option_context_add_main_entries (context, entries, "NaoTH Simspark (SPL) controller");
   if (!g_option_context_parse (context, &argc, &argv, &error))
   {
@@ -66,7 +83,7 @@ int main(int argc, char** argv)
   
   SimSparkController theController(MAKE_NAME(PLATFORM_NAME));
 
-  if (!theController.init(teamName, num, server, port, sync))
+  if (!theController.init(teamName, num, server, port, sync > 0))
   {
       cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
     return EXIT_FAILURE;

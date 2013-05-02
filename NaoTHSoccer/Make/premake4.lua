@@ -11,6 +11,7 @@ dofile "projectconfig.lua"
 dofile (FRAMEWORK_PATH .. "/LuaTools/info.lua")
 --dofile (FRAMEWORK_PATH .. "/LuaTools/ilpath.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator.lua")
+dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator_2.7+.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
 

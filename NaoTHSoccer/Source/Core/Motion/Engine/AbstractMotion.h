@@ -27,6 +27,20 @@ public:
   motion::State state;
 
   bool isStopped() const {return state == motion::stopped; }
+  void setState(motion::MotionID newId, motion::State newState) {
+    assert(newId == id || state == motion::stopped);
+    id = newId;
+    state = newState;
+  }
+  void lock(motion::MotionID newId) {
+    setState(newId, state = motion::running);
+  }
+  void unlock(motion::MotionID newId) {
+    setState(newId, motion::stopped);
+  }
+  void forceUnlock() {
+    state = motion::stopped;
+  }
 };
 
 
@@ -45,8 +59,8 @@ protected:
   {
     // assure the lock is 'mine'
     assert(lock.id == theId);
+    lock.state = state;
     currentState = state;
-    lock.state = currentState;
   }
 
   void setId(motion::MotionID id){ theId = id; lock.id = theId; };

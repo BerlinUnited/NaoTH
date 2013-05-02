@@ -100,6 +100,11 @@ void MotionEngine::selectMotion()
     &&
     (getMotionLock().isStopped() || getMotionRequest().forced))
   {
+    // unlock if forced
+    if(getMotionRequest().forced) {
+      getMotionLock().forceUnlock();
+    }
+
     Module* newMotion = NULL;
     for ( MotionFactorieRegistry::iterator iter=theMotionFactories.begin();
           NULL==newMotion && iter!=theMotionFactories.end(); ++iter)

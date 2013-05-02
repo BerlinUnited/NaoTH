@@ -179,7 +179,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
         boolean selected = tokens[1].equals("1");
         final String path = tokens[0];
         
-        final SelectableTreeNode node = debugRequestTree.insertPath(path, ':');
+        final SelectableTreeNode node = this.debugRequestTree.insertPath(path, ':');
         node.setSelected(selected);
         node.setTooltip(tooltip);
 
@@ -192,6 +192,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
       }
     }//end for
     
+    this.debugRequestTree.repaint();
     btRefresh.setSelected(false);
     dbgRequestManager.removeListener(this);
   }
