@@ -137,6 +137,7 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         jToolBar1.add(btReceiveImages);
 
         btAutoCameraParameters.setText("Auto Camera Params");
+        btAutoCameraParameters.setEnabled(false);
         btAutoCameraParameters.setFocusable(false);
         btAutoCameraParameters.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btAutoCameraParameters.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -149,11 +150,6 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
 
         btCalibrate.setText("Run Calibration");
         btCalibrate.setEnabled(false);
-        btCalibrate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btCalibrateMouseClicked(evt);
-            }
-        });
         btCalibrate.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 btCalibrateStateChanged(evt);
@@ -209,7 +205,7 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(originalImageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 112, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         coloredObjectChooserPanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -242,11 +238,11 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(7, 7, 7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSliderStrength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(21, Short.MAX_VALUE))
@@ -256,16 +252,17 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextFieldStrength)
-                    .addComponent(jSliderStrength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSliderStrength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.Alignment.TRAILING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap(112, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
   private void btReceiveImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesActionPerformed
@@ -275,6 +272,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
       if(parent.checkConnected())
       {
         imageManager.addListener(this);
+        this.coloredObjectChooserPanel.setEnabled(true);
+        btAutoCameraParameters.setEnabled(true);
       }
       else
       {
@@ -284,6 +283,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
     else
     {
       imageManager.removeListener(this);
+      this.coloredObjectChooserPanel.setEnabled(false);
+      btAutoCameraParameters.setEnabled(false);
     }
   }//GEN-LAST:event_btReceiveImagesActionPerformed
 
@@ -390,16 +391,17 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
   private void btCalibrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalibrateActionPerformed
     if(this.parent.getMessageServer().isConnected())
     {
-      if(!btCalibrate.isSelected())
+      if(btCalibrate.isSelected())
       {
         if(colorClass != null)
         {
           this.coloredObjectChooserPanel.setEnabled(false);
           this.colorValueSlidersPanel.setEnabled(false);
-  //        if(colorValueSlidersPanel.showColoredPixels())
-  //        {
-  //          sendShowObjectsPixels(colorClass, "on");
-  //        }
+          this.btReceiveImages.setEnabled(false);
+//          if(colorValueSlidersPanel.showColoredPixels())
+//          {
+//            sendShowObjectsPixels(colorClass, "on");
+//          }
           sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
           try 
           {
@@ -418,13 +420,21 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           {
             this.coloredObjectChooserPanel.setEnabled(true);
             this.colorValueSlidersPanel.setEnabled(true);
+            this.btReceiveImages.setEnabled(true);
             btCalibrate.setSelected(false);
+            
+            try 
+            {
+              Thread.sleep(30);
+            }
+            catch (Exception ex)
+            {}
+            sendShowObjectsPixels(colorClass, "on");
           }
         }
       }
-      if(btCalibrate.isSelected())
+      else
       {
-        //btCalibrate.setSelected(false);
         for(Colors.ColorClass c: Colors.ColorClass.values())
         {
           if
@@ -438,10 +448,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
             c == Colors.ColorClass.blue
           )
           {
-            if(colorValueSlidersPanel.showColoredPixels())
-            {
+//            if(colorValueSlidersPanel.showColoredPixels())
+//            {
               sendShowObjectsPixels(c, "off");
-            }
+//            }
             sendColorCalibCommand(c, "off");          
           }
         }
@@ -455,12 +465,14 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         {
           this.colorValueSlidersPanel.setEnabled(true);
           this.coloredObjectChooserPanel.setEnabled(true);
+          this.btReceiveImages.setEnabled(true);
         }
         else
         {
           btCalibrate.setSelected(true);
           this.colorValueSlidersPanel.setEnabled(false);
           this.coloredObjectChooserPanel.setEnabled(false);
+          this.btReceiveImages.setEnabled(false);
         }
       }
     }
@@ -472,7 +484,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
   private void jSliderStrengthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderStrengthStateChanged
     setStrength(jSliderStrength.getValue());        
     Double val = jSliderStrength.getValue() / 10.0;
-    sendCommand(new Command(getSetCalibStrength + ":set").addArg("calibrationStrength", val.toString()));
+    if(this.parent.getMessageServer().isConnected())
+    {
+      sendCommand(new Command(getSetCalibStrength + ":set").addArg("calibrationStrength", val.toString()));
+    }
   }//GEN-LAST:event_jSliderStrengthStateChanged
 
   private void btCalibrateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btCalibrateMouseClicked
