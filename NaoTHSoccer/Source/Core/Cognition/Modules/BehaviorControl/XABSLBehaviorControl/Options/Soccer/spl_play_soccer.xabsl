@@ -56,6 +56,9 @@ option spl_play_soccer {
 
       // 
       fall_down_and_stand_up();
+
+      //
+      play_soccer();
       
       // control head movement according to value of head.control_mode
       head_control();

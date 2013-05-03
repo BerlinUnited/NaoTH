@@ -1,11 +1,22 @@
 option test_walk_lv2{
 
 common decision {
-  if (!readyToWalk)
-    goto dummy;
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
 }
 
-initial state diagonal{
+initial state idle{
+  decision 
+  {
+    else
+      goto diagonal;
+  }
+  action
+  {
+  }
+}
+
+state diagonal{
   decision
   {
     else if (action_done){
@@ -54,18 +65,6 @@ target state stop {
   action
   {
   }
-}
-
-state dummy{
-  decision 
-  {
-    else
-      goto diagonal;
-  }
-  action
-  {
-  }
-
 }
 
 }

@@ -14,7 +14,7 @@ option fall_down_and_stand_up
     {
       motion.execute_immediately = true;
       motion.type= dead;
-      readyToWalk = false;
+      body.ready_to_walk = false;
     }
   }
 
@@ -30,7 +30,7 @@ option fall_down_and_stand_up
     action
     {
       motion.type=stand;
-      readyToWalk = true;
+      body.ready_to_walk = true;
     }
   }
 
@@ -47,7 +47,7 @@ option fall_down_and_stand_up
     {
       motion.execute_immediately = false;
       stand_up();
-      readyToWalk = false;
+      body.ready_to_walk = false;
     }
   }
 }

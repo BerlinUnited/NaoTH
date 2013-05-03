@@ -41,11 +41,8 @@ namespace internal_symbols("Internal Symbols") {
 
   enum head.control_mode internal head.control_mode;
 
-  bool internal readyToWalk;
 
-  /* sensor_symbols */
-
-  bool internal need_calibrate;
+  bool internal body.ready_to_walk;
 
   /* strategy symbols*/
 
