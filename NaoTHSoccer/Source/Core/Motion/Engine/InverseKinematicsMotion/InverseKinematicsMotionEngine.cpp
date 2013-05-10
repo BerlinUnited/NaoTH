@@ -158,13 +158,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
 
   // copy the requested values for the head and arm joints
-  const double *sj = theMotorJointData.position;//theBlackBoard.theSensorJointData.position;
+  const double *sj = theMotorJointData.position;
   double *j = theInverseKinematics.theJointData.position;
   for (int i = JointData::HeadPitch; i <= JointData::LElbowYaw; i++)
   {
     j[i] = sj[i];
   }
-
 
 
   double bestError = std::numeric_limits<double>::max();
@@ -187,9 +186,9 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     // ... and the com
     theInverseKinematics.theKinematicChain.updateCoM();
 
-    Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
+    Vector3d obsCoM = theInverseKinematics.theKinematicChain.CoM;
 
-    Vector3<double> e = refCoM - obsCoM;
+    Vector3d e = refCoM - obsCoM;
 
     double error = e.x * e.x + e.y * e.y + e.z * e.z*(!fix_height);
 
@@ -208,7 +207,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     if (bestError < max_error /*&& i > 0*/)
     {
       // converge
-      result.hip.translation = theCoMControlResult;
+      assert(result.hip.translation.x == theCoMControlResult.x && 
+             result.hip.translation.y == theCoMControlResult.y &&
+             result.hip.translation.z == theCoMControlResult.z);
+      //result.hip.translation = theCoMControlResult;
       break;
     }
 
@@ -216,13 +218,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
     double maxAdjustment = 50;
     MODIFY("IK_COM_CTR_MAX", maxAdjustment);
-    Vector3<double> u;
-    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment)
-    {
+    Vector3d u;
+    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment) {
       sloved = false;
-    }
-    else
-    {
+    } else {
       sloved = true;
     }
     u.x = Math::clamp(e.x * step, -maxAdjustment, maxAdjustment);
@@ -232,13 +231,15 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     result.hip.translation += u;
   }//end for
   
-  if ( bestError > 1 )
-  {
+  if(!sloved) {
+    std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
+  }
+
+  if ( bestError > 1 ) {
     std::cerr<<"Warning: can not control CoM @ "<<bestError<<std::endl;
   }
 
-  if( i == max_iter )
-  {
+  if( i == max_iter ) {
     std::cerr<<"Warning: maximum iterations reached @ "<<bestError<<std::endl;
   }
   
@@ -262,12 +263,12 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
   Vector2<double> weight;
   weight.x = 
-      getParameters().walk.stabilizeFeetP.x * inertial.x
-    + getParameters().walk.stabilizeFeetD.x * filteredGyro.x;
+      getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
+    + getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
 
   weight.y = 
-      getParameters().walk.stabilizeFeetP.y * inertial.y
-    + getParameters().walk.stabilizeFeetD.y * filteredGyro.y;
+      getParameters().walk.stabilization.stabilizeFeetP.y * inertial.y
+    + getParameters().walk.stabilization.stabilizeFeetD.y * filteredGyro.y;
 
 
   // X axis
@@ -287,7 +288,7 @@ void InverseKinematicsMotionEngine::feetStabilize(
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
-  const InertialSensorData& theInertialSensorData,
+  const naoth::InertialSensorData& theInertialSensorData,
   Pose3D& hip, 
   const Pose3D& leftFoot, 
   const Pose3D& rightFoot)
@@ -297,10 +298,12 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   const double switchingRate = theRobotInfo.basicTimeStep / switchingTime;
   //if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
   if(!theGroundContactModel.leftGroundContact &&
-     !theGroundContactModel.rightGroundContact)
+     !theGroundContactModel.rightGroundContact) 
+  {
     rotationStabilizeFactor -= switchingRate;
-  else
+  } else {
     rotationStabilizeFactor += switchingRate;
+  }
 
   rotationStabilizeFactor = Math::clamp(rotationStabilizeFactor, 0.0, 1.0);
   PLOT("rotationStabilizeFactor", rotationStabilizeFactor);
@@ -318,7 +321,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   Vector2d e = r - s;
 
   bool isWorking = false;
-  Vector2<double> chestRotationStabilizerValue;
+  Vector2d chestRotationStabilizerValue;
   const double maxAngle = Math::fromDegrees(30);
   for( int i=0; i<2; i++ )
   {
@@ -353,7 +356,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
 {
   Pose3D chest = p.hip;
   chest.translate(0, 0, NaoInfo::HipOffsetZ);
-  static const Vector3<double> footOffset(0,0,-NaoInfo::FootHeight);
+  static const Vector3d footOffset(0,0,-NaoInfo::FootHeight);
   
   double err = theInverseKinematics.gotoLegs(chest, p.feet.left, p.feet.right, footOffset, footOffset);
 
@@ -398,8 +401,8 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   currentCoMPose.com *= trans;
 
   thePreviewControlCoM = currentCoMPose.com.translation;
-  thePreviewControldCoM = Vector2<double>(0,0);
-  thePreviewControlddCoM = Vector2<double>(0,0);
+  thePreviewControldCoM = Vector2d(0,0);
+  thePreviewControlddCoM = Vector2d(0,0);
   thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
   
   unsigned int previewSteps = thePreviewController.previewSteps() - 1;
@@ -526,8 +529,70 @@ void InverseKinematicsMotionEngine::autoArms(
   //----------------------------------------------
 }//end autoArms
 
+
+void InverseKinematicsMotionEngine::armsOnBack(
+  const RobotInfo& theRobotInfo,
+  const HipFeetPose& pose,
+  double (&position)[JointData::numOfJoint])
+{
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-90);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(90);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::RElbowRoll] = Math::fromDegrees(30);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
+  target[JointData::RElbowYaw] = Math::fromDegrees(-25);
+  target[JointData::LElbowYaw] = Math::fromDegrees(25);
+
+  // make sure the arms do not collide legs --------------
+  double diffR = target[JointData::RShoulderPitch] - position[JointData::RShoulderPitch];
+  double diffL = target[JointData::LShoulderPitch] - position[JointData::LShoulderPitch];
+
+  if( (diffR + diffL) / 2 <= 0.02)
+  {
+    // limit the max speed -----------------------------
+    double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    for (int i = JointData::RElbowRoll; i <= JointData::LElbowYaw; i++)
+    {
+      double s = target[i] - position[i];
+      s = Math::clamp(s, -max_speed, max_speed);
+      position[i] += s;
+    }
+    diffR = target[JointData::RElbowRoll] - position[JointData::RElbowRoll];
+    diffL = target[JointData::LElbowRoll] - position[JointData::LElbowRoll];
+    if( (diffR + diffL) / 2 <= 0.02)
+    {
+      target[JointData::RShoulderRoll] = 0.0;
+      target[JointData::LShoulderRoll] = 0.0;
+      for (int i = JointData::RShoulderRoll; i <= JointData::LShoulderRoll; i++)
+      {
+        double s = target[i] - position[i];
+        s = Math::clamp(s, -max_speed, max_speed);
+        position[i] += s;
+      }
+    }
+  }
+  else
+  {
+    target[JointData::RElbowRoll] = 0.0;
+    target[JointData::RElbowRoll] = 0.0;
+    // limit the max speed -----------------------------
+    double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+    {
+      double s = target[i] - position[i];
+      s = Math::clamp(s, -max_speed, max_speed);
+      position[i] += s;
+    }
+  }
+  //---------------------------------------------
+
+}//end armsOnBack
+
+
 // calculates the com of theKinematicChain in the coordinates of the link 
-Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(
+Vector3d InverseKinematicsMotionEngine::sensorCoMIn(
   const KinematicChainSensor& theKinematicChain,
   KinematicChain::LinkID link) const
 {
@@ -539,7 +604,7 @@ Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(
 
 // compares expected com and com from sensors
 // @return adjust applyed to hip
-Vector3<double> InverseKinematicsMotionEngine::balanceCoM(
+Vector3d InverseKinematicsMotionEngine::balanceCoM(
   const FrameInfo& theFrameInfo,
   const KinematicChainSensor& theKinematicChain,
   const Vector3d& lastReqCoM, 
@@ -633,7 +698,7 @@ void InverseKinematicsMotionEngine::gotoArms(
 
   // move the arm accoring to interial sensor -------------
   if (getParameters().arm.alwaysEnabled
-    || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.useArm))
+    || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.general.useArm))
   {
     // TODO: InertialSensorData may be better
     const InertialModel& isd = theInertialModel;

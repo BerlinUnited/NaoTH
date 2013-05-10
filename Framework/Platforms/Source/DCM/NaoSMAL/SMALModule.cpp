@@ -133,6 +133,7 @@ void SMALModule::init()
 
   theDCMHandler.init(pBroker);
 
+  // calculate the difference between the NaoTime and the DcmTime
   unsigned int delta = 0;
   dcmTime = theDCMHandler.getTime(delta);
   timeOffset = dcmTime - NaoTime::getNaoTimeInMilliSeconds();
@@ -200,7 +201,7 @@ void SMALModule::motionCallbackPre()
 {
   long long start = NaoTime::getSystemTimeInMicroSeconds();
 
-  // update the dcm time
+  // update the dcm time: NaoTime + (offset to DCM time)
   dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
 
   // we are at the moment shortly before the DCM commands are send to the

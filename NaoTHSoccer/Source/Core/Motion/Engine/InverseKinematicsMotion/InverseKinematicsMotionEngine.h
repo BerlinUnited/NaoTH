@@ -156,20 +156,22 @@ public:
     const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
 
-private:
+  void armsOnBack(
+    const RobotInfo& theRobotInfo,
+    const InverseKinematic::HipFeetPose& pose, 
+    double (&position)[naoth::JointData::numOfJoint]);
 
-  //const MotionBlackBoard& theBlackBoard;
-  
+private:
   IKParameters theParameters;
 
   Kinematics::InverseKinematics theInverseKinematics;
   
-  Vector3<double> theCoMControlResult; // save CoM control result to be reused
+  Vector3d theCoMControlResult; // save CoM control result to be reused
 
   PreviewController thePreviewController;
-  Vector3<double> thePreviewControlCoM;
-  Vector2<double> thePreviewControldCoM;
-  Vector2<double> thePreviewControlddCoM;
+  Vector3d thePreviewControlCoM;
+  Vector2d thePreviewControldCoM;
+  Vector2d thePreviewControlddCoM;
 
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
@@ -180,13 +182,9 @@ private:
 class InverseKinematicsMotionEngineService
 {
 public:
-  InverseKinematicsMotionEngineService() 
-    : 
-  theEngine(NULL) 
-  {
-  }
+  InverseKinematicsMotionEngineService() : theEngine(NULL) {}
 
-  virtual ~InverseKinematicsMotionEngineService()
+  virtual ~InverseKinematicsMotionEngineService() 
   {
     delete theEngine;
   }

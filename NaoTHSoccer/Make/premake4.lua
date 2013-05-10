@@ -137,6 +137,7 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  postbuildcommands { "premake4 webots_copy" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
