@@ -52,6 +52,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   // parameter list
   DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequest2()));
 }
 
 void Debug::execute()

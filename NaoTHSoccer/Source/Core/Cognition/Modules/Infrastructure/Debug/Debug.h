@@ -51,6 +51,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(ColorClassificationModel)
   PROVIDE(MotionRequest)
   PROVIDE(CameraSettingsRequest)
+  PROVIDE(CameraSettingsRequest2)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, virtual private BlackBoardInterface, public DebugCommandExecutor
