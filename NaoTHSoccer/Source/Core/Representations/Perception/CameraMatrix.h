@@ -71,6 +71,24 @@ public:
   virtual ~CameraMatrixBuffer() {}
 };
 
+class CameraMatrixBuffer2 : public RingBuffer<CameraMatrix2, 10>, public naoth::Printable
+{
+public:
+
+  virtual void print(std::ostream& stream) const
+  {
+    for(int i=0; i < getNumberOfEntries(); i++)
+    {
+      stream << "entry " << i << std::endl;
+      stream << "=========" << std::endl;
+      getEntry(i).print(stream);
+      stream << std::endl;
+    }
+  }//end print
+
+  virtual ~CameraMatrixBuffer2() {}
+};
+
 namespace naoth
 {
   template<>
@@ -79,6 +97,14 @@ namespace naoth
   public:
     static void serialize(const CameraMatrix& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, CameraMatrix& representation);
+  };
+
+  template<>
+  class Serializer<CameraMatrix2>
+  {
+  public:
+    static void serialize(const CameraMatrix2& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraMatrix2& representation);
   };
 }
 

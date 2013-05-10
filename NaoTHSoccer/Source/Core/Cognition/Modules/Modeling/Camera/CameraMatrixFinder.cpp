@@ -22,42 +22,64 @@ CameraMatrixFinder::CameraMatrixFinder()
 
 void CameraMatrixFinder::execute()
 {
-  executeForSpecificCamera(getImage(), getCameraMatrix());
-  executeForSpecificCamera(getImage2(), getCameraMatrix2());
-}
-
-void CameraMatrixFinder::executeForSpecificCamera(const Image &img, CameraMatrix &matrix)
-{
-  const CameraMatrixBuffer& buffer = getCameraMatrixBuffer();
-  if(buffer.getNumberOfEntries() < 1)
+  // BOTTOM CAMERA
+  if(getCameraMatrixBuffer().getNumberOfEntries() > 0)
   {
-    return;
+
+    int smallestDiff = std::numeric_limits<int>::max();
+    unsigned int smallestIndex = 0; // default to last one
+
+    for(int i=0; i < getCameraMatrixBuffer().getNumberOfEntries(); i++)
+    {
+      const CameraMatrix& m = getCameraMatrixBuffer().getEntry(i);
+      // compare time stamp
+      int diff = abs((int) m.timestamp - (int) getImage().timestamp);
+      if(diff < smallestDiff)
+      {
+        smallestDiff = diff;
+        smallestIndex = i;
+      }
+      else
+      {
+        // since the time is continous, we can't get better if we are already
+        // got worse once
+        break;
+      }
+    }
+
+    // actually set the cameraMatrix
+    getCameraMatrix() = getCameraMatrixBuffer().getEntry(smallestIndex);
   }
 
-  int smallestDiff = std::numeric_limits<int>::max();
-  unsigned int smallestIndex = 0; // default to last one
-
-  for(int i=0; i < buffer.getNumberOfEntries(); i++)
+  // TOP CAMERA
+  if(getCameraMatrixBuffer2().getNumberOfEntries() > 0)
   {
-    const CameraMatrix& m = buffer.getEntry(i);
-    // compare time stamp
-    int diff = abs((int) m.timestamp - (int) img.timestamp);
-    if(diff < smallestDiff)
-    {
-      smallestDiff = diff;
-      smallestIndex = i;
-    }
-    else
-    {
-      // since the time is continous, we can't get better if we are already
-      // got worse once
-      break;
-    }
-  }
+    int smallestDiff = std::numeric_limits<int>::max();
+    unsigned int smallestIndex = 0; // default to last one
 
-  // actually set the cameraMatrix
-  matrix = buffer.getEntry(smallestIndex);
+    for(int i=0; i < getCameraMatrixBuffer2().getNumberOfEntries(); i++)
+    {
+      const CameraMatrix& m = getCameraMatrixBuffer2().getEntry(i);
+      // compare time stamp
+      int diff = abs((int) m.timestamp - (int) getImage2().timestamp);
+      if(diff < smallestDiff)
+      {
+        smallestDiff = diff;
+        smallestIndex = i;
+      }
+      else
+      {
+        // since the time is continous, we can't get better if we are already
+        // got worse once
+        break;
+      }
+    }
+
+    // actually set the cameraMatrix
+    getCameraMatrix2() = getCameraMatrixBuffer2().getEntry(smallestIndex);
+  }
 }
+
 
 CameraMatrixFinder::~CameraMatrixFinder()
 {

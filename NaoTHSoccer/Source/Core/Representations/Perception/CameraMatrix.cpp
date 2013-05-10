@@ -52,3 +52,13 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
     representation.rotation[i].z = msg.pose().rotation(i).z();
   }
 }//end deserialize
+
+void Serializer<CameraMatrix2>::serialize(const CameraMatrix2& representation, std::ostream& stream)
+{
+  Serializer<CameraMatrix>::serialize(representation, stream);
+}//end serialize
+
+void Serializer<CameraMatrix2>::deserialize(std::istream& stream, CameraMatrix2& representation)
+{
+  Serializer<CameraMatrix>::deserialize(stream, representation);
+}//end deserialize

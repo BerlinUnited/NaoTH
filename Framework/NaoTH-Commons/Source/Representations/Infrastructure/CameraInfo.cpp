@@ -82,7 +82,6 @@ void CameraInfo::print(ostream& stream) const
          ;
 }//end CameraInfo::print
 
-
 CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
 {
   PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
@@ -134,7 +133,6 @@ void CameraInfoParameter::setCameraTrans()
     transformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
   }
 }//end CameraInfoParameter::setCameraTrans
-
 
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
 {
@@ -196,6 +194,16 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
       }
     }
   }
-
 }
+
+void Serializer<CameraInfo2>::serialize(const CameraInfo2& representation, std::ostream& stream)
+{
+  Serializer<CameraInfo>::serialize(representation, stream);
+}
+
+void Serializer<CameraInfo2>::deserialize(std::istream& stream, CameraInfo2& r)
+{
+  Serializer<CameraInfo>::deserialize(stream, r);
+}
+
 

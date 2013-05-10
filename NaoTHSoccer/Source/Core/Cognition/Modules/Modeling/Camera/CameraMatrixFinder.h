@@ -26,6 +26,7 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(CameraMatrixFinder)
   REQUIRE(CameraMatrixBuffer)
+  REQUIRE(CameraMatrixBuffer2)
   REQUIRE(Image)
   REQUIRE(Image2)
 
@@ -46,7 +47,7 @@ public:
 
   virtual void execute();
 private:
-  void executeForSpecificCamera(const Image& img, CameraMatrix& matrix);
+  void executeForSpecificCamera(const Image& img, CameraMatrix& matrix, const CameraMatrixBuffer &buffer);
 };
 
 #endif // CAMERAMATRIXFINDER_H

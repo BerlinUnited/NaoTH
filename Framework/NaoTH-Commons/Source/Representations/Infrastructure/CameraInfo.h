@@ -103,7 +103,6 @@ namespace naoth
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
 
-
     virtual void print(std::ostream& stream) const;
 
   protected:
@@ -112,6 +111,12 @@ namespace naoth
 
   };
 
+  class CameraInfo2 : public CameraInfo
+  {
+  public:
+    using CameraInfo::operator =;
+    virtual ~CameraInfo2() {}
+  };
 
   class CameraInfoParameter : public CameraInfo, public ParameterList
   {
@@ -123,8 +128,6 @@ namespace naoth
     };
 
     CameraTransInfo cameraTrans[numOfCamera];
-
-
     void setCameraTrans();
 
   public:
@@ -132,13 +135,21 @@ namespace naoth
     void init();
 
   };
-  
+
   template<>
   class Serializer<CameraInfo>
   {
     public:
     static void serialize(const CameraInfo& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, CameraInfo& representation);
+  };
+
+  template<>
+  class Serializer<CameraInfo2>
+  {
+    public:
+    static void serialize(const CameraInfo2& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfo2& representation);
   };
   
 }
