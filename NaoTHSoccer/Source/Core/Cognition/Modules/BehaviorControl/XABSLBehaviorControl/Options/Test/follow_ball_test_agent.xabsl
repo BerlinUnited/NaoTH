@@ -1,5 +1,5 @@
 /** The root option of the soccer behavior */
-option test_walk_lv1_agent {
+option follow_ball_test_agent {
 
   initial state test {    
     action {
@@ -21,7 +21,7 @@ option test_walk_lv1_agent {
       // 
       fall_down_and_stand_up();
 
-      test_walk_lv1();
+      follow_ball_test();
       
       // control head movement according to value of head.control_mode
       head_control();

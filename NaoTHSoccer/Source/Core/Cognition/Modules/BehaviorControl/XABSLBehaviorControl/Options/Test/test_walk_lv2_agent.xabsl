@@ -1,22 +1,7 @@
 /** The root option of the soccer behavior */
 option test_walk_lv2_agent {
 
-  // this is part of the initial precedure
-  // to ensure that the robot stands before doing anything
-  initial state stand {
-    decision {
-      if(executed_motion.type == stand)
-        goto test;
-      else
-        stay;
-    }
-    action {
-      head.control_mode = stay_as_forced;
-      motion.type = stand;
-    }
-  }
-
-  state test {    
+  initial state test {    
     action {
     
       //IMPORTANT: reset some stuff(!)

@@ -1,0 +1,31 @@
+option follow_ball_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode == playing)
+      goto play;
+    else if(true)
+      goto idle;
+  }
+  
+
+  initial state idle{action{}}
+
+  state play
+  {
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 120 - ball.radius);
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x);
+    }
+  }
+}
