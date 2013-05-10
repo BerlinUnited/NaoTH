@@ -29,7 +29,6 @@ void CameraMatrixFinder::execute()
 void CameraMatrixFinder::executeForSpecificCamera(const Image &img, CameraMatrix &matrix)
 {
   const CameraMatrixBuffer& buffer = getCameraMatrixBuffer();
-  std::cout << "finding camera matrix" << std::endl;
   if(buffer.getNumberOfEntries() < 1)
   {
     return;
@@ -43,8 +42,6 @@ void CameraMatrixFinder::executeForSpecificCamera(const Image &img, CameraMatrix
     const CameraMatrix& m = buffer.getEntry(i);
     // compare time stamp
     int diff = abs((int) m.timestamp - (int) img.timestamp);
-    std::cout << "diff: " << diff << " (matrix: " << m.timestamp << " image: "
-              << img.timestamp << ")" << std::endl;
     if(diff < smallestDiff)
     {
       smallestDiff = diff;
@@ -59,8 +56,6 @@ void CameraMatrixFinder::executeForSpecificCamera(const Image &img, CameraMatrix
   }
 
   // actually set the cameraMatrix
-  std::cout << "finding camera matrix with index " << smallestIndex <<
-            " (diff was " << smallestDiff << ")" << std::endl;
   matrix = buffer.getEntry(smallestIndex);
 }
 
