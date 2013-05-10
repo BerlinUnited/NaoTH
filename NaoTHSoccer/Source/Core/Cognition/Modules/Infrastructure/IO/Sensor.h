@@ -35,6 +35,7 @@
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
 #include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Perception/CameraMatrixBuffer.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>

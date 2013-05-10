@@ -53,42 +53,6 @@ public:
   virtual ~CameraMatrix2() {}
 };
 
-class CameraMatrixBuffer : public RingBuffer<CameraMatrix, 10>, public naoth::Printable
-{
-public:
-
-  virtual void print(std::ostream& stream) const
-  {
-    for(int i=0; i < getNumberOfEntries(); i++)
-    {
-      stream << "entry " << i << std::endl;
-      stream << "=========" << std::endl;
-      getEntry(i).print(stream);
-      stream << std::endl;
-    }
-  }//end print
-
-  virtual ~CameraMatrixBuffer() {}
-};
-
-class CameraMatrixBuffer2 : public RingBuffer<CameraMatrix2, 10>, public naoth::Printable
-{
-public:
-
-  virtual void print(std::ostream& stream) const
-  {
-    for(int i=0; i < getNumberOfEntries(); i++)
-    {
-      stream << "entry " << i << std::endl;
-      stream << "=========" << std::endl;
-      getEntry(i).print(stream);
-      stream << std::endl;
-    }
-  }//end print
-
-  virtual ~CameraMatrixBuffer2() {}
-};
-
 namespace naoth
 {
   template<>

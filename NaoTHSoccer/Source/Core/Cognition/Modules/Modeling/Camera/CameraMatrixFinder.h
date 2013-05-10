@@ -20,7 +20,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Perception/CameraMatrix.h>
-
+#include <Representations/Perception/CameraMatrixBuffer.h>
 
 using namespace naoth;
 

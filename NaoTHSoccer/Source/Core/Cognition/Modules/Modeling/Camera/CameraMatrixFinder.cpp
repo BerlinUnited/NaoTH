@@ -15,7 +15,7 @@
 */
 
 #include "CameraMatrixFinder.h"
-
+#include <Tools/Debug/DebugBufferedOutput.h>
 CameraMatrixFinder::CameraMatrixFinder()
 {
 }
@@ -49,6 +49,13 @@ void CameraMatrixFinder::execute()
 
     // actually set the cameraMatrix
     getCameraMatrix() = getCameraMatrixBuffer().getEntry(smallestIndex);
+
+    double oldDiff = fabs((double) getCameraMatrixBuffer().getEntry(0).timestamp -
+                          (double) getImage().timestamp);
+    PLOT("bottom-cammatrix-old-diff", oldDiff);
+    double bestDiff = smallestDiff;
+    PLOT("bottom-cammatrix-best-diff", bestDiff);
+
   }
 
   // TOP CAMERA
@@ -77,6 +84,13 @@ void CameraMatrixFinder::execute()
 
     // actually set the cameraMatrix
     getCameraMatrix2() = getCameraMatrixBuffer2().getEntry(smallestIndex);
+
+    double oldDiff = fabs((double) getCameraMatrixBuffer2().getEntry(0).timestamp
+                          - (double) getImage2().timestamp);
+    PLOT("top-cammatrix-old-diff", oldDiff);
+    double bestDiff = smallestDiff;
+    PLOT("top-cammatrix-best-diff", bestDiff);
+
   }
 }
 
