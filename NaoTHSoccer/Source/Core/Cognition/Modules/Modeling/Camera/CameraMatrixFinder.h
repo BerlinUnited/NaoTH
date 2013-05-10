@@ -46,6 +46,7 @@ public:
 
   virtual void execute();
 private:
+  void executeForSpecificCamera(const Image& img, CameraMatrix& matrix);
 };
 
 #endif // CAMERAMATRIXFINDER_H
