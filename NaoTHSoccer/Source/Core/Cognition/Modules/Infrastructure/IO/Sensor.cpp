@@ -34,7 +34,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
   REG_INPUT(Image);
-  REG_INPUT(SecondaryImage);
+  REG_INPUT(Image2);
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(VirtualVision);
   REG_INPUT(FrameInfo);

@@ -47,7 +47,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   
   PROVIDE(SerialSensorData)
   PROVIDE(Image)
-  PROVIDE(SecondaryImage)
+  PROVIDE(Image2)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)

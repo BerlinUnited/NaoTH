@@ -69,7 +69,7 @@ NaoController::NaoController()
   /*  REGISTER IO  */
   // camera
   registerInput<Image>(*this);
-  registerInput<SecondaryImage>(*this);
+  registerInput<Image2>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerOutput<const CameraSettingsRequest>(*this);
     

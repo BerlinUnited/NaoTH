@@ -80,9 +80,9 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     if(arguments.find("secondary") != arguments.end())
     {
       GT_TRACE("Debug::executeDebugCommand() before serialize");
-      STOPWATCH_START("sendSecondaryImage");
-      Serializer<Image>::serialize(getSecondaryImage(), outstream);
-      STOPWATCH_STOP("sendSecondaryImage");
+      STOPWATCH_START("sendImage2");
+      Serializer<Image>::serialize(getImage2(), outstream);
+      STOPWATCH_STOP("sendImage2");
       GT_TRACE("Debug::executeDebugCommand() after serialize");
     }
     else

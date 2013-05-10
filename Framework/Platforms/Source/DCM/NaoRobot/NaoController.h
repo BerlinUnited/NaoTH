@@ -141,7 +141,7 @@ public:
 
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); }
-  void get(SecondaryImage& data){ theTopCameraHandler.get(data); }
+  void get(Image2& data){ theTopCameraHandler.get(data); }
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);
 

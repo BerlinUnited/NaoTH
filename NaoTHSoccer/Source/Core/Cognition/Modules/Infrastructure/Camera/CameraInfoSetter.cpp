@@ -32,7 +32,6 @@ void CameraInfoSetter::execute()
   getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
   getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
 
-
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 }

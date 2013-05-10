@@ -302,10 +302,10 @@ namespace naoth
   /**
    * @brief An image from a secondary camera
    */
-  class SecondaryImage : public Image
+  class Image2 : public Image
   {
   public:
-    virtual ~SecondaryImage() {}
+    virtual ~Image2() {}
   };
 
 } // end namespace naoth
