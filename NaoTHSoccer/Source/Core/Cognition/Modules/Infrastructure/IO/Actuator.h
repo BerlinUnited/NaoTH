@@ -30,6 +30,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(Actuator)
   
   REQUIRE(CameraSettingsRequest)
+  REQUIRE(CameraSettingsRequest2)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)

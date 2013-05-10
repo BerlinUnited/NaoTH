@@ -73,7 +73,6 @@ public:
   void shutdown();
 
   bool isRunning();
-
   virtual ~V4lCameraHandler();
 
 private:
