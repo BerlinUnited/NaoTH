@@ -44,6 +44,15 @@ public:
   }//end print
 };
 
+/**
+ * @brief A camera matrix from a secondary camera
+ */
+class CameraMatrix2 : public CameraMatrix
+{
+public:
+  virtual ~CameraMatrix2() {}
+};
+
 class CameraMatrixBuffer : public RingBuffer<CameraMatrix, 10>, public naoth::Printable
 {
 public:
