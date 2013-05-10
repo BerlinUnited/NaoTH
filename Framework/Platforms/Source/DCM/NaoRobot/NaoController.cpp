@@ -201,9 +201,9 @@ void NaoController::set(const CameraSettingsRequest& data)
   if(somethingChanged)
   {
     std::cout << "Init CameraHandler and settting camera settings (bottom)" << endl;
-    theBottomCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom);
+    theBottomCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom, true);
     std::cout << "Init CameraHandler and settting camera settings (top)" << endl;
-    theTopCameraHandler.init(data, "/dev/video0", CameraInfo::Top);
+    theTopCameraHandler.init(data, "/dev/video0", CameraInfo::Top, false);
   }
 }//end set CameraSettingsRequest
 

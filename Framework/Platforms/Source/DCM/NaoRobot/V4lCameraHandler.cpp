@@ -56,7 +56,8 @@ V4lCameraHandler::V4lCameraHandler()
 }
 
 void V4lCameraHandler::init(const CameraSettings camSettings,
-                            std::string camDevice, CameraInfo::CameraID camID)
+                            std::string camDevice, CameraInfo::CameraID camID,
+                            bool blockingMode)
 {
 
   if(isCapturing)
@@ -74,7 +75,7 @@ void V4lCameraHandler::init(const CameraSettings camSettings,
   cameraName = camDevice;
 
   // open the device
-  openDevice(true);//in blocking mode
+  openDevice(blockingMode);//in blocking mode
   setAllCameraParams(camSettings);
   setFPS(30);
   initDevice();
@@ -434,7 +435,14 @@ int V4lCameraHandler::readFrameMMaP()
     if(bufferSwitched)
     {
       //put buffer back in the drivers incoming queue
-      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      if(blockingCaptureModeEnabled)
+      {
+        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      }
+      else
+      {
+        xioctl(fd, VIDIOC_QBUF, &lastBuf);
+      }
       //std::cout << "give buffer to driver" << std::endl;
     }
    }
@@ -612,7 +620,8 @@ void V4lCameraHandler::get(Image& theImage)
 
     if (resultCode < 0)
     {
-      std::cerr << "[V4L get] Could not get image, error code " << resultCode << "/" << errno << std::endl;
+      std::cerr << "[V4L get] Could not get image, error code " << resultCode
+                << "/" << errno << " (" << strerror(errno) << ")" << std::endl;
     }
     else
     {
