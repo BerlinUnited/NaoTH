@@ -288,6 +288,57 @@ void InverseKinematicsMotionEngine::feetStabilize(
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
+  const InertialModel& theInertialModel,
+  const GyrometerData& theGyrometerData,
+  Pose3D& hip, 
+  const Pose3D& leftFoot, 
+  const Pose3D& rightFoot)
+{
+  Vector2d r;
+  r.x = hip.rotation.getXAngle();
+  r.y = hip.rotation.getYAngle();
+
+  PLOT("rotationStabilize:hip:x", Math::toDegrees(hip.rotation.getXAngle()));
+  PLOT("rotationStabilize:hip:y", Math::toDegrees(hip.rotation.getYAngle()));
+
+  const Vector2d& inertial = theInertialModel.orientation;
+  const Vector2d& gyro = theGyrometerData.data;
+
+  // HACK: small filter...
+  static Vector2d lastGyro = gyro;
+  Vector2d filteredGyro = (lastGyro+gyro)*0.5;
+
+  PLOT("rotationStabilize:gyro:x", Math::toDegrees(lastGyro.x));
+  PLOT("rotationStabilize:gyro:y", Math::toDegrees(lastGyro.y));
+
+  Vector2<double> weight;
+  weight.x = 
+      getParameters().walk.stabilization.rotationP.x * inertial.x
+    + getParameters().walk.stabilization.rotationD.x * filteredGyro.x;
+
+  weight.y = 
+      getParameters().walk.stabilization.rotationP.y * inertial.y
+    + getParameters().walk.stabilization.rotationD.y * filteredGyro.y;
+
+
+  double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+      //theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;
+  hip.translate(0, 0, -height);
+  hip.rotateX(weight.x);
+  hip.rotateY(weight.y);
+  hip.translate(0, 0, height);
+
+  PLOT("rotationStabilize:stabilizer:x", Math::toDegrees(hip.rotation.getXAngle()));
+  PLOT("rotationStabilize:stabilizer:y", Math::toDegrees(hip.rotation.getYAngle()));
+
+  lastGyro = gyro;
+  return true;
+}//end rotationStabilize
+
+
+bool InverseKinematicsMotionEngine::rotationStabilize(
+  const RobotInfo& theRobotInfo,
+  const GroundContactModel& theGroundContactModel,
   const naoth::InertialSensorData& theInertialSensorData,
   Pose3D& hip, 
   const Pose3D& leftFoot, 

@@ -72,7 +72,8 @@ void Walk::execute()
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
-        getInertialSensorData(),
+        getInertialModel(),
+        getGyrometerData(),
         c.hip, c.feet.left, c.feet.right);
     }
 

@@ -97,6 +97,9 @@ public:
       Vector2d stabilizeFeetP;
       Vector2d stabilizeFeetD;
 
+      Vector2d rotationP;
+      Vector2d rotationD;
+
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
     } stabilization;
