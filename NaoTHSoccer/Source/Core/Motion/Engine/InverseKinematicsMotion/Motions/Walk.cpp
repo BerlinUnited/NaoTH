@@ -219,12 +219,9 @@ bool Walk::FSRProtection()
     noTouchCount --;
   }
 
-  if ( !isStopping && canStop() )
-  {
+  if ( !isStopping && canStop() ) {
     return noTouchCount > theWalkParameters.stabilization.minFSRProtectionCount;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }//end FSRProtection
@@ -253,12 +250,9 @@ bool Walk::waitLanding()
   bool unSupporting = (raiseLeftFoot && !rightFootSupportable)
                       || (raiseRightFoot && !leftFootSupportable);
                       
-  if(unSupporting)
-  {
+  if(unSupporting) {
     theUnsupportedCount++;
-  }
-  else
-  {
+  } else {
     theUnsupportedCount = 0;
   }
 
@@ -267,8 +261,7 @@ bool Walk::waitLanding()
   {
     theWaitLandingCount++;
     return true;
-  } else
-  {
+  } else {
     theWaitLandingCount = 0;
     return false;
   }
@@ -396,8 +389,9 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-      if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize )
+      if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize ) {
         adaptStepSize(step.footStep);
+      }
       updateParameters(step, req.character);
     }
 
@@ -919,7 +913,7 @@ Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 
 void Walk::adaptStepSize(FootStep& step) const
 {
-  Vector3<double> comRef, comObs;
+  Vector3d comRef, comObs;
 
   if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
   {
@@ -934,11 +928,11 @@ void Walk::adaptStepSize(FootStep& step) const
     comObs = foot.invert() * getKinematicChainSensor().CoM;
   }
 
-  Vector3<double> comErr = comRef - comObs;
+  Vector3d comErr = comRef - comObs;
 
   PLOT("Walk:adaptStepSize:comErr.x",comErr.x);
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
-  PLOT("Walk:adaptStepSize:comErr.y",comErr.z);
+  PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
 
   double k = -1;
   MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);

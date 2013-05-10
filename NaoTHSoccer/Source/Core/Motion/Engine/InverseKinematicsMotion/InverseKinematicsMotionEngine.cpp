@@ -158,7 +158,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
 
   // copy the requested values for the head and arm joints
-  const double *sj = getSensorJointData().position; // theMotorJointData.position;
+  const double *sj = theMotorJointData.position;
   double *j = theInverseKinematics.theJointData.position;
   for (int i = JointData::HeadPitch; i <= JointData::LElbowYaw; i++)
   {
@@ -298,10 +298,12 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   const double switchingRate = theRobotInfo.basicTimeStep / switchingTime;
   //if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
   if(!theGroundContactModel.leftGroundContact &&
-     !theGroundContactModel.rightGroundContact)
+     !theGroundContactModel.rightGroundContact) 
+  {
     rotationStabilizeFactor -= switchingRate;
-  else
+  } else {
     rotationStabilizeFactor += switchingRate;
+  }
 
   rotationStabilizeFactor = Math::clamp(rotationStabilizeFactor, 0.0, 1.0);
   PLOT("rotationStabilizeFactor", rotationStabilizeFactor);
@@ -319,7 +321,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   Vector2d e = r - s;
 
   bool isWorking = false;
-  Vector2<double> chestRotationStabilizerValue;
+  Vector2d chestRotationStabilizerValue;
   const double maxAngle = Math::fromDegrees(30);
   for( int i=0; i<2; i++ )
   {
@@ -354,7 +356,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
 {
   Pose3D chest = p.hip;
   chest.translate(0, 0, NaoInfo::HipOffsetZ);
-  static const Vector3<double> footOffset(0,0,-NaoInfo::FootHeight);
+  static const Vector3d footOffset(0,0,-NaoInfo::FootHeight);
   
   double err = theInverseKinematics.gotoLegs(chest, p.feet.left, p.feet.right, footOffset, footOffset);
 
