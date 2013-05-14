@@ -10,6 +10,7 @@ message CameraMatrix {
   required Pose3D pose = 1;
   optional CameraID cameraID = 2 [default=bottom];
   optional bool valid = 3;
+  optional uint32 timestamp = 4;
 }
 
 message BallPercept {

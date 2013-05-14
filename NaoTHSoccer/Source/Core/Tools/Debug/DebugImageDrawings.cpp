@@ -6,6 +6,7 @@
 //
 
 #include "DebugImageDrawings.h"
+#include <Representations/Infrastructure/CameraInfo.h>
 
 using namespace naoth;
 
@@ -47,12 +48,12 @@ void DebugImageDrawings::drawPoint(
 
 unsigned int DebugImageDrawings::width() const
 {
-  return 320;
+  return naoth::IMAGE_WIDTH;
 }//end width
 
 unsigned int DebugImageDrawings::height() const
 {
-  return 240;
+  return naoth::IMAGE_HEIGHT;
 }//end height
 
 void DebugImageDrawings::reset()

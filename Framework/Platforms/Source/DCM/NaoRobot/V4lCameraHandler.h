@@ -64,7 +64,8 @@ public:
 
   void init(const CameraSettings camSettings,
             std::string camDevice = "/dev/video1",
-            CameraInfo::CameraID camID = CameraInfo::Bottom);
+            CameraInfo::CameraID camID = CameraInfo::Bottom,
+            bool blockingMode = true);
 
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
@@ -72,7 +73,6 @@ public:
   void shutdown();
 
   bool isRunning();
-
   virtual ~V4lCameraHandler();
 
 private:

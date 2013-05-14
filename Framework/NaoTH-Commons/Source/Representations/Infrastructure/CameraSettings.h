@@ -70,11 +70,26 @@ namespace naoth
   class CameraSettingsRequest : public ParameterList, public CameraSettings
   {
   public:
-    CameraSettingsRequest();
+    CameraSettingsRequest(std::string configName="CameraSettings");
     virtual ~CameraSettingsRequest() {}
 
     /** Set to true to query a real CameraSetting from the Nao camera */
     bool queryCameraSettings;
+
+  };
+
+  class CurrentCameraSettings2 : public CameraSettings
+  {
+  public:
+    CurrentCameraSettings2();
+    virtual ~CurrentCameraSettings2() {}
+  };
+
+  class CameraSettingsRequest2 : public CameraSettingsRequest
+  {
+  public:
+    CameraSettingsRequest2();
+    virtual ~CameraSettingsRequest2() {}
 
   };
 }

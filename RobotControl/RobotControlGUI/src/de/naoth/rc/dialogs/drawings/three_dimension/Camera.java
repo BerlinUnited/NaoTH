@@ -20,11 +20,16 @@ public class Camera extends Drawable
 {
 
   private Point3f[] vertex = new Point3f[4];
-
+  
   public Camera(String[] tokens) throws DataFormatException
   {
+    this(tokens, "Camera");
+  }
+  
+  protected Camera(String[] tokens, String cameraIdentifier) throws DataFormatException
+  {
     float scale = 0.0012f;
-    if(tokens.length > 4 && tokens[0].equals("Camera"))
+    if(tokens.length > 4 && tokens[0].equals(cameraIdentifier))
     {
       float focusLength = Float.parseFloat(tokens[1]) * scale;
       float width = Float.parseFloat(tokens[2]) * scale;

@@ -391,7 +391,7 @@ public class ThreeDimensionViewer extends AbstractDialog
 
     // attach the image of camera
     object.addCameraImage(image);
-
+    
     vw.add(object);
     if (activeScene != null)
     {

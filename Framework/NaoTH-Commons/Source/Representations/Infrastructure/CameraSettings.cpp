@@ -60,8 +60,8 @@ void CameraSettings::print(ostream& stream) const
 }//end print
 
 
-CameraSettingsRequest::CameraSettingsRequest()
-: ParameterList("CameraSettings"),
+CameraSettingsRequest::CameraSettingsRequest(string configName)
+: ParameterList(configName),
   queryCameraSettings(false)
 {
   for(int i=0;i<numOfCameraSetting;i++)
@@ -75,5 +75,15 @@ CameraSettingsRequest::CameraSettingsRequest()
 CurrentCameraSettings::CurrentCameraSettings()
 {
 
+}
+
+CurrentCameraSettings2::CurrentCameraSettings2()
+{
+
+}
+
+CameraSettingsRequest2::CameraSettingsRequest2()
+  : CameraSettingsRequest("CameraSettings2")
+{
 }
 

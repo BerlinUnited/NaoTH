@@ -99,6 +99,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from motion to cognition
   platformInterface.registerOutputChanel(getCameraMatrix());
+  platformInterface.registerOutputChanel(getCameraMatrix2());
   platformInterface.registerOutputChanel(getMotionStatus());
   platformInterface.registerOutputChanel(getOdometryData());
   //platformInterface.registerOutputChanel(getCalibrationData);
@@ -106,6 +107,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
+  platformInterface.registerInputChanel(getCameraInfo2());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
 
@@ -194,7 +196,8 @@ void Motion::processSensorData()
   theSupportPolygonGenerator->execute();
 
   //
-  updateCameraMatrix();
+  updateCameraMatrix("CameraMatrix", getCameraMatrix(), getCameraInfo());
+  updateCameraMatrix("CameraMatrix2", getCameraMatrix2(), getCameraInfo2());
 
   //
   theOdometryCalculator->execute();
@@ -302,30 +305,33 @@ void Motion::debugPlots()
 }//end debugPlots
 
 
-void Motion::updateCameraMatrix()
+void Motion::updateCameraMatrix(
+                                std::string name,
+                                CameraMatrix& cameraMatrix,
+                                const CameraInfo& cameraInfo)
 {
-  CameraMatrix& cameraMatrix = getCameraMatrix();
   CameraMatrixCalculator::calculateCameraMatrix(
     cameraMatrix,
-    getCameraInfo(),
+    cameraInfo,
     getKinematicChainSensor());
-
+  cameraMatrix.timestamp = getSensorJointData().timestamp;
   cameraMatrix.valid = true;
 
-  MODIFY("CameraMatrix:translation:x", cameraMatrix.translation.x);
-  MODIFY("CameraMatrix:translation:y", cameraMatrix.translation.y);
-  MODIFY("CameraMatrix:translation:z", cameraMatrix.translation.z);
+  MODIFY(name + ":translation:x", cameraMatrix.translation.x);
+  MODIFY(name + ":translation:y", cameraMatrix.translation.y);
+  MODIFY(name + ":translation:z", cameraMatrix.translation.z);
 
   double correctionAngleX = 0.0;
   double correctionAngleY = 0.0;
   double correctionAngleZ = 0.0;
-  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
-  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
-  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
+  MODIFY(name + ":correctionAngle:x", correctionAngleX);
+  MODIFY(name + ":correctionAngle:y", correctionAngleY);
+  MODIFY(name + ":correctionAngle:z", correctionAngleZ);
 
   cameraMatrix.rotation.rotateX(correctionAngleX);
   cameraMatrix.rotation.rotateY(correctionAngleY);
   cameraMatrix.rotation.rotateZ(correctionAngleZ);
+
 
 }// end updateCameraMatrix
 

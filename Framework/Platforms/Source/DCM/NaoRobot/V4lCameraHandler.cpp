@@ -56,7 +56,8 @@ V4lCameraHandler::V4lCameraHandler()
 }
 
 void V4lCameraHandler::init(const CameraSettings camSettings,
-                            std::string camDevice, CameraInfo::CameraID camID)
+                            std::string camDevice, CameraInfo::CameraID camID,
+                            bool blockingMode)
 {
 
   if(isCapturing)
@@ -74,7 +75,7 @@ void V4lCameraHandler::init(const CameraSettings camSettings,
   cameraName = camDevice;
 
   // open the device
-  openDevice(true);//in blocking mode
+  openDevice(blockingMode);//in blocking mode
   setAllCameraParams(camSettings);
   setFPS(30);
   initDevice();
@@ -259,8 +260,8 @@ void V4lCameraHandler::initDevice()
   struct v4l2_format fmt;
   memset(&fmt, 0, sizeof (struct v4l2_format));
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 320;
-  fmt.fmt.pix.height = 240;
+  fmt.fmt.pix.width = naoth::IMAGE_WIDTH;
+  fmt.fmt.pix.height = naoth::IMAGE_HEIGHT;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
   VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
@@ -434,7 +435,14 @@ int V4lCameraHandler::readFrameMMaP()
     if(bufferSwitched)
     {
       //put buffer back in the drivers incoming queue
-      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      if(blockingCaptureModeEnabled)
+      {
+        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      }
+      else
+      {
+        xioctl(fd, VIDIOC_QBUF, &lastBuf);
+      }
       //std::cout << "give buffer to driver" << std::endl;
     }
    }
@@ -612,7 +620,8 @@ void V4lCameraHandler::get(Image& theImage)
 
     if (resultCode < 0)
     {
-      std::cerr << "[V4L get] Could not get image, error code " << resultCode << "/" << errno << std::endl;
+      std::cerr << "[V4L get] Could not get image, error code " << resultCode
+                << "/" << errno << " (" << strerror(errno) << ")" << std::endl;
     }
     else
     {
@@ -915,6 +924,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       usleep(1000);
     } // end if csConst was set
   } // end for each camera setting (in order
+
 
 }
 

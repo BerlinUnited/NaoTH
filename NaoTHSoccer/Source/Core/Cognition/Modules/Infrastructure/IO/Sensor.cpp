@@ -34,7 +34,9 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
   REG_INPUT(Image);
+  REG_INPUT(Image2);
   REG_INPUT(CurrentCameraSettings);
+  REG_INPUT(CurrentCameraSettings2);
   REG_INPUT(VirtualVision);
   REG_INPUT(FrameInfo);
 
@@ -53,7 +55,8 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
 
-  platformInterface.registerInputChanel(getCameraMatrix());
+  platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
+  platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer2());
   platformInterface.registerInputChanel(getMotionStatus());
   platformInterface.registerInputChanel(getOdometryData());
   //platformInterface.registerInputChanel(getCalibrationData());

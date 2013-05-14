@@ -74,6 +74,7 @@
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
+#include "Modules/Modeling/Camera/CameraMatrixFinder.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -131,6 +132,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(CameraInfoSetter);
+
+  // pre-modelling
+  REGISTER_MODULE(CameraMatrixFinder);
 
   // perception
   REGISTER_MODULE(CameraMatrixCorrector);
