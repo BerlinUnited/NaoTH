@@ -1,11 +1,11 @@
 /*
- * File:   histogram.cpp
+ * File:   histograms.cpp
  * Author: claas
  *
  * Created on 9. Juli 2009, 13:40
  */
 
-#include "Histogram.h"
+#include "Histograms.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -14,7 +14,7 @@
 using namespace naoth;
 using namespace std;
 
-Histogram::Histogram()
+Histograms::Histograms()
 {
   std::stringstream dbgString;
   std::stringstream descString;
@@ -37,7 +37,7 @@ Histogram::Histogram()
   init();
 }
 
-void Histogram::init()
+void Histograms::init()
 {
   colorChannelIsUptodate = false;
 
@@ -48,12 +48,12 @@ void Histogram::init()
   memset(&colorChannelHistogramCr, 0, sizeof(colorChannelHistogramCr));
 }//end init
 
-void Histogram::execute()
+void Histograms::execute()
 {
   init();
 }
 
-void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
+void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
 {
   std::stringstream dbgString;
   bool drawXHist = false;
@@ -159,7 +159,7 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
 }//end showDebugInfos
 
 
-inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
+inline void Histograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
 {
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
@@ -171,7 +171,7 @@ inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
   }
 }//end createFromColoredGrid
 
-void Histogram::print(ostream& stream) const
+void Histograms::print(ostream& stream) const
 {
   stream << "Histogram";
 }//end print

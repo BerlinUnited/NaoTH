@@ -12,7 +12,7 @@
 
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
@@ -28,7 +28,7 @@ BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(CameraMatrix)
 
   PROVIDE(ColoredGrid)
-  PROVIDE(Histogram)
+  PROVIDE(Histograms)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

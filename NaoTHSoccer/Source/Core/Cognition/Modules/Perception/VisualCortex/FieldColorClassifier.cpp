@@ -67,7 +67,7 @@ void FieldColorClassifier::classify()
   }
 
 
-  if(!getHistogram().colorChannelIsUptodate)
+  if(!getHistograms().colorChannelIsUptodate)
   {
     return;
   }
@@ -87,9 +87,9 @@ void FieldColorClassifier::classify()
     double mCr = max<int>(0,  160 - i);
     double wCr = mCr / 160.0;
     
-    weightedHistV[i] = getHistogram().colorChannelHistogramCr[i];
+    weightedHistV[i] = getHistograms().colorChannelHistogramCr[i];
     //histogram for blue => needed for later yellow and blue estimation
-    histU[i] = getHistogram().colorChannelHistogramCb[i] * wCr;
+    histU[i] = getHistograms().colorChannelHistogramCb[i] * wCr;
     sumU += histU[i];
 
     weightedHistV[i] *= wCr;

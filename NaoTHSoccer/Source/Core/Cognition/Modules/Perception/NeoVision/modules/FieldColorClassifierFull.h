@@ -25,7 +25,7 @@
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 //#include "Tools/ImageProcessing/FieldColorParametersFull.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
@@ -34,7 +34,7 @@
 
 BEGIN_DECLARE_MODULE(FieldColorClassifierFull)
   REQUIRE(ColoredGrid)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
   REQUIRE(Image)
   REQUIRE(ColorTable64)
   REQUIRE(FrameInfo)

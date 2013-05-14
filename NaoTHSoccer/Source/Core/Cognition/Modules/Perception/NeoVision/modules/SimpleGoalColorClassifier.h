@@ -13,7 +13,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/SimpleGoalColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 //#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Representations/Infrastructure/Image.h" // just for debug
 
@@ -28,7 +28,7 @@
 
 BEGIN_DECLARE_MODULE(SimpleGoalColorClassifier)
   REQUIRE(FrameInfo)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
   REQUIRE(Image)
   REQUIRE(FieldColorPercept)
 

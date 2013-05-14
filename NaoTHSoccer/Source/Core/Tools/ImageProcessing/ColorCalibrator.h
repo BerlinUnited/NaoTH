@@ -16,7 +16,7 @@
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/ColorRegion.h"
 #include "Tools/ImageProcessing/CalibrationRect.h"
 

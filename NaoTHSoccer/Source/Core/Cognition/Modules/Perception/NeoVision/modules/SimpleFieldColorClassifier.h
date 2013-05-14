@@ -14,7 +14,7 @@
 // Representations
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 //#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Representations/Infrastructure/Image.h" // just for debug
 
@@ -30,7 +30,7 @@
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
   //REQUIRE(ColoredGrid)
   REQUIRE(FrameInfo)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
   REQUIRE(Image)
 
   PROVIDE(FieldColorPercept)

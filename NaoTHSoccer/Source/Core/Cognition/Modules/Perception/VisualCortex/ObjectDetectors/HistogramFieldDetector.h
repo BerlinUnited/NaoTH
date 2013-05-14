@@ -26,7 +26,7 @@
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 #include "Tools/Debug/DebugRequest.h"
@@ -43,7 +43,7 @@ BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ColoredGrid)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
 
   PROVIDE(FieldPercept)
 END_DECLARE_MODULE(HistogramFieldDetector)

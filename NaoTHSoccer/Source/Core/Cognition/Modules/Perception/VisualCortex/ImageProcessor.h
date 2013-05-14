@@ -16,7 +16,7 @@
 //local Tools
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 
 // submodules
 #include "ObjectDetectors/HistogramFieldDetector.h"

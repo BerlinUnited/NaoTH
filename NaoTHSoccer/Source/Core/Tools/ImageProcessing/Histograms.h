@@ -1,12 +1,12 @@
 /*
- * File:   histogram.h
+ * File:   histograms.h
  * Author: claas
  *
  * Created on 9. Juli 2009, 13:40
  */
 
-#ifndef _Histogram_H
-#define  _Histogram_H
+#ifndef _Histograms_H
+#define  _Histograms_H
 
 #include <sstream>
 
@@ -25,11 +25,11 @@
 
 #define COLOR_CHANNEL_VALUE_COUNT 256
 
-class Histogram: public naoth::Printable
+class Histograms: public naoth::Printable
 {
  public:
-    Histogram();
-    ~Histogram(){}
+    Histograms();
+    ~Histograms(){}
 
     void init();
     void execute();

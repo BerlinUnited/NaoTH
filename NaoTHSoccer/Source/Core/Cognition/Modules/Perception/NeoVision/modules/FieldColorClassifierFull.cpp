@@ -89,7 +89,7 @@ void FieldColorClassifierFull::execute()
 
     double mCr = max(0.0, (double) halfChannelWidth - (double) i);
     double wCr = mCr / (double) halfChannelWidth;
-    weightedHistCr[i] = wCr * (double) getHistogram().colorChannelHistogramCr[i];//colorChannelHistogramField[i];
+    weightedHistCr[i] = wCr * (double) getHistograms().colorChannelHistogramCr[i];//colorChannelHistogramField[i];
     //search for max Cr channel value with weight w
     if(weightedHistCr[i] > maxWeightedCr)
     {
@@ -161,7 +161,7 @@ void FieldColorClassifierFull::execute()
   {
     double mCb = COLOR_CHANNEL_VALUE_COUNT - i;
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
-    weightedHistCb[i] *= wCb;//= wCb * (double) getHistogram().colorChannelHistogram[1][i];
+    weightedHistCb[i] *= wCb;//= wCb * (double) getHistograms().colorChannelHistogram[1][i];
     double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
     weightedSmoothedHistCb[i] = smoothWeightedCb;
     if(smoothWeightedCb > maxWeightedCb)

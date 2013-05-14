@@ -27,7 +27,7 @@ void GridProvider::execute()
 
   // make some debug
   DEBUG_REQUEST("ImageProcessor:Histogram:enable_debug",
-    getHistogram().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
+    getHistograms().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
   );
 
   DEBUG_REQUEST("ImageProcessor:show_classified_image",
@@ -47,7 +47,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 {
   STOPWATCH_START("Histogram+ColoredGrid");
   getColoredGrid().reset();
-  getHistogram().init();
+  getHistograms().init();
 
   unsigned int grey = 0;
   unsigned int red = 0;
@@ -74,8 +74,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     getColoredGrid().setColor(i, currentPixelColor);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
-    getHistogram().increaseValue(gridPoint, currentPixelColor);
-    getHistogram().increaseChannelValue(pixel, currentPixelColor);
+    getHistograms().increaseValue(gridPoint, currentPixelColor);
+    getHistograms().increaseChannelValue(pixel, currentPixelColor);
   }//end for
 
   // 

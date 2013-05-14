@@ -11,7 +11,7 @@
 BaseColorClassifier::BaseColorClassifier()
 :
   cTable(getColorTable64()),
-  histogram(getHistogram()),
+  histogram(getHistograms()),
   coloredGrid(getColoredGrid()),
   calibCount(0),
   calibrating(false),
@@ -30,11 +30,13 @@ BaseColorClassifier::BaseColorClassifier()
   pinkWaistBandColorCalibrator("PinkWaistBand", ColorClasses::pink),
   whiteLinesColorCalibrator("WhiteLines", ColorClasses::white)
 {
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_field_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_ball_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_waistband_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_lines_in_image", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:field", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:line", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:ball", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", " ", false);
@@ -42,6 +44,7 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_field_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_line_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_ball_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_blue_goal_area", " ", false);
@@ -102,6 +105,19 @@ void BaseColorClassifier::initPercepts()
 
 void BaseColorClassifier::execute()
 {
+  Statistics::Histogram<double, 256> hist;
+
+  hist.clear();
+  for(int i = 0; i < 256; i++)
+  {
+    hist.add(getHistograms().colorChannelHistogramCr[i]);
+  }
+  hist.calculate();
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:enable_plots", 
+    hist.plot("BaseColorClassifier:Cr");
+  );
+
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data",
     orangeBallColorCalibrator.reset();
     yellowGoalColorCalibrator.reset();

@@ -43,7 +43,7 @@ void SimpleGoalColorClassifier::execute()
     {
       if(i < min.u)
       {
-        histU[i] = getHistogram().colorChannelHistogramCb[i];
+        histU[i] = getHistograms().colorChannelHistogramCb[i];
       }
       else
       {
@@ -52,14 +52,14 @@ void SimpleGoalColorClassifier::execute()
 
       if(i > goalParams.dist2green.v + max.v )
       {
-        histV[i] = getHistogram().colorChannelHistogramCr[i];
+        histV[i] = getHistograms().colorChannelHistogramCr[i];
       }
       else
       {
         histV[i] = 0.0;
       }
-      PLOT_GENERIC("SimpleGoalColorClassifier:histUorg", i, getHistogram().colorChannelHistogramCb[i]);
-      PLOT_GENERIC("SimpleGoalColorClassifier:histVorg", i, getHistogram().colorChannelHistogramCr[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:histUorg", i, getHistograms().colorChannelHistogramCb[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:histVorg", i, getHistograms().colorChannelHistogramCr[i]);
       PLOT_GENERIC("SimpleGoalColorClassifier:histU", i, histU[i]);
       PLOT_GENERIC("SimpleGoalColorClassifier:histV", i, histV[i]);
     }
