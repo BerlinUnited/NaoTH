@@ -27,6 +27,13 @@ include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 
+// penalty
+include "Options/Soccer/Penalty/penalty_kicker.xabsl";
+
+include "Options/Soccer/Penalty/play_penalty.xabsl";
+include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
+include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
+
 // Test
 include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
