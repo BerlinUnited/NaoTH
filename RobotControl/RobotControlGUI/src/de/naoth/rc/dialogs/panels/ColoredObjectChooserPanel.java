@@ -51,7 +51,7 @@ public class ColoredObjectChooserPanel extends javax.swing.JPanel {
             switch(c)
             {
               case green:
-//                button = new ColorButton(c, "Field", 46);
+                button = new ColorButton(c, "Field", 46);
                 break;
                 
               case white:
@@ -273,4 +273,4 @@ public class ColoredObjectChooserPanel extends javax.swing.JPanel {
     private javax.swing.JToolBar colorToolBar;
     // End of variables declaration//GEN-END:variables
 
-} 
+}
