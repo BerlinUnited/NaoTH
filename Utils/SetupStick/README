@@ -1,0 +1,9 @@
+Parts of the setup stick system are:
+
+../NaoConfigFiles/etc/udev/rules.d/brainwashing.rules
+brainwashinit
+startBrainwashing.sh
+
+Functionality:
+At the moment the os recognizes a usb stick, the udev rule brainwashing.rules is activated and the script brainwashinit will be executed.
+brainwashinit mounts the stick and execute the script startBrainwashing.sh which must be on the stick. After execution the stick will be unmounted.

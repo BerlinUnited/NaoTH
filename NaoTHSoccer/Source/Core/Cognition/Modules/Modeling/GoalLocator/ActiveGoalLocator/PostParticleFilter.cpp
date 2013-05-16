@@ -7,6 +7,8 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
+using namespace std;
+
 PostParticleFilter::PostParticleFilter()
   : sampleSet(10)
 {

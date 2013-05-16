@@ -6,83 +6,76 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
-#include <string>
+#include "PlatformBase.h"
+#include <Tools/DataStructures/Singleton.h>
+#include <Tools/Debug/NaoTHAssert.h>
+#include <Representations/Infrastructure/Configuration.h>
+
 #include <iostream>
 #include <fstream>
-
-#include <string.h>
-#include "PlatformInterface.h"
-#include "Tools/DataStructures/Singleton.h"
-#include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/Configuration.h"
+#include <string>
 
 namespace naoth
 {
 
-  class Platform : public Singleton<Platform>
+class Platform : public Singleton<Platform>
+{
+protected:
+  friend class Singleton<Platform>;
+
+private:
+  Platform()
+  : _hardwareIdentity("Uninitialized"),
+    _headHardwareIdentity("Uninitialized"),
+    _configDir("Config/"),
+
+    theConfigDirectory(_configDir),
+    theHardwareIdentity(_hardwareIdentity),
+    theHeadHardwareIdentity(_headHardwareIdentity),
+    theScheme(_scheme)
+  {}
+
+  // cannot be copied
+  Platform& operator=( const Platform& ) { return *this; }
+
+  // 
+  std::string _hardwareIdentity;
+  std::string _headHardwareIdentity;
+  std::string _configDir;
+  std::string _scheme;
+
+public:
+  virtual ~Platform(){}
+
+  void init(PlatformBase* base)
   {
-  protected:
-    friend class Singleton<Platform>;
+    ASSERT(base != NULL);
 
-  private:
-
-    Platform()
-    : _hardwareIdentity("Uninitialized"),
-      _headHardwareIdentity("Uninitialized"),
-      _platformInterface(NULL),
-      theConfiguration(_configuration),
-      theConfigDirectory(_configDir),
-      theHardwareIdentity(_hardwareIdentity),
-      theHeadHardwareIdentity(_headHardwareIdentity),
-      theScheme(_scheme),
-      thePlatformInterface(_platformInterface)
-    {
-      _configDir = "Config/";
-    }
-
-    // cannot be copied
-    Platform& operator=( const Platform& ) { return *this; }
-
-    std::string _hardwareIdentity;
-    std::string _headHardwareIdentity;
-    Configuration _configuration;
-    std::string _configDir;
-    std::string _scheme;
-    PlatformBase* _platformInterface;
-
-  public:
-    virtual ~Platform()
-    {
-    }
-
-    void init(PlatformBase* _interface)
-    {
-      ASSERT(_interface!=NULL);
-
-      _platformInterface = _interface;
-
-      // set the the hardware identity according to platform
-      _hardwareIdentity = _interface->getBodyNickName();
-      _headHardwareIdentity = _interface->getHeadNickName();
-      _scheme = _interface->getName(); // set to platform by default
-      std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
-      if(schemefile.is_open() && schemefile.good())
-      {
-        std::getline(schemefile, _scheme);
-      }
+    // set the the hardware identity according to platform
+    _hardwareIdentity = base->getBodyNickName();
+    _headHardwareIdentity = base->getHeadNickName();
+    _scheme = base->getName(); // set to platform by default
       
-      _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity, _headHardwareIdentity);
-    }//end init
+    // try to read the scheme name from file
+    std::ifstream schemefile((theConfigDirectory + "scheme.cfg").c_str());
+    if(schemefile.is_open() && schemefile.good()) {
+      std::getline(schemefile, _scheme); 
+    }
+      
+    // load config
+    theConfiguration.loadFromDir(
+      theConfigDirectory, theScheme, theHardwareIdentity, theHeadHardwareIdentity);
+  }//end init
 
-    Configuration& theConfiguration;
-    const std::string& theConfigDirectory;
-    const std::string& theHardwareIdentity; // the string to indentify different robots
-    const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
-    const std::string& theScheme;
+  // const accessors
+  const std::string& theConfigDirectory;
+  const std::string& theHardwareIdentity; // the string to indentify different robots
+  const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
+  const std::string& theScheme;
 
-    PlatformBase* const & thePlatformInterface;
 
-  };
+  Configuration theConfiguration;
+};
 }
 #endif  /* _PLATFORM_H */
 

@@ -15,7 +15,7 @@ currentlyExecutedMotion(MotionRequest::stand)
 
 void MotionBlackBoard::init()
 {
-  theSensorJointData.init();
+
 }
 
 MotionBlackBoard::~MotionBlackBoard()

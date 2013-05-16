@@ -29,7 +29,7 @@ public class FieldDrawingSPL2013 extends FieldDrawingSPL2012
         this.fieldLinesWidth = 50;
 
         // goals
-        this.goalWidth = 1400;
+        this.goalWidth = 1500;
         this.goalpostRadius = 50;
         this.goalDepth = 400 + 2*goalpostRadius;
         

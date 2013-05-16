@@ -5,7 +5,6 @@
  * foot trajectory for walking
  */
 
-#include <list>
 
 #include "FootTrajectoryGenerator.h"
 

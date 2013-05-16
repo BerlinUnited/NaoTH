@@ -9,14 +9,12 @@
 
 // debug
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 // tools
 #include "Tools/Math/Probabilistics.h"
 
+using namespace std;
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
@@ -90,13 +88,13 @@ void MonteCarloSelfLocator::resample(SampleSet& sampleSet)
 
   double aggr = 0;
   int i = 0;//NUM_OF_PARTICLES-1; //particle number to copy
-  double offset = 1.0/(2*sampleSet.numberOfParticles);
+  double offset = 1.0/(2*sampleSet.size());
 
-  for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)   //j is the value of the equidistant grid
+  for (unsigned int j = 0; j < sampleSet.size(); j++)   //j is the value of the equidistant grid
   {
     //take which particle?
 
-    while ((aggr + sampleSet[i].likelihood) <= (double)(j)/sampleSet.numberOfParticles + offset) 
+    while ((aggr + sampleSet[i].likelihood) <= (double)(j)/sampleSet.size() + offset) 
     {
       aggr += sampleSet[i].likelihood;
       i++;
@@ -106,12 +104,12 @@ void MonteCarloSelfLocator::resample(SampleSet& sampleSet)
     newSampleSet[j].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)*0.1);
   }//end for
 
-  int numberOfPartiklesToResample = (int)(((double)sampleSet.numberOfParticles)*0.1+0.5);
+  int numberOfPartiklesToResample = (int)(((double)sampleSet.size())*0.1+0.5);
 
-  for (unsigned int j = 0; j < sampleSet.numberOfParticles-numberOfPartiklesToResample; j++)
+  for (unsigned int j = 0; j < sampleSet.size()-numberOfPartiklesToResample; j++)
   {
-    int index = (int)(Math::random()*(sampleSet.numberOfParticles-1)+0.5);
-    sampleSet[sampleSet.numberOfParticles-1-j] = newSampleSet[index];
+    int index = (int)(Math::random()*(sampleSet.size()-1)+0.5);
+    sampleSet[sampleSet.size()-1-j] = newSampleSet[index];
   }//end for
 
   //sampleSet.sort();
@@ -154,7 +152,7 @@ void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, doub
   const double bestPossibleDistanceWeighting = 1.0;
   //const double bestPossibleAngleWeighting = 1.0;
 
-  for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
+  for (unsigned int j = 0; j < sampleSet.size(); j++)
   {   
     double distDif = (sampleSet[j].translation - pose.translation).abs();
     //sampleSet[j].likelihood *= computeAngleWeighting(pose.rotation, sampleSet[j].rotation, sigmaAngle, bestPossibleAngleWeighting);
@@ -213,7 +211,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     }//end else
     */
 
-    for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
+    for (unsigned int j = 0; j < sampleSet.size(); j++)
     { 
       Sample& sample = sampleSet[j];
       Vector2<double> expectedPostPosition;
@@ -324,7 +322,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       Sample& sample = sampleSet[s];
 
       // statistics
-      shortestLine = min(shortestLine, relPercept.getLength());
+      shortestLine = std::min(shortestLine, relPercept.getLength());
 
 
       // translocation of the line percept to the global coords
@@ -448,7 +446,7 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
     vector<int> cornerVotes(numberOfCornerVotes);
     int maxIdx = 0;
 
-    for(unsigned int s=0; s < sampleSet.numberOfParticles; s++)
+    for(unsigned int s=0; s < sampleSet.size(); s++)
     {
       Sample& sample = sampleSet[s];
 
@@ -520,7 +518,7 @@ void MonteCarloSelfLocator::updateByMiddleCircle(SampleSet& sampleSet) const
 
   Vector2<double> centerCirclePosition; // (0,0)
 
-  for(unsigned int s=0; s < sampleSet.numberOfParticles; s++)
+  for(unsigned int s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
 
@@ -555,7 +553,7 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
   {
     const LinePercept::Flag& flag = getLinePercept().flags[i];
 
-    for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
+    for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
       Sample& sample = sampleSet[j];
 
@@ -594,7 +592,7 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
     }
     
     // HACK: generate a mirrored pose
-    if(n < (int)sampleSet.numberOfParticles && !getRobotPose().isValid)
+    if(n < (int)sampleSet.size() && !getRobotPose().isValid)
     {
       Pose2D poseMirrored(pose);
       poseMirrored.translation *= -1;
@@ -704,7 +702,7 @@ int MonteCarloSelfLocator::sensorResetByGoalPosts(SampleSet& sampleSet, int n) c
     int numberOfPartiklesToResample = 1;
     for(int i=0; i < numberOfPartiklesToResample; i++) 
     {
-      if (n < (int)sampleSet.numberOfParticles) 
+      if (n < (int)sampleSet.size()) 
       {
           // select a random post
           int idx = Math::random((int)getGoalPercept().getNumberOfSeenPosts());
@@ -831,7 +829,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
 
   // add a uniform offset for stabilization
-  for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for(unsigned int i = 0; i < sampleSet.size(); i++)
   {
     oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
   }//end for
@@ -862,14 +860,14 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
   unsigned int n = 0;  // Zaehler durchs Ziel-Set
 
-  for(m = 0; m < sampleSet.numberOfParticles; m++)
+  for(m = 0; m < sampleSet.size(); m++)
   {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.numberOfParticles;
+    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
 
     // select the particle to copy
-    while(count < sum && count < oldSampleSet.numberOfParticles)
+    while(count < sum && count < oldSampleSet.size())
     {
-      if (n >= oldSampleSet.numberOfParticles - numberOfPartiklesToResample) break;
+      if (n >= oldSampleSet.size() - numberOfPartiklesToResample) break;
       
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
@@ -884,13 +882,13 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       count++;
     }//end while
 
-    if (n >= oldSampleSet.numberOfParticles-numberOfPartiklesToResample) break;
+    if (n >= oldSampleSet.size()-numberOfPartiklesToResample) break;
   }//end for
 
 
 
   // sensor resetting by whole goal
-  if(n < oldSampleSet.numberOfParticles)
+  if(n < oldSampleSet.size())
   {
     n = sensorResetBySensingGoalModel(sampleSet, n);
   }
@@ -905,9 +903,9 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
   // fill up by copying random samples
   // (shouldn't happen)
-  while (n < sampleSet.numberOfParticles) 
+  while (n < sampleSet.size()) 
   {
-    int i = Math::random(sampleSet.numberOfParticles);//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
+    int i = Math::random(sampleSet.size());//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
     sampleSet[n] = sampleSet[i];
     n++;
   }//end while
@@ -920,7 +918,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {      
     sampleSet[i] += odometryDelta; 
     if(noise)
@@ -936,7 +934,7 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) c
 // Fall Down noise
 void MonteCarloSelfLocator::updateFallDown(SampleSet& sampleSet) const
 {
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {      
     Sample& sample = sampleSet[i];
     //sample.translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
@@ -1285,7 +1283,7 @@ void MonteCarloSelfLocator::execute()
   
 
   // a heap could collect more than 70% of all particles
-  initialized = initialized || (clusterSize > 0.9*(double)theSampleSet.numberOfParticles);
+  initialized = initialized || (clusterSize > 0.9*(double)theSampleSet.size());
   PLOT("MCSL:initialized", initialized);
 
   // TODO: find a beter place for it
@@ -1296,7 +1294,7 @@ void MonteCarloSelfLocator::execute()
   // if not, then jump only if there is anoter cluster having more then 2/3 particles
 
   // if the hypothesis is to small...
-  if(clusterSize < 0.3*(double)theSampleSet.numberOfParticles)
+  if(clusterSize < 0.3*(double)theSampleSet.size())
   {
     // make new cluseter
     canopyClustering.cluster(theSampleSet);
@@ -1307,7 +1305,7 @@ void MonteCarloSelfLocator::execute()
 
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
-    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.numberOfParticles)
+    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size())
       canopyClustering.cluster(theSampleSet, getRobotPose().translation);
     else // jump...
       getRobotPose().isValid = false;
@@ -1453,8 +1451,8 @@ void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
 {
   initialized = false;
 
-  double likelihood = 1.0/static_cast<double>(sampleSet.numberOfParticles);
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  double likelihood = 1.0/static_cast<double>(sampleSet.size());
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     Sample& sample = sampleSet[i];
     createRandomSample(sample);
@@ -1465,7 +1463,7 @@ void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
 
 void MonteCarloSelfLocator::clampSampleSetToField(SampleSet& sampleSet)
 {
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     Sample& sample = sampleSet[i];
     if(!isInsideCarpet(sample.translation))
@@ -1478,7 +1476,7 @@ void MonteCarloSelfLocator::clampSampleSetToField(SampleSet& sampleSet)
 
 void MonteCarloSelfLocator::mirrorSampleSetFieldSides(SampleSet& sampleSet)
 {
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     Sample& sample = sampleSet[i];
     sample.translation *= -1;
@@ -1538,7 +1536,7 @@ void MonteCarloSelfLocator::drawSamplesImportance(SampleSet& sampleSet) const
   // normalize the colors (black: less importent, red more importent)
   double minValue = 1;
   double maxValue = 0;
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     maxValue = max(sampleSet[i].likelihood, maxValue);
     minValue = min(sampleSet[i].likelihood, minValue);
@@ -1546,7 +1544,7 @@ void MonteCarloSelfLocator::drawSamplesImportance(SampleSet& sampleSet) const
   double colorDiff = maxValue-minValue;
 
   // plot samples
-  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     DebugDrawings::Color color;
     if(colorDiff > 0)

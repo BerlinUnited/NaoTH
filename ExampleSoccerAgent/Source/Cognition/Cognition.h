@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef COGNITION_H
-#define	COGNITION_H
+#ifndef _Cognition_h_
+#define	_Cognition_h_
 
 #include <iostream>
 
@@ -25,15 +25,15 @@ public:
 
   virtual void call();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream);
 
 private:
-  StopwatchItem stopwatch;
+  Stopwatch stopwatch;
 };
 
-#endif	/* COGNITION_H */
+#endif	/* _Cognition_h_ */
 

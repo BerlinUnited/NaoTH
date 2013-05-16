@@ -4,8 +4,8 @@
  * Declaration of class Image
  */
 
-#ifndef __Image_h_
-#define __Image_h_
+#ifndef _Image_h_
+#define _Image_h_
 
 #include <cstring>
 #include <iostream>
@@ -15,11 +15,9 @@
 #include "Tools/Math/Vector3.h"
 #include "Tools/ImageProcessing/ImageDrawings.h"
 
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/ImageProcessing/ImagePrimitives.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ShadingCorrection.h"
@@ -31,7 +29,7 @@ namespace naoth
   /**
    * Platform independend definition of an image class
    */
-  class Image: public DrawingCanvas, public Streamable, public Printable, public PlatformInterchangeable
+  class Image: public DrawingCanvas, public Printable
   {
 
   public:

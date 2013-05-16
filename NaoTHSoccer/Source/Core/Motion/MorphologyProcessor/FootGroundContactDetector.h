@@ -8,25 +8,33 @@
 #ifndef _FootGroundContactDetector_H
 #define _FootGroundContactDetector_H
 
-#include "Tools/LinearClassifier.h"
 
-#include "Motion/MotionBlackBoard.h"
+#include <ModuleFramework/Module.h>
+
+// representations
 #include <Representations/Infrastructure/FSRData.h>
+#include "Representations/Modeling/GroundContactModel.h"
 
+// tools
+#include "Tools/LinearClassifier.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
-class FootGroundContactDetector 
+
+BEGIN_DECLARE_MODULE(FootGroundContactDetector)
+  PROVIDE(FSRData)
+  PROVIDE(GroundContactModel)
+END_DECLARE_MODULE(FootGroundContactDetector)
+
+
+class FootGroundContactDetector: private FootGroundContactDetectorBase
 {
 public:
-  FootGroundContactDetector(const MotionBlackBoard& theBlackBoard, naoth::FSRData& theFSRData, GroundContactModel& theGroundContactModel);
+  FootGroundContactDetector();
   ~FootGroundContactDetector();
 
-  void update();
+  void execute();
 
 private:
-  const MotionBlackBoard& theBlackBoard;
-  naoth::FSRData& theFSRData;
-  GroundContactModel& theGroundContactModel;
 
   RingBufferWithSum<double, 100> leftFSRBuffer;
   RingBufferWithSum<double, 100> rightFSRBuffer;

@@ -6,7 +6,7 @@
 */
 
 #ifndef _FootTouchCalibrator_h_
-#define  _FootTouchCalibrator_h_
+#define _FootTouchCalibrator_h_
 
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SupportPolygon.h"
@@ -33,17 +33,21 @@ private:
   RingBufferWithSum<Vector2<double>,100> predictionBuffer;
 
 public:
-  FootTouchCalibrator(const naoth::FSRData& theFSRData, const MotionStatus& theMotionStatus, const SupportPolygon& theSupportPolygon, const KinematicChain& theKinematicChain)
+  FootTouchCalibrator(
+    const naoth::FSRData& theFSRData, 
+    const MotionStatus& theMotionStatus, 
+    const SupportPolygon& theSupportPolygon, 
+    const KinematicChain& theKinematicChain)
     :
     theFSRData(theFSRData),
     theMotionStatus(theMotionStatus),
     theSupportPolygon(theSupportPolygon),
     theKinematicChain(theKinematicChain)
   {
-    string leftFootTouchDetectorCfg("1 1 1 1 -5");
-    string rightFootTouchDetectorCfg("1 1 1 1 -5");
+    std::string leftFootTouchDetectorCfg("1 1 1 1 -5");
+    std::string rightFootTouchDetectorCfg("1 1 1 1 -5");
     const naoth::Configuration& cfg = naoth::Platform::getInstance().theConfiguration;
-    string cfgname = "TouchDetector";
+    std::string cfgname = "TouchDetector";
     if ( cfg.hasGroup(cfgname) )
     {
       leftFootTouchDetectorCfg = cfg.getString(cfgname, "leftFoot");

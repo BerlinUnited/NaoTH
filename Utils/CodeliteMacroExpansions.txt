@@ -1,8 +1,0 @@
-BEGIN_DECLARE_MODULE(%0)=class %0Base: protected Module {
-REQUIRE(%0)=public: const %0& get%0() {};
-PROVIDE(%0)=public: %0& get%0() {};
-END_DECLARE_MODULE(%0)= };
-
-TEST(%0, %1)=class %0_%1_Test : public ::testing::Test { public: %0_%1_Test() {} private: virtual void TestBody(); static ::testing::TestInfo* const test_info_; %0_%1_Test(%0_%1_Test const &); void operator=(%0_%1_Test const &);};::testing::TestInfo* const %0_%1_Test ::test_info_ = ::testing::internal::MakeAndRegisterTestInfo( "%0", "%1", "", "", (::testing::internal::GetTestTypeId()), ::testing::Test::SetUpTestCase, ::testing::Test::TearDownTestCase, new ::testing::internal::TestFactoryImpl< %0_%1_Test>);void %0_%1_Test::TestBody()
-
-TEST_F(%0, %1)=class %0_%1_Test : public %0 { public: %0_%1_Test() {} private: virtual void TestBody(); static ::testing::TestInfo* const test_info_; %0_%1_Test(%0_%1_Test const &); void operator=(%0_%1_Test const &);};::testing::TestInfo* const %0_%1_Test ::test_info_ = ::testing::internal::MakeAndRegisterTestInfo( "%0", "%1", "", "", (::testing::internal::GetTypeId<%0>()), %0::SetUpTestCase, %0::TearDownTestCase, new ::testing::internal::TestFactoryImpl< %0_%1_Test>);void %0_%1_Test::TestBody()

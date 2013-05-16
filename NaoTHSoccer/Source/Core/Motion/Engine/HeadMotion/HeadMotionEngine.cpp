@@ -11,61 +11,51 @@
 
 
 #include <algorithm>
-#include <cmath>
-#include <iostream>
+#include <fstream>
 
 // Tools
-#include <Tools/Math/Common.h>
-#include <Tools/Math/Matrix2x2.h>
-#include <Tools/NaoInfo.h>
 #include <Tools/CameraGeometry.h>
-
-#include <PlatformInterface/Platform.h>
+#include <Tools/Math/Matrix2x2.h>
 
 // Debug
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-
-#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include <Tools/Debug/DebugRequest.h>
 #include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
+#include <Tools/Debug/DebugDrawings.h>
+
 
 using namespace naoth;
+using namespace std;
 
 HeadMotionEngine::HeadMotionEngine()
-    :
-    theBlackBoard(MotionBlackBoard::getInstance()),
-    theMotorJointData(MotionBlackBoard::getInstance().theMotorJointData),
-    theMotionStatus(MotionBlackBoard::getInstance().theMotionStatus)
-  {
-    theKinematicChain.init(theJointData);
+{
+  theKinematicChain.init(theJointData);
 
-    DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
-  }
+  DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
+}
 
 void HeadMotionEngine::execute()
 {
   // HACK: update torso
-  theKinematicChain.theLinks[KinematicChain::Torso].M = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;
+  theKinematicChain.theLinks[KinematicChain::Torso].M = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
 
-  switch(theBlackBoard.theHeadMotionRequest.id)
+  switch(getHeadMotionRequest().id)
   {
     case HeadMotionRequest::look_straight_ahead: lookStraightAhead(); break;
     case HeadMotionRequest::look_at_point: lookAtPoint(); break;
     
     case HeadMotionRequest::look_at_world_point:
     {
-      lookAtWorldPoint(theBlackBoard.theHeadMotionRequest.targetPointInTheWorld);
+      lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld);
     }
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 
-      gotoPointOnTheGround(theBlackBoard.theHeadMotionRequest.targetPointOnTheGround);
+      gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround);
       break;
 
     case HeadMotionRequest::goto_angle: 
-      gotoAngle(theBlackBoard.theHeadMotionRequest.targetJointPosition); 
+      gotoAngle(getHeadMotionRequest().targetJointPosition); 
       break;
 
     case HeadMotionRequest::hold: hold(); break;
@@ -81,7 +71,7 @@ void HeadMotionEngine::execute()
 
   if(!testCalc)
   {
-    ofstream os("test.txt",ofstream::out);
+    std::ofstream os("test.txt",std::ofstream::out);
     Vector3<double> target(2500.0, 0.0, 0.0);
     double y = -Math::pi_2;
     double p = -Math::pi_2;
@@ -101,7 +91,7 @@ void HeadMotionEngine::execute()
 
         os << f;
       }
-      os << endl;
+      os << std::endl;
     }
     os.close();
   }//end if
@@ -114,13 +104,13 @@ void HeadMotionEngine::hold()
 {
   double stiffness = 0.0;    //it was 0.7 in former times
 
-  theMotorJointData.stiffness[JointData::HeadYaw] = stiffness;
-  theMotorJointData.stiffness[JointData::HeadPitch] = stiffness;
+  getMotorJointData().stiffness[JointData::HeadYaw] = stiffness;
+  getMotorJointData().stiffness[JointData::HeadPitch] = stiffness;
 
-  theMotorJointData.position[JointData::HeadYaw] =
-          theBlackBoard.theSensorJointData.position[JointData::HeadYaw];
-  theMotorJointData.position[JointData::HeadPitch] =
-          theBlackBoard.theSensorJointData.position[JointData::HeadPitch];
+  getMotorJointData().position[JointData::HeadYaw] =
+          getSensorJointData().position[JointData::HeadYaw];
+  getMotorJointData().position[JointData::HeadPitch] =
+          getSensorJointData().position[JointData::HeadPitch];
 }//end hold
 
 void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
@@ -130,14 +120,14 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
   Vector2<double> centerOnField;
   //TODO: handle the case if the projection is not possible
   CameraGeometry::imagePixelToFieldCoord(
-    theBlackBoard.theCameraMatrix, 
-    theBlackBoard.theCameraInfo,
-        (double)theBlackBoard.theCameraInfo.getOpticalCenterX(),
-        (double)theBlackBoard.theCameraInfo.getOpticalCenterY(),
+    getCameraMatrix(), 
+    getCameraInfo(),
+        (double)getCameraInfo().getOpticalCenterX(),
+        (double)getCameraInfo().getOpticalCenterY(),
     0.0,
     centerOnField);
   
-  vector<Vector3<double> > points;
+  std::vector<Vector3<double> > points;
   
 
   points.push_back(Vector3<double>(centerOnField.x,centerOnField.y,0.0));
@@ -159,8 +149,8 @@ void HeadMotionEngine::gotoAngle(const Vector2<double>& target)
 {
   // current position
   Vector2<double> headPos;
-  headPos.x = theBlackBoard.theMotorJointData.position[JointData::HeadYaw];
-  headPos.y = theBlackBoard.theMotorJointData.position[JointData::HeadPitch];
+  headPos.x = getMotorJointData().position[JointData::HeadYaw];
+  headPos.y = getMotorJointData().position[JointData::HeadPitch];
 
   moveByAngle(target-headPos);
 }//end gotoAngle
@@ -175,9 +165,9 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
 
   double max_velocity_deg_in_second = 90;
   // calculate depending on the walking speed
-  if(theBlackBoard.theMotionStatus.currentMotion == motion::walk)
+  if(getMotionStatus().currentMotion == motion::walk)
   {
-    double walking_speed = theBlackBoard.theMotionStatus.plannedMotion.hip.translation.abs();
+    double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
     
     if(walking_speed > cutting_velocity)
     {
@@ -197,15 +187,15 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
 
   
   MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
-  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
 
   double stiffness = 0.7;
   MODIFY("HeadMotionEngine:gotoAngle:hardness", stiffness);
 
   // current position
   Vector2<double> headPos(
-    theBlackBoard.theMotorJointData.position[JointData::HeadYaw],
-    theBlackBoard.theMotorJointData.position[JointData::HeadPitch]);
+    getMotorJointData().position[JointData::HeadYaw],
+    getMotorJointData().position[JointData::HeadPitch]);
 
   // calculate the update step (normalize with speed if needed)
   Vector2<double> update(
@@ -260,36 +250,36 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   headPos += velocity;
 
   // set the stiffness
-  theMotorJointData.stiffness[JointData::HeadYaw] = stiffness;
-  theMotorJointData.stiffness[JointData::HeadPitch] = stiffness;
+  getMotorJointData().stiffness[JointData::HeadYaw] = stiffness;
+  getMotorJointData().stiffness[JointData::HeadPitch] = stiffness;
 
   // set the joints
-  theMotorJointData.position[JointData::HeadYaw] = headPos.x;
-  theMotorJointData.position[JointData::HeadPitch] = headPos.y;
+  getMotorJointData().position[JointData::HeadYaw] = headPos.x;
+  getMotorJointData().position[JointData::HeadPitch] = headPos.y;
 }//end moveByAngle
 
 
 // needed by lookAtWorldPoint
 Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<double>& pointInWorld)
 {
-  theJointData.position[JointData::HeadYaw] = theBlackBoard.theMotorJointData.position[JointData::HeadYaw] + yaw;
-  theJointData.position[JointData::HeadPitch] = theBlackBoard.theMotorJointData.position[JointData::HeadPitch] + pitch;
+  theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
+  theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
   theKinematicChain.theLinks[KinematicChain::Neck].updateFromMother();
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
   CameraMatrix cameraMatrix;
   CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
-    theBlackBoard.theCameraInfo,
+    getCameraInfo(),
     theKinematicChain);
 
   // the point in the image which should point to the pointInWorld
   Vector2<double> projectionPointInImage(
-        theBlackBoard.theCameraInfo.getOpticalCenterX(),
-        theBlackBoard.theCameraInfo.getOpticalCenterY());
+        getCameraInfo().getOpticalCenterX(),
+        getCameraInfo().getOpticalCenterY());
 
   Vector3<double> direction = CameraGeometry::imagePixelToCameraCoords(
     cameraMatrix, 
-    theBlackBoard.theCameraInfo,
+    getCameraInfo(),
     projectionPointInImage.x, 
     projectionPointInImage.y);
   
@@ -302,17 +292,17 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
 {
   // HACK: transform the head motion request to the support foot coordinates
-  const Pose3D& lFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+  const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
   Vector3<double> target(origTarget);
 
   // left foot is the support foot
-  if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::LFoot)
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot)
   {
     target = lFoot*target;
   }
 
-  if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::RFoot)
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot)
   {
     target = rFoot*target;
   }
@@ -352,7 +342,7 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
     if(DgTDg.det() <= 1e-13)
     {
       // debug output
-      std::cerr << "bad matrix" << endl;
+      std::cerr << "bad matrix" << std::endl;
     }
     Vector2<double> z_GN = (-(DgTDg.invert()*DgTw));
     x += z_GN;
@@ -363,7 +353,7 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
 
 void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
 {
-  Vector3<double> vector = target - theBlackBoard.theCameraMatrix.translation;
+  Vector3<double> vector = target - getCameraMatrix().translation;
 
   //camera height for nao -535 for webcam -370
   //double neckHeigth = theBlackBoard.theCameraMatrix.translation.z;
@@ -374,7 +364,7 @@ void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
   double d = sqrt(vector.y*vector.y + vector.x*vector.x);
   
   double cameraTilt = 0;
-  if(theBlackBoard.theHeadMotionRequest.cameraID == CameraInfo::Bottom)
+  if(getHeadMotionRequest().cameraID == CameraInfo::Bottom)
     cameraTilt = Math::fromDegrees(40.0);
 
   double pitch = Math::pi_2 - atan2(d, -vector.z) - cameraTilt;
@@ -386,20 +376,20 @@ void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
 
 void HeadMotionEngine::lookAtPoint()
 {
-  double x = theBlackBoard.theHeadMotionRequest.targetPointInImage.x;
-  double y = theBlackBoard.theHeadMotionRequest.targetPointInImage.y;
+  double x = getHeadMotionRequest().targetPointInImage.x;
+  double y = getHeadMotionRequest().targetPointInImage.y;
   //double f = RobotInfo::getInstance().theCameraInfo.focalLength;
     
-  double dev_x = theBlackBoard.theCameraInfo.getOpticalCenterX() - x;
-  double dev_y = y - theBlackBoard.theCameraInfo.getOpticalCenterY();
+  double dev_x = getCameraInfo().getOpticalCenterX() - x;
+  double dev_y = y - getCameraInfo().getOpticalCenterY();
    
   Vector3<double> startingPointCamera(54,0,68);
 
   //double offsetX = startingPointCamera.x;
   //double offsetY = startingPointCamera.z;
  
-  double divAngleX = atan2(dev_x, theBlackBoard.theCameraInfo.getFocalLength());
-  double divAngleY = atan2(dev_y, theBlackBoard.theCameraInfo.getFocalLength());
+  double divAngleX = atan2(dev_x, getCameraInfo().getFocalLength());
+  double divAngleY = atan2(dev_y, getCameraInfo().getFocalLength());
 
   Vector2<double> update(divAngleX, divAngleY);
 
@@ -412,10 +402,10 @@ void HeadMotionEngine::lookAtPoint()
  */
 void HeadMotionEngine::search() 
 {
-  vector<Vector3<double> > points;
+  std::vector<Vector3<double> > points;
 
-  const Vector3<double>& center = theBlackBoard.theHeadMotionRequest.searchCenter;
-  const Vector3<double>& size = theBlackBoard.theHeadMotionRequest.searchSize;
+  const Vector3<double>& center = getHeadMotionRequest().searchCenter;
+  const Vector3<double>& size = getHeadMotionRequest().searchSize;
 
 
   points.push_back(Vector3<double>(center.x-size.x, center.y-size.y, center.z-size.z));
@@ -423,25 +413,25 @@ void HeadMotionEngine::search()
   points.push_back(Vector3<double>(center.x+size.x, center.y+size.y, center.z+size.z));
   points.push_back(Vector3<double>(center.x+size.x, center.y-size.y, center.z+size.z));
 
-  if (!theBlackBoard.theHeadMotionRequest.searchDirection)
+  if (!getHeadMotionRequest().searchDirection)
   {
       std::reverse(points.begin(), points.end());
   }
 
   if ( trajectoryHeadMove(points) )
   {
-    theMotionStatus.headMotion = HeadMotionRequest::numOfHeadMotion;
+    getMotionStatus().headMotion = HeadMotionRequest::numOfHeadMotion;
   }
   else
   {
-    theMotionStatus.headMotion = HeadMotionRequest::search;
+    getMotionStatus().headMotion = HeadMotionRequest::search;
   }
 }//end search
 
 void HeadMotionEngine::randomSearch()
 {
     static Vector3<double> randomPoint(0, 0, 0);
-    vector<Vector3<double> > points;
+    std::vector<Vector3<double> > points;
     points.push_back(randomPoint);
     if ( trajectoryHeadMove(points) ){
         static double lastDir = 0;
@@ -458,7 +448,7 @@ void HeadMotionEngine::randomSearch()
 /*
  * move the head in the specified trajectory
  */
-bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points)
+bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& points)
 {
   // current state of the head motion
   // indicates the last visited point in the points list
@@ -506,7 +496,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
   cycle++;
   int nextMotionState = (headMotionState+1)%MAXSTATE;
   double dist = (points[nextMotionState]-points[headMotionState]).abs();
-  double s = (dist == 0)?1:cycle / ( dist / (max_speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() ));
+  double s = (dist == 0)?1:cycle / ( dist / (max_speed*getRobotInfo().getBasicTimeStepInSecond() ));
 
   if ( s >= 1 )
   {
@@ -548,7 +538,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
 void HeadMotionEngine::lookStraightAhead()
 {
-  const Pose3D& cameraTrans = theBlackBoard.theCameraInfo.transformation[theBlackBoard.theHeadMotionRequest.cameraID];
+  const Pose3D& cameraTrans = getCameraInfo().transformation[getHeadMotionRequest().cameraID];
   Vector2<double> target(0.0, -cameraTrans.rotation.getYAngle());
   gotoAngle(target);
 }//end lookStraightAhead
@@ -556,6 +546,6 @@ void HeadMotionEngine::lookStraightAhead()
 
 void HeadMotionEngine::lookStraightAheadWithStabilization()
 {
-  Vector2<double> target(0.0, -theBlackBoard.theInertialModel.orientation.y);
+  Vector2<double> target(0.0, -getInertialModel().orientation.y);
   gotoAngle(target);
 }//end lookStraightAheadWithStabilization

@@ -32,6 +32,8 @@ SensorBehaviorControl::SensorBehaviorControl()
 
 void SensorBehaviorControl::execute() 
 {
+  getMotionRequest().id = MotionRequest::stand;
+
   // execute the test behavior
   testBehavior();
 

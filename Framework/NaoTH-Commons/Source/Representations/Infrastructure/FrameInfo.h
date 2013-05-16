@@ -4,13 +4,11 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */ 
 
-#ifndef __FrameInfo_h_
-#define __FrameInfo_h_
+#ifndef _FrameInfo_h_
+#define _FrameInfo_h_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "Tools/DataStructures/Streamable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 namespace naoth
 {
@@ -18,7 +16,7 @@ namespace naoth
   * @class FrameInfo
   * A class that contains information on the current frame.
   */
-  class FrameInfo : public Printable, public PlatformInterchangeable, public Streamable
+  class FrameInfo : public Printable
   {
   public:
     /**
@@ -33,6 +31,7 @@ namespace naoth
     FrameInfo(unsigned int time, unsigned int frameNumber) 
       :
         time(time),
+        step(0),
         frameNumber(frameNumber)
     {}
 

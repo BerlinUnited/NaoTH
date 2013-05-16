@@ -72,6 +72,12 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -83,6 +89,30 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+  int oldWidth = 0;
+  int oldHeight = 0;
+  private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
+  {//GEN-HEADEREND:event_formComponentResized
+      if(oldWidth != 0 && oldHeight != 0)
+      {
+          double sw = ((double)this.getWidth()) / ((double)oldWidth);
+          double sh = ((double)this.getHeight()) / ((double)oldHeight);
+          
+          double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
+          
+          this.scale *= s;
+          this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
+          this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+      }
+      
+      oldWidth = this.getWidth();
+      oldHeight = this.getHeight();
+      
+      
+      
+      this.repaint();
+  }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
@@ -97,6 +127,26 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   }//end removeDrawing
 
   @Override
+  public String getToolTipText(MouseEvent e)
+  {
+      Point.Double p = canvasCoordinatesToInternal(new Point.Double(e.getX(), e.getY()));
+      String s = String.format("%.0f;%.0f", p.x, p.y);
+      return s;
+  }
+
+  @Override
+  public Point getToolTipLocation(MouseEvent e)
+  {
+    Point p = e.getPoint();
+    p.y += 15;
+    return p;
+  }
+  
+  public void setShowCoordinates(boolean v) {
+      
+  }
+  
+  @Override
   public synchronized void paintComponent(Graphics g)
   {
     super.paintComponent(g);
@@ -104,6 +154,8 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     if (this.antializing)
     {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     }
 
@@ -136,6 +188,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   }//end paintComponent
 
   // <editor-fold defaultstate="collapsed" desc="Handling Mouse Events">
+  @Override
   public void mouseWheelMoved(MouseWheelEvent e)
   {
     double newScale = scale - scale * e.getWheelRotation() * 0.1;
@@ -154,6 +207,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     }//end if
   }//end mouseWheelMoved
 
+  @Override
   public void mouseDragged(MouseEvent e)
   {
     this.offsetX = this.dragOffsetX + e.getX();
@@ -161,28 +215,34 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     this.repaint();
   }
 
+  @Override
   public void mousePressed(MouseEvent e)
   {
     this.dragOffsetX = offsetX - e.getX();
     this.dragOffsetY = offsetY - e.getY();
   }//end mousePressed
 
+  @Override
   public void mouseReleased(MouseEvent e)
   {
   }
 
+  @Override
   public void mouseEntered(MouseEvent e)
   {
   }
 
+  @Override
   public void mouseExited(MouseEvent e)
   {
   }
 
+  @Override
   public void mouseMoved(MouseEvent e)
   {
   }
 
+  @Override
   public void mouseClicked(MouseEvent e)
   {
   }

@@ -12,14 +12,13 @@
 #include <string>
 
 #include "Tools/Math/Vector3.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
 
-  class FSRData : public Printable, public PlatformInterchangeable, public Streamable
+  class FSRData : public Printable
   {
   public:
     enum FSRID

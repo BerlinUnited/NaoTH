@@ -2,24 +2,19 @@
  * @file InertiaSensorCalibrator.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- *
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
+ * @author Inspired by the BH-2011
  */
 
 #include "InertiaSensorCalibrator.h"
 
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 using namespace naoth;
 
-InertiaSensorCalibrator::InertiaSensorCalibrator(
-  const MotionBlackBoard& bb, 
-  CalibrationData& theCalibrationData)
-  :
-  theBlackBoard(bb),
-  theCalibrationData(theCalibrationData)
+InertiaSensorCalibrator::InertiaSensorCalibrator()
 {
   DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
 }
@@ -27,8 +22,8 @@ InertiaSensorCalibrator::InertiaSensorCalibrator(
 // check all request joints' speed, return true if all joints are almost not moving
 bool InertiaSensorCalibrator::intentionallyMoving()
 {
-  const double* jointSpeed = theBlackBoard.theMotorJointData.dp;
-  const double* stiffness = theBlackBoard.theMotorJointData.stiffness;
+  const double* jointSpeed = getMotorJointData().dp;
+  const double* stiffness = getMotorJointData().stiffness;
   const double min_speed = Math::fromDegrees(1); // degree per second
   const double min_stiffness = 0.05;
   for( int i=0; i<JointData::numOfJoint; i++)
@@ -53,7 +48,7 @@ void InertiaSensorCalibrator::reset()
 }//end reset
 
 
-void InertiaSensorCalibrator::update()
+void InertiaSensorCalibrator::execute()
 {
   // inertial params
   Vector2d inertialBiasProcessNoise = Vector2d(0.05, 0.05);
@@ -83,12 +78,10 @@ void InertiaSensorCalibrator::update()
   timeFrame = (unsigned int)tmp;
 
 
-
-
   // frame time check
-  if(theBlackBoard.theFrameInfo.getTime() <= lastTime)
+  if(getFrameInfo().getTime() <= lastTime)
   {
-    if(theBlackBoard.theFrameInfo.getTime() == lastTime)
+    if(getFrameInfo().getTime() == lastTime)
       return; // done!
     reset();
   }
@@ -96,7 +89,7 @@ void InertiaSensorCalibrator::update()
   // it's prediction time!
   if(lastTime && calibrated)
   {
-    const double timeDiff = double(theBlackBoard.theFrameInfo.getTimeSince(lastTime)) * 0.001; // in seconds
+    const double timeDiff = double(getFrameInfo().getTimeSince(lastTime)) * 0.001; // in seconds
     inertialXBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.x * timeDiff));
     inertialYBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.y * timeDiff));
     accXBias.predict(0.0, Math::sqr(accBiasProcessNoise.x * timeDiff));
@@ -109,9 +102,9 @@ void InertiaSensorCalibrator::update()
 
   // detect unstable stuff...
   bool unstable = 
-        theBlackBoard.theMotionStatus.currentMotion != motion::stand
-    || !theBlackBoard.theGroundContactModel.leftGroundContact
-    || !theBlackBoard.theGroundContactModel.rightGroundContact;
+        getMotionStatus().currentMotion != motion::stand
+    || !getGroundContactModel().leftGroundContact
+    || !getGroundContactModel().rightGroundContact;
 
   DEBUG_REQUEST("InertiaSensorCalibrator:force_calibrate", unstable=false; );
 
@@ -124,23 +117,23 @@ void InertiaSensorCalibrator::update()
   if(unstable)
     cleanCollectionStartTime = 0;
   else if(!cleanCollectionStartTime)
-    cleanCollectionStartTime = theBlackBoard.theFrameInfo.getTime();
+    cleanCollectionStartTime = getFrameInfo().getTime();
 
 
 
 
   // restart sensor value collecting?
-  if(unstable || (theBlackBoard.theFrameInfo.getTimeSince(collectionStartTime) > 1000))
+  if(unstable || (getFrameInfo().getTimeSince(collectionStartTime) > 1000))
   {
     // add collection within the time frame to the collection buffer
-    if(cleanCollectionStartTime && theBlackBoard.theFrameInfo.getTimeSince(cleanCollectionStartTime) > (int)timeFrame &&
+    if(cleanCollectionStartTime && getFrameInfo().getTimeSince(cleanCollectionStartTime) > (int)timeFrame &&
        inertialValues.getNumberOfEntries())
     {
       //ASSERT(collections.getNumberOfEntries() < collections.getMaxEntries());
       collections.add(Collection(inertialValues.getAverage(),
                                  accValues.getAverage(),
                                  gyroValues.getAverage(),
-                                 collectionStartTime + (theBlackBoard.theFrameInfo.getTimeSince(collectionStartTime)) / 2));
+                                 collectionStartTime + (getFrameInfo().getTimeSince(collectionStartTime)) / 2));
     }
 
     // restart collecting
@@ -151,7 +144,7 @@ void InertiaSensorCalibrator::update()
     for(int i = collections.getNumberOfEntries() - 1; i >= 0; --i)
     {
       const Collection& collection(collections.getEntry(i));
-      if(theBlackBoard.theFrameInfo.getTimeSince(collection.timeStamp) < (int)timeFrame)
+      if(getFrameInfo().getTimeSince(collection.timeStamp) < (int)timeFrame)
         break;
       if(cleanCollectionStartTime && cleanCollectionStartTime < collection.timeStamp)
       {
@@ -190,7 +183,7 @@ void InertiaSensorCalibrator::update()
   {
     // Body rotation, which was calculated using kinematics.
     RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
+      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
@@ -198,49 +191,49 @@ void InertiaSensorCalibrator::update()
     accGravOnly *= -Math::g;
 
     // add sensor reading to the collection
-    inertialValues.add(inertialExpected - theBlackBoard.theInertialSensorData.data);
-    accValues.add(theBlackBoard.theAccelerometerData.data - accGravOnly);
-    gyroValues.add( -theBlackBoard.theGyrometerData.data );
+    inertialValues.add(inertialExpected - getInertialSensorData().data);
+    accValues.add(getAccelerometerData().data - accGravOnly);
+    gyroValues.add( -getGyrometerData().data );
 
     if(!collectionStartTime)
-      collectionStartTime = theBlackBoard.theFrameInfo.getTime();
+      collectionStartTime = getFrameInfo().getTime();
   }//end if !unstable
 
 
 
-  lastTime = theBlackBoard.theFrameInfo.getTime();
+  lastTime = getFrameInfo().getTime();
 
 
   // provide calibrated inertia readings
   if(!calibrated)
   {
-    theCalibrationData.accSensorOffset = Vector3d();
-    theCalibrationData.gyroSensorOffset = Vector2d();
-    theCalibrationData.inertialSensorOffset = Vector2d();
+    getCalibrationData().accSensorOffset = Vector3d();
+    getCalibrationData().gyroSensorOffset = Vector2d();
+    getCalibrationData().inertialSensorOffset = Vector2d();
   }
   else
   {
-    theCalibrationData.inertialSensorOffset.x = inertialXBias.value;
-    theCalibrationData.inertialSensorOffset.y = inertialYBias.value;
+    getCalibrationData().inertialSensorOffset.x = inertialXBias.value;
+    getCalibrationData().inertialSensorOffset.y = inertialYBias.value;
 
-    theCalibrationData.accSensorOffset.x = accXBias.value;
-    theCalibrationData.accSensorOffset.y = accYBias.value;
-    theCalibrationData.accSensorOffset.z = accZBias.value;
+    getCalibrationData().accSensorOffset.x = accXBias.value;
+    getCalibrationData().accSensorOffset.y = accYBias.value;
+    getCalibrationData().accSensorOffset.z = accZBias.value;
 
-    theCalibrationData.gyroSensorOffset.x = gyroXBias.value;
-    theCalibrationData.gyroSensorOffset.y = gyroYBias.value;
+    getCalibrationData().gyroSensorOffset.x = gyroXBias.value;
+    getCalibrationData().gyroSensorOffset.y = gyroYBias.value;
   }
 
-  theCalibrationData.calibrated = calibrated;
+  getCalibrationData().calibrated = calibrated;
 
-  PLOT("InertiaSensorCalibrator:inertialOffset.x", theCalibrationData.inertialSensorOffset.x);
-  PLOT("InertiaSensorCalibrator:inertialOffset.y", theCalibrationData.inertialSensorOffset.y);
+  PLOT("InertiaSensorCalibrator:inertialOffset.x", getCalibrationData().inertialSensorOffset.x);
+  PLOT("InertiaSensorCalibrator:inertialOffset.y", getCalibrationData().inertialSensorOffset.y);
 
-  PLOT("InertiaSensorCalibrator:gyroOffset.x", theCalibrationData.gyroSensorOffset.x);
-  PLOT("InertiaSensorCalibrator:gyroOffset.y", theCalibrationData.gyroSensorOffset.y);
+  PLOT("InertiaSensorCalibrator:gyroOffset.x", getCalibrationData().gyroSensorOffset.x);
+  PLOT("InertiaSensorCalibrator:gyroOffset.y", getCalibrationData().gyroSensorOffset.y);
 
-  PLOT("InertiaSensorCalibrator:accOffset.x", theCalibrationData.accSensorOffset.x);
-  PLOT("InertiaSensorCalibrator:accOffset.y", theCalibrationData.accSensorOffset.y);
-  PLOT("InertiaSensorCalibrator:accOffset.z", theCalibrationData.accSensorOffset.z);
+  PLOT("InertiaSensorCalibrator:accOffset.x", getCalibrationData().accSensorOffset.x);
+  PLOT("InertiaSensorCalibrator:accOffset.y", getCalibrationData().accSensorOffset.y);
+  PLOT("InertiaSensorCalibrator:accOffset.z", getCalibrationData().accSensorOffset.z);
 
 }//end update

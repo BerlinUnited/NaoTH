@@ -1,5 +1,5 @@
-#ifndef __ModuleB_h_
-#define __ModuleB_h_
+#ifndef _ModuleB_h_
+#define _ModuleB_h_
 
 #include "ModuleFramework/Representation.h"
 #include "ModuleFramework/Module.h"
@@ -10,6 +10,7 @@
 
 #include <list>
 #include <cstring>
+
 
 BEGIN_DECLARE_MODULE(ModuleB)
   REQUIRE(RepresentationA)

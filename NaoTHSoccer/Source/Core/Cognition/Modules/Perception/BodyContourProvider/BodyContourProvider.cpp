@@ -8,17 +8,13 @@
 */
 
 #include "BodyContourProvider.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
-#include "Tools/Math/ConvexHull.h"
-#include <vector>
+#include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/DebugDrawings3D.h>
+#include <Tools/Debug/DebugDrawings.h>
 
+using namespace std;
 
 BodyContourProvider::BodyContourProvider()
 {

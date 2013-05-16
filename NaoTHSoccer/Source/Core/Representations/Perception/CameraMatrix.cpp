@@ -9,8 +9,6 @@
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-// HACK: needed for logplayer to calculate horizon
-#include <PlatformInterface/Platform.h>
 #include <Tools/CameraGeometry.h>
 
 using namespace naoth;
@@ -18,7 +16,9 @@ using namespace naoth;
 void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std::ostream& stream)
 {
   naothmessages::CameraMatrix msg;
-  msg.set_cameraid((naothmessages::CameraID) representation.cameraNumber);
+  // ACHTUNG: representation.cameraNumber has to be some value in naothmessages::CameraID
+  // in particular, it cannot be -1 (!)
+  msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_valid(representation.valid);
   msg.mutable_pose()->mutable_translation()->set_x( representation.translation.x );
   msg.mutable_pose()->mutable_translation()->set_y( representation.translation.y );
@@ -38,7 +38,7 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  representation.cameraNumber = msg.cameraid();
+  representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
   representation.valid = msg.valid();
   representation.translation.x = msg.pose().translation().x();
   representation.translation.y = msg.pose().translation().y();

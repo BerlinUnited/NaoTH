@@ -1,13 +1,11 @@
-#ifndef SERIALIZER_H
-#define SERIALIZER_H
+#ifndef _SERIALIZER_H
+#define _SERIALIZER_H
 
-#include <typeinfo>
 
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/DataStructures/Singleton.h"
-#include "Tools/DataStructures/Streamable.h"
 
 #include <iostream>
+#include <typeinfo>
 
 //#define DEBUG_INFRASTRUCTURE
 
@@ -39,4 +37,4 @@ namespace naoth
 
 }
 
-#endif // SERIALIZER_H
+#endif // _SERIALIZER_H

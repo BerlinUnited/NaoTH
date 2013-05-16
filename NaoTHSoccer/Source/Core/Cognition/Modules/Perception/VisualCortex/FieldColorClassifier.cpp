@@ -2,21 +2,14 @@
  * File:   FieldColorClassifier.cpp
  * Author: claas
  *
- * Created on 15. März 2011, 15:56
+ * Created on 15. march 2011, 15:56
  */
 
 #include "FieldColorClassifier.h"
 
-#include <vector>
 
-#include "Tools/Math/Vector3.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 
 FieldColorClassifier::FieldColorClassifier()

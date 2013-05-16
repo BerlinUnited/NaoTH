@@ -9,17 +9,22 @@
 #define	_ParallelKinematicMotionFactory_H
 
 #include "Motion/Engine/MotionFactory.h"
+#include <ModuleFramework/Module.h>
 
-class ParallelKinematicMotionFactory: public MotionFactory
+BEGIN_DECLARE_MODULE(ParallelKinematicMotionFactory)
+END_DECLARE_MODULE(ParallelKinematicMotionFactory)
+
+class ParallelKinematicMotionFactory: public ParallelKinematicMotionFactoryBase, public MotionFactory
 {
 public:
   ParallelKinematicMotionFactory();
   virtual ~ParallelKinematicMotionFactory();
 
-  virtual AbstractMotion* createMotion(const MotionRequest& motionRequest);
+  virtual Module* createMotion(const MotionRequest& motionRequest);
+  void execute(){} // dummy
 
 private:
-  AbstractMotion* currentMotion;
+  AbstractModuleCreator* currentMotionCreator;
 };
 
 #endif	/* _ParallelKinematicMotionFactory_H */

@@ -6,8 +6,8 @@
 * It discribes an interface for an container being able to collect objects of a given type.
 * 
 */
-#ifndef __Container_h_
-#define __Container_h_
+#ifndef _Container_h_
+#define _Container_h_
 
 template<typename T>
 class Container
@@ -16,4 +16,4 @@ public:
   virtual void add(const T& object) = 0;
 };
 
-#endif /* __Container_h_ */
+#endif /* _Container_h_ */

@@ -40,7 +40,9 @@ namespace naoth
     b2(0.0),
     cameraID(Bottom),
     cameraRollOffset(0.0),
-    cameraTiltOffset(0.0)
+    cameraTiltOffset(0.0),
+    transformation(),
+    openingAngleDiagonal(0.0)
     {}
 
     virtual ~CameraInfo()
@@ -50,7 +52,7 @@ namespace naoth
     {
       Top,
       Bottom,
-      numOfCamera
+      numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
     };
 
     unsigned int resolutionWidth;

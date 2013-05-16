@@ -28,6 +28,7 @@
 // todo: move to tools?
 #include "Cognition/Modules/Modeling/GoalLocator/WholeGoalLocator/GoalModelCorrector.h" 
 
+using namespace std;
 
 ActiveGoalLocator::ActiveGoalLocator()
   :

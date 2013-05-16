@@ -6,14 +6,13 @@
  */
 
 #include "InitialMotion.h"
-#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 using namespace std;
 
 InitialMotion::InitialMotion() 
   :
-  AbstractMotion(motion::init),
+  AbstractMotion(motion::init, getMotionLock()),
   initStatus(Dead),
   init_time(3000.0),
   movedTime(0)
@@ -62,19 +61,19 @@ InitialMotion::InitialMotion()
   freeStiffness[JointData::RHipPitch] = 0.1;
 }
 
-void InitialMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void InitialMotion::execute()
 {
   if ( isDanger() ) initStatus = Dead;
 
   switch (initStatus) 
   {
     case Dead:
-      currentState = motion::running;
+      setCurrentState(motion::running);
       dead();
       break;
       
     case Init:
-      currentState = motion::running;
+      setCurrentState(motion::running);
       increaseStiffness();
       break;
 
@@ -87,11 +86,11 @@ void InitialMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*
       break;
 
     case InitialPoseReady:
-      freeJoint(motionRequest.id == getId());
+      freeJoint(getMotionRequest().id == getId());
       break;
 
     case Finish:
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
     break;
   }//end switch
 }//end execute
@@ -100,8 +99,8 @@ void InitialMotion::dead()
 {
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.position[i] = theBlackBoard.theSensorJointData.position[i];
-    theMotorJointData.stiffness[i] = -1;
+    getMotorJointData().position[i] = getSensorJointData().position[i];
+    getMotorJointData().stiffness[i] = -1;
   }
 
   if ( isSafe() )
@@ -114,14 +113,14 @@ void InitialMotion::increaseStiffness()
 {
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.position[i] = theBlackBoard.theSensorJointData.position[i];
+    getMotorJointData().position[i] = getSensorJointData().position[i];
   }
 
-  double stiffDelta = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() * 10;
-  if ( setStiffness(safeStiffness, stiffDelta) )
+  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond() * 10;
+  if ( setStiffness(getMotorJointData(), getSensorJointData(), safeStiffness, stiffDelta) )
   {
     initStatus = StiffnessReady;
-    startJoints = theBlackBoard.theSensorJointData;
+    startJoints = getSensorJointData();
     startJoints.clamp();
     movedTime = 0;
     double maxAngleSpeed = Math::pi_2; // radiant per second
@@ -138,10 +137,10 @@ void InitialMotion::moveToExtendPose()
     double t = movedTime / init_time;
     for (int i = 0; i < JointData::numOfJoint; i++)
     {
-      theMotorJointData.position[i] = (1 - t) * startJoints.position[i] + t * extendJoints.position[i];
-      theMotorJointData.stiffness[i] = safeStiffness[i];
+      getMotorJointData().position[i] = (1 - t) * startJoints.position[i] + t * extendJoints.position[i];
+      getMotorJointData().stiffness[i] = safeStiffness[i];
     }
-    movedTime += theBlackBoard.theRobotInfo.basicTimeStep;
+    movedTime += getRobotInfo().basicTimeStep;
   } else
   {
     initStatus = ExtendPoseReady;
@@ -158,10 +157,10 @@ void InitialMotion::moveToInitialPose()
     double t = movedTime / init_time;
     for (int i = 0; i < JointData::numOfJoint; i++)
     {
-      theMotorJointData.position[i] = (1 - t) * extendJoints.position[i] + t * theInitJoints.position[i];
-      theMotorJointData.stiffness[i] = safeStiffness[i];
+      getMotorJointData().position[i] = (1 - t) * extendJoints.position[i] + t * theInitJoints.position[i];
+      getMotorJointData().stiffness[i] = safeStiffness[i];
     }
-    movedTime += theBlackBoard.theRobotInfo.basicTimeStep;
+    movedTime += getRobotInfo().basicTimeStep;
   } else
   {
     initStatus = InitialPoseReady;
@@ -170,14 +169,14 @@ void InitialMotion::moveToInitialPose()
 
 void InitialMotion::freeJoint(bool freely)
 {
-  double stiffDelta = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
   if (freely)
   {
-    setStiffness(freeStiffness, stiffDelta);
+    setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, stiffDelta);
   }
   else
   {
-    if ( setStiffness(maxStiffness, stiffDelta*2) )
+    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta*2) )
     {
       initStatus = Finish;
     }
@@ -187,15 +186,15 @@ void InitialMotion::freeJoint(bool freely)
 bool InitialMotion::isSafe() const
 {
   const double safeAngle = Math::fromDegrees(10);
-  return abs(theBlackBoard.theInertialSensorData.data.x) < safeAngle
-      && abs(theBlackBoard.theInertialSensorData.data.y) < safeAngle;
+  return abs(getInertialSensorData().data.x) < safeAngle
+      && abs(getInertialSensorData().data.y) < safeAngle;
 }
 
 bool InitialMotion::isDanger() const
 {
   const double dangerAngle = Math::fromDegrees(30);
-  return abs(theBlackBoard.theInertialSensorData.data.x) > dangerAngle
-      || abs(theBlackBoard.theInertialSensorData.data.y) > dangerAngle;
+  return abs(getInertialSensorData().data.x) > dangerAngle
+      || abs(getInertialSensorData().data.y) > dangerAngle;
 }
 
 double InitialMotion::getDistance(const JointData& one, const JointData& another)

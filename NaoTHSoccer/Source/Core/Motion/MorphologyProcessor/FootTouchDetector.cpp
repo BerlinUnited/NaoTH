@@ -6,7 +6,6 @@
 */
 
 #include "FootTouchDetector.h"
-#include <sstream>
 
 using namespace std;
 

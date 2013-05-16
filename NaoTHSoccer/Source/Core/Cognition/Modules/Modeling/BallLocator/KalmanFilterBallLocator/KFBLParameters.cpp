@@ -8,7 +8,6 @@
 */
 
 #include "KFBLParameters.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 KFBLParameters::KFBLParameters()

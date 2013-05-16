@@ -8,17 +8,36 @@
 #ifndef _INITIALMOTION_H
 #define _INITIALMOTION_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
-class InitialMotion : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+
+
+BEGIN_DECLARE_MODULE(InitialMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  REQUIRE(InertialSensorData)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(InitialMotion)
+
+class InitialMotion : private InitialMotionBase, public AbstractMotion
 {
 public:
   InitialMotion();
   
   virtual ~InitialMotion(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
-  
+  void execute();
+
   virtual bool isFinish() const { return initStatus == InitialPoseReady || initStatus == Finish; }
 
 private:

@@ -6,13 +6,10 @@
 * Implementation of Inverse Kinematics
 */
 
-#include "PlatformInterface/Platform.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
 // Tools
-#include "Tools/Math/Common.h"
-#include "Tools/Math/RotationMatrix.h"
 //#include "Tools/TemplateUtility.h"
 #include "Tools/NaoInfo.h"
 
@@ -204,7 +201,7 @@ double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3
       double k3 = axis * ((Pic^Pid) * wp + (uc[0]^ud[0]) * wo0 + (uc[1]^ud[1]) * wo1 + (uc[2]^ud[2]) * wo2);
       double theta = atan2(k3, k2 - k1) * wi;
 
-      (*(link->q)) += theta;
+      (*(link->q)) += theta; // modify the joint
       delta += fabs(theta);
       calculateAffector(linkList, link, offset, affector);
     }

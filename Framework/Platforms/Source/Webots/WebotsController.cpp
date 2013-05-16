@@ -16,7 +16,7 @@ using namespace naoth;
 
 WebotsController::WebotsController()
   : 
-    PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+    PlatformInterface("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
     time(0),
     key(0),
     currentStiffness()
@@ -182,8 +182,8 @@ void WebotsController::main()
       key-='0';
     }
     time += getBasicTimeStep();
-    callCognition();
-    callMotion();
+    runCognition();
+    runMotion();
   }//end while
 
   cout << "Run finished" << endl;
@@ -558,7 +558,7 @@ void WebotsController::set(const UltraSoundSendData& data)
 
 void WebotsController::getCognitionInput()
 {
-  PlatformInterface<WebotsController>::getCognitionInput();
+  PlatformInterface::getCognitionInput();
   //get(theGPSDataProvider.theGPSData);
 }
 

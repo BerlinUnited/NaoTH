@@ -56,28 +56,30 @@ public class PlainPDFExportFileType extends ExportFileType
         p.setProperty(PDFGraphics2D.PAGE_MARGINS, new Insets(0, 0, 0, 0));
     }
     
-    
+    @Override
     public String getDescription() {
-		return "Portable Document Format";
-	}
+        return "Portable Document Format";
+    }
 
-	public String[] getExtensions() {
-		return new String[] { "pdf" };
-	}
+    @Override
+    public String[] getExtensions() {
+        return new String[] { "pdf" };
+    }
 
-	public String[] getMIMETypes() {
-		return new String[] { "application/pdf" };
-	}
-        
-        @Override
+    @Override
+    public String[] getMIMETypes() {
+        return new String[] { "application/pdf" };
+    }
+
+    @Override
     public void exportToFile(OutputStream out, Component[] cmpnts, Component exportDlg, Properties prprts, String creator) throws IOException {
         for(int i = 0; i < cmpnts.length; i++)
         {
             Component c = cmpnts[i];
-            
+
             // --- EVIL HACK ---
             setSize(c.getSize());
-            
+
             VectorGraphics graphics = new PDFGraphics2D(out, c);
             graphics.startExport();
             c.print(graphics);
@@ -90,10 +92,10 @@ public class PlainPDFExportFileType extends ExportFileType
         for(int i = 0; i < cmpnts.length; i++)
         {
             Component c = cmpnts[i];
-            
+
             // --- EVIL HACK ---
             setSize(c.getSize());
-                    
+
             PDFGraphics2D graphics = new PDFGraphics2D(file, c);
             graphics.startExport();
             c.print(graphics);

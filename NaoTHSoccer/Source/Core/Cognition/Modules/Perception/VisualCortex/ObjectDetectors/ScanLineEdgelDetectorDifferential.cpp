@@ -3,13 +3,12 @@
  * Author: claas
  * Author: Heinrich Mellmann
  * 
- * Created on 14. März 2011, 14:22
+ * Created on 14. march 2011, 14:22
  */
 
 #include "ScanLineEdgelDetectorDifferential.h"
 
 #include "Tools/CameraGeometry.h"
-#include "Tools/Debug/NaoTHAssert.h"
 
 ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 {
@@ -131,7 +130,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
   bool begin_found = false;
   int begin_y = 0;
 
-  int begin_of_segment = point.y;
+//  int begin_of_segment = point.y;
 
   // just go up
   for(;point.y >= end.y; point.y--)
@@ -161,7 +160,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           lastGreenPoint.y = x_peak;
         }
 
-        begin_of_segment = x_peak;
+        //begin_of_segment = x_peak;
         greenCount = 0;
         segmentLength = 1;
 
@@ -237,7 +236,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 
         greenCount = 0;
         segmentLength = 1;
-        begin_of_segment = x_peak;
+        //begin_of_segment = x_peak;
         begin_found = true;
         begin_y = x_peak;
       }//end if

@@ -7,8 +7,8 @@
  * via the debug-console
  */
 
-#ifndef __ParameterList_h
-#define __ParameterList_h
+#ifndef _ParameterList_h
+#define _ParameterList_h
 
 #include <map>
 #include <sstream>
@@ -25,7 +25,7 @@ public:
   std::string& registerParameter(const std::string& name, std::string& parameter);
 
   // change some key characters, e.g. []
-  std::string covertName(std::string name);
+  static std::string convertName(std::string name);
 
   void syncWithConfig();
   void saveToConfig();
@@ -40,8 +40,9 @@ private:
   std::map<std::string, double*> doubleParameterReferences;
   std::map<std::string, std::string*> stringParameterReferences;
   std::map<std::string, bool*> boolParameterReferences;
+
 };
 
-#define PARAMETER_REGISTER(parameter) registerParameter(covertName(#parameter), parameter)
+#define PARAMETER_REGISTER(parameter) registerParameter(convertName(#parameter), parameter)
 
-#endif // __ParameterList_h
+#endif // _ParameterList_h

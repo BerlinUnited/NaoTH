@@ -2,9 +2,7 @@
  * @author <a href="xu@informatik.hu-berlin.de">Xu, Yuan</a>
  */
 
-#include <sstream>
 
-#include "Tools/Math/Pose3D.h"
 
 #include "DebugDrawings3D.h"
 #include <DebugCommunication/DebugCommandManager.h>

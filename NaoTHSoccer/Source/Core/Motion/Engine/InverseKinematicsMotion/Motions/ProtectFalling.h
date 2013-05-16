@@ -11,12 +11,35 @@
 
 #include "IKMotion.h"
 
-class ProtectFalling: public IKMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+
+
+BEGIN_DECLARE_MODULE(ProtectFalling)
+  REQUIRE(RobotInfo)
+  REQUIRE(MotionRequest)
+  REQUIRE(SensorJointData)
+  REQUIRE(GroundContactModel)
+  REQUIRE(InertialSensorData)
+
+  REQUIRE(InverseKinematicsMotionEngineService)
+
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(ProtectFalling)
+
+class ProtectFalling: private ProtectFallingBase, public IKMotion
 {
 public:
 
   ProtectFalling()
-  : IKMotion(motion::protect_falling)
+  : IKMotion(getInverseKinematicsMotionEngineService(), motion::protect_falling, getMotionLock())
   {
       for(int i=0; i<naoth::JointData::numOfJoint; i++)
       {
@@ -24,41 +47,45 @@ public:
       }
   }
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+  void execute()
   {
-    if ( motionRequest.id != getId() )
+    if ( getMotionRequest().id != getId() )
     {
       // exit at any time
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
       return;
     }
 
-    if ( currentState == motion::stopped )
+    if ( isStopped() )
     {
       // remember the pose
-      keepPose = theEngine.getCurrentHipFeetPose();
+      keepPose = getEngine().getCurrentHipFeetPose();
       for(int i=0; i<naoth::JointData::numOfJoint; i++)
       {
-        keepStiffness[i] = theBlackBoard.theSensorJointData.stiffness[i];
+        keepStiffness[i] = getSensorJointData().stiffness[i];
       }
     }
 
     InverseKinematic::HipFeetPose c = keepPose;
 
-    theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
+    getEngine().rotationStabilize(
+      getRobotInfo(), 
+      getGroundContactModel(),
+      getInertialSensorData(),
+      c.hip, c.feet.left, c.feet.right);
 
-    theEngine.solveHipFeetIK(c);
-    theEngine.copyLegJoints(theMotorJointData.position);
+    getEngine().solveHipFeetIK(c);
+    getEngine().copyLegJoints(getMotorJointData().position);
     decreaseStiffness();
-    currentState = motion::running;
+    setCurrentState(motion::running);
   }
 
 private:
   /* decrease stiffness according to body rotation */
   void decreaseStiffness()
   {
-    const Vector2d& is = theBlackBoard.theInertialSensorData.data;
-    double angle = max( abs(is.x), abs(is.y) );
+    const Vector2d& is = getInertialSensorData().data;
+    double angle = std::max( abs(is.x), abs(is.y) );
 
     // limit the range
     angle = Math::clamp(angle, 0.0, Math::pi_2);
@@ -68,11 +95,11 @@ private:
     {
       if ( k < 0 )
       {
-        theMotorJointData.stiffness[i] = 0; // don't turn the motor off
+        getMotorJointData().stiffness[i] = 0; // don't turn the motor off
       }
       else
       {
-        theMotorJointData.stiffness[i] = k * keepStiffness[i];
+        getMotorJointData().stiffness[i] = k * keepStiffness[i];
       }
     }
   }

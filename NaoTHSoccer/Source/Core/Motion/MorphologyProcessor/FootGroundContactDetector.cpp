@@ -9,11 +9,7 @@
 
 #include "Tools/Debug/DebugBufferedOutput.h"
 
-FootGroundContactDetector::FootGroundContactDetector(const MotionBlackBoard& theBlackBoard, naoth::FSRData& theFSRData, GroundContactModel& theGroundContactModel)
-  : 
-    theBlackBoard(theBlackBoard),
-    theFSRData(theFSRData),
-    theGroundContactModel(theGroundContactModel)
+FootGroundContactDetector::FootGroundContactDetector()
 {
 }
 
@@ -22,49 +18,49 @@ FootGroundContactDetector::~FootGroundContactDetector()
 }
 
 
-void FootGroundContactDetector::update()
+void FootGroundContactDetector::execute()
 {
 
   // check wether the sensory values look valid
   // usually, broken sensors return large values
   for(int i = 0; i < naoth::FSRData::numOfFSR; i++)
   {
-    if(theFSRData.data[i] > 100)
-      theFSRData.valid[i] = false;
+    if(getFSRData().data[i] > 100)
+      getFSRData().valid[i] = false;
     else
-      theFSRData.valid[i] = true;
+      getFSRData().valid[i] = true;
   }//end for
 
 
-  leftFSRBuffer.add(theFSRData.forceLeft());
-  rightFSRBuffer.add(theFSRData.forceRight());
+  leftFSRBuffer.add(getFSRData().forceLeft());
+  rightFSRBuffer.add(getFSRData().forceRight());
 
-  if(theFSRData.forceLeft() < 3)
-    theGroundContactModel.leftGroundContact = false;
+  if(getFSRData().forceLeft() < 3)
+    getGroundContactModel().leftGroundContact = false;
   else
-    theGroundContactModel.leftGroundContact = true;
+    getGroundContactModel().leftGroundContact = true;
 
-  if(theFSRData.forceRight() < 3)
-    theGroundContactModel.rightGroundContact = false;
+  if(getFSRData().forceRight() < 3)
+    getGroundContactModel().rightGroundContact = false;
   else
-    theGroundContactModel.rightGroundContact = true;
+    getGroundContactModel().rightGroundContact = true;
 
 
   
   if(leftFSRBuffer.getAverage() < 3)
-    theGroundContactModel.leftGroundContactAverage = false;
+    getGroundContactModel().leftGroundContactAverage = false;
   else
-    theGroundContactModel.leftGroundContactAverage = true;
+    getGroundContactModel().leftGroundContactAverage = true;
 
   if(rightFSRBuffer.getAverage() < 3)
-    theGroundContactModel.rightGroundContactAverage = false;
+    getGroundContactModel().rightGroundContactAverage = false;
   else
-    theGroundContactModel.rightGroundContactAverage = true;
+    getGroundContactModel().rightGroundContactAverage = true;
   
 
 
-  PLOT("FootGroundContactDetector:leftGroundContact", theGroundContactModel.leftGroundContact);
-  PLOT("FootGroundContactDetector:rightGroundContact", theGroundContactModel.rightGroundContact);
+  PLOT("FootGroundContactDetector:leftGroundContact", getGroundContactModel().leftGroundContact);
+  PLOT("FootGroundContactDetector:rightGroundContact", getGroundContactModel().rightGroundContact);
 
   PLOT("FootGroundContactDetector:leftFSRBuffer", leftFSRBuffer.getAverage());
   PLOT("FootGroundContactDetector:rightFSRBuffer", rightFSRBuffer.getAverage());

@@ -16,7 +16,8 @@
 #include "Common.h"
 
 /** This class represents a 3-vector */
-template <class V> class Vector3{
+template <class V> class Vector3
+{
   public:
 
   /** The vector values */
@@ -212,6 +213,12 @@ template <class V> class Vector3{
    return normalize(static_cast<V>(1));
   }
 
+  // some prefefined vectors for convenience
+  static const Vector3<V> zero;
+  static const Vector3<V> e1;
+  static const Vector3<V> e2;
+  static const Vector3<V> e3;
+
   void toDataStream(std::ostream& stream) const
   {
     stream.write((const char*) (&x), sizeof (V));
@@ -229,6 +236,13 @@ template <class V> class Vector3{
   }
  
 };
+
+//
+template<typename V> Vector3<V> const Vector3<V>::zero(0,0,0);
+template<typename V> Vector3<V> const Vector3<V>::e1(1,0,0);
+template<typename V> Vector3<V> const Vector3<V>::e2(0,1,0);
+template<typename V> Vector3<V> const Vector3<V>::e3(0,0,1);
+
 
 template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Vector3<DATATYPE>& v)
@@ -268,5 +282,6 @@ Vector3<DATATYPE> pol2xyz(const Vector3<DATATYPE> & v)
 
 //typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
+
 #endif // __Vector3_h__
 

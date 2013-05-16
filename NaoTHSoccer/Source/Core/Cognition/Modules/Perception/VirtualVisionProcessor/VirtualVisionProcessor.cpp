@@ -8,18 +8,13 @@
 
 #include "VirtualVisionProcessor.h"
 
-#include <Tools/Math/Vector2.h>
-#include <Tools/Math/Matrix_nxn.h>
 #include <Tools/Math/Matrix_mxn.h>
-#include <Tools/CameraGeometry.h>
 
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/DataConversion.h"
 
-#include <PlatformInterface/Platform.h>
-
+using namespace std;
 
 VirtualVisionProcessor::VirtualVisionProcessor()
 {

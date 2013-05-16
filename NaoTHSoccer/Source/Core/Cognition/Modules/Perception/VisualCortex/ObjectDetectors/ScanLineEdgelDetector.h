@@ -2,7 +2,7 @@
  * File:   ScanLineEdgelDetector.h
  * Author: claas
  *
- * Created on 14. März 2011, 14:22
+ * Created on 14. march 2011, 14:22
  */
 
 #ifndef _SCANLINEEDGELDETECTOR_H_

@@ -6,11 +6,9 @@
 */
 
 #include "BallSymbols.h"
-#include "Tools/Math/Common.h"
 
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugBufferedOutput.h>
 
 void BallSymbols::registerSymbols(xabsl::Engine& engine)
 {

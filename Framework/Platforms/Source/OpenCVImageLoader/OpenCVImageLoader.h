@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OpenCVImageLoader.h
  * Author: Kirill Yasinovskiy
  *
@@ -12,21 +12,21 @@
 
 //include section
 //representations:
-#include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Infrastructure/JointData.h>
-#include <Representations/Infrastructure/Image.h>
-#include <Representations/Infrastructure/AccelerometerData.h>
-#include <Representations/Infrastructure/GyrometerData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/IRData.h>
-#include <Representations/Infrastructure/CameraSettings.h>
-#include <Representations/Infrastructure/ButtonData.h>
-#include <Representations/Infrastructure/FSRData.h>
-#include <Representations/Infrastructure/BatteryData.h>
-#include <Representations/Infrastructure/UltraSoundData.h>
-#include <Representations/Infrastructure/LEDData.h>
-#include <Representations/Infrastructure/SoundData.h>
-#include <Representations/Infrastructure/GameData.h>
+#include "Representations/Infrastructure/JointData.h"
+#include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/AccelerometerData.h"
+#include "Representations/Infrastructure/GyrometerData.h"
+#include "Representations/Infrastructure/InertialSensorData.h"
+#include "Representations/Infrastructure/IRData.h"
+#include "Representations/Infrastructure/CameraSettings.h"
+#include "Representations/Infrastructure/ButtonData.h"
+#include "Representations/Infrastructure/FSRData.h"
+#include "Representations/Infrastructure/BatteryData.h"
+#include "Representations/Infrastructure/UltraSoundData.h"
+#include "Representations/Infrastructure/LEDData.h"
+#include "Representations/Infrastructure/SoundData.h"
+#include "Representations/Infrastructure/GameData.h"
 
 //platform:
 #include "PlatformInterface/PlatformInterface.h"
@@ -37,15 +37,20 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+//glib 2.0
+#include <glib.h>
+
 using namespace naoth;
 using namespace std;
 using namespace cv;
 
-class OpenCVImageLoader : public PlatformInterface<OpenCVImageLoader>
+class OpenCVImageLoader : public PlatformInterface
 {
 public:
   OpenCVImageLoader(const char* dirPath);
-  ~OpenCVImageLoader(){cvDestroyWindow("ImageLoader");};
+  ~OpenCVImageLoader(){/*cvDestroyWindow("ImageLoader");*/};
+
+  virtual OpenCVImageLoader& getPlatform(){return *this;}
 
   virtual string getBodyID() const { return "naoth-opencvimageloader"; }
 
@@ -59,7 +64,7 @@ public:
 
 
   void printHelp();
-  
+
   void executeCognition();
   void stepForward(int pictureSteps);
   void stepBack(int pictureSteps);
@@ -68,19 +73,20 @@ public:
   void play(bool onePictureMode);
 
   //get methods
-  void get(Image& data);
+  virtual void get(Image& data);
   void get(GameData& data){ data = theGameData; }
   void get(FrameInfo& data);
 
-  
+
 protected:
   virtual MessageQueue* createMessageQueue(const string& name);
 
 private:
   //directory name
-  const char* directoryName;
+  const gchar* directoryName;
+
   //vector containing all file names in directory
-  vector<const string> allFiles;
+  vector<string> allFiles;
   //current position
   unsigned int currentPos;
 

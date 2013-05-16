@@ -10,10 +10,7 @@
 
 #include "BresenhamLineScan.h"
 
-#include "Tools/Math/Line.h"
 #include "Tools/Math/Geometry.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include <vector>
 
 using namespace naoth;
 

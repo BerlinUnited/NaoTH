@@ -6,7 +6,6 @@
 */
 
 #include "CameraMatrixCalculator.h"
-#include "PlatformInterface/Platform.h"
 
 void CameraMatrixCalculator::calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,
@@ -27,6 +26,6 @@ void CameraMatrixCalculator::calculateCameraMatrix(
   // copy the result
   theCameraMatrix = pose;
 
-  theCameraMatrix.cameraNumber = (int)theCameraInfo.cameraID;
+  theCameraMatrix.cameraID = theCameraInfo.cameraID;
 }//end execute
 

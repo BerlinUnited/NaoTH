@@ -7,7 +7,7 @@ project "NaoTH-Commons"
   
   includedirs {
     "../Source/",
-    "../Source/Interface/"
+    "../Source/Messages/"
   }
   
   files {
@@ -16,3 +16,6 @@ project "NaoTH-Commons"
     "../Source/**.c", 
     "../Source/**.h"
   }
+  
+
+  

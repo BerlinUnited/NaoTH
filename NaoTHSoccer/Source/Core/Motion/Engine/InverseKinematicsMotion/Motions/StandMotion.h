@@ -17,12 +17,33 @@
 #include "IKMotion.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
-class StandMotion : public IKMotion
+#include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+
+BEGIN_DECLARE_MODULE(StandMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(MotionRequest)
+  REQUIRE(GroundContactModel)
+  REQUIRE(InertialSensorData)
+
+  REQUIRE(InverseKinematicsMotionEngineService)
+
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(StandMotion)
+
+class StandMotion : private StandMotionBase, public IKMotion
 {
 public:
 
   StandMotion()
-  : IKMotion(motion::stand),
+  : IKMotion(getInverseKinematicsMotionEngineService(), motion::stand, getMotionLock()),
     totalTime(0),
     time(0),
     height(-1000),
@@ -34,21 +55,21 @@ public:
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
     // standing
-    if ( currentState != motion::running
+    if ( isStopped()
         || abs(height - motionRequest.standHeight) > 1
         || standardStand != motionRequest.standardStand ) {
       standardStand = motionRequest.standardStand;
       // init pose
       height = motionRequest.standHeight;
-      double comHeight = (motionRequest.standHeight < 0.0) ? theParameters.walk.comHeight : motionRequest.standHeight;
+      double comHeight = (motionRequest.standHeight < 0.0) ? getEngine().getParameters().walk.comHeight : motionRequest.standHeight;
       comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
-      startPose = theEngine.getCurrentCoMFeetPose();
+      startPose = getEngine().getCurrentCoMFeetPose();
       targetPose = getStandPose(comHeight, standardStand);
 
       targetPose.localInCoM();
       startPose.localInCoM();
 
-      double speed = theParameters.stand.speed;
+      double speed = getEngine().getParameters().stand.speed;
       double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
       double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
       double distMax = (distLeft > distRight) ? distLeft : distRight;
@@ -58,34 +79,39 @@ public:
       // set stiffness
       for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++)
       {
-        theMotorJointData.stiffness[i] = stiffness;
+        getMotorJointData().stiffness[i] = stiffness;
       }
     }
   }//end calculateTrajectory
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+
+  void execute()
   {
-    if ( time > totalTime && motionRequest.id != getId() )
+    if ( time > totalTime && getMotionRequest().id != getId() )
     {
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
       return;
     }
 
-    calculateTrajectory(motionRequest);
+    calculateTrajectory(getMotionRequest());
 
-    time += theBlackBoard.theRobotInfo.basicTimeStep;
-    double k = min(time / totalTime, 1.0);
+    time += getRobotInfo().basicTimeStep;
+    double k = std::min(time / totalTime, 1.0);
 
-    InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
+    InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
     bool solved = false;
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p, solved, false);
+    InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
-    if(theParameters.stand.enableStabilization)
-      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
+    if(getEngine().getParameters().stand.enableStabilization)
+      getEngine().rotationStabilize(
+        getRobotInfo(),
+        getGroundContactModel(),
+        getInertialSensorData(),
+        c.hip, c.feet.left, c.feet.right);
 
-    theEngine.solveHipFeetIK(c);
-    theEngine.copyLegJoints(theMotorJointData.position);
-    theEngine.autoArms(c, theMotorJointData.position);
+    getEngine().solveHipFeetIK(c);
+    getEngine().copyLegJoints(getMotorJointData().position);
+    getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
 
 
     PLOT("Stand:hip:x",c.hip.translation.x);
@@ -94,19 +120,19 @@ public:
 
 
     //if(theParameters.stand.stabilizeNeural)
-    //  theEngine.feetStabilize(theMotorJointData.position);
+    //  theEngine.feetStabilize(getMotorJointData().position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
-    currentState = motion::running;
+    setCurrentState(motion::running);
   }//end execute
 
 private:
   void turnOffStiffnessWhenJointIsOutOfRange()
   {
-    const double* pos = theMotorJointData.position;
-    double* stiff = theMotorJointData.stiffness;
+    const double* pos = getMotorJointData().position;
+    double* stiff = getMotorJointData().stiffness;
     // Knee pitch
-    if ( pos[naoth::JointData::LKneePitch] > theMotorJointData.max[naoth::JointData::LKneePitch] )
+    if ( pos[naoth::JointData::LKneePitch] > getMotorJointData().max[naoth::JointData::LKneePitch] )
     {
       stiff[naoth::JointData::LKneePitch] = -1;
     }
@@ -114,7 +140,7 @@ private:
     {
       stiff[naoth::JointData::LKneePitch] = stiffness;
     }
-    if ( pos[naoth::JointData::RKneePitch] > theMotorJointData.max[naoth::JointData::RKneePitch] )
+    if ( pos[naoth::JointData::RKneePitch] > getMotorJointData().max[naoth::JointData::RKneePitch] )
     {
       stiff[naoth::JointData::RKneePitch] = -1;
     }
@@ -124,7 +150,7 @@ private:
     }
 
     // Ankle pitch
-    if ( pos[naoth::JointData::LAnklePitch] < theMotorJointData.min[naoth::JointData::LAnklePitch] )
+    if ( pos[naoth::JointData::LAnklePitch] < getMotorJointData().min[naoth::JointData::LAnklePitch] )
     {
       stiff[naoth::JointData::LAnklePitch] = -1;
     }
@@ -132,7 +158,7 @@ private:
     {
       stiff[naoth::JointData::LAnklePitch] = stiffness;
     }
-    if ( pos[naoth::JointData::RAnklePitch] < theMotorJointData.min[naoth::JointData::RAnklePitch] )
+    if ( pos[naoth::JointData::RAnklePitch] < getMotorJointData().min[naoth::JointData::RAnklePitch] )
     {
       stiff[naoth::JointData::RAnklePitch] = -1;
     }

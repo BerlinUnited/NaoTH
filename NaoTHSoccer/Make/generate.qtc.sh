@@ -1,15 +1,7 @@
 #!/bin/bash
 echo "create QT-Creator project files for SoccerNaoTH"
 
-
-cd ../../Framework/NaoTH-Commons/Make
-rm -f  *.config *.include *.creator *.user *.files *.make
-
-cd ../../Platforms/Make
-rm -f  *.config *.include *.creator *.user *.files *.make
-
-cd ../../../NaoTHSoccer/Make
-rm -f  *.config *.include *.creator *.user *.files *.make
+rm -f  ../build/*.config ../build/*.includes ../build/*.creator ../build/*.user ../build/*.files ../build/*.make
 
 ./generateMakefile.sh
 premake4 qtc

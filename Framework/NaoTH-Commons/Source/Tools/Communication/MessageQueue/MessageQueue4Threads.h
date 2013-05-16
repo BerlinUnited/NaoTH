@@ -9,6 +9,7 @@
 #define _MESSAGE_QUEUE_4_THREADS_H_
 
 #include "MessageQueue.h"
+#include <glib.h>
 
 class MessageQueue4Threads: public MessageQueue
 {

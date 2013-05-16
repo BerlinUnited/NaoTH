@@ -108,7 +108,7 @@ private:
   void debugStdOut();
 
   //Tools
-  string convertIntToString(int number);
+  std::string convertIntToString(int number);
 
 };
 
