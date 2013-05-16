@@ -62,7 +62,7 @@ public:
   {
     // standing
     if ( isStopped()
-        || abs(height - motionRequest.standHeight) > 1
+        || fabs(height - motionRequest.standHeight) > 1
         || standardStand != motionRequest.standardStand ) {
       standardStand = motionRequest.standardStand;
       // init pose

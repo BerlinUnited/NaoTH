@@ -51,7 +51,7 @@ namespace naoth
       return data[idx][i];
     }//end get
 
-    inline void set(unsigned int idx, unsigned int x, unsigned int y, unsigned int value)
+    inline void set(unsigned int idx, unsigned int x, unsigned int y, unsigned short value)
     {
       //if not initialized or invalid pixel, return default value
       if(x > width || y > height || idx > 2 || data[idx] == NULL )
@@ -61,7 +61,7 @@ namespace naoth
       data[idx][y * width + x] = value;
     }//end get
 
-    inline void set(unsigned int idx, unsigned int i, unsigned int value)
+    inline void set(unsigned int idx, unsigned int i, unsigned short value)
     {
       //if not initialized or invalid pixel, do nothing
       if(i >= size || idx > 2 || data[idx] == NULL )

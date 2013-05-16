@@ -396,7 +396,7 @@ void WebotsController::get(InertialSensorData& data)
   data.data.y += (webots_gyrometer[1] * time);
 
   // calibrate the Interial Sensor while the robot is static
-  if ( abs(webots_gyrometer[0]) < 0.01 && abs(webots_gyrometer[1]) < 0.01  )
+  if ( fabs(webots_gyrometer[0]) < 0.01 && fabs(webots_gyrometer[1]) < 0.01  )
   {
     // calculate intertial sensor data by accelerometer
     const double *webots_acc = wb_accelerometer_get_values(accelerometer);

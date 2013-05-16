@@ -181,45 +181,45 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     // calculate the joints fulfilling the result
     solveHipFeetIK(result);
 
-    // calculate the kinematic chain
+    // calculate the kinematic chain and the com
     Kinematics::ForwardKinematics::updateKinematicChainFrom(obsFoot);
-    // ... and the com
     theInverseKinematics.theKinematicChain.updateCoM();
 
-    Vector3d obsCoM = theInverseKinematics.theKinematicChain.CoM;
-
+    // calculate error
+    const Vector3d& obsCoM = theInverseKinematics.theKinematicChain.CoM;
     Vector3d e = refCoM - obsCoM;
-
     double error = e.x * e.x + e.y * e.y + e.z * e.z*(!fix_height);
 
+    // adjust step size
     if (bestError < error)
     {
       // the error becoms bigger, reset
       result.hip.translation = theCoMControlResult;
       step *= alpha; // make smaller steps
-    } else
-    {
+    } else {
       bestError = error;
       theCoMControlResult = result.hip.translation;
       step *= (1.0 + alpha); // make bigger steps
     }
+    step = Math::clamp(step, max_error, max_step);
 
+    // convergence
     if (bestError < max_error /*&& i > 0*/)
     {
-      // converge
       assert(result.hip.translation.x == theCoMControlResult.x && 
              result.hip.translation.y == theCoMControlResult.y &&
              result.hip.translation.z == theCoMControlResult.z);
-      //result.hip.translation = theCoMControlResult;
       break;
     }
 
-    step = Math::clamp(step, max_error, max_step);
+    
+    // calculate the update
+    Vector3d u = e * step;
 
+    // clampt the update
     double maxAdjustment = 50;
     MODIFY("IK_COM_CTR_MAX", maxAdjustment);
-    Vector3d u;
-    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment) {
+    if (fabs(u.x) > maxAdjustment || fabs(u.y) > maxAdjustment) {
       sloved = false;
     } else {
       sloved = true;
@@ -227,6 +227,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     u.x = Math::clamp(e.x * step, -maxAdjustment, maxAdjustment);
     u.y = Math::clamp(e.y * step, -maxAdjustment, maxAdjustment);
     u.z = Math::clamp(e.z * step, -maxAdjustment, maxAdjustment)*(!fix_height);
+
 
     result.hip.translation += u;
   }//end for
@@ -239,7 +240,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     std::cerr<<"Warning: can not control CoM @ "<<bestError<<std::endl;
   }
 
-  if( i == max_iter ) {
+  if( i >= max_iter ) {
     std::cerr<<"Warning: maximum iterations reached @ "<<bestError<<std::endl;
   }
   
@@ -377,7 +378,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   for( int i=0; i<2; i++ )
   {
     double threshold = Math::fromDegrees(getParameters().rotationStabilize.threshold[i]);
-    if ( abs(e[i]) > threshold )
+    if ( fabs(e[i]) > threshold )
     {
       chestRotationStabilizerValue[i] = (e[i] - Math::sgn(e[i]) * threshold) * getParameters().rotationStabilize.k[i];
       chestRotationStabilizerValue[i] = Math::clamp(chestRotationStabilizerValue[i], -maxAngle, maxAngle);
@@ -411,7 +412,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
   
   double err = theInverseKinematics.gotoLegs(chest, p.feet.left, p.feet.right, footOffset, footOffset);
 
-  if (abs(err) > Math::fromDegrees(1))
+  if (fabs(err) > Math::fromDegrees(1))
   {
     THROW("IK failed!");
   }
@@ -679,7 +680,7 @@ Vector3d InverseKinematicsMotionEngine::balanceCoM(
   Vector3<double> u;
   for( int i=0; i<3; i++)
   {
-    if (abs(e[i]) > theParameters.balanceCoM.threshold)
+    if (fabs(e[i]) > theParameters.balanceCoM.threshold)
     {
       u[i] = e[i] - Math::sgn(e[i]) * theParameters.balanceCoM.threshold;
     }

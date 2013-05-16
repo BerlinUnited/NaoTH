@@ -146,7 +146,7 @@ NaoController::NaoController()
   int debug_port = 5401; // default port
   config.get("network", "debug_port", debug_port);
   theDebugServer = new DebugServer();
-  theDebugServer->start(debug_port, true);
+  theDebugServer->start(static_cast<unsigned short>(debug_port), true);
 
 
   std::cout<< "Init SPLGameController"<<endl;
