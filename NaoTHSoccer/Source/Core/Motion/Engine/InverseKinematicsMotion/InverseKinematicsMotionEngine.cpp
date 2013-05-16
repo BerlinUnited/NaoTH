@@ -209,6 +209,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
       assert(result.hip.translation.x == theCoMControlResult.x && 
              result.hip.translation.y == theCoMControlResult.y &&
              result.hip.translation.z == theCoMControlResult.z);
+	  sloved = true;
       break;
     }
 
