@@ -199,17 +199,14 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
   Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
 
-  if ( abs(req.target.rotation) > theMaxTurnInner )
+  if ( fabs(req.target.rotation) > theMaxTurnInner )
   {
     // choose foot by rotation
     double leftTurn = leftMove.rotation.getZAngle();
     double rightTurn = rightMove.rotation.getZAngle();
-    if ( abs(leftTurn) > abs(rightTurn) )
-    {
+    if ( fabs(leftTurn) > fabs(rightTurn) ) {
       return firstStepLeft;
-    }
-    else
-    {
+    } else {
       return firstStepRight;
     }
   }

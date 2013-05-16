@@ -15,7 +15,7 @@ GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, 
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    //if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
+    //if (fabs(compassDirection.angle) > Math::pi_2 && fabs(goal.calculateCenter().angle()) < Math::pi_2) {
     if(fabs(compassDirection.angle + goal.calculateCenter().angle()) > Math::pi_2){
       return goal;
     } else {

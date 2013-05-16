@@ -119,6 +119,15 @@ public:
     const naoth::GyrometerData& theGyrometerData,
     double (&position)[naoth::JointData::numOfJoint]);
 
+  bool rotationStabilize(
+    const RobotInfo& theRobotInfo,
+    const GroundContactModel& theGroundContactModel,
+    const InertialModel& theInertialModel,
+    const GyrometerData& theGyrometerData,
+    Pose3D& hip, 
+    const Pose3D& leftFoot, 
+    const Pose3D& rightFoot);
+
   /**
    * @return if stabilizer is working
    */

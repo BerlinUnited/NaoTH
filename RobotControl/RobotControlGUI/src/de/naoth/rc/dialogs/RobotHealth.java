@@ -18,7 +18,6 @@ import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.messages.FrameworkRepresentations;
-import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -50,8 +50,8 @@ public class RobotHealth extends AbstractDialog
       public static GenericManagerFactory genericManagerFactory;
   }//end Plugin
     
-  private final Command getFSRDataCommand = new Command("representation:getbinary").addArg("FSRData");
-  private final Command getSensorJointDataCommand = new Command("representation:getbinary").addArg("SensorJointData");
+  private final Command getFSRDataCommand = new Command("Cognition:representation:getbinary").addArg("FSRData");
+  private final Command getSensorJointDataCommand = new Command("Cognition:representation:getbinary").addArg("SensorJointData");
   
   
   FSRDataListener fSRDataListener = new FSRDataListener();
@@ -239,7 +239,6 @@ public class RobotHealth extends AbstractDialog
                 theFSRStates[i].setValue(fsrData.getForce(i));
             }
 
-            
             RobotHealth.this.repaint();
           }
           catch (InvalidProtocolBufferException ex)
@@ -247,6 +246,8 @@ public class RobotHealth extends AbstractDialog
             //ex.printStackTrace();
             Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
             errorOccured(ex.getMessage());
+            String msg = new String(object);
+            JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
           }
         }//end newObjectReceived
     }//end class FSRDataListener
@@ -281,6 +282,8 @@ public class RobotHealth extends AbstractDialog
             //ex.printStackTrace();
             Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
             errorOccured(ex.getMessage());
+            String msg = new String(object);
+            JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
           }
         }//end newObjectReceived
     }//end class SensorJointDataListener
@@ -322,8 +325,9 @@ public class RobotHealth extends AbstractDialog
         //float min = 0;
         //float max = 12.5f;
 
-        if(v > max)
+        if(v > max) {
             return Color.black;
+        }
 
         float t = Math.max(Math.min(v,max),min);
         float d = (t-min)/(max - min);
@@ -337,9 +341,10 @@ public class RobotHealth extends AbstractDialog
         //float min = 0;
         //float max = 12.5f;
 
-        if(v > max)
+        if(v > max) {
             return Color.black;
-
+        }
+        
         float t = Math.max(Math.min(v,max),min);
         float d = (t-min)/(max - min);
 
@@ -367,8 +372,9 @@ public class RobotHealth extends AbstractDialog
         public void setValue(double value)
         {
             values.add(value);
-            if(values.size() > samples)
+            if(values.size() > samples) {
                 values.remove(0);
+            }
         }
         
         @Override
@@ -377,7 +383,9 @@ public class RobotHealth extends AbstractDialog
             //g2d.setColor(Color.white);
             //g2d.fillRect(0, 0, samples, height);
             
-            if(values.isEmpty()) return;
+            if(values.isEmpty()) { 
+                return;
+            }
             
             double last = values.get(0);
             int lastX = 0;

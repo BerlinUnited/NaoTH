@@ -26,6 +26,8 @@
 #include "Representations/Modeling/InertialModel.h"
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/GyrometerData.h>
+#include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(RobotInfo)
@@ -33,6 +35,8 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(GroundContactModel)
   REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
+  REQUIRE(GyrometerData)
+  REQUIRE(KinematicChainSensor)
 
   REQUIRE(InverseKinematicsMotionEngineService)
 
@@ -58,7 +62,7 @@ public:
   {
     // standing
     if ( isStopped()
-        || abs(height - motionRequest.standHeight) > 1
+        || fabs(height - motionRequest.standHeight) > 1
         || standardStand != motionRequest.standardStand ) {
       standardStand = motionRequest.standardStand;
       // init pose
@@ -105,11 +109,14 @@ public:
     InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
     if(getEngine().getParameters().stand.enableStabilization)
+    {
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
-        getInertialSensorData(),
+        getInertialModel(),
+        getGyrometerData(),
         c.hip, c.feet.left, c.feet.right);
+    }
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
@@ -123,6 +130,32 @@ public:
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
     PLOT("Stand:hip:z",c.hip.translation.z);
+
+
+    { // DEBUG
+    Vector3d comRef, comObs;
+
+    if ( p.feet.left.translation.z > p.feet.right.translation.z )
+    {
+      comRef = p.feet.right.invert() * p.com.translation;
+      const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+      comObs = foot.invert() * getKinematicChainSensor().CoM;
+    }
+    else
+    {
+      comRef = p.feet.left.invert() * p.com.translation;
+      const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
+      comObs = foot.invert() * getKinematicChainSensor().CoM;
+    }
+
+    Vector3d comErr = comRef - comObs;
+
+    PLOT("Stand:comErr.x",comErr.x);
+    PLOT("Stand:comErr.y",comErr.y);
+    PLOT("Stand:comErr.z",comErr.z);
+    }
+
+
 
 
     //if(theParameters.stand.stabilizeNeural)

@@ -9,7 +9,7 @@
 #define _SITUATIONSTATUS_H
 
 #include "Tools/DataStructures/Printable.h"
-#include "Messages/Messages.pb.h"
+
 
 /**
  * This is a wrapper Representation for naothmessages::BehaviorStatus in

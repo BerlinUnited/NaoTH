@@ -66,23 +66,20 @@ void RCTCHandler::execute()
 
 void RCTCHandler::createMessage(rctc::Message& msg)
 {
-  msg.teamID = getPlayerInfo().gameData.teamNumber;
-  msg.playerID = getPlayerInfo().gameData.playerNumber;
+  msg.teamID = static_cast<uint8_t>(getPlayerInfo().gameData.teamNumber);
+  msg.playerID = static_cast<uint8_t>(getPlayerInfo().gameData.playerNumber);
   msg.goalieID = 1;
   
-  if(getPlayerInfo().isPlayingStriker)
-  {
-    msg.mabID = getPlayerInfo().gameData.playerNumber;
-  }
-  else
-  {
+  if(getPlayerInfo().isPlayingStriker) {
+    msg.mabID = static_cast<uint8_t>(getPlayerInfo().gameData.playerNumber);
+  } else {
     msg.mabID = 0;
   }
 
   if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
   {
-    msg.ballPosX = (int16_t)getBallModel().position.x;
-    msg.ballPosY = (int16_t)getBallModel().position.y;
+    msg.ballPosX = static_cast<uint16_t>(getBallModel().position.x);
+    msg.ballPosY = static_cast<uint16_t>(getBallModel().position.y);
   }
   else
   {

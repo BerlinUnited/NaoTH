@@ -72,7 +72,8 @@ void Walk::execute()
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
-        getInertialSensorData(),
+        getInertialModel(),
+        getGyrometerData(),
         c.hip, c.feet.left, c.feet.right);
     }
 
@@ -581,7 +582,7 @@ RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) c
   double rAng = feet.left.rotation.getZAngle();
   double lAng = feet.right.rotation.getZAngle();
   double bodyRotation = Math::calculateMeanAngle(rAng, lAng);
-  if (abs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
+  if (fabs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
   {
     bodyRotation = Math::normalizeAngle(bodyRotation + Math::pi);
   }
