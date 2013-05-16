@@ -31,7 +31,7 @@
 #include  <opencv2/core/core.hpp>
 #include  <opencv2/imgproc/imgproc.hpp>
 #ifndef WIN32
-#pragma GCC diagnostic warning "-Wconversion"
+#pragma GCC diagnostic error "-Wconversion"
 #endif
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////

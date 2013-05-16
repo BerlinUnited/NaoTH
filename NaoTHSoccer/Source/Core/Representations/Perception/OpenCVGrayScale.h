@@ -6,7 +6,7 @@
 #endif
 #include <opencv2/core/core.hpp>
 #ifndef WIN32
-#pragma GCC diagnostic warning "-Wconversion"
+#pragma GCC diagnostic error "-Wconversion"
 #endif
 
 class OpenCVGrayScale
