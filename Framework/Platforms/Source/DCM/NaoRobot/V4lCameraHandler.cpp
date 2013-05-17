@@ -44,16 +44,19 @@ V4lCameraHandler::V4lCameraHandler()
   allowedTolerance[CameraSettings::WhiteBalance] = 1;
 
   settingsOrder.push_back(CameraSettings::Brightness);
-  settingsOrder.push_back(CameraSettings::BacklightCompensation);
-  settingsOrder.push_back(CameraSettings::AutoExposition);
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
-  //settingsOrder.push_back(CameraSettings::Brightness);
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::Hue);
+  settingsOrder.push_back(CameraSettings::VerticalFlip);
+  settingsOrder.push_back(CameraSettings::HorizontalFlip);
   settingsOrder.push_back(CameraSettings::Sharpness);
+  settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+  settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::WhiteBalance);
+  settingsOrder.push_back(CameraSettings::BacklightCompensation);
+  settingsOrder.push_back(CameraSettings::FadeToBlack);
 
   // set our IDs
   initIDMapping();
@@ -76,6 +79,7 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID,
   setFPS(30);
   initDevice();
 
+//  setFlipParameters(camID == CameraInfo::Top);
   internalUpdateCameraSettings();
 
   // start capturing

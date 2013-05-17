@@ -99,7 +99,6 @@ private:
   int setSingleCameraParameter(int id, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-
   std::string getErrnoDescription(int err);
 
   typedef enum
