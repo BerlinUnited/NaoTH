@@ -59,6 +59,29 @@ else
     echo "start script naoth is missing";
 fi
 
+# brainwashinit
+if [ -f ./brainwashinit ]
+then
+    echo "adding start script brainwashinit";
+    cp -f ./brainwashinit /usr/bin/brainwashinit;
+    chown root:root /usr/bin/brainwashinit;
+    chmod 755 /usr/bin/brainwashinit;
+else
+    echo "brainwashinit script is missing";
+fi
+
+# brainwash udev rule
+if [ -f ./etc/udev/rules.d/brainwashing.rules]
+then
+    echo "setting udev brainwashing.rules";
+    cp -f ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules;
+    chown root:root /etc/udev/rules.d/brainwashing.rules;
+    chmod 644 /etc/udev/rules.d/brainwashing.rules;
+else
+    echo "udev brainwashing.rules is missing";
+fi
+
+
 # naoqi user autoload.ini
 if [ -f ./autoload.ini ]
 then
