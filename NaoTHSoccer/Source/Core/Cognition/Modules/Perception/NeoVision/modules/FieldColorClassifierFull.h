@@ -57,7 +57,7 @@ public:
   unsigned int minDistCr;
   unsigned int minCrRate;
 
-  FieldColorParametersFull::FieldColorParametersFull()
+  FieldColorParametersFull()
   :
     ParameterList("FieldColorParametersFull")
   {
@@ -76,7 +76,7 @@ public:
     DebugParameterList::getInstance().add(this);
   }
 
-  FieldColorParametersFull::~FieldColorParametersFull()
+  ~FieldColorParametersFull()
   {
     DebugParameterList::getInstance().remove(this);
   } 
