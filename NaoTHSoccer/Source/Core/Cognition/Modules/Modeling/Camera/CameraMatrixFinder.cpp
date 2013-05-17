@@ -68,7 +68,7 @@ void CameraMatrixFinder::execute()
     {
       const CameraMatrix& m = getCameraMatrixBuffer2().getEntry(i);
       // compare time stamp
-      int diff = abs((int) m.timestamp - (int) getImage2().timestamp);
+      int diff = abs((int) m.timestamp - (int) getImageTop().timestamp);
       if(diff < smallestDiff)
       {
         smallestDiff = diff;
@@ -83,10 +83,10 @@ void CameraMatrixFinder::execute()
     }
 
     // actually set the cameraMatrix
-    getCameraMatrix2() = getCameraMatrixBuffer2().getEntry(smallestIndex);
+    getCameraMatrixTop() = getCameraMatrixBuffer2().getEntry(smallestIndex);
 
     double oldDiff = fabs((double) getCameraMatrixBuffer2().getEntry(0).timestamp
-                          - (double) getImage2().timestamp);
+                          - (double) getImageTop().timestamp);
     PLOT("top-cammatrix-old-diff", oldDiff);
     double bestDiff = smallestDiff;
     PLOT("top-cammatrix-best-diff", bestDiff);

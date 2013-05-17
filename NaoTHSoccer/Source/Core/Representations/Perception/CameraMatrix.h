@@ -47,10 +47,10 @@ public:
 /**
  * @brief A camera matrix from a secondary camera
  */
-class CameraMatrix2 : public CameraMatrix
+class CameraMatrixTop : public CameraMatrix
 {
 public:
-  virtual ~CameraMatrix2() {}
+  virtual ~CameraMatrixTop() {}
 };
 
 namespace naoth
@@ -64,11 +64,11 @@ namespace naoth
   };
 
   template<>
-  class Serializer<CameraMatrix2>
+  class Serializer<CameraMatrixTop>
   {
   public:
-    static void serialize(const CameraMatrix2& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, CameraMatrix2& representation);
+    static void serialize(const CameraMatrixTop& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraMatrixTop& representation);
   };
 }
 

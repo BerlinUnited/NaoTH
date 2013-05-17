@@ -73,18 +73,18 @@ namespace naoth
 
   };
 
-  class CurrentCameraSettings2 : public CameraSettings
+  class CurrentCameraSettingsTop : public CameraSettings
   {
   public:
-    CurrentCameraSettings2();
-    virtual ~CurrentCameraSettings2() {}
+    CurrentCameraSettingsTop();
+    virtual ~CurrentCameraSettingsTop() {}
   };
 
-  class CameraSettingsRequest2 : public CameraSettingsRequest
+  class CameraSettingsRequestTop : public CameraSettingsRequest
   {
   public:
-    CameraSettingsRequest2();
-    virtual ~CameraSettingsRequest2() {}
+    CameraSettingsRequestTop();
+    virtual ~CameraSettingsRequestTop() {}
 
   };
 }

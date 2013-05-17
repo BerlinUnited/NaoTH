@@ -72,13 +72,13 @@ CurrentCameraSettings::CurrentCameraSettings()
 
 }
 
-CurrentCameraSettings2::CurrentCameraSettings2()
+CurrentCameraSettingsTop::CurrentCameraSettingsTop()
 {
 
 }
 
-CameraSettingsRequest2::CameraSettingsRequest2()
-  : CameraSettingsRequest("CameraSettings2")
+CameraSettingsRequestTop::CameraSettingsRequestTop()
+  : CameraSettingsRequest("CameraSettingsTop")
 {
 }
 

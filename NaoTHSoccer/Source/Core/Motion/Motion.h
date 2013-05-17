@@ -40,7 +40,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   //PROVIDE(FSRPositions)// TODO:strange...
   PROVIDE(CameraMatrix)// TODO:strange...
-  PROVIDE(CameraMatrix2)// TODO:strange...
+  PROVIDE(CameraMatrixTop)// TODO:strange...
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
@@ -60,7 +60,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // from cognition
   PROVIDE(CameraInfo)
-  PROVIDE(CameraInfo2)
+  PROVIDE(CameraInfoTop)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Motion)

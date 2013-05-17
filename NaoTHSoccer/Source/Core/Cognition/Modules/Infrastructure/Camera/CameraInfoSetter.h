@@ -29,15 +29,15 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(CameraInfoSetter)
   REQUIRE(CameraSettingsRequest)
-  REQUIRE(CameraSettingsRequest2)
+  REQUIRE(CameraSettingsRequestTop)
 
   // we don't actually provide the Image but rather set the CameraInfo for it
   PROVIDE(Image)
-  PROVIDE(Image2)
+  PROVIDE(ImageTop)
 
   PROVIDE(CameraInfoParameter)
   PROVIDE(CameraInfo)
-  PROVIDE(CameraInfo2)
+  PROVIDE(CameraInfoTop)
 END_DECLARE_MODULE(CameraInfoSetter)
 
 

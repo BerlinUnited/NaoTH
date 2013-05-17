@@ -69,11 +69,11 @@ NaoController::NaoController()
   /*  REGISTER IO  */
   // camera
   registerInput<Image>(*this);
-  registerInput<Image2>(*this);
+  registerInput<ImageTop>(*this);
   registerInput<CurrentCameraSettings>(*this);
-  registerInput<CurrentCameraSettings2>(*this);
+  registerInput<CurrentCameraSettingsTop>(*this);
   registerOutput<const CameraSettingsRequest>(*this);
-  registerOutput<const CameraSettingsRequest2>(*this);
+  registerOutput<const CameraSettingsRequestTop>(*this);
     
   // sound
   registerOutput<const SoundPlayData>(*this);
@@ -217,7 +217,7 @@ void NaoController::set(const CameraSettingsRequest &data)
   setCameraSettingsInternal(data, CameraInfo::Bottom);
 }
 
-void NaoController::set(const CameraSettingsRequest2 &data)
+void NaoController::set(const CameraSettingsRequestTop &data)
 {
   setCameraSettingsInternal(data, CameraInfo::Top);
 }

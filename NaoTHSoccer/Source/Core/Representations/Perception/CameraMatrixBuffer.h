@@ -21,7 +21,7 @@ public:
   virtual ~CameraMatrixBuffer() {}
 };
 
-class CameraMatrixBuffer2 : public RingBuffer<CameraMatrix2, 10>, public naoth::Printable
+class CameraMatrixBuffer2 : public RingBuffer<CameraMatrixTop, 10>, public naoth::Printable
 {
 public:
 
