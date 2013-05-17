@@ -27,18 +27,12 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case Contrast: return "Contrast"; break;
     case Saturation: return "Saturation"; break;
     case Hue: return "Hue"; break;
-    case RedChroma: return "RedChroma"; break;
-    case BlueChroma: return "BlueChroma"; break;
     case Gain: return "Gain"; break;
     case HorizontalFlip: return "HorizontalFlip"; break;
     case VerticalFlip: return "VerticalFlip"; break;
-    case CorrectionLensX: return "CorrectionLensX"; break;
-    case CorrectionLensY: return "CorrectionLensY"; break;
     case AutoExposition: return "AutoExposition"; break;
     case AutoWhiteBalancing: return "AutoWhiteBalancing"; break;
-    case AutoGain: return "AutoGain"; break;
     case Exposure: return "Exposure"; break;
-    case ExposureCorrection: return "ExposureCorrection"; break;
     case FPS: return "FPS"; break;
     case ResolutionWidth: return "ResolutionWidth"; break;
     case ResolutionHeight: return "ResolutionHeight"; break;
@@ -46,6 +40,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case BacklightCompensation: return "BacklightCompensation"; break;
     case WhiteBalance: return "WhiteBalance"; break;
     case Sharpness: return "Sharpness"; break;
+    case FadeToBlack: return "FadeToBlack"; break;
     default: return "Unknown CameraSetting"; break;
   }//end switch
 }//end getCameraSettingsName

@@ -16,8 +16,12 @@
 #include <string.h>
 #include <iostream>
 
+//Custom V4L control variables
+#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+
 using namespace naoth;
 using namespace std;
+
 
 V4lCameraHandler::V4lCameraHandler()
   :
@@ -122,51 +126,99 @@ void V4lCameraHandler::initIDMapping()
 
 
   // map the existing parameters that can be used safely
-  csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
-  csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
-  csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
-  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
-  csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
+  csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
+  csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
+  csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
+  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
+  csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
+  csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
 
 //---------------------------------------------------------------------
 // copied from the driver for information:
 //---------------------------------------------------------------------
-//  /* Fill in min, max, step and default value for these controls. */
-//  switch (qc->id) {
-//  case V4L2_CID_BRIGHTNESS:
-//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 55);
-//  case V4L2_CID_CONTRAST:
-//    return v4l2_ctrl_query_fill(qc, 0, 127, 1, 32);
-//  case V4L2_CID_SATURATION:
-//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 128);
-//  case V4L2_CID_HUE:
-//    return v4l2_ctrl_query_fill(qc, -180, 180, 1, 0);
-//  case V4L2_CID_VFLIP:
-//  case V4L2_CID_HFLIP:
-//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 0);
-//  case V4L2_CID_SHARPNESS:
-//    return v4l2_ctrl_query_fill(qc, -7, 7, 1, 0);
-//  case V4L2_CID_EXPOSURE_AUTO:
-//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
-//  case V4L2_CID_AUTO_WHITE_BALANCE:
-//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
-//  case V4L2_CID_GAIN:
-//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 32);
-//  case V4L2_CID_EXPOSURE:
-//    return v4l2_ctrl_query_fill(qc, 0, 512, 1, 0);
-//  case V4L2_CID_DO_WHITE_BALANCE:
-//    return v4l2_ctrl_query_fill(qc, -180, 180, 1, -166);
-//  case V4L2_CID_BACKLIGHT_COMPENSATION:
-//    return v4l2_ctrl_query_fill(qc, 0, 4, 1, 1);
-//  }
+/*
+V4L2_CID_BRIGHTNESS:
+Range: [0 .. 255]
+Default: 55
+Description: Set brightness in auto exposure mode.
+
+V4L2_CID_CONTRAST:
+Range: [16 .. 64] (Fixed point number: 16 = 0.5, 64 = 2.0)
+Default: 32
+Description: Controls contrast enhancement and noise reduction values.
+
+V4L2_CID_SATURATION:
+Range: [0 .. 255]
+Default: 128
+Description: Zero means gray-scale, values > 128 result in a boosted saturation.
+
+V4L2_CID_HUE:
+Range: [-22° .. 22°]
+Default: 0
+Description: Hue rotation. Not all values are possible depending on camera internals. The camera chip will clip to the nearest possible number.
+
+V4L2_CID_VFLIP:
+Range: Boolean
+Default: 0
+Description: Vertical flip
+
+V4L2_CID_HFLIP:
+Range: Boolean
+Default: 0
+Description: Horizontal flip
+
+V4L2_CID_SHARPNESS:
+Range: [0 .. 7] and -7
+Default: 0
+Description: Relative adjustment to the applied sharpness.
+             Set to -7 to ensure that no sharpness is applied.
+
+V4L2_CID_EXPOSURE_AUTO:
+Range: Boolean
+Default: 1
+Description: Auto exposure feature. Automatically controls gain
+             and exposure.
+
+V4L2_CID_AUTO_WHITE_BALANCE:
+Range: Boolean
+Default: 1
+Description: Auto white balance feature.
+
+V4L2_CID_GAIN:
+Range: [0 .. 255]
+Default: 32
+Description: The amount of gain that is applied if auto exposure
+             is disabled. 32 = 1x gain.
+
+V4L2_CID_EXPOSURE:
+Range: [0 .. 512]
+Default: 0
+Description: The absolute exposure time if auto exposure is disabled.
+
+V4L2_CID_DO_WHITE_BALANCE:
+Range: [2700 .. 6500] ° Kelvin
+Default: 6500
+Description: White balance color temperature. Ignored if auto white balance
+             is enabled.
+
+V4L2_CID_BACKLIGHT_COMPENSATION:
+Range: [0 .. 4]
+Default: 1
+Description: -
+
+V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE):
+Range: Boolean
+Default: 1
+Description: Enable/disable fade-to-black feature.
+ */
 //---------------------------------------------------------------------
 
 
