@@ -62,8 +62,7 @@ class V4lCameraHandler
 public:
   V4lCameraHandler();
 
-  void init(const CameraSettings camSettings,
-            std::string camDevice = "/dev/video1",
+  void init(std::string camDevice = "/dev/video1",
             CameraInfo::CameraID camID = CameraInfo::Bottom,
             bool blockingMode = true);
 
@@ -73,6 +72,8 @@ public:
   void shutdown();
 
   bool isRunning();
+  void setAllCameraParams(const CameraSettings &data);
+
   virtual ~V4lCameraHandler();
 
 private:
@@ -82,7 +83,6 @@ private:
   void initIDMapping();
   void openDevice(bool blockingMode);
   void initDevice();
-  void setAllCameraParams(const CameraSettings &data);
   void initMMap();
   void initUP(unsigned int buffer_size);
   void initRead(unsigned int buffer_size);

@@ -59,8 +59,7 @@ V4lCameraHandler::V4lCameraHandler()
   initIDMapping();
 }
 
-void V4lCameraHandler::init(const CameraSettings camSettings,
-                            std::string camDevice, CameraInfo::CameraID camID,
+void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID,
                             bool blockingMode)
 {
 
@@ -70,20 +69,14 @@ void V4lCameraHandler::init(const CameraSettings camSettings,
   }
 
   currentCamera = camID;
-
-  for(int j=0; j < CameraSettings::numOfCameraSetting; j++)
-  {
-    currentSettings.data[j] = camSettings.data[j];
-  }
-
   cameraName = camDevice;
 
   // open the device
   openDevice(blockingMode);//in blocking mode
-  setAllCameraParams(camSettings);
   setFPS(30);
   initDevice();
 
+  internalUpdateCameraSettings();
 
   // start capturing
   startCapturing();
@@ -855,15 +848,6 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
   int min = queryctrl.minimum;
   int max = queryctrl.maximum;
 
-//  // HACK
-//  if(id == V4L2_CID_DO_WHITE_BALANCE)
-//  {
-//    //min = -120;
-//    //max = -36;
-//    //min = -1;
-//    //max = 1;
-//  }
-
   // clip value
   if (value == -1)
   {
@@ -903,16 +887,6 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-
-  // HACK
-    setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
-//    setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
-//    usleep(1000);
-
-//    setSingleCameraParameter(V4L2_CID_BRIGHTNESS,128);
-//    //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
-//    usleep(1000);
-
   for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
       it != settingsOrder.end(); it++)
   {
@@ -975,8 +949,14 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       }
       usleep(1000);
     } // end if csConst was set
-  } // end for each camera setting (in order
+  } // end for each camera setting (in order)
 
+  // Assume that every update succeeded.
+  // If we would only store the successfull ones we would set the
+  // camera parameters for ever.
+  // The single parameter setting will try several times, thus we
+  // already done our best to really set the data.
+  currentSettings = data;
 
 }
 

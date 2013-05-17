@@ -154,6 +154,11 @@ NaoController::NaoController()
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
+
+  std::cout << "Init CameraHandler (bottom)" << std::endl;
+  theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
+  std::cout << "Init CameraHandler (top)" << std::endl;
+  theTopCameraHandler.init("/dev/video0", CameraInfo::Bottom, false);
 }
 
 NaoController::~NaoController()
@@ -199,20 +204,11 @@ void NaoController::setCameraSettingsInternal(const CameraSettingsRequest &data,
       }
     }
   }
-  else
-  {
-    std::cout << "something changed in CameraSettings because handler not running" << std::endl;
-    somethingChanged = true;
-  }
-
   if(somethingChanged)
   {
-    std::cout << "Init CameraHandler and settting camera settings ("
+    std::cout << "Settting camera settings ("
               << (camID == CameraInfo::Bottom ? "bottom" : "top") << ")" << endl;
-    cameraHandler.init(data,
-                             camID == CameraInfo::Bottom ? "/dev/video1" : "/dev/video0",
-                             camID,
-                             camID == CameraInfo::Bottom ? true : false);
+    cameraHandler.setAllCameraParams(data);
   }
 }//end set CameraSettingsRequest
 
