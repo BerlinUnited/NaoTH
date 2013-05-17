@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop at the first error
+set -e
+
 if [ "$EXTERN_DIR" == "" ]; then
   echo ".::ERROR::. enviroment variable EXTERN_DIR was not set"
   echo ".::ERROR::. will exit"
@@ -19,8 +22,14 @@ elif [ "$1" = "install" ]; then
   tar xvzf ../downloads/sexpr_1.2.1.tar.gz
   cd sexpr_1.2.1/
   ./configure && make
-  cp src/*.h $EXTERN_DIR/include/
-  cp src/libsexp.a $EXTERN_DIR/lib/libsfsexp.a
+  
+  # create the dirs if they are not there
+  mkdir -p "$EXTERN_DIR/include/sfsexp"
+  mkdir -p "$EXTERN_DIR/lib"
+  
+  # copy the results
+  cp src/*.h "$EXTERN_DIR/include/sfsexp"
+  cp src/libsexp.a "$EXTERN_DIR/lib/libsfsexp.a"
   cd ..  
 fi
 

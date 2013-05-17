@@ -10,6 +10,7 @@
 #ifndef __RingBufferWithSum_h_
 #define __RingBufferWithSum_h_
 
+#include <algorithm>
 
 /**
  * @class RingBufferWithSum
@@ -40,6 +41,16 @@ template <class C, int n> class RingBufferWithSum
       if (current==n) current=0;
       if (++numberOfEntries >= n) numberOfEntries = n;
       buffer[current] = value;
+    }
+
+    C& last ()
+    {
+      return buffer[current];
+    }
+
+    C& first ()
+    {
+      return getEntry(numberOfEntries - 1);
     }
 
     /**
@@ -79,10 +90,20 @@ template <class C, int n> class RingBufferWithSum
      */
     C getAverage()
     {
-        // Return 0 if buffer is empty
-        if (0==numberOfEntries) return C();
+      // Return 0 if buffer is empty
+      if (0==numberOfEntries) return C();
 
       return (sum / numberOfEntries);
+    }
+
+    // copied from AustinVilla 2012
+    C getMedian() 
+    {
+      C temp[n];
+      memcpy(temp,buffer,n * sizeof(C));
+      int mid = (int)(n/2);
+      std::nth_element(temp,temp+mid,temp+n);
+      return temp[mid];
     }
 
     /**
