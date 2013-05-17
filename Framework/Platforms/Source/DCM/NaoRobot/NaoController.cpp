@@ -219,7 +219,7 @@ void NaoController::set(const CameraSettingsRequest &data)
 
 void NaoController::set(const CameraSettingsRequest2 &data)
 {
-//  setCameraSettingsInternal(data, CameraInfo::Top);
+  setCameraSettingsInternal(data, CameraInfo::Top);
 }
 
 void NaoController::get(RCTCTeamMessageDataIn& data) 
