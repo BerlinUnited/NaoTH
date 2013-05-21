@@ -47,6 +47,8 @@ include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
+include "Options/Test/walk/obstacle_test.xabsl";
+include "Options/Test/obstacle_test_agent.xabsl";
 
 
 /** The soccer competition agent */
@@ -56,3 +58,4 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
+agent obstacle_test("obstacle_test", obstacle_test_agent);

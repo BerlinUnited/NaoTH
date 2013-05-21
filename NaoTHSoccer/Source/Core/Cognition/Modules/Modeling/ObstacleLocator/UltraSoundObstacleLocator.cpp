@@ -49,7 +49,8 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
 
-  unsigned int transmitter = UltraSoundSendData::TRANSMIT_BOTH;
+  // default state
+  unsigned int transmitter = UltraSoundSendData::TRANSMIT_LEFT;
   unsigned int receiver = UltraSoundSendData::CAPTURE_BOTH;
 
   DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_LEFT",
