@@ -53,12 +53,12 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   }
 }//end deserialize
 
-void Serializer<CameraMatrix2>::serialize(const CameraMatrix2& representation, std::ostream& stream)
+void Serializer<CameraMatrixTop>::serialize(const CameraMatrixTop& representation, std::ostream& stream)
 {
   Serializer<CameraMatrix>::serialize(representation, stream);
 }//end serialize
 
-void Serializer<CameraMatrix2>::deserialize(std::istream& stream, CameraMatrix2& representation)
+void Serializer<CameraMatrixTop>::deserialize(std::istream& stream, CameraMatrixTop& representation)
 {
   Serializer<CameraMatrix>::deserialize(stream, representation);
 }//end deserialize

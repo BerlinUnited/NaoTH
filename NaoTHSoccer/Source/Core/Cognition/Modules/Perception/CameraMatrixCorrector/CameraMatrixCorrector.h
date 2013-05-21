@@ -36,7 +36,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(FrameInfo)
 //  REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrix2)
+  REQUIRE(CameraMatrixTop)
 
   // TODO: put offset to extra config
   PROVIDE(CameraInfoParameter)

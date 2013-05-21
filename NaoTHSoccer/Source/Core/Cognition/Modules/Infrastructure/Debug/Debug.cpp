@@ -52,7 +52,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   // parameter list
   DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequest2()));
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
 }
 
 void Debug::execute()
@@ -81,9 +81,9 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     if(arguments.find("secondary") != arguments.end())
     {
       GT_TRACE("Debug::executeDebugCommand() before serialize");
-      STOPWATCH_START("sendImage2");
-      Serializer<Image>::serialize(getImage2(), outstream);
-      STOPWATCH_STOP("sendImage2");
+      STOPWATCH_START("sendImageTop");
+      Serializer<Image>::serialize(getImageTop(), outstream);
+      STOPWATCH_STOP("sendImageTop");
       GT_TRACE("Debug::executeDebugCommand() after serialize");
     }
     else

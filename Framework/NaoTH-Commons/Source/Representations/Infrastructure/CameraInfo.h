@@ -104,11 +104,11 @@ namespace naoth
 
   };
 
-  class CameraInfo2 : public CameraInfo
+  class CameraInfoTop : public CameraInfo
   {
   public:
     using CameraInfo::operator =;
-    virtual ~CameraInfo2() {}
+    virtual ~CameraInfoTop() {}
   };
 
   class CameraInfoParameter : public CameraInfo, public ParameterList
@@ -138,11 +138,11 @@ namespace naoth
   };
 
   template<>
-  class Serializer<CameraInfo2>
+  class Serializer<CameraInfoTop>
   {
     public:
-    static void serialize(const CameraInfo2& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, CameraInfo2& representation);
+    static void serialize(const CameraInfoTop& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfoTop& representation);
   };
   
 }

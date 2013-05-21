@@ -141,11 +141,11 @@ public:
 
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); }
-  void get(Image2& data){ theTopCameraHandler.get(data); }
+  void get(ImageTop& data){ theTopCameraHandler.get(data); }
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
-  void get(CurrentCameraSettings2& data) { theTopCameraHandler.getCameraSettings(data); }
+  void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);
-  void set(const CameraSettingsRequest2& data);
+  void set(const CameraSettingsRequestTop& data);
 
   // sound
   void set(const SoundPlayData& data) 

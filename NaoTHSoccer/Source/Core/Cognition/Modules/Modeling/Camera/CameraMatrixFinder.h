@@ -28,10 +28,10 @@ BEGIN_DECLARE_MODULE(CameraMatrixFinder)
   REQUIRE(CameraMatrixBuffer)
   REQUIRE(CameraMatrixBuffer2)
   REQUIRE(Image)
-  REQUIRE(Image2)
+  REQUIRE(ImageTop)
 
   PROVIDE(CameraMatrix)
-  PROVIDE(CameraMatrix2)
+  PROVIDE(CameraMatrixTop)
 END_DECLARE_MODULE(CameraMatrixFinder)
 
 

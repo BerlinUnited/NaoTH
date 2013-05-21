@@ -99,7 +99,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from motion to cognition
   platformInterface.registerOutputChanel(getCameraMatrix());
-  platformInterface.registerOutputChanel(getCameraMatrix2());
+  platformInterface.registerOutputChanel(getCameraMatrixTop());
   platformInterface.registerOutputChanel(getMotionStatus());
   platformInterface.registerOutputChanel(getOdometryData());
   //platformInterface.registerOutputChanel(getCalibrationData);
@@ -107,7 +107,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
-  platformInterface.registerInputChanel(getCameraInfo2());
+  platformInterface.registerInputChanel(getCameraInfoTop());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
 
@@ -197,7 +197,7 @@ void Motion::processSensorData()
 
   //
   updateCameraMatrix("CameraMatrix", getCameraMatrix(), getCameraInfo());
-  updateCameraMatrix("CameraMatrix2", getCameraMatrix2(), getCameraInfo2());
+  updateCameraMatrix("CameraMatrixTop", getCameraMatrixTop(), getCameraInfoTop());
 
   //
   theOdometryCalculator->execute();

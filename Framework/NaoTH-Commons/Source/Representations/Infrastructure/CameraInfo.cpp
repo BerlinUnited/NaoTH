@@ -196,12 +196,12 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   }
 }
 
-void Serializer<CameraInfo2>::serialize(const CameraInfo2& representation, std::ostream& stream)
+void Serializer<CameraInfoTop>::serialize(const CameraInfoTop& representation, std::ostream& stream)
 {
   Serializer<CameraInfo>::serialize(representation, stream);
 }
 
-void Serializer<CameraInfo2>::deserialize(std::istream& stream, CameraInfo2& r)
+void Serializer<CameraInfoTop>::deserialize(std::istream& stream, CameraInfoTop& r)
 {
   Serializer<CameraInfo>::deserialize(stream, r);
 }
