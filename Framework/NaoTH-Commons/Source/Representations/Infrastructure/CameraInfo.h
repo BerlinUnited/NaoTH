@@ -8,6 +8,7 @@
 #ifndef _CAMERAINFO_H
 #define _CAMERAINFO_H
 
+#include "CameraInfoConstants.h"
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
 #include "Tools/DataStructures/ParameterList.h"
@@ -16,14 +17,6 @@
 
 namespace naoth
 {
-
-#ifdef QVGA
-  static const unsigned int IMAGE_WIDTH = 320;
-  static const unsigned int IMAGE_HEIGHT = 240;
-#else
-  static const unsigned int IMAGE_WIDTH = 640;
-  static const unsigned int IMAGE_HEIGHT = 480;
-#endif
 
   class CameraInfo: public Printable
   {

@@ -10,6 +10,8 @@
 
 #define CYCLE_TIME 100
 
+#include "Representations/Infrastructure/CameraInfoConstants.h"
+
 //include section
 //representations:
 #include "Representations/Infrastructure/JointData.h"

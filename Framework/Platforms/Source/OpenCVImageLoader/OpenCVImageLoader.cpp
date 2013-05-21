@@ -347,7 +347,7 @@ void OpenCVImageLoader::get(Image& data)
 {
   //ACHTUNG: this is set by the module CameraInfoSetter
   //data.setCameraInfo(Platform::getInstance().theCameraInfo);
-  if (data.cameraInfo.resolutionWidth == 320)
+  if (data.cameraInfo.resolutionWidth == naoth::IMAGE_WIDTH)
   {
     copyImage(data, loadedImage);
   }//if
@@ -364,21 +364,19 @@ void OpenCVImageLoader::copyImage(Image& image, Mat mat)
 {
   Mat temp;
   Size size;
-  size.width = 320;
-  size.height = 240;
+  size.width = naoth::IMAGE_WIDTH;
+  size.height = naoth::IMAGE_HEIGHT;
   //resize the image
   resize(mat, temp, size, 0, 0, INTER_CUBIC);
   cvtColor(temp, temp, CV_RGB2YCrCb);
 
-  int currentWidth = 320;
-  int currentHeight = 240;
   Pixel pixel;
 
-  for(int x = 0; x < currentWidth - 1; x++)
+  for(int x = 0; x < size.width - 1; x++)
   {
-    for(int y = 0; y < currentHeight - 1; y++)
+    for(int y = 0; y < size.height - 1; y++)
     {
-      int index = 3 * (x + y * currentWidth);
+      int index = 3 * (x + y * size.width);
       for(int k = 0; k < 3; k++)
       {
         pixel.channels[k] = temp.data[index + k];
