@@ -65,7 +65,7 @@ option penalty_set_penalized_play
   state playing {
     action 
     {
-      sound.request = (state_time == 0)  ? playing : off;
+      //sound.request = (state_time == 0)  ? playing : off;
       decide_penalty_role();
       //check_fall_down();
       last_state_was_penalized = false;
@@ -77,7 +77,7 @@ option penalty_set_penalized_play
     action
     {
       last_state_was_penalized = true;
-      sound.request = (state_time == 0) ? penalized : off;
+      //sound.request = (state_time == 0) ? penalized : off;
       head.control_mode = stay_as_forced;
       motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
     }

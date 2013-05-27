@@ -1,0 +1,52 @@
+/** Go straight to the ball with respect to hip coordinates **/
+
+option go_to_ball
+{
+  initial state go_to_ball
+  {
+    decision
+    {
+      if (abs(value = 0.7*(ball.preview.x - 120 - ball.radius)) < 20
+        && abs(value = ball.preview.y) < 20
+        && abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 20)
+        goto go_to_ball_done;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = 0.7*(ball.preview.x - 120 - ball.radius);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x);
+    }
+  }
+
+  target state go_to_ball_done
+  {
+    decision
+    {
+      if (abs(value = 0.7*(ball.preview.x - 120 - ball.radius)) > 30
+        || abs(value = ball.preview.y) > 30
+        || abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) > 30)
+        goto go_to_ball_done;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0.7*(ball.preview.x - 120 - ball.radius);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x);
+    }
+  }
+}

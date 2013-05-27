@@ -28,7 +28,7 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true);
+      //go_to_ball(distance = 170, right_foot=true);
       head.control_mode = search_for_ball;
       motion.walk.style = (ball.distance < 500)?stable:normal;
     }
@@ -51,7 +51,7 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true);
+      //go_to_ball(distance = 170, right_foot=true);
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
@@ -69,7 +69,7 @@ option penalty_kicker
     }
     action
     {
-      kick_ball_with_foot(direction = 0, right = true);
+      //kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
     }
   }
@@ -83,7 +83,7 @@ option penalty_kicker
     }
     action
     {
-      spl_playing_striker();
+      //spl_playing_striker();
     }
   }
 

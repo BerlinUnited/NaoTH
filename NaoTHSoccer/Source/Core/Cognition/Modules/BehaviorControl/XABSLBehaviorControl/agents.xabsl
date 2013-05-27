@@ -20,6 +20,7 @@ include "Options/HeadControl/look_around.xabsl";
 
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
+include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/stand_up.xabsl";
 
 // Soccer
@@ -38,6 +39,7 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
+include "Options/Test/go_to_ball_test_agent.xabsl";
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
@@ -58,4 +60,5 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
+agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent obstacle_test("obstacle_test", obstacle_test_agent);
