@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Video
 if [ ! -f /etc/init.d/set_dev_video ]  
 then
@@ -163,6 +162,8 @@ fi
 
 ldconfig;
 
-
+# allow everyone to shutdown
+chmod +x /sbin/shutdown
+chmod +x /sbin/reboot
 
 
