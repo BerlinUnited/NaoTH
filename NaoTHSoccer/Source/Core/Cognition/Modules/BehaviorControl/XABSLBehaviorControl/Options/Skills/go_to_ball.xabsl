@@ -1,4 +1,5 @@
-/** Go straight to the ball with respect to hip coordinates **/
+/** Go straight to the ball with respect to hip coordinates 
+  Note: No rotation with less then 20 cm distance! **/
 
 option go_to_ball
 {
@@ -6,9 +7,10 @@ option go_to_ball
   {
     decision
     {
-      if (abs(value = 0.7*(ball.preview.x - 120 - ball.radius)) < 20
-        && abs(value = ball.preview.y) < 20
-        && abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 20)
+      if (abs(value = (ball.percept.x - 100 - ball.radius)) < 20
+        && abs(value = ball.percept.y) < 20
+        && abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) < 20
+        && vector.abs(x=ball.speed.x, y=ball.speed.y) < 12)
         goto go_to_ball_done;
       else
         stay;
@@ -20,9 +22,9 @@ option go_to_ball
       
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-      motion.walk_speed.x = 0.7*(ball.preview.x - 120 - ball.radius);
+      motion.walk_speed.x = 0.7*(ball.preview.x - 100 - ball.radius);
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x);
+      motion.walk_speed.rot = (ball.distance > 200) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 
@@ -30,10 +32,11 @@ option go_to_ball
   {
     decision
     {
-      if (abs(value = 0.7*(ball.preview.x - 120 - ball.radius)) > 30
-        || abs(value = ball.preview.y) > 30
-        || abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) > 30)
-        goto go_to_ball_done;
+      if (abs(value = (ball.percept.x - 100 - ball.radius)) > 30
+        || abs(value = ball.percept.y) > 30
+        || abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) > 30
+        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 17)
+        goto go_to_ball;
       else
         stay;
     }
@@ -44,9 +47,9 @@ option go_to_ball
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      motion.walk_speed.x = 0.7*(ball.preview.x - 120 - ball.radius);
+      motion.walk_speed.x = (ball.preview.x - 100 - ball.radius)>0 ? 0.7*(ball.preview.x - 100 - ball.radius) : 0;
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x);
+      motion.walk_speed.rot = (ball.distance > 200) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 }

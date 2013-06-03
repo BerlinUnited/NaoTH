@@ -21,6 +21,9 @@ include "Options/HeadControl/look_around.xabsl";
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
+include "Options/Skills/kick_direction.xabsl";
+include "Options/Skills/sidekick_to_left.xabsl";
+include "Options/Skills/sidekick_to_right.xabsl";
 include "Options/Skills/stand_up.xabsl";
 
 // Soccer
@@ -41,6 +44,10 @@ include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_test_agent.xabsl";
+include "Options/Test/sidekick_test_agent.xabsl";
+include "Options/Test/kick_direction_test_agent.xabsl";
+include "Options/Test/kicks/sidekick_test.xabsl";
+include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
@@ -63,3 +70,5 @@ agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent obstacle_test("obstacle_test", obstacle_test_agent);
+agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
+agent sidekick_test("sidekick_test_agent", sidekick_test_agent);

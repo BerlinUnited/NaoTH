@@ -16,9 +16,6 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.preview.right_foot.x [mm];
   float input ball.preview.right_foot.y [mm];
 
-  /** Absolute ball speed */
-  float input ball.speed [mm/s];
-
   /** x direction of speed */
   float input ball.speed.x [mm/s];
 
