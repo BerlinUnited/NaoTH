@@ -1,63 +1,11 @@
 /** The root option of the soccer behavior */
 option spl_play_soccer {
-
-  initial state initialize {
-    decision {
-      if (game.state != _initial_)
-        goto stand;
-      else
-        stay;
-    }
-    action
-    {
-      head.control_mode = stay_as_forced;
-      motion.type = init;
-    }
-  }
-
-  // this is part of the initial precedure
-  // to ensure that the robot stands before doing anything
-  state stand {
-    decision {
-      if(executed_motion.type == stand)
-        goto play_soccer;
-      else
-        stay;
-    }
+  
+  initial state play_soccer {
     action {
-      head.control_mode = stay_as_forced;
-      motion.type = stand;
-    }
-  }
+      // react to the game controller and handle fall down
+      basic_play();
 
-
-  state play_soccer {
-    decision {
-      if (game.state == _initial_)
-        goto initialize;
-      else
-        stay;
-    }
-    action {
-    
-      //IMPORTANT: reset some stuff(!)
-      motion.type = stand;
-      motion.execute_immediately = false;
-      motion.standHeight = -1;
-      motion.walk.step_control.foot = none;
-      motion.walk.stop_with_stand = true;
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
-            
-      head.control_mode = stay_as_forced;
-
-      // run player behavior
-      decide_game_state();
-
-      // 
-      fall_down_and_stand_up();
-
-      //
       play_soccer();
       
       // control head movement according to value of head.control_mode

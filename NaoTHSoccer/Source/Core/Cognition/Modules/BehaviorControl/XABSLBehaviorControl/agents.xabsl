@@ -26,6 +26,7 @@ include "Options/Skills/stand_up.xabsl";
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/play_soccer.xabsl";
+include "Options/Soccer/Strategy/basic_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 
 // penalty

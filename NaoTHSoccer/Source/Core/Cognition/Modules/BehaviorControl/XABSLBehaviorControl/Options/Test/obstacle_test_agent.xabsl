@@ -3,23 +3,8 @@ option obstacle_test_agent
 
   initial state test {    
     action {
-    
-      //IMPORTANT: reset some stuff(!)
-      motion.type = stand;
-      motion.execute_immediately = false;
-      motion.standHeight = -1;
-      motion.walk.step_control.foot = none;
-      motion.walk.stop_with_stand = true;
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
-            
-      head.control_mode = stay_as_forced;
-
-      // run player behavior
-      decide_game_state();
-
-      // 
-      fall_down_and_stand_up();
+      // react to the game controller and handle fall down
+      basic_play();
 
       obstacle_test();
       

@@ -6,7 +6,7 @@ option fall_down_and_stand_up
     {
       if(abs(value=sensor.inertial.y)>20)
         goto falling;
-      else 
+      else
         stay;
     }      
     action
@@ -20,9 +20,8 @@ option fall_down_and_stand_up
     decision
     {
       if (state_time > 2000)
-      { 
         goto stand_up;
-      } else 
+      else 
         stay;
     }
     action

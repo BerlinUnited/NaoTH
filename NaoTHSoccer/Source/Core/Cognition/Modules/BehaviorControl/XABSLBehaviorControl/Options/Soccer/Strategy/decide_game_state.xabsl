@@ -32,6 +32,7 @@ option decide_game_state
       game.current_mode = ready;
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      fall_down_and_stand_up();
     }
   }
   
@@ -51,6 +52,7 @@ option decide_game_state
       game.current_mode = playing;
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      fall_down_and_stand_up();
     }
   }
   
