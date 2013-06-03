@@ -13,6 +13,7 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/DataStructures/Histogram.h"
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
@@ -67,18 +68,18 @@ private:
   pinkColorRegion pinkParams;
   blueColorRegion blueParams;
   
-  vector<vector<double> > histDifference;
-  vector<vector<double> > histColorChannel;
+  Statistics::Histogram<512> histDifferenceVminusU;
+  Statistics::Histogram<512> histDifferenceUminusY;
+  Statistics::Histogram<512> histDifferenceVminusY;
+  Statistics::Histogram<256> histColorChannelY;
+  Statistics::Histogram<256> histColorChannelU;
+  Statistics::Histogram<256> histColorChannelV;
 
   void calibrateColorRegions(const naoth::Image& image);
 
   void calibrateColorRegionGoal(const naoth::Image& image);
 
-  void initHistograms
-  (
-    vector<vector<double> >& histColorChannel,
-    vector<vector<double> >& histDifference
-  );
+  void initHistograms();
 
   void getAverageDistances
   (

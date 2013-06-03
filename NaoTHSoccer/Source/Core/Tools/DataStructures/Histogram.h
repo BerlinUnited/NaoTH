@@ -9,19 +9,29 @@
 
 #include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 namespace Statistics
 {
 
-  template <class T, int SIZE> class Histogram
+  template <int SIZE> class Histogram
   {
-   public:
-      
+    public:
+      int rawData[SIZE];
+      double normalizedData[SIZE];
+      double cumulativeData[SIZE];
+     
+      int median;
+      double mean;
+      double variance;
+      double sigma;
+      double squareMean;
+      double skewness;
+      double kurtosis;
+
       Histogram()
       {
-          rawData.reserve(SIZE);
-          normalizedData.reserve(SIZE);
-          cumulativeData.reserve(SIZE);
+        clear();
       };
       
       ~Histogram()
@@ -29,37 +39,40 @@ namespace Statistics
 
       void clear()
       {
-          rawData.clear();
-          normalizedData.clear();
-          cumulativeData.clear();
+         calculated = false;
+         memset(&rawData, 0, sizeof(rawData));
+         memset(&normalizedData, 0, sizeof(normalizedData));
+         memset(&cumulativeData, 0, sizeof(cumulativeData));
       };
 
-      void add(T value)
+      void add(int value)
       {
-        if(rawData.size() < SIZE)
-        {
-          rawData.push_back(value);
-        }
+        rawData[value]++;
+      };
+
+      void set(int idx, int value)
+      {
+        rawData[idx] = value;
       };
 
       void calculate()
       {
         double sum = 0.0;
         mean = 0.0;
-        for(unsigned int i = 0; i < SIZE; i++)
+        for(int i = 0; i < SIZE; i++)
         {
           sum += rawData[i];
           mean += i * rawData[i];
         }
         mean /= sum;
-        median = 0.0;
+        median = 0;
         squareMean = 0.0;
         variance = 0.0;
         skewness = 0.0;
         kurtosis = 0.0;
-        for(unsigned int i = 0; i < SIZE; i++)
+        for(int i = 0; i < SIZE; i++)
         {
-          normalizedData.push_back(rawData[i] / sum);
+          normalizedData[i] = rawData[i] / sum;
           squareMean += i * i * normalizedData[i];
           double v = (i - mean);
           double v2 = v * v;
@@ -69,11 +82,11 @@ namespace Statistics
 
           if(i == 0)
           {
-            cumulativeData.push_back(normalizedData[i]);
+            cumulativeData[i] = normalizedData[i];
           }
           else
           {
-            cumulativeData.push_back(cumulativeData[i - 1] + normalizedData[i]);
+            cumulativeData[i] = cumulativeData[i - 1] + normalizedData[i];
           }
           if(median == 0.0 && cumulativeData[i] >= 0.5)
           {
@@ -85,31 +98,48 @@ namespace Statistics
         double s2 = sigma * sigma;
         skewness /= (sigma * s2);
         kurtosis /= (s2 * s2);
+        calculated = true;
       };
 
-      void plot(std::string id)
+      void plot(std::string id) const
       {
         for(int i = 0; i < SIZE; i++)
         {
           PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
+          if(calculated)
+          {
+            PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
+            PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
+          }
+        }
+      };
+
+      void plotRaw(std::string id) const
+      {
+        for(int i = 0; i < SIZE; i++)
+        {
+          PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
+        }
+      };
+
+      void plotNormalized(std::string id) const
+      {
+        for(int i = 0; i < SIZE; i++)
+        {
           PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
+        }
+      };
+
+      void plotCumulated(std::string id) const
+      {
+        for(int i = 0; i < SIZE; i++)
+        {
           PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
         }
       };
 
   private:
-
-    vector<T> rawData;
-    vector<double> normalizedData;
-    vector<double> cumulativeData;
-
-    T median;
-    double mean;
-    double variance;
-    double sigma;
-    double squareMean;
-    double skewness;
-    double kurtosis;
+    bool calculated;
 
   };
 }

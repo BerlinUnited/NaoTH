@@ -18,6 +18,8 @@
 #include "Tools/ImageProcessing/ImagePrimitives.h"
 #include "Tools/DataStructures/Printable.h"
 
+#include "Tools/DataStructures/Histogram.h"
+
 //Representations
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "ColoredGrid.h"
@@ -36,21 +38,21 @@ class Histograms: public naoth::Printable
 
     inline void increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
     {
-      xHistogram[color][y]++;
-      yHistogram[color][x]++;
+      xHistogram[color].add(y);
+      yHistogram[color].add(x);
     }//end increaseValue
 
     inline void increaseValue(const Vector2<int> pixel, const ColorClasses::Color& color)
     {
-      xHistogram[color][pixel.y]++;
-      yHistogram[color][pixel.x]++;
+      xHistogram[color].add(pixel.y);
+      yHistogram[color].add(pixel.x);
     }//end increaseValue
 
     inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
     {
-      colorChannelHistogramY[pixel.y]++;
-      colorChannelHistogramCb[pixel.u]++;
-      colorChannelHistogramCr[pixel.v]++;
+      histogramY.add(pixel.y);
+      histogramU.add(pixel.u);
+      histogramV.add(pixel.v);
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
 
@@ -60,13 +62,13 @@ class Histograms: public naoth::Printable
 
   public:
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
-    int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
+    Statistics::Histogram<UniformGrid::HACK_MAX_HEIGHT> xHistogram[ColorClasses::numOfColors];
+    Statistics::Histogram<UniformGrid::HACK_MAX_WIDTH > yHistogram[ColorClasses::numOfColors];
 
     // color histograms
-    int colorChannelHistogramY[COLOR_CHANNEL_VALUE_COUNT]; // y u-cb v-cr
-    int colorChannelHistogramCb[COLOR_CHANNEL_VALUE_COUNT];
-    int colorChannelHistogramCr[COLOR_CHANNEL_VALUE_COUNT];
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramY;
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramU;
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramV;
 
     unsigned int colorChannelIsUptodate;
 

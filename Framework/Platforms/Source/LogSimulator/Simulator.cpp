@@ -34,6 +34,7 @@ Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode
   registerInput<AccelerometerData>(*this);
   registerInput<SensorJointData>(*this);
   registerInput<Image>(*this);
+  registerInput<ImageTop>(*this);
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);

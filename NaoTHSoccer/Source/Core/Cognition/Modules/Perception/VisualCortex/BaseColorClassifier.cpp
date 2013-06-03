@@ -54,8 +54,6 @@ BaseColorClassifier::BaseColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data", " ", false);
   
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:enable_plots", " ", false);
-
   lastMeanY = coloredGrid.meanBrightness;
   lastMeanU = coloredGrid.meanBlue;
   lastMeanV = coloredGrid.meanRed;
@@ -105,19 +103,6 @@ void BaseColorClassifier::initPercepts()
 
 void BaseColorClassifier::execute()
 {
-  Statistics::Histogram<double, 256> hist;
-
-  hist.clear();
-  for(int i = 0; i < 256; i++)
-  {
-    hist.add(getHistograms().colorChannelHistogramCr[i]);
-  }
-  hist.calculate();
-
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:enable_plots", 
-    hist.plot("BaseColorClassifier:Cr");
-  );
-
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data",
     orangeBallColorCalibrator.reset();
     yellowGoalColorCalibrator.reset();

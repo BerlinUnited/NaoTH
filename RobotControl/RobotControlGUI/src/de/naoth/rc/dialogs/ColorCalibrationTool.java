@@ -9,7 +9,6 @@ import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -672,6 +671,11 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     {
       this.image = image;
       this.backgroundImage = image.getRgb();
+      Dimension dim = imagePanel.getSize();
+      double heightPanel = dim.height;
+      double heightImage = image.getRgb().getHeight();
+      this.scale = heightPanel / heightImage;
+      
       this.setSize(imagePanel.getSize()); 
       getColor();
       this.repaint();

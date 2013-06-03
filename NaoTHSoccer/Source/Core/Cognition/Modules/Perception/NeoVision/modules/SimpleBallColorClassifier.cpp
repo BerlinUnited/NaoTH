@@ -37,13 +37,13 @@ void SimpleBallColorClassifier::execute()
     {
       if(i > ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV )
       {
-        histV[i] = getHistograms().colorChannelHistogramCr[i];
+        histV[i] = getHistograms().histogramV.rawData[i];
       }
       else
       {
         histV[i] = 0.0;
       }
-      PLOT_GENERIC("SimpleBallColorClassifier:histVorg", i, getHistograms().colorChannelHistogramCr[i]);
+      getHistograms().histogramV.plotRaw("SimpleBallColorClassifier:histVorg");
       PLOT_GENERIC("SimpleBallColorClassifier:histV", i, histV[i]);
     }
   );

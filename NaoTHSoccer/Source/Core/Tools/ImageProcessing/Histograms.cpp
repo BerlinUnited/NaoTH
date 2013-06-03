@@ -33,6 +33,9 @@ Histograms::Histograms()
   }
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramCr", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram", false);
 
   init();
 }
@@ -41,11 +44,11 @@ void Histograms::init()
 {
   colorChannelIsUptodate = false;
 
-  memset(&xHistogram, 0, sizeof(xHistogram));
-  memset(&yHistogram, 0, sizeof(xHistogram));
-  memset(&colorChannelHistogramY, 0, sizeof(colorChannelHistogramY));
-  memset(&colorChannelHistogramCb, 0, sizeof(colorChannelHistogramCb));
-  memset(&colorChannelHistogramCr, 0, sizeof(colorChannelHistogramCr));
+  for(int c = 0; c < ColorClasses::numOfColors; c++)
+  {
+    xHistogram[c].clear();
+    yHistogram[c].clear();
+  }
 }//end init
 
 void Histograms::execute()
@@ -60,13 +63,23 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
   bool drawYHist = false;
   bool drawChannelHist = false;
 
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotY", 
+    histogramY.plot("Histograms:Y");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotU", 
+    histogramU.plot("Histograms:U");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotV", 
+    histogramV.plot("Histograms:V");
+  );
+
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
     dbgString.str("");
     dbgString << "ImageProcessor:Histogram:x:" << ColorClasses::getColorName( (ColorClasses::Color) color);
     DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawXHist = true;
-      Vector2<int> last(cameraInfo.resolutionWidth - (xHistogram[color][0] * 1), 0);
+    Vector2<int> last(cameraInfo.resolutionWidth - (xHistogram[color].rawData[0] * 1), 0);
       for(unsigned int y = 1; y < (grid.height * 1); y += 1)
       {
         LINE_PX
@@ -74,10 +87,10 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
           (ColorClasses::Color) color,
           last.x,
           last.y,
-          cameraInfo.resolutionWidth - (xHistogram[color][y] * 1),
+          cameraInfo.resolutionWidth - (xHistogram[color].rawData[y] * 1),
           y
         );
-        last.x = cameraInfo.resolutionWidth - (xHistogram[color][y] * 1);
+        last.x = cameraInfo.resolutionWidth - (xHistogram[color].rawData[y] * 1);
         last.y = y;
       }
     );
@@ -86,7 +99,7 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
     dbgString << "ImageProcessor:Histogram:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
     DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawYHist = true;
-      Vector2<int> last(0, cameraInfo.resolutionHeight - (yHistogram[color][0] * 1) );
+    Vector2<int> last(0, cameraInfo.resolutionHeight - (yHistogram[color].rawData[0] * 1) );
       for(unsigned int x = 1; x < (grid.width * 1); x += 1)
       {
         LINE_PX
@@ -95,43 +108,43 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
           last.x,
           last.y,
           x,
-          cameraInfo.resolutionHeight - (yHistogram[color][x] * 1)
+          cameraInfo.resolutionHeight - (yHistogram[color].rawData[x] * 1)
         );
         last.x = x;
-        last.y = cameraInfo.resolutionHeight - (yHistogram[color][x] * 1);
+        last.y = cameraInfo.resolutionHeight - (yHistogram[color].rawData[x] * 1);
       }
     );
   }
 
-  DEBUG_REQUEST("ImageProcessor:Histogram:colorChannelHistogramCr",
-    drawChannelHist = true;
-    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[0], 0, (int)cameraInfo.resolutionHeight));
-    for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
-    {
-      LINE_PX
-      (
-        ColorClasses::red,
-        last.x,
-        last.y,
-        x,
-        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight)
-      );
-      last.x = x;
-      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight);
-    }
-  );
+  //DEBUG_REQUEST("ImageProcessor:Histogram:colorChannelHistogramCr",
+  //  drawChannelHist = true;
+  //  Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[0], 0, (int)cameraInfo.resolutionHeight));
+  //  for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
+  //  {
+  //    LINE_PX
+  //    (
+  //      ColorClasses::red,
+  //      last.x,
+  //      last.y,
+  //      x,
+  //      Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight)
+  //    );
+  //    last.x = x;
+  //    last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight);
+  //  }
+  //);
 
-  if(drawChannelHist)
-  {
-    RECT_PX
-    (
-      ColorClasses::black,
-      0,
-      cameraInfo.resolutionHeight,
-      COLOR_CHANNEL_VALUE_COUNT,
-      0
-    );
-  }
+  //if(drawChannelHist)
+  //{
+  //  RECT_PX
+  //  (
+  //    ColorClasses::black,
+  //    0,
+  //    cameraInfo.resolutionHeight,
+  //    COLOR_CHANNEL_VALUE_COUNT,
+  //    0
+  //  );
+  //}
 
   if(drawXHist)
   {

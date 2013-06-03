@@ -54,7 +54,7 @@ void SimpleFieldColorClassifier::execute()
   {
     // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
     double wCr = 1.0 - i*histogramDoubleStep;
-    double weightedCr = wCr * (double) getHistograms().colorChannelHistogramCr[i];
+    double weightedCr = wCr * (double) getHistograms().histogramV.rawData[i];
 
     // search for max Cr channel value with weight w
     if(weightedCr > maxWeightedCr)
@@ -138,7 +138,7 @@ void SimpleFieldColorClassifier::execute()
   {
     // weight based on the mean value  (255 - i)/255
     double wCb = 1.0 - i*histogramStep;
-    double weightedCb = wCb * (double) getHistograms().colorChannelHistogramCb[i];
+    double weightedCb = wCb * (double) getHistograms().histogramU.rawData[i];
 
     // calculate the Cb maximum
     if(weightedCb > maxWeightedCb)
@@ -147,8 +147,8 @@ void SimpleFieldColorClassifier::execute()
       maxWeightedIndexCb = i;
     }
 
-    meanFieldY += getHistograms().colorChannelHistogramY[i]*i;
-    numberOfFieldY += getHistograms().colorChannelHistogramY[i];
+    meanFieldY += getHistograms().histogramY.rawData[i]*i;
+    numberOfFieldY += getHistograms().histogramY.rawData[i];
   }//end for
 
 

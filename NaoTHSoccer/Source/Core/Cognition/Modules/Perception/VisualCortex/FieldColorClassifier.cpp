@@ -87,9 +87,9 @@ void FieldColorClassifier::classify()
     double mCr = max<int>(0,  160 - i);
     double wCr = mCr / 160.0;
     
-    weightedHistV[i] = getHistograms().colorChannelHistogramCr[i];
+    weightedHistV[i] = getHistograms().histogramV.rawData[i];
     //histogram for blue => needed for later yellow and blue estimation
-    histU[i] = getHistograms().colorChannelHistogramCb[i] * wCr;
+    histU[i] = getHistograms().histogramU.rawData[i] * wCr;
     sumU += histU[i];
 
     weightedHistV[i] *= wCr;
