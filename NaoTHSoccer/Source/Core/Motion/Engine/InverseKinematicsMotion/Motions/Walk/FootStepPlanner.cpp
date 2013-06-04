@@ -87,12 +87,9 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
-  if ( lastStep.liftingFoot() == FootStep::NONE )
-  {
+  if ( lastStep.liftingFoot() == FootStep::NONE ) {
     return firstStep(lastStep.end(), req);
-  }
-  else
-  {
+  } else {
     Pose2D step = calculateStep(lastStep, req);
     return nextStep(lastStep, step, req);
   }
@@ -103,8 +100,8 @@ FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkReques
   WalkRequest myReq = req;
   myReq.target = req.stepControl.target;//HACK
   Pose2D step = calculateStep(lastStep, myReq);
-  restrictStepSize(step, lastStep, req.character);
-  //restrictStepSizeSimple(step, lastStep, req.character);
+  //restrictStepSize(step, lastStep, req.character);
+  restrictStepSizeSimple(step, lastStep, req.character);
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
@@ -213,12 +210,9 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
   else
   {
     // choose foot by distance
-    if ( leftMove.translation.abs2() > rightMove.translation.abs2() )
-    {
+    if ( leftMove.translation.abs2() > rightMove.translation.abs2() ) {
       return firstStepLeft;
-    }
-    else
-    {
+    } else {
       return firstStepRight;
     }
   }
@@ -279,26 +273,23 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, d
   }
   else
   {
-    if (step.translation.x < -maxStepLengthBack)
-    {
+    if (step.translation.x < -maxStepLengthBack) {
       step.translation.x = -maxStepLengthBack;
-    }
-    else if (step.translation.x > maxStepLength )
-    {
+    } else if (step.translation.x > maxStepLength ) {
       step.translation.x = maxStepLength;
     }
     
-    if (theMaxStepWidth > numeric_limits<double>::epsilon())
+    if (theMaxStepWidth > numeric_limits<double>::epsilon()) {
       step.translation.y = Math::clamp(step.translation.y, -maxStepWidth, maxStepWidth);
-    else
+    } else {
       step.translation.y = 0;
+    }
 
     ASSERT( fabs(step.translation.x) <= maxStepLength );
     ASSERT( fabs(step.translation.y) <= maxStepWidth );
   }
 
-  if ( maxTurn > Math::fromDegrees(1.0) )
-  {
+  if ( maxTurn > Math::fromDegrees(1.0) ) {
     step.translation *= cos( step.rotation/maxTurn * Math::pi / 2);
   }
 }//end restrictStepSize
