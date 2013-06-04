@@ -1,0 +1,320 @@
+/* Tests kicking witch respect to attack direction,
+  Goes to the ball and kicks depending on the given direction */
+
+option kick_direction_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball_90;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state kick_90
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball_75;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = -90);
+    }
+  }
+
+  state kick_75
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball_45;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = -75);
+    }
+  }
+
+  state kick_45
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball_25;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = -45);
+    }
+  }
+
+  state kick_25
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball0;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = -25);
+    }
+  }
+
+  state kick0
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball15;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = 0);
+    }
+  }
+
+  state kick15
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball35;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = 15);
+    }
+  }
+
+  state kick35
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball65;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = 35);
+    }
+  }
+
+  state kick65
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball80;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = 65);
+    }
+  }
+
+  state kick80
+  {
+    decision
+    {
+      else if(action_done)//  && state_time > 2000)
+        //goto stand;
+        goto go_to_ball_90;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = 80);
+    }
+  }
+
+  state go_to_ball_90
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_90;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+  
+  state go_to_ball_75
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_75;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball_45
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_45;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball_25
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_25;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball0
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick0;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball15
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick15;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball35
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick35;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball65
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick65;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state go_to_ball80
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick80;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      else if(state_time > 1500)
+        goto go_to_ball_90;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+}
