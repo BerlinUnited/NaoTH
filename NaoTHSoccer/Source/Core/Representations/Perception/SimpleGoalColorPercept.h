@@ -75,6 +75,11 @@ public:
 
 };
 
+class SimpleGoalColorPerceptTop : public SimpleGoalColorPercept
+{
+public:
+  virtual ~SimpleGoalColorPerceptTop() {}
+};
 
 #endif  /* SIMPLEGOALCOLORPERCEPT_H */
 

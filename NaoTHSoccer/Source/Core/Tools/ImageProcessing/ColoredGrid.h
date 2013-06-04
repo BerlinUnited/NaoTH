@@ -257,5 +257,12 @@ public:
 
 };//end class ColoredGrid
 
+class ColoredGridTop : public ColoredGrid
+{
+public:
+  virtual ~ColoredGridTop() {}
+};
+
+
 #endif // _COLOREDGRID_H__
 

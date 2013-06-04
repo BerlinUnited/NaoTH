@@ -24,6 +24,8 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:markCrClassification_top", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:mark_green_top", "", false);
 }
 
 void SimpleFieldColorClassifier::execute()
@@ -47,6 +49,8 @@ void SimpleFieldColorClassifier::execute()
   // CAUTION: the histogram created by the grid provider in the last frame is used
   double maxWeightedCr = 0.0;
   int maxWeightedIndexCr = -1;
+  double maxWeightedCrTop = 0.0;
+  int maxWeightedIndexCrTop = -1;
 
   // the histogram is weighted with the function 
   // max(0,128-i)/128, i.e., we are interested only in the first half of it
@@ -55,6 +59,7 @@ void SimpleFieldColorClassifier::execute()
     // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
     double wCr = 1.0 - i*histogramDoubleStep;
     double weightedCr = wCr * (double) getHistograms().histogramV.rawData[i];
+    double weightedCrTop = wCr * (double) getHistograms().histogramTopV.rawData[i];
 
     // search for max Cr channel value with weight w
     if(weightedCr > maxWeightedCr)
@@ -62,11 +67,20 @@ void SimpleFieldColorClassifier::execute()
       maxWeightedCr = weightedCr;
       maxWeightedIndexCr = i;
     }
+    if(weightedCrTop > maxWeightedCrTop)
+    {
+      maxWeightedCrTop = weightedCrTop;
+      maxWeightedIndexCrTop = i;
+    }
   }//end for
   
 
   // no green candidates found
   if(maxWeightedIndexCr < 0)
+  {
+    return;
+  }
+  if(maxWeightedIndexCrTop < 0)
   {
     return;
   }
@@ -79,6 +93,20 @@ void SimpleFieldColorClassifier::execute()
       {
         const Pixel& pixel = getImage().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
+        {
+          POINT_PX(ColorClasses::red, x, y);
+        }
+      }
+    }
+  );
+
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:markCrClassification_top",
+    for(unsigned int x = 0; x < getImageTop().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImageTop().height(); y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);
+        if( abs((int)pixel.v-(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v)
         {
           POINT_PX(ColorClasses::red, x, y);
         }
@@ -130,15 +158,20 @@ void SimpleFieldColorClassifier::execute()
   
   double maxWeightedCb = 0;
   int maxWeightedIndexCb = -1;
+  double maxWeightedCbTop = 0;
+  int maxWeightedIndexCbTop = -1;
 
   double meanFieldY = 0;
   double numberOfFieldY = 0;
+  double meanFieldYTop = 0;
+  double numberOfFieldYTop = 0;
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     // weight based on the mean value  (255 - i)/255
     double wCb = 1.0 - i*histogramStep;
     double weightedCb = wCb * (double) getHistograms().histogramU.rawData[i];
+    double weightedCbTop = wCb * (double) getHistograms().histogramTopU.rawData[i];
 
     // calculate the Cb maximum
     if(weightedCb > maxWeightedCb)
@@ -146,9 +179,16 @@ void SimpleFieldColorClassifier::execute()
       maxWeightedCb = weightedCb;
       maxWeightedIndexCb = i;
     }
+    if(weightedCbTop > maxWeightedCbTop)
+    {
+      maxWeightedCbTop = weightedCbTop;
+      maxWeightedIndexCbTop = i;
+    }
 
     meanFieldY += getHistograms().histogramY.rawData[i]*i;
     numberOfFieldY += getHistograms().histogramY.rawData[i];
+    meanFieldYTop += getHistograms().histogramTopY.rawData[i]*i;
+    numberOfFieldYTop += getHistograms().histogramTopY.rawData[i];
   }//end for
 
 
@@ -157,8 +197,14 @@ void SimpleFieldColorClassifier::execute()
     meanFieldY /= numberOfFieldY;
   }
 
+  if(numberOfFieldYTop > 0)
+  {
+    meanFieldYTop /= numberOfFieldYTop;
+  }
+
   //check how it works in other conditions
   int maxWeightedIndexY = (int)Math::clamp(meanFieldY,0.0, 255.0);
+  int maxWeightedIndexYTop = (int)Math::clamp(meanFieldYTop,0.0, 255.0);
 
 
   PLOT("SimpleFieldColorClassifier:maxWeightedIndexCr", maxWeightedIndexCr);
@@ -192,6 +238,28 @@ void SimpleFieldColorClassifier::execute()
     }
   );
 
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:mark_green_top",
+    for(unsigned int x = 0; x < getImageTop().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImageTop().height(); y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);
+
+        if
+        (
+          min((int)(maxWeightedIndexYTop + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
+          &&
+          max((int)(maxWeightedIndexYTop - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
+          &&
+          abs((int)pixel.u -(int)maxWeightedIndexCbTop) < (int)fieldParams.fieldColorMax.u
+          &&
+          abs((int)pixel.v -(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v
+        )
+          POINT_PX(ColorClasses::green, x, y);
+      }
+    }
+  );
+
   /*
   // 
   getFieldColorPercept().distY = fieldParams.fieldColorMax.y;
@@ -217,6 +285,17 @@ void SimpleFieldColorClassifier::execute()
     (int)maxWeightedIndexCr + (int)fieldParams.fieldColorMax.v
     );
 
+  getFieldColorPerceptTop().range.set(
+    maxWeightedIndexYTop - (int)fieldParams.fieldColorMin.y,
+    (int)maxWeightedIndexCbTop - (int)fieldParams.fieldColorMax.u,
+    (int)maxWeightedIndexCrTop - (int)fieldParams.fieldColorMax.v,
+
+    maxWeightedIndexYTop + (int)fieldParams.fieldColorMax.y,
+    (int)maxWeightedIndexCbTop + (int)fieldParams.fieldColorMax.u,
+    (int)maxWeightedIndexCrTop + (int)fieldParams.fieldColorMax.v
+    );
+
   //getFieldColorPercept().set();
   getFieldColorPercept().lastUpdated = getFrameInfo();
+  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
 }//end execute

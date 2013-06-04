@@ -18,6 +18,7 @@ using namespace std;
 SimpleGoalColorClassifier::SimpleGoalColorClassifier()
 {
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:mark_yellow", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:mark_yellow_top", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:enable_plots", "", false);
 }
 
@@ -25,6 +26,8 @@ void SimpleGoalColorClassifier::execute()
 {
   PixelT<int> max = getFieldColorPercept().range.getMax();
   PixelT<int> min = getFieldColorPercept().range.getMin();
+  PixelT<int> maxTop = getFieldColorPerceptTop().range.getMax();
+  PixelT<int> minTop = getFieldColorPerceptTop().range.getMin();
 
   //getSimpleGoalColorPercept().minFieldV = min.v;
   //getSimpleGoalColorPercept().maxFieldV = max.v;
@@ -35,8 +38,14 @@ void SimpleGoalColorClassifier::execute()
   getSimpleGoalColorPercept().maxU = min.u;
   getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + max.v;
   getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
+  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
+  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
+  getSimpleGoalColorPerceptTop().maxU = minTop.u;
+  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + maxTop.v;
+  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
 
   getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
+  getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
 
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -74,6 +83,21 @@ void SimpleGoalColorClassifier::execute()
         if
         (
           getSimpleGoalColorPercept().isInside(pixel)
+        )
+          POINT_PX(ColorClasses::yellow, x, y);        
+      }
+    }
+  );
+
+  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:mark_yellow_top",
+    for(unsigned int x = 0; x < getImageTop().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImageTop().height(); y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);        
+        if
+        (
+          getSimpleGoalColorPerceptTop().isInside(pixel)
         )
           POINT_PX(ColorClasses::yellow, x, y);        
       }

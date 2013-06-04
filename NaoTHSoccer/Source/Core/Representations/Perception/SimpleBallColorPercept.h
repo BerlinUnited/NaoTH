@@ -50,5 +50,11 @@ public:
 };
 
 
+class SimpleBallColorPerceptTop : public SimpleBallColorPercept
+{
+public:
+  virtual ~SimpleBallColorPerceptTop() {}
+};
+
 #endif  /* SIMPLEBALLCOLORPERCEPT_H */
 

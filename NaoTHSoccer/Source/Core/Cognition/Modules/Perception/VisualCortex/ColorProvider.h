@@ -26,10 +26,15 @@ BEGIN_DECLARE_MODULE(ColorProvider)
   REQUIRE(BaseColorRegionPercept)
   REQUIRE(SimpleGoalColorPercept)
   REQUIRE(SimpleBallColorPercept)
+  REQUIRE(FieldColorPerceptTop)
+  REQUIRE(BaseColorRegionPerceptTop)
+  REQUIRE(SimpleGoalColorPerceptTop)
+  REQUIRE(SimpleBallColorPerceptTop)
   REQUIRE(FrameInfo)
 
   PROVIDE(ColorTable64)
   PROVIDE(ColorClassificationModel)
+  PROVIDE(ColorClassificationModelTop)
 END_DECLARE_MODULE(ColorProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

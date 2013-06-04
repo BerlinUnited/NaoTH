@@ -23,11 +23,14 @@
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(CameraMatrix)
 
   PROVIDE(ColoredGrid)
+  PROVIDE(ColoredGridTop)
   PROVIDE(Histograms)
 END_DECLARE_MODULE(GridProvider)
 

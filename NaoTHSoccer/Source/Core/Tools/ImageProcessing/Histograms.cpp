@@ -32,10 +32,13 @@ Histograms::Histograms()
     DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
   }
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramCr", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram", false);
+  //DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramCr", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotTopY", "plot Y channel histogram top image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotTopU", "plot U channel histogram top image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotTopV", "plot V channel histogram top image", false);
 
   init();
 }
@@ -48,6 +51,9 @@ void Histograms::init()
   {
     xHistogram[c].clear();
     yHistogram[c].clear();
+
+    xHistogramTop[c].clear();
+    yHistogramTop[c].clear();
   }
 }//end init
 
@@ -71,6 +77,16 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
   );
   DEBUG_REQUEST("ImageProcessor:Histogram:plotV", 
     histogramV.plot("Histograms:V");
+  );
+
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotTopY", 
+    histogramTopY.plot("Histograms:TopY");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotTopU", 
+    histogramTopU.plot("Histograms:TopU");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotTopV", 
+    histogramTopV.plot("Histograms:TopV");
   );
 
   for(int color = 0; color < ColorClasses::numOfColors; color++)
@@ -180,6 +196,18 @@ inline void Histograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
     {
       const Vector2<int>& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
       increaseValue(gridPoint, (ColorClasses::Color) color);
+    }
+  }
+}//end createFromColoredGrid
+
+inline void Histograms::createFromColoredGridTop(const ColoredGrid& coloredGrid)
+{
+  for(int color = 0; color < ColorClasses::numOfColors; color++)
+  {
+    for (unsigned int pixelIndex = 0; pixelIndex < coloredGrid.numberOfColorPoints[color]; pixelIndex++)
+    {
+      const Vector2<int>& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
+      increaseValueTop(gridPoint, (ColorClasses::Color) color);
     }
   }
 }//end createFromColoredGrid

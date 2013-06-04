@@ -32,8 +32,10 @@ BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
   REQUIRE(FrameInfo)
   REQUIRE(Histograms)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
 
   PROVIDE(FieldColorPercept)
+  PROVIDE(FieldColorPerceptTop)
 END_DECLARE_MODULE(SimpleFieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

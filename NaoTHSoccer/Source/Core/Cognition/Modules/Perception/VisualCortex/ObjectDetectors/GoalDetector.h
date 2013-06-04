@@ -34,12 +34,12 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GoalDetector)
-  REQUIRE(Image)
-  REQUIRE(CameraMatrix)
+  REQUIRE(ImageTop)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
 //  REQUIRE(ColorTable64)
-  REQUIRE(ColorClassificationModel)
-  REQUIRE(ColoredGrid)
+  REQUIRE(ColorClassificationModelTop)
+  REQUIRE(ColoredGridTop)
 //  REQUIRE(FieldPercept)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
@@ -139,8 +139,24 @@ private:
 
   const ColorClassificationModel& getColorTable64() const
   {
-    return getColorClassificationModel();
+    return getColorClassificationModelTop();
   }
+
+  const Image& getImage() const
+  {
+    return getImageTop();
+  }
+
+  const CameraMatrix& getCameraMatrix() const
+  {
+    return getCameraMatrixTop();
+  }
+
+  const ColoredGrid& getColoredGrid() const
+  {
+    return getColoredGridTop();
+  }
+
 
 };//end class GoalDetector
 

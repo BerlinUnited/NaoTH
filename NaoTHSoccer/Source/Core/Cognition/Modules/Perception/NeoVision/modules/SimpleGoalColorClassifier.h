@@ -30,9 +30,12 @@ BEGIN_DECLARE_MODULE(SimpleGoalColorClassifier)
   REQUIRE(FrameInfo)
   REQUIRE(Histograms)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(FieldColorPercept)
+  REQUIRE(FieldColorPerceptTop)
 
   PROVIDE(SimpleGoalColorPercept)
+  PROVIDE(SimpleGoalColorPerceptTop)
 END_DECLARE_MODULE(SimpleGoalColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

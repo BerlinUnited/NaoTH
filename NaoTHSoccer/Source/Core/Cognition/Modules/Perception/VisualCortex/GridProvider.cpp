@@ -14,6 +14,7 @@
 GridProvider::GridProvider()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_grid", "show the image processing grid", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:show_grid_top", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_classified_image", "draw the image represented by uniformGrid", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:enable_debug", "Enables the debug output for the histogram", false);
@@ -47,54 +48,81 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 {
   STOPWATCH_START("Histogram+ColoredGrid");
   getColoredGrid().reset();
+  getColoredGridTop().reset();
   getHistograms().init();
 
   unsigned int grey = 0;
   unsigned int red = 0;
   unsigned int blue = 0;
+  unsigned int greyTop = 0;
+  unsigned int redTop = 0;
+  unsigned int blueTop = 0;
   Pixel pixel;
+  Pixel pixelTop;
 
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
+    const Vector2<int>& pointTop = getColoredGridTop().uniformGrid.getPoint(i);
 
     //getImage().getCorrected(point.x, point.y, pixel);
     getImage().get(point.x, point.y, pixel);
+    getImageTop().get(pointTop.x, pointTop.y, pixelTop);
 
     // TODO: check if it is needed
     // mean color
     grey += pixel.y; // used by BaseColorClassifier
     red  += pixel.u; // used by BaseColorClassifier
     blue += pixel.v; // used by BaseColorClassifier
+    greyTop += pixelTop.y; // used by BaseColorClassifier
+    redTop  += pixelTop.u; // used by BaseColorClassifier
+    blueTop += pixelTop.v; // used by BaseColorClassifier
 
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
+    ColorClasses::Color currentPixelColorTop = getColorClassificationModelTop().getColorClass(pixelTop);
 
     // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
+    getColoredGridTop().setColor(i, currentPixelColorTop);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
     getHistograms().increaseValue(gridPoint, currentPixelColor);
     getHistograms().increaseChannelValue(pixel, currentPixelColor);
+
+    const Vector2<int>& gridPointTop = getColoredGridTop().uniformGrid.getGridCoordinates(i);
+    getHistograms().increaseValueTop(gridPointTop, currentPixelColorTop);
+    getHistograms().increaseChannelValueTop(pixelTop, currentPixelColorTop);
   }//end for
 
-  // 
   getColoredGrid().validate();
+  getColoredGridTop().validate();
   
-
   unsigned int imgArea = getColoredGrid().uniformGrid.maxNumberOfPoints;
   getColoredGrid().meanBrightness = grey / imgArea;
   getColoredGrid().meanRed = red / imgArea;
   getColoredGrid().meanBlue = blue / imgArea;
 
-  STOPWATCH_STOP("Histogram+ColoredGrid");
+  unsigned int imgAreaTop = getColoredGrid().uniformGrid.maxNumberOfPoints;
+  getColoredGridTop().meanBrightness = greyTop / imgArea;
+  getColoredGridTop().meanRed = redTop / imgArea;
+  getColoredGridTop().meanBlue = blueTop / imgArea;
 
+  STOPWATCH_STOP("Histogram+ColoredGrid");
 
   DEBUG_REQUEST("ImageProcessor:show_grid",
     for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
     {
       Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
       POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
+    }//end for
+  );
+
+  DEBUG_REQUEST("ImageProcessor:show_grid_top",
+    for(unsigned int i = 0; i < getColoredGridTop().uniformGrid.numberOfGridPoints; i++)
+    {
+      Vector2<int> point = getColoredGridTop().uniformGrid.getPoint(i);
+      POINT_PX(getColoredGridTop().pointsColors[i], point.x, point.y);
     }//end for
   );
 }//end calculateColoredGrid

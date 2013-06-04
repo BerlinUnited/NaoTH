@@ -19,18 +19,24 @@ using namespace std;
 SimpleBallColorClassifier::SimpleBallColorClassifier()
 {
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange_top", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:enable_plots", "", false);
 }
 
 void SimpleBallColorClassifier::execute()
 {
   PixelT<int> max = getFieldColorPercept().range.getMax();
+  PixelT<int> maxTop = getFieldColorPerceptTop().range.getMax();
   
   getSimpleBallColorPercept().minV = (int) ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV;
   getSimpleBallColorPercept().maxY = (int) ballParams.ballColorMax.y;
   getSimpleBallColorPercept().maxU = (int) ballParams.ballColorMax.u;
+  getSimpleBallColorPerceptTop().minV = (int) ballParams.dist2yellow.v + getSimpleGoalColorPerceptTop().minV + getSimpleGoalColorPerceptTop().maxDistV;
+  getSimpleBallColorPerceptTop().maxY = (int) ballParams.ballColorMax.y;
+  getSimpleBallColorPerceptTop().maxU = (int) ballParams.ballColorMax.u;
 
   getSimpleBallColorPercept().lastUpdated = getFrameInfo();;
+  getSimpleBallColorPerceptTop().lastUpdated = getFrameInfo();;
 
   DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -62,4 +68,20 @@ void SimpleBallColorClassifier::execute()
       }
     }
   );
+
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_orange_top",
+    for(unsigned int x = 0; x < getImageTop().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImageTop().height(); y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);
+        if
+        (
+          getSimpleBallColorPerceptTop().isInside(pixel)
+        )
+          POINT_PX(ColorClasses::red, x, y);
+      }
+    }
+  );
+
 }//end execute

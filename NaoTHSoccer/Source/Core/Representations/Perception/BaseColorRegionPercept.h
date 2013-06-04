@@ -469,6 +469,11 @@ public:
 
 };
 
+class BaseColorRegionPerceptTop : public BaseColorRegionPercept
+{
+public:
+  virtual ~BaseColorRegionPerceptTop() {}
+};
 
 
 #endif // BASECOLORREGIONPERCEPT_H

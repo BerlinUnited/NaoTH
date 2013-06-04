@@ -151,6 +151,12 @@ public:
 
 };
 
+class FieldColorPerceptTop : public FieldColorPercept
+{
+public:
+  virtual ~FieldColorPerceptTop() {}
+};
+
 
 #endif  /* FIELDCOLORPERCEPT_H */
 

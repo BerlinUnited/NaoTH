@@ -63,6 +63,7 @@ public:
   void setColorTable(const ColorTable64& ct);
   void setFieldColorPercept(const FieldColorPercept& percept);
   void invalidateFieldColorPercept();
+
   void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
   void invalidateBaseColorRegionPercept();
 
@@ -137,7 +138,6 @@ public:
     return colorTable.getColorClass(p.y, p.u, p.v);
   }//end getColorClass
 
-
   const FieldColorPercept& getFieldColorPercept() const
   {
     return fieldColorPercept;
@@ -178,5 +178,13 @@ private:
   // ...a hacked classifier
   SimpleColorClassifier simpleColorClassifier;
 };
+
+class ColorClassificationModelTop : public ColorClassificationModel
+{
+public:
+  virtual ~ColorClassificationModelTop() {}
+};
+
+
 
 #endif // COLORCLASSIFICATIONMODEL_H
