@@ -308,6 +308,10 @@ namespace naoth
     virtual ~ImageTop() {}
   };
 
+  template<>
+  class Serializer<ImageTop> : public Serializer<Image>
+  {};
+
 } // end namespace naoth
 
-#endif //__Image_h_
+#endif //_Image_h_
