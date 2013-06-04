@@ -25,15 +25,10 @@ void ColorCalibrator::addCalibrationRect(CalibrationRect& calibRect)
 
 void ColorCalibrator::reset()
 {
-  //initHistograms(histColorChannel, histDifference);
   initHistograms();
 }
 
-void  ColorCalibrator::initHistograms
-(
-  //vector<vector<double> >& histColorChannel,
-  //vector<vector<double> >& histDifference
-)
+void  ColorCalibrator::initHistograms()
 {
   histDifferenceVminusU.clear();
   histDifferenceUminusY.clear();
@@ -41,22 +36,6 @@ void  ColorCalibrator::initHistograms
   histColorChannelY.clear();
   histColorChannelU.clear();
   histColorChannelV.clear();
-  //histColorChannel.clear();
-  //histDifference.clear();
-
-  //vector<double> VminusU(512);
-  //histDifference.push_back(VminusU);
-  //vector<double> UminusY(512);
-  //histDifference.push_back(UminusY);
-  //vector<double> VminusY(512);
-  //histDifference.push_back(VminusY);
-
-  //vector<double> Y(256);
-  //histColorChannel.push_back(Y);
-  //vector<double> U(256);
-  //histColorChannel.push_back(U);
-  //vector<double> V(256);
-  //histColorChannel.push_back(V);
 }
 
 void ColorCalibrator::execute(const naoth::Image& image)
