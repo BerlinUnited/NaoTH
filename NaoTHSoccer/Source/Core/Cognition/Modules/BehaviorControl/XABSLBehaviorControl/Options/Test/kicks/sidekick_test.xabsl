@@ -58,7 +58,7 @@ option sidekick_test
   {
     decision
     {
-      else if(action_done && state_time > 2000)
+      else if(action_done)
         goto sidekick_to_left;
       else
         stay;
@@ -73,7 +73,7 @@ option sidekick_test
   {
     decision
     {
-      else if(action_done && state_time > 2000)
+      else if(action_done)
         goto sidekick_to_right;
       else
         stay;

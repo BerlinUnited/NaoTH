@@ -7,7 +7,7 @@ option sidekick_to_left
   {
     decision
     {
-      if(state_time > 150 && executed_motion.step_control.right_movable)
+      if(state_time > 250 && executed_motion.step_control.right_movable)
       {
         goto sidekick_right_foot;
       }
@@ -19,7 +19,7 @@ option sidekick_to_left
       head.control_mode = search_for_ball;
       motion.type = walk;
 
-      motion.walk_speed.x = ball.preview.right_foot.x - ball.radius - 100;
+      motion.walk_speed.x = ball.preview.right_foot.x - ball.radius - 130;
       motion.walk_speed.y = ball.preview.right_foot.y;
       motion.walk_speed.rot = 0;
     }
@@ -36,18 +36,24 @@ option sidekick_to_left
     }
     action
     {
-      head.control_mode = search_for_ball;
       motion.type = walk;
       
       motion.walk.coordinate = right_foot;
       motion.walk.style = normal;
 
       motion.walk.step_control.foot = right;
-      motion.walk.step_control.target.x = 5*ball.preview.right_foot.x;
-      motion.walk.step_control.target.y = 2*ball.preview.right_foot.y;
+      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.right_foot.y;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 90;
-      motion.walk.step_control.time = 200;
+      motion.walk.step_control.time = 300;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
 
@@ -55,24 +61,26 @@ option sidekick_to_left
   {
     decision
     {
-      if (state_time > 400)
+      if (state_time > 1000)
         goto finished;
       else
         stay;
     }
     action
     {
-      head.control_mode = search_for_ball;
-      motion.type = walk;
+       motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
-
       motion.walk.step_control.foot = none;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
 
@@ -84,15 +92,17 @@ option sidekick_to_left
 	  }
 	  action
 	  {
-	    head.control_mode = search_for_ball;
-	    motion.type = walk;
-	  
-	    motion.walk.coordinate = hip;
-	    motion.walk.style = normal;
-	
-	    motion.walk_speed.x = 0;
-	    motion.walk_speed.y = 0;
-	    motion.walk_speed.rot = 0;
+	     motion.type = stand;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
 	  }
   }
 }

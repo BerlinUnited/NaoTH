@@ -51,4 +51,9 @@ namespace internal_symbols("Internal Symbols") {
   /** remembers the numbers of turns while search (@see search_ball)*/
   float internal search_ball.turns_for_searching;
 
+  /* Kick symbols */
+  
+  /** remember attack direction for hysteresis */
+  float internal attack.direction.used;
+
 }

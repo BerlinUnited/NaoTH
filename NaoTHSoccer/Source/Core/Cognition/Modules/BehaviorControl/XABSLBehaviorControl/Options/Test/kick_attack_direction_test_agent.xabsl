@@ -1,5 +1,5 @@
-/** Sidekick tester */
-option sidekick_test_agent {
+/** kick attack_direction tester */
+option kick_attack_direction_test_agent {
 
   initial state test {    
     action {
@@ -7,7 +7,7 @@ option sidekick_test_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      sidekick_test();
+      kick_attack_direction_test();
       
       // control head movement according to value of head.control_mode
       head_control();
