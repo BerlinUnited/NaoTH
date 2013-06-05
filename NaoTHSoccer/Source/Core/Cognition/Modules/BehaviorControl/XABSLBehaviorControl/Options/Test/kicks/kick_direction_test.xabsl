@@ -179,7 +179,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
   
@@ -194,7 +194,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -209,7 +209,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -224,7 +224,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -239,7 +239,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -254,7 +254,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -269,7 +269,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -284,7 +284,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 
@@ -299,7 +299,7 @@ option kick_direction_test
     }
     action 
     {
-      go_to_ball();
+      go_to_ball(distance = 130);
     }
   }
 

@@ -1,13 +1,15 @@
 /** Go straight to the ball with respect to hip coordinates 
-  Note: No rotation with less then 20 cm distance! **/
+  Note: No rotation with less then 20 cm distance! 
+  Parameter @distance for the distance hip-ball (use 130 as default)**/
 
 option go_to_ball
 {
+  float @distance [mm];
   initial state go_to_ball
   {
     decision
     {
-      if (abs(value = (ball.percept.x - 130 - ball.radius)) < 20
+      if (abs(value = (ball.percept.x - @distance - ball.radius)) < 20
         && abs(value = ball.percept.y) < 20
         //&& abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) < 20
         && vector.abs(x=ball.speed.x, y=ball.speed.y) < 30)
@@ -22,7 +24,7 @@ option go_to_ball
       
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-      motion.walk_speed.x = 0.7*(ball.preview.x - 130 - ball.radius);
+      motion.walk_speed.x = 0.7*(ball.preview.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.y;
       motion.walk_speed.rot = (ball.distance > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
@@ -32,7 +34,7 @@ option go_to_ball
   {
     decision
     {
-      if (abs(value = (ball.percept.x - 130 - ball.radius)) > 30
+      if (abs(value = (ball.percept.x - @distance - ball.radius)) > 30
         || abs(value = ball.percept.y) > 30
         || abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) > 30
         || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
@@ -47,7 +49,7 @@ option go_to_ball
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      motion.walk_speed.x = 0.7*(ball.preview.x - 130 - ball.radius);
+      motion.walk_speed.x = 0.7*(ball.preview.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.y;
       motion.walk_speed.rot = (ball.distance > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }

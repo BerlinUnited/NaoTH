@@ -34,7 +34,6 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
-
 include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
