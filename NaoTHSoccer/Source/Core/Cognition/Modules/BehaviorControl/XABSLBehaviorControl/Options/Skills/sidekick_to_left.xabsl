@@ -68,7 +68,7 @@ option sidekick_to_left
     }
     action
     {
-       motion.type = stand;
+      motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
@@ -92,7 +92,7 @@ option sidekick_to_left
 	  }
 	  action
 	  {
-	     motion.type = stand;
+	    motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;

@@ -92,7 +92,7 @@ option sidekick_to_right
     }
     action
     {
-       motion.type = stand;
+      motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;

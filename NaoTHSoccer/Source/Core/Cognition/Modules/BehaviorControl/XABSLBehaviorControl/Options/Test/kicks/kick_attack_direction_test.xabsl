@@ -23,7 +23,7 @@ option kick_attack_direction_test
     }
   }
 
-  state snap_attack_direction
+  state get_attack_direction
   {
     decision
     {
@@ -42,8 +42,7 @@ option kick_attack_direction_test
   {
     decision
     {
-      else if(action_done)//  && state_time > 2000)
-        //goto stand;
+      else if(action_done)
         goto go_to_ball;
       else
         stay;
@@ -59,7 +58,7 @@ option kick_attack_direction_test
     decision
     {
       else if(action_done)
-        goto snap_attack_direction;
+        goto get_attack_direction;
       else
         stay;
     }

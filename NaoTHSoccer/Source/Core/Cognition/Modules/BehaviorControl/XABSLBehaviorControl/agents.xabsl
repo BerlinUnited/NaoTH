@@ -39,7 +39,7 @@ include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
-// Test
+// Test agents
 include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
@@ -47,9 +47,13 @@ include "Options/Test/go_to_ball_test_agent.xabsl";
 include "Options/Test/sidekick_test_agent.xabsl";
 include "Options/Test/kick_direction_test_agent.xabsl";
 include "Options/Test/kick_attack_direction_test_agent.xabsl";
+
+// Test options
+// Test Kicks
 include "Options/Test/kicks/sidekick_test.xabsl";
 include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
+// Test Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
@@ -62,7 +66,6 @@ include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/obstacle_test_agent.xabsl";
-
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);

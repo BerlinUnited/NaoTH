@@ -22,7 +22,7 @@ option kick_direction
   {
     decision
     {
-      if(state_time > 300 && executed_motion.step_control.left_movable)
+      if(state_time > 250 && executed_motion.step_control.left_movable)
       {
         goto sidekick_left_foot;
       }
@@ -44,7 +44,7 @@ option kick_direction
   {
     decision
     {
-	    if(state_time > 300 && executed_motion.step_control.right_movable)
+	    if(state_time > 250 && executed_motion.step_control.right_movable)
 	    {
 	      goto sidekick_right_foot;
 	    }
@@ -130,7 +130,7 @@ option kick_direction
   {
     decision
     {
-      if (state_time > 3000)
+      if (state_time > 1000)
         goto finished;
       else
         stay;
@@ -141,10 +141,6 @@ option kick_direction
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-
-      motion.walk_speed.x = (ball.preview.x - 130 - ball.radius);
-      motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 200) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
 
       motion.walk.step_control.foot = none;
 
@@ -165,14 +161,10 @@ option kick_direction
     }
     action
     {
-      motion.type = walk;
+      motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-
-      motion.walk_speed.x = (ball.preview.x - 130 - ball.radius);
-      motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 200) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
 
       //loook at percept
       head.control_mode = none;
