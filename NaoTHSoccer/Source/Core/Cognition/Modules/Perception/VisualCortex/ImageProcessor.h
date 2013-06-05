@@ -49,17 +49,23 @@
 BEGIN_DECLARE_MODULE(ImageProcessor)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
 
   PROVIDE(BallPercept)
+  PROVIDE(BallPerceptTop)
   PROVIDE(PlayersPercept)
   PROVIDE(LinePercept)
   PROVIDE(GoalPercept)
   PROVIDE(ScanLineEdgelPercept)
+  PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ImageProcessor)
 
 class ImageProcessor: private ImageProcessorBase, private ModuleManager

@@ -98,6 +98,21 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
 
+    std::string getCameraIDName(CameraID id)
+    {
+      switch(id)
+      {
+        case Top:
+          return "Top";
+
+        case Bottom:
+          return "Bottom";
+
+        default:
+          return "unknown";
+      }
+    }
+
   protected:
 
     double openingAngleDiagonal;

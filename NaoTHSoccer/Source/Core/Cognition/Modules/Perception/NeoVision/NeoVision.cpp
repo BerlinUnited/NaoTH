@@ -11,19 +11,19 @@
 
 NeoVision::NeoVision()
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:execute", " ", true);
+  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:execute", " ", false);
   theFieldColorClassifierFull = registerModule<FieldColorClassifierFull>("FieldColorClassifierFull");
   theFieldColorClassifierFull->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:execute", " ", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:execute", " ", true);
   theSimpleFieldColorClassifier = registerModule<SimpleFieldColorClassifier>("SimpleFieldColorClassifier");
   theSimpleFieldColorClassifier->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:execute", " ", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:execute", " ", true);
   theSimpleGoalColorClassifier = registerModule<SimpleGoalColorClassifier>("SimpleGoalColorClassifier");
   theSimpleGoalColorClassifier->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:execute", " ", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:execute", " ", true);
   theSimpleBallColorClassifier = registerModule<SimpleBallColorClassifier>("SimpleBallColorClassifier");
   theSimpleBallColorClassifier->setEnabled(true);
 

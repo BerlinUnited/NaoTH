@@ -155,6 +155,12 @@ private:
   friend class naoth::Serializer<GoalPercept>;
 };//end GoalPercept
 
+class GoalPerceptBottom : public GoalPercept
+{
+public:
+  virtual ~GoalPerceptBottom() {}
+};
+
 namespace naoth
 {
   template<>
@@ -164,6 +170,10 @@ namespace naoth
     static void serialize(const GoalPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, GoalPercept& representation);
   };
+
+  template<>
+  class Serializer<GoalPerceptBottom> : public Serializer<GoalPercept>
+  {};
 }
 
 #endif // _GoalPercept_h_

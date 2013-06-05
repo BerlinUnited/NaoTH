@@ -25,8 +25,11 @@
 
 BEGIN_DECLARE_MODULE(ArtificialHorizonCalculator)
   REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   PROVIDE(ArtificialHorizon)
+  PROVIDE(ArtificialHorizonTop)
 END_DECLARE_MODULE(ArtificialHorizonCalculator)
 
 class ArtificialHorizonCalculator : public ArtificialHorizonCalculatorBase
@@ -35,7 +38,52 @@ public:
   ArtificialHorizonCalculator();
   virtual ~ArtificialHorizonCalculator();
 
-  virtual void execute();
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+  };
+
+  virtual void execute(CameraInfo::CameraID id);
+
+private:
+  CameraInfo::CameraID cameraID;
+
+  const CameraMatrix& getCameraMatrix_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraMatrixTop();
+    }
+    else
+    {
+      return getCameraMatrix();
+    }
+  };
+
+  const CameraInfo& getCameraInfo_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraInfoTop();
+    }
+    else
+    {
+      return getCameraInfo();
+    }
+  };
+
+  ArtificialHorizon& getArtificialHorizon_()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getArtificialHorizonTop();
+    }
+    else
+    {
+      return getArtificialHorizon();
+    }
+  };
+
 };
 
 #endif // ARTIFICIALHORIZONCALCULATOR_H

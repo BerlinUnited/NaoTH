@@ -34,7 +34,7 @@ ImageProcessor::ImageProcessor()
   theBodyContourProvider->setEnabled(true);
 
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(false);
+  theScanLineEdgelDetector->setEnabled(true);
 
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
@@ -62,19 +62,23 @@ void ImageProcessor::execute()
   //reset the Representations:
   
   getBallPercept().reset();
+  getBallPerceptTop().reset();
   getGoalPercept().reset();
   getScanLineEdgelPercept().reset();
+  getScanLineEdgelPerceptTop().reset();
   getLinePercept().reset();
   getPlayersPercept().reset();
 
   GT_TRACE("executing HistogramFieldDetector");
   STOPWATCH_START("HistogramFieldDetector");
   theHistogramFieldDetector->execute();
+  theHistogramFieldDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("HistogramFieldDetector");
 
   GT_TRACE("executing BodyContourProvider");
   STOPWATCH_START("BodyContourProvider");
   theBodyContourProvider->execute();
+  theBodyContourProvider->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("BodyContourProvider");
 
   GT_TRACE("executing RobotDetector");
@@ -90,16 +94,19 @@ void ImageProcessor::execute()
   GT_TRACE("executing ScanLineEdgelDetector");
   STOPWATCH_START("ScanLineEdgelDetector");
   theScanLineEdgelDetector->execute();
+  theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("ScanLineEdgelDetector");
 
   GT_TRACE("executing FieldDetector");
   STOPWATCH_START("FieldDetector");
   theFieldDetector->execute();
+  theFieldDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("FieldDetector");
 
   GT_TRACE("executing BallDetector");
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
+  theBallDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("BallDetector");
 
   GT_TRACE("executing LineDetector");

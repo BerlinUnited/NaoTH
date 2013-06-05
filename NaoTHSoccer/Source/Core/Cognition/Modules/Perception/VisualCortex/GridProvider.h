@@ -32,6 +32,7 @@ BEGIN_DECLARE_MODULE(GridProvider)
   PROVIDE(ColoredGrid)
   PROVIDE(ColoredGridTop)
   PROVIDE(Histograms)
+  PROVIDE(HistogramsTop)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

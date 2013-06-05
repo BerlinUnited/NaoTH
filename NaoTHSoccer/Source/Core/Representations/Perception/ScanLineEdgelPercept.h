@@ -77,6 +77,12 @@ public:
   }//end print
 };
 
+class ScanLineEdgelPerceptTop : public ScanLineEdgelPercept
+{
+public:
+  virtual ~ScanLineEdgelPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -86,6 +92,11 @@ namespace naoth
     static void serialize(const ScanLineEdgelPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, ScanLineEdgelPercept& representation);
   };
+
+  template<>
+  class Serializer<ScanLineEdgelPerceptTop> : public Serializer<ScanLineEdgelPercept>
+  {};
+
 }
 
 #endif //_ScanLineEdgelPercept_h_

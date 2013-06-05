@@ -14,7 +14,10 @@
 
 
 GoalDetector::GoalDetector()
-  : blobFinder(getColoredGrid())
+: 
+  blobFinder(getColoredGridTop()),
+  blobFinderBottom(getColoredGrid()),
+  cameraID(CameraInfo::Top)
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:mark_color_scans", "mark the results of the color scan algorithm", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:mark_post_scans", "mark the scanlines along the posts", false);
@@ -26,9 +29,11 @@ GoalDetector::GoalDetector()
   DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:back_proj_test", "...", false);
 }
 
-void GoalDetector::execute()
+void GoalDetector::execute(CameraInfo::CameraID id)
 {
-  getGoalPercept().reset();
+  cameraID = id;
+
+  getGoalPercept_().reset();
 
   //if there is no field percept, then, there is also no goal ?!
   /*
@@ -39,16 +44,16 @@ void GoalDetector::execute()
   */
 
   // estimate the horizon
-  Vector2<double> p1(getArtificialHorizon().begin());
-  Vector2<double> p2(getArtificialHorizon().end());
+  Vector2<double> p1(getArtificialHorizon_().begin());
+  Vector2<double> p2(getArtificialHorizon_().end());
   int heightOfHorizon = (int)((p1.y + p2.y) * 0.5 + 0.5);
 
   // image over the horizon
-  if(heightOfHorizon > (int)getImage().cameraInfo.resolutionHeight-10) return;
+  if(heightOfHorizon > (int)getImage_().cameraInfo.resolutionHeight-10) return;
 
   // clamp the scanline
-  p1.y = Math::clamp((int)p1.y, 10, (int)getImage().cameraInfo.resolutionHeight-10);
-  p2.y = Math::clamp((int)p2.y, 10, (int)getImage().cameraInfo.resolutionHeight-10);
+  p1.y = Math::clamp((int)p1.y, 10, (int)getImage_().cameraInfo.resolutionHeight-10);
+  p2.y = Math::clamp((int)p2.y, 10, (int)getImage_().cameraInfo.resolutionHeight-10);
 
 
   // calculate the post candidates along of the horizon
@@ -58,16 +63,16 @@ void GoalDetector::execute()
   // fallback: try to scan along the center of the image
   if(numberOfCandidates == 0)
   {
-    Vector2<double> c1(0,getImage().cameraInfo.getOpticalCenterY());
-    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.getOpticalCenterY());
+    Vector2<double> c1(0,getImage_().cameraInfo.getOpticalCenterY());
+    Vector2<double> c2(getImage_().cameraInfo.resolutionWidth-1,getImage_().cameraInfo.getOpticalCenterY());
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
   // try once again...
   if(numberOfCandidates == 0)
   {
-    Vector2<double> c1(0,getImage().cameraInfo.resolutionHeight/3);
-    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.resolutionHeight/3);
+    Vector2<double> c1(0,getImage_().cameraInfo.resolutionHeight/3);
+    Vector2<double> c2(getImage_().cameraInfo.resolutionWidth-1,getImage_().cameraInfo.resolutionHeight/3);
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
@@ -95,7 +100,7 @@ void GoalDetector::execute()
   GoalPercept::GoalPost postOne;
   GoalPercept::GoalPost postTwo;
 
-  int distToBottomImage = getImage().cameraInfo.resolutionHeight - max(postOne.basePoint.y, postTwo.basePoint.y) - 1;
+  int distToBottomImage = getImage_().cameraInfo.resolutionHeight - max(postOne.basePoint.y, postTwo.basePoint.y) - 1;
   // look max 5 pixel down
   Vector2<int> extraBase(0, min(distToBottomImage,5));
 
@@ -164,8 +169,8 @@ void GoalDetector::execute()
     // position on the ground is not reliable if the post cannot be projected
     postOne.positionReliable =
       CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraMatrix_(),
+        getImage_().cameraInfo,
         postOne.basePoint.x, postOne.basePoint.y, 0.0,
         postOne.position);
 
@@ -173,8 +178,8 @@ void GoalDetector::execute()
     // position on the ground is not reliable if the post cannot be projected
     postTwo.positionReliable = 
       CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraMatrix_(),
+        getImage_().cameraInfo,
         postTwo.basePoint.x, postTwo.basePoint.y, 0.0,
         postTwo.position);
 
@@ -187,23 +192,23 @@ void GoalDetector::execute()
     postOne.positionReliable = postOne.positionReliable && checkIfPostReliable(postOne.basePoint);
     postTwo.positionReliable = postTwo.positionReliable && checkIfPostReliable(postTwo.basePoint);
 
-    getGoalPercept().add(postOne);
-    getGoalPercept().add(postTwo);
+    getGoalPercept_().add(postOne);
+    getGoalPercept_().add(postTwo);
   }
   else if(numberOfPostsFound > 0) // only one post found
   {
     //TODO: handle the case if the projection is not possible
     postOne.positionReliable = 
       CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraMatrix_(),
+        getImage_().cameraInfo,
         postOne.basePoint.x, postOne.basePoint.y, 0.0,
         postOne.position);
 
     postOne.positionReliable = postOne.positionReliable && checkIfPostReliable(postOne.basePoint);
 
     postOne.type = GoalPercept::GoalPost::unknownPost;
-    getGoalPercept().add(postOne);
+    getGoalPercept_().add(postOne);
   }//end else
 
 
@@ -213,34 +218,34 @@ void GoalDetector::execute()
   // calculate the centroid
   // at least one post was seen
   // TODO: clean it up (calculation of the centroid)
-  if(getGoalPercept().getNumberOfSeenPosts() > 0)
+  if(getGoalPercept_().getNumberOfSeenPosts() > 0)
   {
 
     //Vector2<double> centroid;
     //double mainAxisAngle = -getMajorAxis( goalColor, centroid);
 
-    Vector2<double> centroid = getGoalPercept().getPost(0).basePoint -
-      Vector2<double>(0.0, getGoalPercept().getPost(0).seenHeight*0.5); 
+    Vector2<double> centroid = getGoalPercept_().getPost(0).basePoint -
+      Vector2<double>(0.0, getGoalPercept_().getPost(0).seenHeight*0.5); 
 
     if(getGoalPercept().getNumberOfSeenPosts() > 1)
     {
-      centroid += getGoalPercept().getPost(1).basePoint -
-            Vector2<double>(0.0, getGoalPercept().getPost(1).seenHeight*0.5);
+      centroid += getGoalPercept_().getPost(1).basePoint -
+            Vector2<double>(0.0, getGoalPercept_().getPost(1).seenHeight*0.5);
 
       centroid /= 2.0;
     }//end if
 
     Vector2<double> angles = CameraGeometry::angleToPointInImage(
-            getCameraMatrix(), 
-            getImage().cameraInfo,
+            getCameraMatrix_(), 
+            getImage_().cameraInfo,
             (int)centroid.x, 
             (int)centroid.y);
 
-    getGoalPercept().angleToSeenGoal = angles.x;
+    getGoalPercept_().angleToSeenGoal = angles.x;
 
-    getGoalPercept().goalCentroid = CameraGeometry::imagePixelToWorld(
-            getCameraMatrix(), 
-            getImage().cameraInfo,
+    getGoalPercept_().goalCentroid = CameraGeometry::imagePixelToWorld(
+            getCameraMatrix_(), 
+            getImage_().cameraInfo,
             centroid.x,
             centroid.y,
             3000.0);
@@ -313,8 +318,8 @@ void GoalDetector::execute()
 Vector2<int> GoalDetector::extendCandidate(ColorClasses::Color color, const Vector2<int>& start)
 {
   Vector2<double> p1, p2;
-  p1 = getArtificialHorizon().begin();
-  p2 = getArtificialHorizon().end();
+  p1 = getArtificialHorizon_().begin();
+  p2 = getArtificialHorizon_().end();
   
   Vector2<int> direction(p2 - p1);
   
@@ -336,7 +341,7 @@ void GoalDetector::estimatePostsByScanlines(
   {
     // orthogonal to horizon (down)
     // TODO: check rounding
-    Vector2<int> directionDown((getArtificialHorizon().end() - getArtificialHorizon().begin()).rotateLeft());
+    Vector2<int> directionDown((getArtificialHorizon_().end() - getArtificialHorizon_().begin()).rotateLeft());
     Vector2<int> directionUp(-directionDown);
     Vector2<int> basePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
     Vector2<int> topPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);
@@ -386,7 +391,7 @@ Vector2<int> GoalDetector::scanColorLine(
   // TODO: make parameter
   int maxNumberOfSkippedPixel = 10;
 
-  BresenhamLineScan scanLine(start, direction, getImage().cameraInfo);
+  BresenhamLineScan scanLine(start, direction, getImage_().cameraInfo);
   int nonColorCount = 0;
   Vector2<int> point(start);
   Vector2<int> end(start);
@@ -394,7 +399,7 @@ Vector2<int> GoalDetector::scanColorLine(
   for(int k = 0; k < scanLine.numberOfPixels; k++)
   {
     scanLine.getNext(point);
-    Pixel pixel = getImage().get(point.x, point.y);
+    Pixel pixel = getImage_().get(point.x, point.y);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
     DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_color_scans",
@@ -445,11 +450,11 @@ void GoalDetector::estimatePostsByBlobs(
       CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
     );
 
-    Vector2<int> leftBottom = blob.getClosestPoint(Vector2<int>(0, getImage().cameraInfo.resolutionHeight));
-    Vector2<int> rightBottom = blob.getClosestPoint(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+    Vector2<int> leftBottom = blob.getClosestPoint(Vector2<int>(0, getImage_().cameraInfo.resolutionHeight));
+    Vector2<int> rightBottom = blob.getClosestPoint(Vector2<int>(getImage_().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
 
     Vector2<int> leftTop = blob.getClosestPoint(Vector2<int>(0, 0));
-    Vector2<int> rightTop = blob.getClosestPoint(Vector2<int>(getImage().cameraInfo.resolutionWidth, 0));
+    Vector2<int> rightTop = blob.getClosestPoint(Vector2<int>(getImage_().cameraInfo.resolutionWidth, 0));
   
     DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
       RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
@@ -489,7 +494,7 @@ int GoalDetector::scanForCandidates(
   for(int i = 0; i < scanLine.numberOfPixels; i++)
   {
     scanLine.getNext(point);
-    Pixel pixel = getImage().get(point.x, point.y);
+    Pixel pixel = getImage_().get(point.x, point.y);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
 //    double angleBegin = 0;
@@ -571,13 +576,13 @@ bool GoalDetector::checkIfPostReliable(Vector2<int>& post)
   int searchLength = 15;
 
   if(post.x < 0 || post.y < 0 || 
-     post.x >= (int)getImage().cameraInfo.resolutionWidth ||
-     post.y >= (int)getImage().cameraInfo.resolutionHeight)
+     post.x >= (int)getImage_().cameraInfo.resolutionWidth ||
+     post.y >= (int)getImage_().cameraInfo.resolutionHeight)
     return false;
 
-  for(int i = post.y; i < std::min((int)getImage().cameraInfo.resolutionHeight-1, post.y+searchLength); i++)
+  for(int i = post.y; i < std::min((int)getImage_().cameraInfo.resolutionHeight-1, post.y+searchLength); i++)
   {
-    Pixel pixel = getImage().get(post.x,i);
+    Pixel pixel = getImage_().get(post.x,i);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
     DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
@@ -595,14 +600,14 @@ bool GoalDetector::checkIfPostReliable(Vector2<int>& post)
 double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2<double>& centroid)
 {
 
-  int numberOfPoints=getColoredGrid().numberOfColorPoints[goalColor];
+  int numberOfPoints=getColoredGrid_().numberOfColorPoints[goalColor];
 
   Moments2<2> moments;
 
   //iterate over all pixels with goal color and calculate moments of their distribution
   for(int p = 0; p < numberOfPoints; p++)
   {
-    moments.add(getColoredGrid().getImagePoint(goalColor, p));
+    moments.add(getColoredGrid_().getImagePoint(goalColor, p));
   }
 
   Vector2<double> major;
@@ -662,9 +667,9 @@ GoalDetector::Blob GoalDetector::spiderExpandArea(
       // check the current point
       if( skipped > maxPointsToSkip ||
         // point outside the getImage()?
-        (unsigned int)currentPoint.x > getImage().cameraInfo.resolutionWidth - 1 ||
+        (unsigned int)currentPoint.x > getImage_().cameraInfo.resolutionWidth - 1 ||
         currentPoint.x < 0 ||
-        (unsigned int)currentPoint.y > getImage().cameraInfo.resolutionHeight - 1 ||
+        (unsigned int)currentPoint.y > getImage_().cameraInfo.resolutionHeight - 1 ||
         currentPoint.y < 0 )
       {
         break;
@@ -674,7 +679,7 @@ GoalDetector::Blob GoalDetector::spiderExpandArea(
       ////////////////////////////////
       // process the current point  
       ////////////////////////////////
-      Pixel pixel = getImage().get(currentPoint.x,currentPoint.y);
+      Pixel pixel = getImage_().get(currentPoint.x,currentPoint.y);
       ColorClasses::Color currentPixelColor = getColorTable64().getColorClass( 
         pixel); //classify color
 
@@ -746,9 +751,9 @@ double GoalDetector::getPointsAngle(const Vector2<int>& point)
     {
       x = point.x + offsetX;
       y = point.y + offsetY;
-      Math::clamp(x, 1, (signed int)getImage().cameraInfo.resolutionWidth-1);
-      Math::clamp(y, 1, (signed int)getImage().cameraInfo.resolutionHeight-1);
-      Pixel pixel = getImage().get(x,y);
+      Math::clamp(x, 1, (signed int)getImage_().cameraInfo.resolutionWidth-1);
+      Math::clamp(y, 1, (signed int)getImage_().cameraInfo.resolutionHeight-1);
+      Pixel pixel = getImage_().get(x,y);
       pixelEnvironment[offsetX+1][offsetY+1] = pixel.y;
     }//end for offsetY
   }//end for

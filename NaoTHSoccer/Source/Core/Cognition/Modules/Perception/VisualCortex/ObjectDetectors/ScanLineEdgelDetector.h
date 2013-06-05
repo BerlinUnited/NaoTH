@@ -32,14 +32,22 @@
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(CurrentCameraSettings)
+  REQUIRE(CurrentCameraSettingsTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
   REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
 
   PROVIDE(ScanLineEdgelPercept)
+  PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
 
 
@@ -49,9 +57,15 @@ public:
   ScanLineEdgelDetector();
   ~ScanLineEdgelDetector();
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
 
 private:
+  CameraInfo::CameraID cameraID;
 
   void integrated_edgel_detection();
   void iterative_edgel_detection();
@@ -65,6 +79,102 @@ private:
 
   double getPointsAngle(Vector2<int>& point);
   double calculateMeanAngle(double angle1,double  angle2);
+
+  const Image& getImage_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getImageTop();
+    }
+    else
+    {
+      return getImage();
+    }
+  };
+  
+  const ColorClassificationModel& getColorClassificationModel_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getColorClassificationModelTop();
+    }
+    else
+    {
+      return getColorClassificationModel();
+    }
+  };
+
+  const CameraSettings& getCurrentCameraSettings_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCurrentCameraSettingsTop();
+    }
+    else
+    {
+      return getCurrentCameraSettings();
+    }
+  };
+
+  const CameraMatrix& getCameraMatrix_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraMatrixTop();
+    }
+    else
+    {
+      return getCameraMatrix();
+    }
+  };
+
+  const FieldPercept& getFieldPercept_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getFieldPerceptTop();
+    }
+    else
+    {
+      return getFieldPercept();
+    }
+  };
+
+  const BodyContour& getBodyContour_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getBodyContourTop();
+    }
+    else
+    {
+      return getBodyContour();
+    }
+  };
+  
+  const ArtificialHorizon& getArtificialHorizon_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getArtificialHorizonTop();
+    }
+    else
+    {
+      return getArtificialHorizon();
+    }
+  };
+
+  ScanLineEdgelPercept& getScanLineEdgelPercept_()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getScanLineEdgelPerceptTop();
+    }
+    else
+    {
+      return getScanLineEdgelPercept();
+    }
+  };
 
 };
 #endif  /* _SCANLINEEDGELDETECTOR_H_ */

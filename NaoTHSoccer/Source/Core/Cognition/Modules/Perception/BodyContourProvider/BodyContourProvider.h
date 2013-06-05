@@ -32,8 +32,11 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(SensorJointData)
   REQUIRE(KinematicChain)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   PROVIDE(BodyContour)
+  PROVIDE(BodyContourTop)
 END_DECLARE_MODULE(BodyContourProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -51,7 +54,12 @@ public:
   
   virtual ~BodyContourProvider(){};
 
-  virtual void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
 
 protected:
 
@@ -107,6 +115,58 @@ private:
   CameraInfo ci;
   BodyParts bodyparts;
   int lineNumber;
+
+  CameraInfo::CameraID cameraID;
+
+  const Image& getImage_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getImageTop();
+    }
+    else
+    {
+      return getImage();
+    }
+  };
+  
+  const CameraMatrix& getCameraMatrix_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraMatrixTop();
+    }
+    else
+    {
+      return getCameraMatrix();
+    }
+  }
+
+
+  BodyContour& getBodyContour_()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getBodyContourTop();
+    }
+    else
+    {
+      return getBodyContour();
+    }
+  }
+
+  const BodyContour& getBodyContour_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getBodyContourTop();
+    }
+    else
+    {
+      return getBodyContour();
+    }
+  }
+
 };// end class BodyContourProvider
 
 #endif // _BodyContourProvider_h_

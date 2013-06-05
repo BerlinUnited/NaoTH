@@ -73,6 +73,12 @@ namespace naoth
   };
 }
 
+class BallPerceptTop : public BallPercept
+{
+public:
+  virtual ~BallPerceptTop() {}
+};
+
 #endif //__BallPercept_h_
 
 

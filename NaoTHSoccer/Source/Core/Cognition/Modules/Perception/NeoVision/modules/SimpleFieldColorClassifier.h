@@ -31,6 +31,7 @@ BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
   //REQUIRE(ColoredGrid)
   REQUIRE(FrameInfo)
   REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 

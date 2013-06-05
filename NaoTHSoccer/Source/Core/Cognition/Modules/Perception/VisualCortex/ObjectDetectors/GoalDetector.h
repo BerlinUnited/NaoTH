@@ -34,17 +34,23 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GoalDetector)
+  REQUIRE(Image)
   REQUIRE(ImageTop)
+  REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
 //  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
+  REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
 //  REQUIRE(FieldPercept)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   
   PROVIDE(GoalPercept)
+  PROVIDE(GoalPerceptBottom)
 END_DECLARE_MODULE(GoalDetector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -56,9 +62,16 @@ public:
   GoalDetector();
   ~GoalDetector(){};
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
 
+  void execute()
+  {
+     execute(CameraInfo::Top);
+  };
+ 
 private:
+  CameraInfo::CameraID cameraID;
+
   class Blob;
 
   class Candidate
@@ -73,6 +86,7 @@ private:
   static const int maxNumberOfCandidates = 10;
 
   BlobFinder blobFinder;
+  BlobFinder blobFinderBottom;
 
   /** */
   int scanForCandidates(
@@ -136,27 +150,89 @@ private:
 
   };//end class Blob
 
-
-  const ColorClassificationModel& getColorTable64() const
+  BlobFinder& getBlobFinder()
   {
-    return getColorClassificationModelTop();
+    if(cameraID == CameraInfo::Top)
+    {
+      return blobFinder;
+    }
+    else
+    {
+      return blobFinderBottom;
+    }
   }
 
-  const Image& getImage() const
+  const Image& getImage_() const
   {
-    return getImageTop();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return getImageTop();
+    }
+    else
+    {
+      return getImage();
+    }
+  };
 
-  const CameraMatrix& getCameraMatrix() const
+  const CameraMatrix& getCameraMatrix_() const
   {
-    return getCameraMatrixTop();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraMatrixTop();
+    }
+    else
+    {
+      return getCameraMatrix();
+    }
+  };
 
-  const ColoredGrid& getColoredGrid() const
+  const ArtificialHorizon& getArtificialHorizon_() const
   {
-    return getColoredGridTop();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return getArtificialHorizonTop();
+    }
+    else
+    {
+      return getArtificialHorizon();
+    }
+  };
 
+ const ColorClassificationModel& getColorTable64() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getColorClassificationModelTop();
+    }
+    else
+    {
+      return getColorClassificationModel();
+    }
+  };
+
+   const ColoredGrid& getColoredGrid_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getColoredGridTop();
+    }
+    else
+    {
+      return getColoredGrid();
+    }
+  };
+
+  GoalPercept& getGoalPercept_()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getGoalPercept();
+    }
+    else
+    {
+      return getGoalPerceptBottom();
+    }
+  };
 
 };//end class GoalDetector
 

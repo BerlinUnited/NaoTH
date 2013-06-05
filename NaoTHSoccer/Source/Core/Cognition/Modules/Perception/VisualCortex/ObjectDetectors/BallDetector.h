@@ -43,19 +43,28 @@
 
 BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
   REQUIRE(KinematicChain)
   REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
   REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
 //  REQUIRE(BlobPercept)
   REQUIRE(FieldInfo)
 
   PROVIDE(BallPercept)
+  PROVIDE(BallPerceptTop)
 END_DECLARE_MODULE(BallDetector)
 
 
@@ -68,13 +77,20 @@ public:
   void execute(const Vector2<int>& start);
 
   // override the Module execute method
-  virtual void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
  
 private:
+  CameraInfo::CameraID cameraID;
   typedef PointList<20> BallPointList;
 
   bool connectedColors[ColorClasses::numOfColors];
   BlobFinder theBlobFinder;
+  BlobFinder theBlobFinderTop;
 
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
   bool randomScan(ColorClasses::Color color, Vector2<int>& result, const Vector2<int>& orgMin, const Vector2<int>& orgMax) const;
@@ -83,12 +99,126 @@ private:
 
   double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
 
+  BlobFinder& getBlobFinder()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return theBlobFinderTop;
+    }
+    else
+    {
+      return theBlobFinder;
+    }
+  }
 
   const ColorClassificationModel& getColorTable64() const
   {
-    return getColorClassificationModel();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return getColorClassificationModelTop();
+    }
+    else
+    {
+      return getColorClassificationModel();
+    }
+  };
 
+  const Image& getImage_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getImageTop();
+    }
+    else
+    {
+      return getImage();
+    }
+  };
+  
+  const ColoredGrid& getColoredGrid_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getColoredGridTop();
+    }
+    else
+    {
+      return getColoredGrid();
+    }
+  };
+
+  const CameraMatrix& getCameraMatrix_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraMatrixTop();
+    }
+    else
+    {
+      return getCameraMatrix();
+    }
+  };
+
+  const CameraInfo& getCameraInfo_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getCameraInfoTop();
+    }
+    else
+    {
+      return getCameraInfo();
+    }
+  };
+
+  const ArtificialHorizon& getArtificialHorizon_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getArtificialHorizonTop();
+    }
+    else
+    {
+      return getArtificialHorizon();
+    }
+  };
+
+  const FieldPercept& getFieldPercept_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getFieldPerceptTop();
+    }
+    else
+    {
+      return getFieldPercept();
+    }
+  };
+
+  const BodyContour& getBodyContour_() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getBodyContourTop();
+    }
+    else
+    {
+      return getBodyContour();
+    }
+  };
+  
+  BallPercept& getBallPercept_()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return getBallPerceptTop();
+    }
+    else
+    {
+      return getBallPercept();
+    }
+  };
+          
 };//end class BallDetector
 
 #endif // __BallDetector_H_

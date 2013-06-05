@@ -9,18 +9,23 @@
 #include "HistogramFieldDetector.h"
 
 HistogramFieldDetector::HistogramFieldDetector()
+:
+  cameraID(CameraInfo::Bottom)
 {
   fieldColor = ColorClasses::green;
   lineColor = ColorClasses::white;
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle_top", "mark boundary rectangle of the detected field on the image", false);
 
   getFieldPercept().setDimension(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+  getFieldPerceptTop().setDimension(Vector2<int>(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
 }
 
-void HistogramFieldDetector::execute()
+void HistogramFieldDetector::execute(CameraInfo::CameraID id)
 {
-  getFieldPercept().reset();
+  cameraID = id;
+  getFieldPercept_().reset();
   largestAreaRectangle.clear();
 
   Vector2<int> min(0,0);
@@ -28,13 +33,13 @@ void HistogramFieldDetector::execute()
 
   getFieldRectFromHistogram(min, max);
 
-  getFieldPercept().setRect(largestAreaRectangle, getArtificialHorizon());
+  getFieldPercept_().setRect(largestAreaRectangle, getArtificialHorizon_());
 
   //if die enclosured area of the polygon/rectangle is lower than 11200 squarepixels the area is to small
   //TODO: this could be an topic of some kind of learning
   if(largestAreaRectangle.getArea() >= 5600)
   {
-    getFieldPercept().setValid(true);
+    getFieldPercept_().setValid(true);
   }
   DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
     ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
@@ -47,32 +52,43 @@ void HistogramFieldDetector::execute()
           getFieldPercept().getLargestValidRect().points[2].y
       );
   );
+  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle_top",
+    ColorClasses::Color color = getFieldPerceptTop().isValid() ? ColorClasses::green : ColorClasses::red;
+      RECT_PX
+      (
+          color,
+          getFieldPerceptTop().getLargestValidRect().points[0].x,
+          getFieldPerceptTop().getLargestValidRect().points[0].y,
+          getFieldPerceptTop().getLargestValidRect().points[2].x,
+          getFieldPerceptTop().getLargestValidRect().points[2].y
+      );
+  );
 }//end execute
 
 void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector2<int>& max)
 {
   Vector2<int> actMin(-1,-1);
   Vector2<int> actMax(-1,-1);
-  const int minXHistLevel = (int) (getColoredGrid().uniformGrid.width * 0.10);
-  const int minYHistLevel = (int) (getColoredGrid().uniformGrid.height * 0.10);
+  const int minXHistLevel = (int) (getColoredGrid_().uniformGrid.width * 0.10);
+  const int minYHistLevel = (int) (getColoredGrid_().uniformGrid.height * 0.10);
 
   int whiteCount = 0;
   int otherCount = 0;
 
   //go through histogram for values along the y axis and pick the largest area of green color as partial field y axis
-  for (unsigned int y = 0; y < getColoredGrid().uniformGrid.height; y++)
+  for (unsigned int y = 0; y < getColoredGrid_().uniformGrid.height; y++)
   {
     if
     (
       (
-      getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel
-      || 0.9 * getHistograms().xHistogram[fieldColor].rawData[y] + 0.1 * getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel
+      getHistograms_().xHistogram[fieldColor].rawData[y] >= minXHistLevel
+      || 0.9 * getHistograms_().xHistogram[fieldColor].rawData[y] + 0.1 * getHistograms_().xHistogram[lineColor].rawData[y] >= minXHistLevel
       )
       && whiteCount <= LINE_THICKNESS
     )
     {
       otherCount = 0;
-      if(getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel)
+      if(getHistograms_().xHistogram[fieldColor].rawData[y] >= minXHistLevel)
       {
         if(whiteCount > 0)
         {
@@ -89,7 +105,7 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
         actMax.y = y;
       }
     }
-    else if(getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
+    else if(getHistograms_().xHistogram[lineColor].rawData[y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
     {
       whiteCount++;
       otherCount = 0;
@@ -117,13 +133,13 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
   }
 
   //go through histogram for values along the x axis and pick the largest area of green color as partial field x axis
-  for (unsigned int x = 0; x < getColoredGrid().uniformGrid.width; x++)
+  for (unsigned int x = 0; x < getColoredGrid_().uniformGrid.width; x++)
   {
     if
     (
       (
-      getHistograms().yHistogram[fieldColor].rawData[x] >= minYHistLevel
-      || 0.9 * getHistograms().yHistogram[fieldColor].rawData[x] + 0.1 * getHistograms().yHistogram[lineColor].rawData[x] >= minYHistLevel
+      getHistograms_().yHistogram[fieldColor].rawData[x] >= minYHistLevel
+      || 0.9 * getHistograms_().yHistogram[fieldColor].rawData[x] + 0.1 * getHistograms_().yHistogram[lineColor].rawData[x] >= minYHistLevel
       )
     )
     {
@@ -156,12 +172,12 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
 
   if(min.x > -1 && min.x > -1 && max.x > -1 && max.y > -1)
   {
-    largestAreaRectangle.add(getColoredGrid().getImagePoint(min));
+    largestAreaRectangle.add(getColoredGrid_().getImagePoint(min));
     Vector2<int> v1(min.x,max.y);
-    largestAreaRectangle.add(getColoredGrid().getImagePoint(v1));
-    largestAreaRectangle.add(getColoredGrid().getImagePoint(max));
+    largestAreaRectangle.add(getColoredGrid_().getImagePoint(v1));
+    largestAreaRectangle.add(getColoredGrid_().getImagePoint(max));
     Vector2<int> v2(max.x,min.y);
-    largestAreaRectangle.add(getColoredGrid().getImagePoint(v2));
+    largestAreaRectangle.add(getColoredGrid_().getImagePoint(v2));
   }
 
 }//end getFieldRectFromHistogram
