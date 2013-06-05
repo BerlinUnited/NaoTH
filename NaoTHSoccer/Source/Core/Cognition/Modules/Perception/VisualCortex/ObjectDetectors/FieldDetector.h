@@ -46,63 +46,63 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return FieldDetectorBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return FieldDetectorBase::getCameraMatrix();
     }
   };
 
-  const Image& getImage_() const
+  const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getImageTop();
+      return FieldDetectorBase::getImageTop();
     }
     else
     {
-      return getImage();
+      return FieldDetectorBase::getImage();
     }
   };
 
-  const ArtificialHorizon& getArtificialHorizon_() const
+  const ArtificialHorizon& getArtificialHorizon() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getArtificialHorizonTop();
+      return FieldDetectorBase::getArtificialHorizonTop();
     }
     else
     {
-      return getArtificialHorizon();
+      return FieldDetectorBase::getArtificialHorizon();
     }
   };
 
-  const ScanLineEdgelPercept& getScanLineEdgelPercept_() const
+  const ScanLineEdgelPercept& getScanLineEdgelPercept() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getScanLineEdgelPerceptTop();
+      return FieldDetectorBase::getScanLineEdgelPerceptTop();
     }
     else
     {
-      return getScanLineEdgelPercept();
+      return FieldDetectorBase::getScanLineEdgelPercept();
     }
   };
 
-  FieldPercept& getFieldPercept_() 
+  FieldPercept& getFieldPercept() 
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getFieldPerceptTop();
+      return FieldDetectorBase::getFieldPerceptTop();
     }
     else
     {
-      return getFieldPercept();
+      return FieldDetectorBase::getFieldPercept();
     }
   };
 };
