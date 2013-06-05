@@ -23,12 +23,12 @@
 
 BEGIN_DECLARE_MODULE(ColorProvider)
   REQUIRE(FieldColorPercept)
-  REQUIRE(BaseColorRegionPercept)
-  REQUIRE(SimpleGoalColorPercept)
-  REQUIRE(SimpleBallColorPercept)
   REQUIRE(FieldColorPerceptTop)
+  REQUIRE(BaseColorRegionPercept)
   REQUIRE(BaseColorRegionPerceptTop)
+  REQUIRE(SimpleGoalColorPercept)
   REQUIRE(SimpleGoalColorPerceptTop)
+  REQUIRE(SimpleBallColorPercept)
   REQUIRE(SimpleBallColorPerceptTop)
   REQUIRE(FrameInfo)
 

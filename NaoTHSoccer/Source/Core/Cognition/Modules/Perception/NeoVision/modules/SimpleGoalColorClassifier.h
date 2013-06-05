@@ -29,6 +29,7 @@
 BEGIN_DECLARE_MODULE(SimpleGoalColorClassifier)
   REQUIRE(FrameInfo)
   REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(FieldColorPercept)

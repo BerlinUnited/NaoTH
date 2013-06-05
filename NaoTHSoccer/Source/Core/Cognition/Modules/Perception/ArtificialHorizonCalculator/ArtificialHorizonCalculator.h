@@ -48,39 +48,39 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return ArtificialHorizonCalculatorBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return ArtificialHorizonCalculatorBase::getCameraMatrix();
     }
   };
 
-  const CameraInfo& getCameraInfo_() const
+  const CameraInfo& getCameraInfo() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraInfoTop();
+      return ArtificialHorizonCalculatorBase::getCameraInfoTop();
     }
     else
     {
-      return getCameraInfo();
+      return ArtificialHorizonCalculatorBase::getCameraInfo();
     }
   };
 
-  ArtificialHorizon& getArtificialHorizon_()
+  ArtificialHorizon& getArtificialHorizon()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getArtificialHorizonTop();
+      return ArtificialHorizonCalculatorBase::getArtificialHorizonTop();
     }
     else
     {
-      return getArtificialHorizon();
+      return ArtificialHorizonCalculatorBase::getArtificialHorizon();
     }
   };
 

@@ -18,9 +18,10 @@ using namespace std;
 
 SimpleBallColorClassifier::SimpleBallColorClassifier()
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange_top", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:enable_plots", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:TopCam:mark_orange", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:BottomCam:mark_orange", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:TopCam:enable_plots", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:BottomCam:enable_plots", "", false);
 }
 
 void SimpleBallColorClassifier::execute()
@@ -38,7 +39,22 @@ void SimpleBallColorClassifier::execute()
   getSimpleBallColorPercept().lastUpdated = getFrameInfo();;
   getSimpleBallColorPerceptTop().lastUpdated = getFrameInfo();;
 
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:enable_plots",
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:TopCam:enable_plots",
+    for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+    {
+      if(i > ballParams.dist2yellow.v + getSimpleGoalColorPerceptTop().minV + getSimpleGoalColorPerceptTop().maxDistV )
+      {
+        histV[i] = getHistogramsTop().histogramV.rawData[i];
+      }
+      else
+      {
+        histV[i] = 0.0;
+      }
+      getHistogramsTop().histogramV.plotRaw("SimpleBallColorClassifier:TopCam:histVorg");
+      PLOT_GENERIC("SimpleBallColorClassifier:TopCam:histV", i, histV[i]);
+    }
+  );
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:BottomCam:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
     {
       if(i > ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV )
@@ -49,27 +65,12 @@ void SimpleBallColorClassifier::execute()
       {
         histV[i] = 0.0;
       }
-      getHistograms().histogramV.plotRaw("SimpleBallColorClassifier:histVorg");
-      PLOT_GENERIC("SimpleBallColorClassifier:histV", i, histV[i]);
+      getHistograms().histogramV.plotRaw("SimpleBallColorClassifier:BottomCam:histVorg");
+      PLOT_GENERIC("SimpleBallColorClassifier:BottomCam:histV", i, histV[i]);
     }
   );
 
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_orange",
-    for(unsigned int x = 0; x < getImage().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y++)
-      {
-        const Pixel& pixel = getImage().get(x, y);
-        if
-        (
-          getSimpleBallColorPercept().isInside(pixel)
-        )
-          POINT_PX(ColorClasses::red, x, y);
-      }
-    }
-  );
-
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_orange_top",
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:TopCam:mark_orange",
     for(unsigned int x = 0; x < getImageTop().width(); x++)
     {
       for(unsigned int y = 0; y < getImageTop().height(); y++)
@@ -78,6 +79,20 @@ void SimpleBallColorClassifier::execute()
         if
         (
           getSimpleBallColorPerceptTop().isInside(pixel)
+        )
+          POINT_PX(ColorClasses::red, x, y);
+      }
+    }
+  );
+  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:BottomCam:mark_orange",
+    for(unsigned int x = 0; x < getImage().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y++)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if
+        (
+          getSimpleBallColorPercept().isInside(pixel)
         )
           POINT_PX(ColorClasses::red, x, y);
       }

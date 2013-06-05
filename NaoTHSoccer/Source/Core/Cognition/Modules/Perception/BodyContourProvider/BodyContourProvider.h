@@ -118,52 +118,52 @@ private:
 
   CameraInfo::CameraID cameraID;
 
-  const Image& getImage_() const
+  const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getImageTop();
+      return BodyContourProviderBase::getImageTop();
     }
     else
     {
-      return getImage();
+      return BodyContourProviderBase::getImage();
     }
   };
   
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return BodyContourProviderBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return BodyContourProviderBase::getCameraMatrix();
     }
   }
 
 
-  BodyContour& getBodyContour_()
+  BodyContour& getBodyContour()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getBodyContourTop();
+      return BodyContourProviderBase::getBodyContourTop();
     }
     else
     {
-      return getBodyContour();
+      return BodyContourProviderBase::getBodyContour();
     }
   }
 
-  const BodyContour& getBodyContour_() const
+  const BodyContour& getBodyContour() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getBodyContourTop();
+      return BodyContourProviderBase::getBodyContourTop();
     }
     else
     {
-      return getBodyContour();
+      return BodyContourProviderBase::getBodyContour();
     }
   }
 

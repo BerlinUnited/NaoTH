@@ -27,8 +27,8 @@ void ArtificialHorizonCalculator::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   Vector2<double> a,b;
-  CameraGeometry::calculateArtificialHorizon(getCameraMatrix_(), getCameraInfo_(), a, b);
-  getArtificialHorizon_() = ArtificialHorizon(a, b);
+  CameraGeometry::calculateArtificialHorizon(getCameraMatrix(), getCameraInfo(), a, b);
+  getArtificialHorizon() = ArtificialHorizon(a, b);
 }
 
 ArtificialHorizonCalculator::~ArtificialHorizonCalculator()
