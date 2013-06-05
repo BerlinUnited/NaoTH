@@ -50,7 +50,7 @@ BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(FieldInfo)
   
   PROVIDE(GoalPercept)
-  PROVIDE(GoalPerceptBottom)
+  PROVIDE(GoalPerceptTop)
 END_DECLARE_MODULE(GoalDetector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -162,39 +162,39 @@ private:
     }
   }
 
-  const Image& getImage_() const
+  const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getImageTop();
+      return GoalDetectorBase::getImageTop();
     }
     else
     {
-      return getImage();
+      return GoalDetectorBase::getImage();
     }
   };
 
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return GoalDetectorBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return GoalDetectorBase::getCameraMatrix();
     }
   };
 
-  const ArtificialHorizon& getArtificialHorizon_() const
+  const ArtificialHorizon& getArtificialHorizon() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getArtificialHorizonTop();
+      return GoalDetectorBase::getArtificialHorizonTop();
     }
     else
     {
-      return getArtificialHorizon();
+      return GoalDetectorBase::getArtificialHorizon();
     }
   };
 
@@ -202,35 +202,35 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getColorClassificationModelTop();
+      return GoalDetectorBase::getColorClassificationModelTop();
     }
     else
     {
-      return getColorClassificationModel();
+      return GoalDetectorBase::getColorClassificationModel();
     }
   };
 
-   const ColoredGrid& getColoredGrid_() const
+   const ColoredGrid& getColoredGrid() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getColoredGridTop();
+      return GoalDetectorBase::getColoredGridTop();
     }
     else
     {
-      return getColoredGrid();
+      return GoalDetectorBase::getColoredGrid();
     }
   };
 
-  GoalPercept& getGoalPercept_()
+  GoalPercept& getGoalPercept()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getGoalPercept();
+      return GoalDetectorBase::getGoalPerceptTop();
     }
     else
     {
-      return getGoalPerceptBottom();
+      return GoalDetectorBase::getGoalPercept();
     }
   };
 

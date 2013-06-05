@@ -80,99 +80,99 @@ private:
   double getPointsAngle(Vector2<int>& point);
   double calculateMeanAngle(double angle1,double  angle2);
 
-  const Image& getImage_() const
+  const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getImageTop();
+      return ScanLineEdgelDetectorBase::getImageTop();
     }
     else
     {
-      return getImage();
+      return ScanLineEdgelDetectorBase::getImage();
     }
   };
   
-  const ColorClassificationModel& getColorClassificationModel_() const
+  const ColorClassificationModel& getColorClassificationModel() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getColorClassificationModelTop();
+      return ScanLineEdgelDetectorBase::getColorClassificationModelTop();
     }
     else
     {
-      return getColorClassificationModel();
+      return ScanLineEdgelDetectorBase::getColorClassificationModel();
     }
   };
 
-  const CameraSettings& getCurrentCameraSettings_() const
+  const CameraSettings& getCurrentCameraSettings() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCurrentCameraSettingsTop();
+      return ScanLineEdgelDetectorBase::getCurrentCameraSettingsTop();
     }
     else
     {
-      return getCurrentCameraSettings();
+      return ScanLineEdgelDetectorBase::getCurrentCameraSettings();
     }
   };
 
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return ScanLineEdgelDetectorBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return ScanLineEdgelDetectorBase::getCameraMatrix();
     }
   };
 
-  const FieldPercept& getFieldPercept_() const
+  const FieldPercept& getFieldPercept() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getFieldPerceptTop();
+      return ScanLineEdgelDetectorBase::getFieldPerceptTop();
     }
     else
     {
-      return getFieldPercept();
+      return ScanLineEdgelDetectorBase::getFieldPercept();
     }
   };
 
-  const BodyContour& getBodyContour_() const
+  const BodyContour& getBodyContour() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getBodyContourTop();
+      return ScanLineEdgelDetectorBase::getBodyContourTop();
     }
     else
     {
-      return getBodyContour();
+      return ScanLineEdgelDetectorBase::getBodyContour();
     }
   };
   
-  const ArtificialHorizon& getArtificialHorizon_() const
+  const ArtificialHorizon& getArtificialHorizon() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getArtificialHorizonTop();
+      return ScanLineEdgelDetectorBase::getArtificialHorizonTop();
     }
     else
     {
-      return getArtificialHorizon();
+      return ScanLineEdgelDetectorBase::getArtificialHorizon();
     }
   };
 
-  ScanLineEdgelPercept& getScanLineEdgelPercept_()
+  ScanLineEdgelPercept& getScanLineEdgelPercept()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getScanLineEdgelPerceptTop();
+      return ScanLineEdgelDetectorBase::getScanLineEdgelPerceptTop();
     }
     else
     {
-      return getScanLineEdgelPercept();
+      return ScanLineEdgelDetectorBase::getScanLineEdgelPercept();
     }
   };
 

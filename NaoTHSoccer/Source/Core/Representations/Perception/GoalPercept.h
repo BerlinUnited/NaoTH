@@ -155,10 +155,10 @@ private:
   friend class naoth::Serializer<GoalPercept>;
 };//end GoalPercept
 
-class GoalPerceptBottom : public GoalPercept
+class GoalPerceptTop : public GoalPercept
 {
 public:
-  virtual ~GoalPerceptBottom() {}
+  virtual ~GoalPerceptTop() {}
 };
 
 namespace naoth
@@ -172,7 +172,7 @@ namespace naoth
   };
 
   template<>
-  class Serializer<GoalPerceptBottom> : public Serializer<GoalPercept>
+  class Serializer<GoalPerceptTop> : public Serializer<GoalPercept>
   {};
 }
 

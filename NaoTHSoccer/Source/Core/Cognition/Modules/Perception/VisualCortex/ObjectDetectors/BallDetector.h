@@ -115,107 +115,107 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getColorClassificationModelTop();
+      return BallDetectorBase::getColorClassificationModelTop();
     }
     else
     {
-      return getColorClassificationModel();
+      return BallDetectorBase::getColorClassificationModel();
     }
   };
 
-  const Image& getImage_() const
+  const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getImageTop();
+      return BallDetectorBase::getImageTop();
     }
     else
     {
-      return getImage();
+      return BallDetectorBase::getImage();
     }
   };
   
-  const ColoredGrid& getColoredGrid_() const
+  const ColoredGrid& getColoredGrid() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getColoredGridTop();
+      return BallDetectorBase::getColoredGridTop();
     }
     else
     {
-      return getColoredGrid();
+      return BallDetectorBase::getColoredGrid();
     }
   };
 
-  const CameraMatrix& getCameraMatrix_() const
+  const CameraMatrix& getCameraMatrix() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraMatrixTop();
+      return BallDetectorBase::getCameraMatrixTop();
     }
     else
     {
-      return getCameraMatrix();
+      return BallDetectorBase::getCameraMatrix();
     }
   };
 
-  const CameraInfo& getCameraInfo_() const
+  const CameraInfo& getCameraInfo() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getCameraInfoTop();
+      return BallDetectorBase::getCameraInfoTop();
     }
     else
     {
-      return getCameraInfo();
+      return BallDetectorBase::getCameraInfo();
     }
   };
 
-  const ArtificialHorizon& getArtificialHorizon_() const
+  const ArtificialHorizon& getArtificialHorizon() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getArtificialHorizonTop();
+      return BallDetectorBase::getArtificialHorizonTop();
     }
     else
     {
-      return getArtificialHorizon();
+      return BallDetectorBase::getArtificialHorizon();
     }
   };
 
-  const FieldPercept& getFieldPercept_() const
+  const FieldPercept& getFieldPercept() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getFieldPerceptTop();
+      return BallDetectorBase::getFieldPerceptTop();
     }
     else
     {
-      return getFieldPercept();
+      return BallDetectorBase::getFieldPercept();
     }
   };
 
-  const BodyContour& getBodyContour_() const
+  const BodyContour& getBodyContour() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getBodyContourTop();
+      return BallDetectorBase::getBodyContourTop();
     }
     else
     {
-      return getBodyContour();
+      return BallDetectorBase::getBodyContour();
     }
   };
   
-  BallPercept& getBallPercept_()
+  BallPercept& getBallPercept()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return getBallPerceptTop();
+      return BallDetectorBase::getBallPerceptTop();
     }
     else
     {
-      return getBallPercept();
+      return BallDetectorBase::getBallPercept();
     }
   };
           
