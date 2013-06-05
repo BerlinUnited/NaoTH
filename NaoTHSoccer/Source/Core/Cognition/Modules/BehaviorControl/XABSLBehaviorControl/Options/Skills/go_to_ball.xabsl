@@ -9,9 +9,9 @@ option go_to_ball
   {
     decision
     {
-      if (abs(value = (ball.percept.x - @distance - ball.radius)) < 20
-        && abs(value = ball.percept.y) < 20
-        //&& abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) < 20
+      if (abs(value = (ball.preview.x - @distance - ball.radius)) < 20
+        && abs(value = ball.preview.y) < 20
+        //&& abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 20
         && vector.abs(x=ball.speed.x, y=ball.speed.y) < 30)
         goto go_to_ball_done;
       else
@@ -34,9 +34,9 @@ option go_to_ball
   {
     decision
     {
-      if (abs(value = (ball.percept.x - @distance - ball.radius)) > 30
-        || abs(value = ball.percept.y) > 30
-        || abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) > 30
+      if (abs(value = (ball.preview.x - @distance - ball.radius)) > 30
+        || abs(value = ball.preview.y) > 30
+        //|| abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) > 30
         || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
         goto go_to_ball;
       else

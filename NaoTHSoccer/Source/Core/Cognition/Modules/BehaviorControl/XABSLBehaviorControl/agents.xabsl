@@ -24,8 +24,8 @@ include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
+include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
-include "Options/Skills/go_to_ball_with_USOA.xabsl";
 
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
@@ -39,21 +39,29 @@ include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
-// Test agents
+/* Test section */
+// Test agents (options)
+// Test agents (options) Kicks
+include "Options/Test/sidekick_test_agent.xabsl";
+include "Options/Test/kick_direction_test_agent.xabsl";
+include "Options/Test/kick_attack_direction_test_agent.xabsl";
+include "Options/Test/omnidirectional_kick_test_agent.xabsl";
+// Test agents (options) Walk
 include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_test_agent.xabsl";
-include "Options/Test/sidekick_test_agent.xabsl";
-include "Options/Test/kick_direction_test_agent.xabsl";
-include "Options/Test/kick_attack_direction_test_agent.xabsl";
+// Test agens (options) Penalty
+include "Options/Test/penalty_kicker_test_agent.xabsl";
+
 
 // Test options
-// Test Kicks
+// Test options Kicks
 include "Options/Test/kicks/sidekick_test.xabsl";
 include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
-// Test Walk
+include "Options/Test/kicks/omnidirectional_kick_test.xabsl";
+// Test options Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
@@ -62,22 +70,29 @@ include "Options/Test/walk/walk_circularly_x.xabsl";
 include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
+include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/obstacle_test_agent.xabsl";
-include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
+// Test options Penalty
+include "Options/Test/penalty/penalty_kicker_test.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 
-// Test agents
-agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
+/** The Test agents */
+// Test agents Kicks
+agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
+agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
+agent sidekick_test("sidekick_test_agent", sidekick_test_agent);
+agent omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
+// Test agents Walk
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
+agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
 agent obstacle_test("obstacle_test", obstacle_test_agent);
-agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
-agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
-agent sidekick_test("sidekick_test_agent", sidekick_test_agent);
+// Test agents Penalty
+agent penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
