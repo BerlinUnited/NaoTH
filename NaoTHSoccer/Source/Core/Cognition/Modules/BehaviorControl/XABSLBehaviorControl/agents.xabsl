@@ -26,6 +26,7 @@ include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
+include "Options/Skills/go_to_ball_with_USOA.xabsl";
 
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
