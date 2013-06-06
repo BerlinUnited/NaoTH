@@ -98,7 +98,7 @@ void SimpleFieldColorClassifier::execute()
         const Pixel& pixel = getImageTop().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v)
         {
-          POINT_PX(ColorClasses::red, x, y);
+          TOP_POINT_PX(ColorClasses::red, x, y);
         }
       }
     }
@@ -240,7 +240,7 @@ void SimpleFieldColorClassifier::execute()
           &&
           abs((int)pixel.v -(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v
         )
-          POINT_PX(ColorClasses::green, x, y);
+          TOP_POINT_PX(ColorClasses::green, x, y);
       }
     }
   );

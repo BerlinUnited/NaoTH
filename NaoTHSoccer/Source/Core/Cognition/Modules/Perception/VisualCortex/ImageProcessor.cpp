@@ -39,7 +39,7 @@ ImageProcessor::ImageProcessor()
   theBodyContourProvider->setEnabled(true);
 
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(false);
+  theScanLineEdgelDetector->setEnabled(true);
 
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
@@ -100,8 +100,8 @@ void ImageProcessor::execute()
 
   GT_TRACE("executing ScanLineEdgelDetector");
   STOPWATCH_START("ScanLineEdgelDetector");
-  //theScanLineEdgelDetector->execute();
-  //theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
+  theScanLineEdgelDetector->execute();
+  theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("ScanLineEdgelDetector");
 
   GT_TRACE("executing FieldDetector");
@@ -139,7 +139,7 @@ void ImageProcessor::execute()
     getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
     DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_in_image",
-      CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
+      TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
     );
     DEBUG_REQUEST("ImageProcessor:BottomCam:draw_ball_in_image",
       CIRCLE_PX(ColorClasses::red, (int)getBallPercept().centerInImage.x, (int)getBallPercept().centerInImage.y, (int)getBallPercept().radiusInImage);
@@ -244,7 +244,7 @@ void ImageProcessor::execute()
 
     //project the old percept in the image
     DEBUG_REQUEST("ImageProcessor:TopCam:mark_previous_ball",
-      CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPerceptTop().radiusInImage);
+      TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPerceptTop().radiusInImage);
     );
     DEBUG_REQUEST("ImageProcessor:BottomCam:mark_previous_ball",
       CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
@@ -255,7 +255,7 @@ void ImageProcessor::execute()
   DEBUG_REQUEST("ImageProcessor:TopCam:draw_horizon",
     Vector2<double> a(getArtificialHorizonTop().begin());
     Vector2<double> b(getArtificialHorizonTop().end());
-    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+    TOP_LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
   DEBUG_REQUEST("ImageProcessor:BottomCam:draw_horizon",
     Vector2<double> a(getArtificialHorizon().begin());
@@ -280,7 +280,7 @@ void ImageProcessor::execute()
         if(t > 120)
           naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
         else*/
-          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,t,0,0);
+          naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
       }//end for
     }//end for
   );

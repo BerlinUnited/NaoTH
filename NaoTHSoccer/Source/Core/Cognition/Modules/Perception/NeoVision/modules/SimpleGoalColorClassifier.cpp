@@ -111,7 +111,7 @@ void SimpleGoalColorClassifier::execute()
         (
           getSimpleGoalColorPerceptTop().isInside(pixel)
         )
-          POINT_PX(ColorClasses::yellow, x, y);        
+          TOP_POINT_PX(ColorClasses::yellow, x, y);        
       }
     }
   );

@@ -98,11 +98,11 @@ void LineDetector::execute(CameraInfo::CameraID id)
       {
         const LinePercept::LineSegmentImage& line = lineSegments[i];
         if (!lineSegments[i].valid) continue;
-        LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
-        CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
-        CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
+        TOP_LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
+        TOP_CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
+        TOP_CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
       
-        LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
+        TOP_LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
       }//end for
     }
   );
@@ -135,11 +135,11 @@ void LineDetector::execute(CameraInfo::CameraID id)
       {
         const LinePercept::LineSegmentImage& line = lineSegments[i];
         if (!lineSegments[i].valid) continue;
-        LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
-        CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
-        CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
+        TOP_LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
+        TOP_CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
+        TOP_CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
       
-        LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
+        TOP_LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
       }//end for
     }
   );
@@ -191,12 +191,12 @@ void LineDetector::execute(CameraInfo::CameraID id)
         Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
         Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
         Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
-        LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
-        LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
-        LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
-        LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
+        TOP_LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
+        TOP_LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
+        TOP_LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
+        TOP_LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
 
-        LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
+        TOP_LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
       }//end for
     }
   );
@@ -231,7 +231,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
       for (unsigned int i = 0; i < getLinePercept().intersections.size(); i++)
       {
         const LinePercept::Intersection& intersection = getLinePercept().intersections[i];
-        CIRCLE_PX(ColorClasses::red, (int) intersection.getPos().x, (int) intersection.getPos().y, 5);
+        TOP_CIRCLE_PX(ColorClasses::red, (int) intersection.getPos().x, (int) intersection.getPos().y, 5);
       }//end for
     }
   );
@@ -909,7 +909,7 @@ void LineDetector::classifyIntersections()
       {
         //mark intersection in the image
         const Vector2<int>& point = getLinePercept().intersections[i].getPos();
-        CIRCLE_PX((ColorClasses::Color) getLinePercept().intersections[i].getType(), point.x, point.y, 5);
+        TOP_CIRCLE_PX((ColorClasses::Color) getLinePercept().intersections[i].getType(), point.x, point.y, 5);
       }
     );
     DEBUG_REQUEST("ImageProcessor:LineDetector:BottomCam:estimate_corners",
@@ -1067,7 +1067,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
   DEBUG_REQUEST("ImageProcessor:LineDetector:TopCam:line_clusters",
     if(cameraID == CameraInfo::Top)
     {
-      CIRCLE_PX((ColorClasses::Color) (0) , edgelList[0].center.x, edgelList[0].center.y, 5);
+      TOP_CIRCLE_PX((ColorClasses::Color) (0) , edgelList[0].center.x, edgelList[0].center.y, 5);
     }
   );
   DEBUG_REQUEST("ImageProcessor:LineDetector:BottomCam:line_clusters",
@@ -1095,7 +1095,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
             if(cameraID == CameraInfo::Top)
             {
               int idx = ((lineClusters[clusterIndex].id() ) % (unsigned int)ColorClasses::numOfColors);
-              CIRCLE_PX(
+              TOP_CIRCLE_PX(
                 (ColorClasses::Color) (idx) , 
                 edgel.center.x, edgel.center.y, 
                 5 + idx);
@@ -1123,7 +1123,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
           if(cameraID == CameraInfo::Top)
           {
             int idx = ((newCluster.id() ) % (unsigned int)ColorClasses::numOfColors);
-            CIRCLE_PX(
+            TOP_CIRCLE_PX(
               (ColorClasses::Color) (idx) , 
               edgel.center.x, edgel.center.y, 
               5 + idx);

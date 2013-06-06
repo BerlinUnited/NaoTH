@@ -68,7 +68,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
       for(int i = 0; i < 240; i++)
       {
         int c = (int)(vertical_confidence[i]);
-        POINT_PX(c, 0, 0, c, i);
+        TOP_POINT_PX(c, 0, 0, c, i);
       }
     }
   );
@@ -150,11 +150,11 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
       {
         const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
       
-        CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
+        TOP_CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
         if(i > 0)
         {
           const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
-          LINE_PX(last_point.color,
+          TOP_LINE_PX(last_point.color,
                   last_point.posInImage.x, last_point.posInImage.y,
                   point.posInImage.x, point.posInImage.y);
         }//end if
@@ -253,7 +253,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:TopCam:mark_edgels",
             if(cameraID == CameraInfo::Top)
             {
-              POINT_PX(ColorClasses::red, start.x, x_peak);
+              TOP_POINT_PX(ColorClasses::red, start.x, x_peak);
             }
           );
           DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:mark_edgels",
@@ -301,9 +301,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
             DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:TopCam:mark_edgels",
               if(cameraID == CameraInfo::Top)
               {
-                LINE_PX(ColorClasses::red ,edgel.begin.x,edgel.begin.y,edgel.begin.x + (int)(10 * cos(edgel.begin_angle)) ,edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
-                LINE_PX(ColorClasses::blue ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
-                LINE_PX(ColorClasses::black ,edgel.end.x,edgel.end.y,edgel.end.x + (int)(10 * cos(edgel.end_angle)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle)));
+                TOP_LINE_PX(ColorClasses::red ,edgel.begin.x,edgel.begin.y,edgel.begin.x + (int)(10 * cos(edgel.begin_angle)) ,edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+                TOP_LINE_PX(ColorClasses::blue ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+                TOP_LINE_PX(ColorClasses::black ,edgel.end.x,edgel.end.y,edgel.end.x + (int)(10 * cos(edgel.end_angle)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle)));
               }
             );
             DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:mark_edgels",
@@ -322,7 +322,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:TopCam:mark_edgels",
             if(cameraID == CameraInfo::Top)
             {
-              POINT_PX(ColorClasses::yellow, start.x, x_peak);
+              TOP_POINT_PX(ColorClasses::yellow, start.x, x_peak);
             }
           );
           DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:mark_edgels",
@@ -347,7 +347,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
         DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:TopCam:mark_edgels",
           if(cameraID == CameraInfo::Top)
           {
-            POINT_PX(ColorClasses::blue, start.x, (int)x_peak);
+            TOP_POINT_PX(ColorClasses::blue, start.x, (int)x_peak);
           }
         );
         DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:mark_edgels",
@@ -382,7 +382,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
       {
         Pixel pixel = getImage().get(point.x, point.y);
         ColorClasses::Color thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
-        POINT_PX(thisPixelColor, point.x, point.y);
+        TOP_POINT_PX(thisPixelColor, point.x, point.y);
       }
     );
     DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:scanlines",
