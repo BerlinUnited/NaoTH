@@ -91,7 +91,7 @@ void KalmanFilterBallLocator::execute()
   //update the ballBuffer
   for (int i = 0; i < ballBuffer.getNumberOfEntries(); i++) 
   {
-    BallPercept& ball = ballBuffer.getEntry(i);
+    LocalBallPercept& ball = ballBuffer.getEntry(i);
     ball.lastSeenBall = odometryDelta * ball.lastSeenBall;
   }
 
@@ -187,7 +187,7 @@ void KalmanFilterBallLocator::execute()
     lastSeenBall = getBallPercept().bearingBasedOffsetOnField;
 
     //insert in buffer
-    BallPercept ball;
+    LocalBallPercept ball;
     ball.lastFrameInfoWhenBallSeen = getFrameInfo();
     ball.lastSeenBall = getBallPercept().bearingBasedOffsetOnField;
     ballBuffer.add(ball);

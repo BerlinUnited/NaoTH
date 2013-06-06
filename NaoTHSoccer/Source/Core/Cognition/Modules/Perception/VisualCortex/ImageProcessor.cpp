@@ -17,6 +17,7 @@ ImageProcessor::ImageProcessor()
 {
   //DEBUG_REQUEST_REGISTER("ImageProcessor:show_grid", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:draw_horizon", "draws the artificial horizon", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_horizon_top", "draws the artificial horizon", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_on_field", "draw the projection of the ball on the field", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_in_image", "draw ball in the image if found", false);
@@ -139,10 +140,7 @@ void ImageProcessor::execute()
       PEN("FF9900", 20);
       CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
              getBallPercept().bearingBasedOffsetOnField.y,
-             45);
-
-//      PLOT("ball.field.y", getBallPercept().bearingBasedOffsetOnField.y);
-//      PLOT("ball.field.x", getBallPercept().bearingBasedOffsetOnField.x);
+             getFieldInfo().ballRadius);
     );
 
 
@@ -200,11 +198,44 @@ void ImageProcessor::execute()
 
 
 
+  // estimate the relative position of the ball
+  if(getBallPerceptTop().ballWasSeen)
+  {
+    // estimate the projection of the ball on the ground
+    getBallPerceptTop().ballWasSeen = CameraGeometry::imagePixelToFieldCoord(
+      getCameraMatrixTop(), 
+      getImageTop().cameraInfo,
+      getBallPerceptTop().centerInImage.x, 
+      getBallPerceptTop().centerInImage.y, 
+      getFieldInfo().ballRadius,
+      getBallPerceptTop().bearingBasedOffsetOnField);
+
+    getBallPerceptTop().frameInfoWhenBallWasSeen = getFrameInfo();
+
+    DEBUG_REQUEST("ImageProcessor:draw_ball_in_image",
+      CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPercept().radiusInImage);
+    );
+
+    DEBUG_REQUEST("ImageProcessor:draw_ball_on_field",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF9900", 20);
+      CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 
+             getBallPerceptTop().bearingBasedOffsetOnField.y,
+             getFieldInfo().ballRadius);
+    );
+  }
+
+
 
   //draw horizon to image
   DEBUG_REQUEST("ImageProcessor:draw_horizon",
-    Vector2<double> a(getArtificialHorizon().begin());
-    Vector2<double> b(getArtificialHorizon().end());
+    Vector2d a(getArtificialHorizon().begin());
+    Vector2d b(getArtificialHorizon().end());
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+  );
+  DEBUG_REQUEST("ImageProcessor:draw_horizon_top",
+    Vector2d a(getArtificialHorizonTop().begin());
+    Vector2d b(getArtificialHorizonTop().end());
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 

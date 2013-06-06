@@ -5,8 +5,8 @@
 * Declaration of class KalmanFilterBallLocator
 */
 
-#ifndef __KalmanFilterBallLocator_h_
-#define __KalmanFilterBallLocator_h_
+#ifndef _KalmanFilterBallLocator_h_
+#define _KalmanFilterBallLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -30,7 +30,6 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
-  REQUIRE(BallPercept)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
@@ -38,6 +37,9 @@ BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
   REQUIRE(SituationStatus)
+  REQUIRE(BallPercept)
+  REQUIRE(BallPerceptTop)
+
   PROVIDE(BallModel)
 END_DECLARE_MODULE(KalmanFilterBallLocator)
 
@@ -57,14 +59,14 @@ private:
   KFBLParameters parameters;
   OdometryData lastRobotOdometry;
 
-  struct BallPercept
+  struct LocalBallPercept
   {
     FrameInfo lastFrameInfoWhenBallSeen;
-    Vector2<double> lastSeenBall;
+    Vector2d lastSeenBall;
   };
 
   //stores last 10 BallPercepts
-  RingBuffer<BallPercept, 10 > ballBuffer;
+  RingBuffer<LocalBallPercept, 10 > ballBuffer;
 
   Matrix2x2<double> I; // eye
 
@@ -89,8 +91,20 @@ private:
   void predictByMotionModelContineously(Vector2<double>& position, Vector2<double>& speed, double time);
 
   void updatePreviewModel();
+
+
+  const BallPercept& getBallPercept() const
+  {
+    if(!KalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
+        KalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen) 
+    {
+      return KalmanFilterBallLocatorBase::getBallPerceptTop();
+    } else {
+      return KalmanFilterBallLocatorBase::getBallPercept();
+    }
+  }
 };
 
-#endif //__KalmanFilterBallLocator_h_
+#endif //_KalmanFilterBallLocator_h_
 
 
