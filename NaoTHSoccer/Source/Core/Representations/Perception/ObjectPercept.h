@@ -192,6 +192,12 @@ public:
   virtual void print(std::ostream& stream) const;
 };
 
+class ObjectPerceptTop : public ObjectPercept
+{
+public:
+  virtual ~ObjectPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -201,6 +207,10 @@ namespace naoth
     static void serialize(const ObjectPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, ObjectPercept& representation);
   };
+
+  template<>
+  class Serializer<ObjectPerceptTop> : public Serializer<ObjectPercept>
+  {};
 }
 
 #endif //_ObjectPercept_h_

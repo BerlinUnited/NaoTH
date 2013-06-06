@@ -67,6 +67,7 @@ void NeoVision::execute()
     GT_TRACE("executing ScanLineEdgelDetectorDifferential");
     STOPWATCH_START("ScanLineEdgelDetectorDifferential");
     theScanLineEdgelDetectorDifferential->execute();
+    theScanLineEdgelDetectorDifferential->getModuleT()->execute(CameraInfo::Bottom);
     STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
   );
 }//end execute
