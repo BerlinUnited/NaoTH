@@ -896,62 +896,66 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
   {
     if(csConst[*it] != -1)
     {
-      bool success = false;
-      int realValue = data.data[*it];
-
-      std::cout << "setting "
-        << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it]
-        << ": ";
-
-      int errorNumber = 0;
-      while(!success && errorNumber < 100)
+      // only set if it was changed
+      if(data.data[*it] != currentSettings.data[*it])
       {
-        int clippedValue = setSingleCameraParameter(csConst[*it], data.data[*it]);
-        usleep(1000);
-        if(clippedValue != data.data[*it])
-        {
-          std::cout << "(clipped " << clippedValue << ")";
-        }
+        bool success = false;
+        int realValue = data.data[*it];
 
-        if(allowedTolerance[*it] == -1)
+        std::cout << "setting "
+          << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it]
+          << ": ";
+
+        int errorNumber = 0;
+        while(!success && errorNumber < 100)
         {
-          success = true;
+          int clippedValue = setSingleCameraParameter(csConst[*it], data.data[*it]);
+          usleep(1000);
+          if(clippedValue != data.data[*it])
+          {
+            std::cout << "(clipped " << clippedValue << ")";
+          }
+
+          if(allowedTolerance[*it] == -1)
+          {
+            success = true;
+          }
+          else
+          {
+            realValue = getSingleCameraParameter(csConst[*it]);
+            if(csConst[*it] == CameraSettings::Exposure)
+            {
+              clippedValue = (clippedValue << 2) >> 2;
+            }
+
+            if(csConst[*it] == CameraSettings::WhiteBalance)
+            {
+              clippedValue = ((clippedValue + 180) * 45) / 45 - 180;
+            }
+
+            success = abs(realValue - clippedValue) <= allowedTolerance[*it];
+
+            if(!success)
+            {
+              errorNumber++;
+              std::cout << "." << std::flush;
+              usleep(1000);
+            }
+          }
+
+
+        } // end while not successfull
+
+        if(success)
+        {
+          std::cout << std::endl;
         }
         else
         {
-          realValue = getSingleCameraParameter(csConst[*it]);
-          if(csConst[*it] == CameraSettings::Exposure)
-          {
-            clippedValue = (clippedValue << 2) >> 2;
-          }
-
-          if(csConst[*it] == CameraSettings::WhiteBalance)
-          {
-            clippedValue = ((clippedValue + 180) * 45) / 45 - 180;
-          }
-
-          success = abs(realValue - clippedValue) <= allowedTolerance[*it];
-
-          if(!success)
-          {
-            errorNumber++;
-            std::cout << "." << std::flush;
-            usleep(1000);
-          }
+          std::cout << "XXX hang up at " << realValue << std::endl;
         }
-
-
-      } // end while not successfull
-
-      if(success)
-      {
-        std::cout << std::endl;
-      }
-      else
-      {
-        std::cout << "XXX hang up at " << realValue << std::endl;
-      }
-      usleep(1000);
+        usleep(1000);
+      } // end if not the same as current value
     } // end if csConst was set
   } // end for each camera setting (in order)
 
