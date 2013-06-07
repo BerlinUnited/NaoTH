@@ -67,6 +67,7 @@ public:
   void execute()
   {
      execute(CameraInfo::Top);
+     execute(CameraInfo::Bottom);
   };
  
 private:

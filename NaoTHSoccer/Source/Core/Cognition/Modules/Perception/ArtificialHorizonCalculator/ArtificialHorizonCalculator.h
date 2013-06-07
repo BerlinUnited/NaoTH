@@ -40,8 +40,10 @@ public:
 
   void execute()
   {
+    // hack: run the module twice to both cameras
     execute(CameraInfo::Bottom);
-  };
+    execute(CameraInfo::Top);
+  }
 
   virtual void execute(CameraInfo::CameraID id);
 
@@ -50,39 +52,30 @@ private:
 
   const CameraMatrix& getCameraMatrix() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ArtificialHorizonCalculatorBase::getCameraMatrixTop();
-    }
-    else
-    {
+    } else {
       return ArtificialHorizonCalculatorBase::getCameraMatrix();
     }
-  };
+  }
 
   const CameraInfo& getCameraInfo() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ArtificialHorizonCalculatorBase::getCameraInfoTop();
-    }
-    else
-    {
+    } else {
       return ArtificialHorizonCalculatorBase::getCameraInfo();
     }
-  };
+  }
 
   ArtificialHorizon& getArtificialHorizon()
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ArtificialHorizonCalculatorBase::getArtificialHorizonTop();
-    }
-    else
-    {
+    } else {
       return ArtificialHorizonCalculatorBase::getArtificialHorizon();
     }
-  };
+  }
 
 };
 
