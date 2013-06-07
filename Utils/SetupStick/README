@@ -1,9 +1,17 @@
 Parts of the setup stick system are:
 
 ../NaoConfigFiles/etc/udev/rules.d/brainwashing.rules
-brainwashinit
+../NaoConfigFiles/brainwashinit
 startBrainwashing.sh
 
 Functionality:
-At the moment the os recognizes a usb stick, the udev rule brainwashing.rules is activated and the script brainwashinit will be executed.
-brainwashinit mounts the stick and execute the script startBrainwashing.sh which must be on the stick. After execution the stick will be unmounted.
+At the moment the os recognizes a usb stick, the udev rule brainwashing.rules (located in /etc/udev/rules.d) is activated and the script brainwashinit (located in /usr/bin) will be executed.
+brainwashinit mounts the stick and execute the script startBrainwashing.sh which must be on the stick.
+startBrainwashing.sh makes a backup of the old naoth executable and the old Config and copies the new naoth executable and the new Config folder (plus a sound file to Media). After execution the stick will be unmounted and the sound file is played which indicates a successful process.
+
+Stick structure:
+
+/startBrainwashing.sh
+/home/nao/bin/naoth
+/home/nao/naoqi/Config/* [all config stuff]
+/anDieArbeit.wav
