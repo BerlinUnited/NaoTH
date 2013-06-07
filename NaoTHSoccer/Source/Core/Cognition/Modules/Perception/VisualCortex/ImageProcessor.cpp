@@ -137,23 +137,10 @@ void ImageProcessor::execute()
 
     getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_in_image",
-      TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
-    );
     DEBUG_REQUEST("ImageProcessor:BottomCam:draw_ball_in_image",
       CIRCLE_PX(ColorClasses::red, (int)getBallPercept().centerInImage.x, (int)getBallPercept().centerInImage.y, (int)getBallPercept().radiusInImage);
     );
 
-    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_on_field",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF9900", 20);
-      CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 
-             getBallPerceptTop().bearingBasedOffsetOnField.y,
-             45);
-
-//      PLOT("ball.field.y", getBallPercept().bearingBasedOffsetOnField.y);
-//      PLOT("ball.field.x", getBallPercept().bearingBasedOffsetOnField.x);
-    );
     DEBUG_REQUEST("ImageProcessor:BottomCam:draw_ball_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF9900", 20);
@@ -262,11 +249,11 @@ void ImageProcessor::execute()
 
     getBallPerceptTop().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:draw_ball_in_image",
-      CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPercept().radiusInImage);
+    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_in_image",
+      TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
     );
 
-    DEBUG_REQUEST("ImageProcessor:draw_ball_on_field",
+    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF9900", 20);
       CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 

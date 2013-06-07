@@ -85,7 +85,7 @@ void PerceptionsVisualization::execute()
   );
 
 
-  //DEBUG_REQUEST("PerceptionsVisualization:field:edgels_percept",
+  DEBUG_REQUEST("PerceptionsVisualization:field:edgels_percept",
     FIELD_DRAWING_CONTEXT;
 
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
@@ -208,7 +208,7 @@ void PerceptionsVisualization::execute()
         SIMPLE_PARTICLE(c.x,c.y,r2);
       }
     }//end for
-  //);
+  );
 
 
   DEBUG_REQUEST("PerceptionsVisualization:image_px:edgels_percept",
