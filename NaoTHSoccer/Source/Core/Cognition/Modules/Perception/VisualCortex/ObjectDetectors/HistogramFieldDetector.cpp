@@ -45,7 +45,7 @@ void HistogramFieldDetector::execute(CameraInfo::CameraID id)
     if(cameraID == CameraInfo::Top)
     {
       ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        RECT_PX
+        TOP_RECT_PX
         (
             color,
             getFieldPercept().getLargestValidRect().points[0].x,

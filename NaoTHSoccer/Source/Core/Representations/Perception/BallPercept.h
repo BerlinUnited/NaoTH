@@ -62,6 +62,12 @@ public:
   }//end print
 };
 
+class BallPerceptTop : public BallPercept
+{
+public:
+  virtual ~BallPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -71,13 +77,12 @@ namespace naoth
     static void serialize(const BallPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, BallPercept& representation);
   };
+
+  template<>
+  class Serializer<BallPerceptTop> : public Serializer<BallPercept>
+  {};
 }
 
-class BallPerceptTop : public BallPercept
-{
-public:
-  virtual ~BallPerceptTop() {}
-};
 
 #endif //__BallPercept_h_
 

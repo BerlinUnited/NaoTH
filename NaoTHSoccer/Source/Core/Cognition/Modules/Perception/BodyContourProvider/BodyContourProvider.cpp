@@ -138,7 +138,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
       {
         for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
         {
-          LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
+          TOP_LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
         }// end for
       }// end if
     }
@@ -244,8 +244,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
         {
           if (getBodyContour().grid[i][j].occupied)
           {
-              IMAGE_DRAWING_CONTEXT;
-              RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
+              TOP_RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
           }
         }
       }

@@ -80,7 +80,7 @@ void SimpleBallColorClassifier::execute()
         (
           getSimpleBallColorPerceptTop().isInside(pixel)
         )
-          POINT_PX(ColorClasses::red, x, y);
+          TOP_POINT_PX(ColorClasses::red, x, y);
       }
     }
   );

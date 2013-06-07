@@ -43,19 +43,29 @@
 
 BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(CurrentCameraSettings)
+  REQUIRE(CurrentCameraSettingsTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
   REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
   REQUIRE(FieldInfo)
   REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(FrameInfo)
 
   PROVIDE(LinePercept)
+  PROVIDE(LinePerceptTop)
   PROVIDE(ObjectPercept)
+  PROVIDE(ObjectPerceptTop)
 END_DECLARE_MODULE(LineDetector)
 
 
@@ -65,9 +75,15 @@ public:
   LineDetector();
   ~LineDetector(){};
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
  
 private:
+  CameraInfo::CameraID cameraID;
   vector<LinePercept::LineSegmentImage> lineSegments;
 
   /** estimate the line segments from edgels */
@@ -96,10 +112,126 @@ private:
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
 
+  const Image& getImage() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getImageTop();
+    }
+    else
+    {
+      return LineDetectorBase::getImage();
+    }
+  };
+
   const ColorClassificationModel& getColorTable64() const
   {
-    return getColorClassificationModel();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getColorClassificationModelTop();
+    }
+    else
+    {
+      return LineDetectorBase::getColorClassificationModel();
+    }
+  };
+
+  const CameraSettings& getCurrentCameraSettings() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getCurrentCameraSettingsTop();
+    }
+    else
+    {
+      return LineDetectorBase::getCurrentCameraSettings();
+    }
+  };
+
+  const CameraMatrix& getCameraMatrix() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getCameraMatrixTop();
+    }
+    else
+    {
+      return LineDetectorBase::getCameraMatrix();
+    }
+  };
+
+  const ArtificialHorizon& getArtificialHorizon() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getArtificialHorizonTop();
+    }
+    else
+    {
+      return LineDetectorBase::getArtificialHorizon();
+    }
+  };
+
+  const FieldPercept& getFieldPercept() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getFieldPerceptTop();
+    }
+    else
+    {
+      return LineDetectorBase::getFieldPercept();
+    }
+  };
+
+  const ColoredGrid& getColoredGrid() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getColoredGridTop();
+    }
+    else
+    {
+      return LineDetectorBase::getColoredGrid();
+    }
+  };
+
+  const ScanLineEdgelPercept& getScanLineEdgelPercept() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getScanLineEdgelPerceptTop();
+    }
+    else
+    {
+      return LineDetectorBase::getScanLineEdgelPercept();
+    }
+  };
+
+  LinePercept& getLinePercept() 
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getLinePerceptTop();
+    }
+    else
+    {
+      return LineDetectorBase::getLinePercept();
+    }
+  };
+
+  ObjectPercept& getObjectPercept() 
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return LineDetectorBase::getObjectPerceptTop();
+    }
+    else
+    {
+      return LineDetectorBase::getObjectPercept();
+    }
+  };
+
 };//end class LineDetector
 
 #endif // __LineDetector_H_
