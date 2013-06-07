@@ -1,0 +1,36 @@
+option go_to_ball_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state go_to_ball
+  {
+    decision
+    {
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball();
+    }
+  }
+}

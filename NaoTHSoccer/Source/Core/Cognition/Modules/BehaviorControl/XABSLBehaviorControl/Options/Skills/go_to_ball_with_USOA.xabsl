@@ -1,0 +1,114 @@
+// go to ball while avoiding obstacles using ultra sonic 
+option go_to_ball_with_USOA
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state go
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.left.distance < 400)
+        goto avoid_left;
+      else if(obstacle.ultrasound.right.distance < 400)
+        goto avoid_right;
+      else if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball(distance=130);
+    }
+  }
+
+  state avoid_left
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.left.distance < 400)
+        stay;
+      else if(obstacle.ultrasound.right.distance < 400)
+        goto avoid_right;
+      else
+        goto go;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.right.distance < 400)
+        stay;
+      else if(obstacle.ultrasound.left.distance < 400)
+        goto avoid_left;
+      else
+        goto go;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  target state finish{
+    decision
+    {
+      else if (abs(value = (ball.percept.x - 130 - ball.radius)) > 30
+        || abs(value = ball.percept.y) > 30
+        || abs(value = atan2(y = ball.percept.y, x = ball.percept.x)) > 30
+        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
+        goto go;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+
+}

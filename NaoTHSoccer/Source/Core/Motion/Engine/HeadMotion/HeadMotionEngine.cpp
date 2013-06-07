@@ -286,7 +286,7 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
 
 void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
 {
-  // HACK: transform the head motion request to the support foot coordinates
+  // HACK: transform the head motion request to hip from the support foot coordinates
   const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
   Vector3d target(origTarget);

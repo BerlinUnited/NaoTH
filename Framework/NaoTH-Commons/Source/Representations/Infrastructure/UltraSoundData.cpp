@@ -6,6 +6,10 @@
 
 using namespace naoth;
 
+// todo: change this to mm?
+const double UltraSoundReceiveData::MIN_DIST = 0.25;
+const double UltraSoundReceiveData::INVALIDE = 2.55;
+
 UltraSoundData::UltraSoundData()
 {
 }
@@ -17,13 +21,13 @@ UltraSoundData::~UltraSoundData()
 
 UltraSoundReceiveData::UltraSoundReceiveData()
 {
-  rawdata = 2.55;
+  rawdata = INVALIDE;
   init();
 }
 
 void UltraSoundReceiveData::init()
 {
-  rawdata = 2.55;
+  rawdata = INVALIDE;
   for(int i = 0; i < numOfUSEcho; i++)
   {
     dataLeft[i] = 0.0;
@@ -37,16 +41,13 @@ void UltraSoundReceiveData::print(std::ostream& stream) const
     << "UltraSoundReceiveData" << std::endl
     << "---------------------" << std::endl
     << "rawdata = " << rawdata << std::endl;
-  for(int i = 0; i < numOfUSEcho; i++)
-  {
+
+  for(int i = 0; i < numOfUSEcho; i++) {
     stream << "data[" << i << "]: left = " << dataLeft[i] << " , "  << "right = " << dataRight[i] << std::endl;
   }
 }
 
-UltraSoundReceiveData::~UltraSoundReceiveData()
-{
-
-}
+UltraSoundReceiveData::~UltraSoundReceiveData(){}
 
 
 
@@ -98,27 +99,12 @@ UltraSoundSendData::UltraSoundSendData()
 
 void UltraSoundSendData::setMode(unsigned int _mode)
 {
-  switch(_mode)
-  {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      mode = _mode;
-      break;
+  mode = _mode;
 
-    case 4:
-    case 12:
-      mode = _mode;
-      break;
-  }
-
-  if((_mode & 64) == 1)
-  {
+  // TODO: check, do we need it?
+  if((_mode & 64) == 1) {
     ultraSoundTimeStep = 100;
-  }
-  else
-  {
+  } else {
     ultraSoundTimeStep = 10;
   }
 }

@@ -1,0 +1,30 @@
+option play_soccer
+{
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode == playing)
+      goto play;
+    else if(game.current_mode == ready)
+      goto ready;
+    else if(true)
+      goto idle;
+  }  
+
+  initial state idle{action{}}
+
+  state play
+  {
+    action 
+    {
+    }
+  }
+
+  state ready
+  {
+    action 
+    {
+    }
+  }
+}

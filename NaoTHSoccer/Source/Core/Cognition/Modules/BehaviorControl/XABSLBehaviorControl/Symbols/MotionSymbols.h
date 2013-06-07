@@ -17,17 +17,12 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/PlayersModel.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/PlayerInfo.h"
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 
 BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(MotionStatus)
-  REQUIRE(KinematicChain)
   REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo)
-  REQUIRE(PlayersModel)
   REQUIRE(SensorJointData)
 
   PROVIDE(HeadMotionRequest)
@@ -40,36 +35,14 @@ class MotionSymbols: public MotionSymbolsBase
 public:
   MotionSymbols()
   :
-    headMotionRequest(getHeadMotionRequest()),
-    motionRequest(getMotionRequest()),
-    motionStatus(getMotionStatus()),
-    kinematicChain(getKinematicChain()),
-    frameInfo(getFrameInfo()),
-    playerInfo(getPlayerInfo()),
-    playersModel(getPlayersModel()),
-    sensorJointData(getSensorJointData()),
-
-    turn_around_radius(0.0),
-    relativeToLeftFootXx(0.0),
-    relativeToLeftFootXy(0.0),
-    relativeToLeftFootYx(0.0),
-    relativeToLeftFootYy(0.0),
-    relativeToLeftFootAa(0.0),
-    relativeToRightFootXx(0.0),
-    relativeToRightFootXy(0.0),
-    relativeToRightFootYx(0.0),
-    relativeToRightFootYy(0.0),
-    relativeToRightFootAa(0.0),
-    isAvoidObstacle(false),
-    headSpeed(0.0),
-
     walkStyle(normal),
     stepControlFoot(none),
     stepControlRequestTime(0),
     stepControlRequestSpeedDirection(0)
   {
     theInstance = this;
-  };
+  }
+
   virtual ~MotionSymbols(){}
   
   /** registers the symbols at an engine */
@@ -90,24 +63,9 @@ public:
   static std::string getWalkStyleName(WalkStyle i);
 
 private:
-
-  // representations
-  HeadMotionRequest& headMotionRequest;
-  MotionRequest& motionRequest;
-  const MotionStatus& motionStatus;
-  const KinematicChain& kinematicChain;
-  const naoth::FrameInfo& frameInfo;
-  const PlayerInfo& playerInfo;
-  const PlayersModel& playersModel;
-  const naoth::SensorJointData& sensorJointData;
-
   static MotionSymbols* theInstance;
 
-  double turn_around_radius;
-  
   // setter and getter
-
-  // enum
   static void setHeadMotionRequest(int value);
   static int getHeadMotionRequestId();
   static int getHeadMotionStatus();
@@ -119,45 +77,17 @@ private:
   static bool getMotionStatusLeftMovable();
   static bool getMotionStatusRightMovable();
 
-  static void setCameraID(int value);
-  static int getCameraID();
-
   static void setWalkOffsetRot(double rot);
   static void setWalkSpeedRot(double rot);
   static void setWalkSpeedY(double x);
   static void setWalkSpeedX(double y);
   static void setKickDirection(double alpha);
 
-
   static double getWalkOffsetRot();
   static double getWalkSpeedRot();
   static double getWalkSpeedX();
   static double getWalkSpeedY();
   static double getKickDirection();
-
-  double relativeToLeftFootXx, relativeToLeftFootXy;
-  static double relativeToLeftFootX();
-  double relativeToLeftFootYx, relativeToLeftFootYy;
-  static double relativeToLeftFootY();
-  double relativeToLeftFootAa;
-  static double relativeToLeftFootA();
-  double relativeToRightFootXx, relativeToRightFootXy;
-  static double relativeToRightFootX();
-  double relativeToRightFootYx, relativeToRightFootYy;
-  static double relativeToRightFootY();
-  double relativeToRightFootAa;
-  static double relativeToRightFootA();
-
-  static double relativeToX(double x, double y, const RotationMatrix& R, const Vector3<double>& p);
-
-  static double relativeToY(double x, double y, const RotationMatrix& R, const Vector3<double>& p);
-
-  static double relativeToA(double a, const RotationMatrix& R);
-
-  static bool avoidObstacle();
-  static void setAvoidObstacle(bool b);
-  static bool getAvoidObstacle();
-  bool isAvoidObstacle;
 
   static double getHeadPitchAngle();
   static double getHeadYawAngle();
@@ -176,9 +106,6 @@ private:
       {}
   };
 
-  RingBuffer<HeadMotion, 10 > headMotionBuffer;
-
-  double headSpeed;
 
   WalkStyle walkStyle;
 
@@ -197,4 +124,4 @@ private:
   double stepControlRequestSpeedDirection;
 };//end class MotionSymbols
 
-#endif // __MotionSymbols_H_
+#endif // _MotionSymbols_H_

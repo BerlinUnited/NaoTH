@@ -1,0 +1,67 @@
+option fall_down_and_stand_up
+{
+  initial state idle
+  {
+    decision
+    {
+      if(abs(value=sensor.inertial.y)>20)
+        goto falling;
+      else
+        stay;
+    }      
+    action
+    {
+      body.ready_to_walk = true;
+    }
+  }
+  
+  state falling
+  {
+    decision
+    {
+      if (state_time > 2000)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type= dead;
+    }
+  }
+
+  state stand_up
+  {
+    decision
+    {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action 
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = false;
+      stand_up();
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if(executed_motion.type == stand)
+        goto idle;
+      else 
+        stay;
+    }      
+    action
+    {
+      body.ready_to_walk = false;
+      motion.type=stand;
+    }
+  }
+}

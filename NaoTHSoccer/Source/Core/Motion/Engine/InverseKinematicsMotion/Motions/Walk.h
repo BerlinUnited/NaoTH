@@ -20,10 +20,10 @@
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/GroundContactModel.h"
-#include <Representations/Infrastructure/InertialSensorData.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/SupportPolygon.h"
 #include <Representations/Infrastructure/JointData.h>
@@ -33,12 +33,12 @@
 BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(RobotInfo)
   REQUIRE(GroundContactModel)
-  REQUIRE(InertialSensorData)
   REQUIRE(MotionRequest)
   REQUIRE(KinematicChainSensor)
   REQUIRE(KinematicChainMotor)
   REQUIRE(GyrometerData)
   REQUIRE(InertialModel)
+  REQUIRE(InertialSensorData)
   REQUIRE(SupportPolygon)
   REQUIRE(SensorJointData)
 

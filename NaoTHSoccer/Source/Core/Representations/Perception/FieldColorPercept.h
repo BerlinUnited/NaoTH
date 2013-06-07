@@ -126,7 +126,7 @@ public:
     range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
-  inline bool isFieldColorOld(const int& yy, const int& cb, const int& cr) const
+  inline bool isFieldColorOld(int yy, int cb, int cr) const
   {
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }

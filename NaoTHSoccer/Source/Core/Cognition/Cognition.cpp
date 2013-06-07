@@ -80,6 +80,7 @@
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl2011/XABSLBehaviorControl2011.h"
+#include "Modules/BehaviorControl/XABSLBehaviorControl2012/XABSLBehaviorControl2012.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 
@@ -103,7 +104,7 @@ Cognition::~Cognition()
 
 #define REGISTER_MODULE(module) \
   g_message("Register "#module);\
-  registerModule<module>(std::string(#module));
+  registerModule<module>(std::string(#module))
 
 
 void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -178,13 +179,14 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);
-  REGISTER_MODULE(CollisionDetector)
+  REGISTER_MODULE(CollisionDetector);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
   REGISTER_MODULE(CalibrationBehaviorControl);
   REGISTER_MODULE(XABSLBehaviorControl2011);
+  REGISTER_MODULE(XABSLBehaviorControl2012);
   REGISTER_MODULE(XABSLBehaviorControl);
 
   // experiment

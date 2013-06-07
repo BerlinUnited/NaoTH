@@ -46,11 +46,11 @@ void SerialSensorData::processData()
         ids.push_back(accelID);
 
         unsigned short accelX = rawData[i * 24 + 7];
-        accelX = (accelX << 8) + rawData[i * 24 + 6];
+        accelX = static_cast<unsigned short>((accelX << 8) + rawData[i * 24 + 6]);
         unsigned short accelY = rawData[i * 24 + 9];
-        accelY = (accelY << 8) + rawData[i * 24 + 8];
+        accelY = static_cast<unsigned short>((accelY << 8) + rawData[i * 24 + 8]);
         unsigned short accelZ = rawData[i * 24 + 11];
-        accelZ = (accelZ << 8) + rawData[i * 24 + 10];
+        accelZ = static_cast<unsigned short>((accelZ << 8) + rawData[i * 24 + 10]);
 
         vector<double> accel(3);
         accel[0] = (static_cast<short>(accelX) >> 6);
@@ -74,7 +74,7 @@ void SerialSensorData::processData()
         accels.push_back(accel);
 
         unsigned short forceHand = rawData[i * 24 + 17];
-        forceHand = (forceHand << 8) + rawData[i * 24 + 16];
+        forceHand = static_cast<unsigned short>((forceHand << 8) + rawData[i * 24 + 16]);
 
         vector<double> force(2);
 

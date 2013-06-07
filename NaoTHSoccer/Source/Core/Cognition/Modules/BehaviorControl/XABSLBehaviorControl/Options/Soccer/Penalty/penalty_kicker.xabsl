@@ -22,40 +22,63 @@ option penalty_kicker
     decision
     {
       if(action_done)
-        goto prepare_kick;
+        goto sidestep_for_right_foot_kick;
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
-      go_to_ball_cool(distance = 170, right_foot=true,
-                      errorX=30, errorY=30, errorR=15);
+      go_to_ball(distance = 170);
       head.control_mode = search_for_ball;
       motion.walk.style = (ball.distance < 500)?stable:normal;
     }
   }
   
-
-  state prepare_kick
+  state sidestep_for_right_foot_kick
   {
     decision
     {
-      if(state_time > 3000)
+      if( abs(value = ball.preview.right_foot.x - ball.radius - 170) < 20
+          && abs(value = ball.preview.right_foot.y) < 20)
       {
-        if(action_done)
-          goto do_kick;
-        else
-          goto approach_ball;
+        goto prepare_kick;
       }
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
-      go_to_ball_cool(distance = 170, right_foot=true,
-                      errorX=30, errorY=30, errorR=15);
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+
+      motion.walk.style = stable;
+      motion.walk.coordinate = right_foot;
+      motion.walk_speed.x = ball.preview.right_foot.x - ball.radius - 170;
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = 0;
+
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+    }
+  }
+
+  state prepare_kick
+  {
+    decision
+    {
+      if(state_time > 2000)
+      {
+        if( abs(value = ball.preview.right_foot.x - ball.radius - 170) < 20
+            && abs(value = ball.preview.right_foot.y) < 20)
+          goto do_kick;
+        else
+          goto sidestep_for_right_foot_kick;
+      }
+      else
+        stay;
+    }
+    action
+    {
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
@@ -67,20 +90,19 @@ option penalty_kicker
     decision
     {
       if(action_done)
-        goto play_normal_striker;
+        goto finished;
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
       kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
     }
   }
 
 
-  state play_normal_striker
+  target state finished
   {
     decision
     {
@@ -88,8 +110,8 @@ option penalty_kicker
     }
     action
     {
-      situationStatusOppHalf = false;
-      spl_playing_striker();
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
     }
   }
 

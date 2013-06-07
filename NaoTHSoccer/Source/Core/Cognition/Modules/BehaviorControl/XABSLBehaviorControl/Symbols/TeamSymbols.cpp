@@ -209,7 +209,7 @@ bool TeamSymbols::calculateIfTheLast()
 
 //  std::cout << "==========" << std::endl;
 
-  if(abs(secondShortestDistance-shortestDistance) < 500)
+  if(fabs(secondShortestDistance-shortestDistance) < 500)
   {
     // distance of distance is less than half a meter, choose if we have the
     // lowest player number

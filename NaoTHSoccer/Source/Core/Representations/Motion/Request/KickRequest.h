@@ -5,8 +5,8 @@
 * Definition of the class Cognition
 */
 
-#ifndef __KickRequest_h_
-#define __KickRequest_h_
+#ifndef _KickRequest_h_
+#define _KickRequest_h_
 
 #include <Tools/Math/Vector3.h>
 
@@ -69,4 +69,4 @@ namespace naoth
   };
 }
 
-#endif // __MotionRequest_h_
+#endif // _KickRequest_h_

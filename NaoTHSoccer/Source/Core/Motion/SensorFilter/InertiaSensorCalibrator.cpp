@@ -28,7 +28,7 @@ bool InertiaSensorCalibrator::intentionallyMoving()
   const double min_stiffness = 0.05;
   for( int i=0; i<JointData::numOfJoint; i++)
   {
-    if ( stiffness[i] > min_stiffness && abs(jointSpeed[i]) > min_speed )
+    if ( stiffness[i] > min_stiffness && fabs(jointSpeed[i]) > min_speed )
     {
       return true;
     }

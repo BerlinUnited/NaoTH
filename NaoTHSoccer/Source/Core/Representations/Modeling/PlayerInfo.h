@@ -1,6 +1,6 @@
 
-#ifndef __PlayerInfo_h_
-#define  __PlayerInfo_h_
+#ifndef _PlayerInfo_h_
+#define _PlayerInfo_h_
 
 #include <string>
 
@@ -32,5 +32,5 @@ public:
 
 };
 
-#endif  // __PlayerInfo_h_
+#endif  // _PlayerInfo_h_
 

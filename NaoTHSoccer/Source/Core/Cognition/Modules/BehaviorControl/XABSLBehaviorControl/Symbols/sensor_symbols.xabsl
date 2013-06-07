@@ -16,7 +16,6 @@ namespace sensor("Sensor Symbols") {
   /** Calibrate inertial sensor */
   bool output sensor.inertial.calibrate;
 
-  bool internal need_calibrate;
 
   /** The ids of the states */
   enum fall_down_state {

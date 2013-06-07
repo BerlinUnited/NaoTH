@@ -34,10 +34,16 @@
 #include "PlatformInterface/PlatformInterface.h"
 #include "DebugCommunication/DebugServer.h"
 
+#ifndef WIN32
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 //opencv:
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#ifndef WIN32
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
 //glib 2.0
 #include <glib.h>

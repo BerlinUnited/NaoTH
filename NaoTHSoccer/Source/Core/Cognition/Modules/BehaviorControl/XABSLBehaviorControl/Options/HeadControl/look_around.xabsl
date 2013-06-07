@@ -6,7 +6,7 @@ option look_around
   {
     decision{
       // find a close point to start the lookaround
-      if(motion.head.yaw > 0){
+      if(head.yaw > 0){
         goto bottom_left;
       }else{
         goto bottom_right;
