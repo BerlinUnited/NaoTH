@@ -31,8 +31,8 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x;
-      head.point_in_world.y = ball.y;
+      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
@@ -79,8 +79,8 @@ option search_for_ball
     {
       head.motion_type = search;
 
-      head.search.center.x = ball.x;
-      head.search.center.y = ball.y;
+      head.search.center.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.search.center.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.search.center.z = ball.radius;
       head.search.size.x = 200;
       head.search.size.y = 200;
@@ -105,8 +105,8 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x;//ball.percept.x;
-      head.point_in_world.y = ball.y;//ball.percept.y;
+      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
@@ -129,8 +129,8 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.x = ball.percept.x * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.y = ball.percept.y * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }

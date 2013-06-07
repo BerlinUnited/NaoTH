@@ -67,7 +67,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     {
       for(int i = 0; i < 240; i++)
       {
-        int c = (int)(vertical_confidence[i]);
+        unsigned char c = (unsigned char)(vertical_confidence[i]);
         TOP_POINT_PX(c, 0, 0, c, i);
       }
     }
@@ -77,7 +77,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     {
       for(int i = 0; i < 240; i++)
       {
-        int c = (int)(vertical_confidence[i]);
+        unsigned char c = (unsigned char)(vertical_confidence[i]);
         POINT_PX(c, 0, 0, c, i);
       }
     }
