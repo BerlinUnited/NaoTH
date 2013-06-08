@@ -67,7 +67,7 @@ private:
   
   
   //
-  void setWarningLED();
+  void setWarningLED(bool red=false);
   //
   bool runningEmergencyMotion();
   
@@ -102,8 +102,10 @@ private:
   // sitdown motion in case the Controller dies
   bool command_data_available;
   bool sensor_data_available;
+  bool shutdown_requested;
   MotorJointData theMotorJointData;
   InertialSensorData theInertialSensorData;
+  ButtonData theButtonData;
   BasicMotion* initialMotion;
 };
 
