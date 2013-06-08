@@ -1,0 +1,10 @@
+#!/bin/bash
+mkdir /media/brainwasher
+mount /dev/brainwasher /media/brainwasher
+cd /media/brainwasher
+sh ./startBrainwashing.sh
+cd /
+umount -l /media/brainwasher
+rmdir /media/brainwasher
+#play something
+play /home/nao/Media/anDieArbeit.wav
