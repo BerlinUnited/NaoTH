@@ -211,6 +211,8 @@ void Motion::processSensorData()
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+
+  debugPlots();
 }//end processSensorData
 
 
@@ -301,6 +303,37 @@ void Motion::debugPlots()
   PLOT_JOINT(LAnklePitch);
   PLOT_JOINT(RAnkleRoll);
   PLOT_JOINT(LAnkleRoll);
+
+
+  
+#define PLOT_JOINT_ERROR(name) \
+  {double e = getMotorJointData().position[JointData::name] - getSensorJointData().position[JointData::name];\
+  PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e));}
+
+  PLOT_JOINT_ERROR(HeadPitch);
+  PLOT_JOINT_ERROR(HeadYaw);
+
+  PLOT_JOINT_ERROR(RShoulderRoll);
+  PLOT_JOINT_ERROR(LShoulderRoll);
+  PLOT_JOINT_ERROR(RShoulderPitch);
+  PLOT_JOINT_ERROR(LShoulderPitch);
+  PLOT_JOINT_ERROR(RElbowRoll);
+  PLOT_JOINT_ERROR(LElbowRoll);
+  PLOT_JOINT_ERROR(RElbowYaw);
+  PLOT_JOINT_ERROR(LElbowYaw);
+
+  PLOT_JOINT_ERROR(RHipYawPitch);
+  PLOT_JOINT_ERROR(LHipYawPitch);
+  PLOT_JOINT_ERROR(RHipPitch);
+  PLOT_JOINT_ERROR(LHipPitch);
+  PLOT_JOINT_ERROR(RHipRoll);
+  PLOT_JOINT_ERROR(LHipRoll);
+  PLOT_JOINT_ERROR(RKneePitch);
+  PLOT_JOINT_ERROR(LKneePitch);
+  PLOT_JOINT_ERROR(RAnklePitch);
+  PLOT_JOINT_ERROR(LAnklePitch);
+  PLOT_JOINT_ERROR(RAnkleRoll);
+  PLOT_JOINT_ERROR(LAnkleRoll);
 
 }//end debugPlots
 
