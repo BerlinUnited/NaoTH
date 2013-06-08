@@ -186,15 +186,15 @@ void InitialMotion::freeJoint(bool freely)
 bool InitialMotion::isSafe() const
 {
   const double safeAngle = Math::fromDegrees(10);
-  return abs(getInertialSensorData().data.x) < safeAngle
-      && abs(getInertialSensorData().data.y) < safeAngle;
+  return fabs(getInertialSensorData().data.x) < safeAngle
+      && fabs(getInertialSensorData().data.y) < safeAngle;
 }
 
 bool InitialMotion::isDanger() const
 {
   const double dangerAngle = Math::fromDegrees(30);
-  return abs(getInertialSensorData().data.x) > dangerAngle
-      || abs(getInertialSensorData().data.y) > dangerAngle;
+  return fabs(getInertialSensorData().data.x) > dangerAngle
+      || fabs(getInertialSensorData().data.y) > dangerAngle;
 }
 
 double InitialMotion::getDistance(const JointData& one, const JointData& another)

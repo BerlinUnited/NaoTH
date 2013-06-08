@@ -69,7 +69,7 @@ GError* BroadCastListener::bindAndListen(unsigned int port)
   g_socket_set_blocking(socket, true);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<unsigned short>(port));
 
   g_socket_bind(socket, socketAddress, true, &err);
 

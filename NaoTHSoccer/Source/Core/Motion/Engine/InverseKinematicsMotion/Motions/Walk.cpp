@@ -34,7 +34,7 @@ void Walk::execute()
   updateComObserver();
 
   {
-    if ( !theWalkParameters.enableWaitLanding || !waitLanding() )
+    if ( !theWalkParameters.stabilization.enableWaitLanding || !waitLanding() )
     {
       plan(getMotionRequest());
       theCoMFeetPose = executeStep();
@@ -67,7 +67,7 @@ void Walk::execute()
 
 
     // apply online stabilization
-    if(theWalkParameters.rotationStabilize)
+    if(theWalkParameters.stabilization.rotationStabilize)
     {
       getEngine().rotationStabilize(
         getRobotInfo(),
@@ -82,24 +82,31 @@ void Walk::execute()
     
     // move arms
     //getEngine().autoArms(c, getMotorJointData().position);
-    getEngine().gotoArms(
-      getMotionStatus(),
-      getInertialModel(),
-      getRobotInfo(),
-      c, getMotorJointData().position);
+
+    if(getEngine().getParameters().arm.takeBack) {
+      getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
+    } else {
+      getEngine().gotoArms(
+        getMotionStatus(),
+        getInertialModel(),
+        getRobotInfo(),
+        c, getMotorJointData().position);
+    }
 
     // force the hip joint
-    if (getMotorJointData().position[JointData::LHipRoll] < 0)
-      getMotorJointData().position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
-
-    if (getMotorJointData().position[JointData::RHipRoll] > 0)
-      getMotorJointData().position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
+    if (getMotorJointData().position[JointData::LHipRoll] < 0) {
+      getMotorJointData().position[JointData::LHipRoll] *= theWalkParameters.general.hipRollSingleSupFactorLeft;
+    }
+    if (getMotorJointData().position[JointData::RHipRoll] > 0) {
+      getMotorJointData().position[JointData::RHipRoll] *= theWalkParameters.general.hipRollSingleSupFactorRight;
+    }
 
     PLOT("Walk:RHipRoll",getMotorJointData().position[JointData::RHipRoll]);
     PLOT("Walk:LHipRoll",getMotorJointData().position[JointData::LHipRoll]);
 
-    if(theWalkParameters.stabilizeFeet)
+    if(theWalkParameters.stabilization.stabilizeFeet) {
       feetStabilize(getMotorJointData().position);
+    }
   }
 
   updateMotionStatus(getMotionStatus());
@@ -146,17 +153,17 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 
 
   // HACK: small filter...
-  static Vector2<double> lastGyro = gyro;
-  Vector2<double> filteredGyro = (lastGyro+gyro)*0.5;
+  static Vector2d lastGyro = gyro;
+  Vector2d filteredGyro = (lastGyro+gyro)*0.5;
 
-  Vector2<double> weight;
+  Vector2d weight;
   weight.x = 
-      theWalkParameters.stabilizeFeetP.x * inertial.x
-    + theWalkParameters.stabilizeFeetD.x * filteredGyro.x;
+      theWalkParameters.stabilization.stabilizeFeetP.x * inertial.x
+    + theWalkParameters.stabilization.stabilizeFeetD.x * filteredGyro.x;
 
   weight.y = 
-      theWalkParameters.stabilizeFeetP.y * inertial.y
-    + theWalkParameters.stabilizeFeetD.y * filteredGyro.y;
+      theWalkParameters.stabilization.stabilizeFeetP.y * inertial.y
+    + theWalkParameters.stabilization.stabilizeFeetD.y * filteredGyro.y;
 
 
   switch(executingStep.footStep.liftingFoot())
@@ -202,7 +209,7 @@ bool Walk::FSRProtection()
   static unsigned int noTouchCount = 0;
 
   if ( getSupportPolygon().mode == SupportPolygon::NONE
-      && noTouchCount <= theWalkParameters.minFSRProtectionCount )
+      && noTouchCount <= theWalkParameters.stabilization.minFSRProtectionCount )
   {
     noTouchCount ++;
   }
@@ -212,12 +219,9 @@ bool Walk::FSRProtection()
     noTouchCount --;
   }
 
-  if ( !isStopping && canStop() )
-  {
-    return noTouchCount > theWalkParameters.minFSRProtectionCount;
-  }
-  else
-  {
+  if ( !isStopping && canStop() ) {
+    return noTouchCount > theWalkParameters.stabilization.minFSRProtectionCount;
+  } else {
     return false;
   }
 }//end FSRProtection
@@ -246,22 +250,18 @@ bool Walk::waitLanding()
   bool unSupporting = (raiseLeftFoot && !rightFootSupportable)
                       || (raiseRightFoot && !leftFootSupportable);
                       
-  if(unSupporting)
-  {
+  if(unSupporting) {
     theUnsupportedCount++;
-  }
-  else
-  {
+  } else {
     theUnsupportedCount = 0;
   }
 
-  if ( theUnsupportedCount > theWalkParameters.maxUnsupportedCount
-    && ( theWalkParameters.maxWaitLandingCount < 0 || theWaitLandingCount < theWalkParameters.maxWaitLandingCount) )
+  if ( theUnsupportedCount > theWalkParameters.stabilization.maxUnsupportedCount
+    && ( theWalkParameters.stabilization.maxWaitLandingCount < 0 || theWaitLandingCount < theWalkParameters.stabilization.maxWaitLandingCount) )
   {
     theWaitLandingCount++;
     return true;
-  } else
-  {
+  } else {
     theWaitLandingCount = 0;
     return false;
   }
@@ -292,7 +292,7 @@ void Walk::plan(const MotionRequest& motionRequest)
   double emergency_stop = 500;
   MODIFY("Walk:emergency_stop", emergency_stop);
 
-  bool fsrStop = (theWalkParameters.enableFSRProtection && FSRProtection() );
+  bool fsrStop = (theWalkParameters.stabilization.enableFSRProtection && FSRProtection() );
   PLOT("Walk:FSRStop", fsrStop);
 
   if ( (motionRequest.id == getId() && com_errors.getAverage() < emergency_stop && !fsrStop) || !canStop() )
@@ -307,7 +307,7 @@ void Walk::plan(const MotionRequest& motionRequest)
     {
       stopWalking();
     }
-    else
+    else // stop as you are
     {
       stopWalkingWithoutStand();
     }
@@ -323,6 +323,7 @@ void Walk::addStep(const Step& step)
 
 void Walk::manageSteps(const WalkRequest& req)
 {
+  // first step
   if ( stepBuffer.empty() )
   {
     std::cout << "walk start" << std::endl;
@@ -332,7 +333,7 @@ void Walk::manageSteps(const WalkRequest& req)
     // TODO: why in the left foot?!
     currentZMP.localInLeftFoot(); 
 
-    currentZMP.zmp.translation.z = theWalkParameters.comHeight;
+    currentZMP.zmp.translation.z = theWalkParameters.hip.comHeight;
     Step zeroStep;
     updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
@@ -346,9 +347,10 @@ void Walk::manageSteps(const WalkRequest& req)
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
     {
-      getMotorJointData().stiffness[i] = theWalkParameters.stiffness;
+      getMotorJointData().stiffness[i] = theWalkParameters.general.stiffness;
     }
-  }
+  }// if ( stepBuffer.empty() )
+
 
   Step& planningStep = stepBuffer.back();
   if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
@@ -387,20 +389,22 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-      if ( !isStopping && theWalkParameters.dynamicStepsize )
+      if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize ) {
         adaptStepSize(step.footStep);
+      }
       updateParameters(step, req.character);
     }
 
     addStep(step);
   }
-}
+}//end manageSteps
+
 
 void Walk::planStep()
 {
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
-  double zmpOffset = theWalkParameters.ZMPOffsetY + theWalkParameters.ZMPOffsetYByCharacter * (1-planningStep.character);
+  double zmpOffset = theWalkParameters.hip.ZMPOffsetY + theWalkParameters.hip.ZMPOffsetYByCharacter * (1-planningStep.character);
   double zmpOffsetX = getEngine().getParameters().hipOffsetX;
 
 
@@ -443,13 +447,15 @@ void Walk::planStep()
 
 
   // TODO: change the height?
-  getEngine().controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.comHeight));
+  getEngine().controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.hip.comHeight));
   planningStep.planningCycle++;
 }
 
 CoMFeetPose Walk::executeStep()
 {
   // control the target com
+  // don't do anything until there are enough steps to plan the next com
+  // i.e., the PreviewController is ready
   Vector3d com;
   if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() )
   {
@@ -502,7 +508,7 @@ CoMFeetPose Walk::executeStep()
       double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
       if( executingStep.executingCycle > doubleSupportEnd ) // want to lift the foot
       {
-        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / getRobotInfo().basicTimeStep );
+        int maxExtendSamples = static_cast<int>( theWalkParameters.step.maxExtendDoubleSupportTime / getRobotInfo().basicTimeStep );
         if( !footSupporting // but another foot can not support
             && executingStep.extendDoubleSupport < maxExtendSamples ) // allow to extend double support
         {
@@ -529,7 +535,7 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.samplesDoubleSupport,
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
-                                                        theWalkParameters.stepHeight, 
+                                                        theWalkParameters.step.stepHeight, 
                                                         0, //footPitchOffset
                                                         0, //footYawOffset
                                                         0, //footRollOffset
@@ -544,7 +550,7 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.samplesDoubleSupport,
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
-                                                        theWalkParameters.stepHeight,
+                                                        theWalkParameters.step.stepHeight,
                                                         0, //getInertialModel.orientation.y*footPitchOffset, // footPitchOffset
                                                         0, //footYawOffset
                                                         0, //getInertialModel.orientation.x*footRollOffset, // footRollOffset
@@ -575,7 +581,7 @@ RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) c
   double rAng = feet.left.rotation.getZAngle();
   double lAng = feet.right.rotation.getZAngle();
   double bodyRotation = Math::calculateMeanAngle(rAng, lAng);
-  if (abs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
+  if (fabs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
   {
     bodyRotation = Math::normalizeAngle(bodyRotation + Math::pi);
   }
@@ -644,7 +650,7 @@ void Walk::stopWalking()
   else
   {
     Pose3D finalLeftFoot = stepBuffer.back().footStep.end().left;
-    CoMFeetPose standPose = getStandPose(theWalkParameters.comHeight);
+    CoMFeetPose standPose = getStandPose(theWalkParameters.hip.comHeight);
     standPose.localInLeftFoot();
     Pose3D finalBody = finalLeftFoot * standPose.com;
     // wait for the com stops
@@ -734,9 +740,9 @@ void Walk::updateParameters(Step& step, double character) const
   const unsigned int basicTimeStep = getRobotInfo().basicTimeStep;
   
   step.bodyPitchOffset = Math::fromDegrees(getEngine().getParameters().bodyPitchOffset);
-  step.samplesDoubleSupport = std::max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
-  step.samplesSingleSupport = std::max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
-  int extendDoubleSupportByCharacter = std::max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
+  step.samplesDoubleSupport = std::max(0, (int) (theWalkParameters.step.doubleSupportTime / basicTimeStep));
+  step.samplesSingleSupport = std::max(1, (int) (theWalkParameters.step.singleSupportTime / basicTimeStep));
+  int extendDoubleSupportByCharacter = std::max(0, (int)((theWalkParameters.step.extendDoubleSupportTimeByCharacter / basicTimeStep)
                                                     *(1-character)));
 
   ASSERT(extendDoubleSupportByCharacter < step.samplesSingleSupport);
@@ -901,13 +907,13 @@ Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
   Pose3D com;
   com.rotation = calculateBodyRotation(feet, pitch);
   com.translation = (feet.left.translation + feet.right.translation) * 0.5;
-  com.translation.z = theWalkParameters.comHeight;
+  com.translation.z = theWalkParameters.hip.comHeight;
   return com;
 }//end calculateStableCoMByFeet
 
 void Walk::adaptStepSize(FootStep& step) const
 {
-  Vector3<double> comRef, comObs;
+  Vector3d comRef, comObs;
 
   if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
   {
@@ -922,11 +928,11 @@ void Walk::adaptStepSize(FootStep& step) const
     comObs = foot.invert() * getKinematicChainSensor().CoM;
   }
 
-  Vector3<double> comErr = comRef - comObs;
+  Vector3d comErr = comRef - comObs;
 
   PLOT("Walk:adaptStepSize:comErr.x",comErr.x);
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
-  PLOT("Walk:adaptStepSize:comErr.y",comErr.z);
+  PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
 
   double k = -1;
   MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);

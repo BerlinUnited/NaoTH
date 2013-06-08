@@ -99,9 +99,9 @@ Vector2<double> SoccerStrategyProvider::calculateForamtion() const
       && p.y < penaltyLeft
       && p.y > penaltyRight )
     {
-      double dFront = abs(p.x - penaltyFront);
-      double dLeft = abs(p.y - penaltyLeft);
-      double dRight = abs(p.y - penaltyRight);
+      double dFront = fabs(p.x - penaltyFront);
+      double dLeft = fabs(p.y - penaltyLeft);
+      double dRight = fabs(p.y - penaltyRight);
 
       if ( dLeft < dRight && dLeft < dFront )
       {
@@ -144,7 +144,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
 
 
   double t = p.abs() / speed;
-  t += abs(p.angle()) / turnSpeed;
+  t += fabs(p.angle()) / turnSpeed;
 
   if ( getBodyState().fall_down_state != BodyState::upright )
     t += 3000; // stand up time
@@ -177,9 +177,9 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
     if ( d < dist )
     {
       double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
-      if (abs(ang) < Math::pi_2)
+      if (fabs(ang) < Math::pi_2)
       {
-        double blockRadius = abs(d * tan(ang));
+        double blockRadius = fabs(d * tan(ang));
         if (blockRadius < radiusOfRobot)
         {
           return true;
@@ -198,9 +198,9 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
     if (d < dist)
     {
       double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
-      if (abs(ang) < Math::pi_2)
+      if (fabs(ang) < Math::pi_2)
       {
-        double blockRadius = abs(d * tan(ang));
+        double blockRadius = fabs(d * tan(ang));
         if (blockRadius < radiusOfRobot)
         {
           return true;

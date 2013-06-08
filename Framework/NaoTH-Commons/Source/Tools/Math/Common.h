@@ -43,7 +43,7 @@ namespace Math {
 #ifdef WIN32
     return _isnan(static_cast<double> (f)) != 0;
 #else
-    return isnan(f);
+    return isnan(static_cast<float> (f));
 #endif
   }
 

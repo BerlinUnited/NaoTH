@@ -9,8 +9,14 @@
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include <Representations/Perception/FieldSidePercept.h>
 
+#ifndef WIN32
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
+#ifndef WIN32
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
 BEGIN_DECLARE_MODULE(FieldSideDetector)
   REQUIRE(GoalPercept)

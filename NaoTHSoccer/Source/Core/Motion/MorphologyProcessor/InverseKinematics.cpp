@@ -349,7 +349,7 @@ double InverseKinematics::gotoLegs(
   const double max_hip_error = Math::fromDegrees(0.5);
   const int max_trials = 5;
   int trials = 0;
-  while ( abs(err) > max_hip_error ||  lerr > maxError || rerr > maxError )
+  while ( fabs(err) > max_hip_error ||  lerr > maxError || rerr > maxError )
   {
     // TODO: fixme!!!
     if (true || trials < 2 || ( (leftFootMask == MASK_ALL) && (rightFootMask == MASK_ALL)) )

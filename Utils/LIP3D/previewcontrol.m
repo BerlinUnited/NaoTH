@@ -26,18 +26,21 @@ P = dare(A,b,Q,R);
 %Y = A'*P*A-(A'*P*b)*(R+b'*P*b)^(-1)*(b'*P*A)+Q;
 %norm(P-Y)
 
-K = (R+b'*P*b)^-1*b'*P*A;
-Ac = A - b*(R+b'*P*b)^-1*b'*P*A;
+Mb = (R+b'*P*b)^-1*b';
+K = Mb*P*A;
+Ac = A - b*Mb*P*A;
 Xl = -Ac'*P*[1; 0; 0; 0];
 F = -K(1,1);
+
 N = floor(pt / dt);
 for i = 1:N-1
-    f = (R+b'*P*b)^-1*b'*Xl;
+    f = Mb*Xl;
+	Xl = Ac'*Xl;
+	
     if f > 0
         break;
     end
     F = [F, f];
-    Xl = Ac'*Xl;
 end
 
 if N ~= length(F)
