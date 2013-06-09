@@ -80,6 +80,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     if(arguments.find("secondary") != arguments.end())
     {
       DebugTopImageDrawings::getInstance().drawToImage(getImageTop());
+      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(getImageTop());
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImageTop");
       Serializer<Image>::serialize(getImageTop(), outstream);
@@ -88,7 +89,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     }
     else
     {
-      DebugBottomImageDrawings::getInstance().drawToImage(getImage());
+      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(getImage());
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImage");
       Serializer<Image>::serialize(getImage(), outstream);

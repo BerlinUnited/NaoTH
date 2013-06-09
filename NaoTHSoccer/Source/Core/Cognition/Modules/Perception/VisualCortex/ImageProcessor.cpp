@@ -64,15 +64,15 @@ ImageProcessor::ImageProcessor()
 void ImageProcessor::execute()
 {
   //reset the Representations:
-  
+  //todo: for consistency reasonst this should be done within the detectors
   getBallPercept().reset();
   getBallPerceptTop().reset();
   getGoalPercept().reset();
   getGoalPerceptTop().reset();
   getScanLineEdgelPercept().reset();
   getScanLineEdgelPerceptTop().reset();
-  getLinePercept().reset();
-  getLinePerceptTop().reset();
+  //getLinePercept().reset();
+  //getLinePerceptTop().reset();
   getPlayersPercept().reset();
 
   GT_TRACE("executing HistogramFieldDetector");
@@ -118,7 +118,7 @@ void ImageProcessor::execute()
   GT_TRACE("executing LineDetector");
   STOPWATCH_START("LineDetector");
   theLineDetector->execute();
-  theLineDetector->getModuleT()->execute(CameraInfo::Bottom);
+  theLineDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("LineDetector");
 
   GT_TRACE("executing rest of ImageProcessor::execute()");
@@ -290,9 +290,11 @@ void ImageProcessor::execute()
         
         /*
         if(t > 120)
-          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
+          //naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
+          POINT_PX(x,y,pixel.y,pixel.u,pixel.v);
         else*/
-          naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
+          //naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
+          POINT_PX(x,y,t,0,0);
       }//end for
     }//end for
   );

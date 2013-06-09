@@ -114,15 +114,12 @@ private:
 
   const Image& getImage() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return LineDetectorBase::getImageTop();
-    }
-    else
-    {
+    } else {
       return LineDetectorBase::getImage();
     }
-  };
+  }
 
   const ColorClassificationModel& getColorTable64() const
   {

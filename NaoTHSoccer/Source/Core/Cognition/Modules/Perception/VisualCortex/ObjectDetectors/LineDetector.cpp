@@ -53,8 +53,8 @@ void LineDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   // remove old percepts
+  getLinePercept().reset();
   lineSegments.clear();
-
 
   cameraBrighness = getCurrentCameraSettings().data[CameraSettings::Brightness];
   if(cameraBrighness <= 0 || cameraBrighness > 255)
