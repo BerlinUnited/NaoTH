@@ -110,7 +110,7 @@ void PerceptionsVisualization::execute()
     
     for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
     {
-      const Edgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+      const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
     
       Vector2<double> edgelOnFieldDirectionBegin;
       Vector2<double> edgelOnFieldBegin;

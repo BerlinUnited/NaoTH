@@ -74,7 +74,7 @@ private:
   unsigned int edgelBrightnessLevel;
   unsigned int edgelGrayThresholdLevel;
 
-  Edgel getEdgel(const Vector2<int>& start, const Vector2<int>& end);
+  DoubleEdgel getEdgel(const Vector2<int>& start, const Vector2<int>& end);
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end);
 
   double getPointsAngle(Vector2<int>& point);

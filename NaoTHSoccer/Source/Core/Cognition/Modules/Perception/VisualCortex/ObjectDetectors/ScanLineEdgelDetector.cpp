@@ -286,7 +286,7 @@ void ScanLineEdgelDetector::iterative_edgel_detection()
   for (; start.x < (int) getImage().cameraInfo.resolutionWidth; start.x += step)
   {
     end.x = start.x;
-    Edgel tmp = getEdgel(start, end);
+    DoubleEdgel tmp = getEdgel(start, end);
     tmp.runID = 0;
     tmp.ScanLineID = scanLineID;
 
@@ -363,7 +363,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   // line scanning state
   bool lineBeginFound = false;
   //results
-  Edgel edgel; 
+  DoubleEdgel edgel; 
 
   Pixel pixel = getImage().get(point.x,point.y);
   int thisPixelBrightness = pixel.y;
@@ -603,9 +603,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 // scans at given x-coordinate to the top & cancels at  //
 // field end. starts at bottom line or given y      //
 //////////////////////////////////////////////////////////
-Edgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<int>& end)
+DoubleEdgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<int>& end)
 {
-  Edgel edgel; //result
+  DoubleEdgel edgel; //result
   unsigned int greenValue = 0;
   unsigned int greenCount = 0;
   unsigned int totalGreenCount = 0;

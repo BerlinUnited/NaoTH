@@ -5,14 +5,23 @@
 * Definition of struct Edgel
 */
 
-#ifndef __Edgel_H_
-#define __Edgel_H_
+#ifndef _Edgel_H_
+#define _Edgel_H_
 
-
-class Edgel 
+class Edgel
 {
 public:
-  Edgel()
+  Edgel() : angle(0.0)
+  {}
+
+  Vector2<int> point;
+  double angle;
+};
+
+class DoubleEdgel
+{
+public:
+  DoubleEdgel()
     :
     center_angle(0.0),
     begin_angle(0.0),
@@ -34,4 +43,4 @@ public:
   unsigned int ScanLineID;
 };
 
-#endif //__Edgel_H_
+#endif //_Edgel_H_

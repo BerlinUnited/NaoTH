@@ -66,8 +66,11 @@ public:
 
   void execute()
   {
-     execute(CameraInfo::Top);
-  };
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+
+    CANVAS_PX_BOTTOM;
+  }
 
   class Parameters: public ParameterList
   {
@@ -100,7 +103,16 @@ public:
 
 private:
   CameraInfo::CameraID cameraID;
-  double vertical_confidence[240];
+  double vertical_confidence[480];
+  std::vector<Edgel> edgel_list;
+
+  void add_edgel(int x, int y) {
+    Edgel edgel;
+    edgel.point.x = x;
+    edgel.point.y = y;
+    edgel.angle = getPointsAngle(edgel.point);
+    edgel_list.push_back(edgel);
+  }
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end) ;
@@ -114,90 +126,71 @@ private:
   /** */
   double calculateMeanAngle(double angle1, double angle2) const;
 
+
+
+
   const Image& getImage() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getImageTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getImage();
     }
-  };
+  }
 
   const ColorClassificationModel& getColorClassificationModel() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getColorClassificationModelTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getColorClassificationModel();
     }
-  };
+  }
 
   const CameraMatrix& getCameraMatrix() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getCameraMatrixTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getCameraMatrix();
     }
-  };
+  }
 
   const ArtificialHorizon& getArtificialHorizon() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getArtificialHorizonTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getArtificialHorizon();
     }
-  };
+  }
 
   const FieldPercept& getFieldPercept() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getFieldPerceptTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getFieldPercept();
     }
-  };
+  }
 
   const BodyContour& getBodyContour() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getBodyContourTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getBodyContour();
     }
-  };
+  }
 
   ScanLineEdgelPercept& getScanLineEdgelPercept()
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorDifferentialBase::getScanLineEdgelPerceptTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorDifferentialBase::getScanLineEdgelPercept();
     }
-  };
-
+  }
 
 };
 

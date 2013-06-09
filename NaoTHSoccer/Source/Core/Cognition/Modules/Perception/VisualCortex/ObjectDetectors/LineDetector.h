@@ -87,7 +87,7 @@ private:
   vector<LinePercept::LineSegmentImage> lineSegments;
 
   /** estimate the line segments from edgels */
-  void clusterEdgels(const vector<Edgel>& edgelList);
+  void clusterEdgels(const vector<DoubleEdgel>& edgelList);
 
   /** */
   void expandLines();

@@ -70,7 +70,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
 
   // TODO: copy the edgels (do we need it?)
   // maybe it should be in edgel detector
-  vector<Edgel> edgelList;
+  vector<DoubleEdgel> edgelList;
   edgelList.reserve(MAX_NUMBER_OF_SCANLINE_EDGELS);
   for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
   {
@@ -450,11 +450,11 @@ void LineDetector::analyzeEndPoints()
 
   if((startImage - endImage).abs() == 0) return;
   
-  Edgel edgelStart;
-  Edgel edgelEnd;
+  DoubleEdgel edgelStart;
+  DoubleEdgel edgelEnd;
   for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
   {
-    const Edgel& edgel = getScanLineEdgelPercept().scanLineEdgels[i];
+    const DoubleEdgel& edgel = getScanLineEdgelPercept().scanLineEdgels[i];
 
     if(i == 0 || (edgel.center - startImage).abs() < (edgelStart.center - startImage).abs())
       edgelStart = edgel;
@@ -1054,7 +1054,7 @@ void LineDetector::classifyIntersections()
 // clusters given edgels to line segments, verifies    //
 // the segments and writes to given line array      //
 //////////////////////////////////////////////////////////
-void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
+void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
 {
   if(edgelList.empty()) return;
   
@@ -1079,7 +1079,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
 
   for(unsigned int i = 1; i < edgelList.size(); i++)
   {
-    const Edgel& edgel = edgelList[i];
+    const DoubleEdgel& edgel = edgelList[i];
 
     if(edgel.valid)
     {

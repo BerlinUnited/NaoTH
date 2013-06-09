@@ -30,7 +30,7 @@ void LineClusterProvider::execute()
 
   for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
   {
-    const Edgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+    const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
     int k = -1;
     double distance = Math::fromDegrees(5);//getImage().cameraInfo.resolutionHeight*getImage().cameraInfo.resolutionWidth;
     //distance *= distance;
@@ -45,7 +45,7 @@ void LineClusterProvider::execute()
 
     for(unsigned int j = i+1; j < getScanLineEdgelPercept().numOfSeenEdgels; j++)
     {
-      const Edgel& f = getScanLineEdgelPercept().scanLineEdgels[j];
+      const DoubleEdgel& f = getScanLineEdgelPercept().scanLineEdgels[j];
       if(!CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(),
         getImage().cameraInfo,
@@ -68,7 +68,7 @@ void LineClusterProvider::execute()
 
     if(k > 0)
     {
-      const Edgel& f = getScanLineEdgelPercept().scanLineEdgels[k];
+      const DoubleEdgel& f = getScanLineEdgelPercept().scanLineEdgels[k];
 
       DEBUG_REQUEST("ImageProcessor:LineClusterProvider:line_clusters",
         LINE_PX(ColorClasses::red,

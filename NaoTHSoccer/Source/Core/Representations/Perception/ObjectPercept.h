@@ -128,7 +128,7 @@ public:
   Ball balls[MAXNUMBEROFBALLS];
   Obstacle obstacles[MAXNUMBEROFOBSTACLES];
 
-  std::vector<Edgel> scanLineEdgels;
+  std::vector<DoubleEdgel> scanLineEdgels;
 
   void addLine(const FieldLine& line)
   {

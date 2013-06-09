@@ -40,13 +40,13 @@ public:
   /** */
   unsigned int numOfSeenEdgels;
   /** */
-  Edgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
+  DoubleEdgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
 
   /** */
   std::vector<EndPoint> endPoints;
 
 
-  void add(const Edgel& edgel)
+  void add(const DoubleEdgel& edgel)
   {
     if(numOfSeenEdgels < MAX_NUMBER_OF_SCANLINE_EDGELS)
     {
