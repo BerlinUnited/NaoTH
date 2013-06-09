@@ -24,6 +24,7 @@
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
 
+#include "Tools/Debug/DebugImageDrawings.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -49,7 +50,16 @@ public:
   virtual ~SimpleFieldColorClassifier(){}
 
   /** executes the module */
-  void execute();
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+
+    // reset the debug drawing canvas to bottom
+    CANVAS_PX_BOTTOM;
+  }
+
+  void execute(const CameraInfo::CameraID id);
 
 private:
 
@@ -80,6 +90,35 @@ private:
 
   Parameters fieldParams;
 
+  // id of the camera the module is curently running on
+  CameraInfo::CameraID cameraID;
+
+  const Image& getImage() const
+  {
+    if(cameraID == CameraInfo::Top) {
+      return SimpleFieldColorClassifierBase::getImageTop();
+    } else {
+      return SimpleFieldColorClassifierBase::getImage();
+    }
+  }
+
+  const Histograms& getHistograms() const
+  {
+    if(cameraID == CameraInfo::Top) {
+      return SimpleFieldColorClassifierBase::getHistogramsTop();
+    } else {
+      return SimpleFieldColorClassifierBase::getHistograms();
+    }
+  }
+
+  FieldColorPercept& getFieldColorPercept() const
+  {
+    if(cameraID == CameraInfo::Top) {
+      return SimpleFieldColorClassifierBase::getFieldColorPerceptTop();
+    } else {
+      return SimpleFieldColorClassifierBase::getFieldColorPercept();
+    }
+  }
 };
 
 #endif  /* _SimpleFieldColorClassifier_H_ */

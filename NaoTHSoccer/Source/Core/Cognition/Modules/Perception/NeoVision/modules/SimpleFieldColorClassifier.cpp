@@ -17,6 +17,7 @@
 using namespace std;
 
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
+  : cameraID(CameraInfo::Bottom)
 {
   //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCr", " ", false);
   //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistY", " ", false);
@@ -32,8 +33,10 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:enable_plots", "", false);
 }
 
-void SimpleFieldColorClassifier::execute()
+void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 {
+  cameraID = id;
+  CANVAS_PX(cameraID);
 
   // check if a fresh histogram is avaliable
   if(!getHistograms().colorChannelIsUptodate)
@@ -63,7 +66,6 @@ void SimpleFieldColorClassifier::execute()
     // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
     double wCr = 1.0 - i*histogramDoubleStep;
     double weightedCr = wCr * (double) getHistograms().histogramV.rawData[i];
-    double weightedCrTop = wCr * (double) getHistogramsTop().histogramV.rawData[i];
 
     // search for max Cr channel value with weight w
     if(weightedCr > maxWeightedCr)
@@ -71,47 +73,39 @@ void SimpleFieldColorClassifier::execute()
       maxWeightedCr = weightedCr;
       maxWeightedIndexCr = i;
     }
-    if(weightedCrTop > maxWeightedCrTop)
-    {
-      maxWeightedCrTop = weightedCrTop;
-      maxWeightedIndexCrTop = i;
-    }
   }//end for
   
 
   // no green candidates found
-  if(maxWeightedIndexCr < 0)
-  {
-    return;
-  }
-  if(maxWeightedIndexCrTop < 0)
-  {
+  if(maxWeightedIndexCr < 0) {
     return;
   }
 
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification",
-    for(unsigned int x = 0; x < getImageTop().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImageTop().height(); y++)
-      {
-        const Pixel& pixel = getImageTop().get(x, y);
-        if( abs((int)pixel.v-(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v)
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
+    if(cameraID == CameraInfo::Bottom) {
+      for(unsigned int x = 0; x < getImage().width(); x++) {
+        for(unsigned int y = 0; y < getImage().height(); y++) 
         {
-          TOP_POINT_PX(ColorClasses::red, x, y);
+          const Pixel& pixel = getImage().get(x, y);
+          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
+          {
+            POINT_PX(ColorClasses::red, x, y);
+          }
         }
       }
     }
   );
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
-    for(unsigned int x = 0; x < getImage().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y++)
-      {
-        const Pixel& pixel = getImage().get(x, y);
-        if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification",
+    if(cameraID == CameraInfo::Top) {
+      for(unsigned int x = 0; x < getImage().width(); x++) {
+        for(unsigned int y = 0; y < getImage().height(); y++) 
         {
-          POINT_PX(ColorClasses::red, x, y);
+          const Pixel& pixel = getImage().get(x, y);
+          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
+          {
+            POINT_PX(ColorClasses::red, x, y);
+          }
         }
       }
     }
@@ -160,20 +154,15 @@ void SimpleFieldColorClassifier::execute()
   
   double maxWeightedCb = 0;
   int maxWeightedIndexCb = -1;
-  double maxWeightedCbTop = 0;
-  int maxWeightedIndexCbTop = -1;
 
   double meanFieldY = 0;
   double numberOfFieldY = 0;
-  double meanFieldYTop = 0;
-  double numberOfFieldYTop = 0;
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     // weight based on the mean value  (255 - i)/255
     double wCb = 1.0 - i*histogramStep;
     double weightedCb = wCb * (double) getHistograms().histogramU.rawData[i];
-    double weightedCbTop = wCb * (double) getHistogramsTop().histogramU.rawData[i];
 
     // calculate the Cb maximum
     if(weightedCb > maxWeightedCb)
@@ -181,41 +170,31 @@ void SimpleFieldColorClassifier::execute()
       maxWeightedCb = weightedCb;
       maxWeightedIndexCb = i;
     }
-    if(weightedCbTop > maxWeightedCbTop)
-    {
-      maxWeightedCbTop = weightedCbTop;
-      maxWeightedIndexCbTop = i;
-    }
 
     meanFieldY += getHistograms().histogramY.rawData[i]*i;
     numberOfFieldY += getHistograms().histogramY.rawData[i];
-    meanFieldYTop += getHistogramsTop().histogramY.rawData[i]*i;
-    numberOfFieldYTop += getHistogramsTop().histogramY.rawData[i];
   }//end for
 
-  if(numberOfFieldY > 0)
-  {
+  if(numberOfFieldY > 0) {
     meanFieldY /= numberOfFieldY;
-  }
-
-  if(numberOfFieldYTop > 0)
-  {
-    meanFieldYTop /= numberOfFieldYTop;
   }
 
   //check how it works in other conditions
   int maxWeightedIndexY = (int)Math::clamp(meanFieldY,0.0, 255.0);
-  int maxWeightedIndexYTop = (int)Math::clamp(meanFieldYTop,0.0, 255.0);
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:enable_plots",
-    PLOT("SimpleFieldColorClassifier:TopCam:maxWeightedIndexCr", maxWeightedIndexCr);
-    PLOT("SimpleFieldColorClassifier:TopCam:maxWeightedIndexCb", maxWeightedIndexCb);
-    PLOT("SimpleFieldColorClassifier:TopCam:meanFieldY", meanFieldY);
-  );
   DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:enable_plots",
-    PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCr", maxWeightedIndexCr);
-    PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCb", maxWeightedIndexCb);
-    PLOT("SimpleFieldColorClassifier:BottomCam:meanFieldY", meanFieldY);
+    if(cameraID == CameraInfo::Bottom) {
+      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCr", maxWeightedIndexCr);
+      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCb", maxWeightedIndexCb);
+      PLOT("SimpleFieldColorClassifier:BottomCam:meanFieldY", meanFieldY);
+    }
+  );
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:enable_plots",
+    if(cameraID == CameraInfo::Top) {
+      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCr", maxWeightedIndexCr);
+      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCb", maxWeightedIndexCb);
+      PLOT("SimpleFieldColorClassifier:BottomCam:meanFieldY", meanFieldY);
+    }
   );
 
   double maxY = 255;
@@ -223,46 +202,50 @@ void SimpleFieldColorClassifier::execute()
   double minY = 0;
   MODIFY("SimpleFieldColorClassifier:minY", minY);
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green",
-    for(unsigned int x = 0; x < getImageTop().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImageTop().height(); y++)
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green",
+    if(cameraID == CameraInfo::Bottom) {
+      for(unsigned int x = 0; x < getImage().width(); x++)
       {
-        const Pixel& pixel = getImageTop().get(x, y);
+        for(unsigned int y = 0; y < getImage().height(); y++)
+        {
+          const Pixel& pixel = getImage().get(x, y);
 
-        if
-        (
-          min((int)(maxWeightedIndexYTop + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
-          &&
-          max((int)(maxWeightedIndexYTop - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
-          &&
-          abs((int)pixel.u -(int)maxWeightedIndexCbTop) < (int)fieldParams.fieldColorMax.u
-          &&
-          abs((int)pixel.v -(int)maxWeightedIndexCrTop) < (int)fieldParams.fieldColorMax.v
-        )
-          TOP_POINT_PX(ColorClasses::green, x, y);
-      }
+          if
+          (
+            min((int)(maxWeightedIndexY + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
+            &&
+            max((int)(maxWeightedIndexY - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
+            &&
+            abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
+            &&
+            abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
+          )
+            POINT_PX(ColorClasses::green, x, y);
+        }
+      } 
     }
   );
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green",
-    for(unsigned int x = 0; x < getImage().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y++)
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green",
+    if(cameraID == CameraInfo::Top) {
+      for(unsigned int x = 0; x < getImage().width(); x++)
       {
-        const Pixel& pixel = getImage().get(x, y);
+        for(unsigned int y = 0; y < getImage().height(); y++)
+        {
+          const Pixel& pixel = getImage().get(x, y);
 
-        if
-        (
-          min((int)(maxWeightedIndexY + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
-          &&
-          max((int)(maxWeightedIndexY - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
-          &&
-          abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
-          &&
-          abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
-        )
-          POINT_PX(ColorClasses::green, x, y);
-      }
+          if
+          (
+            min((int)(maxWeightedIndexY + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
+            &&
+            max((int)(maxWeightedIndexY - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
+            &&
+            abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
+            &&
+            abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
+          )
+            POINT_PX(ColorClasses::green, x, y);
+        }
+      } 
     }
   );
 
@@ -291,17 +274,6 @@ void SimpleFieldColorClassifier::execute()
     (int)maxWeightedIndexCr + (int)fieldParams.fieldColorMax.v
     );
 
-  getFieldColorPerceptTop().range.set(
-    maxWeightedIndexYTop - (int)fieldParams.fieldColorMin.y,
-    (int)maxWeightedIndexCbTop - (int)fieldParams.fieldColorMax.u,
-    (int)maxWeightedIndexCrTop - (int)fieldParams.fieldColorMax.v,
-
-    maxWeightedIndexYTop + (int)fieldParams.fieldColorMax.y,
-    (int)maxWeightedIndexCbTop + (int)fieldParams.fieldColorMax.u,
-    (int)maxWeightedIndexCrTop + (int)fieldParams.fieldColorMax.v
-    );
-
   //getFieldColorPercept().set();
   getFieldColorPercept().lastUpdated = getFrameInfo();
-  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
 }//end execute
