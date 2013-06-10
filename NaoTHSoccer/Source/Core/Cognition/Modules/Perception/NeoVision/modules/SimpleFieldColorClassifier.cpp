@@ -60,12 +60,12 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   int maxWeightedIndexCrTop = -1;
 
   // the histogram is weighted with the function 
-  // max(0,128-i)/128, i.e., we are interested only in the first half of it
+  // max^2(0,128-i)/128, i.e., we are interested only in the first half of it
   for(int i = 0; i < halfChannelWidth; i++)
   {
     // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
     double wCr = 1.0 - i*histogramDoubleStep;
-    double weightedCr = wCr * (double) getHistograms().histogramV.rawData[i];
+    double weightedCr = wCr * wCr * (double) getHistograms().histogramV.rawData[i];
 
     // search for max Cr channel value with weight w
     if(weightedCr > maxWeightedCr)

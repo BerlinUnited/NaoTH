@@ -49,7 +49,6 @@ public:
   SimpleFieldColorClassifier();
   virtual ~SimpleFieldColorClassifier(){}
 
-  /** executes the module */
   void execute()
   {
     execute(CameraInfo::Bottom);

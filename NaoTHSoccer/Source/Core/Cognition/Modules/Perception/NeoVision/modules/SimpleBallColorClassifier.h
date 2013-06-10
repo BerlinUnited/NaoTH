@@ -25,7 +25,7 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
-
+#include "Tools/Debug/DebugImageDrawings.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -56,12 +56,20 @@ public:
   SimpleBallColorClassifier();
   virtual ~SimpleBallColorClassifier(){}
 
-  /** executes the module */
-  void execute();
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+
+    // reset the debug drawing canvas to bottom
+    CANVAS_PX_BOTTOM;
+  }
+
+  void execute(const CameraInfo::CameraID id);
 
 private:
 
-    class Parameters: public ParameterList
+  class Parameters: public ParameterList
   {
   public:
 
@@ -89,6 +97,8 @@ private:
 
   Parameters ballParams;
 
+  // id of the camera the module is curently running on
+  CameraInfo::CameraID cameraID;
 };
 
 #endif  /* _SimpleBallColorClassifier_H_ */
