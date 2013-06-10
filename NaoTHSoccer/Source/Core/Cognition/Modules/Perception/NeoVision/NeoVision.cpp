@@ -30,6 +30,10 @@ NeoVision::NeoVision()
   DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", false);
   theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
   theScanLineEdgelDetectorDifferential->setEnabled(true);
+
+  DEBUG_REQUEST_REGISTER("NeoVision:NeoLineDetector:execute", " ", false);
+  theNeoLineDetector = registerModule<NeoLineDetector>("NeoLineDetector");
+  theNeoLineDetector->setEnabled(true);
 }//end constructor
 
 
@@ -68,6 +72,13 @@ void NeoVision::execute()
     STOPWATCH_START("ScanLineEdgelDetectorDifferential");
     theScanLineEdgelDetectorDifferential->execute();
     STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
+  );
+
+  DEBUG_REQUEST("NeoVision:NeoLineDetector:execute",
+    GT_TRACE("executing NeoLineDetector");
+    STOPWATCH_START("NeoLineDetector");
+    theNeoLineDetector->execute();
+    STOPWATCH_STOP("NeoLineDetector");
   );
 }//end execute
 

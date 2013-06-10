@@ -18,6 +18,7 @@
 #include "modules/SimpleGoalColorClassifier.h"
 #include "modules/SimpleBallColorClassifier.h"
 #include "modules/ScanLineEdgelDetectorDifferential.h"
+#include "modules/NeoLineDetector.h"
 
 #include <sstream>
 
@@ -39,6 +40,7 @@ private:
   ModuleCreator<SimpleGoalColorClassifier>* theSimpleGoalColorClassifier;
   ModuleCreator<SimpleBallColorClassifier>* theSimpleBallColorClassifier;
   ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
+  ModuleCreator<NeoLineDetector>* theNeoLineDetector;
 
 };//end class NeoVision
 

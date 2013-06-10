@@ -291,10 +291,10 @@ void ImageProcessor::execute()
         /*
         if(t > 120)
           //naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
-          POINT_PX(x,y,pixel.y,pixel.u,pixel.v);
+          POINT_PX(pixel.y,pixel.u,pixel.v,x,y);
         else*/
           //naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
-          POINT_PX(x,y,t,0,0);
+          POINT_PX(t,0,0,x,y);
       }//end for
     }//end for
   );

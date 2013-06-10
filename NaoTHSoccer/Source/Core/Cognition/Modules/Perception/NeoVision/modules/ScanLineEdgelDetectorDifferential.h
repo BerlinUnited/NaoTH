@@ -78,7 +78,7 @@ public:
     Parameters() : ParameterList("ScanLineParameters")
     {
       PARAMETER_REGISTER(brightness_threshold) = 6;
-      PARAMETER_REGISTER(scanline_count) = 23;
+      PARAMETER_REGISTER(scanline_count) = 31;
       PARAMETER_REGISTER(pixel_border_y) = 3;
 
       syncWithConfig();
@@ -104,14 +104,13 @@ public:
 private:
   CameraInfo::CameraID cameraID;
   double vertical_confidence[480];
-  std::vector<Edgel> edgel_list;
 
   void add_edgel(int x, int y) {
     Edgel edgel;
     edgel.point.x = x;
     edgel.point.y = y;
     edgel.angle = getPointsAngle(edgel.point);
-    edgel_list.push_back(edgel);
+    getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */

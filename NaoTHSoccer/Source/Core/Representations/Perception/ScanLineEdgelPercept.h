@@ -45,6 +45,7 @@ public:
   /** */
   std::vector<EndPoint> endPoints;
 
+  std::vector<Edgel> edgels;
 
   void add(const DoubleEdgel& edgel)
   {
@@ -60,6 +61,7 @@ public:
   {
     numOfSeenEdgels = 0;
     endPoints.clear();
+    edgels.clear();
   }//end reset
 
   virtual void print(std::ostream& stream) const

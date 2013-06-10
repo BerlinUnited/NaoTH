@@ -39,9 +39,8 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
+  getScanLineEdgelPercept().reset();
 
-  edgel_list.clear();
-  
   // needs a valid field polygon
   if(!getFieldPercept().isValid()) {
     return;
@@ -149,8 +148,8 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   }//end for
 
   DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:mark_edgels",
-    for(unsigned int i = 0; i < edgel_list.size(); i++) {
-      const Edgel& edgel = edgel_list[i];
+    for(unsigned int i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
+      const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
       LINE_PX(ColorClasses::black,edgel.point.x ,edgel.point.y ,edgel.point.x + (int)(10 * cos(edgel.angle))   ,edgel.point.y + (int)(10 * sin(edgel.angle)));
     }
   );
@@ -251,7 +250,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 //  int begin_of_segment = point.y;
 
   // just go up
-  for(;point.y >= end.y; point.y--)
+  for(;point.y >= end.y; point.y -= 2)
   {
     // get the pixel color
     Pixel pixel = getImage().get(point.x, x_peak);
