@@ -396,7 +396,7 @@ std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node)
     Kinematics::Link* m = node.mother;
     while (NULL != m)
     {
-      count += (KinematicChain::getLinkName(m).length());
+      count += static_cast<int>(KinematicChain::getLinkName(m).length());
       m = m->mother;
     }
     for (int i = 0; i < count; i++)

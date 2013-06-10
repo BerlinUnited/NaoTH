@@ -381,7 +381,7 @@ public:
     
     // initialize ranking vector
     Vector_n<int, N> ranking;
-    size_t i;
+    int i;
     for (i = 0; i < N; ++i)
       ranking[i] = i;
     

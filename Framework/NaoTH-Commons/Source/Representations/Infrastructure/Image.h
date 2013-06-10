@@ -274,7 +274,7 @@ namespace naoth
 
     inline unsigned int getIndexSize() const
     {
-      return cameraInfo.getSize();
+      return static_cast<unsigned int> (cameraInfo.getSize());
     }
 
     inline unsigned int getXOffsetFromIndex(const unsigned int i) const

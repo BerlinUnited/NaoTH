@@ -121,7 +121,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
   //obstacle detection vizualization
   DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_estimated_obstacles",
-    unsigned int size = getScanLineEdgelPercept().endPoints.size();
+    unsigned int size = static_cast<unsigned int> (getScanLineEdgelPercept().endPoints.size());
     if (size >=2)
     {
       int pointer = 0;

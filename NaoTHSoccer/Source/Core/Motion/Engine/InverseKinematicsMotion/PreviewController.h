@@ -55,7 +55,7 @@ public:
   void push(const Vector3d& zmp);
   Vector3d front() const;
   Vector3d back() const;
-  unsigned int count() const { return refZMPx.size(); }
+  unsigned int count() const { return static_cast<unsigned int> (refZMPx.size()); }
   void clear();
 
 
