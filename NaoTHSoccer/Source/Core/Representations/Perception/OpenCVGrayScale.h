@@ -1,7 +1,13 @@
 #ifndef OPENCVGRAYSCALE_H
 #define OPENCVGRAYSCALE_H
 
+#ifndef WIN32
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 #include <opencv2/core/core.hpp>
+#ifndef WIN32
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
 class OpenCVGrayScale
 {

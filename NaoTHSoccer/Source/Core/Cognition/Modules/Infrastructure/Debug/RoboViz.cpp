@@ -522,8 +522,9 @@ void RoboViz::drawTimeToBall()
   double len = Math::clamp(10000 - getSoccerStrategy().timeToBall, 0.0, 10000.0);
   Vector3d e(b);
   e.z += len/10;
-  unsigned int red = Math::clamp(static_cast<int>(len / 10000 * 255), 0, 255);
-  drawLine(b, e, 3, Vector3<unsigned char>(red,255-red,0), getRobotInfo().bodyNickName + ".timeToBall");
+  unsigned char red = Math::clamp<unsigned char>(static_cast<unsigned char>(len / 10000 * 255), 0, 255);
+  unsigned char unred = static_cast<unsigned char>(255-red);
+  drawLine(b, e, 3, Vector3<unsigned char>(red,unred,0), getRobotInfo().bodyNickName + ".timeToBall");
 }
 
 void RoboViz::test()

@@ -20,7 +20,7 @@ Nh = (h_max - h_min) / dh + 1;
 
 % create a new file
 paramFileName = sprintf('previewControl%d.prm', round(previewTime*1000));
-save(paramFileName, 'N', 'Nh', '-ascii');
+save(paramFileName, 'dt', 'N', 'Nh', '-ascii');
 
 for z = h_min:dh:h_max
 	[A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, previewTime);

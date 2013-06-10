@@ -69,7 +69,7 @@ public:
     speed += ds;
 
     if (motionRequest.id != getId()
-      && abs(speed) < 1.0 && radius < 0.1 ) {
+      && fabs(speed) < 1.0 && radius < 0.1 ) {
       speed = 0;
       radius = 0;
       setCurrentState(motion::stopped);

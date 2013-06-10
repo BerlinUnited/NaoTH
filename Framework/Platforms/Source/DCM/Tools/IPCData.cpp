@@ -57,7 +57,7 @@ void NaoSensorData::get(AccelerometerData& data) const
   //forum of Aldebaran scale = g/56.0
   //experiments Nao36 scale = g/60.0
   //wrong sign in Aldebaran
-  static float scale_acc = Math::g/60.0;
+  static float scale_acc = static_cast<float>(Math::g/60.0);
 
   data.rawData.x = sensorsValue[theAccelerometerDataIndex + 0];
   data.rawData.y = sensorsValue[theAccelerometerDataIndex + 1];
@@ -95,7 +95,7 @@ void NaoSensorData::get(IRReceiveData& data) const
 {
   unsigned int currentIndex = theIRReceiveDataIndex;
   for (int i = 0; i < IRReceiveData::numOfIRReceive; i++) {
-    data.data[i] = sensorsValue[currentIndex++];
+    data.data[i] = static_cast<int>(sensorsValue[currentIndex++]);
   }
 }//end IRReceiveData
 

@@ -11,6 +11,7 @@ dofile "projectconfig.lua"
 dofile (FRAMEWORK_PATH .. "/LuaTools/info.lua")
 --dofile (FRAMEWORK_PATH .. "/LuaTools/ilpath.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator.lua")
+dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator_2.7+.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
 dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
 
@@ -77,8 +78,8 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    -- flags { "Optimize", "FatalWarnings" }
-    flags { "Optimize" }
+    flags { "Optimize", "FatalWarnings" }
+    --flags { "Optimize" }
          
   
   configuration{"Native"}
@@ -87,6 +88,7 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
+	buildoptions {"-Wconversion"}
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
@@ -107,7 +109,7 @@ solution "NaoTHSoccer"
 	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-Wno-deprecated-declarations -Wconversion"}
     flags { "ExtraWarnings" }
     links {"pthread"}
 	
@@ -137,6 +139,7 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  postbuildcommands { "premake4 webots_copy" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }

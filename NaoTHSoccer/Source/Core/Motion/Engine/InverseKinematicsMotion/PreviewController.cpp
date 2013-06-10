@@ -13,15 +13,14 @@
 
 using namespace std;
 
-double PreviewController::Parameters::length_f = 0.0;
-
 PreviewController::PreviewController()
   :
   parameters(NULL),
   parameterHeight(0)
 {
-  double dt = 0.01; // 10ms
-  double z = parameterHeight * 0.001; // in m
+  loadParameter();
+
+  double dt = timeStep; // 10ms
 
   A.c[0] = Vector3d(1      , 0 , 0);
   A.c[1] = Vector3d(dt     , 1 , 0);
@@ -29,7 +28,7 @@ PreviewController::PreviewController()
 
   b = Vector3d(dt*dt*dt/6, dt*dt/2, dt);
 
-  loadParameter();
+  setHeight(200); // some initial height
 }
 
 void PreviewController::setHeight(double height)
@@ -58,25 +57,32 @@ void PreviewController::loadParameter()
   path += "scheme/";
   path += naoth::Platform::getInstance().theScheme;
   path += "/previewControl.prm";
-  cout<<"PreviewController load "<<path<<endl;
+  cout << "PreviewController load " << path << endl;
     
-  // read the values
+  // open the stream
   ifstream ifs(path.c_str());
   ASSERT(ifs.good());
       
-  double number_of_entries(0.0);
-      
-  ifs >> Parameters::length_f;
-  ifs >> number_of_entries;
+  // read the header
+  double length_f(0.0), number_of_entries(0.0);
+  ifs >> timeStep >> length_f >> number_of_entries;
 
+  // read the parameters for each height step
   double height(0.0);
   for(int i = 0; i < number_of_entries; i++)
   {
     ifs >> height;
-    ifs >> loadedParameters[(int)height];
-  }
+    
+    PreviewController::Parameters& p = loadedParameters[(int)height];
+    p.f.resize((int)length_f);
 
-  ParameterMap::const_iterator iter = loadedParameters.find(300);
+    ifs >> p.Ki >> p.K;
+    
+    for(unsigned int i = 0; i < p.f.size(); i++) {
+      assert(!ifs.eof());
+      ifs >> p.f[i];
+    }
+  }
 }//end loadParameter
 
 
@@ -84,7 +90,7 @@ void PreviewController::update(const std::list<double>& ref, Vector3d&x, double&
 {
   double u = -parameters->Ki * err - parameters->K*x;
   std::list<double>::const_iterator refi = ref.begin();
-  std::list<double>::const_iterator fi = parameters->f.begin();
+  std::vector<double>::const_iterator fi = parameters->f.begin();
   
   // the preview length is limited by the nomber of parameters and
   // by the length of the reference zmp (ref)
@@ -171,6 +177,7 @@ Vector3d PreviewController::back() const
   return Vector3d(refZMPx.back(), refZMPy.back(), refZMPz.back());
 }
 
+/*
 std::istream & operator >>(std::istream& ist, PreviewController::Parameters& p)
 {
   //ist >> p.A >> p.b >> p.c >> p.Ki >> p.K >> p.length_f;
@@ -186,3 +193,4 @@ std::istream & operator >>(std::istream& ist, PreviewController::Parameters& p)
 
   return ist;
 }
+*/

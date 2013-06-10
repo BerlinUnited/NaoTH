@@ -6,6 +6,9 @@ For details, see http://sourceforge.net/projects/libb64
 
 Modified for SimSpark (http://simspark.sourceforge.net)
 */
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 
 #include "cencode.h"
 
