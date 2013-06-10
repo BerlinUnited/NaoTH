@@ -105,6 +105,109 @@ void PerceptionsVisualization::execute()
         LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
       }
     }//end for
+
+
+    
+    for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+    {
+      const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+    
+      Vector2<double> edgelOnFieldDirectionBegin;
+      Vector2<double> edgelOnFieldBegin;
+      if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.begin.x,
+        e.begin.y,
+        0.0,
+        edgelOnFieldBegin))
+        /*
+      edgelOnField = CameraGeometry::angleToPointInImage(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.begin.x,
+        e.begin.y) * 100;*/
+      {
+        Vector2<double> direction(1,0);
+        direction.rotate(e.begin_angle);
+        direction += e.begin;
+        
+        if(CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(),
+          getImage().cameraInfo,
+          direction.x,
+          direction.y,
+          0.0,
+          edgelOnFieldDirectionBegin))
+        {
+          PEN("000000", 5);
+          //CIRCLE(edgelOnFieldBegin.x, edgelOnFieldBegin.y, 10);
+          double r = (edgelOnFieldDirectionBegin - edgelOnFieldBegin).angle();
+          SIMPLE_PARTICLE(edgelOnFieldBegin.x,edgelOnFieldBegin.y,r);
+        }
+      }
+
+      Vector2<double> edgelOnFieldDirectionEnd;
+      Vector2<double> edgelOnFieldEnd;
+      if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.end.x,
+        e.end.y,
+        0.0,
+        edgelOnFieldEnd))
+      /*
+      edgelOnField = CameraGeometry::angleToPointInImage(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.end.x,
+        e.end.y) * 100;*/
+      {
+        Vector2<double> direction(1,0);
+        direction.rotate(e.end_angle);
+        direction += e.end;
+
+        if(CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(),
+          getImage().cameraInfo,
+          direction.x,
+          direction.y,
+          0.0,
+          edgelOnFieldDirectionEnd))
+        {
+          PEN("FF0000", 5);
+          //CIRCLE(edgelOnFieldEnd.x, edgelOnFieldEnd.y, 10);
+          double r = (edgelOnFieldDirectionEnd - edgelOnFieldEnd).angle();
+          SIMPLE_PARTICLE(edgelOnFieldEnd.x,edgelOnFieldEnd.y,r);
+        }
+      }
+
+
+
+      Vector2<double> direction(1,0);
+      direction.rotate(e.center_angle);
+      direction += e.center;
+      Vector2<double> edgelOnFieldDirectionCenter;
+
+      if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        direction.x,
+        direction.y,
+        0.0,
+        edgelOnFieldDirectionCenter))
+      {
+        PEN("000066", 5);
+        Vector2<double> c = (edgelOnFieldEnd + edgelOnFieldBegin)*0.5;
+        double r = (edgelOnFieldDirectionCenter - c).angle();
+        SIMPLE_PARTICLE(c.x,c.y,r);
+
+        PEN("FF2266", 5);
+        double r2 = ( (edgelOnFieldDirectionEnd-edgelOnFieldEnd).normalize() + 
+          (edgelOnFieldDirectionBegin - edgelOnFieldBegin).normalize()).angle();
+        SIMPLE_PARTICLE(c.x,c.y,r2);
+      }
+    }//end for
   );
 
 

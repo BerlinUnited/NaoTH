@@ -140,10 +140,12 @@ public:
   
 
   // camera stuff
-  void get(Image& data){ theCameraHandler.get(data); }
-  void get(CurrentCameraSettings& data) { theCameraHandler.getCameraSettings(data); }
+  void get(Image& data){ theBottomCameraHandler.get(data); }
+  void get(ImageTop& data){ theTopCameraHandler.get(data); }
+  void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
+  void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);
-
+  void set(const CameraSettingsRequestTop& data);
 
   // sound
   void set(const SoundPlayData& data) 
@@ -249,6 +251,9 @@ protected:
     return new MessageQueue4Threads();
   }
 
+  void setCameraSettingsInternal(const CameraSettingsRequest& data,
+           CameraInfo::CameraID camID = CameraInfo::Bottom);
+
 protected:
   std::string theBodyID;
   std::string theBodyNickName;
@@ -267,7 +272,8 @@ protected:
   // -- end -- shared memory access --
   
   //
-  V4lCameraHandler theCameraHandler;
+  V4lCameraHandler theBottomCameraHandler;
+  V4lCameraHandler theTopCameraHandler;
   //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theBroadCaster;

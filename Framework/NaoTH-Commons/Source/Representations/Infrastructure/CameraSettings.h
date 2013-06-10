@@ -25,29 +25,24 @@ namespace naoth
        */
       enum CameraSettingID
       {
-        CameraSelection,
         AutoExposition,
         AutoWhiteBalancing,
-        AutoGain,
+        BacklightCompensation,
         Brightness,
+        CameraSelection,
         Contrast,
-        Saturation,
-        Hue,
-        RedChroma,
-        BlueChroma,
+        Exposure,
+        FadeToBlack,
+        FPS,
         Gain,
         HorizontalFlip,
-        VerticalFlip,
-        CorrectionLensX,
-        CorrectionLensY,
-        Exposure,
-        ExposureCorrection,
-        FPS,
-        ResolutionWidth,
+        Hue,
         ResolutionHeight,
-        BacklightCompensation,
-        WhiteBalance,
+        ResolutionWidth,
+        Saturation,
         Sharpness,
+        VerticalFlip,
+        WhiteBalance,
         numOfCameraSetting
       };
 
@@ -70,11 +65,26 @@ namespace naoth
   class CameraSettingsRequest : public ParameterList, public CameraSettings
   {
   public:
-    CameraSettingsRequest();
+    CameraSettingsRequest(std::string configName="CameraSettings");
     virtual ~CameraSettingsRequest() {}
 
     /** Set to true to query a real CameraSetting from the Nao camera */
     bool queryCameraSettings;
+
+  };
+
+  class CurrentCameraSettingsTop : public CameraSettings
+  {
+  public:
+    CurrentCameraSettingsTop();
+    virtual ~CurrentCameraSettingsTop() {}
+  };
+
+  class CameraSettingsRequestTop : public CameraSettingsRequest
+  {
+  public:
+    CameraSettingsRequestTop();
+    virtual ~CameraSettingsRequestTop() {}
 
   };
 }

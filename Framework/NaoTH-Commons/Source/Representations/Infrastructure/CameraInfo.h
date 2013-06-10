@@ -8,6 +8,7 @@
 #ifndef _CAMERAINFO_H
 #define _CAMERAINFO_H
 
+#include "CameraInfoConstants.h"
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
 #include "Tools/DataStructures/ParameterList.h"
@@ -25,8 +26,8 @@ namespace naoth
     
     CameraInfo()
     :
-    resolutionWidth(320),
-    resolutionHeight(240),
+    resolutionWidth(IMAGE_WIDTH),
+    resolutionHeight(IMAGE_HEIGHT),
     pixelSize(0.0),
     focus(0.0),
     xp(0.0),
@@ -95,8 +96,22 @@ namespace naoth
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
 
-
     virtual void print(std::ostream& stream) const;
+
+    std::string getCameraIDName(CameraID id)
+    {
+      switch(id)
+      {
+        case Top:
+          return "Top";
+
+        case Bottom:
+          return "Bottom";
+
+        default:
+          return "unknown";
+      }
+    }
 
   protected:
 
@@ -104,6 +119,12 @@ namespace naoth
 
   };
 
+  class CameraInfoTop : public CameraInfo
+  {
+  public:
+    using CameraInfo::operator =;
+    virtual ~CameraInfoTop() {}
+  };
 
   class CameraInfoParameter : public CameraInfo, public ParameterList
   {
@@ -115,8 +136,6 @@ namespace naoth
     };
 
     CameraTransInfo cameraTrans[numOfCamera];
-
-
     void setCameraTrans();
 
   public:
@@ -124,13 +143,21 @@ namespace naoth
     void init();
 
   };
-  
+
   template<>
   class Serializer<CameraInfo>
   {
     public:
     static void serialize(const CameraInfo& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, CameraInfo& representation);
+  };
+
+  template<>
+  class Serializer<CameraInfoTop>
+  {
+    public:
+    static void serialize(const CameraInfoTop& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfoTop& representation);
   };
   
 }

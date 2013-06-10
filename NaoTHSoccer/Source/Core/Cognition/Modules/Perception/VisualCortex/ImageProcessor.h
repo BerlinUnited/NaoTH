@@ -16,15 +16,15 @@
 //local Tools
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 
 // submodules
 #include "ObjectDetectors/HistogramFieldDetector.h"
 #include "ObjectDetectors/ScanLineEdgelDetector.h"
-#include "ObjectDetectors/ScanLineEdgelDetectorDifferential.h"
 #include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
 #include "ObjectDetectors/LineDetector.h"
+#include "ObjectDetectors/LineClusterProvider.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
 #include "../BodyContourProvider/BodyContourProvider.h"
@@ -49,17 +49,25 @@
 BEGIN_DECLARE_MODULE(ImageProcessor)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
 
   PROVIDE(BallPercept)
+  PROVIDE(BallPerceptTop)
   PROVIDE(PlayersPercept)
   PROVIDE(LinePercept)
+  PROVIDE(LinePerceptTop)
   PROVIDE(GoalPercept)
+  PROVIDE(GoalPerceptTop)
   PROVIDE(ScanLineEdgelPercept)
+  PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ImageProcessor)
 
 class ImageProcessor: private ImageProcessorBase, private ModuleManager
@@ -73,7 +81,6 @@ public:
 private:
   ModuleCreator<HistogramFieldDetector>* theHistogramFieldDetector;
   ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
-  ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
   ModuleCreator<BodyContourProvider>* theBodyContourProvider;
   ModuleCreator<FieldDetector>* theFieldDetector;
 
@@ -81,6 +88,7 @@ private:
   ModuleCreator<RobotDetector>* theRobotDetector;
   
   ModuleCreator<LineDetector>* theLineDetector;
+  ModuleCreator<LineClusterProvider>* theLineClusterProvider;
   ModuleCreator<GoalDetector>* theGoalDetector;
 
   const ColorClassificationModel& getColorTable64() const

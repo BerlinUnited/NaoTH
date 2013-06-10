@@ -9,7 +9,6 @@ import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -51,7 +50,9 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   private final String toggleCalibCommandField = "ImageProcessor:FieldColorClassifier:calibrate:";
   private final String getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
   private final String getSetCalibValuesField = "ParameterList:FieldColorParameters:";
-    
+  
+  private final String getSetCalibStrength = "ParameterList:BCC_Parameters";
+          
   private boolean drawRect = false;
   private Color CalibColor;
   private Integer CalibColorIndex;
@@ -79,9 +80,16 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
     {
       classifiedPixelShowStateList.put(c,false);
     }
-    
+    setStrength(10);
   }//end init
 
+  private void setStrength(int value)
+  {
+    jSliderStrength.setValue(value);
+    Double val = value / 10.0;
+    jTextFieldStrength.setText(val.toString());
+  }
+  
   @Override
   public JPanel getPanel()
   {
@@ -106,6 +114,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         imagePanel = new javax.swing.JPanel();
         coloredObjectChooserPanel = new de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel();
         colorValueSlidersPanel = new de.naoth.rc.dialogs.panels.ColorValueSlidersPanel();
+        jSliderStrength = new javax.swing.JSlider();
+        jTextFieldStrength = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(800, 663));
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -126,6 +136,7 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         jToolBar1.add(btReceiveImages);
 
         btAutoCameraParameters.setText("Auto Camera Params");
+        btAutoCameraParameters.setEnabled(false);
         btAutoCameraParameters.setFocusable(false);
         btAutoCameraParameters.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btAutoCameraParameters.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -202,6 +213,20 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             }
         });
 
+        jSliderStrength.setMajorTickSpacing(10);
+        jSliderStrength.setMaximum(30);
+        jSliderStrength.setMinorTickSpacing(1);
+        jSliderStrength.setPaintTicks(true);
+        jSliderStrength.setSnapToTicks(true);
+        jSliderStrength.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSliderStrengthStateChanged(evt);
+            }
+        });
+
+        jTextFieldStrength.setEditable(false);
+        jTextFieldStrength.setText("1.0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -210,25 +235,33 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSliderStrength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSliderStrength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.Alignment.TRAILING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addContainerGap(112, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
   private void btReceiveImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesActionPerformed
@@ -238,6 +271,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
       if(parent.checkConnected())
       {
         imageManager.addListener(this);
+        this.coloredObjectChooserPanel.setEnabled(true);
+        btAutoCameraParameters.setEnabled(true);
       }
       else
       {
@@ -247,6 +282,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
     else
     {
       imageManager.removeListener(this);
+      this.coloredObjectChooserPanel.setEnabled(false);
+      btAutoCameraParameters.setEnabled(false);
     }
   }//GEN-LAST:event_btReceiveImagesActionPerformed
 
@@ -272,53 +309,113 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
  }//GEN-LAST:event_btCalibrateStateChanged
   
   private void btCalibrateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_btCalibrateItemStateChanged
-    if(evt.getStateChange() == ItemEvent.SELECTED)
-    {
-      if(colorClass != null)
-      {
-        this.colorValueSlidersPanel.setEnabled(false);
-//        if(colorValueSlidersPanel.showColoredPixels())
-//        {
-//          sendShowObjectsPixels(colorClass, "on");
-//        }
-        sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
-        sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("off"));
-        sendColorCalibCommand(colorClass, "on");     
-      }
-    }
-    if(evt.getStateChange() == ItemEvent.DESELECTED)
-    {
-      btCalibrate.setSelected(false);
-      for(Colors.ColorClass c: Colors.ColorClass.values())
-      {
-        if
-        (
-          c == Colors.ColorClass.green || 
-          c == Colors.ColorClass.white || 
-          c == Colors.ColorClass.orange || 
-          c == Colors.ColorClass.yellow ||
-          c == Colors.ColorClass.skyblue || 
-          c == Colors.ColorClass.red || 
-          c == Colors.ColorClass.blue
-        )
-        {
-          if(colorValueSlidersPanel.showColoredPixels())
-          {
-            sendShowObjectsPixels(c, "off");
-          }
-          sendColorCalibCommand(c, "off");          
-        }
-      }
-      sendGetColorValueCommand(colorClass, "get");
-      this.colorValueSlidersPanel.setEnabled(true);
-    }
   }//GEN-LAST:event_btCalibrateItemStateChanged
 
   private void btCalibrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalibrateActionPerformed
+    if(this.parent.getMessageServer().isConnected())
+    {
+      if(btCalibrate.isSelected())
+      {
+        if(colorClass != null)
+        {
+          this.coloredObjectChooserPanel.setEnabled(false);
+          this.colorValueSlidersPanel.setEnabled(false);
+          this.btReceiveImages.setEnabled(false);
+//          if(colorValueSlidersPanel.showColoredPixels())
+//          {
+//            sendShowObjectsPixels(colorClass, "on");
+//          }
+          sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
+          try 
+          {
+            Thread.sleep(30);
+          }
+          catch (Exception ex)
+          {}
+          sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("off"));
+          try 
+          {
+            Thread.sleep(30);
+          }
+          catch (Exception ex)
+          {}
+          if(!sendColorCalibCommand(colorClass, "on"))
+          {
+            this.coloredObjectChooserPanel.setEnabled(true);
+            this.colorValueSlidersPanel.setEnabled(true);
+            this.btReceiveImages.setEnabled(true);
+            btCalibrate.setSelected(false);
+            
+            try 
+            {
+              Thread.sleep(30);
+            }
+            catch (Exception ex)
+            {}
+            sendShowObjectsPixels(colorClass, "on");
+          }
+        }
+      }
+      else
+      {
+        for(Colors.ColorClass c: Colors.ColorClass.values())
+        {
+          if
+          (
+            c == Colors.ColorClass.green || 
+            c == Colors.ColorClass.white || 
+            c == Colors.ColorClass.orange || 
+            c == Colors.ColorClass.yellow ||
+            c == Colors.ColorClass.skyblue || 
+            c == Colors.ColorClass.red || 
+            c == Colors.ColorClass.blue
+          )
+          {
+//            if(colorValueSlidersPanel.showColoredPixels())
+//            {
+              sendShowObjectsPixels(c, "off");
+//            }
+            sendColorCalibCommand(c, "off");          
+          }
+        }
+        try 
+        {
+          Thread.sleep(30);
+        }
+        catch (Exception ex)
+        {}
+        if(sendGetColorValueCommand(colorClass, "get"))
+        {
+          this.colorValueSlidersPanel.setEnabled(true);
+          this.coloredObjectChooserPanel.setEnabled(true);
+          this.btReceiveImages.setEnabled(true);
+        }
+        else
+        {
+          btCalibrate.setSelected(true);
+          this.colorValueSlidersPanel.setEnabled(false);
+          this.coloredObjectChooserPanel.setEnabled(false);
+          this.btReceiveImages.setEnabled(false);
+        }
+      }
+    }
   }//GEN-LAST:event_btCalibrateActionPerformed
 
   private void coloredObjectChooserPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_coloredObjectChooserPanelMouseClicked
   }//GEN-LAST:event_coloredObjectChooserPanelMouseClicked
+
+  private void jSliderStrengthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderStrengthStateChanged
+    setStrength(jSliderStrength.getValue());        
+    Double val = jSliderStrength.getValue() / 10.0;
+    if(this.parent.getMessageServer().isConnected())
+    {
+      sendCommand(new Command(getSetCalibStrength + ":set").addArg("calibrationStrength", val.toString()));
+    }
+  }//GEN-LAST:event_jSliderStrengthStateChanged
+
+  private void btCalibrateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btCalibrateMouseClicked
+    
+  }//GEN-LAST:event_btCalibrateMouseClicked
 
   @Override
   public void newObjectReceived(JanusImage object)
@@ -368,7 +465,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     }
   }
 
-  private void sendGetColorValueCommand(Colors.ColorClass colorClass, String mode)
+  private boolean sendGetColorValueCommand(Colors.ColorClass colorClass, String mode)
   {
     if(colorClass != null)
     {
@@ -413,11 +510,17 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           cmd.addArg(values[i][0], values[i][1]);
         }
       }
-      sendCommand(cmd);
+//      else
+//      {
+//        sendCommand(new Command(getSetCalibStrength + ":get"));  
+//       }
+      return sendCommand(cmd);
+        
     }
+    return false;
   }
 
-  private void sendColorCalibCommand(Colors.ColorClass colorClass, String arg)
+  private boolean sendColorCalibCommand(Colors.ColorClass colorClass, String arg)
   {
     String cmdString = toggleCalibCommand;
     switch(colorClass)
@@ -450,7 +553,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           cmdString += "blueWaistBand";
         break;
     }
-    sendCommand(new Command(cmdString).addArg(arg));
+    return sendCommand(new Command(cmdString).addArg(arg));
   }
 
   @Override
@@ -568,6 +671,11 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     {
       this.image = image;
       this.backgroundImage = image.getRgb();
+      Dimension dim = imagePanel.getSize();
+      double heightPanel = dim.height;
+      double heightImage = image.getRgb().getHeight();
+      this.scale = heightPanel / heightImage;
+      
       this.setSize(imagePanel.getSize()); 
       getColor();
       this.repaint();
@@ -953,66 +1061,75 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     }
   }
   
-  private void sendCommand(Command command)
+  private boolean sendCommand(Command command)
   {
     final Command commandToExecute = command;
     final ColorCalibrationTool thisFinal = this;
-    this.parent.getMessageServer().executeSingleCommand(new CommandSender()
+    if(this.parent.getMessageServer().isConnected())
     {
-      @Override
-      public void handleResponse(byte[] result, Command originalCommand)
+      this.parent.getMessageServer().executeSingleCommand(new CommandSender()
       {
-        //getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
-        String strResult = new String(result);
-        if
-        (
-          originalCommand.getName().contains("ParameterList:") &&
-          originalCommand.getName().contains("ColorRegion_") &&
-          originalCommand.getName().contains(":get")
-        )
+        @Override
+        public void handleResponse(byte[] result, Command originalCommand)
         {
-          int idx = originalCommand.getName().indexOf("ColorRegion_");
-          String name = originalCommand.getName().substring(idx).replace("ColorRegion_", "").replace(":get", "");
-          
-          addUpdateControls(name, strResult);
-        }
-        else if((getSetCalibValuesField + "get").equals(originalCommand.getName()))
-        {
-          addUpdateControls("Field", strResult);
-        }
-        else if(originalCommand.getName().equals(cameraAutoParam)
-          && originalCommand.getArguments().size() >= 1
-          && originalCommand.getArguments().keySet().contains("off"))
-        {
-          String answer = new String(result);
-          if(answer.endsWith("parameter were saved"))
+          //getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
+          String strResult = new String(result);
+          if
+          (
+            originalCommand.getName().contains("ParameterList:") &&
+            originalCommand.getName().contains("ColorRegion_") &&
+            originalCommand.getName().contains(":get")
+          )
           {
-            JOptionPane.showMessageDialog(thisFinal,
-              "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+            int idx = originalCommand.getName().indexOf("ColorRegion_");
+            String name = originalCommand.getName().substring(idx).replace("ColorRegion_", "").replace(":get", "");
+
+            addUpdateControls(name, strResult);
           }
-          else
+          else if((getSetCalibValuesField + "get").equals(originalCommand.getName()))
           {
-            JOptionPane.showMessageDialog(thisFinal,
-                answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
+            addUpdateControls("Field", strResult);
           }
-          
+          else if(originalCommand.getName().equals(cameraAutoParam)
+            && originalCommand.getArguments().size() >= 1
+            && originalCommand.getArguments().keySet().contains("off"))
+          {
+            String answer = new String(result);
+            if(answer.endsWith("parameter were saved"))
+            {
+              JOptionPane.showMessageDialog(thisFinal,
+                "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else
+            {
+              JOptionPane.showMessageDialog(thisFinal,
+                  answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+          }
+
+        }//end handleResponse
+
+        @Override
+        public void handleError(int code)
+        {
+          JOptionPane.showMessageDialog(thisFinal,
+                "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
         }
 
-      }//end handleResponse
-
-      @Override
-      public void handleError(int code)
-      {
-        JOptionPane.showMessageDialog(thisFinal,
-              "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
-
-      @Override
-      public Command getCurrentCommand()
-      {
-        return commandToExecute;
-      }
-    }, command);
+        @Override
+        public Command getCurrentCommand()
+        {
+          return commandToExecute;
+        }
+      }, command);
+      return true;
+    }
+    else
+    {
+      this.parent.checkConnected();
+    }
+    return false;
   }//end sendCommand
 
   @Override
@@ -1034,6 +1151,8 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JSlider jSliderStrength;
+    private javax.swing.JTextField jTextFieldStrength;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel originalImageContainer;
     // End of variables declaration//GEN-END:variables

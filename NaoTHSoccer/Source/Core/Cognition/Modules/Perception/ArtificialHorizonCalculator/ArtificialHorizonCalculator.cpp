@@ -19,17 +19,17 @@
 #include <Tools/CameraGeometry.h>
 
 ArtificialHorizonCalculator::ArtificialHorizonCalculator()
-{
-}
+:
+  cameraID(CameraInfo::Bottom)
+{}
 
-void ArtificialHorizonCalculator::execute()
+void ArtificialHorizonCalculator::execute(CameraInfo::CameraID id)
 {
-  Vector2<double> a,b;
+  cameraID = id;
+  Vector2d a,b;
   CameraGeometry::calculateArtificialHorizon(getCameraMatrix(), getCameraInfo(), a, b);
   getArtificialHorizon() = ArtificialHorizon(a, b);
 }
 
 ArtificialHorizonCalculator::~ArtificialHorizonCalculator()
-{
-
-}
+{}

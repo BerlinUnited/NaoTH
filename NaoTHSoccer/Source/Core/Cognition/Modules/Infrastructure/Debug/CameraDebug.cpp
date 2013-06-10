@@ -32,8 +32,7 @@ void CameraDebug::execute()
   if(isAutoCalibratingCamera)
   {
     //disabled auto exposure time setting
-    //getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 1;
-    getCameraSettingsRequest().data[CameraSettings::AutoGain] = 1;
+    getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 1;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 1;
 
     timeWhenCameraCalibrationStopped = getFrameInfo();
@@ -61,8 +60,7 @@ void CameraDebug::execute()
 
     // deactivate the auto stuff
     //disabled auto exposure time setting
-    //getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
-    getCameraSettingsRequest().data[CameraSettings::AutoGain] = 0;
+    getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 0;
 
 

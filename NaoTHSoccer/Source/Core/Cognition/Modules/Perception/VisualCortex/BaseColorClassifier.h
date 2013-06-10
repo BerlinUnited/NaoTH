@@ -15,38 +15,56 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/DataStructures/Histogram.h"
+#include <Tools/Debug/DebugParameterList.h>
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/BaseColorRegionParameters.h"
 #include "Tools/ImageProcessing/ColorCalibrator.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
-
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(BaseColorClassifier)
   REQUIRE(ColoredGrid)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
-  REQUIRE(FieldColorPercept)
+  //REQUIRE(FieldColorPercept)
   REQUIRE(GoalPercept)
 
+  PROVIDE(FieldColorPercept)
   PROVIDE(BaseColorRegionPercept)
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(BaseColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
+class BaseColorClassifierParameters : public ParameterList
+{
+public:
+
+  double calibrationStrength;
+
+  BaseColorClassifierParameters()
+  : 
+    ParameterList("BCC_Parameters")
+  {
+    PARAMETER_REGISTER(calibrationStrength) = 1.8;        
+
+    syncWithConfig();
+
+    DebugParameterList::getInstance().add(this);
+  }
+
+  ~BaseColorClassifierParameters()
+  {
+    DebugParameterList::getInstance().remove(this);
+  } 
+
+};
 
 class BaseColorClassifier : public  BaseColorClassifierBase
 {
@@ -87,9 +105,11 @@ private:
 
   void runDebugRequests();
 
+  BaseColorClassifierParameters params;
+
   BaseColorRegionParameters regionParams;
   ColorTable64& cTable;
-  const Histogram& histogram;
+  const Histograms& histogram;
   const ColoredGrid& coloredGrid;
 
   unsigned int fieldHist[3][COLOR_CHANNEL_VALUE_COUNT];
@@ -99,6 +119,7 @@ private:
   double fieldCalibMeanCountY;
 
   int calibCount;
+  bool calibrating;
 
   RingBufferWithSum<int, 100> sampleMinDistVu;
   RingBufferWithSum<int, 100> sampleMaxDistVu;

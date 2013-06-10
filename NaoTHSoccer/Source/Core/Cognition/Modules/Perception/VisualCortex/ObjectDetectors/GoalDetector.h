@@ -35,16 +35,22 @@
 
 BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
 //  REQUIRE(FieldPercept)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   
   PROVIDE(GoalPercept)
+  PROVIDE(GoalPerceptTop)
 END_DECLARE_MODULE(GoalDetector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -56,9 +62,17 @@ public:
   GoalDetector();
   ~GoalDetector(){};
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
 
+  void execute()
+  {
+     execute(CameraInfo::Top);
+     execute(CameraInfo::Bottom);
+  };
+ 
 private:
+  CameraInfo::CameraID cameraID;
+
   class Blob;
 
   class Candidate
@@ -73,6 +87,7 @@ private:
   static const int maxNumberOfCandidates = 10;
 
   BlobFinder blobFinder;
+  BlobFinder blobFinderBottom;
 
   /** */
   int scanForCandidates(
@@ -136,11 +151,89 @@ private:
 
   };//end class Blob
 
-
-  const ColorClassificationModel& getColorTable64() const
+  BlobFinder& getBlobFinder()
   {
-    return getColorClassificationModel();
+    if(cameraID == CameraInfo::Top)
+    {
+      return blobFinder;
+    }
+    else
+    {
+      return blobFinderBottom;
+    }
   }
+
+  const Image& getImage() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getImageTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getImage();
+    }
+  };
+
+  const CameraMatrix& getCameraMatrix() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getCameraMatrixTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getCameraMatrix();
+    }
+  };
+
+  const ArtificialHorizon& getArtificialHorizon() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getArtificialHorizonTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getArtificialHorizon();
+    }
+  };
+
+ const ColorClassificationModel& getColorTable64() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getColorClassificationModelTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getColorClassificationModel();
+    }
+  };
+
+   const ColoredGrid& getColoredGrid() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getColoredGridTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getColoredGrid();
+    }
+  };
+
+  GoalPercept& getGoalPercept()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return GoalDetectorBase::getGoalPerceptTop();
+    }
+    else
+    {
+      return GoalDetectorBase::getGoalPercept();
+    }
+  };
 
 };//end class GoalDetector
 

@@ -1,0 +1,85 @@
+option decide_game_state 
+{  
+  common decision {
+    if (game.state == _initial_)
+      goto _initial;
+    else if (game.state == ready)
+      goto ready;
+    else if (game.state == set)
+      goto set;
+    else if (game.state == penalized)
+      goto penalized;
+    else if (game.state == finished)
+      goto _initial;
+    else if(game.state == playing)
+      goto playing;
+    else if(game.state == unknown)
+      goto dont_know_what_to_do;
+  }
+    
+  initial state _initial {
+    action
+    {
+      game.current_mode = init;
+      motion.type = init;
+      head.control_mode = stay_as_forced;
+    }
+  }
+  
+  state ready {
+    action
+    {
+      game.current_mode = ready;
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+      fall_down_and_stand_up();
+    }
+  }
+  
+  state set {
+    action
+    {
+      game.current_mode = set;
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+    }
+  }
+  
+  
+  state playing {
+    action 
+    {
+      game.current_mode = playing;
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+      fall_down_and_stand_up();
+    }
+  }
+  
+  state penalized {
+    action
+    {
+      game.current_mode = penalized;
+      motion.type = stand;
+      head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+    }
+  }
+  
+  state finished {
+    action
+    {
+      game.current_mode = finished;
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+    }
+  }
+
+  state dont_know_what_to_do {
+    action
+    {
+      game.current_mode = unknown;
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+    }
+  }
+}

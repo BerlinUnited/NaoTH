@@ -18,8 +18,7 @@ option decide_penalty_role
   {
     action
     {
-      team.is_playing_as_striker = false;
-      playing_penalty_goalie_with_dive();
+      //team.is_playing_as_striker = false;
     }
   }
 
@@ -27,7 +26,7 @@ option decide_penalty_role
   {
     action
     {
-      team.is_playing_as_striker = true;
+      //team.is_playing_as_striker = true;
       penalty_kicker();
     }
   }

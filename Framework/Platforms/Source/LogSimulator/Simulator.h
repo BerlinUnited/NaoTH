@@ -64,6 +64,7 @@ public:
     exludeMap["AccelerometerData"] = "";
     exludeMap["SensorJointData"] = "";
     exludeMap["Image"] = "";
+    exludeMap["ImageTop"] = "";
     exludeMap["FSRData"] = "";
     exludeMap["GyrometerData"] = "";
     exludeMap["InertialSensorData"] = "";
@@ -164,6 +165,7 @@ public:
   SIM_GET(SensorJointData);
   SIM_GET(AccelerometerData);
   SIM_GET(Image);
+  SIM_GET(ImageTop);
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);

@@ -143,9 +143,14 @@ void SimpleMotionBehaviorControl::testHead()
   DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_ball_modell",
     if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
     {
+      Vector2d xp = getBallModel().position;
+      double d = 250;
+      MODIFY("look_distance",d);
+      xp.normalize(d);
+
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
-      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().position.x;
-      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().position.y;
+      getHeadMotionRequest().targetPointInTheWorld.x = xp.x; //getBallModel().position.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = xp.y; //getBallModel().position.y;
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );

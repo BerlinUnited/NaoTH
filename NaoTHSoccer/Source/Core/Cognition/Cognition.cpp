@@ -50,6 +50,10 @@
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
 #include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 
+// neo vision
+#include "Modules/Perception/NeoVision/NeoVision.h"
+
+
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/BallLocator/ParticleFilterBallLocator/ParticleFilterBallLocator.h"
@@ -72,11 +76,13 @@
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
+#include "Modules/Modeling/Camera/CameraMatrixFinder.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl2011/XABSLBehaviorControl2011.h"
+#include "Modules/BehaviorControl/XABSLBehaviorControl2012/XABSLBehaviorControl2012.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 
@@ -100,7 +106,7 @@ Cognition::~Cognition()
 
 #define REGISTER_MODULE(module) \
   g_message("Register "#module);\
-  registerModule<module>(std::string(#module));
+  registerModule<module>(std::string(#module))
 
 
 void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -130,6 +136,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(CameraInfoSetter);
 
+  // pre-modelling
+  REGISTER_MODULE(CameraMatrixFinder);
+
   // perception
   REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(KinematicChainProvider);
@@ -143,6 +152,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(OpenCVDebug);
+  // neo vision
+  REGISTER_MODULE(NeoVision);
+
 
   // scene analysers 
   // (analyze the visual information seen in the image)
@@ -171,13 +183,14 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);
-  REGISTER_MODULE(CollisionDetector)
+  REGISTER_MODULE(CollisionDetector);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
   REGISTER_MODULE(CalibrationBehaviorControl);
   REGISTER_MODULE(XABSLBehaviorControl2011);
+  REGISTER_MODULE(XABSLBehaviorControl2012);
   REGISTER_MODULE(XABSLBehaviorControl);
 
   // experiment
@@ -266,7 +279,8 @@ void Cognition::call()
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
   DebugDrawings::getInstance().update();
-  DebugImageDrawings::getInstance().reset();
+  DebugBottomImageDrawings::getInstance().reset();
+  DebugTopImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call

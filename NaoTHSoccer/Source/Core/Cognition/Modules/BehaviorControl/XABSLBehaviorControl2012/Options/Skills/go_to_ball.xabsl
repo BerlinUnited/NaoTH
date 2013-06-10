@@ -1,0 +1,71 @@
+/** Scan mode for looking at the ball/searching for the ball */
+option go_to_ball
+{
+  /** The current difference to the wished angle */
+  float @distance [mm];
+
+  initial target state stand
+  {
+    decision
+    {
+      if (abs(value = ball.angle) > 20)
+        goto turn_to_ball;
+      else if (abs(value = ball.distance - @distance) > 100)
+        goto go_stright_ahead;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 0; //deg
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state go_stright_ahead
+  {
+    decision
+    {
+      if (abs(value = ball.angle) > 30)
+        goto turn_to_ball;
+      else if(abs(value = ball.distance - @distance) < 50)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = ball.distance - @distance; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 0; //deg
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state turn_to_ball
+  {
+    decision
+    {
+	    if (abs(value = ball.angle) < 10)
+	      goto stand;
+	    else
+	      stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = ball.angle; //deg
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+}

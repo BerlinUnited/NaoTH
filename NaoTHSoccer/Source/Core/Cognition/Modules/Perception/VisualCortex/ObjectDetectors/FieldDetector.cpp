@@ -14,8 +14,11 @@
 using namespace std;
 
 FieldDetector::FieldDetector()
+:
+  cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:TopCam:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:BottomCam:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
 }
 
 
@@ -24,8 +27,9 @@ FieldDetector::~FieldDetector()
 }
 
 
-void FieldDetector::execute()
+void FieldDetector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
@@ -64,15 +68,29 @@ void FieldDetector::execute()
       getFieldPercept().setValid(false);
     }
 
-
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
-      int idx = result.size()-1;
-      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-      for(unsigned int i = 0; i < result.size(); i++)
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:TopCam:mark_field_polygon",
+      if(cameraID == CameraInfo::Top)
       {
-        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
-        idx = i;
+        int idx = result.size()-1;
+        ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+        for(unsigned int i = 0; i < result.size(); i++)
+        {
+          TOP_LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
+          idx = i;
+        }
       }
     );
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:BottomCam:mark_field_polygon",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        int idx = result.size()-1;
+        ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+        for(unsigned int i = 0; i < result.size(); i++)
+        {
+          LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
+          idx = i;
+        }
+      }
+    );    
   }
 }//end execute

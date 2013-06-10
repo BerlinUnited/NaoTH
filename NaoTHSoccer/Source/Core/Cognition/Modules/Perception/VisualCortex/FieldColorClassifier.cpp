@@ -28,6 +28,8 @@ FieldColorClassifier::FieldColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:reset", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:enable_plot", " ", false);
+
   GT_TRACE("before FieldColorClassifier constructor memset");
   memset(&weightedHistV, 0, sizeof(weightedHistV));
   GT_TRACE("after FieldColorClassifier constructor memset");
@@ -45,7 +47,6 @@ void FieldColorClassifier::execute()
 void FieldColorClassifier::classify()
 {
   getFieldColorPercept().maxY = fieldParams.MaxBrightnessChannelValue;
-  getFieldColorPercept().maxU = fieldParams.MaxCromaBlueChannelValue;
   getFieldColorPercept().distV = fieldParams.CromaRedChannelDistance;
 
   DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:reset",
@@ -66,7 +67,7 @@ void FieldColorClassifier::classify()
   }
 
 
-  if(!getHistogram().colorChannelIsUptodate)
+  if(!getHistograms().colorChannelIsUptodate)
   {
     return;
   }
@@ -75,13 +76,22 @@ void FieldColorClassifier::classify()
   maxWeightedV = 0.0;
   indexV = 0;
 
+  double sumU = 0.0;
+  double meanU = 0.0;
+
+  double p = 1.0 / getColoredGrid().uniformGrid.numberOfGridPoints;
+
   STOPWATCH_START("FieldColorClassifier:Cr_filtering");
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
-    double mCr = max<int>(0,  128 - i);
-    double wCr = mCr / 128.0;
+    double mCr = max<int>(0,  160 - i);
+    double wCr = mCr / 160.0;
     
-    weightedHistV[i] = getHistogram().colorChannelHistogramField[i];
+    weightedHistV[i] = getHistograms().histogramV.rawData[i];
+    //histogram for blue => needed for later yellow and blue estimation
+    histU[i] = getHistograms().histogramU.rawData[i] * wCr;
+    sumU += histU[i];
+
     weightedHistV[i] *= wCr;
 
     // remember the maximal value
@@ -92,6 +102,28 @@ void FieldColorClassifier::classify()
     }
   }//end for
   STOPWATCH_STOP("FieldColorClassifier:Cr_filtering");
+
+  if(sumU == 0.0)
+    return;
+
+  for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+  {
+    histNormU[i] = histU[i] / sumU;
+    meanU += i * histNormU[i];
+  }
+
+  double z2U = 0.0;
+
+  for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+  {
+    double t = (meanU - histU[i]) * histNormU[i];
+    z2U += t * t;
+  }
+
+  double stdDevU = sqrt(z2U);
+
+  getFieldColorPercept().minU = (int) Math::clamp(meanU - stdDevU  * 0.5, 0.0, meanU);
+  getFieldColorPercept().maxU = (int) Math::clamp(meanU + stdDevU , meanU, (double) fieldParams.MaxCromaBlueChannelValue);
 
   getFieldColorPercept().set();
   getFieldColorPercept().lastUpdated = getFrameInfo();

@@ -30,10 +30,9 @@ option search_for_ball
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x;
-      head.point_in_world.y = ball.y;
+      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
@@ -58,8 +57,6 @@ option search_for_ball
     }
     action
     {
-      head.camera.id = bottom;
-      
       head.motion_type = look_at_point_on_the_ground;
       head.point_on_grond.x = attention.mi_point.x;
       head.point_on_grond.y = attention.mi_point.y;
@@ -81,41 +78,15 @@ option search_for_ball
     action
     {
       head.motion_type = search;
-      head.camera.id = bottom;
-      head.search.center.x = ball.x;
-      head.search.center.y = ball.y;
+
+      head.search.center.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.search.center.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.search.center.z = ball.radius;
       head.search.size.x = 200;
       head.search.size.y = 200;
       head.search.size.z = 0;
     }
   }
-
-  /*
-  state search_for_ball_near
-  {
-    decision
-    {
-      if (ball.was_seen)
-        goto look_at_ball_percept;
-      else if(head.executed_motion_type != search)
-        goto search_for_ball;
-      else
-        stay;
-    }
-    action
-    {
-      head.camera.id = bottom;
-      head.motion_type = search;
-      head.search.center.x = 800;
-      head.search.center.y = 0;
-      head.search.center.z = ball.radius;
-      head.search.size.x = 500;
-      head.search.size.y = 600;
-      head.search.size.z = 0;
-    }
-  }
-*/
   
   state look_at_ball
   {
@@ -133,10 +104,9 @@ option search_for_ball
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x;//ball.percept.x;
-      head.point_in_world.y = ball.y;//ball.percept.y;
+      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
+      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
@@ -158,10 +128,9 @@ option search_for_ball
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.x = ball.percept.x * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.y = ball.percept.y * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }

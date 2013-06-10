@@ -14,20 +14,34 @@
 
 
 GoalDetector::GoalDetector()
-  : blobFinder(getColoredGrid())
+: 
+  blobFinder(getColoredGridTop()),
+  blobFinderBottom(getColoredGrid()),
+  cameraID(CameraInfo::Top)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:mark_color_scans", "mark the results of the color scan algorithm", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:mark_post_scans", "mark the scanlines along the posts", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:spiderSearch", "enable output for spider search", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:draw_blobs", "draw search blobs", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:mark_color_scans", "mark the results of the color scan algorithm", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:mark_color_scans", "mark the results of the color scan algorithm", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:mark_goal", "mark the goal on the getImage()", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:mark_post_scans", "mark the scanlines along the posts", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:mark_post_scans", "mark the scanlines along the posts", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:back_proj_test", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:spiderSearch", "enable output for spider search", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:spiderSearch", "enable output for spider search", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:draw_blobs", "draw search blobs", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:draw_blobs", "draw search blobs", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:mark_goal", "mark the goal on the getImage()", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:mark_goal", "mark the goal on the getImage()", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:back_proj_test", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:back_proj_test", "...", false);
 }
 
-void GoalDetector::execute()
+void GoalDetector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
+
   getGoalPercept().reset();
 
   //if there is no field percept, then, there is also no goal ?!
@@ -245,8 +259,18 @@ void GoalDetector::execute()
             centroid.y,
             3000.0);
 
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-      CIRCLE_PX(ColorClasses::red, (int)centroid.x, (int)centroid.y, 5);
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_CIRCLE_PX(ColorClasses::red, (int)centroid.x, (int)centroid.y, 5);
+      }
+    );
+    
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        CIRCLE_PX(ColorClasses::red, (int)centroid.x, (int)centroid.y, 5);
+      }
     );
   }//end if
   /************************************************/
@@ -255,58 +279,120 @@ void GoalDetector::execute()
 
   /////////////////////////////////////////////////////////
   // do some drawings
-  DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-    for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+    if(cameraID == CameraInfo::Top)
     {
-      const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
-      ColorClasses::Color drawingColor;
-
-      if(post.type == GoalPercept::GoalPost::leftPost && post.positionReliable)
-        drawingColor=ColorClasses::gray;
-      else if (post.type == GoalPercept::GoalPost::rightPost && post.positionReliable)
-        drawingColor=ColorClasses::white;
-      else if (post.type == GoalPercept::GoalPost::unknownPost && post.positionReliable)
-        drawingColor=ColorClasses::pink;
-      else 
-        drawingColor=ColorClasses::red;
-
-      LINE_PX(drawingColor, post.topPoint.x, post.topPoint.y, post.basePoint.x, post.basePoint.y);
-      CIRCLE_PX(drawingColor, post.topPoint.x, post.topPoint.y, 3);
-      CIRCLE_PX(post.color, post.topPoint.x, post.topPoint.y, 2);
-      CIRCLE_PX(drawingColor, post.basePoint.x, post.basePoint.y, 3);
-      CIRCLE_PX(post.color, post.basePoint.x, post.basePoint.y, 2);
-    }//end for
-  );
-
-
-
-  DEBUG_REQUEST("ImageProcessor:GoalDetector:back_proj_test",
-    static GoalPercept::GoalPost lastGoalPost;
-    static unsigned int lastFrame = 0;
-
-    if(getGoalPercept().getNumberOfSeenPosts() > 0)
-    {
-      if(getFrameInfo().getFrameNumber() - lastFrame == 1)
+      for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
       {
-        double differenceInImage = (lastGoalPost.basePoint - getGoalPercept().getPost(0).basePoint).abs();
-        PLOT("GoalDetector:differenceInImage", differenceInImage);
+        const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
+        ColorClasses::Color drawingColor;
 
-        // back projection test
-        Vector2<int> projectedPost = 
-          CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-            Vector3<double>(lastGoalPost.position.x,
-                            lastGoalPost.position.y, 
-                            0.0)
-          );
+        if(post.type == GoalPercept::GoalPost::leftPost && post.positionReliable)
+          drawingColor=ColorClasses::gray;
+        else if (post.type == GoalPercept::GoalPost::rightPost && post.positionReliable)
+          drawingColor=ColorClasses::white;
+        else if (post.type == GoalPercept::GoalPost::unknownPost && post.positionReliable)
+          drawingColor=ColorClasses::pink;
+        else 
+          drawingColor=ColorClasses::red;
 
-        double backPojDifferenceInImage = (projectedPost - getGoalPercept().getPost(0).basePoint).abs();
-        PLOT("GoalDetector:backPojDifferenceInImage", backPojDifferenceInImage);
-      }//end if
-
-      lastGoalPost = getGoalPercept().getPost(0);
-      lastFrame = getFrameInfo().getFrameNumber();
+        TOP_LINE_PX(drawingColor, post.topPoint.x, post.topPoint.y, post.basePoint.x, post.basePoint.y);
+        TOP_CIRCLE_PX(drawingColor, post.topPoint.x, post.topPoint.y, 3);
+        TOP_CIRCLE_PX(post.color, post.topPoint.x, post.topPoint.y, 2);
+        TOP_CIRCLE_PX(drawingColor, post.basePoint.x, post.basePoint.y, 3);
+        TOP_CIRCLE_PX(post.color, post.basePoint.x, post.basePoint.y, 2);
+      }//end for
     }
   );
+
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+      {
+        const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
+        ColorClasses::Color drawingColor;
+
+        if(post.type == GoalPercept::GoalPost::leftPost && post.positionReliable)
+          drawingColor=ColorClasses::gray;
+        else if (post.type == GoalPercept::GoalPost::rightPost && post.positionReliable)
+          drawingColor=ColorClasses::white;
+        else if (post.type == GoalPercept::GoalPost::unknownPost && post.positionReliable)
+          drawingColor=ColorClasses::pink;
+        else 
+          drawingColor=ColorClasses::red;
+
+        LINE_PX(drawingColor, post.topPoint.x, post.topPoint.y, post.basePoint.x, post.basePoint.y);
+        CIRCLE_PX(drawingColor, post.topPoint.x, post.topPoint.y, 3);
+        CIRCLE_PX(post.color, post.topPoint.x, post.topPoint.y, 2);
+        CIRCLE_PX(drawingColor, post.basePoint.x, post.basePoint.y, 3);
+        CIRCLE_PX(post.color, post.basePoint.x, post.basePoint.y, 2);
+      }//end for
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:back_proj_test",
+    if(cameraID == CameraInfo::Top)
+    {
+      static GoalPercept::GoalPost lastGoalPost;
+      static unsigned int lastFrame = 0;
+
+      if(getGoalPercept().getNumberOfSeenPosts() > 0)
+      {
+        if(getFrameInfo().getFrameNumber() - lastFrame == 1)
+        {
+          double differenceInImage = (lastGoalPost.basePoint - getGoalPercept().getPost(0).basePoint).abs();
+          PLOT("GoalDetector:differenceInImage", differenceInImage);
+
+          // back projection test
+          Vector2<int> projectedPost = 
+            CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+              Vector3<double>(lastGoalPost.position.x,
+                              lastGoalPost.position.y, 
+                              0.0)
+            );
+
+          double backPojDifferenceInImage = (projectedPost - getGoalPercept().getPost(0).basePoint).abs();
+          PLOT("GoalDetector:backPojDifferenceInImage", backPojDifferenceInImage);
+        }//end if
+
+        lastGoalPost = getGoalPercept().getPost(0);
+        lastFrame = getFrameInfo().getFrameNumber();
+      }
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:back_proj_test",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      static GoalPercept::GoalPost lastGoalPost;
+      static unsigned int lastFrame = 0;
+
+      if(getGoalPercept().getNumberOfSeenPosts() > 0)
+      {
+        if(getFrameInfo().getFrameNumber() - lastFrame == 1)
+        {
+          double differenceInImage = (lastGoalPost.basePoint - getGoalPercept().getPost(0).basePoint).abs();
+          PLOT("GoalDetector:differenceInImage", differenceInImage);
+
+          // back projection test
+          Vector2<int> projectedPost = 
+            CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+              Vector3<double>(lastGoalPost.position.x,
+                              lastGoalPost.position.y, 
+                              0.0)
+            );
+
+          double backPojDifferenceInImage = (projectedPost - getGoalPercept().getPost(0).basePoint).abs();
+          PLOT("GoalDetector:backPojDifferenceInImage", backPojDifferenceInImage);
+        }//end if
+
+        lastGoalPost = getGoalPercept().getPost(0);
+        lastFrame = getFrameInfo().getFrameNumber();
+      }
+    }
+  );
+
 }//end horizonScan
 
 
@@ -369,9 +455,19 @@ void GoalDetector::estimatePostsByScanlines(
 
     postvector.push_back(post);
 
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_post_scans",
-      CIRCLE_PX(ColorClasses::green, basePoint.x, basePoint.y, 2);
-      CIRCLE_PX(ColorClasses::red, topPoint.x, topPoint.y, 2);
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_post_scans",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_CIRCLE_PX(ColorClasses::green, basePoint.x, basePoint.y, 2);
+        TOP_CIRCLE_PX(ColorClasses::red, topPoint.x, topPoint.y, 2);
+      }
+    );
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_post_scans",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        CIRCLE_PX(ColorClasses::green, basePoint.x, basePoint.y, 2);
+        CIRCLE_PX(ColorClasses::red, topPoint.x, topPoint.y, 2);
+      }
     );
   }//end for
 }//end estimatePostsByScanlines
@@ -397,8 +493,18 @@ Vector2<int> GoalDetector::scanColorLine(
     Pixel pixel = getImage().get(point.x, point.y);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_color_scans",
-      POINT_PX(ColorClasses::green, point.x, point.y);
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_color_scans",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_POINT_PX(ColorClasses::green, point.x, point.y);
+      }
+    );
+
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_color_scans",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        POINT_PX(ColorClasses::green, point.x, point.y);
+      }
     );
 
     if( currentPixelColor == color )
@@ -433,16 +539,34 @@ void GoalDetector::estimatePostsByBlobs(
       320);
 
     // draw expanded blob
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:draw_blobs",
-      LINE_PX(ColorClasses::green,
-        blob.vertices[7].x, blob.vertices[7].y, blob.vertices[0].x, blob.vertices[0].y);
-      for(int i = 0; i < 7; i++)
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:draw_blobs",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_LINE_PX(ColorClasses::green,
+          blob.vertices[7].x, blob.vertices[7].y, blob.vertices[0].x, blob.vertices[0].y);
+        for(int i = 0; i < 7; i++)
+        {
+          TOP_LINE_PX(ColorClasses::green,
+            blob.vertices[i].x, blob.vertices[i].y, blob.vertices[i+1].x, blob.vertices[i+1].y);
+        }
+        Vector2<int> meanPoint = blob.vertices.getMean();
+        TOP_CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
+      }
+    );
+
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:draw_blobs",
+      if(cameraID == CameraInfo::Bottom)
       {
         LINE_PX(ColorClasses::green,
-          blob.vertices[i].x, blob.vertices[i].y, blob.vertices[i+1].x, blob.vertices[i+1].y);
+          blob.vertices[7].x, blob.vertices[7].y, blob.vertices[0].x, blob.vertices[0].y);
+        for(int i = 0; i < 7; i++)
+        {
+          LINE_PX(ColorClasses::green,
+            blob.vertices[i].x, blob.vertices[i].y, blob.vertices[i+1].x, blob.vertices[i+1].y);
+        }
+        Vector2<int> meanPoint = blob.vertices.getMean();
+        CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
       }
-      Vector2<int> meanPoint = blob.vertices.getMean();
-      CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
     );
 
     Vector2<int> leftBottom = blob.getClosestPoint(Vector2<int>(0, getImage().cameraInfo.resolutionHeight));
@@ -451,8 +575,18 @@ void GoalDetector::estimatePostsByBlobs(
     Vector2<int> leftTop = blob.getClosestPoint(Vector2<int>(0, 0));
     Vector2<int> rightTop = blob.getClosestPoint(Vector2<int>(getImage().cameraInfo.resolutionWidth, 0));
   
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-      RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
+      }
+    );
+
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
+      }
     );
 
     double height = std::max(leftBottom.y, rightBottom.y) - std::min(leftTop.y, rightTop.y);
@@ -516,10 +650,20 @@ int GoalDetector::scanForCandidates(
       numOfPoints++;
       candidates[idx].color = currentPixelColor;
       
-      DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-        POINT_PX(currentPixelColor, point.x, point.y);
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+        if(cameraID == CameraInfo::Top)
+        {
+          TOP_POINT_PX(currentPixelColor, point.x, point.y);
+        }
       );
-    }else
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+        if(cameraID == CameraInfo::Bottom)
+        {
+          POINT_PX(currentPixelColor, point.x, point.y);
+        }
+      );
+    }
+    else
     {
       // last point of goal color
       if(numOfPoints > 0 && nonColorCount > maxNumberOfSkippedPixel)
@@ -530,18 +674,32 @@ int GoalDetector::scanForCandidates(
         candidates[idx].point = (runSum/numOfPoints + half);
         candidates[idx].angle = getPointsAngle(candidates[idx].point);
         
-        DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-          CIRCLE_PX(currentPixelColor, candidates[idx].point.x, candidates[idx].point.y, 2);
-          // draw the estimated angle
-          LINE_PX(ColorClasses::red, 
-            candidates[idx].point.x,
-            candidates[idx].point.y,
-            candidates[idx].point.x + (int)(candidates[idx].width * cos(candidates[idx].angle)*2) ,
-            candidates[idx].point.y + (int)(candidates[idx].width * sin(candidates[idx].angle)*2));
+        DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+          if(cameraID == CameraInfo::Top)
+          {
+            TOP_CIRCLE_PX(currentPixelColor, candidates[idx].point.x, candidates[idx].point.y, 2);
+            // draw the estimated angle
+            TOP_LINE_PX(ColorClasses::red, 
+              candidates[idx].point.x,
+              candidates[idx].point.y,
+              candidates[idx].point.x + (int)(candidates[idx].width * cos(candidates[idx].angle)*2) ,
+              candidates[idx].point.y + (int)(candidates[idx].width * sin(candidates[idx].angle)*2));
+            TOP_POINT_PX(ColorClasses::red, point.x, point.y);
+          }
         );
 
-        DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-          POINT_PX(ColorClasses::red, point.x, point.y);
+        DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+          if(cameraID == CameraInfo::Bottom)
+          {
+            CIRCLE_PX(currentPixelColor, candidates[idx].point.x, candidates[idx].point.y, 2);
+            // draw the estimated angle
+            LINE_PX(ColorClasses::red, 
+              candidates[idx].point.x,
+              candidates[idx].point.y,
+              candidates[idx].point.x + (int)(candidates[idx].width * cos(candidates[idx].angle)*2) ,
+              candidates[idx].point.y + (int)(candidates[idx].width * sin(candidates[idx].angle)*2));
+            POINT_PX(ColorClasses::red, point.x, point.y);
+          }
         );
 
         nonColorCount = 0;
@@ -549,10 +707,21 @@ int GoalDetector::scanForCandidates(
         runSum.x = 0.0;
         runSum.y = 0.0;
         idx++;
-      }else
+      }
+      else
       {
-        DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-          POINT_PX(ColorClasses::gray, point.x, point.y);
+        DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+          if(cameraID == CameraInfo::Top)
+          {
+            TOP_POINT_PX(ColorClasses::gray, point.x, point.y);
+          }
+        );
+
+        DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+          if(cameraID == CameraInfo::Bottom)
+          {
+            POINT_PX(ColorClasses::gray, point.x, point.y);
+          }
         );
         nonColorCount++;
       }
@@ -580,8 +749,18 @@ bool GoalDetector::checkIfPostReliable(Vector2<int>& post)
     Pixel pixel = getImage().get(post.x,i);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
-    DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-      POINT_PX(currentPixelColor, post.x, i);
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_POINT_PX(currentPixelColor, post.x, i);
+      }
+    );
+
+    DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        POINT_PX(currentPixelColor, post.x, i);
+      }
     );
 
     if(currentPixelColor == ColorClasses::green)
@@ -612,9 +791,20 @@ double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2<d
   moments.getAxes(major, minor);
 
   //draw the major axis of the distribution
-  DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-    CIRCLE_PX(ColorClasses::green, (unsigned int)(centroid.x), (unsigned int)(centroid.y), 3);
-    LINE_PX(ColorClasses::red, (unsigned int)(centroid.x), (unsigned int)(centroid.y), (unsigned int)(centroid.x+major.x), (unsigned int)(centroid.y+major.y));
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:mark_goal",
+    if(cameraID == CameraInfo::Top)
+    {
+      TOP_CIRCLE_PX(ColorClasses::green, (unsigned int)(centroid.x), (unsigned int)(centroid.y), 3);
+      TOP_LINE_PX(ColorClasses::red, (unsigned int)(centroid.x), (unsigned int)(centroid.y), (unsigned int)(centroid.x+major.x), (unsigned int)(centroid.y+major.y));
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:mark_goal",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      CIRCLE_PX(ColorClasses::green, (unsigned int)(centroid.x), (unsigned int)(centroid.y), 3);
+      LINE_PX(ColorClasses::red, (unsigned int)(centroid.x), (unsigned int)(centroid.y), (unsigned int)(centroid.x+major.x), (unsigned int)(centroid.y+major.y));
+    }
   );
 
   return major.angle();
@@ -682,14 +872,30 @@ GoalDetector::Blob GoalDetector::spiderExpandArea(
 
       greenPointFound = greenPointFound || (currentPixelColor == ColorClasses::green && direction.x > 0);
 
-      DEBUG_REQUEST("ImageProcessor:GoalDetector:spiderSearch",
-        if(hasRightColor)
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:spiderSearch",
+        if(cameraID == CameraInfo::Top)
         {
-          POINT_PX(ColorClasses::gray, currentPoint.x, currentPoint.y);
+          if(hasRightColor)
+          {
+            TOP_POINT_PX(ColorClasses::gray, currentPoint.x, currentPoint.y);
+          }
+          else
+          {
+            TOP_POINT_PX(ColorClasses::black, currentPoint.x, currentPoint.y);
+          }
         }
-        else
+      );
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:spiderSearch",
+        if(cameraID == CameraInfo::Bottom)
         {
-          POINT_PX(ColorClasses::black, currentPoint.x, currentPoint.y);
+          if(hasRightColor)
+          {
+            POINT_PX(ColorClasses::gray, currentPoint.x, currentPoint.y);
+          }
+          else
+          {
+            POINT_PX(ColorClasses::black, currentPoint.x, currentPoint.y);
+          }
         }
       );
 
@@ -711,8 +917,18 @@ GoalDetector::Blob GoalDetector::spiderExpandArea(
     // additional treatement for border points ?!
     if(borderPointFound)
     {    
-      DEBUG_REQUEST("ImageProcessor:GoalDetector:spiderSearch",
-        POINT_PX(color, borderPoint.x, borderPoint.y);
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:TopCam:spiderSearch",
+        if(cameraID == CameraInfo::Top)
+        {
+          TOP_POINT_PX(color, borderPoint.x, borderPoint.y);
+        }
+      );
+
+      DEBUG_REQUEST("ImageProcessor:GoalDetector:BottomCam:spiderSearch",
+        if(cameraID == CameraInfo::Bottom)
+        {
+          POINT_PX(color, borderPoint.x, borderPoint.y);
+        }
       );
     }
   }// for i < directions

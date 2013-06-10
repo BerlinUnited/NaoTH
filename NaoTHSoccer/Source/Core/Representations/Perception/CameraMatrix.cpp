@@ -20,6 +20,7 @@ void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std
   // in particular, it cannot be -1 (!)
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_valid(representation.valid);
+  msg.set_timestamp(representation.timestamp);
   msg.mutable_pose()->mutable_translation()->set_x( representation.translation.x );
   msg.mutable_pose()->mutable_translation()->set_y( representation.translation.y );
   msg.mutable_pose()->mutable_translation()->set_z( representation.translation.z );
@@ -40,6 +41,7 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
 
   representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
   representation.valid = msg.valid();
+  representation.timestamp = msg.timestamp();
   representation.translation.x = msg.pose().translation().x();
   representation.translation.y = msg.pose().translation().y();
   representation.translation.z = msg.pose().translation().z();
@@ -49,4 +51,14 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
     representation.rotation[i].y = msg.pose().rotation(i).y();
     representation.rotation[i].z = msg.pose().rotation(i).z();
   }
+}//end deserialize
+
+void Serializer<CameraMatrixTop>::serialize(const CameraMatrixTop& representation, std::ostream& stream)
+{
+  Serializer<CameraMatrix>::serialize(representation, stream);
+}//end serialize
+
+void Serializer<CameraMatrixTop>::deserialize(std::istream& stream, CameraMatrixTop& representation)
+{
+  Serializer<CameraMatrix>::deserialize(stream, representation);
 }//end deserialize

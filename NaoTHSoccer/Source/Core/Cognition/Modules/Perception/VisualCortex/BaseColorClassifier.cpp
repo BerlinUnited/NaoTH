@@ -1,11 +1,20 @@
 #include "BaseColorClassifier.h"
 
+// Debug
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugModify.h"
+
 BaseColorClassifier::BaseColorClassifier()
 :
   cTable(getColorTable64()),
-  histogram(getHistogram()),
+  histogram(getHistograms()),
   coloredGrid(getColoredGrid()),
-  calibCount(0) ,
+  calibCount(0),
+  calibrating(false),
   orangeBallCalibRect("OrangeBall", ColorClasses::orange, 140, 155, 180, 170),
   yellowGoalPostLeftCalibRect("YellowGoalPostLeft", ColorClasses::yellow, 60, 40, 80, 150),
   yellowGoalPostRightCalibRect("YellowGoalPostRight", ColorClasses::yellow, 240, 40, 260, 150),
@@ -21,11 +30,13 @@ BaseColorClassifier::BaseColorClassifier()
   pinkWaistBandColorCalibrator("PinkWaistBand", ColorClasses::pink),
   whiteLinesColorCalibrator("WhiteLines", ColorClasses::white)
 {
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_field_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_ball_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_waistband_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_lines_in_image", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:field", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:line", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:ball", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", " ", false);
@@ -33,6 +44,7 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_field_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_line_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_ball_area", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_blue_goal_area", " ", false);
@@ -41,7 +53,7 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibration_areas:show_blueWaistBand_area", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data", " ", false);
-
+  
   lastMeanY = coloredGrid.meanBrightness;
   lastMeanU = coloredGrid.meanBlue;
   lastMeanV = coloredGrid.meanRed;
@@ -99,7 +111,6 @@ void BaseColorClassifier::execute()
     pinkWaistBandColorCalibrator.reset();
     whiteLinesColorCalibrator.reset();
   );
-
   calibrateColorRegions();
   initPercepts();
 
@@ -128,6 +139,7 @@ void BaseColorClassifier::calibrateColorRegions()
   chDist.v = 0;
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:ball",
+    orangeBallColorCalibrator.setStrength(params.calibrationStrength);
     orangeBallColorCalibrator.execute(getImage());
     orangeBallColorCalibrator.get(                chIdx, chDist);
     getBaseColorRegionPercept().orangeBall.set(   chIdx, chDist);
@@ -142,6 +154,7 @@ void BaseColorClassifier::calibrateColorRegions()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:yellow_goal",
+    yellowGoalColorCalibrator.setStrength(params.calibrationStrength);
     yellowGoalColorCalibrator.execute(getImage());
     yellowGoalColorCalibrator.get(                chIdx, chDist);
     getBaseColorRegionPercept().yellowGoal.set(   chIdx, chDist);
@@ -156,6 +169,7 @@ void BaseColorClassifier::calibrateColorRegions()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", 
+    blueGoalColorCalibrator.setStrength(params.calibrationStrength);
     blueGoalColorCalibrator.execute(getImage());
     blueGoalColorCalibrator.get(                  chIdx, chDist);
     getBaseColorRegionPercept().blueGoal.set(     chIdx, chDist);
@@ -170,6 +184,7 @@ void BaseColorClassifier::calibrateColorRegions()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", 
+    blueWaistBandColorCalibrator.setStrength(params.calibrationStrength);
     blueWaistBandColorCalibrator.execute(getImage());
     blueWaistBandColorCalibrator.get(             chIdx, chDist);
     getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
@@ -180,6 +195,7 @@ void BaseColorClassifier::calibrateColorRegions()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand",
+    pinkWaistBandColorCalibrator.setStrength(params.calibrationStrength);
     pinkWaistBandColorCalibrator.execute(getImage());
     pinkWaistBandColorCalibrator.get(             chIdx, chDist);
     getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
@@ -190,6 +206,7 @@ void BaseColorClassifier::calibrateColorRegions()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:line",
+    whiteLinesColorCalibrator.setStrength(params.calibrationStrength);
     whiteLinesColorCalibrator.execute(getImage());
     whiteLinesColorCalibrator.get(                chIdx, chDist);
     getBaseColorRegionPercept().whiteLine.set(    chIdx, chDist);

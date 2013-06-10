@@ -9,6 +9,10 @@
 // Chroma upsampling reference: "Fast Scheme for Image Size Change in the Compressed Domain"
 // http://vision.ai.uiuc.edu/~dugad/research/dct/index.html
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 #include "jpgd.h"
 #include <string.h>
 

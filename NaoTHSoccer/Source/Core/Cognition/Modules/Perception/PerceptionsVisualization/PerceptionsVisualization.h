@@ -19,6 +19,7 @@
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/ObjectPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -35,6 +36,8 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualization)
   REQUIRE(LinePercept)
   REQUIRE(ObjectPercept)
   REQUIRE(ScanLineEdgelPercept)
+
+  REQUIRE(CameraMatrix)
 
   REQUIRE(FieldInfo)
 

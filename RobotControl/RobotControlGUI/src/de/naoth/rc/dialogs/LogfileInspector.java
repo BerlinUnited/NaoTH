@@ -833,6 +833,7 @@ public class LogfileInspector extends AbstractDialog
       try
       {
         LogDataFrame imageFrame = frame.get("Image");
+        LogDataFrame imageTopFrame = frame.get("ImageTop");
         LogDataFrame infoFrame = frame.get("FrameInfo");
 
         if(imageFrame != null)
@@ -840,12 +841,19 @@ public class LogfileInspector extends AbstractDialog
             FrameInfo frameInfo = FrameInfo.parseFrom(infoFrame.data); 
             
             // create a file
-            File outFile = new File("image_export/"+file_name+"/"+frameInfo.getTime()+".png");
+            File outFile = new File("image_export/"+file_name+"/"+frameInfo.getTime()+"_bottom.png");
             outFile.mkdirs();
             
             ImageManagerImpl im = new ImageManagerImpl();
             JanusImage janusImage = im.convertByteArrayToType(imageFrame.data);
             ImageIO.write(janusImage.getRgb(), "PNG", outFile);
+            
+            File outFileTop = new File("image_export/"+file_name+"/"+frameInfo.getTime()+"_top.png");
+            outFileTop.mkdirs();
+            
+            ImageManagerImpl imTop = new ImageManagerImpl();
+            JanusImage janusImageTop = imTop.convertByteArrayToType(imageTopFrame.data);
+            ImageIO.write(janusImageTop.getRgb(), "PNG", outFileTop);
         }
         else
         {

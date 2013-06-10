@@ -3,18 +3,7 @@
 option penalty_set_penalized_play
 {  
   common decision {
-    /* do nothing if it is not our turn */
-    if(game.player_number == 1 && game.own_kickoff)
-    {
-      // goalie does not perform kickoff
-      goto _initial;
-    }
-    else if(game.player_number > 1 && !game.own_kickoff)
-    {
-      // attacker does not protect the goal
-      goto _initial;
-    }
-    else if (game.state == _initial_)
+    if (game.state == _initial_)
     {
       goto _initial;
     }
@@ -88,7 +77,7 @@ option penalty_set_penalized_play
     action
     {
       last_state_was_penalized = true;
-      sound.request = (state_time == 0) ? penalized : off;
+      //sound.request = (state_time == 0) ? penalized : off;
       head.control_mode = stay_as_forced;
       motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
     }

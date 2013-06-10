@@ -11,14 +11,23 @@
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
+:
+  cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:mark_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:scanlines", "mark the scan lines", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels", "mark the edgels on the image", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:mark_end_points_on_field", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:TopCam:scanlines", "mark the scan lines", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:BottomCam:scanlines", "mark the scan lines", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:use_iterative_edgel_detection", "...", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:mark_estimated_obstacles", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_end_points_on_field", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_end_points_on_field", "...", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:TopCam:use_iterative_edgel_detection", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:BottomCam:use_iterative_edgel_detection", "...", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_estimated_obstacles", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_estimated_obstacles", "...", false);
 }
 
 
@@ -26,8 +35,9 @@ ScanLineEdgelDetector::~ScanLineEdgelDetector()
 {}
 
 
-void ScanLineEdgelDetector::execute()
+void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
   getScanLineEdgelPercept().reset();
 
 
@@ -45,12 +55,19 @@ void ScanLineEdgelDetector::execute()
   edgelBrightnessLevel = BRIGHTNESS;
   edgelGrayThresholdLevel = GRAY_THRESHOLD;
 
-
-
   STOPWATCH_START("ScanLineEdgelDetector ~ find edgels");
   bool use_iterative_edgel_detection = false;
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:use_iterative_edgel_detection", 
-    use_iterative_edgel_detection = true;
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:use_iterative_edgel_detection", 
+    if(cameraID == CameraInfo::Top)
+    {
+      use_iterative_edgel_detection = true;
+    }
+  );
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:use_iterative_edgel_detection", 
+    if(cameraID == CameraInfo::Bottom)
+    {
+      use_iterative_edgel_detection = true;
+    }
   );
 
   if(use_iterative_edgel_detection)
@@ -103,73 +120,152 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   }//end for
 
 
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels",
+    if(cameraID == CameraInfo::Top)
     {
-      const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-      
-      CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
-      if(i > 0)
+      for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
       {
-        const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
-        LINE_PX(last_point.color,
-                last_point.posInImage.x, last_point.posInImage.y,
-                point.posInImage.x, point.posInImage.y);
-      }//end if
-    }//end for
+        const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+      
+        TOP_CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
+        if(i > 0)
+        {
+          const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
+          TOP_LINE_PX(last_point.color,
+                  last_point.posInImage.x, last_point.posInImage.y,
+                  point.posInImage.x, point.posInImage.y);
+        }//end if
+      }//end for
+    }
+  );
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+      {
+        const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+      
+        CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
+        if(i > 0)
+        {
+          const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
+          LINE_PX(last_point.color,
+                  last_point.posInImage.x, last_point.posInImage.y,
+                  point.posInImage.x, point.posInImage.y);
+        }//end if
+      }//end for
+    }
   );
 
   //obstacle detection vizualization
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_estimated_obstacles",
-    unsigned int size = getScanLineEdgelPercept().endPoints.size();
-    if (size >=2)
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_estimated_obstacles",
+    if(cameraID == CameraInfo::Top)
     {
-      int pointer = 0;
-      for (unsigned int i = 0;  i < getScanLineEdgelPercept().endPoints.size(); i++)
+      unsigned int size = getScanLineEdgelPercept().endPoints.size();
+      if (size >=2)
+      {
+        int pointer = 0;
+        for (unsigned int i = 0;  i < getScanLineEdgelPercept().endPoints.size(); i++)
+        {
+          const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+          if (point.color == (int) ColorClasses::white)
+          {
+            pointer++;
+          } 
+          else
+          {
+            if (pointer > 1)
+            {
+              while (pointer != 0)
+              {
+                const ScanLineEdgelPercept::EndPoint& point2 = getScanLineEdgelPercept().endPoints[i-pointer];
+                TOP_RECT_PX(ColorClasses::green, point2.posInImage.x - 3, point2.posInImage.y - 3, point2.posInImage.x + 3, point2.posInImage.y + 3);
+                pointer--;
+              }
+            }
+            pointer = 0;
+          }
+        }
+      }
+    }
+  );
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_estimated_obstacles",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      unsigned int size = getScanLineEdgelPercept().endPoints.size();
+      if (size >=2)
+      {
+        int pointer = 0;
+        for (unsigned int i = 0;  i < getScanLineEdgelPercept().endPoints.size(); i++)
+        {
+          const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+          if (point.color == (int) ColorClasses::white)
+          {
+            pointer++;
+          } 
+          else
+          {
+            if (pointer > 1)
+            {
+              while (pointer != 0)
+              {
+                const ScanLineEdgelPercept::EndPoint& point2 = getScanLineEdgelPercept().endPoints[i-pointer];
+                RECT_PX(ColorClasses::green, point2.posInImage.x - 3, point2.posInImage.y - 3, point2.posInImage.x + 3, point2.posInImage.y + 3);
+                pointer--;
+              }
+            }
+            pointer = 0;
+          }
+        }
+      }
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_end_points_on_field",
+    if(cameraID == CameraInfo::Top)
+    {
+      FIELD_DRAWING_CONTEXT;
+
+      for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
       {
         const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-        if (point.color == (int) ColorClasses::white)
-        {
-          pointer++;
-        } 
+
+        if(point.posInImage.y < 10) // close to the top
+          PEN("009900", 20);
         else
+          PEN(ColorClasses::colorClassToHex(point.color), 20);
+
+        CIRCLE(point.posOnField.x, point.posOnField.y, 10);
+        if(i > 0)
         {
-          if (pointer > 1)
-          {
-            while (pointer != 0)
-            {
-              const ScanLineEdgelPercept::EndPoint& point2 = getScanLineEdgelPercept().endPoints[i-pointer];
-              RECT_PX(ColorClasses::green, point2.posInImage.x - 3, point2.posInImage.y - 3, point2.posInImage.x + 3, point2.posInImage.y + 3);
-              pointer--;
-            }
-          }
-          pointer = 0;
+          const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
+          LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
         }
-
-      }
-
+      }//end for
     }
-    );
-
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_end_points_on_field",
-    FIELD_DRAWING_CONTEXT;
-
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+  );
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_end_points_on_field",
+    if(cameraID == CameraInfo::Bottom)
     {
-      const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+      FIELD_DRAWING_CONTEXT;
 
-      if(point.posInImage.y < 10) // close to the top
-        PEN("009900", 20);
-      else
-        PEN(ColorClasses::colorClassToHex(point.color), 20);
-
-      CIRCLE(point.posOnField.x, point.posOnField.y, 10);
-      if(i > 0)
+      for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
       {
-        const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
-        LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
-      }
-    }//end for
+        const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+
+        if(point.posInImage.y < 10) // close to the top
+          PEN("009900", 20);
+        else
+          PEN(ColorClasses::colorClassToHex(point.color), 20);
+
+        CIRCLE(point.posOnField.x, point.posOnField.y, 10);
+        if(i > 0)
+        {
+          const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
+          LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
+        }
+      }//end for
+    }
   );
 
 }//end integrated_edgel_detection
@@ -190,7 +286,7 @@ void ScanLineEdgelDetector::iterative_edgel_detection()
   for (; start.x < (int) getImage().cameraInfo.resolutionWidth; start.x += step)
   {
     end.x = start.x;
-    Edgel tmp = getEdgel(start, end);
+    DoubleEdgel tmp = getEdgel(start, end);
     tmp.runID = 0;
     tmp.ScanLineID = scanLineID;
 
@@ -267,7 +363,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   // line scanning state
   bool lineBeginFound = false;
   //results
-  Edgel edgel; 
+  DoubleEdgel edgel; 
 
   Pixel pixel = getImage().get(point.x,point.y);
   int thisPixelBrightness = pixel.y;
@@ -285,10 +381,21 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     // TODO: possible optimization
     thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
 
-    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
-      //int b_offset = thisPixelBrightness / 10;
-      int b_offset = 0;
-      POINT_PX(thisPixelColor, point.x + b_offset, point.y);
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:scanlines",
+      if(cameraID == CameraInfo::Top)
+      {
+        //int b_offset = thisPixelBrightness / 10;
+        int b_offset = 0;
+        TOP_POINT_PX(thisPixelColor, point.x + b_offset, point.y);
+      }
+    );
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:scanlines",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        //int b_offset = thisPixelBrightness / 10;
+        int b_offset = 0;
+        POINT_PX(thisPixelColor, point.x + b_offset, point.y);
+      }
     );
 
     if (lineBeginFound) // scan a line
@@ -301,10 +408,18 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
         edgel.end = last_min_point;
         edgel.end_angle = Math::normalizeAngle(getPointsAngle(edgel.end) + Math::pi);
 
-        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
-          POINT_PX(ColorClasses::yellow, last_min_point.x, last_min_point.y);
+        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels",
+          if(cameraID == CameraInfo::Top)
+          {
+            TOP_POINT_PX(ColorClasses::yellow, last_min_point.x, last_min_point.y);
+          }
         );
-
+        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels",
+          if(cameraID == CameraInfo::Bottom)
+          {
+            POINT_PX(ColorClasses::yellow, last_min_point.x, last_min_point.y);
+          }
+        );
         edgel.center = (edgel.end + edgel.begin) / 2;
         edgel.center_angle = calculateMeanAngle(edgel.begin_angle, edgel.end_angle);
 
@@ -332,17 +447,36 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
           getScanLineEdgelPercept().add(edgel);
 
           // mark finished valid edgels
-          DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
-            LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
-            LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
-            LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+          DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels",
+            if(cameraID == CameraInfo::Top)
+            {
+              TOP_LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+              TOP_LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
+              TOP_LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+            }
+          );
+          DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels",
+            if(cameraID == CameraInfo::Bottom)
+            {
+              LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+              LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
+              LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+            }
           );
         }
 
-        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
-          POINT_PX(ColorClasses::red, last_point.x, last_point.y);
+        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels",
+          if(cameraID == CameraInfo::Top)
+          {
+            TOP_POINT_PX(ColorClasses::red, last_point.x, last_point.y);
+          }
         );
-
+        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels",
+          if(cameraID == CameraInfo::Bottom)
+          {
+            POINT_PX(ColorClasses::red, last_point.x, last_point.y);
+          }
+        );
         // begin a new edgel
         edgel.begin = last_point;
         edgel.begin_angle = getPointsAngle(edgel.begin);
@@ -412,11 +546,23 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     edgel.ScanLineID = scan_id;
     getScanLineEdgelPercept().add(edgel);
 
-    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
-      LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
-      LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
-      LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_edgels",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+        TOP_LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
+        TOP_LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+      }
     );
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_edgels",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        LINE_PX(ColorClasses::black,edgel.begin.x, edgel.begin.y,    edgel.begin.x  + (int)(10 * cos(edgel.begin_angle)),edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+        LINE_PX(ColorClasses::black,edgel.end.x,   edgel.end.y,      edgel.end.x    + (int)(10 * cos(edgel.end_angle + Math::pi)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle + Math::pi)));
+        LINE_PX(ColorClasses::pink ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+      }
+    );
+   
   }
 
 
@@ -457,9 +603,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 // scans at given x-coordinate to the top & cancels at  //
 // field end. starts at bottom line or given y      //
 //////////////////////////////////////////////////////////
-Edgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<int>& end)
+DoubleEdgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<int>& end)
 {
-  Edgel edgel; //result
+  DoubleEdgel edgel; //result
   unsigned int greenValue = 0;
   unsigned int greenCount = 0;
   unsigned int totalGreenCount = 0;
@@ -480,8 +626,17 @@ Edgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<i
     if (noGreenSeen > MAX_POSSIBLE_LINE_THICKNESS)
     {
       // mark the border
-      DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
-        CIRCLE_PX(ColorClasses::red, point.x, point.y, 5);
+      DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:scanlines",
+        if(cameraID == CameraInfo::Top)
+        {
+          TOP_CIRCLE_PX(ColorClasses::red, point.x, point.y, 5);
+        }
+      );
+      DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:scanlines",
+        if(cameraID == CameraInfo::Bottom)
+        {
+          CIRCLE_PX(ColorClasses::red, point.x, point.y, 5);
+        }
       );
       break;
     }
@@ -490,8 +645,17 @@ Edgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<i
     thisPixelBrightness = pixel.y;
     thisPixelColor = getColorClassificationModel().getColorClass(pixel);
 
-    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
-      POINT_PX(thisPixelColor, point.x, point.y);
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:scanlines",
+      if(cameraID == CameraInfo::Top)
+      {
+        TOP_POINT_PX(thisPixelColor, point.x, point.y);
+      }
+    );
+    DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:scanlines",
+      if(cameraID == CameraInfo::Bottom)
+      {
+        POINT_PX(thisPixelColor, point.x, point.y);
+      }
     );
 
     if (greenCount > 5)

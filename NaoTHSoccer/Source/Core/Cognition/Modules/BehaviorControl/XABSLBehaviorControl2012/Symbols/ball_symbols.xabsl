@@ -1,0 +1,137 @@
+/** Symbols for accessing ball position and speed */
+namespace ball_symbols("Ball Symbols") {
+  /** radius of ball */
+  float input ball.radius [mm];
+  
+  /** Position of the ball in x direction relative to the field in mm */
+  float input ball.x [mm];
+  /** Position of the ball in y direction relative to the field in mm */
+  float input ball.y [mm];
+
+  /** Position of the ball in previewed model */
+  float input ball.preview.x [mm];
+  float input ball.preview.y [mm];
+  float input ball.left_foot.preview.x [mm];
+  float input ball.left_foot.preview.y [mm];
+  float input ball.right_foot.preview.x [mm];
+  float input ball.right_foot.preview.y [mm];
+
+  /** Absolute ball speed */
+  float input ball.speed [mm/s];
+
+  /** x direction of speed */
+  float input ball.speed.x [mm/s];
+
+  /** y direction of speed */
+  float input ball.speed.y [mm/s];
+
+
+  /** Estimated position of the ball in x direction x seconds in the future */
+  float input ball.future.x "mm" (
+    /** seconds in the future (1-10 valid) */
+    t [1..10] "seconds";
+  );
+  /** Estimated position of the ball in y direction x seconds in the future */
+  float input ball.future.y "mm" (
+    /** seconds in the future (1-10 valid) */
+    t [1..10] "seconds";
+  );
+  /** Estimated distance of the ball x seconds in the future */
+  float input ball.future.distance "mm" (
+    /** seconds in the future (1-10 valid) */
+    t [1..10] "seconds";
+  );
+
+  /** Whether the ball was seen in the current frame */
+  bool input ball.was_seen;
+  /** Time since the ball was last seen in ms */
+  float input ball.time_since_last_seen "ms";
+  /** Time since the ball is seen in ms*/
+  float input ball.time_seen "ms";
+  
+
+  /** relative ball position to the robot based on a current percept*/
+  float input ball.percept.x "mm";
+  /** relative ball position to the robot based on a current percept*/
+  float input ball.percept.y "mm";
+
+
+  /** Distance of the ball in mm */
+  float input ball.distance "mm";
+  /** Angle to the ball in deg */
+  float input ball.angle [-180..180]"deg";
+
+  
+  /** Position of the ball center in the image */
+  float input ball.center_in_image.x "px";
+  /** Position of the ball center in the image */
+  float input ball.center_in_image.y "px";
+
+
+  /** Position of the ball in x direction relative to the field */
+  float input ball.position.field.x "mm";
+  /** Position of the ball in y direction relative to the field */
+  float input ball.position.field.y "mm";
+
+  /** Time since the team ball was update in ms */
+  float input ball.team.time_since_last_update "ms";
+  /** Position of the team ball in x direction relative to the field in mm */
+  float input ball.team.position.x "mm";
+  float input ball.team.position.y "mm";
+
+  float input ball.team.goalie.time_since_last_update [ms];
+  float input ball.team.goalie.position.x [mm];
+  float input ball.team.goalie.position.y [mm];
+
+  float input ball.team.striker.time_since_last_update [ms];
+  float input ball.team.striker.position.x [mm];
+  float input ball.team.striker.position.y [mm];
+
+  /** Position of the ball in x direction relative to the left foot */
+  float input ball.left_foot.x "mm";
+  /** Position of the ball in y direction relative to the left foot */
+  float input ball.left_foot.y "mm";
+
+  /** Position of the ball in x direction relative to the right foot */
+  float input ball.right_foot.x "mm";
+  /** Position of the ball in y direction relative to the right foot */
+  float input ball.right_foot.y "mm";
+
+/** the x part of the position behind the ball function */
+  float input posBehindBallPreview.x "mm"(
+    /** x coordinate*/
+    goToPointX "mm";
+    /** y coordinate*/
+    goToPointY "mm";
+    /** distance to the ball in x direction*/
+    goToPointDistanceX "mm";
+    /** distance to the ball in y direction*/
+    goToPointDistanceY "mm";
+  );
+
+/** the y part of the position behind the ball function */
+  float input posBehindBallPreview.y "mm"(
+    /** x coordinate*/
+    goToPointX "mm";
+    /** y coordinate*/
+    goToPointY "mm";
+    /** distance to the ball in x direction*/
+    goToPointDistanceX "mm";
+    /** distance to the ball in y direction*/
+    goToPointDistanceY "mm";
+  );
+
+/** the rotation of the position behind the ball function */
+  float input posBehindBallPreview.rot "deg"(
+    /** x coordinate*/
+    goToPointX "mm";
+    /** y coordinate*/
+    goToPointY "mm";
+    /** distance to the ball in x direction*/
+    goToPointDistanceX "mm";
+    /** distance to the ball in y direction*/
+    goToPointDistanceY "mm";
+  );
+
+}
+  

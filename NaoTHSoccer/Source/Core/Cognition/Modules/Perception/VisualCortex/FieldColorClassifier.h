@@ -20,7 +20,7 @@
 #include "Tools/Math/Vector3.h"
 
 //Perception
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/FieldColorParameters.h"
 #include "Tools/ImageProcessing/ColorCalibrator.h"
@@ -28,7 +28,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
-  REQUIRE(Histogram)
+  REQUIRE(Histograms)
   REQUIRE(ColoredGrid)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
@@ -60,6 +60,9 @@ private:
   
   double weightedHistV[COLOR_CHANNEL_VALUE_COUNT];
   int colorChannelHistogram[COLOR_CHANNEL_VALUE_COUNT];
+
+  double histU[COLOR_CHANNEL_VALUE_COUNT];
+  double histNormU[COLOR_CHANNEL_VALUE_COUNT];
 
   int sampleCount;
   int maxSampleCount;

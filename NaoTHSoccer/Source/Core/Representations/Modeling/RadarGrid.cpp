@@ -65,7 +65,7 @@ double RadarGrid::getDistanceInCorridor(double angle, double width) const
     if(
       distance < minDistance && 
       distance > 10 &&
-      abs(centerLine.minDistance(point)) < width / 2.0
+      fabs(centerLine.minDistance(point)) < width / 2.0
       )
       minDistance = distance;
   }

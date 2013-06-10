@@ -29,11 +29,10 @@ public class Scene extends BranchGroup
     for ( Enumeration e = getAllChildren(); e.hasMoreElements();)
     {
       Object o = e.nextElement();
-      if (Camera.class.isInstance(o))
+      if (o instanceof Camera)
       {
         Camera c = (Camera)o;
         c.addImage(image);
-        return;
       }
     }
   }

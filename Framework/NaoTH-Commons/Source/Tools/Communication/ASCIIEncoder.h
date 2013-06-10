@@ -8,7 +8,7 @@
  */
 
 #ifndef _ASCIIENCODER_H
-#define  _ASCIIENCODER_H
+#define _ASCIIENCODER_H
 
 #include <limits>
 #include <string>

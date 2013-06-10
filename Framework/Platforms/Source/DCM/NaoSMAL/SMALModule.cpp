@@ -12,6 +12,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <fstream>
+#include <cstdlib>
 
 
 //
@@ -88,6 +89,7 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
   sem(SEM_FAILED),
   command_data_available(false),
   sensor_data_available(false),
+  shutdown_requested(false),
   initialMotion(NULL)
 {
 
@@ -133,6 +135,7 @@ void SMALModule::init()
 
   theDCMHandler.init(pBroker);
 
+  // calculate the difference between the NaoTime and the DcmTime
   unsigned int delta = 0;
   dcmTime = theDCMHandler.getTime(delta);
   timeOffset = dcmTime - NaoTime::getNaoTimeInMilliSeconds();
@@ -200,7 +203,7 @@ void SMALModule::motionCallbackPre()
 {
   long long start = NaoTime::getSystemTimeInMicroSeconds();
 
-  // update the dcm time
+  // update the dcm time: NaoTime + (offset to DCM time)
   dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
 
   // we are at the moment shortly before the DCM commands are send to the
@@ -210,6 +213,13 @@ void SMALModule::motionCallbackPre()
   // what to do when the Controller is dead?
   if(runningEmergencyMotion())
   {
+    long long stop = NaoTime::getSystemTimeInMicroSeconds();
+    time_motionCallbackPre = (int)(stop - start);
+    return;
+  }
+  else if(shutdown_requested)
+  {
+    setWarningLED(true);
     long long stop = NaoTime::getSystemTimeInMicroSeconds();
     time_motionCallbackPre = (int)(stop - start);
     return;
@@ -274,6 +284,14 @@ void SMALModule::motionCallbackPost()
   long long start = NaoTime::getSystemTimeInMicroSeconds();
   static int drop_count = 10;
 
+
+  if(shutdown_requested)
+  {
+    // do nothing
+    return;
+  }
+
+
   NaoSensorData* sensorData = naoSensorData.writing();
 
   // current system time (System time, not nao time (!))
@@ -281,6 +299,35 @@ void SMALModule::motionCallbackPost()
 
   // read the sensory data from DCM to the shared memory
   theDCMHandler.readSensorData(sensorData->sensorsValue);
+
+  // check if chest button was pressed as a request to shutdown
+  // each cycle needs 10ms so if the button was pressed for 30 seconds
+  // these are 300 frames
+  sensorData->get(theButtonData);
+  if(theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
+  {
+    shutdown_requested = true;
+
+    if(fork() == 0)
+    {
+      // we are the child process
+
+      // play a sound that the user knows we recognized his shutdown request
+      system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
+
+      sleep(1); // give the parent process some time to set the LEDs
+
+      // we are the child process, do a blocking call to shutdown
+      system("/sbin/shutdown -h now");
+      std::cout << "System shutdown requested" << std::endl;
+
+      // await termination
+      while(1)
+      {
+        sleep(100);
+      }
+    }
+  }
 
   // save the data for the emergency case
   if(state == DISCONNECTED)
@@ -367,7 +414,7 @@ void SMALModule::exit()
 }//end exit
 
 
-void SMALModule::setWarningLED()
+void SMALModule::setWarningLED(bool red)
 {
   static naoth::LEDData theLEDData;
   static int count = 0;
@@ -381,9 +428,9 @@ void SMALModule::setWarningLED()
 
   for(int i=0; i<LEDData::numOfMultiLED; i++)
   {
-    theLEDData.theMultiLED[i][LEDData::RED] = 0;
+    theLEDData.theMultiLED[i][LEDData::RED] = red ? 1 : 0;
     theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
-    theLEDData.theMultiLED[i][LEDData::BLUE] = 1;
+    theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
   }//end for
 
   theDCMHandler.setSingleLED(theLEDData, dcmTime);

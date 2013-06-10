@@ -12,6 +12,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.PNGExportFileType;
 import de.naoth.rc.dialogs.Tools.PlainPDFExportFileType;
+import de.naoth.rc.dialogs.drawings.Circle;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
@@ -20,6 +21,7 @@ import de.naoth.rc.dialogs.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2013;
 import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
+import de.naoth.rc.dialogs.drawings.Pen;
 import de.naoth.rc.dialogs.drawings.RadarDrawing;
 import de.naoth.rc.dialogs.drawings.StrokePlot;
 import de.naoth.rc.manager.DebugDrawingManager;
@@ -32,9 +34,6 @@ import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
@@ -429,12 +428,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 
     private void btRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRotateActionPerformed
     {//GEN-HEADEREND:event_btRotateActionPerformed
-        if(this.btRotate.isSelected())
-        {
-            this.fieldCanvas.setRotation(-Math.PI*0.5);
-        }
-        else
-        {
+        if(this.btRotate.isSelected()) {
+            this.fieldCanvas.setRotation(Math.PI*0.5);
+        } else {
             this.fieldCanvas.setRotation(0);
         }
         this.fieldCanvas.repaint();
