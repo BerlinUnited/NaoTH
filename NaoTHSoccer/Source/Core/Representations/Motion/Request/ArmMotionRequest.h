@@ -55,6 +55,11 @@ public:
       set_right_arm_joint_stiffness,
       set_both_arms_joint_position,
       set_both_arms_joint_stiffness,
+
+      arms_none,
+      arms_back,
+      arms_straight,
+      
       numOfArmMotion
   };
 

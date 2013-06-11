@@ -100,6 +100,7 @@ void ArmMotionEngine::execute()
 
     case ArmMotionRequest::hold: hold(); break;
 
+    case ArmMotionRequest::arms_none: // do nothing
     default: break;
   }//end switch
 
