@@ -6,8 +6,8 @@
 * Definition of class SimpleMotionBehaviorControl
 */
 
-#ifndef __SimpleMotionBehaviorControl_H_
-#define __SimpleMotionBehaviorControl_H_
+#ifndef _SimpleMotionBehaviorControl_H_
+#define _SimpleMotionBehaviorControl_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -54,4 +54,4 @@ private:
 
 };//end class ImageProcessor
 
-#endif // __ImageProcessor_H_
+#endif // _SimpleMotionBehaviorControl_H_

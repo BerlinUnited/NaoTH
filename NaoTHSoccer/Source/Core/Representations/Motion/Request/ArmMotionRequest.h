@@ -6,8 +6,8 @@
 * Declaration of class ArmMotionRequest
 */
 
-#ifndef __ArmMotionRequest_h_
-#define __ArmMotionRequest_h_
+#ifndef _ArmMotionRequest_h_
+#define _ArmMotionRequest_h_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -40,27 +40,27 @@ public:
   /** ids for all motion types */
   enum ArmMotionID
   {
-      hold,
-      set_left_shoulder_position,
-      set_left_shoulder_stiffness,
-      set_left_elbow_position,
-      set_left_elbow_stiffness,
-      set_right_shoulder_position,
-      set_right_shoulder_stiffness,
-      set_right_elbow_position,
-      set_right_elbow_stiffness,
-      set_left_arm_joint_position,
-      set_left_arm_joint_stiffness,
-      set_right_arm_joint_position,
-      set_right_arm_joint_stiffness,
-      set_both_arms_joint_position,
-      set_both_arms_joint_stiffness,
+    hold,
+    set_left_shoulder_position,
+    set_left_shoulder_stiffness,
+    set_left_elbow_position,
+    set_left_elbow_stiffness,
+    set_right_shoulder_position,
+    set_right_shoulder_stiffness,
+    set_right_elbow_position,
+    set_right_elbow_stiffness,
+    set_left_arm_joint_position,
+    set_left_arm_joint_stiffness,
+    set_right_arm_joint_position,
+    set_right_arm_joint_stiffness,
+    set_both_arms_joint_position,
+    set_both_arms_joint_stiffness,
 
-      arms_none,
-      arms_back,
-      arms_straight,
+    arms_none,
+    arms_back,
+    arms_down,
       
-      numOfArmMotion
+    numOfArmMotion
   };
 
   /** constructor */
@@ -123,4 +123,4 @@ namespace naoth
   };
 }
 
-#endif // __ArmMotionRequest_h_
+#endif // _ArmMotionRequest_h_

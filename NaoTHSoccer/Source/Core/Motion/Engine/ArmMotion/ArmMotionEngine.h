@@ -48,7 +48,7 @@ public:
 private:
   //const MotionBlackBoard& theBlackBoard;
 
-  naoth::MotorJointData theMotorJointData;
+  naoth::MotorJointData theMotorJointDataOld;
   naoth::JointData theJointData;
 
   naoth::SensorJointData theSensorJointData;
@@ -80,6 +80,9 @@ private:
   // set all the joints with the same stiffness
   void setStiffness(double stiffness);
   void hold();
+
+  bool armsDown();
+  bool armsOnBack();
 
 };
 

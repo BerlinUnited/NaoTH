@@ -19,22 +19,27 @@ std::string ArmMotionRequest::getName(ArmMotionID id)
 {
   switch (id)
   {
-      case hold: return "hold";
-      case set_left_shoulder_position: return "set_left_shoulder_position";
-      case set_left_shoulder_stiffness: return "set_left_shoulder_stiffness";
-      case set_left_elbow_position: return "set_left_elbow_position";
-      case set_left_elbow_stiffness: return "set_left_elbow_stiffness";
-      case set_right_shoulder_position: return "set_right_shoulder_position";
-      case set_right_shoulder_stiffness: return "set_right_shoulder_stiffness";
-      case set_right_elbow_position: return "set_right_elbow_position";
-      case set_right_elbow_stiffness: return "set_right_elbow_stiffness";
-      case set_left_arm_joint_position: return "set_left_arm_joint_position";
-      case set_left_arm_joint_stiffness: return "set_left_arm_joint_stiffness";
-      case set_right_arm_joint_position: return "set_right_arm_joint_position";
-      case set_right_arm_joint_stiffness: return "set_right_arm_joint_stiffness";
-      case set_both_arms_joint_position: return "set_both_arms_joint_position";
-      case set_both_arms_joint_stiffness: return "set_both_arms_joint_stiffness";
-      default: return "unknown";
+    case hold: return "hold";
+    case set_left_shoulder_position: return "set_left_shoulder_position";
+    case set_left_shoulder_stiffness: return "set_left_shoulder_stiffness";
+    case set_left_elbow_position: return "set_left_elbow_position";
+    case set_left_elbow_stiffness: return "set_left_elbow_stiffness";
+    case set_right_shoulder_position: return "set_right_shoulder_position";
+    case set_right_shoulder_stiffness: return "set_right_shoulder_stiffness";
+    case set_right_elbow_position: return "set_right_elbow_position";
+    case set_right_elbow_stiffness: return "set_right_elbow_stiffness";
+    case set_left_arm_joint_position: return "set_left_arm_joint_position";
+    case set_left_arm_joint_stiffness: return "set_left_arm_joint_stiffness";
+    case set_right_arm_joint_position: return "set_right_arm_joint_position";
+    case set_right_arm_joint_stiffness: return "set_right_arm_joint_stiffness";
+    case set_both_arms_joint_position: return "set_both_arms_joint_position";
+    case set_both_arms_joint_stiffness: return "set_both_arms_joint_stiffness";
+
+    case arms_none: return "arms_none";
+    case arms_back: return "arms_back";
+    case arms_down: return "arms_down";
+
+    default: return "unknown";
   }///end switch
 }///end getName
 

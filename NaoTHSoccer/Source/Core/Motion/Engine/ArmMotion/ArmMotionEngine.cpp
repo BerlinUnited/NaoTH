@@ -100,10 +100,16 @@ void ArmMotionEngine::execute()
 
     case ArmMotionRequest::hold: hold(); break;
 
+    case ArmMotionRequest::arms_back: armsOnBack(); break;
+    case ArmMotionRequest::arms_down: armsDown(); break;
+
     case ArmMotionRequest::arms_none: // do nothing
     default: break;
   }//end switch
 
+
+  // copy the requested state
+  theMotorJointDataOld = getMotorJointData();
 }//end execute 
 
 void ArmMotionEngine::setLeftShoulderPosition(double shoulderPitch, double shoulderRoll) {
@@ -320,3 +326,61 @@ void ArmMotionEngine::hold()
   getMotorJointData().position[JointData::LElbowRoll] =
           getSensorJointData().position[JointData::LElbowRoll];
 }
+
+
+bool ArmMotionEngine::armsDown()
+{
+  const double maxSpeed = Math::fromDegrees(30);
+  double max_deviation = 0.0;
+
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(0);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(0);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(90);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(90);
+  target[JointData::RElbowRoll] = Math::fromDegrees(0);
+  target[JointData::LElbowRoll] = Math::fromDegrees(0);
+  target[JointData::RElbowYaw] = Math::fromDegrees(0);
+  target[JointData::LElbowYaw] = Math::fromDegrees(0);
+
+  // limit the max speed -----------------------------
+  double max_speed = maxSpeed * getRobotInfo().getBasicTimeStepInSecond();
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+  {
+    double s = target[i] - theMotorJointDataOld.position[i];
+    max_deviation = std::max(max_deviation, std::fabs(s));
+    s = Math::clamp(s, -max_speed, max_speed);
+    getMotorJointData().position[i] = theMotorJointDataOld.position[i] + s;
+  }
+
+  return max_deviation < max_speed;
+}//end armsDown
+
+
+bool ArmMotionEngine::armsOnBack()
+{
+  const double maxSpeed = Math::fromDegrees(30);
+  double max_deviation = 0.0;
+
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(0);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(0);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(119);
+  target[JointData::RElbowRoll] = Math::fromDegrees(60);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-60);
+  target[JointData::RElbowYaw] = Math::fromDegrees(-25);
+  target[JointData::LElbowYaw] = Math::fromDegrees(25);
+
+  // limit the max speed -----------------------------
+  double max_speed = maxSpeed * getRobotInfo().getBasicTimeStepInSecond();
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+  {
+    double s = target[i] - theMotorJointDataOld.position[i];
+    max_deviation = std::max(max_deviation, std::fabs(s));
+    s = Math::clamp(s, -max_speed, max_speed);
+    getMotorJointData().position[i] = theMotorJointDataOld.position[i] + s;
+  }
+
+  return max_deviation < max_speed;
+}//end armsOnBack
