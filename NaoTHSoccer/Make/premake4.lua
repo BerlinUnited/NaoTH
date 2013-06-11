@@ -98,7 +98,7 @@ solution "NaoTHSoccer"
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
 	links {"ws2_32"}
-	--debugdir ".."
+	debugdir "$(SolutionDir).."
   end
   
   configuration {"linux"}
