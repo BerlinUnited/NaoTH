@@ -75,7 +75,7 @@ void OpenCVImageLoader::main()
   printHelp();
   cout << directoryName << endl;
   char c;
-  while((c = getch()) && c != 'q' && c != 'x')
+  while((c = static_cast<char>(getch())) && c != 'q' && c != 'x')
   {
     if (c == 'd')
     {
