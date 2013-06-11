@@ -1,0 +1,57 @@
+option search_ball_back_rot{
+
+initial state turn_left {
+
+decision{
+    if(state_time>2500 )
+      goto turn_rigth;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -70;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 18;
+
+      head.control_mode = search_for_ball;
+}
+}
+
+state turn_rigth {
+
+decision{
+    if(state_time>2500 )
+      goto finish;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -70;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = -36;
+
+      head.control_mode = search_for_ball;
+
+}
+}
+
+target state finish {
+
+decision{
+      stay;
+}
+
+action{
+      motion.type = stand;
+}
+}
+
+}

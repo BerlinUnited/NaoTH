@@ -27,6 +27,7 @@ include "Options/Skills/sidekick_to_right.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/go_to_ball_with_USOA.xabsl";
+include "Options/Skills/search_ball_back_rot.xabsl";
 
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
@@ -52,9 +53,11 @@ include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_test_agent.xabsl";
-// Test agens (options) Penalty
+include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
+// Test agents (options) Penalty
 include "Options/Test/penalty_kicker_test_agent.xabsl";
-
+// Test agents (options) ball search
+include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 
 // Test options
 // Test options Kicks
@@ -71,13 +74,15 @@ include "Options/Test/walk/walk_circularly_x.xabsl";
 include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
-include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
+include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/obstacle_test_agent.xabsl";
 // Test options Penalty
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
+// Test options ball search
+include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
@@ -97,3 +102,4 @@ agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_b
 agent obstacle_test("obstacle_test", obstacle_test_agent);
 // Test agents Penalty
 agent penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
+agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);

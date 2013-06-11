@@ -26,9 +26,9 @@ option go_to_ball_with_USOA
   {
     decision
     {
-      else if(obstacle.ultrasound.left.distance < 400)
+      else if((obstacle.ultrasound.left.distance < 400)&&(state_time>1500))
         goto avoid_left;
-      else if(obstacle.ultrasound.right.distance < 400)
+      else if((obstacle.ultrasound.right.distance < 400)&&(state_time>1500))
         goto avoid_right;
       else if(action_done)
         goto finish;
@@ -45,6 +45,8 @@ option go_to_ball_with_USOA
   {
     decision
     {
+      else if(state_time > 3000)
+       goto go;
       else if(obstacle.ultrasound.left.distance < 400)
         stay;
       else if(obstacle.ultrasound.right.distance < 400)
@@ -62,7 +64,7 @@ option go_to_ball_with_USOA
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -60;
-      motion.walk_speed.rot = 0;
+      motion.walk_speed.rot = (ball.distance > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 
@@ -71,6 +73,8 @@ option go_to_ball_with_USOA
   {
     decision
     {
+      else if(state_time > 3000)
+        goto go;
       else if(obstacle.ultrasound.right.distance < 400)
         stay;
       else if(obstacle.ultrasound.left.distance < 400)
@@ -88,7 +92,7 @@ option go_to_ball_with_USOA
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 60;
-      motion.walk_speed.rot = 0;
+      motion.walk_speed.rot = (ball.distance > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 

@@ -1,0 +1,34 @@
+option search_ball_back_rot_test{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto do_search;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state do_search{
+    decision
+    {
+      else
+        stay;
+    }
+    action{
+      search_ball_back_rot();
+    }
+  }
+  
+}
