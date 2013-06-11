@@ -89,6 +89,7 @@ solution "NaoTHSoccer"
     defines { "NAO" }
     targetdir "../dist/Nao"
 	buildoptions {"-Wconversion"}
+	flags { "ExtraWarnings" }
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
