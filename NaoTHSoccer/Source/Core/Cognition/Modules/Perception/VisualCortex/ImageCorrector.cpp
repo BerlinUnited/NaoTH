@@ -58,9 +58,9 @@ void ImageCorrector::execute()
       {
         PixelT<unsigned short> newPixel;
         getImage().get(x, y, pixel);
-        newPixel.y = (getImage().shadingCorrection.get(0, x, y) * pixel.y) >> 10;
-        newPixel.u = (getImage().shadingCorrection.get(1, x, y) * pixel.u) >> 10;
-        newPixel.v = (getImage().shadingCorrection.get(2, x, y) * pixel.v) >> 10;
+        newPixel.y = static_cast<unsigned short>((getImage().shadingCorrection.get(0, x, y) * pixel.y) >> 10);
+        newPixel.u = static_cast<unsigned short>((getImage().shadingCorrection.get(1, x, y) * pixel.u) >> 10);
+        newPixel.v = static_cast<unsigned short>((getImage().shadingCorrection.get(2, x, y) * pixel.v) >> 10);
        
         pixel.y = (unsigned char) Math::clamp<unsigned short>(newPixel.y, 0, 255);
         pixel.u = (unsigned char) Math::clamp<unsigned short>(newPixel.u, 0, 255);
@@ -109,9 +109,9 @@ void ImageCorrector::correctBrightnessSimple()
 
   PixelT<unsigned short> meanMiddle;
 
-  meanMiddle.y = pix1.y + pix2.y + pix3.y + pix4.y;
-  meanMiddle.u = pix1.u + pix2.u + pix3.u + pix4.u;
-  meanMiddle.v = pix1.v + pix2.v + pix3.v + pix4.v;
+  meanMiddle.y = static_cast<unsigned short>(pix1.y + pix2.y + pix3.y + pix4.y);
+  meanMiddle.u = static_cast<unsigned short>(pix1.u + pix2.u + pix3.u + pix4.u);
+  meanMiddle.v = static_cast<unsigned short>(pix1.v + pix2.v + pix3.v + pix4.v);
 
   Pixel pixel;
 
@@ -121,62 +121,62 @@ void ImageCorrector::correctBrightnessSimple()
     {
       getImage().get(x, y, pixel);
       PixelT<unsigned short> corr;
-      corr.y = getImage().shadingCorrection.get(0, x, y);
-      corr.u = getImage().shadingCorrection.get(1, x, y);
-      corr.v = getImage().shadingCorrection.get(2, x, y);
+      corr.y = static_cast<unsigned short>(getImage().shadingCorrection.get(0, x, y));
+      corr.u = static_cast<unsigned short>(getImage().shadingCorrection.get(1, x, y));
+      corr.v = static_cast<unsigned short>(getImage().shadingCorrection.get(2, x, y));
 
       if(correctionCycle != 255)
       {
         if(pixel.y > 0)
         {
-          getImage().shadingCorrection.set(0, x, y, ((255 *  meanMiddle.y / pixel.y) + corr.y) / 2 );
+          getImage().shadingCorrection.set(0, x, y, static_cast<unsigned short>(((255 *  meanMiddle.y / pixel.y) + corr.y) / 2) );
         }
         else if(pixel.y == 0)
         {
-          getImage().shadingCorrection.set(0, x, y, (255 *  meanMiddle.y) + corr.y );
+          getImage().shadingCorrection.set(0, x, y, static_cast<unsigned short>((255 *  meanMiddle.y) + corr.y) );
         }
         if(pixel.u > 0)
         {
-          getImage().shadingCorrection.set(1, x, y, ((255 *  meanMiddle.u / pixel.u) + corr.u) / 2 );
+          getImage().shadingCorrection.set(1, x, y, static_cast<unsigned short>(((255 *  meanMiddle.u / pixel.u) + corr.u) / 2) );
         }
         else if(pixel.u == 0)
         {
-          getImage().shadingCorrection.set(1, x, y, (255 *  meanMiddle.u) + corr.u);
+          getImage().shadingCorrection.set(1, x, y, static_cast<unsigned short>((255 *  meanMiddle.u) + corr.u));
         }
         if(pixel.v > 0)
         {
-          getImage().shadingCorrection.set(2, x, y, ((255 *  meanMiddle.v / pixel.v) + corr.v) / 2 );
+          getImage().shadingCorrection.set(2, x, y, static_cast<unsigned short>(((255 *  meanMiddle.v / pixel.v) + corr.v) / 2) );
         }
         else if(pixel.v == 0)
         {
-          getImage().shadingCorrection.set(2, x, y, (255 *  meanMiddle.v) + corr.v);
+          getImage().shadingCorrection.set(2, x, y, static_cast<unsigned short>((255 *  meanMiddle.v) + corr.v));
         }
       }
       else
       {
         if(pixel.y > 0)
         {
-          getImage().shadingCorrection.set(0, x, y, 255 *  meanMiddle.y / pixel.y);
+          getImage().shadingCorrection.set(0, x, y, static_cast<unsigned short>(255 *  meanMiddle.y / pixel.y));
         }
         else if(pixel.y == 0)
         {
-          getImage().shadingCorrection.set(0, x, y, 255 *  meanMiddle.y);
+          getImage().shadingCorrection.set(0, x, y, static_cast<unsigned short>(255 *  meanMiddle.y));
         }
         if(pixel.u > 0)
         {
-          getImage().shadingCorrection.set(1, x, y, 255 *  meanMiddle.u / pixel.u);
+          getImage().shadingCorrection.set(1, x, y, static_cast<unsigned short>(255 *  meanMiddle.u / pixel.u));
         }
         else if(pixel.u == 0)
         {
-          getImage().shadingCorrection.set(1, x, y, 255 *  meanMiddle.u);
+          getImage().shadingCorrection.set(1, x, y, static_cast<unsigned short>(255 *  meanMiddle.u));
         }
         if(pixel.v > 0)
         {
-          getImage().shadingCorrection.set(2, x, y, 255 *  meanMiddle.v / pixel.v);
+          getImage().shadingCorrection.set(2, x, y, static_cast<unsigned short>(255 *  meanMiddle.v / pixel.v));
         }
         else if(pixel.v == 0)
         {
-          getImage().shadingCorrection.set(2, x, y, 255 *  meanMiddle.v);
+          getImage().shadingCorrection.set(2, x, y, static_cast<unsigned short>(255 *  meanMiddle.v));
         }
       }
     }

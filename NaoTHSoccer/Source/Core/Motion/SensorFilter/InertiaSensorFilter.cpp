@@ -79,7 +79,7 @@ void InertiaSensorFilter::execute()
     (getMotionStatus().currentMotion == motion::stand || getMotionStatus().currentMotion == motion::walk)
     //&& ( getSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
     && (getGroundContactModel().leftGroundContact || getGroundContactModel().rightGroundContact)
-    && abs(safeRawAngle.x) < p.calculatedAccLimit.x && abs(safeRawAngle.y) < p.calculatedAccLimit.y
+    && fabs(safeRawAngle.x) < p.calculatedAccLimit.x && fabs(safeRawAngle.y) < p.calculatedAccLimit.y
     )
   {
     // use a modeled acceleration, if the feet are on the ground

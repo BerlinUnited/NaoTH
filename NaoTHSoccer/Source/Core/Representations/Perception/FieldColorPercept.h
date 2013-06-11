@@ -55,7 +55,7 @@ public:
     borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
   }
 
-  inline bool isFieldColor(const int& yy, const int& cb, const int& cr) const
+  inline bool isFieldColor(int yy, int cb, int cr) const
   {
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }

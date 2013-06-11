@@ -55,9 +55,9 @@ public:
   Vector2<double> getBase() const { return base; }
 
 
-  double minDistance(Vector2<double> p) const
+  double minDistance(const Vector2d& p) const
   {
-    return std::abs(direction.x*(p.y-base.y)+direction.y*(p.x-base.x))/direction.abs();
+    return std::fabs(direction.x*(p.y-base.y)+direction.y*(p.x-base.x))/direction.abs();
   }
 
 };

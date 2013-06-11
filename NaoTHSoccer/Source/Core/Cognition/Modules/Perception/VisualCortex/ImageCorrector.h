@@ -25,9 +25,14 @@
 // Debug
 #include "Tools/Debug/DebugRequest.h"
 
+#ifndef WIN32
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 #include  <opencv2/core/core.hpp>
 #include  <opencv2/imgproc/imgproc.hpp>
-
+#ifndef WIN32
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 

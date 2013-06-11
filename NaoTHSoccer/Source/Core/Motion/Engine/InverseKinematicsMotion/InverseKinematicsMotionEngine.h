@@ -129,6 +129,15 @@ public:
     const naoth::GyrometerData& theGyrometerData,
     double (&position)[naoth::JointData::numOfJoint]);
 
+  bool rotationStabilize(
+    const RobotInfo& theRobotInfo,
+    const GroundContactModel& theGroundContactModel,
+    const InertialModel& theInertialModel,
+    const GyrometerData& theGyrometerData,
+    Pose3D& hip, 
+    const Pose3D& leftFoot, 
+    const Pose3D& rightFoot);
+
   /**
    * @return if stabilizer is working
    */
@@ -176,21 +185,22 @@ public:
     const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
 
+  void armsOnBack(
+    const RobotInfo& theRobotInfo,
+    const InverseKinematic::HipFeetPose& pose, 
+    double (&position)[naoth::JointData::numOfJoint]);
 
 private:
-
-  //const MotionBlackBoard& theBlackBoard;
-  
   IKParameters theParameters;
 
   Kinematics::InverseKinematics theInverseKinematics;
   
-  Vector3<double> theCoMControlResult; // save CoM control result to be reused
+  Vector3d theCoMControlResult; // save CoM control result to be reused
 
   PreviewController thePreviewController;
-  Vector3<double> thePreviewControlCoM;
-  Vector2<double> thePreviewControldCoM;
-  Vector2<double> thePreviewControlddCoM;
+  Vector3d thePreviewControlCoM;
+  Vector2d thePreviewControldCoM;
+  Vector2d thePreviewControlddCoM;
 
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
@@ -201,13 +211,9 @@ private:
 class InverseKinematicsMotionEngineService
 {
 public:
-  InverseKinematicsMotionEngineService() 
-    : 
-  theEngine(NULL) 
-  {
-  }
+  InverseKinematicsMotionEngineService() : theEngine(NULL) {}
 
-  virtual ~InverseKinematicsMotionEngineService()
+  virtual ~InverseKinematicsMotionEngineService() 
   {
     delete theEngine;
   }

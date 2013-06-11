@@ -53,7 +53,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
   if("unknown" != broadcast)
   {
     GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
-    broadcastAddress = g_inet_socket_address_new(address, port);
+    broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
     g_object_unref(address);
   }
 

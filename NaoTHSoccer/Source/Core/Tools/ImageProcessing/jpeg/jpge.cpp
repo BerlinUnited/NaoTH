@@ -5,6 +5,10 @@
 // v1.03, Apr. 16, 2011 - Added support for optimized Huffman code tables, optimized dynamic memory allocation down to only 1 alloc.
 //                        Also from Alex Evans: Added RGBA support, linear memory allocator (no longer needed in v1.03).
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 #include "jpge.h"
 
 #include <stdlib.h>

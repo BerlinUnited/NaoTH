@@ -8,8 +8,9 @@ using namespace std;
 
 void InertialSensorData::print(ostream& stream) const
 {
-  stream << "values:" << Math::toDegrees(data.x) << " "
-         << Math::toDegrees(data.y) << "\n";
+  stream << "values (deg):" << std::endl; 
+  stream << "x = " << Math::toDegrees(data.x) << std::endl; 
+  stream << "y = " << Math::toDegrees(data.y) << std::endl;
 }//end print
 
 void Serializer<InertialSensorData>::serialize(const InertialSensorData& representation, std::ostream& stream)
