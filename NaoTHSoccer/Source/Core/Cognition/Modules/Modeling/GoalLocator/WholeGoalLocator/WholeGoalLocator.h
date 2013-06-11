@@ -5,8 +5,8 @@
  * Declaration of class WholeGoalLocator
  */
 
-#ifndef __WholeGoalLocator_h_
-#define __WholeGoalLocator_h_
+#ifndef _WholeGoalLocator_h_
+#define _WholeGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -38,15 +38,18 @@
 
 BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(FieldSidePercept)
-  REQUIRE(GoalPercept)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(OdometryData)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
-  REQUIRE(CameraMatrix)
   REQUIRE(CameraInfo)
   REQUIRE(CompassDirection)
+
+  REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
   PROVIDE(CameraMatrixOffset)
   PROVIDE(SensingGoalModel)
@@ -82,6 +85,15 @@ private:
     double offsetY,
     const GoalPercept::GoalPost& post1,
     const GoalPercept::GoalPost& post2);
+
+private:
+  const GoalPercept& getGoalPercept() {
+    return WholeGoalLocatorBase::getGoalPerceptTop();
+  }
+
+  const CameraMatrix& getCameraMatrix() {
+    return WholeGoalLocatorBase::getCameraMatrixTop();
+  }
 };
 
-#endif //__WholeGoalLocator_h_
+#endif //_WholeGoalLocator_h_

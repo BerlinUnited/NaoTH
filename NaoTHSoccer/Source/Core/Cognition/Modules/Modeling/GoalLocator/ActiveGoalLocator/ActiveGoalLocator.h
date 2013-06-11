@@ -39,7 +39,10 @@
 
 BEGIN_DECLARE_MODULE(ActiveGoalLocator)
   REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  
   REQUIRE(PlayerInfo)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
@@ -110,6 +113,14 @@ private:
   //Tools
   std::string convertIntToString(int number);
 
+
+  const GoalPercept& getGoalPercept() {
+    return ActiveGoalLocatorBase::getGoalPerceptTop();
+  }
+
+  const CameraMatrix& getCameraMatrix() {
+    return ActiveGoalLocatorBase::getCameraMatrixTop();
+  }
 };
 
 #endif //_ActiveGoalLocator_h_
