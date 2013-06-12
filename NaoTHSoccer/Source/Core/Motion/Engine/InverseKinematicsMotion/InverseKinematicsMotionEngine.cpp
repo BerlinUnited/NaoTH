@@ -670,7 +670,7 @@ void InverseKinematicsMotionEngine::armsOnBack(
   else
   {
     target[JointData::RElbowRoll] = 0.0;
-    target[JointData::RElbowRoll] = 0.0;
+    target[JointData::LElbowRoll] = 0.0;
     // limit the max speed -----------------------------
     double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
     for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
