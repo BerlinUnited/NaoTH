@@ -82,9 +82,16 @@ void MotionEngine::execute()
   //
   currentlyExecutedMotion->execute();
 
+
   // TODO: a good place to execute arms?
-  theIKArmGrasping->execute();
-  theArmMotionEngine->execute();
+  // HACK: only certain motions allow arms
+  if ( getMotionStatus().currentMotion == motion::stand ||
+       getMotionStatus().currentMotion == motion::walk ||
+       getMotionStatus().currentMotion == motion::sit)
+  {
+    theIKArmGrasping->execute();
+    theArmMotionEngine->execute();
+  }
 
   getMotionStatus().currentMotionState = getMotionLock().state;
 }//end execute

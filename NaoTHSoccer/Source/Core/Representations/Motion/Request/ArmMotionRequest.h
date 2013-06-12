@@ -64,8 +64,12 @@ public:
   };
 
   /** constructor */
-  ArmMotionRequest() { }
-  ~ArmMotionRequest() { }
+  ArmMotionRequest() 
+    : 
+    id(arms_none) 
+  { }
+  
+  virtual ~ArmMotionRequest() { }
 
   void reset() { }
 
