@@ -83,8 +83,7 @@ public:
       time = 0;
 
       // set stiffness
-      for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++)
-      {
+      for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
         getMotorJointData().stiffness[i] = stiffness;
       }
     }
@@ -102,7 +101,8 @@ public:
     calculateTrajectory(getMotionRequest());
 
     time += getRobotInfo().basicTimeStep;
-    double k = std::min(time / totalTime, 1.0);
+    double t = std::min(time / totalTime, 1.0);
+    double k = 0.5*(1.0-cos(t*Math::pi));
 
     InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
     bool solved = false;
@@ -120,11 +120,8 @@ public:
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
 
-    if(getEngine().getParameters().arm.takeBack) {
-      getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
-    } else {
-      getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
-    }
+    getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
+    
 
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
@@ -155,8 +152,6 @@ public:
     }
 
 
-
-
     //if(theParameters.stand.stabilizeNeural)
     //  theEngine.feetStabilize(getMotorJointData().position);
 
@@ -170,41 +165,29 @@ private:
     const double* pos = getMotorJointData().position;
     double* stiff = getMotorJointData().stiffness;
     // Knee pitch
-    if ( pos[naoth::JointData::LKneePitch] > getMotorJointData().max[naoth::JointData::LKneePitch] )
-    {
+    if ( pos[naoth::JointData::LKneePitch] > getMotorJointData().max[naoth::JointData::LKneePitch] ) {
       stiff[naoth::JointData::LKneePitch] = -1;
-    }
-    else
-    {
+    } else {
       stiff[naoth::JointData::LKneePitch] = stiffness;
     }
-    if ( pos[naoth::JointData::RKneePitch] > getMotorJointData().max[naoth::JointData::RKneePitch] )
-    {
+    if ( pos[naoth::JointData::RKneePitch] > getMotorJointData().max[naoth::JointData::RKneePitch] ) {
       stiff[naoth::JointData::RKneePitch] = -1;
-    }
-    else
-    {
+    } else {
       stiff[naoth::JointData::RKneePitch] = stiffness;
     }
 
     // Ankle pitch
-    if ( pos[naoth::JointData::LAnklePitch] < getMotorJointData().min[naoth::JointData::LAnklePitch] )
-    {
+    if ( pos[naoth::JointData::LAnklePitch] < getMotorJointData().min[naoth::JointData::LAnklePitch] ) {
       stiff[naoth::JointData::LAnklePitch] = -1;
-    }
-    else
-    {
+    } else {
       stiff[naoth::JointData::LAnklePitch] = stiffness;
     }
-    if ( pos[naoth::JointData::RAnklePitch] < getMotorJointData().min[naoth::JointData::RAnklePitch] )
-    {
+    if ( pos[naoth::JointData::RAnklePitch] < getMotorJointData().min[naoth::JointData::RAnklePitch] ) {
       stiff[naoth::JointData::RAnklePitch] = -1;
-    }
-    else
-    {
+    } else {
       stiff[naoth::JointData::RAnklePitch] = stiffness;
     }
-  }
+  }//end turnOffStiffnessWhenJointIsOutOfRange
 
 private:
   double totalTime;
