@@ -42,6 +42,18 @@ namespace motion_symbols("Motion Symbols") {
   float output head.search.size.z [mm];
   bool output head.search.direction;
   
+  /** Remark: not all arm motion ids are listed here */
+  enum arm.type 
+  {
+    arms_none,
+    arms_back,
+    arms_down
+  };
+
+  /** The currently requested motion type for the arms. */
+  enum arm.type output arm.type;
+
+  
   enum motion.type 
   {
     empty,

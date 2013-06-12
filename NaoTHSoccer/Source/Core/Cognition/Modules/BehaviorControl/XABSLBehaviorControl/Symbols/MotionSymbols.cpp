@@ -48,6 +48,19 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("head.pitch", &getHeadPitchAngle);
   engine.registerDecimalInputSymbol("head.yaw", &getHeadYawAngle);
 
+
+  //arm motion
+  // enum type for motion
+  for(int i = 0; i <= ArmMotionRequest::numOfArmMotion; i++)
+  {
+    string str("arm.type.");
+    str.append(ArmMotionRequest::getName((ArmMotionRequest::ArmMotionID)i));
+    engine.registerEnumElement("arm.type", str.c_str(), i);
+  }//end for
+
+  engine.registerEnumeratedOutputSymbol("arm.type", "arm.type", &setArmRequestId, &getArmRequestId);
+
+
   // enum type for motion
   for(int i = 0; i <= motion::num_of_motions; i++)
   {
@@ -178,6 +191,14 @@ int MotionSymbols::getHeadMotionRequestId() {
 
 int MotionSymbols::getHeadMotionStatus() { 
   return (int)(theInstance->getMotionStatus().headMotion); 
+}
+
+void MotionSymbols::setArmRequestId(int value) { 
+  theInstance->getMotionRequest().armMotionRequest.id = (ArmMotionRequest::ArmMotionID)value; 
+}
+
+int MotionSymbols::getArmRequestId() { 
+  return (int)(theInstance->getMotionRequest().armMotionRequest.id); 
 }
 
 void MotionSymbols::setMotionRequestId(int value) { 

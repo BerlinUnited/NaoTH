@@ -70,6 +70,9 @@ private:
   static int getHeadMotionRequestId();
   static int getHeadMotionStatus();
 
+  static void setArmRequestId(int value);
+  static int getArmRequestId();
+
   static void setMotionRequestId(int value);
   static int getMotionRequestId();
   static int getMotionStatusId();

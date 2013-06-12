@@ -42,6 +42,15 @@ namespace internal_symbols("Internal Symbols") {
   enum head.control_mode internal head.control_mode;
 
 
+  enum arm.control_mode internal 
+  {
+    back,
+    normal
+  };
+
+  enum arm.control_mode internal arm.control_mode;
+  
+
   bool internal body.ready_to_walk;
 
   /* strategy symbols*/
