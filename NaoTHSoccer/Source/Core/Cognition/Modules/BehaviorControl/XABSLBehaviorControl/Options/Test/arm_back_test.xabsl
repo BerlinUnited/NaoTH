@@ -1,0 +1,48 @@
+option arm_back_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto follow_ball;
+      else
+        stay;
+    }
+    action {}
+  }
+
+
+  state follow_ball
+  {
+    decision {
+      else if(state_time > 3000)
+        goto follow_ball_safe;
+      else
+        stay;
+    }
+    action {
+      follow_ball_test();
+      arm.control_mode = normal;
+    }
+  }
+
+  state follow_ball_safe
+  {
+    decision {
+      else if(state_time > 3000)
+        goto follow_ball;
+      else
+        stay;
+    }
+    action {
+      follow_ball_test();
+      arm.control_mode = back;
+    }
+  }
+
+}

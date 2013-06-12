@@ -5,13 +5,13 @@ option head_control
   {
     if (head.control_mode == none)
       goto none;
-	else if (head.control_mode == stay_as_forced)
+    else if (head.control_mode == stay_as_forced)
       goto stay_as_forced;
     else if (head.control_mode == look_straight_ahead)
       goto look_straight_ahead;
     else if (head.control_mode == search_for_ball)
       goto search_for_ball;
-	else if (head.control_mode == look_around)
+    else if (head.control_mode == look_around)
       goto look_around;
   }
 

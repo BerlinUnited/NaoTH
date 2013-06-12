@@ -18,6 +18,9 @@ include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 
+// Arm Control
+include "Options/Skills/arms_control.xabsl";
+
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
@@ -84,6 +87,10 @@ include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
 
+// Test arms
+include "Options/Test/arm_back_test.xabsl";
+include "Options/Test/arm_back_test_agent.xabsl";
+
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 
@@ -103,3 +110,9 @@ agent obstacle_test("obstacle_test", obstacle_test_agent);
 // Test agents Penalty
 agent penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
 agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
+
+agent arm_back_test("arm_back_test_agent",arm_back_test_agent);
+
+
+
+
