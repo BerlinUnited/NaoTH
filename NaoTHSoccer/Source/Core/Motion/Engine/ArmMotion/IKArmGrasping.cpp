@@ -47,6 +47,17 @@ IKArmGrasping::~IKArmGrasping()
 void IKArmGrasping::execute() 
 {
   
+  /*
+  // TEST: calculate the position of the hands
+  Pose3D leftHand = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M;
+  Pose3D rightHand = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M;
+
+  Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  leftHand.translate(lHandOffset);
+  rightHand.translate(rHandOffset);
+  */
+
   if (getMotionRequest().graspRequest.graspingState == GraspRequest::none) 
   {
     currentState = motion::stopped;
@@ -65,8 +76,8 @@ void IKArmGrasping::execute()
       theCurrentPose.arms.left = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M;
       theCurrentPose.arms.right = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M;
 
-      Vector3<double> lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
-      Vector3<double> rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+      Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+      Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
       theCurrentPose.arms.left.translate(lHandOffset);
       theCurrentPose.arms.right.translate(rHandOffset);
       theCurrentPose.localInChest();
