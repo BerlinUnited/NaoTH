@@ -1,5 +1,5 @@
 echo "remove old database"
-del *.sdf
+del "../build/*.sdf"
 echo "create VS 2010 project files for SoccerNaoTH"
 premake4 vs2010
 pause

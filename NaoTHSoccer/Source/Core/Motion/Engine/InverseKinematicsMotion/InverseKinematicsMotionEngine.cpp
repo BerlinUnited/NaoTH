@@ -634,8 +634,8 @@ void InverseKinematicsMotionEngine::armsOnBack(
   target[JointData::LShoulderRoll] = Math::fromDegrees(90);
   target[JointData::RShoulderPitch] = Math::fromDegrees(119);
   target[JointData::LShoulderPitch] = Math::fromDegrees(119);
-  target[JointData::RElbowRoll] = Math::fromDegrees(30);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
+  target[JointData::RElbowRoll] = Math::fromDegrees(60);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-60);
   target[JointData::RElbowYaw] = Math::fromDegrees(-25);
   target[JointData::LElbowYaw] = Math::fromDegrees(25);
 

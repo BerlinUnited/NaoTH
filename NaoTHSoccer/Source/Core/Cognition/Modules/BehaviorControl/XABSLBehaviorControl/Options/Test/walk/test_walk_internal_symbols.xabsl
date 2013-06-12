@@ -1,0 +1,27 @@
+/* Symbols for internal communication between states or options */
+namespace test_walk_internal_symbols("Test Walk Internal Symbols") {
+
+  /* ugly,ugly,ugly */
+  enum test_walk_states internal 
+  {
+    forwards,
+    backwards,
+    sidewards_right,
+    sidewards_left,
+    forwards_left,
+    forwards_right,
+    backwards_right,
+    backwards_left,
+    rot_forwards_left,
+    rot_forwards_right,
+    rot_backwards_right,
+    rot_backwards_left,
+    walk_left_rot_left,
+    walk_left_rot_right,
+    walk_right_rot_right,
+    walk_right_rot_left
+  };
+  
+  enum test_walk_states internal test_walk.last_state;
+  
+}

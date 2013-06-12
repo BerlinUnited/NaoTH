@@ -63,7 +63,7 @@ public class ThreeDimensionViewer extends AbstractDialog
   private Scene activeScene;
   private static boolean java3dAvailable = true;
   private final Command getColorTableCommand =
-    new Command("representation:get").addArg("ColorTable64");
+    new Command("Cognition:representation:get").addArg("ColorTable64");
   private ObjectListener imageListener;
   private JanusImage image;
 

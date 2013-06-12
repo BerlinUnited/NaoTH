@@ -63,19 +63,4 @@ namespace game_symbols("Game Control Symbols") {
 
   float input game.msecsRemaining;
 
-  /* */
-  bool internal special_kickoff_done;
-
-  /* */
-  bool internal last_state_was_penalized;
-
-  /** Wether a situtation can be aborted */
-  bool internal situation.abortable;
-
-  /** Wether a common situation is allowed to interfere */
-  bool internal common_decision.allowed;
-
-  /** Will be set once to true if the ball was outside the center circle */
-  bool internal ball_was_outside_circle;
-
 }
