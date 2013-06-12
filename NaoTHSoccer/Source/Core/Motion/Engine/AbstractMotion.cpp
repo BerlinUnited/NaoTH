@@ -32,22 +32,21 @@ bool AbstractMotion::setStiffness(
   for (int i = begin; i < end; i++)
   {
     double d = stiffness[i] - theSensorJointData.stiffness[i];
-    if (fabs(d) < delta || i == JointData::HeadPitch || i==JointData::HeadYaw )
+    if (fabs(d) < 1e-2 || i == JointData::HeadPitch || i==JointData::HeadYaw )
     {
       readyJointNum++;
       theMotorJointData.stiffness[i] = stiffness[i];
-    } else
-    {
+    } else {
       d = Math::clamp(d, -delta, delta);
       theMotorJointData.stiffness[i] = theMotorJointData.stiffness[i] + d;
+    }
 
-      // ensure that we always get a valid stiffness, i.e, -1 or [0,1]
-      if (theMotorJointData.stiffness[i] < 0) // -1 is the special case
-      {
-        theMotorJointData.stiffness[i] = (d < 0)?-1:0;
-      } else {
-        theMotorJointData.stiffness[i] = std::min(theMotorJointData.stiffness[i],1.0);
-      }
+    // ensure that we always get a valid stiffness, i.e, -1 or [0,1]
+    if (theMotorJointData.stiffness[i] < 0) // -1 is the special case
+    {
+      theMotorJointData.stiffness[i] = (d > 0)?0:-1;
+    } else {
+      theMotorJointData.stiffness[i] = std::min(theMotorJointData.stiffness[i],1.0);
     }
   }//end for
 
