@@ -330,41 +330,49 @@ void ArmMotionEngine::hold()
 
 bool ArmMotionEngine::armsDown()
 {
-  const double maxSpeed = Math::fromDegrees(30);
-  double max_deviation = 0.0;
-
-  double target[JointData::LElbowYaw + 1];
-  target[JointData::RShoulderRoll] = Math::fromDegrees(0);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(0);
+  static double target[JointData::numOfJoint];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
   target[JointData::RShoulderPitch] = Math::fromDegrees(90);
   target[JointData::LShoulderPitch] = Math::fromDegrees(90);
   target[JointData::RElbowRoll] = Math::fromDegrees(0);
   target[JointData::LElbowRoll] = Math::fromDegrees(0);
-  target[JointData::RElbowYaw] = Math::fromDegrees(0);
-  target[JointData::LElbowYaw] = Math::fromDegrees(0);
+  target[JointData::RElbowYaw] = Math::fromDegrees(90);
+  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
 
-  // limit the max speed -----------------------------
-  double max_speed = maxSpeed * getRobotInfo().getBasicTimeStepInSecond();
-  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
-  {
-    double s = target[i] - theMotorJointDataOld.position[i];
-    max_deviation = std::max(max_deviation, std::fabs(s));
-    s = Math::clamp(s, -max_speed, max_speed);
-    getMotorJointData().position[i] = theMotorJointDataOld.position[i] + s;
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
+    getMotorJointData().stiffness[i] = theArmMotionParams.armStiffness;
   }
 
-  return max_deviation < max_speed;
+  double diffMax = 0.0;
+  diffMax = max(diffMax, fabs(target[JointData::RElbowRoll] - theMotorJointDataOld.position[JointData::RElbowRoll]));
+  diffMax = max(diffMax, fabs(target[JointData::LElbowRoll] - theMotorJointDataOld.position[JointData::LElbowRoll]));
+
+  bool result = false;
+
+  if( diffMax <= 0.02 )
+  {
+    result = moveToJoints(target);
+  }
+  else
+  {
+    target[JointData::RShoulderPitch] = Math::fromDegrees(119);
+    target[JointData::LShoulderPitch] = Math::fromDegrees(119);
+    target[JointData::RElbowYaw] = Math::fromDegrees(-25);
+    target[JointData::LElbowYaw] = Math::fromDegrees(25);
+    moveToJoints(target);
+  }
+
+  return result;
 }//end armsDown
 
 
 bool ArmMotionEngine::armsOnBack()
 {
-  const double maxSpeed = Math::fromDegrees(30);
-  double max_deviation = 0.0;
-
-  double target[JointData::LElbowYaw + 1];
-  target[JointData::RShoulderRoll] = Math::fromDegrees(0);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(0);
+  // hack
+  static double target[JointData::numOfJoint];
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
   target[JointData::RShoulderPitch] = Math::fromDegrees(119);
   target[JointData::LShoulderPitch] = Math::fromDegrees(119);
   target[JointData::RElbowRoll] = Math::fromDegrees(60);
@@ -372,15 +380,54 @@ bool ArmMotionEngine::armsOnBack()
   target[JointData::RElbowYaw] = Math::fromDegrees(-25);
   target[JointData::LElbowYaw] = Math::fromDegrees(25);
 
-  // limit the max speed -----------------------------
-  double max_speed = maxSpeed * getRobotInfo().getBasicTimeStepInSecond();
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
+    getMotorJointData().stiffness[i] = theArmMotionParams.armStiffness;
+  }
+
+  double diffMax = 0.0;
+  diffMax = max(diffMax, fabs(target[JointData::RShoulderPitch] - theMotorJointDataOld.position[JointData::RShoulderPitch]));
+  diffMax = max(diffMax, fabs(target[JointData::LShoulderPitch] - theMotorJointDataOld.position[JointData::LShoulderPitch]));
+  diffMax = max(diffMax, fabs(target[JointData::RElbowYaw] - theMotorJointDataOld.position[JointData::RElbowYaw]));
+  diffMax = max(diffMax, fabs(target[JointData::LElbowYaw] - theMotorJointDataOld.position[JointData::LElbowYaw]));
+
+  bool result = false;
+
+  if( diffMax <= 0.02 )
+  {
+    target[JointData::RShoulderRoll] = 0.0;
+    target[JointData::LShoulderRoll] = 0.0;
+    result = moveToJoints(target);
+  }
+  else
+  {
+    target[JointData::RElbowRoll] = 0.0;
+    target[JointData::LElbowRoll] = 0.0;
+    moveToJoints(target);
+  }
+
+  return result;
+}//end armsOnBack
+
+
+bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint])
+{
+  double max_deviation = 0.0;
+  double max_speed = Math::fromDegrees(theArmMotionParams.maxJointSpeed) * getRobotInfo().getBasicTimeStepInSecond();
+
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
   {
     double s = target[i] - theMotorJointDataOld.position[i];
     max_deviation = std::max(max_deviation, std::fabs(s));
-    s = Math::clamp(s, -max_speed, max_speed);
+
+    // HACK: move the Yaw joints faster than the others (needed by the armsOnBack motion)
+    if(i == JointData::RElbowYaw || i == JointData::LElbowYaw) {
+      s = Math::clamp(s, -max_speed*4, max_speed*4);
+    } else {
+      s = Math::clamp(s, -max_speed, max_speed);
+    }
+    
     getMotorJointData().position[i] = theMotorJointDataOld.position[i] + s;
   }
 
   return max_deviation < max_speed;
-}//end armsOnBack
+}//end moveToJoints

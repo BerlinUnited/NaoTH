@@ -11,6 +11,9 @@
 
 #include <ModuleFramework/Module.h>
 
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
+
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
 //#include <Representations/Infrastructure/CameraInfo.h>
@@ -44,6 +47,29 @@ public:
   ~ArmMotionEngine(){};
 
   void execute();
+
+private:
+  class ArmMotionParams : public ParameterList
+  {
+  public:
+    ArmMotionParams():ParameterList("ArmMotionParams")
+    {
+      PARAMETER_REGISTER(maxJointSpeed) = 40;
+      PARAMETER_REGISTER(armStiffness) = 0.2;
+
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    ~ArmMotionParams() {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    double maxJointSpeed;
+    double armStiffness;
+  };//end ArmMotionParams
+
+  ArmMotionParams theArmMotionParams;
 
 private:
   //const MotionBlackBoard& theBlackBoard;
@@ -81,9 +107,13 @@ private:
   void setStiffness(double stiffness);
   void hold();
 
+  ArmMotionRequest::ArmMotionID current_id;
+
   bool armsDown();
   bool armsOnBack();
 
+
+  bool moveToJoints(const double (&position)[JointData::numOfJoint]);
 };
 
 #endif	/* _ArmMotionEngine_H */
