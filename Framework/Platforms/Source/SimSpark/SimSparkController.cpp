@@ -174,7 +174,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   GSocketAddress* sockaddr = NULL;
   GError* conn_error = NULL;
 
-  GSocketConnectable* addr = g_network_address_new(host.c_str(), port);
+  GSocketConnectable* addr = g_network_address_new(host.c_str(),static_cast<guint16> (port));
   GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
   g_object_unref(addr);
 
@@ -246,10 +246,10 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   unsigned short debugPort = 5401;
   if (theGameData.teamColor == GameData::blue )
   {
-    debugPort = 5400 + theGameData.playerNumber;
+    debugPort = static_cast<short unsigned int> (5400 + theGameData.playerNumber);
   } else if (theGameData.teamColor == GameData::red )
   {
-    debugPort = 5500 + theGameData.playerNumber;
+    debugPort = static_cast<short unsigned int> (5500 + theGameData.playerNumber);
   }
 
   theDebugServer.start(debugPort, true);
@@ -738,7 +738,7 @@ bool SimSparkController::updateImage(const sexp_t* sexp)
     if (SexpParser::isVal(dsexp) && string(dsexp->val) == "d")
     {
       dsexp = dsexp->next;
-      int dl = theBase64Decoder.decode(dsexp->val, dsexp->val_used, theImageData);
+      int dl = theBase64Decoder.decode(dsexp->val,static_cast<int> (dsexp->val_used), theImageData);
       ASSERT(dl == (int) theImageSize);
       return true;
     }

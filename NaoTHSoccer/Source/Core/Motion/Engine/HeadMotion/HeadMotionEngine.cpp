@@ -463,7 +463,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& p
   // return value
   // is true if the end of the trajectory is reached
   bool finished = false;
-  int MAXSTATE = points.size();
+  int MAXSTATE = static_cast<int> (points.size());
 
   // this may happens if the trajectory changes
   if(headMotionState >= MAXSTATE)

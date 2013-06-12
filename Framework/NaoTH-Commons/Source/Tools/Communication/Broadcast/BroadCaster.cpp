@@ -47,7 +47,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(int));
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
 
   string broadcast = NetAddr::getBroadcastAddr(interfaceName);
   if("unknown" != broadcast)
@@ -141,7 +141,7 @@ void BroadCaster::socketSend(const std::string& data)
     return;
 
   GError *error = NULL;
-  int result = g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error);
+  int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
   if ( result != static_cast<int>(data.size()) )
   {
     g_warning("broadcast error, sended size = %d", result);

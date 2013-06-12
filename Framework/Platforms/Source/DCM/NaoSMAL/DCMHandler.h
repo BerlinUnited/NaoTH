@@ -42,9 +42,10 @@ class DCMHandler
 private:
   boost::shared_ptr<AL::ALBroker> pBroker;
   boost::shared_ptr<AL::ALMemoryProxy> al_memory;
+  boost::shared_ptr<AL::DCMProxy> al_dcmproxy;
+  // a tool for fast access in Read/Write to some variables of ALMemory
   AL::ALMemoryFastAccess al_memoryfast;
-  AL::DCMProxy * al_dcmproxy;
-    
+
   //Joints
   std::string DCMPath_MotorJointHardness[JointData::numOfJoint];
   std::string DCMPath_MotorJointPosition[JointData::numOfJoint];
@@ -104,7 +105,10 @@ private:
   AL::ALValue irCommands;
   AL::ALValue usSendCommands;
 
-    
+  /*
+  * Retrieving a single value from ALMemory
+  * For multiple data use al_memory->getListData() directly
+  */
   AL::ALValue getFromALMemory(const std::string& path);
   
   void sendToDCM(const std::string& path, const double value, const int timestamp);

@@ -82,7 +82,7 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   if (connection != NULL)
   {
     // send message size in 4 bytes
-    guint32 sizeFixed = size;
+    guint32 sizeFixed = static_cast<unsigned int> (size);
     g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
 
     gsize pos = 0;
@@ -143,7 +143,7 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
             throw "Connection Error";
 
           }
-            pos += read_bytes;
+            pos += static_cast<unsigned int> (read_bytes);
         } // end while read bytes
 
         //std::cout << " r ";

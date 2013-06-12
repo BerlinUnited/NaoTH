@@ -428,10 +428,10 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
     {
       middle += circleMiddlePoints[i];
     }
-    middle = middle / circleMiddlePoints.size();
+    middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-    Math::Matrix_mxn<double> A(circlePoints.size(), 3);
-    Math::Matrix_mxn<double> l(circlePoints.size(), 1);
+    Math::Matrix_mxn<double> A(static_cast<unsigned int> (circlePoints.size()), 3);
+    Math::Matrix_mxn<double> l(static_cast<unsigned int> (circlePoints.size()), 1);
     for(unsigned int i = 0; i < circlePoints.size(); i++)
     {
       /*

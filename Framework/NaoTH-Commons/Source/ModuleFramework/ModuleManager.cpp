@@ -59,7 +59,7 @@ void ModuleManager::calculateExecutionList()
     
   bool changed = true;
   std::list<std::string>::iterator start=moduleExecutionList.begin();
-  const int maxAttempts = moduleExecutionList.size()*10;
+  const int maxAttempts = static_cast<int> (moduleExecutionList.size())*10;
   int iterations = 0;
 
   while(changed && iterations < maxAttempts)
@@ -171,7 +171,7 @@ void ModuleManager::calculateExecutionListOld()
   unsigned int oldErrors = countExecutionListErrors(oldExecutionList, required, provided, false);
   unsigned int unsuccessfulAttempts = 0;
     
-  const unsigned int maxAttempts = oldExecutionList.size()*10;
+  const unsigned int maxAttempts = static_cast<unsigned int> (oldExecutionList.size())*10;
     
   // init to same seed to get "reliable" results
   srand(100);
@@ -185,8 +185,8 @@ void ModuleManager::calculateExecutionListOld()
       
     while(left == right)
     {
-      left = rand() % newExecutionList.size();
-      right = rand() % newExecutionList.size();
+      left = rand() % static_cast<int> (newExecutionList.size());
+      right = rand() % static_cast<int> (newExecutionList.size());
     }
       
     std::string buffer = newExecutionList[right];

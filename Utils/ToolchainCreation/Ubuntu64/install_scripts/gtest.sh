@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop at the first error
+set -e
+
 if [ "$EXTERN_DIR" == "" ]; then
   echo ".::ERROR::. enviroment variable EXTERN_DIR was not set"
   echo ".::ERROR::. will exit"
@@ -18,7 +21,7 @@ elif [ "$1" = "install" ]; then
   rm -Rf gtest-1.5.0
   unzip ../downloads/gtest-1.5.0.zip
   cd gtest-1.5.0/
-  ./configure --prefix=$EXTERN_DIR && make && make install
+  ./configure --prefix="$EXTERN_DIR" && make -j4 && make install
   cd ..  
 fi
 

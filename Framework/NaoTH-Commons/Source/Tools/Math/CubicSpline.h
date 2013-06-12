@@ -45,7 +45,7 @@ public:
 
     // Back-substitution
     theZ = std::vector<double>(n, 0);
-    for ( int i=n-2; i>0; i--)
+    for ( int i=static_cast<int> (n)-2; i>0; i--)
     {
       theZ[i] = (v[i] - h[i] * theZ[i+1] ) / u[i];
     }
@@ -54,7 +54,7 @@ public:
   // calculate y by given x
   double y(double x)
   {
-    int n = theSamples.size();
+    int n = static_cast<int> (theSamples.size());
     ASSERT(n >= 3);
     ASSERT( theSamples.front().x <= x );
     ASSERT( x <= theSamples.back().x );

@@ -86,7 +86,7 @@ string TeamCommEncoder::encode(const string& data)
 // from ASCII to protobuf
 string TeamCommEncoder::decode(const string& anscii)
 {
-  unsigned int messageSize = anscii.size();
+  unsigned int messageSize = static_cast<unsigned int> (anscii.size());
   if ( messageSize == 15 || messageSize == 20 )
   {
     naothmessages::TeamCommMessage msg;

@@ -135,7 +135,7 @@ void KeyFrameMotion::getNextTransition(std::string condition)
 {
   bool transitionFound = false;
 
-  for(size_t i = 0; i < currentMotionNet.getNumOfTransition(); i++)
+  for(int i = 0; i < static_cast<int> (currentMotionNet.getNumOfTransition()); i++)
   {
     if(currentMotionNet.getTransition(i).fromKeyFrame == currentKeyFrame.id)
     {

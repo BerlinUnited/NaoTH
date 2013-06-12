@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop at the first error
+set -e
+
 if [ "$EXTERN_DIR" == "" ]; then
   echo ".::ERROR::. enviroment variable EXTERN_DIR was not set"
   echo ".::ERROR::. will exit"
@@ -20,7 +23,7 @@ elif [ "$1" = "install" ]; then
   rm -Rf protobuf-2.4.1
   tar xvzf ../downloads/protobuf-2.4.1.tar.gz
   cd protobuf-2.4.1
-  ./configure --disable-shared --prefix=$EXTERN_DIR && make && make install
+  ./configure --disable-shared --prefix="$EXTERN_DIR" && make -j4 && make install
   cd ..  
 fi
 

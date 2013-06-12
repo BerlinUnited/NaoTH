@@ -98,7 +98,7 @@ Cognition::~Cognition()
 
 #define REGISTER_MODULE(module) \
   g_message("Register "#module);\
-  registerModule<module>(std::string(#module));
+  registerModule<module>(std::string(#module))
 
 
 void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -167,7 +167,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);
-  REGISTER_MODULE(CollisionDetector)
+  REGISTER_MODULE(CollisionDetector);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

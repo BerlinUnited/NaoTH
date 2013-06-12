@@ -458,7 +458,7 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   thePreviewControlddCoM = Vector2d(0,0);
   thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
   
-  unsigned int previewSteps = thePreviewController.previewSteps() - 1;
+  unsigned int previewSteps = static_cast<unsigned int> (thePreviewController.previewSteps() - 1);
   thePreviewController.clear();
 
   for (unsigned int i = 0; i < previewSteps; i++)
