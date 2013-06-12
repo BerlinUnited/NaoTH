@@ -81,12 +81,23 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JToggleButton" name="btReceiveImages">
+        <Component class="javax.swing.JToggleButton" name="btReceiveBottomImages">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive Images"/>
+            <Property name="text" type="java.lang.String" value="Receive Bottom Images"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveBottomImagesActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="btReceiveTopImages">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Receive Top Images"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveTopImagesActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JToggleButton" name="btAutoCameraParameters">

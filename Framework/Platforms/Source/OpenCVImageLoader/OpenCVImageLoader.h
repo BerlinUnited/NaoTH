@@ -10,6 +10,7 @@
 
 #define CYCLE_TIME 100
 
+//in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
 //include section

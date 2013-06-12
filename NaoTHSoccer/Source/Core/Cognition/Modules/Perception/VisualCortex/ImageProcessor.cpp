@@ -277,9 +277,9 @@ void ImageProcessor::execute()
 
   DEBUG_REQUEST("ImageProcessor:classify_ball_color",
     // color experiment
-    for(unsigned int x = 0; x < getImage().cameraInfo.resolutionWidth; x++)
+    for(unsigned char x = 0; x < getImage().cameraInfo.resolutionWidth; x++)
     {
-      for(unsigned int y = 0; y < getImage().cameraInfo.resolutionHeight; y++)
+      for(unsigned char y = 0; y < getImage().cameraInfo.resolutionHeight; y++)
       {
         Pixel pixel = getImage().get(x,y);
 
@@ -294,7 +294,8 @@ void ImageProcessor::execute()
           POINT_PX(pixel.y,pixel.u,pixel.v,x,y);
         else*/
           //naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
-          POINT_PX(t,0,0,x,y);
+          POINT_PX( (unsigned char) x, (unsigned char) y, t, 0, 0);
+
       }//end for
     }//end for
   );

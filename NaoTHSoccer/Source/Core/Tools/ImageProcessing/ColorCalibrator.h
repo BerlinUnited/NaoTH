@@ -51,7 +51,7 @@ public:
 
   void addCalibrationRect(CalibrationRect&);
   
-  void drawCalibrationAreaRects();
+  void drawCalibrationAreaRects(CameraInfo::CameraID camID);
 
 private:
   double strength;

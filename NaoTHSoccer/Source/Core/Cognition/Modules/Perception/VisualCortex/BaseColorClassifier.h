@@ -29,15 +29,20 @@
 
 BEGIN_DECLARE_MODULE(BaseColorClassifier)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
   REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
   //REQUIRE(FieldColorPercept)
   REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
 
   PROVIDE(FieldColorPercept)
+  PROVIDE(FieldColorPerceptTop)
   PROVIDE(BaseColorRegionPercept)
-  PROVIDE(ColorTable64)
+  PROVIDE(BaseColorRegionPerceptTop)
 END_DECLARE_MODULE(BaseColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -81,6 +86,16 @@ private:
   RingBufferWithSum<double, 100> meanY;
   RingBufferWithSum<double, 100> meanU;
   RingBufferWithSum<double, 100> meanV;
+  RingBufferWithSum<double, 100> meanTopY;
+  RingBufferWithSum<double, 100> meanTopU;
+  RingBufferWithSum<double, 100> meanTopV;
+
+  RingBufferWithSum<double, 100> minY;
+  RingBufferWithSum<double, 100> maxY;
+  RingBufferWithSum<double, 100> minTopY;
+  RingBufferWithSum<double, 100> maxTopY;
+  RingBufferWithSum<double, 100> spanWidthY;
+  RingBufferWithSum<double, 100> spanWidthTopY;
 
   RingBufferWithSum<double, 100> goalMeanY;
   RingBufferWithSum<double, 100> goalMeanU;
@@ -91,12 +106,21 @@ private:
   double lastMeanY;
   double lastMeanU;
   double lastMeanV;
+  double lastMeanTopY;
+  double lastMeanTopU;
+  double lastMeanTopV;
 
-  //RingBufferWithSum<Vector3<double>, 10> sampleDist;
-  //RingBufferWithSum<Vector3<int>, 10> sampleIndex;
+  double lastMinY;
+  double lastMaxY;
+  double lastMinTopY;
+  double lastMaxTopY;
+
+  double lastSpanWidthY;
+  double lastSpanWidthTopY;
+
+  FrameInfo lastFrameInfo;
 
   void initPercepts();
-  //void setPercepts();
 
   void setColorRegions();
 
@@ -108,9 +132,6 @@ private:
   BaseColorClassifierParameters params;
 
   BaseColorRegionParameters regionParams;
-  ColorTable64& cTable;
-  const Histograms& histogram;
-  const ColoredGrid& coloredGrid;
 
   unsigned int fieldHist[3][COLOR_CHANNEL_VALUE_COUNT];
   double fieldCalibHist[2][COLOR_CHANNEL_VALUE_COUNT];
@@ -139,20 +160,34 @@ private:
   Pixel minEnv;
   Pixel maxEnv;
 
+  CalibrationRect orangeBallCalibRectTop;
   CalibrationRect orangeBallCalibRect;
+  CalibrationRect yellowGoalPostLeftCalibRectTop;
   CalibrationRect yellowGoalPostLeftCalibRect;
+  CalibrationRect yellowGoalPostRightCalibRectTop;
   CalibrationRect yellowGoalPostRightCalibRect;
+  CalibrationRect blueGoalLeftCalibRectTop;
   CalibrationRect blueGoalLeftCalibRect;
+  CalibrationRect blueGoalRightCalibRectTop;
   CalibrationRect blueGoalRightCalibRect;
-  CalibrationRect blueWaistBandCalibRect;
-  CalibrationRect pinkWaistBandCalibRect;
+  CalibrationRect blueTeamCalibRectTop;
+  CalibrationRect blueTeamCalibRect;
+  CalibrationRect redTeamCalibRectTop;
+  CalibrationRect redTeamCalibRect;
+  CalibrationRect whiteLinesCalibRectTop;
   CalibrationRect whiteLinesCalibRect;
 
+  ColorCalibrator orangeBallColorCalibratorTop;
   ColorCalibrator orangeBallColorCalibrator;
+  ColorCalibrator yellowGoalColorCalibratorTop;
   ColorCalibrator yellowGoalColorCalibrator;
+  ColorCalibrator blueGoalColorCalibratorTop;
   ColorCalibrator blueGoalColorCalibrator;
-  ColorCalibrator blueWaistBandColorCalibrator;
-  ColorCalibrator pinkWaistBandColorCalibrator;
+  ColorCalibrator blueTeamColorCalibratorTop;
+  ColorCalibrator blueTeamColorCalibrator;
+  ColorCalibrator redTeamColorCalibratorTop;
+  ColorCalibrator redTeamColorCalibrator;
+  ColorCalibrator whiteLinesColorCalibratorTop;
   ColorCalibrator whiteLinesColorCalibrator;
 
 };

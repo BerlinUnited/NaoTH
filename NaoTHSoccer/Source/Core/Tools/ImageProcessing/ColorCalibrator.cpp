@@ -309,11 +309,18 @@ void ColorCalibrator::get(colorPixel& idx, colorPixel& dist)
   }
 }
 
-void ColorCalibrator::drawCalibrationAreaRects()
+void ColorCalibrator::drawCalibrationAreaRects(CameraInfo::CameraID camID)
 {
   for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
-    calibRect.draw();
+    if(camID == CameraInfo::Top)
+    {
+      calibRect.drawTop();
+    }
+    else
+    {
+      calibRect.draw();
+    }
   }
 }
