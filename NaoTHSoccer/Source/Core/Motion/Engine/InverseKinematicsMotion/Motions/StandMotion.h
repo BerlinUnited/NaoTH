@@ -37,6 +37,7 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(InertialSensorData)
   REQUIRE(GyrometerData)
   REQUIRE(KinematicChainSensor)
+  REQUIRE(MotionStatus)
 
   REQUIRE(InverseKinematicsMotionEngineService)
 
@@ -119,9 +120,12 @@ public:
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
-
-    getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
     
+    getEngine().gotoArms(
+        getMotionStatus(),
+        getInertialModel(),
+        getRobotInfo(),
+        c, getMotorJointData().position);
 
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
