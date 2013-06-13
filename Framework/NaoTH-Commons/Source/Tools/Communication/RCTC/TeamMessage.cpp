@@ -1,3 +1,9 @@
+// there is bug with ntohs in the GCC version <= 4.4
+#ifdef __GNUC__
+#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 5)
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+#endif
 
 #include "TeamMessage.h"
 #include <cstring>
@@ -9,16 +15,16 @@ namespace rctc
   /**
     *
     */
-	bool binaryToMessage(const uint8_t* data, Message &msg)
+  bool binaryToMessage(const uint8_t* data, Message &msg)
   {
     // check header
-	  uint32_t header;
-	  memcpy(&header, &data[RCTC_HEADER], 4);
-	  header = ntohl(header);
-	  if (header != RCTC_HEADER_CONTENT) {
+    uint32_t header;
+    memcpy(&header, &data[RCTC_HEADER], 4);
+    header = ntohl(header);
+    if (header != RCTC_HEADER_CONTENT) {
       printf("ERROR: Invalid header RCTC. Header is %c%c%c%c\n", data[0], data[1], data[2], data[3]);
-		  return false;
-	  }
+      return false;
+    }
 
     msg.teamID     = data[RCTC_TEAMID];
     msg.playerID   = data[RCTC_PID];
