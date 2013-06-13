@@ -31,7 +31,7 @@ void AccelerometerData::print(ostream& stream) const
 void Serializer<AccelerometerData>::serialize(const AccelerometerData& representation, std::ostream& stream)
 {
   naothmessages::DoubleVector msg;
-  for(size_t i=0; i<3; i++)
+  for(int i=0; i<3; i++)
   {
     msg.add_v(representation.data[i]);
     msg.add_v(representation.rawData[i]);

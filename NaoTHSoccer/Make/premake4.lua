@@ -89,6 +89,7 @@ solution "NaoTHSoccer"
     defines { "NAO" }
     targetdir "../dist/Nao"
 	buildoptions {"-Wconversion"}
+	flags { "ExtraWarnings" }
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
@@ -98,7 +99,7 @@ solution "NaoTHSoccer"
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
 	links {"ws2_32"}
-	debugdir ".."
+	debugdir "$(SolutionDir).."
   end
   
   configuration {"linux"}
@@ -135,7 +136,7 @@ solution "NaoTHSoccer"
 	dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	  debugargs { "--sync" }
+	  --debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }

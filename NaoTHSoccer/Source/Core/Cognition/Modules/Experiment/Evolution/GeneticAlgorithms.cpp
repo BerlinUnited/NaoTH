@@ -99,7 +99,7 @@ vector<GeneticAlgorithms::Individual> GeneticAlgorithms::newGeneration(const vec
 const GeneticAlgorithms::Individual& GeneticAlgorithms::selectParent(const std::vector<Individual>& old)
 {
   //@note: all the parents have the same possibility to be seleceted
-  double maxId = min(old.size(), parentsNum);
+  double maxId = static_cast<double> (min(old.size(),parentsNum));
   double r = Math::random(0.0, maxId);
   return old[old.size() -1 - (size_t)floor(r)];
 }

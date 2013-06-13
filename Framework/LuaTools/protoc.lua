@@ -81,7 +81,7 @@ local function protocCompile(inputFiles, cppOut, javaOut, ipaths)
   local returnCode = os.execute(cmd)
   
   -- add few lines to supress the conversion warnings to each of the generated *.cc files
-  --add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
+  add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
   add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
   --
   
@@ -91,15 +91,24 @@ end
 
 function add_gcc_ignore_pragmas(files)
 	-- add gcc pragma to supress the conversion warnings to each of the generated *.cc files
+	-- hack for the GCC version < 4.6.x
+	-- this is because "#pragma GCC diagnostic push/pop" was introduced in GCC 4.6
 	local prefix = "// added by NaoTH \n" ..
 				 "#ifdef __GNUC__\n" ..
+				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
+				 "#pragma GCC diagnostic push\n" ..
+				 "#endif\n" ..
 				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
 				 "#endif\n\n"
 	
 	-- enable the warnings at the end
 	local suffix = "\n\n// added by NaoTH \n" ..
 				 "#ifdef __GNUC__\n" ..
+				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
+				 "#pragma GCC diagnostic pop\n" ..
+				 "#else\n" ..
 				 "#pragma GCC diagnostic error \"-Wconversion\"\n" ..
+				 "#endif\n" ..
 				 "#endif\n\n"
 	
 	for i,v in ipairs(files) do

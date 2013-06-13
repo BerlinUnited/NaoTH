@@ -32,7 +32,7 @@ namespace ConvexHull
     template<typename T>
     vector<T> convexHull(vector<T> P)
     {
-        int n = P.size(), k = 0;
+        int n = static_cast<int> (P.size()), k = 0;
         vector<T> H(n+1);
  
         // Sort points lexicographically

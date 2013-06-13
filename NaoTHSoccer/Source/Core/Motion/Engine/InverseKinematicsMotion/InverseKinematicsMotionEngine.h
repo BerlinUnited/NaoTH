@@ -89,7 +89,7 @@ public:
     bool fix_height/*=false*/);
 
 
-  unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
+  unsigned int contorlZMPlength() const { return static_cast<unsigned int> (thePreviewController.previewSteps()); }
 
   int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
 

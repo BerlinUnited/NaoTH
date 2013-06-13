@@ -3,7 +3,7 @@ option search_ball_back_rot{
 initial state turn_left {
 
 decision{
-    if(state_time>2500 )
+    if(state_time>1000 )
       goto turn_rigth;
     else
       stay;
@@ -13,9 +13,9 @@ action{
       
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-      motion.walk_speed.x = -70;
+      motion.walk_speed.x = -100;
       motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 18;
+      motion.walk_speed.rot = 45;
 
       head.control_mode = search_for_ball;
 }
@@ -24,7 +24,7 @@ action{
 state turn_rigth {
 
 decision{
-    if(state_time>2500 )
+    if(state_time>1000 )
       goto finish;
     else
       stay;
@@ -34,9 +34,9 @@ action{
       
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-      motion.walk_speed.x = -70;
+      motion.walk_speed.x = -100;
       motion.walk_speed.y = 0;
-      motion.walk_speed.rot = -36;
+      motion.walk_speed.rot = 90;
 
       head.control_mode = search_for_ball;
 

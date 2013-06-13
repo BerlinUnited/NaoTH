@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # stop at the first error
-set -e
 
 export EXTERN_DIR="$PWD"
 
