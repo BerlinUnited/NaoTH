@@ -44,8 +44,8 @@ namespace internal_symbols("Internal Symbols") {
 
   enum arm.control_mode internal 
   {
-    back,
-    normal
+    normal,
+    back
   };
 
   enum arm.control_mode internal arm.control_mode;
