@@ -31,6 +31,7 @@ bool AbstractMotion::setStiffness(
   int readyJointNum = 0;
   for (int i = begin; i < end; i++)
   {
+    // Achtung: the increase of the stiffness depends on the sensory feedback
     double d = stiffness[i] - theSensorJointData.stiffness[i];
     if (fabs(d) < 1e-2 || i == JointData::HeadPitch || i==JointData::HeadYaw )
     {
@@ -38,7 +39,7 @@ bool AbstractMotion::setStiffness(
       theMotorJointData.stiffness[i] = stiffness[i];
     } else {
       d = Math::clamp(d, -delta, delta);
-      theMotorJointData.stiffness[i] = theMotorJointData.stiffness[i] + d;
+      theMotorJointData.stiffness[i] = theSensorJointData.stiffness[i] + d;
     }
 
     // ensure that we always get a valid stiffness, i.e, -1 or [0,1]

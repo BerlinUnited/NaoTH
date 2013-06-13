@@ -28,6 +28,7 @@ option head_control
     action
     {
       head.motion_type = hold;
+      head.camera.id = Bottom;
     }
   }
     
@@ -36,6 +37,7 @@ option head_control
     action
     {
       head.motion_type = look_straight_ahead;
+      head.camera.id = Top;
     }
   }
   
@@ -44,6 +46,7 @@ option head_control
     action
     {
       search_for_ball(force_ball_model_check = false);
+      head.camera.id = Bottom;
     }
   }
 
@@ -52,6 +55,7 @@ option head_control
     action
     {
       look_around();
+      head.camera.id = Bottom;
     }
   }
 
