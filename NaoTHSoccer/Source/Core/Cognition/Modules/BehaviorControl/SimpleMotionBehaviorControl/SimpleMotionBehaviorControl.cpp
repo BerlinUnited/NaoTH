@@ -51,6 +51,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
 
   // other motions
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dead", "Set the robot dead.", false);
@@ -305,6 +306,10 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_back",
     getMotionRequest().id = motion::stand_up_from_back;
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_back_arms_back",
+    getMotionRequest().id = motion::stand_up_from_back_arms_back;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:dead",

@@ -55,7 +55,7 @@ private:
     ArmMotionParams():ParameterList("ArmMotionParams")
     {
       PARAMETER_REGISTER(maxJointSpeed) = 60;
-      PARAMETER_REGISTER(armStiffness) = 0.2;
+      PARAMETER_REGISTER(armStiffness) = 0.3;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);

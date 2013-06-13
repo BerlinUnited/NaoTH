@@ -78,6 +78,7 @@ namespace motion_symbols("Motion Symbols") {
     
     stand_up_from_front,
     stand_up_from_back,
+    stand_up_from_back_arms_back,
 
     block_middle,
     goalie_get_down,
