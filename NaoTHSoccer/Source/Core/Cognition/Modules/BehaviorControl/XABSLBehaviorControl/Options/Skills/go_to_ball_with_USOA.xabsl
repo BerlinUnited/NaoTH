@@ -91,8 +91,15 @@ option go_to_ball_with_USOA
 
   action
   {
-      go_to_ball(distance=130);
-      motion.walk.style = stable; 
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.style = stable;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = 15;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (ball.distance > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+     
   
   }
 
