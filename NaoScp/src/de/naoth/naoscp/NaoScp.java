@@ -22,12 +22,10 @@ import java.awt.Component;
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URLDecoder;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Collections;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.swing.*;
@@ -68,6 +66,8 @@ public class NaoScp extends NaoScpMainFrame
   private String setupPlayerNo;
   private String lastBashColorOption;
   
+  private NaoScpConfig config; 
+  
   @SuppressWarnings("unchecked")
   public NaoScp()
   {
@@ -78,7 +78,7 @@ public class NaoScp extends NaoScpMainFrame
     }
     catch (Exception e) 
     {
-        e.printStackTrace();
+        e.printStackTrace(System.err);
         System.exit(1);
     }
 
@@ -110,7 +110,7 @@ public class NaoScp extends NaoScpMainFrame
     this.sNaoWLanIps.put(0, "");
     this.iNaoBytes.put(0, -1);    
     
-    Component[] allComps = jActionsPanel.getComponents();
+    Component[] allComps = scpPanel.getComponents();
     for(int c = 0; c < allComps.length; c++)
     {
       String name = allComps[c].getName();
@@ -355,6 +355,8 @@ public class NaoScp extends NaoScpMainFrame
     
   }
   
+  
+  // fills the iNaoBytes, sNaoWLanIps, sNaoLanIps,
   private boolean checkNaoIps(Boolean init)
   {
     int naoIpCount = 0;
@@ -412,10 +414,9 @@ public class NaoScp extends NaoScpMainFrame
     return naoIpCount > 0;
   }
 
-  private void copyFiles2Nao()
+  
+  private NaoScpConfig createDeployConfig()
   {
-    clearLog();
-    setFormEnabled(false);        
     NaoScpConfig cfg = new NaoScpConfig(config);
     cfg.addresses.clear();
     cfg.copyConfig = cbCopyConfig.isSelected();
@@ -426,6 +427,12 @@ public class NaoScp extends NaoScpMainFrame
     cfg.restartNaoth = cbRestartNaoth.isSelected();
     cfg.noBackup = cbNoBackup.isSelected();
     cfg.forceBackup = cbForceBackup.isSelected();
+    cfg.sTeamCommPort = jTeamCommPort.getText();
+    cfg.scheme = jSchemeBox.getSelectedItem().toString();
+    cfg.teamNumber = jTeamNumber.getText();
+    cfg.teamColor = jColorBox.getSelectedItem().toString();
+    cfg.comment = jCommentTextArea.getText();
+    
     if(cfg.backupIsSelected)
     {
       cfg.boxSelected = jBackupBox.getSelectedItem().toString();
@@ -436,6 +443,17 @@ public class NaoScp extends NaoScpMainFrame
       cfg.boxSelected = "";
       cfg.selectedBackup = "";
     }
+
+    return cfg;
+  }
+  
+  
+  private void copyFiles2Nao()
+  {
+    clearLog();
+    setFormEnabled(false);
+    
+    NaoScpConfig cfg = createDeployConfig();
 
     if(cfg.copyConfig || cfg.copyExe || cfg.copyLib || cfg.copyLogs || cfg.forceBackup || cfg.noBackup)
     {
@@ -473,7 +491,8 @@ public class NaoScp extends NaoScpMainFrame
     }
     
     cfg.backupTimestamp = String.valueOf(System.currentTimeMillis());
-    prepareDeploy(cfg);
+    
+    prepareDeploy(cfg, false);
    
     for(Integer naoNo : copyDone.keySet())
     {
@@ -526,6 +545,40 @@ public class NaoScp extends NaoScpMainFrame
       }
     }
   }
+  
+  // todo: take this apart
+  private boolean prepareDeploy(NaoScpConfig cfg, boolean init)
+  {
+    this.actionInfo("preparing deploy dir");
+    
+    boolean result = true;
+    checkNaoIps(init);
+    
+    for(Integer playerNumber : iNaoBytes.keySet())
+    {
+      if((!init && playerNumber > 0) || (init && playerNumber == 0))
+      {
+        // last byte of the player ip adress
+        int playerIpByte = iNaoBytes.get(playerNumber);
+        String sNaoByte = String.valueOf(playerIpByte);
+        if(playerIpByte < 256 && playerIpByte > -1)
+        {
+          String playerNumberString = String.valueOf(playerNumber);
+          
+          String myConfigPathIn = cfg.localDeployInPath(playerNumberString, sNaoByte) + "/Config";
+          File myConfigDirIn = new File(myConfigPathIn);
+          myConfigDirIn.mkdirs();
+    
+          String currentDeployPath = cfg.localDeployOutPath(playerNumberString);
+          result = DeployUtils.prepareDeploy(this, cfg, playerNumber.intValue(), currentDeployPath) && result;
+        }
+      }
+    }
+    
+    this.actionInfo("finished preparing deploy dir");
+    return result;
+  }  
+  
 
   private boolean checkDirPath(boolean verbose)
   {
@@ -539,14 +592,6 @@ public class NaoScp extends NaoScpMainFrame
     }
     return true;
   }
-
-    private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-      if(checkDirPath(true))
-      {
-        copyFiles2Nao();
-        resetBackupList();
-      }
-    }//GEN-LAST:event_copyButtonActionPerformed
 
   public void haveError(String sNaoNo, String error)
   {
@@ -770,122 +815,6 @@ public class NaoScp extends NaoScpMainFrame
     jButtonRemoteKernelVideoReload.setEnabled(enable);
   }
 
-
-  private boolean prepareDeploy(NaoScpConfig cfg)
-  {
-    return prepareDeploy(cfg, false);
-  }  
-  
-  /**
-   * Staging - prepares "deploy out dir" with the files to be copied to the robots
-   * copies files, creates scheme.cfg, modifies other cfgs according to UI settings
-   * @return
-   */
-  private boolean prepareDeploy(NaoScpConfig cfg, boolean init)
-  {
-    actionInfo("preparing deploy dir");
-
-    File deployOutDir = new File(cfg.localDeployRootPath());
-
-    if( ! deployOutDir.isDirectory())
-    {
-      if( ! deployOutDir.mkdirs())
-      {
-        actionInfo("Error: Could not create deploy out directory");
-        return false;
-      }
-    }
-
-    if( ! deployOutDir.canWrite())
-    {
-      actionInfo("Error: Cant write to deploy out dir");
-      return false;
-    }
-
-    checkNaoIps(init);
-    
-    for(Integer naoNo : iNaoBytes.keySet())
-    {
-      if((!init && naoNo > 0) || (init && naoNo == 0))
-      {
-        int iNaoByte = iNaoBytes.get(naoNo);
-        String sNaoByte = String.valueOf(iNaoByte);
-        if(iNaoByte < 256 && iNaoByte > -1)
-        {
-          String sNaoNo = String.valueOf(naoNo);
-          String currentDeployPath = cfg.localDeployOutPath(sNaoNo);
-          File currentDeployDir = new File(currentDeployPath);
-
-          if(currentDeployDir.isDirectory())
-          {
-            deleteDir(currentDeployDir);
-          }
-
-          currentDeployDir.mkdirs();
-          File localLibPath = new File(cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath());
-          localLibPath.mkdirs();
-          File localBinPath = new File(cfg.localDeployOutPath(sNaoNo) + cfg.binPath());
-          localBinPath.mkdirs();
-
-          if(cfg.copyLib)
-          {
-            File localLib = new File(
-            cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/libnaosmal.so");
-            if(localLib.exists())
-            {
-              localLib.delete();
-            }
-            copyFiles(new File(cfg.localLibnaosmalPath() + "/libnaosmal.so"), localLib);
-          }
-
-          if(cfg.copyExe)
-          {
-            File localExe = new File(
-            cfg.localDeployOutPath(sNaoNo) + cfg.binPath() + "/naoth");
-            if(localExe.exists())
-            {
-              localExe.delete();
-            }
-            try
-            {
-              FileOutputStream fos = new FileOutputStream(cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/comment.cfg");
-              DataOutputStream out = new DataOutputStream(fos);
-              out.writeBytes(jCommentTextArea.getText());
-              fos.close();
-            }
-            catch(IOException ioe)
-            {
-              actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
-            }
-
-            copyFiles(new File(cfg.localLibnaosmalPath() + "/naoth"), localExe);
-          }
-
-          String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
-          File myConfigDirIn = new File(myConfigPathIn);
-          myConfigDirIn.mkdirs();
-          
-          String myConfigPath = cfg.localDeployOutPath(sNaoNo) + cfg.configPath();
-          File myGenericConfigDir = new File(myConfigPath + "/general");
-          myGenericConfigDir.mkdirs();
-
-          if(cfg.copyConfig)
-          {
-            File myConfigDir = new File(myConfigPath);
-            copyFiles(new File(cfg.localConfigPath()), myConfigDir);
-            writeTeamcommCfg(new File(myConfigPath + "/general/teamcomm.cfg"));
-            writeScheme(new File(myConfigPath + "/scheme.cfg"));
-          }
-          writePlayerCfg(new File(myConfigPath + "/general/player.cfg"), sNaoNo);
-        }
-      }
-    }
-
-    actionInfo("finished preparing deploy dir");
-
-    return true;
-  }//end prepareDeploy
-
 /**
    * Staging - prepares "deploy out dir for setting up nao system" with the files to be copied to the robots
    * copies files, modifies nao system cfgs according to UI settings
@@ -924,20 +853,20 @@ public class NaoScp extends NaoScpMainFrame
       File mySetupScriptDir = new File(mySetupScriptPath);
       if(mySetupScriptDir.isDirectory())
       {
-        deleteDir(mySetupScriptDir);
+        DeployUtils.deleteDir(mySetupScriptDir);
       }
       mySetupScriptDir.mkdirs();
 
       File mySetupScriptCheckRC = new File(mySetupScriptPath +"/checkRC.sh");        
-      copyFiles(new File(cfg.localSetupScriptPath() + "/checkRC.sh"), mySetupScriptCheckRC);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/checkRC.sh"), mySetupScriptCheckRC);
       File mySetupScriptInitEnv = new File(mySetupScriptPath +"/init_env.sh");        
-      copyFiles(new File(cfg.localSetupScriptPath() + "/init_env.sh"), mySetupScriptInitEnv);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/init_env.sh"), mySetupScriptInitEnv);
       File mySetupScriptInitNet = new File(mySetupScriptPath +"/init_net.sh");        
-      copyFiles(new File(cfg.localSetupScriptPath() + "/init_net.sh"), mySetupScriptInitNet);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/init_net.sh"), mySetupScriptInitNet);
       File myAutoloadIni = new File(mySetupScriptPath +"/autoload.ini");        
-      copyFiles(new File(cfg.localSetupScriptPath() + "/autoload.ini"), myAutoloadIni);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/autoload.ini"), myAutoloadIni);
       File myNaothScript = new File(mySetupScriptPath +"/naoth");        
-      copyFiles(new File(cfg.localSetupScriptPath() + "/naoth"), myNaothScript);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/naoth"), myNaothScript);
             
       File libRT = new File(cfg.stagingLibDir +"/usr/lib/librt.so");
       if(libRT.exists())
@@ -949,7 +878,7 @@ public class NaoScp extends NaoScpMainFrame
       File mySetupDir = new File(mySetupPath);
       mySetupDir.mkdirs();
 
-      copyFiles(new File(cfg.localSetupScriptPath() + "/etc"), mySetupDir);
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDir);
       
       setConfdNet(cfg, sNaoByte);
       setHostname(cfg, sNaoByte);
@@ -998,7 +927,7 @@ public class NaoScp extends NaoScpMainFrame
         fileContent = fileContent.replace("WLAN_NETMASK", netmaskFieldWLAN.getText());
         fileContent = fileContent.replace("ETH_BRD", broadcastFieldLAN.getText());
         fileContent = fileContent.replace("WLAN_BRD", broadcastFieldWLAN.getText());
-        fileContent.trim();
+        //fileContent.trim();
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(cfg.localDeployOutPath("0") + cfg.setupScriptPath() + "/etc/conf.d/net"));
         bw.write(fileContent);
@@ -1081,7 +1010,7 @@ public class NaoScp extends NaoScpMainFrame
       br.close();
       fileContent = fileContent.replace("WLAN_SSID", wlanSSID.getText());
       fileContent = fileContent.replace("WLAN_KEY", wlanKey.getText());
-      fileContent.trim();
+      //fileContent.trim();
 
       File wpaConfig = new File(dstDir + "/etc/wpa_supplicant/wpa_supplicant.conf");
       if(wpaConfig.exists())
@@ -1329,7 +1258,7 @@ public class NaoScp extends NaoScpMainFrame
     File f = new File(config.localConfigPath() + "/general/player.cfg");
     if(!f.isFile())
     {
-      writePlayerCfg(f, "1");
+      DeployUtils.writePlayerCfg(this, f, setupPlayerNo, jTeamNumber.getText(), jColorBox.getSelectedItem().toString());
     }
     else
     {
@@ -1341,7 +1270,7 @@ public class NaoScp extends NaoScpMainFrame
     f = new File(config.localConfigPath() + "/general/teamcomm.cfg");
     if(!f.isFile())
     {
-      writeTeamcommCfg(f);
+      DeployUtils.writeTeamcommCfg(this, jTeamCommPort.getText(), f);
     }
     else
     {
@@ -1350,22 +1279,6 @@ public class NaoScp extends NaoScpMainFrame
   }
 
 
-
-  /**
-   * selects the NaoController directory, populates schemes Dir
-   * @param evt
-   */
-    private void jDirChooserPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDirChooserPerformed
-      JFileChooser chooser = new JFileChooser();
-      chooser.setCurrentDirectory(new java.io.File("."));
-      chooser.setDialogTitle("Select NaoController Directory");
-      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      chooser.setAcceptAllFileFilterUsed(false);
-      if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-      {
-        setDirectory(String.valueOf(chooser.getSelectedFile()));
-      }
-    }//GEN-LAST:event_jDirChooserPerformed
 
   /**
    * populates the Schemes-Dropdown with the Schemes found in the schemedir
@@ -1470,7 +1383,7 @@ public class NaoScp extends NaoScpMainFrame
   }  
   
   
-  protected final void actionInfo(String logtext)
+  public final void actionInfo(String logtext)
   {
     logBashColored(logtext);
   }//end log
@@ -1480,102 +1393,6 @@ public class NaoScp extends NaoScpMainFrame
     logTextPane.setText("");
   }//end log
 
-  /**
-   * recursively delete local dir
-   * @param dir File dir
-   */
-  private void deleteDir(File dir)
-  {
-    if(dir.isDirectory())
-    {
-      File fileList[] = dir.listFiles();
-      for(int index = 0; index < fileList.length; index ++)
-      {
-        File file = fileList[index];
-        deleteDir(file);
-      }
-    }
-    dir.delete();
-  }//end deleteDir
-
-  /**
-   * recursively copy local files, skips .svn
-   *
-   * @param src File source
-   * @param dest File destination
-   */
-  private void copyFiles(File src, File dest)
-  {
-    if( ! src.exists() ||  ! src.canRead() || src.getName().equals(".svn") || src.getName().equals(".bzr") || src.getName().equals(".hg") || src.getName().equals(".git"))
-    {
-      return;
-    }
-    if(src.isDirectory())
-    {
-      if( ! dest.exists())
-      {
-        if( ! dest.mkdirs())
-        {
-          actionInfo("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
-          return;
-        }
-      }
-      String list[] = src.list();
-      for(int i = 0; i < list.length; i ++)
-      {
-        File dest1 = new File(dest, list[i]);
-        File src1 = new File(src, list[i]);
-        copyFiles(src1, dest1);
-      }
-    }
-    else
-    {
-      try
-      {
-        byte[] buffer = new byte[4096]; //Buffer 4K at a time (you can change this).
-        int bytesRead;
-
-        FileInputStream fin = new FileInputStream(src);
-        FileOutputStream fout = new FileOutputStream(dest);
-
-        while((bytesRead = fin.read(buffer)) >= 0)
-        {
-          fout.write(buffer, 0, bytesRead);
-        }
-        fin.close();
-        fout.close();
-      }
-      catch(IOException e)
-      {
-        e.printStackTrace();
-        actionInfo("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
-        getAbsolutePath() + ".");
-      }
-    }
-  }
-  
-  /**
-   * Creates scheme.cfg with the scheme
-   * @param schemeCfg File
-   */
-  private void writeScheme(File schemeCfg)
-  {
-    
-    String outString = jSchemeBox.getSelectedItem().toString();
-    if(!"n/a".equals(outString))
-    {
-      try
-      {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(schemeCfg));
-        writer.write(outString);
-        writer.close();
-      }
-      catch(IOException ioe)
-      {
-        actionInfo("I/O Error in writeScheme- " + ioe.toString());
-      }
-    }
-  }
   
   private void readPlayerCfg(File configFile)
   {
@@ -1617,43 +1434,6 @@ public class NaoScp extends NaoScpMainFrame
     }
   }
   
-  private void writePlayerCfg(File configFile, String playerNumber)
-  {
-    if(playerNumber.equals("0"))
-    {
-      playerNumber = setupPlayerNo;
-    }
-    
-    StringBuilder c = new StringBuilder();
-    
-    c.append("[player]\n");    
-    c.append("PlayerNumber=");
-    c.append(playerNumber);
-    c.append("\n");
-    
-    c.append("TeamNumber=");
-    c.append(jTeamNumber.getText());
-    c.append("\n");
-    
-    c.append("TeamColor=");
-    c.append(jColorBox.getSelectedItem());
-    c.append("\n");
-    
-    c.append("NumOfPlayer=");
-    c.append(String.valueOf(iNaoBytes.size() - 1));
-    c.append("\n");
-    
-    try
-    {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-      writer.write(c.toString());
-      writer.close();
-    }
-    catch(IOException ex)
-    {
-      actionInfo("I/O Error in writePlayerCfg- " + ex.getMessage());
-    }
-  }
   
   private void readTeamCfg(File configFile)
   {
@@ -1683,40 +1463,6 @@ public class NaoScp extends NaoScpMainFrame
     }
   }
  
-  private void writeTeamcommCfg(File configFile)
-  {
-    
-    StringBuilder c = new StringBuilder();
-    
-    c.append("[teamcomm]\n");
-   
-    c.append("port=");
-    c.append(jTeamCommPort.getText());
-    c.append("\n");
-    
-    c.append("interface=wlan0\n");
-    
-    /*
-    c.append("wlan=");
-    c.append(lblTeamCommWLAN.getText());
-    c.append("\n");
-    
-    c.append("lan=");
-    c.append(lblTeamCommLAN.getText());
-    c.append("\n");
-    */
-    
-    try
-    {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-      writer.write(c.toString());
-      writer.close();
-    }
-    catch(IOException ex)
-    {
-      actionInfo("I/O Error in writeTeamcommCfg- " + ex.getMessage());
-    }
-  }
   
   public boolean isIPV6Address(String hostAddress)
   {
@@ -2096,1225 +1842,1158 @@ public class NaoScp extends NaoScpMainFrame
   }
 
 
-    private void jColorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jColorBoxActionPerformed
-    }//GEN-LAST:event_jColorBoxActionPerformed
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents()
+  {
 
-    private void naoByte2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte2ActionPerformed
-    }//GEN-LAST:event_naoByte2ActionPerformed
+    jDialog1 = new javax.swing.JDialog();
+    wlanBtnGroup = new javax.swing.ButtonGroup();
+    jLabel12 = new javax.swing.JLabel();
+    jSplitPane1 = new javax.swing.JSplitPane();
+    mainTab = new javax.swing.JTabbedPane();
+    panelCopy = new javax.swing.JPanel();
+    actionsTab = new javax.swing.JTabbedPane();
+    scpPanel = new javax.swing.JPanel();
+    jLabel6 = new javax.swing.JLabel();
+    naoByte1 = new javax.swing.JTextField();
+    jLabel7 = new javax.swing.JLabel();
+    naoByte2 = new javax.swing.JTextField();
+    naoByte3 = new javax.swing.JTextField();
+    jLabel8 = new javax.swing.JLabel();
+    copyButton = new javax.swing.JButton();
+    jLabel15 = new javax.swing.JLabel();
+    jBackupBox = new javax.swing.JComboBox();
+    naoByte4 = new javax.swing.JTextField();
+    jLabel17 = new javax.swing.JLabel();
+    stickPanel = new javax.swing.JPanel();
+    jLabel10 = new javax.swing.JLabel();
+    jLabel11 = new javax.swing.JLabel();
+    txtNaonamePlayer1 = new javax.swing.JTextField();
+    jLabel18 = new javax.swing.JLabel();
+    txtNaonamePlayer2 = new javax.swing.JTextField();
+    jLabel31 = new javax.swing.JLabel();
+    txtNaonamePlayer3 = new javax.swing.JTextField();
+    jLabel32 = new javax.swing.JLabel();
+    txtNaonamePlayer4 = new javax.swing.JTextField();
+    jLabel33 = new javax.swing.JLabel();
+    txtNaonamePlayer5 = new javax.swing.JTextField();
+    btWriteToStick = new javax.swing.JButton();
+    jSettingsPanel = new javax.swing.JPanel();
+    jLabel3 = new javax.swing.JLabel();
+    jColorBox = new javax.swing.JComboBox();
+    jLabel2 = new javax.swing.JLabel();
+    jTeamNumber = new javax.swing.JTextField();
+    jLabel4 = new javax.swing.JLabel();
+    jSchemeBox = new javax.swing.JComboBox();
+    jButtonRefreshData = new javax.swing.JButton();
+    jDirPathLabel = new javax.swing.JLabel();
+    jDirChooser = new javax.swing.JButton();
+    cbCopyLib = new javax.swing.JCheckBox();
+    cbRestartNaoth = new javax.swing.JCheckBox();
+    cbCopyConfig = new javax.swing.JCheckBox();
+    cbNoBackup = new javax.swing.JCheckBox();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    jCommentTextArea = new javax.swing.JTextArea();
+    cbCopyLogs = new javax.swing.JCheckBox();
+    jLabel16 = new javax.swing.JLabel();
+    cbCopyExe = new javax.swing.JCheckBox();
+    cbRestartNaoqi = new javax.swing.JCheckBox();
+    cbForceBackup = new javax.swing.JCheckBox();
+    panelConfig = new javax.swing.JPanel();
+    jSettingsPanel1 = new javax.swing.JPanel();
+    jLabel13 = new javax.swing.JLabel();
+    jLabel1 = new javax.swing.JLabel();
+    jLabel20 = new javax.swing.JLabel();
+    jLabel22 = new javax.swing.JLabel();
+    subnetFieldLAN = new javax.swing.JTextField();
+    netmaskFieldLAN = new javax.swing.JTextField();
+    broadcastFieldLAN = new javax.swing.JTextField();
+    jLabel14 = new javax.swing.JLabel();
+    jLabel19 = new javax.swing.JLabel();
+    jLabel21 = new javax.swing.JLabel();
+    jLabel23 = new javax.swing.JLabel();
+    subnetFieldWLAN = new javax.swing.JTextField();
+    netmaskFieldWLAN = new javax.swing.JTextField();
+    broadcastFieldWLAN = new javax.swing.JTextField();
+    radioWPA = new javax.swing.JRadioButton();
+    radioWEP = new javax.swing.JRadioButton();
+    jLabel5 = new javax.swing.JLabel();
+    wlanSSID = new javax.swing.JTextField();
+    jLabel9 = new javax.swing.JLabel();
+    wlanKey = new javax.swing.JPasswordField();
+    jSettingsPanel2 = new javax.swing.JPanel();
+    jLabel24 = new javax.swing.JLabel();
+    lblTeamCommWLAN = new javax.swing.JTextField();
+    jLabel25 = new javax.swing.JLabel();
+    lblTeamCommLAN = new javax.swing.JTextField();
+    jLabel26 = new javax.swing.JLabel();
+    jTeamCommPort = new javax.swing.JTextField();
+    jLabel27 = new javax.swing.JLabel();
+    sshUser = new javax.swing.JTextField();
+    jLabel28 = new javax.swing.JLabel();
+    sshPassword = new javax.swing.JPasswordField();
+    jLabel29 = new javax.swing.JLabel();
+    sshRootUser = new javax.swing.JTextField();
+    jLabel30 = new javax.swing.JLabel();
+    sshRootPassword = new javax.swing.JPasswordField();
+    jButtonSetRobotNetwork = new javax.swing.JButton();
+    jButtonInitRobotSystem = new javax.swing.JButton();
+    jButtonSaveNetworkConfig = new javax.swing.JButton();
+    jScrollPane3 = new javax.swing.JScrollPane();
+    lstNaos = new javax.swing.JList();
+    cbRebootSystem = new javax.swing.JCheckBox();
+    jButtonRemoteKernelVideoReload = new javax.swing.JButton();
+    jPanel3 = new javax.swing.JPanel();
+    jScrollPane5 = new javax.swing.JScrollPane();
+    logTextPane = new javax.swing.JTextPane();
+    jCopyStatus = new javax.swing.JLabel();
+    progressBar = new javax.swing.JProgressBar();
 
-    private void naoByte1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte1ActionPerformed
-    }//GEN-LAST:event_naoByte1ActionPerformed
+    javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+    jDialog1.getContentPane().setLayout(jDialog1Layout);
+    jDialog1Layout.setHorizontalGroup(
+      jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 400, Short.MAX_VALUE)
+    );
+    jDialog1Layout.setVerticalGroup(
+      jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGap(0, 300, Short.MAX_VALUE)
+    );
 
-    private void naoByte3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte3ActionPerformed
-    }//GEN-LAST:event_naoByte3ActionPerformed
-
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setTitle("NaoSCP");
+    addWindowListener(new java.awt.event.WindowAdapter()
     {
+      public void windowClosing(java.awt.event.WindowEvent evt)
+      {
+        formWindowClosing(evt);
+      }
+    });
 
-        jDialog1 = new javax.swing.JDialog();
-        wlanBtnGroup = new javax.swing.ButtonGroup();
-        jLabel12 = new javax.swing.JLabel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jActionsPanel = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        naoByte1 = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        naoByte2 = new javax.swing.JTextField();
-        naoByte3 = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        copyButton = new javax.swing.JButton();
-        jDirChooser = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jDirPathLabel = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jBackupBox = new javax.swing.JComboBox();
-        naoByte4 = new javax.swing.JTextField();
-        jLabel17 = new javax.swing.JLabel();
-        cbCopyLib = new javax.swing.JCheckBox();
-        cbRestartNaoth = new javax.swing.JCheckBox();
-        cbCopyConfig = new javax.swing.JCheckBox();
-        jSettingsPanel = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jColorBox = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
-        jTeamNumber = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jSchemeBox = new javax.swing.JComboBox();
-        jButtonRefreshData = new javax.swing.JButton();
-        cbNoBackup = new javax.swing.JCheckBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jCommentTextArea = new javax.swing.JTextArea();
-        cbCopyLogs = new javax.swing.JCheckBox();
-        jLabel16 = new javax.swing.JLabel();
-        cbCopyExe = new javax.swing.JCheckBox();
-        cbRestartNaoqi = new javax.swing.JCheckBox();
-        cbForceBackup = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
-        jSettingsPanel1 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        subnetFieldLAN = new javax.swing.JTextField();
-        netmaskFieldLAN = new javax.swing.JTextField();
-        broadcastFieldLAN = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        subnetFieldWLAN = new javax.swing.JTextField();
-        netmaskFieldWLAN = new javax.swing.JTextField();
-        broadcastFieldWLAN = new javax.swing.JTextField();
-        radioWPA = new javax.swing.JRadioButton();
-        radioWEP = new javax.swing.JRadioButton();
-        jLabel5 = new javax.swing.JLabel();
-        wlanSSID = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        wlanKey = new javax.swing.JPasswordField();
-        jSettingsPanel2 = new javax.swing.JPanel();
-        jLabel24 = new javax.swing.JLabel();
-        lblTeamCommWLAN = new javax.swing.JTextField();
-        jLabel25 = new javax.swing.JLabel();
-        lblTeamCommLAN = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
-        jTeamCommPort = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        sshUser = new javax.swing.JTextField();
-        jLabel28 = new javax.swing.JLabel();
-        sshPassword = new javax.swing.JPasswordField();
-        jLabel29 = new javax.swing.JLabel();
-        sshRootUser = new javax.swing.JTextField();
-        jLabel30 = new javax.swing.JLabel();
-        sshRootPassword = new javax.swing.JPasswordField();
-        jButtonSetRobotNetwork = new javax.swing.JButton();
-        jButtonInitRobotSystem = new javax.swing.JButton();
-        jButtonSaveNetworkConfig = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        lstNaos = new javax.swing.JList();
-        cbRebootSystem = new javax.swing.JCheckBox();
-        jButtonRemoteKernelVideoReload = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        logTextPane = new javax.swing.JTextPane();
-        jCopyStatus = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
+    jLabel12.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
+    jLabel12.setText("v0.4");
 
-        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
-        jDialog1.getContentPane().setLayout(jDialog1Layout);
-        jDialog1Layout.setHorizontalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        jDialog1Layout.setVerticalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+    jLabel6.setText("Nao 1:");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("NaoSCP");
-        addWindowListener(new java.awt.event.WindowAdapter()
-        {
-            public void windowClosing(java.awt.event.WindowEvent evt)
-            {
-                formWindowClosing(evt);
-            }
-        });
+    naoByte1.setText("-1");
+    naoByte1.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte1.setName("naoByte1"); // NOI18N
+    naoByte1.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte1ActionPerformed(evt);
+      }
+    });
 
-        jLabel12.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
-        jLabel12.setText("v0.4");
+    jLabel7.setText("Nao 2:");
 
-        jLabel6.setText("Nao 1:");
+    naoByte2.setText("-1");
+    naoByte2.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte2.setName("naoByte2"); // NOI18N
+    naoByte2.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte2ActionPerformed(evt);
+      }
+    });
 
-        naoByte1.setText("-1");
-        naoByte1.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte1.setName("naoByte1"); // NOI18N
-        naoByte1.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                naoByte1ActionPerformed(evt);
-            }
-        });
+    naoByte3.setText("-1");
+    naoByte3.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte3.setName("naoByte3"); // NOI18N
+    naoByte3.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte3ActionPerformed(evt);
+      }
+    });
 
-        jLabel7.setText("Nao 2:");
+    jLabel8.setText("Nao 3:");
 
-        naoByte2.setText("-1");
-        naoByte2.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte2.setName("naoByte2"); // NOI18N
-        naoByte2.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                naoByte2ActionPerformed(evt);
-            }
-        });
+    copyButton.setEnabled(false);
+    copyButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        copyButtonActionPerformed(evt);
+      }
+    });
 
-        naoByte3.setText("-1");
-        naoByte3.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte3.setName("naoByte3"); // NOI18N
-        naoByte3.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                naoByte3ActionPerformed(evt);
-            }
-        });
+    jLabel15.setText("Version to Upload:");
 
-        jLabel8.setText("Nao 3:");
+    jBackupBox.setEnabled(false);
+    jBackupBox.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        jBackupBoxItemStateChanged(evt);
+      }
+    });
 
-        copyButton.setEnabled(false);
-        copyButton.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                copyButtonActionPerformed(evt);
-            }
-        });
+    naoByte4.setText("-1");
+    naoByte4.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte4.setName("naoByte4"); // NOI18N
+    naoByte4.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte4ActionPerformed(evt);
+      }
+    });
 
-        jDirChooser.setText("...");
-        jDirChooser.setActionCommand("jDirChoose");
-        jDirChooser.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jDirChooserPerformed(evt);
-            }
-        });
+    jLabel17.setText("Nao 4:");
 
-        jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
-        jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
+    javax.swing.GroupLayout scpPanelLayout = new javax.swing.GroupLayout(scpPanel);
+    scpPanel.setLayout(scpPanelLayout);
+    scpPanelLayout.setHorizontalGroup(
+      scpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(scpPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(scpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(scpPanelLayout.createSequentialGroup()
+            .addComponent(jLabel15)
+            .addGap(18, 18, 18)
+            .addComponent(jBackupBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(scpPanelLayout.createSequentialGroup()
+            .addComponent(jLabel6)
+            .addGap(18, 18, 18)
+            .addComponent(naoByte1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(6, 6, 6)
+            .addComponent(jLabel7)
+            .addGap(18, 18, 18)
+            .addComponent(naoByte2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(6, 6, 6)
+            .addComponent(jLabel8)
+            .addGap(18, 18, 18)
+            .addComponent(naoByte3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(18, 18, 18)
+            .addComponent(jLabel17)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(naoByte4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(18, 18, 18)
+            .addComponent(copyButton, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    scpPanelLayout.setVerticalGroup(
+      scpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(scpPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(scpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel7)
+          .addComponent(jLabel8)
+          .addComponent(jLabel6)
+          .addComponent(naoByte2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(naoByte1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(naoByte3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(naoByte4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(copyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel17))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(scpPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel15)
+          .addComponent(jBackupBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(38, Short.MAX_VALUE))
+    );
 
-        jLabel15.setText("Version to Upload:");
+    actionsTab.addTab("SCP", scpPanel);
 
-        jBackupBox.setEnabled(false);
-        jBackupBox.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                jBackupBoxItemStateChanged(evt);
-            }
-        });
+    jLabel10.setText("Names:");
 
-        naoByte4.setText("-1");
-        naoByte4.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte4.setName("naoByte4"); // NOI18N
-        naoByte4.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                naoByte4ActionPerformed(evt);
-            }
-        });
+    jLabel11.setText("1:");
 
-        jLabel17.setText("Nao 4:");
+    jLabel18.setText("2:");
 
-        javax.swing.GroupLayout jActionsPanelLayout = new javax.swing.GroupLayout(jActionsPanel);
-        jActionsPanel.setLayout(jActionsPanelLayout);
-        jActionsPanelLayout.setHorizontalGroup(
-            jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jActionsPanelLayout.createSequentialGroup()
-                .addGroup(jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jActionsPanelLayout.createSequentialGroup()
-                        .addComponent(jDirChooser)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jDirPathLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jActionsPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jActionsPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel15)
-                                .addGap(18, 18, 18)
-                                .addComponent(jBackupBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jActionsPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)
-                                .addComponent(naoByte1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel7)
-                                .addGap(18, 18, 18)
-                                .addComponent(naoByte2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel8)
-                                .addGap(18, 18, 18)
-                                .addComponent(naoByte3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel17)
-                                .addGap(18, 18, 18)
-                                .addComponent(naoByte4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(copyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addContainerGap())
-        );
-        jActionsPanelLayout.setVerticalGroup(
-            jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jActionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel17)
-                    .addComponent(naoByte2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(naoByte1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(naoByte3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(naoByte4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(copyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    jLabel31.setText("3:");
+
+    jLabel32.setText("4:");
+
+    jLabel33.setText("5:");
+
+    btWriteToStick.setText("Write to Stick");
+    btWriteToStick.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        btWriteToStickActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout stickPanelLayout = new javax.swing.GroupLayout(stickPanel);
+    stickPanel.setLayout(stickPanelLayout);
+    stickPanelLayout.setHorizontalGroup(
+      stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(stickPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(btWriteToStick, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(stickPanelLayout.createSequentialGroup()
+            .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel10)
+              .addGroup(stickPanelLayout.createSequentialGroup()
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNaonamePlayer1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNaonamePlayer2, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNaonamePlayer3, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel32)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNaonamePlayer4, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel33)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNaonamePlayer5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 53, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    stickPanelLayout.setVerticalGroup(
+      stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(stickPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jLabel10)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel11)
+          .addComponent(txtNaonamePlayer1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel18)
+          .addComponent(txtNaonamePlayer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel31)
+          .addComponent(txtNaonamePlayer3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel32)
+          .addComponent(txtNaonamePlayer4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel33)
+          .addComponent(txtNaonamePlayer5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(btWriteToStick)
+        .addContainerGap(15, Short.MAX_VALUE))
+    );
+
+    actionsTab.addTab("Stick", stickPanel);
+
+    jSettingsPanel.setBackground(new java.awt.Color(204, 204, 255));
+
+    jLabel3.setText("Color:");
+
+    jColorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "blue" }));
+    jColorBox.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jColorBoxActionPerformed(evt);
+      }
+    });
+
+    jLabel2.setText("TeamNr:");
+
+    jTeamNumber.setText("4");
+
+    jLabel4.setText("Scheme:");
+
+    jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
+    jSchemeBox.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        jSchemeBoxItemStateChanged(evt);
+      }
+    });
+
+    jButtonRefreshData.setText("Refresh");
+    jButtonRefreshData.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonRefreshDataActionPerformed(evt);
+      }
+    });
+
+    jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
+    jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
+
+    jDirChooser.setText("...");
+    jDirChooser.setActionCommand("jDirChoose");
+    jDirChooser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jDirChooserPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jSettingsPanelLayout = new javax.swing.GroupLayout(jSettingsPanel);
+    jSettingsPanel.setLayout(jSettingsPanelLayout);
+    jSettingsPanelLayout.setHorizontalGroup(
+      jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jSettingsPanelLayout.createSequentialGroup()
+            .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel4)
+              .addComponent(jLabel3))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jSettingsPanelLayout.createSequentialGroup()
+                .addComponent(jColorBox, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(jBackupBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
+              .addComponent(jSchemeBox, 0, 423, Short.MAX_VALUE)))
+          .addGroup(jSettingsPanelLayout.createSequentialGroup()
+            .addComponent(jDirChooser)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jDirPathLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    jSettingsPanelLayout.setVerticalGroup(
+      jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanelLayout.createSequentialGroup()
+        .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jDirChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jDirPathLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jSchemeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jColorBox)
+          .addComponent(jTeamNumber)
+          .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jButtonRefreshData)
+          .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)))
+    );
+
+    cbCopyLib.setText("copyLibNaoSMAL");
+    cbCopyLib.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyLibItemStateChanged(evt);
+      }
+    });
+
+    cbRestartNaoth.setSelected(true);
+    cbRestartNaoth.setText("restartNaoTH");
+    cbRestartNaoth.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbRestartNaothItemStateChanged(evt);
+      }
+    });
+    cbRestartNaoth.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbRestartNaothActionPerformed(evt);
+      }
+    });
+
+    cbCopyConfig.setText("copyConfig");
+    cbCopyConfig.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyConfigItemStateChanged(evt);
+      }
+    });
+
+    cbNoBackup.setText("ONLY MINIMAL BACKUP");
+    cbNoBackup.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbNoBackupItemStateChanged(evt);
+      }
+    });
+    cbNoBackup.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbNoBackupActionPerformed(evt);
+      }
+    });
+
+    jCommentTextArea.setColumns(15);
+    jCommentTextArea.setRows(4);
+    jScrollPane2.setViewportView(jCommentTextArea);
+
+    cbCopyLogs.setText("copyLogs");
+    cbCopyLogs.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyLogsItemStateChanged(evt);
+      }
+    });
+    cbCopyLogs.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbCopyLogsActionPerformed(evt);
+      }
+    });
+
+    jLabel16.setText("Comment:");
+
+    cbCopyExe.setSelected(true);
+    cbCopyExe.setText("copyNaoTH(exe)");
+    cbCopyExe.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyExeItemStateChanged(evt);
+      }
+    });
+
+    cbRestartNaoqi.setText("restartNaoqi");
+    cbRestartNaoqi.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbRestartNaoqiItemStateChanged(evt);
+      }
+    });
+    cbRestartNaoqi.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbRestartNaoqiActionPerformed(evt);
+      }
+    });
+
+    cbForceBackup.setText("force full Backup");
+    cbForceBackup.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbForceBackupItemStateChanged(evt);
+      }
+    });
+    cbForceBackup.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbForceBackupActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout panelCopyLayout = new javax.swing.GroupLayout(panelCopy);
+    panelCopy.setLayout(panelCopyLayout);
+    panelCopyLayout.setHorizontalGroup(
+      panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelCopyLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(panelCopyLayout.createSequentialGroup()
+            .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(cbCopyExe)
+              .addComponent(cbCopyLib))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(cbCopyConfig)
+              .addComponent(cbCopyLogs))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(panelCopyLayout.createSequentialGroup()
+                .addComponent(cbRestartNaoth)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbForceBackup))
+              .addGroup(panelCopyLayout.createSequentialGroup()
+                .addComponent(cbRestartNaoqi)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jActionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jDirChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jDirPathLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+                .addComponent(cbNoBackup)))))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(panelCopyLayout.createSequentialGroup()
+            .addComponent(jLabel16)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+        .addContainerGap())
+      .addComponent(actionsTab)
+    );
+    panelCopyLayout.setVerticalGroup(
+      panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelCopyLayout.createSequentialGroup()
+        .addComponent(actionsTab, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(20, 20, 20)
+        .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addGroup(panelCopyLayout.createSequentialGroup()
+            .addComponent(jLabel16)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane2))
+          .addComponent(jSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+        .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(panelCopyLayout.createSequentialGroup()
+            .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(cbCopyConfig)
+              .addComponent(cbRestartNaoth)
+              .addComponent(cbForceBackup, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(8, 8, 8)
+            .addGroup(panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(cbCopyLogs)
+              .addComponent(cbRestartNaoqi)
+              .addComponent(cbNoBackup, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addGroup(panelCopyLayout.createSequentialGroup()
+            .addComponent(cbCopyExe)
+            .addGap(8, 8, 8)
+            .addComponent(cbCopyLib)))
+        .addContainerGap())
+    );
 
-        cbCopyLib.setText("copyLibNaoSMAL");
-        cbCopyLib.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbCopyLibItemStateChanged(evt);
-            }
-        });
+    mainTab.addTab("Copy & Run", panelCopy);
 
-        cbRestartNaoth.setSelected(true);
-        cbRestartNaoth.setText("restartNaoTH");
-        cbRestartNaoth.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbRestartNaothItemStateChanged(evt);
-            }
-        });
-        cbRestartNaoth.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                cbRestartNaothActionPerformed(evt);
-            }
-        });
+    panelConfig.setPreferredSize(new java.awt.Dimension(456, 462));
+    panelConfig.setVerifyInputWhenFocusTarget(false);
 
-        cbCopyConfig.setText("copyConfig");
-        cbCopyConfig.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbCopyConfigItemStateChanged(evt);
-            }
-        });
+    jSettingsPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
-        jSettingsPanel.setBackground(new java.awt.Color(204, 204, 255));
+    jLabel13.setText("LAN:");
 
-        jLabel3.setText("Color:");
+    jLabel1.setText("SubNet");
 
-        jColorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "blue" }));
-        jColorBox.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jColorBoxActionPerformed(evt);
-            }
-        });
+    jLabel20.setText("Netmask");
 
-        jLabel2.setText("TeamNr:");
+    jLabel22.setText("Broadcast");
 
-        jTeamNumber.setText("4");
+    subnetFieldLAN.setText("10.0.0");
+    subnetFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        subnetFieldLANActionPerformed(evt);
+      }
+    });
 
-        jLabel4.setText("Scheme:");
+    netmaskFieldLAN.setText("255.255.255.0");
+    netmaskFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        netmaskFieldLANActionPerformed(evt);
+      }
+    });
 
-        jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
-        jSchemeBox.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                jSchemeBoxItemStateChanged(evt);
-            }
-        });
+    broadcastFieldLAN.setText("10.0.0.255");
+    broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        broadcastFieldLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
+    {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
+      {
+      }
+    });
+    broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter()
+    {
+      public void keyPressed(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldLANKeyPressed(evt);
+      }
+    });
 
-        jButtonRefreshData.setText("Refresh");
-        jButtonRefreshData.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButtonRefreshDataActionPerformed(evt);
-            }
-        });
+    jLabel14.setText("WLAN:");
 
-        javax.swing.GroupLayout jSettingsPanelLayout = new javax.swing.GroupLayout(jSettingsPanel);
-        jSettingsPanel.setLayout(jSettingsPanelLayout);
-        jSettingsPanelLayout.setHorizontalGroup(
-            jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jSettingsPanelLayout.createSequentialGroup()
-                        .addComponent(jColorBox, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
-                    .addComponent(jSchemeBox, 0, 423, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jSettingsPanelLayout.setVerticalGroup(
-            jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSchemeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jColorBox)
-                    .addComponent(jTeamNumber)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonRefreshData)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)))
-        );
+    jLabel19.setText("SubNet");
 
-        cbNoBackup.setText("ONLY MINIMAL BACKUP");
-        cbNoBackup.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbNoBackupItemStateChanged(evt);
-            }
-        });
-        cbNoBackup.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                cbNoBackupActionPerformed(evt);
-            }
-        });
+    jLabel21.setText("Netmask");
 
-        jCommentTextArea.setColumns(15);
-        jCommentTextArea.setRows(4);
-        jScrollPane2.setViewportView(jCommentTextArea);
+    jLabel23.setText("Broadcast");
 
-        cbCopyLogs.setText("copyLogs");
-        cbCopyLogs.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbCopyLogsItemStateChanged(evt);
-            }
-        });
-        cbCopyLogs.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                cbCopyLogsActionPerformed(evt);
-            }
-        });
+    subnetFieldWLAN.setText("192.168.4");
+    subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        subnetFieldWLANActionPerformed(evt);
+      }
+    });
 
-        jLabel16.setText("Comment:");
+    netmaskFieldWLAN.setText("255.255.255.0");
+    netmaskFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        netmaskFieldWLANActionPerformed(evt);
+      }
+    });
 
-        cbCopyExe.setSelected(true);
-        cbCopyExe.setText("copyNaoTH(exe)");
-        cbCopyExe.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbCopyExeItemStateChanged(evt);
-            }
-        });
+    broadcastFieldWLAN.setText("192.168.4.255");
+    broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        broadcastFieldWLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
+    {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldWLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldWLANCaretPositionChanged(evt);
+      }
+    });
+    broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener()
+    {
+      public void propertyChange(java.beans.PropertyChangeEvent evt)
+      {
+        broadcastFieldWLANPropertyChange(evt);
+      }
+    });
+    broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter()
+    {
+      public void keyTyped(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldWLANKeyTyped(evt);
+      }
+      public void keyPressed(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldWLANKeyPressed(evt);
+      }
+    });
+    broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener()
+    {
+      public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException
+      {
+        broadcastFieldWLANVetoableChange(evt);
+      }
+    });
 
-        cbRestartNaoqi.setText("restartNaoqi");
-        cbRestartNaoqi.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbRestartNaoqiItemStateChanged(evt);
-            }
-        });
-        cbRestartNaoqi.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                cbRestartNaoqiActionPerformed(evt);
-            }
-        });
+    radioWPA.setBackground(new java.awt.Color(204, 204, 255));
+    radioWPA.setSelected(true);
+    radioWPA.setText("WPA PSK");
 
-        cbForceBackup.setText("force full Backup");
-        cbForceBackup.addItemListener(new java.awt.event.ItemListener()
-        {
-            public void itemStateChanged(java.awt.event.ItemEvent evt)
-            {
-                cbForceBackupItemStateChanged(evt);
-            }
-        });
-        cbForceBackup.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                cbForceBackupActionPerformed(evt);
-            }
-        });
+    radioWEP.setBackground(new java.awt.Color(204, 204, 255));
+    radioWEP.setText("WEP");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbCopyExe)
-                                    .addComponent(cbCopyLib))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbCopyConfig)
-                                    .addComponent(cbCopyLogs))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(cbRestartNaoth)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbForceBackup))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(cbRestartNaoqi)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbNoBackup)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel16)
-                                .addGap(0, 132, Short.MAX_VALUE))
-                            .addComponent(jScrollPane2))
-                        .addContainerGap())
-                    .addComponent(jActionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jActionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jSettingsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbCopyConfig)
-                            .addComponent(cbRestartNaoth)
-                            .addComponent(cbForceBackup, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(8, 8, 8)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbCopyLogs)
-                            .addComponent(cbRestartNaoqi)
-                            .addComponent(cbNoBackup, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(cbCopyExe)
-                        .addGap(8, 8, 8)
-                        .addComponent(cbCopyLib)))
-                .addContainerGap(18, Short.MAX_VALUE))
-        );
+    jLabel5.setText("SSID");
 
-        jTabbedPane1.addTab("Copy & Run", jPanel1);
+    wlanSSID.setText("SPL_Field_B");
+    wlanSSID.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        wlanSSIDActionPerformed(evt);
+      }
+    });
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(456, 462));
-        jPanel2.setVerifyInputWhenFocusTarget(false);
+    jLabel9.setText("WLAN Key");
 
-        jSettingsPanel1.setBackground(new java.awt.Color(204, 204, 255));
+    wlanKey.setText("SPLRC2012");
+    wlanKey.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        wlanKeyActionPerformed(evt);
+      }
+    });
 
-        jLabel13.setText("LAN:");
-
-        jLabel1.setText("SubNet");
-
-        jLabel20.setText("Netmask");
-
-        jLabel22.setText("Broadcast");
-
-        subnetFieldLAN.setText("10.0.0");
-        subnetFieldLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                subnetFieldLANActionPerformed(evt);
-            }
-        });
-
-        netmaskFieldLAN.setText("255.255.255.0");
-        netmaskFieldLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                netmaskFieldLANActionPerformed(evt);
-            }
-        });
-
-        broadcastFieldLAN.setText("10.0.0.255");
-        broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                broadcastFieldLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
-        {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
-            {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
-            {
-                broadcastFieldLANInputMethodTextChanged(evt);
-            }
-        });
-        broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter()
-        {
-            public void keyPressed(java.awt.event.KeyEvent evt)
-            {
-                broadcastFieldLANKeyPressed(evt);
-            }
-        });
-
-        jLabel14.setText("WLAN:");
-
-        jLabel19.setText("SubNet");
-
-        jLabel21.setText("Netmask");
-
-        jLabel23.setText("Broadcast");
-
-        subnetFieldWLAN.setText("192.168.4");
-        subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                subnetFieldWLANActionPerformed(evt);
-            }
-        });
-
-        netmaskFieldWLAN.setText("255.255.255.0");
-        netmaskFieldWLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                netmaskFieldWLANActionPerformed(evt);
-            }
-        });
-
-        broadcastFieldWLAN.setText("192.168.4.255");
-        broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                broadcastFieldWLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
-        {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
-            {
-                broadcastFieldWLANCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
-            {
-                broadcastFieldWLANInputMethodTextChanged(evt);
-            }
-        });
-        broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener()
-        {
-            public void propertyChange(java.beans.PropertyChangeEvent evt)
-            {
-                broadcastFieldWLANPropertyChange(evt);
-            }
-        });
-        broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter()
-        {
-            public void keyTyped(java.awt.event.KeyEvent evt)
-            {
-                broadcastFieldWLANKeyTyped(evt);
-            }
-            public void keyPressed(java.awt.event.KeyEvent evt)
-            {
-                broadcastFieldWLANKeyPressed(evt);
-            }
-        });
-        broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener()
-        {
-            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException
-            {
-                broadcastFieldWLANVetoableChange(evt);
-            }
-        });
-
-        radioWPA.setBackground(new java.awt.Color(204, 204, 255));
-        radioWPA.setSelected(true);
-        radioWPA.setText("WPA PSK");
-
-        radioWEP.setBackground(new java.awt.Color(204, 204, 255));
-        radioWEP.setText("WEP");
-
-        jLabel5.setText("SSID");
-
-        wlanSSID.setText("SPL_Field_B");
-        wlanSSID.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                wlanSSIDActionPerformed(evt);
-            }
-        });
-
-        jLabel9.setText("WLAN Key");
-
-        wlanKey.setText("SPLRC2012");
-        wlanKey.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                wlanKeyActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jSettingsPanel1Layout = new javax.swing.GroupLayout(jSettingsPanel1);
-        jSettingsPanel1.setLayout(jSettingsPanel1Layout);
-        jSettingsPanel1Layout.setHorizontalGroup(
-            jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+    javax.swing.GroupLayout jSettingsPanel1Layout = new javax.swing.GroupLayout(jSettingsPanel1);
+    jSettingsPanel1.setLayout(jSettingsPanel1Layout);
+    jSettingsPanel1Layout.setHorizontalGroup(
+      jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel13)
+                .addGap(217, 217, 217))
+              .addGroup(jSettingsPanel1Layout.createSequentialGroup()
                 .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addGap(217, 217, 217))
-                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel22))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(subnetFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel14)
-                                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel21)
-                                                    .addComponent(jLabel19))
-                                                .addGap(28, 28, 28))
-                                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel23)
-                                                .addGap(18, 18, 18)))
-                                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(broadcastFieldWLAN, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .addComponent(subnetFieldWLAN, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .addComponent(radioWPA, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
-                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                .addGap(84, 84, 84)
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(wlanKey, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                        .addComponent(wlanSSID, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(radioWEP)
-                                        .addGap(168, 168, 168))))
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel9))))
-                .addGap(13, 13, 13))
-        );
-        jSettingsPanel1Layout.setVerticalGroup(
-            jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                  .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(jLabel1)
+                  .addComponent(jLabel22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel19)
-                            .addComponent(subnetFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel21)
-                            .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(broadcastFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(subnetFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel20)
-                            .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel22)
-                            .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel23))))
-                .addGap(18, 18, 18)
-                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(wlanSSID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(subnetFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                  .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                  .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(jLabel14)
+                  .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                    .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                      .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                          .addComponent(jLabel21)
+                          .addComponent(jLabel19))
+                        .addGap(28, 28, 28))
+                      .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel23)
+                        .addGap(18, 18, 18)))
+                    .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                      .addComponent(broadcastFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                      .addComponent(subnetFieldWLAN)
+                      .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                      .addComponent(radioWPA, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+          .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+                .addGap(84, 84, 84)
+                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(wlanKey, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
+                  .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+                    .addComponent(wlanSSID, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(radioWEP)
-                    .addComponent(radioWPA))
+                    .addGap(168, 168, 168))))
+              .addComponent(jLabel5)
+              .addComponent(jLabel9))))
+        .addGap(13, 13, 13))
+    );
+    jSettingsPanel1Layout.setVerticalGroup(
+      jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+            .addComponent(jLabel14)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(jLabel19)
+              .addComponent(subnetFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(jLabel21)
+              .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(broadcastFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+            .addComponent(jLabel13)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(subnetFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel1))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(jLabel20)
+              .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(jLabel22)
+              .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel23))))
+        .addGap(18, 18, 18)
+        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(wlanSSID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(radioWEP)
+          .addComponent(radioWPA))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel9)
+          .addComponent(wlanKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    jSettingsPanel2.setBackground(new java.awt.Color(204, 204, 255));
+
+    jLabel24.setText("TeamComm:");
+
+    lblTeamCommWLAN.setEditable(false);
+    lblTeamCommWLAN.setText("192.168.4.255");
+    lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        lblTeamCommWLANActionPerformed(evt);
+      }
+    });
+
+    jLabel25.setText("/");
+
+    lblTeamCommLAN.setEditable(false);
+    lblTeamCommLAN.setText("10.0.0.255");
+    lblTeamCommLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        lblTeamCommLANActionPerformed(evt);
+      }
+    });
+
+    jLabel26.setText(":");
+
+    jTeamCommPort.setText("10400");
+
+    jLabel27.setText("ssh:");
+
+    sshUser.setText("nao");
+    sshUser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        sshUserActionPerformed(evt);
+      }
+    });
+
+    jLabel28.setText(":");
+
+    sshPassword.setText("nao");
+
+    jLabel29.setText("ssh:");
+
+    sshRootUser.setEditable(false);
+    sshRootUser.setText("root");
+    sshRootUser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        sshRootUserActionPerformed(evt);
+      }
+    });
+
+    jLabel30.setText(":");
+
+    sshRootPassword.setText("root");
+
+    javax.swing.GroupLayout jSettingsPanel2Layout = new javax.swing.GroupLayout(jSettingsPanel2);
+    jSettingsPanel2.setLayout(jSettingsPanel2Layout);
+    jSettingsPanel2Layout.setHorizontalGroup(
+      jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jSettingsPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel24)
+            .addGap(18, 18, 18)
+            .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel25)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel26)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jTeamCommPort, javax.swing.GroupLayout.DEFAULT_SIZE, 12, Short.MAX_VALUE))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
+            .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+              .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jSettingsPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel29)
+                .addGap(18, 18, 18)
+                .addComponent(sshRootUser, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(wlanKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jSettingsPanel2.setBackground(new java.awt.Color(204, 204, 255));
-
-        jLabel24.setText("TeamComm:");
-
-        lblTeamCommWLAN.setEditable(false);
-        lblTeamCommWLAN.setText("192.168.4.255");
-        lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                lblTeamCommWLANActionPerformed(evt);
-            }
-        });
-
-        jLabel25.setText("/");
-
-        lblTeamCommLAN.setEditable(false);
-        lblTeamCommLAN.setText("10.0.0.255");
-        lblTeamCommLAN.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                lblTeamCommLANActionPerformed(evt);
-            }
-        });
-
-        jLabel26.setText(":");
-
-        jTeamCommPort.setText("10400");
-
-        jLabel27.setText("ssh:");
-
-        sshUser.setText("nao");
-        sshUser.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                sshUserActionPerformed(evt);
-            }
-        });
-
-        jLabel28.setText(":");
-
-        sshPassword.setText("nao");
-
-        jLabel29.setText("ssh:");
-
-        sshRootUser.setEditable(false);
-        sshRootUser.setText("root");
-        sshRootUser.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                sshRootUserActionPerformed(evt);
-            }
-        });
-
-        jLabel30.setText(":");
-
-        sshRootPassword.setText("root");
-
-        javax.swing.GroupLayout jSettingsPanel2Layout = new javax.swing.GroupLayout(jSettingsPanel2);
-        jSettingsPanel2.setLayout(jSettingsPanel2Layout);
-        jSettingsPanel2Layout.setHorizontalGroup(
-            jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jSettingsPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel24)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel25)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel26)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTeamCommPort, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
-                        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jSettingsPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel29)
-                                .addGap(18, 18, 18)
-                                .addComponent(sshRootUser, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jSettingsPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel27)
-                                .addGap(18, 18, 18)
-                                .addComponent(sshUser, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel28)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sshPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
-                            .addComponent(sshRootPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))))
-                .addContainerGap())
-        );
-        jSettingsPanel2Layout.setVerticalGroup(
-            jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jSettingsPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel27)
-                    .addComponent(sshUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sshPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sshRootUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel29)
-                    .addComponent(sshRootPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jButtonSetRobotNetwork.setText("Set Network to Robot");
-        jButtonSetRobotNetwork.setEnabled(false);
-        jButtonSetRobotNetwork.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButtonSetRobotNetworkActionPerformed(evt);
-            }
-        });
-
-        jButtonInitRobotSystem.setText("Initialize Robot System");
-        jButtonInitRobotSystem.setEnabled(false);
-        jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButtonInitRobotSystemActionPerformed(evt);
-            }
-        });
-
-        jButtonSaveNetworkConfig.setText("Save As Default Config");
-        jButtonSaveNetworkConfig.setEnabled(false);
-        jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButtonSaveNetworkConfigActionPerformed(evt);
-            }
-        });
-
-        lstNaos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        lstNaos.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
-                lstNaosMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(lstNaos);
-
-        cbRebootSystem.setText("reboot OS");
-
-        jButtonRemoteKernelVideoReload.setText("Reload kernel video module");
-        jButtonRemoteKernelVideoReload.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jButtonRemoteKernelVideoReloadActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSettingsPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbRebootSystem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonSetRobotNetwork, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
-                    .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jButtonRemoteKernelVideoReload, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(cbRebootSystem)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSettingsPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButtonRemoteKernelVideoReload)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonSetRobotNetwork, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("Network Configuration / Utilities", jPanel2);
-
-        jSplitPane1.setLeftComponent(jTabbedPane1);
-
-        logTextPane.setEditable(false);
-        jScrollPane5.setViewportView(logTextPane);
-
-        jCopyStatus.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        jCopyStatus.setText("idle...");
-
-        progressBar.setEnabled(false);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jCopyStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
-            .addComponent(jScrollPane5)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .addGroup(jSettingsPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel27)
+                .addGap(18, 18, 18)
+                .addComponent(sshUser, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCopyStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+                .addComponent(jLabel28)))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(sshPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+              .addComponent(sshRootPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))))
+        .addContainerGap())
+    );
+    jSettingsPanel2Layout.setVerticalGroup(
+      jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jSettingsPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel27)
+          .addComponent(sshUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(sshPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(sshRootUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel29)
+          .addComponent(sshRootPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
 
-        jSplitPane1.setRightComponent(jPanel3);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel12)
-                .addGap(2, 2, 2)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_subnetFieldLANActionPerformed
-
-    private void cbCopyLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyLogsActionPerformed
-      // TODO add your handling code here:
-}//GEN-LAST:event_cbCopyLogsActionPerformed
-
-    private void cbNoBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbNoBackupActionPerformed
-    }//GEN-LAST:event_cbNoBackupActionPerformed
-
-    private void jBackupBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jBackupBoxItemStateChanged
-      
-      String itemValue = evt.getItem().toString();
-
-      if(jBackupBox.getItemCount() > 0 && jBackupBox.getSelectedItem().equals(itemValue) && !itemValue.equals(jBackupBox.getItemAt(0)))
+    jButtonSetRobotNetwork.setText("Set Network to Robot");
+    jButtonSetRobotNetwork.setEnabled(false);
+    jButtonSetRobotNetwork.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        config.backupIsSelected = true;
-        config.boxSelected = jBackupBox.getSelectedItem().toString();
-        config.selectedBackup = config.backups.get(jBackupBox.getSelectedItem()).toString();
+        jButtonSetRobotNetworkActionPerformed(evt);
       }
-      else
+    });
+
+    jButtonInitRobotSystem.setText("Initialize Robot System");
+    jButtonInitRobotSystem.setEnabled(false);
+    jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        config.boxSelected = "";
-        config.selectedBackup = "";
-        config.backupIsSelected = false;
+        jButtonInitRobotSystemActionPerformed(evt);
       }
-      setCommentText();
-    }//GEN-LAST:event_jBackupBoxItemStateChanged
+    });
 
-    private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged
-      setActionBtnLabel();
-    }//GEN-LAST:event_cbCopyConfigItemStateChanged
-
-    private void cbCopyLibItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLibItemStateChanged
-      setActionBtnLabel();
-    }//GEN-LAST:event_cbCopyLibItemStateChanged
-
-    private void naoByte4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte4ActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_naoByte4ActionPerformed
-
-    private void jButtonRefreshDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshDataActionPerformed
-      setFormData();
-    }//GEN-LAST:event_jButtonRefreshDataActionPerformed
-
-    private void cbRestartNaothItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbRestartNaothItemStateChanged
-      setActionBtnLabel();
-    }//GEN-LAST:event_cbRestartNaothItemStateChanged
-
-    private void cbRestartNaothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRestartNaothActionPerformed
-      
-    }//GEN-LAST:event_cbRestartNaothActionPerformed
-
-    private void cbCopyExeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyExeItemStateChanged
-      setActionBtnLabel();
-    }//GEN-LAST:event_cbCopyExeItemStateChanged
-
-    private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_subnetFieldWLANActionPerformed
-
-    private void netmaskFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_netmaskFieldLANActionPerformed
-
-    private void netmaskFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldWLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_netmaskFieldWLANActionPerformed
-
-    private void broadcastFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_broadcastFieldLANActionPerformed
-
-    private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldWLANActionPerformed
-      lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-    }//GEN-LAST:event_broadcastFieldWLANActionPerformed
-
-    private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommWLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_lblTeamCommWLANActionPerformed
-
-    private void lblTeamCommLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommLANActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_lblTeamCommLANActionPerformed
-
-    private void sshUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshUserActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_sshUserActionPerformed
-
-    private void sshRootUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshRootUserActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_sshRootUserActionPerformed
-
-    private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
-      if(checkDirPath(true))
+    jButtonSaveNetworkConfig.setText("Save As Default Config");
+    jButtonSaveNetworkConfig.setEnabled(false);
+    jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        setRobotNetwork();
+        jButtonSaveNetworkConfigActionPerformed(evt);
       }
-    }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
+    });
 
-    private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
-      try
+    lstNaos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    lstNaos.addMouseListener(new java.awt.event.MouseAdapter()
+    {
+      public void mouseClicked(java.awt.event.MouseEvent evt)
       {
-        actionInfo("saving network configuration");
-        writeNetworkConfig();
-        saveWpaSupplicant(config, config.localSetupScriptPath());
-        writePlayerCfg(new File(config.localConfigPath() + "/general/player.cfg"), "1");
-        writeTeamcommCfg(new File(config.localConfigPath() + "/general/teamcomm.cfg"));
-        writeScheme(new File(config.localConfigPath() + "/scheme.cfg"));
+        lstNaosMouseClicked(evt);
       }
-      catch(IOException ex)
-      {
-        actionInfo("Could'nt write network config file\n"  + ex.getMessage());
-      }
-    }//GEN-LAST:event_jButtonSaveNetworkConfigActionPerformed
+    });
+    jScrollPane3.setViewportView(lstNaos);
 
-    private void lstNaosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstNaosMouseClicked
-      
-      if (evt.getClickCount() == 2 && checkDirPath(true))
+    cbRebootSystem.setText("reboot OS");
+
+    jButtonRemoteKernelVideoReload.setText("Reload kernel video module");
+    jButtonRemoteKernelVideoReload.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
       {
-        Object[] options={ "initialize Robot", "set network config" };
-        int pressedBtnId = JOptionPane.showOptionDialog
-                            (
-                              null, "Choose or loose!",
-                              "Demand", JOptionPane.DEFAULT_OPTION, 
-                              JOptionPane.INFORMATION_MESSAGE,
-                              null, options, options[0]
-                            );
-        if(pressedBtnId == 0)
-        {
-          initializeRobot();
-        }
-        else if(pressedBtnId == 1)
-        {
-          setRobotNetwork();
-        }
+        jButtonRemoteKernelVideoReloadActionPerformed(evt);
       }
-    }//GEN-LAST:event_lstNaosMouseClicked
+    });
+
+    javax.swing.GroupLayout panelConfigLayout = new javax.swing.GroupLayout(panelConfig);
+    panelConfig.setLayout(panelConfigLayout);
+    panelConfigLayout.setHorizontalGroup(
+      panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(panelConfigLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jSettingsPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(cbRebootSystem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jButtonSetRobotNetwork, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+          .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+          .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+          .addComponent(jButtonRemoteKernelVideoReload, javax.swing.GroupLayout.PREFERRED_SIZE, 189, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    panelConfigLayout.setVerticalGroup(
+      panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelConfigLayout.createSequentialGroup()
+        .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addGroup(panelConfigLayout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(cbRebootSystem)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane3))
+          .addGroup(panelConfigLayout.createSequentialGroup()
+            .addGap(14, 14, 14)
+            .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jSettingsPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelConfigLayout.createSequentialGroup()
+            .addComponent(jButtonRemoteKernelVideoReload)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButtonSetRobotNetwork, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap())
+    );
+
+    mainTab.addTab("Network Configuration / Utilities", panelConfig);
+
+    jSplitPane1.setLeftComponent(mainTab);
+
+    logTextPane.setEditable(false);
+    jScrollPane5.setViewportView(logTextPane);
+
+    jCopyStatus.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+    jCopyStatus.setText("idle...");
+
+    progressBar.setEnabled(false);
+
+    javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+    jPanel3.setLayout(jPanel3Layout);
+    jPanel3Layout.setHorizontalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(jCopyStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
+      .addComponent(jScrollPane5)
+    );
+    jPanel3Layout.setVerticalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jCopyStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+    );
+
+    jSplitPane1.setRightComponent(jPanel3);
+
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel12)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(jSplitPane1))
+        .addContainerGap())
+    );
+    layout.setVerticalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(layout.createSequentialGroup()
+        .addComponent(jLabel12)
+        .addGap(2, 2, 2)
+        .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    pack();
+  }// </editor-fold>//GEN-END:initComponents
        
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 //      for(int i = 0; i < jmdnsList.size() && i < jmdnsServiceListenerList.size(); i++)
@@ -3330,169 +3009,460 @@ public class NaoScp extends NaoScpMainFrame
 //      }
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
-      if(checkDirPath(true))
-      {
-        initializeRobot();
-      }
-    }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
-
-    private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jSchemeBoxItemStateChanged
-    }//GEN-LAST:event_jSchemeBoxItemStateChanged
-
-    private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
-    }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
-
-    private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
-    }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
-
-    private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_broadcastFieldWLANPropertyChange
-    }//GEN-LAST:event_broadcastFieldWLANPropertyChange
-
-    private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_broadcastFieldWLANVetoableChange
-    }//GEN-LAST:event_broadcastFieldWLANVetoableChange
-
-    private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
-    }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
-
-    private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyTyped
-    }//GEN-LAST:event_broadcastFieldWLANKeyTyped
-
-    private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyPressed
-      lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-    }//GEN-LAST:event_broadcastFieldWLANKeyPressed
-
-    private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldLANKeyPressed
-      lblTeamCommLAN.setText(broadcastFieldLAN.getText());
-    }//GEN-LAST:event_broadcastFieldLANKeyPressed
-
-  private void cbNoBackupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbNoBackupItemStateChanged
-    setActionBtnLabel();
-  }//GEN-LAST:event_cbNoBackupItemStateChanged
-
-  private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanSSIDActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_wlanSSIDActionPerformed
-
-  private void cbRestartNaoqiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbRestartNaoqiItemStateChanged
-    setActionBtnLabel();
-  }//GEN-LAST:event_cbRestartNaoqiItemStateChanged
-
-  private void cbRestartNaoqiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRestartNaoqiActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_cbRestartNaoqiActionPerformed
-
-  private void cbForceBackupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbForceBackupItemStateChanged
-    setActionBtnLabel();
-  }//GEN-LAST:event_cbForceBackupItemStateChanged
-
-  private void cbForceBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbForceBackupActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_cbForceBackupActionPerformed
-
-  private void cbCopyLogsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLogsItemStateChanged
-    setActionBtnLabel();
-  }//GEN-LAST:event_cbCopyLogsItemStateChanged
-
-  private void jButtonRemoteKernelVideoReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoteKernelVideoReloadActionPerformed
+  private void jButtonRemoteKernelVideoReloadActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonRemoteKernelVideoReloadActionPerformed
+  {//GEN-HEADEREND:event_jButtonRemoteKernelVideoReloadActionPerformed
     remoteReloadKernelVideoModule();
   }//GEN-LAST:event_jButtonRemoteKernelVideoReloadActionPerformed
 
-  private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanKeyActionPerformed
+  private void lstNaosMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_lstNaosMouseClicked
+  {//GEN-HEADEREND:event_lstNaosMouseClicked
+
+    if (evt.getClickCount() == 2 && checkDirPath(true))
+    {
+      Object[] options={ "initialize Robot", "set network config" };
+      int pressedBtnId = JOptionPane.showOptionDialog
+      (
+        null, "Choose or loose!",
+        "Demand", JOptionPane.DEFAULT_OPTION,
+        JOptionPane.INFORMATION_MESSAGE,
+        null, options, options[0]
+      );
+      if(pressedBtnId == 0)
+      {
+        initializeRobot();
+      }
+      else if(pressedBtnId == 1)
+      {
+        setRobotNetwork();
+      }
+    }
+  }//GEN-LAST:event_lstNaosMouseClicked
+
+  private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
+  {//GEN-HEADEREND:event_jButtonSaveNetworkConfigActionPerformed
+    try
+    {
+      actionInfo("saving network configuration");
+      writeNetworkConfig();
+      saveWpaSupplicant(config, config.localSetupScriptPath());
+      DeployUtils.writePlayerCfg(this, 
+        new File(config.localConfigPath() + "/general/player.cfg"), 
+        setupPlayerNo, jTeamNumber.getText(), jColorBox.getSelectedItem().toString());
+      DeployUtils.writeTeamcommCfg(this, jTeamCommPort.getText(), new File(config.localConfigPath() + "/general/teamcomm.cfg"));
+      //todo: why writing scheme here?
+      DeployUtils.writeScheme(this, jSchemeBox.getSelectedItem().toString(), new File(config.localConfigPath() + "/scheme.cfg"));
+    }
+    catch(IOException ex)
+    {
+      actionInfo("Could'nt write network config file\n"  + ex.getMessage());
+    }
+  }//GEN-LAST:event_jButtonSaveNetworkConfigActionPerformed
+
+  private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
+  {//GEN-HEADEREND:event_jButtonInitRobotSystemActionPerformed
+    if(checkDirPath(true))
+    {
+      initializeRobot();
+    }
+  }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
+
+  private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
+  {//GEN-HEADEREND:event_jButtonSetRobotNetworkActionPerformed
+    if(checkDirPath(true))
+    {
+      setRobotNetwork();
+    }
+  }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
+
+  private void sshRootUserActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_sshRootUserActionPerformed
+  {//GEN-HEADEREND:event_sshRootUserActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_sshRootUserActionPerformed
+
+  private void sshUserActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_sshUserActionPerformed
+  {//GEN-HEADEREND:event_sshUserActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_sshUserActionPerformed
+
+  private void lblTeamCommLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_lblTeamCommLANActionPerformed
+  {//GEN-HEADEREND:event_lblTeamCommLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_lblTeamCommLANActionPerformed
+
+  private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_lblTeamCommWLANActionPerformed
+  {//GEN-HEADEREND:event_lblTeamCommWLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_lblTeamCommWLANActionPerformed
+
+  private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wlanKeyActionPerformed
+  {//GEN-HEADEREND:event_wlanKeyActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_wlanKeyActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField broadcastFieldLAN;
-    private javax.swing.JTextField broadcastFieldWLAN;
-    private javax.swing.JCheckBox cbCopyConfig;
-    private javax.swing.JCheckBox cbCopyExe;
-    private javax.swing.JCheckBox cbCopyLib;
-    private javax.swing.JCheckBox cbCopyLogs;
-    private javax.swing.JCheckBox cbForceBackup;
-    private javax.swing.JCheckBox cbNoBackup;
-    private javax.swing.JCheckBox cbRebootSystem;
-    private javax.swing.JCheckBox cbRestartNaoqi;
-    private javax.swing.JCheckBox cbRestartNaoth;
-    private javax.swing.JButton copyButton;
-    private javax.swing.JPanel jActionsPanel;
-    private javax.swing.JComboBox jBackupBox;
-    private javax.swing.JButton jButtonInitRobotSystem;
-    private javax.swing.JButton jButtonRefreshData;
-    private javax.swing.JButton jButtonRemoteKernelVideoReload;
-    private javax.swing.JButton jButtonSaveNetworkConfig;
-    private javax.swing.JButton jButtonSetRobotNetwork;
-    private javax.swing.JComboBox jColorBox;
-    private javax.swing.JTextArea jCommentTextArea;
-    private javax.swing.JLabel jCopyStatus;
-    private javax.swing.JDialog jDialog1;
-    private javax.swing.JButton jDirChooser;
-    private javax.swing.JLabel jDirPathLabel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JComboBox jSchemeBox;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JPanel jSettingsPanel;
-    private javax.swing.JPanel jSettingsPanel1;
-    private javax.swing.JPanel jSettingsPanel2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTeamCommPort;
-    private javax.swing.JTextField jTeamNumber;
-    private javax.swing.JTextField lblTeamCommLAN;
-    private javax.swing.JTextField lblTeamCommWLAN;
-    private javax.swing.JTextPane logTextPane;
-    private javax.swing.JList lstNaos;
-    private javax.swing.JTextField naoByte1;
-    private javax.swing.JTextField naoByte2;
-    private javax.swing.JTextField naoByte3;
-    private javax.swing.JTextField naoByte4;
-    private javax.swing.JTextField netmaskFieldLAN;
-    private javax.swing.JTextField netmaskFieldWLAN;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JRadioButton radioWEP;
-    private javax.swing.JRadioButton radioWPA;
-    private javax.swing.JPasswordField sshPassword;
-    private javax.swing.JPasswordField sshRootPassword;
-    private javax.swing.JTextField sshRootUser;
-    private javax.swing.JTextField sshUser;
-    private javax.swing.JTextField subnetFieldLAN;
-    private javax.swing.JTextField subnetFieldWLAN;
-    private javax.swing.ButtonGroup wlanBtnGroup;
-    private javax.swing.JPasswordField wlanKey;
-    private javax.swing.JTextField wlanSSID;
-    // End of variables declaration//GEN-END:variables
+  private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wlanSSIDActionPerformed
+  {//GEN-HEADEREND:event_wlanSSIDActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_wlanSSIDActionPerformed
+
+  private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException//GEN-FIRST:event_broadcastFieldWLANVetoableChange
+  {//GEN-HEADEREND:event_broadcastFieldWLANVetoableChange
+
+  }//GEN-LAST:event_broadcastFieldWLANVetoableChange
+
+  private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldWLANKeyPressed
+  {//GEN-HEADEREND:event_broadcastFieldWLANKeyPressed
+    lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
+  }//GEN-LAST:event_broadcastFieldWLANKeyPressed
+
+  private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldWLANKeyTyped
+  {//GEN-HEADEREND:event_broadcastFieldWLANKeyTyped
+
+  }//GEN-LAST:event_broadcastFieldWLANKeyTyped
+
+  private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_broadcastFieldWLANPropertyChange
+  {//GEN-HEADEREND:event_broadcastFieldWLANPropertyChange
+
+  }//GEN-LAST:event_broadcastFieldWLANPropertyChange
+
+  private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
+  {//GEN-HEADEREND:event_broadcastFieldWLANCaretPositionChanged
+
+  }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
+
+  private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
+  {//GEN-HEADEREND:event_broadcastFieldWLANInputMethodTextChanged
+
+  }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
+
+  private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_broadcastFieldWLANActionPerformed
+  {//GEN-HEADEREND:event_broadcastFieldWLANActionPerformed
+    lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
+  }//GEN-LAST:event_broadcastFieldWLANActionPerformed
+
+  private void netmaskFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_netmaskFieldWLANActionPerformed
+  {//GEN-HEADEREND:event_netmaskFieldWLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_netmaskFieldWLANActionPerformed
+
+  private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_subnetFieldWLANActionPerformed
+  {//GEN-HEADEREND:event_subnetFieldWLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_subnetFieldWLANActionPerformed
+
+  private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldLANKeyPressed
+  {//GEN-HEADEREND:event_broadcastFieldLANKeyPressed
+    lblTeamCommLAN.setText(broadcastFieldLAN.getText());
+  }//GEN-LAST:event_broadcastFieldLANKeyPressed
+
+  private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
+  {//GEN-HEADEREND:event_broadcastFieldLANInputMethodTextChanged
+
+  }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
+
+  private void broadcastFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_broadcastFieldLANActionPerformed
+  {//GEN-HEADEREND:event_broadcastFieldLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_broadcastFieldLANActionPerformed
+
+  private void netmaskFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_netmaskFieldLANActionPerformed
+  {//GEN-HEADEREND:event_netmaskFieldLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_netmaskFieldLANActionPerformed
+
+  private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_subnetFieldLANActionPerformed
+  {//GEN-HEADEREND:event_subnetFieldLANActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_subnetFieldLANActionPerformed
+
+  private void cbForceBackupActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbForceBackupActionPerformed
+  {//GEN-HEADEREND:event_cbForceBackupActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbForceBackupActionPerformed
+
+  private void cbForceBackupItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbForceBackupItemStateChanged
+  {//GEN-HEADEREND:event_cbForceBackupItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbForceBackupItemStateChanged
+
+  private void cbRestartNaoqiActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbRestartNaoqiActionPerformed
+  {//GEN-HEADEREND:event_cbRestartNaoqiActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbRestartNaoqiActionPerformed
+
+  private void cbRestartNaoqiItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbRestartNaoqiItemStateChanged
+  {//GEN-HEADEREND:event_cbRestartNaoqiItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbRestartNaoqiItemStateChanged
+
+  private void cbCopyExeItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbCopyExeItemStateChanged
+  {//GEN-HEADEREND:event_cbCopyExeItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbCopyExeItemStateChanged
+
+  private void cbCopyLogsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbCopyLogsActionPerformed
+  {//GEN-HEADEREND:event_cbCopyLogsActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbCopyLogsActionPerformed
+
+  private void cbCopyLogsItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbCopyLogsItemStateChanged
+  {//GEN-HEADEREND:event_cbCopyLogsItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbCopyLogsItemStateChanged
+
+  private void cbNoBackupActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbNoBackupActionPerformed
+  {//GEN-HEADEREND:event_cbNoBackupActionPerformed
+
+  }//GEN-LAST:event_cbNoBackupActionPerformed
+
+  private void cbNoBackupItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbNoBackupItemStateChanged
+  {//GEN-HEADEREND:event_cbNoBackupItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbNoBackupItemStateChanged
+
+  private void jButtonRefreshDataActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonRefreshDataActionPerformed
+  {//GEN-HEADEREND:event_jButtonRefreshDataActionPerformed
+    setFormData();
+  }//GEN-LAST:event_jButtonRefreshDataActionPerformed
+
+  private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_jSchemeBoxItemStateChanged
+  {//GEN-HEADEREND:event_jSchemeBoxItemStateChanged
+
+  }//GEN-LAST:event_jSchemeBoxItemStateChanged
+
+  private void jColorBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jColorBoxActionPerformed
+  {//GEN-HEADEREND:event_jColorBoxActionPerformed
+
+  }//GEN-LAST:event_jColorBoxActionPerformed
+
+  private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbCopyConfigItemStateChanged
+  {//GEN-HEADEREND:event_cbCopyConfigItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbCopyConfigItemStateChanged
+
+  private void cbRestartNaothActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbRestartNaothActionPerformed
+  {//GEN-HEADEREND:event_cbRestartNaothActionPerformed
+
+  }//GEN-LAST:event_cbRestartNaothActionPerformed
+
+  private void cbRestartNaothItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbRestartNaothItemStateChanged
+  {//GEN-HEADEREND:event_cbRestartNaothItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbRestartNaothItemStateChanged
+
+  private void cbCopyLibItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_cbCopyLibItemStateChanged
+  {//GEN-HEADEREND:event_cbCopyLibItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbCopyLibItemStateChanged
+
+  /**
+   * selects the NaoController directory, populates schemes Dir
+   * @param evt
+   */
+  private void jDirChooserPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jDirChooserPerformed
+  {//GEN-HEADEREND:event_jDirChooserPerformed
+    JFileChooser chooser = new JFileChooser();
+    chooser.setCurrentDirectory(new java.io.File("."));
+    chooser.setDialogTitle("Select NaoController Directory");
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setAcceptAllFileFilterUsed(false);
+    if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+    {
+      setDirectory(String.valueOf(chooser.getSelectedFile()));
+    }
+  }//GEN-LAST:event_jDirChooserPerformed
+
+  private void naoByte4ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_naoByte4ActionPerformed
+  {//GEN-HEADEREND:event_naoByte4ActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_naoByte4ActionPerformed
+
+  private void jBackupBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_jBackupBoxItemStateChanged
+  {//GEN-HEADEREND:event_jBackupBoxItemStateChanged
+
+    String itemValue = evt.getItem().toString();
+
+    if(jBackupBox.getItemCount() > 0 && jBackupBox.getSelectedItem().equals(itemValue) && !itemValue.equals(jBackupBox.getItemAt(0)))
+    {
+      config.backupIsSelected = true;
+      config.boxSelected = jBackupBox.getSelectedItem().toString();
+      config.selectedBackup = config.backups.get(jBackupBox.getSelectedItem()).toString();
+    }
+    else
+    {
+      config.boxSelected = "";
+      config.selectedBackup = "";
+      config.backupIsSelected = false;
+    }
+    setCommentText();
+  }//GEN-LAST:event_jBackupBoxItemStateChanged
+
+  private void copyButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_copyButtonActionPerformed
+  {//GEN-HEADEREND:event_copyButtonActionPerformed
+    if(checkDirPath(true))
+    {
+      copyFiles2Nao();
+      resetBackupList();
+    }
+  }//GEN-LAST:event_copyButtonActionPerformed
+
+  private void naoByte3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_naoByte3ActionPerformed
+  {//GEN-HEADEREND:event_naoByte3ActionPerformed
+
+  }//GEN-LAST:event_naoByte3ActionPerformed
+
+  private void naoByte2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_naoByte2ActionPerformed
+  {//GEN-HEADEREND:event_naoByte2ActionPerformed
+
+  }//GEN-LAST:event_naoByte2ActionPerformed
+
+  private void naoByte1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_naoByte1ActionPerformed
+  {//GEN-HEADEREND:event_naoByte1ActionPerformed
+
+  }//GEN-LAST:event_naoByte1ActionPerformed
+
+  private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btWriteToStickActionPerformed
+  {//GEN-HEADEREND:event_btWriteToStickActionPerformed
+
+    if(checkDirPath(true))
+    {
+      JFileChooser chooser = new JFileChooser();
+      //chooser.setCurrentDirectory(new java.io.File("."));
+      chooser.setDialogTitle("Select the USB stick path");
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.setAcceptAllFileFilterUsed(false);
+
+      if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+      {
+        String usbStickPath = String.valueOf(chooser.getSelectedFile());
+        
+        Map<String,Integer> bodyIdToPlayerNumber = new HashMap<String, Integer>();
+        if(!this.txtNaonamePlayer1.getText().isEmpty()) {
+          bodyIdToPlayerNumber.put(this.txtNaonamePlayer1.getText(), 1);
+        }
+        if(!this.txtNaonamePlayer2.getText().isEmpty()) {
+          bodyIdToPlayerNumber.put(this.txtNaonamePlayer2.getText(), 2);
+        }
+        if(!this.txtNaonamePlayer3.getText().isEmpty()) {
+          bodyIdToPlayerNumber.put(this.txtNaonamePlayer3.getText(), 3);
+        }
+        if(!this.txtNaonamePlayer4.getText().isEmpty()) {
+          bodyIdToPlayerNumber.put(this.txtNaonamePlayer4.getText(), 4);
+        }
+        if(!this.txtNaonamePlayer5.getText().isEmpty()) {
+          bodyIdToPlayerNumber.put(this.txtNaonamePlayer5.getText(), 5);
+        }
+        
+        NaoScpConfig cfg = createDeployConfig();
+        DeployUtils.assembleDeployDir(this, cfg, usbStickPath + "/deploy");
+        DeployUtils.configureUSBDeployDir(this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+      }
+    }
+  }//GEN-LAST:event_btWriteToStickActionPerformed
+
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JTabbedPane actionsTab;
+  private javax.swing.JTextField broadcastFieldLAN;
+  private javax.swing.JTextField broadcastFieldWLAN;
+  private javax.swing.JButton btWriteToStick;
+  private javax.swing.JCheckBox cbCopyConfig;
+  private javax.swing.JCheckBox cbCopyExe;
+  private javax.swing.JCheckBox cbCopyLib;
+  private javax.swing.JCheckBox cbCopyLogs;
+  private javax.swing.JCheckBox cbForceBackup;
+  private javax.swing.JCheckBox cbNoBackup;
+  private javax.swing.JCheckBox cbRebootSystem;
+  private javax.swing.JCheckBox cbRestartNaoqi;
+  private javax.swing.JCheckBox cbRestartNaoth;
+  private javax.swing.JButton copyButton;
+  private javax.swing.JComboBox jBackupBox;
+  private javax.swing.JButton jButtonInitRobotSystem;
+  private javax.swing.JButton jButtonRefreshData;
+  private javax.swing.JButton jButtonRemoteKernelVideoReload;
+  private javax.swing.JButton jButtonSaveNetworkConfig;
+  private javax.swing.JButton jButtonSetRobotNetwork;
+  private javax.swing.JComboBox jColorBox;
+  private javax.swing.JTextArea jCommentTextArea;
+  private javax.swing.JLabel jCopyStatus;
+  private javax.swing.JDialog jDialog1;
+  private javax.swing.JButton jDirChooser;
+  private javax.swing.JLabel jDirPathLabel;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel10;
+  private javax.swing.JLabel jLabel11;
+  private javax.swing.JLabel jLabel12;
+  private javax.swing.JLabel jLabel13;
+  private javax.swing.JLabel jLabel14;
+  private javax.swing.JLabel jLabel15;
+  private javax.swing.JLabel jLabel16;
+  private javax.swing.JLabel jLabel17;
+  private javax.swing.JLabel jLabel18;
+  private javax.swing.JLabel jLabel19;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel20;
+  private javax.swing.JLabel jLabel21;
+  private javax.swing.JLabel jLabel22;
+  private javax.swing.JLabel jLabel23;
+  private javax.swing.JLabel jLabel24;
+  private javax.swing.JLabel jLabel25;
+  private javax.swing.JLabel jLabel26;
+  private javax.swing.JLabel jLabel27;
+  private javax.swing.JLabel jLabel28;
+  private javax.swing.JLabel jLabel29;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel30;
+  private javax.swing.JLabel jLabel31;
+  private javax.swing.JLabel jLabel32;
+  private javax.swing.JLabel jLabel33;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel8;
+  private javax.swing.JLabel jLabel9;
+  private javax.swing.JPanel jPanel3;
+  private javax.swing.JComboBox jSchemeBox;
+  private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JScrollPane jScrollPane3;
+  private javax.swing.JScrollPane jScrollPane5;
+  private javax.swing.JPanel jSettingsPanel;
+  private javax.swing.JPanel jSettingsPanel1;
+  private javax.swing.JPanel jSettingsPanel2;
+  private javax.swing.JSplitPane jSplitPane1;
+  private javax.swing.JTextField jTeamCommPort;
+  private javax.swing.JTextField jTeamNumber;
+  private javax.swing.JTextField lblTeamCommLAN;
+  private javax.swing.JTextField lblTeamCommWLAN;
+  private javax.swing.JTextPane logTextPane;
+  private javax.swing.JList lstNaos;
+  private javax.swing.JTabbedPane mainTab;
+  private javax.swing.JTextField naoByte1;
+  private javax.swing.JTextField naoByte2;
+  private javax.swing.JTextField naoByte3;
+  private javax.swing.JTextField naoByte4;
+  private javax.swing.JTextField netmaskFieldLAN;
+  private javax.swing.JTextField netmaskFieldWLAN;
+  private javax.swing.JPanel panelConfig;
+  private javax.swing.JPanel panelCopy;
+  private javax.swing.JProgressBar progressBar;
+  private javax.swing.JRadioButton radioWEP;
+  private javax.swing.JRadioButton radioWPA;
+  private javax.swing.JPanel scpPanel;
+  private javax.swing.JPasswordField sshPassword;
+  private javax.swing.JPasswordField sshRootPassword;
+  private javax.swing.JTextField sshRootUser;
+  private javax.swing.JTextField sshUser;
+  private javax.swing.JPanel stickPanel;
+  private javax.swing.JTextField subnetFieldLAN;
+  private javax.swing.JTextField subnetFieldWLAN;
+  private javax.swing.JTextField txtNaonamePlayer1;
+  private javax.swing.JTextField txtNaonamePlayer2;
+  private javax.swing.JTextField txtNaonamePlayer3;
+  private javax.swing.JTextField txtNaonamePlayer4;
+  private javax.swing.JTextField txtNaonamePlayer5;
+  private javax.swing.ButtonGroup wlanBtnGroup;
+  private javax.swing.JPasswordField wlanKey;
+  private javax.swing.JTextField wlanSSID;
+  // End of variables declaration//GEN-END:variables
 };
 
 

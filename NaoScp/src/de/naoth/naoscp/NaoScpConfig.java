@@ -28,6 +28,7 @@ public class NaoScpConfig
 
   boolean backupIsSelected;
 
+  String comment; // comment for the current deploy
   String jDirPathLabel;
 
   String stagingLibDir;
@@ -39,6 +40,11 @@ public class NaoScpConfig
   String actIp;
   String sNaoNo;
   String sNaoByte;
+  
+  String sTeamCommPort;
+  String scheme;
+  String teamNumber;
+  String teamColor;
 
   String sshUser;
   String sshPassword;
