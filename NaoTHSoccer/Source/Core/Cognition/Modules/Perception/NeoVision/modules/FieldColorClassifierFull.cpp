@@ -83,10 +83,6 @@ void FieldColorClassifierFull::execute()
   double maxWeightedTopY = 0.85 * getFieldColorPerceptTop().maxRateY;
   unsigned int maxWeightedIndexTopY = getFieldColorPerceptTop().indexY;
 
-//  double meanY = 0;
-  double weightedMeanY = 0;
-  double weightedMeanTopY = 0;
-
   double maxWeightedCb = 0.85 * getFieldColorPercept().maxRateU;
   unsigned int maxWeightedIndexCb = getFieldColorPercept().indexU;
   double maxWeightedTopCb = 0.85 * getFieldColorPerceptTop().maxRateU;
@@ -189,7 +185,7 @@ void FieldColorClassifierFull::execute()
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
     const Pixel& pixel = getImage().get(point.x,point.y);
     const Vector2<int>& pointTop = getColoredGridTop().uniformGrid.getPoint(i);
-    const Pixel& pixelTop = getImageTop().get(point.x,point.y);
+    const Pixel& pixelTop = getImageTop().get(pointTop.x,pointTop.y);
 
     if
     (
@@ -605,7 +601,7 @@ void FieldColorClassifierFull::execute()
     outfile << endl;
   );
 
-  runDebugRequests((int) weightedMeanY, (int) meanFieldY);
+  runDebugRequests();
 }
 
 double FieldColorClassifierFull::smoothRungeKutta4(const unsigned int& idx, double* valueArray)
@@ -628,7 +624,7 @@ double FieldColorClassifierFull::smoothRungeKutta4(const unsigned int& idx, doub
   return (valueArray[idx - 1] +  2 * (valueArray[idx - 2] + valueArray[idx - 3]) + valueArray[idx - 4]) / 6;
 }
 
-void FieldColorClassifierFull::runDebugRequests(int weightedMeanY, int meanY)
+void FieldColorClassifierFull::runDebugRequests()
 {
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:TopCam:enable_plots",
     for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i ++)

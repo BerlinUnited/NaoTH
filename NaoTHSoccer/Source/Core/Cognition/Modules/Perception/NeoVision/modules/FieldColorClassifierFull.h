@@ -123,7 +123,7 @@ private:
 
   double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
 
-  void runDebugRequests(int weigthedMeanY, int meanY);
+  void runDebugRequests();
 };
 
 #endif // FIELDCOLORCLASSIFIERFULL_H

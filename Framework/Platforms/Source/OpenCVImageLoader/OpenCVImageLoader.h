@@ -97,7 +97,7 @@ private:
   //vector containing all file names in directory
   vector<string> allFiles;
   //current position
-  unsigned int currentPos;
+  size_t currentPos;
 
   GameData theGameData;
   unsigned int time;

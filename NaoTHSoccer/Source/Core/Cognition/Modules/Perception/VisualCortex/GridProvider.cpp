@@ -120,9 +120,9 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getColoredGrid().meanBlue = blue / imgArea;
 
   unsigned int imgAreaTop = getColoredGrid().uniformGrid.maxNumberOfPoints;
-  getColoredGridTop().meanBrightness = greyTop / imgArea;
-  getColoredGridTop().meanRed = redTop / imgArea;
-  getColoredGridTop().meanBlue = blueTop / imgArea;
+  getColoredGridTop().meanBrightness = greyTop / imgAreaTop;
+  getColoredGridTop().meanRed = redTop / imgAreaTop;
+  getColoredGridTop().meanBlue = blueTop / imgAreaTop;
 
   getHistograms().histogramY.calculate();
   getHistograms().histogramU.calculate();

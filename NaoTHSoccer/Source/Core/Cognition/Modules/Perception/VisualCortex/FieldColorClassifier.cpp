@@ -79,7 +79,7 @@ void FieldColorClassifier::classify()
   double sumU = 0.0;
   double meanU = 0.0;
 
-  double p = 1.0 / getColoredGrid().uniformGrid.numberOfGridPoints;
+  //double p = 1.0 / getColoredGrid().uniformGrid.numberOfGridPoints;
 
   STOPWATCH_START("FieldColorClassifier:Cr_filtering");
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)

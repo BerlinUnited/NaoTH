@@ -103,9 +103,9 @@ void Simulator::printHelp()
 char Simulator::getInput()
 {
   if (backendMode) {
-    return getchar();
+    return static_cast<char>(getchar());
   } else {
-    return getch();
+    return static_cast<char>(getch());
   }
 }
 

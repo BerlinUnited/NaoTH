@@ -458,7 +458,7 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   thePreviewControlddCoM = Vector2d(0,0);
   thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
   
-  unsigned int previewSteps = thePreviewController.previewSteps() - 1;
+  unsigned int previewSteps = static_cast<unsigned int> (thePreviewController.previewSteps() - 1);
   thePreviewController.clear();
 
   for (unsigned int i = 0; i < previewSteps; i++)
@@ -582,7 +582,6 @@ void InverseKinematicsMotionEngine::autoArms(
   //----------------------------------------------
 }//end autoArms
 
-
 void InverseKinematicsMotionEngine::armsOnBack(
   const RobotInfo& theRobotInfo,
   const HipFeetPose& pose,
@@ -593,8 +592,8 @@ void InverseKinematicsMotionEngine::armsOnBack(
   target[JointData::LShoulderRoll] = Math::fromDegrees(90);
   target[JointData::RShoulderPitch] = Math::fromDegrees(119);
   target[JointData::LShoulderPitch] = Math::fromDegrees(119);
-  target[JointData::RElbowRoll] = Math::fromDegrees(60);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-60);
+  target[JointData::RElbowRoll] = Math::fromDegrees(30);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
   target[JointData::RElbowYaw] = Math::fromDegrees(-25);
   target[JointData::LElbowYaw] = Math::fromDegrees(25);
 
@@ -640,7 +639,6 @@ void InverseKinematicsMotionEngine::armsOnBack(
     }
   }
   //---------------------------------------------
-
 }//end armsOnBack
 
 

@@ -20,17 +20,17 @@ class SimpleGoalColorPercept : public naoth::Printable
 public:
   bool valid;
 
-  int maxY;
-  int maxU;
-
-  int minY;
-  int minV;
-
-  int maxDistV;
-
   //int minFieldV;
   //int maxFieldV;
   //int maxFieldU;
+
+  int maxY;
+  int maxU;
+
+  int maxDistV;
+
+  int minY;
+  int minV;
 
   FrameInfo lastUpdated;
 
