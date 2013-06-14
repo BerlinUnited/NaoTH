@@ -7,6 +7,8 @@
 
 #include "InitialMotion.h"
 
+#include "Tools/Debug/DebugBufferedOutput.h"
+
 using namespace naoth;
 using namespace std;
 
@@ -150,7 +152,7 @@ void InitialMotion::moveToExtendPose()
 
 void InitialMotion::moveToInitialPose()
 {
-  const double init_time = 100;//ms
+  const double init_time = 200;//ms
 
   if (movedTime < init_time)
   {
@@ -176,8 +178,7 @@ void InitialMotion::freeJoint(bool freely)
   }
   else
   {
-    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta*2) )
-    {
+    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta*2) ) {
       initStatus = Finish;
     }
   }

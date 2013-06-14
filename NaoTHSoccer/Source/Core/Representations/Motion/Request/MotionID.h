@@ -18,14 +18,14 @@ namespace motion
   /** ids for all motion types */
   enum MotionID
   {
+    /* analytical */
     empty,
     init,
     dead,
-    
-    /* inverse kinematic */
     sit,
+
+    /* inverse kinematic */
     stand,
-    
     walk,
     kick,
     dance,
@@ -34,11 +34,11 @@ namespace motion
     /* paralell kinematic */
     parallel_stepper,
     parallel_dance,
-    
 
     /* motion net */
     stand_up_from_front,
     stand_up_from_back,
+    stand_up_from_back_arms_back,
     
     block_middle,
     goalie_get_down,
@@ -84,6 +84,7 @@ namespace motion
       
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";
+      case stand_up_from_back_arms_back: return "stand_up_from_back_arms_back";
       
       case block_middle: return "block_middle";
       case goalie_get_down: return "goalie_get_down";

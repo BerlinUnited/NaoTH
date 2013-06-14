@@ -51,6 +51,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
 
   // other motions
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dead", "Set the robot dead.", false);
@@ -66,6 +67,11 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
 
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_dance", "parallel dance test", false);
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_stepper", "parallel stepper test", false);
+
+
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:arms:01_arms_back", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:arms:02_arms_down", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:arms:03_arms_none", "set arms request to none", false);
 }
 
 void SimpleMotionBehaviorControl::execute() 
@@ -83,6 +89,13 @@ void SimpleMotionBehaviorControl::execute()
   DEBUG_REQUEST("SimpleMotionBehaviorControl:sound:test",
     getSoundPlayData().soundFile = "victory.wav";
   );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:arms:01_arms_back", 
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;);
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:arms:02_arms_down", 
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;);
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:arms:03_arms_none", 
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
 
 }//end execute
 
@@ -293,6 +306,10 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_back",
     getMotionRequest().id = motion::stand_up_from_back;
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_back_arms_back",
+    getMotionRequest().id = motion::stand_up_from_back_arms_back;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:dead",

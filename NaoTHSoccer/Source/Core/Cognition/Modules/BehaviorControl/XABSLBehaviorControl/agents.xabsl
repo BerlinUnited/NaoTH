@@ -12,11 +12,16 @@ include "Symbols/ball_symbols.xabsl";
 include "Symbols/strategy_symbols.xabsl";
 include "Symbols/sensor_symbols.xabsl";
 include "Symbols/internal_symbols.xabsl";
+include "Symbols/team_symbols.xabsl";
+include "Symbols/led_symbols.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/look_around.xabsl";
+
+// Arm Control
+include "Options/Skills/arms_control.xabsl";
 
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
@@ -84,8 +89,18 @@ include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
 
+// Test arms
+include "Options/Test/arm_back_test.xabsl";
+include "Options/Test/arm_back_test_agent.xabsl";
+
+// Test role change
+include "Options/Test/role_change_test.xabsl";
+include "Options/Test/role_change_test_agent.xabsl";
+
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
+
+
 
 /** The Test agents */
 // Test agents Kicks
@@ -93,6 +108,7 @@ agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
 agent sidekick_test("sidekick_test_agent", sidekick_test_agent);
 agent omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
+
 // Test agents Walk
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
@@ -100,6 +116,13 @@ agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
 agent obstacle_test("obstacle_test", obstacle_test_agent);
+
 // Test agents Penalty
 agent penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
 agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
+
+agent arm_back_test("arm_back_test_agent",arm_back_test_agent);
+agent role_change_test ("role_change_test _agent",role_change_test_agent);
+
+
+

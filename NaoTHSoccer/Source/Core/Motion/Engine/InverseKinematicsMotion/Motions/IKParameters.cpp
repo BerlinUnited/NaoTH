@@ -89,7 +89,7 @@ IKParameters::IKParameters()
   // arm parameter
   PARAMETER_REGISTER(arm.shoulderPitchInterialSensorRate) = -10;
   PARAMETER_REGISTER(arm.shoulderRollInterialSensorRate) = -10;
-  PARAMETER_REGISTER(arm.maxSpeed) = 200;
+  PARAMETER_REGISTER(arm.maxSpeed) = 60;
   PARAMETER_REGISTER(arm.alwaysEnabled)  = false;
   PARAMETER_REGISTER(arm.kickEnabled) = true;
   PARAMETER_REGISTER(arm.walkEnabled) = true;
