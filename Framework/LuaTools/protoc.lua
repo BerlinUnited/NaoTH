@@ -83,7 +83,7 @@ local function protocCompile(inputFiles, cppOut, javaOut, ipaths)
   print("INFO: executing " .. cmd)
   local returnCode = os.execute(cmd)
   
-  if _OPTIONS["Wno-conversion"] ~= nil then
+  if _OPTIONS["Wno-conversion"] == nil then
 	-- add few lines to supress the conversion warnings to each of the generated *.cc files
 	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
 	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
