@@ -92,7 +92,7 @@ solution "NaoTHSoccer"
     defines { "NAO" }
     targetdir "../dist/Nao"
 	flags { "ExtraWarnings" }
-	if _OPTIONS["Wno-conversion"] ~= nil then
+	if _OPTIONS["Wno-conversion"] == nil then
 		buildoptions {"-Wconversion"}
 	end
 
@@ -119,7 +119,7 @@ solution "NaoTHSoccer"
     flags { "ExtraWarnings" }
     links {"pthread"}
 	
-	if _OPTIONS["Wno-conversion"] ~= nil then
+	if _OPTIONS["Wno-conversion"] == nil then
 		buildoptions {"-Wconversion"}
 	end
 	
