@@ -104,12 +104,12 @@ public:
         return ColorClasses::skyblue;
       }
       else
-      if(baseColorRegionPercept.pinkWaistBand.inside(p))
+      if(baseColorRegionPercept.redTeam.inside(p))
       {
         return ColorClasses::red;
       }
       else
-      if(baseColorRegionPercept.blueWaistBand.inside(p))
+      if(baseColorRegionPercept.blueTeam.inside(p))
       {
         return ColorClasses::blue;
       }

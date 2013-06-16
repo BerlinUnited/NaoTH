@@ -25,25 +25,84 @@ SimpleGoalColorClassifier::SimpleGoalColorClassifier()
 
 void SimpleGoalColorClassifier::execute()
 {
-  PixelT<int> max = getFieldColorPercept().range.getMax();
-  PixelT<int> min = getFieldColorPercept().range.getMin();
-  PixelT<int> maxTop = getFieldColorPerceptTop().range.getMax();
-  PixelT<int> minTop = getFieldColorPerceptTop().range.getMin();
+  PixelT<int> fieldMaxTop = getFieldColorPerceptTop().range.getMax();
+  PixelT<int> fieldMinTop = getFieldColorPerceptTop().range.getMin();
+  PixelT<int> fieldMax = getFieldColorPercept().range.getMax();
+  PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
 
   //getSimpleGoalColorPercept().minFieldV = min.v;
   //getSimpleGoalColorPercept().maxFieldV = max.v;
   //getSimpleGoalColorPercept().maxFieldU = max.u;
 
-  getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPercept().maxU = min.u;
-  getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + max.v;
-  getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
-  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPerceptTop().maxU = minTop.u;
-  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + maxTop.v;
-  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+  {
+    if(i < fieldMinTop.u)
+    {
+      histTopU.set(i, getHistogramsTop().histogramU.rawData[i]);
+    }
+    else
+    {
+      histTopU.set(i, 0);
+    }
+    if(i < fieldMin.u)
+    {
+      histU.set(i, getHistograms().histogramU.rawData[i]);
+    }
+    else
+    {
+      histU.set(i, 0);
+    }
+
+    if(i > fieldMaxTop.v )
+    {
+        histTopV.set(i, getHistogramsTop().histogramV.rawData[i]);
+    }
+    else
+    {
+      histV.set(i, 0);
+    }
+    if(i > fieldMax.v )
+    {
+        histV.set(i, getHistograms().histogramV.rawData[i]);
+    }
+    else
+    {
+      histV.set(i, 0);
+    }
+  }
+  histTopU.calculate();
+  histTopV.calculate();
+  histU.calculate();
+  histV.calculate();
+
+  //getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
+  //getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
+  //getSimpleGoalColorPercept().maxU = fieldMin.u;
+  //getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
+  //getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
+  //getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
+  //getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
+  //getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u;
+  //getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
+  //getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  int diffTop = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
+  int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;
+  double maxTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.7 - diffTop;
+  double maxY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.7 - diff;
+  double minTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.3 - diffTop;
+  double minY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.3 - diff;
+
+  getSimpleGoalColorPerceptTop().minY = (int) minTopY;//goalParams.goalColorMin.y;
+  getSimpleGoalColorPerceptTop().maxY = (int) maxTopY;//goalParams.goalColorMax.y;
+  getSimpleGoalColorPerceptTop().maxU = (int) (histTopU.mean + 1.5 * goalParams.strength * histTopU.sigma);
+  getSimpleGoalColorPerceptTop().minV = (int) (histTopV.mean - goalParams.strength * histTopV.sigma);
+  getSimpleGoalColorPerceptTop().maxDistV = (int) (histTopV.sigma * 2 * goalParams.strength);
+
+  getSimpleGoalColorPercept().minY = (int) minY;//goalParams.goalColorMin.y;
+  getSimpleGoalColorPercept().maxY = (int) maxY;//goalParams.goalColorMax.y;
+  getSimpleGoalColorPercept().maxU = (int) (histU.mean + 1.5 * goalParams.strength * histU.sigma);
+  getSimpleGoalColorPercept().minV = (int) (histV.mean - goalParams.strength * histV.sigma);
+  getSimpleGoalColorPercept().maxDistV = (int) (histV.sigma * 2 * goalParams.strength);
 
   getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
   getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
@@ -51,53 +110,19 @@ void SimpleGoalColorClassifier::execute()
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:TopCam:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
     {
-      if(i < min.u)
-      {
-        histU[i] = getHistogramsTop().histogramU.rawData[i];
-      }
-      else
-      {
-        histU[i] = 0.0;
-      }
-
-      if(i > goalParams.dist2green.v + max.v )
-      {
-         histV[i] = getHistogramsTop().histogramV.rawData[i];
-      }
-      else
-      {
-        histV[i] = 0.0;
-      }
       getHistogramsTop().histogramU.plotRaw("SimpleGoalColorClassifier:TopCam:histUorg");
       getHistogramsTop().histogramV.plotRaw("SimpleGoalColorClassifier:TopCam:histVorg");
-      PLOT_GENERIC("SimpleGoalColorClassifier:TopCam:histU", i, histU[i]);
-      PLOT_GENERIC("SimpleGoalColorClassifier:TopCam:histV", i, histV[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:TopCam:histU", i, histTopU.rawData[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:TopCam:histV", i, histTopV.rawData[i]);
     }
   );
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:BottomCam:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
     {
-      if(i < min.u)
-      {
-        histU[i] = getHistograms().histogramU.rawData[i];
-      }
-      else
-      {
-        histU[i] = 0.0;
-      }
-
-      if(i > goalParams.dist2green.v + max.v )
-      {
-         histV[i] = getHistograms().histogramV.rawData[i];
-      }
-      else
-      {
-        histV[i] = 0.0;
-      }
       getHistograms().histogramU.plotRaw("SimpleGoalColorClassifier:BottomCam:histUorg");
       getHistograms().histogramV.plotRaw("SimpleGoalColorClassifier:BottomCam:histVorg");
-      PLOT_GENERIC("SimpleGoalColorClassifier:BottomCam:histU", i, histU[i]);
-      PLOT_GENERIC("SimpleGoalColorClassifier:BottomCam:histV", i, histV[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:BottomCam:histU", i, histU.rawData[i]);
+      PLOT_GENERIC("SimpleGoalColorClassifier:BottomCam:histV", i, histV.rawData[i]);
     }
   );
 

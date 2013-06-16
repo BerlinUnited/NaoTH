@@ -56,8 +56,6 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   // CAUTION: the histogram created by the grid provider in the last frame is used
   double maxWeightedCr = 0.0;
   int maxWeightedIndexCr = -1;
-  double maxWeightedCrTop = 0.0;
-  int maxWeightedIndexCrTop = -1;
 
   // the histogram is weighted with the function 
   // max^2(0,128-i)/128, i.e., we are interested only in the first half of it

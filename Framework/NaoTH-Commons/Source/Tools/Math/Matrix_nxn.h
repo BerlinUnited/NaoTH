@@ -381,8 +381,8 @@ public:
     
     // initialize ranking vector
     Vector_n<int, N> ranking;
-    size_t i;
-    for (i = 0; i < N; ++i)
+    int i;
+    for (i = 0; i < (int)N; ++i)
       ranking[i] = i;
     
     T z = T();

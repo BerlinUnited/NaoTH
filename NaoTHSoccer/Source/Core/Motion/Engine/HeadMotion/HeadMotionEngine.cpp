@@ -254,7 +254,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
 
 
 // needed by lookAtWorldPoint
-Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
+Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
   theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
   theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
@@ -456,7 +456,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d >& points)
   // return value
   // is true if the end of the trajectory is reached
   bool finished = false;
-  int MAXSTATE = points.size();
+  int MAXSTATE = static_cast<int> (points.size());
 
   // this may happens if the trajectory changes
   if(headMotionState >= MAXSTATE)

@@ -22,6 +22,9 @@ namespace Statistics
       double cumulativeData[SIZE];
      
       int median;
+      int min;
+      int max;
+      int spanWidth;
       double mean;
       double variance;
       double sigma;
@@ -39,10 +42,20 @@ namespace Statistics
 
       void clear()
       {
-         calculated = false;
-         memset(&rawData, 0, sizeof(rawData));
-         memset(&normalizedData, 0, sizeof(normalizedData));
-         memset(&cumulativeData, 0, sizeof(cumulativeData));
+        median = 0;
+        min = 0;
+        max = 0;
+        spanWidth = 0;
+        mean = 0.0;
+        variance = 0.0;
+        sigma = 0.0;
+        squareMean = 0.0;
+        skewness = 0.0;
+        kurtosis = 0.0;
+        calculated = false;
+        memset(&rawData, 0, sizeof(rawData));
+        memset(&normalizedData, 0, sizeof(normalizedData));
+        memset(&cumulativeData, 0, sizeof(cumulativeData));
       };
 
       void add(int value)
@@ -66,6 +79,8 @@ namespace Statistics
         }
         mean /= sum;
         median = 0;
+        min = 255;
+        max = 0;
         squareMean = 0.0;
         variance = 0.0;
         skewness = 0.0;
@@ -92,7 +107,16 @@ namespace Statistics
           {
             median = i;
           }
+          if(min == 255 &&  cumulativeData[i] > 0.0)
+          {
+            min = i;
+          }
+          if(max == 0 &&  cumulativeData[i] >= 1.0)
+          {
+            max = i;
+          }
         }
+        spanWidth = max - min;
         squareMean = sqrt(squareMean);
         sigma = sqrt(variance);
         double s2 = sigma * sigma;

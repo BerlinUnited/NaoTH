@@ -294,6 +294,7 @@ public:
     ColorRegion(regionColor),
     ParameterList(std::string( ColorClasses::getColorName(regionColor)) + "ColorRegion_" + regionName)
   {
+    std::cout << std::string( ColorClasses::getColorName(regionColor)) + "ColorRegion_" + regionName << std::endl;
     if
     (
       regionColor == ColorClasses::orange

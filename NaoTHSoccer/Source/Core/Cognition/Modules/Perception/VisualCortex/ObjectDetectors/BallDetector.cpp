@@ -17,9 +17,9 @@
 
 BallDetector::BallDetector()
 : 
+  cameraID(CameraInfo::Bottom),
   theBlobFinder(getColoredGrid()),
-  theBlobFinderTop(getColoredGridTop()),
-  cameraID(CameraInfo::Bottom)
+  theBlobFinderTop(getColoredGridTop())
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:mark_ball", "mark the ball on the image", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:mark_ball", "mark the ball on the image", false);

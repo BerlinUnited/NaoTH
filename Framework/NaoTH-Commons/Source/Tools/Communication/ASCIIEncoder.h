@@ -46,7 +46,7 @@ public:
     ASSERT(size > 0);
 
     unsigned int n = data % encode_base;
-    char c = n + min_char;
+    char c = static_cast<char> (n + min_char);
     if (c >= double_quote_char) c++;
     if (c >= single_quote_char) c++;
     if (c >= left_brace_char) c++;

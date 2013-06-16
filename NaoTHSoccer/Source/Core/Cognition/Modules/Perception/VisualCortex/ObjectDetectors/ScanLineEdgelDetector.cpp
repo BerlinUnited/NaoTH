@@ -161,7 +161,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:TopCam:mark_estimated_obstacles",
     if(cameraID == CameraInfo::Top)
     {
-      unsigned int size = getScanLineEdgelPercept().endPoints.size();
+			unsigned int size = static_cast<unsigned int> (getScanLineEdgelPercept().endPoints.size());
       if (size >=2)
       {
         int pointer = 0;
@@ -192,7 +192,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:BottomCam:mark_estimated_obstacles",
     if(cameraID == CameraInfo::Bottom)
     {
-      unsigned int size = getScanLineEdgelPercept().endPoints.size();
+			unsigned int size = static_cast<unsigned int> (getScanLineEdgelPercept().endPoints.size());
       if (size >=2)
       {
         int pointer = 0;

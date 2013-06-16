@@ -31,13 +31,17 @@
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/GameData.h>
 
-//
-
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 
 #include <Tools/Debug/DebugRequest.h>
 #include <ModuleFramework/Module.h>
+
+//in runtime as constant defined width and heigth of the input image
+#include "Representations/Infrastructure/CameraInfoConstants.h"
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #define CYCLE_TIME 20
 

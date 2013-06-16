@@ -368,7 +368,7 @@ void LineDetector::setLinePercepts()
 
     if (line.valid)
     {
-      idx[i] = getLinePercept().lines.size();
+      idx[static_cast<int> (i)] = static_cast<int> ( getLinePercept().lines.size());
 
       LinePercept::FieldLineSegment fieldLineSegment;
 
@@ -931,10 +931,10 @@ void LineDetector::classifyIntersections()
     {
       middle += circleMiddlePoints[i];
     }
-    middle = middle / circleMiddlePoints.size();
+    middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-    Math::Matrix_mxn<double> A(circlePoints.size(), 3);
-    Math::Matrix_mxn<double> l(circlePoints.size(), 1);
+    Math::Matrix_mxn<double> A(static_cast<unsigned int> (circlePoints.size()), 3);
+    Math::Matrix_mxn<double> l(static_cast<unsigned int> (circlePoints.size()), 1);
     for(unsigned int i = 0; i < circlePoints.size(); i++)
     {
       /*
@@ -1118,7 +1118,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
       // no cluster found, create a new one
       if(!matchingClusterFound)
       {
-        ClusteredLine newCluster(edgel, lineClusters.size());
+        ClusteredLine newCluster(edgel, static_cast<int> (lineClusters.size()));
         DEBUG_REQUEST("ImageProcessor:LineDetector:TopCam:line_clusters",
           if(cameraID == CameraInfo::Top)
           {

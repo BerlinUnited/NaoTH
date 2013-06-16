@@ -20,9 +20,9 @@ class SimpleBallColorPercept : public naoth::Printable
 public:
   bool valid;
 
-  int minV;
   int maxY;
   int maxU;
+  int minV;
 
   FrameInfo lastUpdated;
 

@@ -15,9 +15,9 @@
 
 GoalDetector::GoalDetector()
 : 
+  cameraID(CameraInfo::Top),
   blobFinder(getColoredGridTop()),
-  blobFinderBottom(getColoredGrid()),
-  cameraID(CameraInfo::Top)
+  blobFinderBottom(getColoredGrid())
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:TopCam:mark_color_scans", "mark the results of the color scan algorithm", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:BottomCam:mark_color_scans", "mark the results of the color scan algorithm", false);

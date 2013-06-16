@@ -46,6 +46,11 @@ public:
     RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
   }
 
+  void drawTop()
+  {
+    TOP_RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
+  }
+
 };
 
 

@@ -333,12 +333,12 @@ public:
       }
       else
       {
-        unsigned int sizeBeforeExpand(searchTree.size());
+        unsigned int sizeBeforeExpand(static_cast<unsigned int> (searchTree.size()));
         searchTree[nextNodeToExpand].successor(searchTree, expandedNodes, this->myStart,
                                             this->myGoal, this->parameterSet, this->obstacles, nextNodeToExpand,
                                             theRobotPose, thePlayerInfo, theFieldInfo);
         expandedNodes.push_back(nextNodeToExpand);
-        unsigned int sizeAfterExpand(searchTree.size());
+        unsigned int sizeAfterExpand(static_cast<unsigned int> (searchTree.size()));
         // have we expanded any nodes?
         if (sizeAfterExpand == sizeBeforeExpand)
         {

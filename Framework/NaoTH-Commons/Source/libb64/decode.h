@@ -27,7 +27,7 @@ public:
     std::string code;
     istream_in >> code;
 
-    int len = code.size();
+    int len =static_cast<int> ( code.size());
     char* text = new char[len]; // enough space
 
     int textLen = decode(code, text, len);
@@ -47,7 +47,7 @@ public:
     int totalLen = 0;
 
     const char* code = in.c_str();
-    int len = in.size();
+    int len = static_cast<int> (in.size());
 
     while ( len>0 && out_len>0 )
     {

@@ -10,6 +10,7 @@
 
 #define CYCLE_TIME 100
 
+//in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
 //include section
@@ -96,7 +97,7 @@ private:
   //vector containing all file names in directory
   vector<string> allFiles;
   //current position
-  unsigned int currentPos;
+  size_t currentPos;
 
   GameData theGameData;
   unsigned int time;

@@ -24,8 +24,8 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
   //connect to DCM
   try
   {
-    al_dcmproxy = new DCMProxy(pB);
-    al_memory = pB->getMemoryProxy();
+    al_dcmproxy = boost::shared_ptr<AL::DCMProxy>(new DCMProxy(pB));
+    al_memory = boost::shared_ptr<AL::ALMemoryProxy>(new AL::ALMemoryProxy(pB));
   }
   catch(ALError e) {
     std::cerr << "Failed to init DCMHandler: " << e.toString() << endl;
@@ -74,10 +74,6 @@ int DCMHandler::getTime(unsigned int time_delay)
   return al_dcmproxy->getTime(time_delay);
 }
 
-/*
- * function for retrieving a single value from ALMemory
- * For multiple data use al_memory->getListData() directly
- */
 ALValue DCMHandler::getFromALMemory(const string& path)
 {
   ALValue value;

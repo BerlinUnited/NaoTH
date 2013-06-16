@@ -34,13 +34,17 @@
 
 BEGIN_DECLARE_MODULE(FieldColorClassifierFull)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
   REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+  REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
   REQUIRE(BaseColorRegionPercept)
+  REQUIRE(BaseColorRegionPerceptTop)
 
   PROVIDE(FieldColorPercept)
+  PROVIDE(FieldColorPerceptTop)
 END_DECLARE_MODULE(FieldColorClassifierFull)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -68,10 +72,7 @@ public:
       PARAMETER_REGISTER(minDistCb) = 4;
       PARAMETER_REGISTER(minDistCr) = 4;
       PARAMETER_REGISTER(minCrRate) = 20;
-  //#define MIN_FIELD_COLOR_Y_LEVEL 20
-  //#define MAX_FIELD_COLOR_Y_LEVEL 224
-
-    syncWithConfig();
+      syncWithConfig();
 
     DebugParameterList::getInstance().add(this);
   }
@@ -99,6 +100,9 @@ private:
   RingBufferWithSum<int, 100> IndexYBuffer;
   RingBufferWithSum<int, 100> IndexCbBuffer;
   RingBufferWithSum<int, 100> IndexCrBuffer;
+  RingBufferWithSum<int, 100> IndexYBufferTop;
+  RingBufferWithSum<int, 100> IndexCbBufferTop;
+  RingBufferWithSum<int, 100> IndexCrBufferTop;
   naoth::FrameInfo lastFrame;
 
   FieldColorParametersFull fieldParams;
@@ -109,11 +113,17 @@ private:
   double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
   double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
 
+  double weightedSmoothedHistTopY[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedSmoothedHistTopCb[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedHistTopY[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedHistTopCb[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedHistTopCr[COLOR_CHANNEL_VALUE_COUNT];
+
   std::ofstream outfile;
 
   double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
 
-  void runDebugRequests(int weigthedMeanY, int meanY);
+  void runDebugRequests();
 };
 
 #endif // FIELDCOLORCLASSIFIERFULL_H

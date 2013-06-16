@@ -139,8 +139,8 @@ void ColorCalibrator::getAverageDistances
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
     calibRect.draw();
 
-    int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
-    int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
+    //int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
+    //int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
 
     //use every enclosed pixel for descriptive statistic
     for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
@@ -309,11 +309,18 @@ void ColorCalibrator::get(colorPixel& idx, colorPixel& dist)
   }
 }
 
-void ColorCalibrator::drawCalibrationAreaRects()
+void ColorCalibrator::drawCalibrationAreaRects(CameraInfo::CameraID camID)
 {
   for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
-    calibRect.draw();
+    if(camID == CameraInfo::Top)
+    {
+      calibRect.drawTop();
+    }
+    else
+    {
+      calibRect.draw();
+    }
   }
 }
