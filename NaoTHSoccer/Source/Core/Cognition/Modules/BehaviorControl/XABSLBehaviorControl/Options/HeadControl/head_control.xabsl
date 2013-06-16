@@ -37,7 +37,8 @@ option head_control
     action
     {
       head.motion_type = look_straight_ahead;
-      head.camera.id = Top;
+      // this is for the double cap use
+      //head.camera.id = Top;
     }
   }
   
