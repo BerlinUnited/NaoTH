@@ -139,9 +139,6 @@ void ColorCalibrator::getAverageDistances
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
     calibRect.draw();
 
-    //int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
-    //int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
-
     //use every enclosed pixel for descriptive statistic
     for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
     {
@@ -150,19 +147,6 @@ void ColorCalibrator::getAverageDistances
         getAverageDistancesLoopBody(image, x, y);
       }
     }
-
-    //use only pixels along the middle cross of the selected regions for descriptive statistic
-    //int x = Math::clamp<int>((calibRect.upperRight.x + calibRect.lowerLeft.x) / 2, 0, image.width() - 1 );
-    //for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
-    //{
-    //  getAverageDistancesLoopBody(image, x, y);
-    //}
-
-    //int y = Math::clamp<int>((calibRect.upperRight.y + calibRect.lowerLeft.y) / 2, 0, image.height() - 2);
-    //for(int x = calibRect.lowerLeft.x; x <= calibRect.upperRight.x; x++)
-    //{
-    //  getAverageDistancesLoopBody(image, x, y);
-    //}
   }
 }
 
