@@ -23,6 +23,10 @@ end
 -- test
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
+newoption {
+   trigger     = "Wno-conversion",
+   description = "Disable te -Wconversion warnin for gCC"
+}
 
 -- definition of the solution
 solution "NaoTHSoccer"
@@ -58,7 +62,7 @@ solution "NaoTHSoccer"
   invokeprotoc(
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", 
 	 FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
-    FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
+     FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/"}
   )
@@ -79,8 +83,7 @@ solution "NaoTHSoccer"
   configuration { "OptDebug" }
     defines { "DEBUG" }
     flags { "Optimize", "FatalWarnings" }
-    --flags { "Optimize" }
-         
+
   
   configuration{"Native"}
     targetdir "../dist/Native"
@@ -88,8 +91,10 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
-	buildoptions {"-Wconversion"}
 	flags { "ExtraWarnings" }
+	if _OPTIONS["Wno-conversion"] ~= nil then
+		buildoptions {"-Wconversion"}
+	end
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
@@ -110,9 +115,13 @@ solution "NaoTHSoccer"
 	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations -Wconversion"}
+    buildoptions {"-Wno-deprecated-declarations"}
     flags { "ExtraWarnings" }
     links {"pthread"}
+	
+	if _OPTIONS["Wno-conversion"] ~= nil then
+		buildoptions {"-Wconversion"}
+	end
 	
 	-- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
 	linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
