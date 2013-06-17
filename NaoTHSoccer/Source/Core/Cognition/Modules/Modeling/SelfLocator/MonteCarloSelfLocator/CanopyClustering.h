@@ -123,12 +123,12 @@ public:
     const int minClusterSize = 4;
     for(unsigned int k = 0; k < numOfClusters; k++)
     {
-      if(clusters[k].size() < minClusterSize) {
+      if((int)clusters[k].size() < minClusterSize) {
         continue;
       }
       for(unsigned int j = k+1; j < numOfClusters; j++) 
       {
-        if ( clusters[j].size() < minClusterSize) {
+        if ( (int)clusters[j].size() < minClusterSize) {
           continue;
         }
         // merge the clusters k and j

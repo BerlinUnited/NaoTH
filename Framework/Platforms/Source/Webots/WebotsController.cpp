@@ -116,7 +116,7 @@ void WebotsController::init()
   std::cout << "Init WebotsController" << std::endl;
 //  PlayerInfo::TeamColor teamColor = PlayerInfo::red;
   bool isBlue = false;
-  unsigned char playerNumber = 0;
+  unsigned int playerNumber = 0;
 
 
   // get player-info from webots
@@ -150,16 +150,16 @@ void WebotsController::init()
 #else
       sscanf(robotName.c_str(), "red player %d", &n);
 #endif
-      playerNumber = n;
+      playerNumber = (unsigned char)n;
     }
   }
 
   // calculate port
   unsigned short port = 5401;
   if(isBlue) {
-    port = 5500 + playerNumber;
+    port = (unsigned short)(5500 + playerNumber);
   } else {
-    port = 5400 + playerNumber;
+    port = (unsigned short)(5400 + playerNumber);
   }
 
   Platform::getInstance().init(this);
@@ -308,11 +308,10 @@ void WebotsController::copyImage(Image& image, const unsigned char *woriginal_im
       {
 
         pixels[0].channels[k]     = original_image[indexWebots+k];
-        pixels[1].channels[k]   = (original_image[indexWebots+k]+original_image[indexWebots1+k])/2;
-        pixels[2].channels[k] = (original_image[indexWebots+k]+original_image[indexWebots1+k]+
-                                         original_image[indexWebots2+k]+original_image[indexWebots3+k])/4;
-        pixels[3].channels[k]   = (original_image[indexWebots+k]+original_image[indexWebots3+k])/2;
-
+        pixels[1].channels[k]   = static_cast<unsigned char>((original_image[indexWebots+k]+original_image[indexWebots1+k])/2);
+        pixels[2].channels[k] = static_cast<unsigned char>((original_image[indexWebots+k]+original_image[indexWebots1+k]+
+                                         original_image[indexWebots2+k]+original_image[indexWebots3+k])/4);
+        pixels[3].channels[k]   = static_cast<unsigned char>((original_image[indexWebots+k]+original_image[indexWebots3+k])/2);
         /*
         image.image[yImage][xImage].channels[k]     = original_image[indexWebots+k];
         image.image[yImage][xImage+1].channels[k]   = (original_image[indexWebots+k]+original_image[indexWebots1+k])/2;
