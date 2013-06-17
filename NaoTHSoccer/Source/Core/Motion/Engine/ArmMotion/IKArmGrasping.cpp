@@ -476,8 +476,8 @@ double IKArmGrasping::integralController(double input, double inputDesired, doub
 void IKArmGrasping::test_roundtrip_delay() 
 {
   // calculate the time since first applying this debug request
-  static clock_t timeOnFirstRequest = getFrameInfo().getTime();
-  clock_t timeSinceFirstRequest = getFrameInfo().getTimeSince(timeOnFirstRequest);
+  static unsigned int timeOnFirstRequest = getFrameInfo().getTime();
+  double timeSinceFirstRequest = static_cast<double>(getFrameInfo().getTimeSince(timeOnFirstRequest));
   PLOT("IKGrasping:test_roundtrip_delay_timeSinceFirstRequest", timeSinceFirstRequest);
 
   // remove stiffness
@@ -486,9 +486,9 @@ void IKArmGrasping::test_roundtrip_delay()
   double alpha_messured = getSensorJointData().position[MotorJointData::LShoulderPitch];
   double alpha_ordered = 0;
 
-  if (sin(timeSinceFirstRequest / 1000.0 / 4.0) > 0) 
+  if (sin(static_cast<double>(timeSinceFirstRequest) / 1000.0 / 4.0) > 0)
   {
-    alpha_ordered = Math::pi / 2 * sin(timeSinceFirstRequest / 1000.0 / 2.0);
+    alpha_ordered = Math::pi / 2 * sin(static_cast<double>(timeSinceFirstRequest) / 1000.0 / 2.0);
   }
 
   PLOT("IKGrasping:test_roundtrip_delay_alpha_messured", alpha_messured);
