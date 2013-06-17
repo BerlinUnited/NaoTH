@@ -10,6 +10,9 @@
 #include <sys/socket.h>
 #else
 #include <winsock.h>
+#if !defined(socklen_t)
+typedef int socklen_t;
+#endif
 #endif
 
 #include "Tools/Communication/NetAddr.h"

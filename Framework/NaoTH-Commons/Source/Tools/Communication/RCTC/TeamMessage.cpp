@@ -1,3 +1,10 @@
+// there is bug with ntohs in the GCC version <= 4.4
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 
 #include "TeamMessage.h"
 #include <cstring>
@@ -9,28 +16,28 @@ namespace rctc
   /**
     *
     */
-	bool binaryToMessage(const uint8_t* data, Message &msg)
+  bool binaryToMessage(const uint8_t* data, Message &msg)
   {
     // check header
-	  uint32_t header;
-	  memcpy(&header, &data[RCTC_HEADER], 4);
-	  header = ntohl(header);
-	  if (header != RCTC_HEADER_CONTENT) {
+    uint32_t header;
+    memcpy(&header, &data[RCTC_HEADER], 4);
+    header = ntohl(header);
+    if (header != RCTC_HEADER_CONTENT) {
       printf("ERROR: Invalid header RCTC. Header is %c%c%c%c\n", data[0], data[1], data[2], data[3]);
-		  return false;
-	  }
+      return false;
+    }
 
     msg.teamID     = data[RCTC_TEAMID];
     msg.playerID   = data[RCTC_PID];
-	  msg.goalieID   = data[RCTC_GOALIE_ID];
+    msg.goalieID   = data[RCTC_GOALIE_ID];
     msg.mabID      = data[RCTC_MAB_ID];
     
-    int16_t ballPosX;
-	  int16_t ballPosY;
-	  memcpy(&ballPosX, &data[RCTC_BALL_POS_X], 2);
-	  memcpy(&ballPosY, &data[RCTC_BALL_POS_Y], 2);
+    uint16_t ballPosX;
+    uint16_t ballPosY;
+    memcpy(&ballPosX, &data[RCTC_BALL_POS_X], 2);
+    memcpy(&ballPosY, &data[RCTC_BALL_POS_Y], 2);
     msg.ballPosX = (int16_t) ntohs(ballPosX);
-	  msg.ballPosX = (int16_t) ntohs(ballPosY);
+    msg.ballPosX = (int16_t) ntohs(ballPosY);
 
     return true;
   }//end binaryToMessage
@@ -42,20 +49,20 @@ namespace rctc
   void messageToBinary(const Message& msg, uint8_t *data)
   {
     // set header
-	  uint32_t header = htonl(RCTC_HEADER_CONTENT);
-	  memcpy(&data[RCTC_HEADER], &header, RCTC_HEADER_SIZE);
+    uint32_t header = htonl(RCTC_HEADER_CONTENT);
+    memcpy(&data[RCTC_HEADER], &header, RCTC_HEADER_SIZE);
 
     // fill the message
     data[RCTC_TEAMID]    = msg.teamID;
     data[RCTC_PID]       = msg.playerID;
-	  data[RCTC_GOALIE_ID] = msg.goalieID;
+    data[RCTC_GOALIE_ID] = msg.goalieID;
     data[RCTC_MAB_ID]    = msg.mabID;
 
     // ball information
-	  uint16_t ballPosX = htons( (uint16_t) msg.ballPosX);
-	  uint16_t ballPosY = htons( (uint16_t) msg.ballPosY);
+    uint16_t ballPosX = htons( (uint16_t) msg.ballPosX);
+    uint16_t ballPosY = htons( (uint16_t) msg.ballPosY);
     memcpy(&data[RCTC_BALL_POS_X], &ballPosX, 2);
-	  memcpy(&data[RCTC_BALL_POS_Y], &ballPosY, 2);
+    memcpy(&data[RCTC_BALL_POS_Y], &ballPosY, 2);
   }//end messageToBinary
 
   
@@ -63,7 +70,7 @@ namespace rctc
   {
     printf("teamID:  \t%d\n", msg.teamID);
     printf("playerID:\t%d\n", msg.playerID);
-	  printf("goalieID:\t%d\n", msg.goalieID);
+    printf("goalieID:\t%d\n", msg.goalieID);
     printf("mabID:   \t%d\n", msg.mabID);
     printf("ballPosX:\t%d\n", msg.ballPosX);
     printf("ballPosY:\t%d\n", msg.ballPosY);
@@ -81,4 +88,11 @@ namespace rctc
   }//end print
 
 }//end namespace rctc
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
