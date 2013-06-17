@@ -9,7 +9,10 @@
 // Chroma upsampling reference: "Fast Scheme for Image Size Change in the Compressed Domain"
 // http://vision.ai.uiuc.edu/~dugad/research/dct/index.html
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
@@ -3166,3 +3169,11 @@ unsigned char *decompress_jpeg_image_from_file(const char *pSrc_filename, int *w
 }
 
 } // namespace jpgd
+
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#endif

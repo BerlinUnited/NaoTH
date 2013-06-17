@@ -99,7 +99,7 @@ function add_gcc_ignore_pragmas(files)
 	-- hack for the GCC version < 4.6.x
 	-- this is because "#pragma GCC diagnostic push/pop" was introduced in GCC 4.6
 	local prefix = "// added by NaoTH \n" ..
-				 "#ifdef __GNUC__\n" ..
+				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
 				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
 				 "#pragma GCC diagnostic push\n" ..
 				 "#endif\n" ..
@@ -108,7 +108,7 @@ function add_gcc_ignore_pragmas(files)
 	
 	-- enable the warnings at the end
 	local suffix = "\n\n// added by NaoTH \n" ..
-				 "#ifdef __GNUC__\n" ..
+				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
 				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
 				 "#pragma GCC diagnostic pop\n" ..
 				 "#else\n" ..

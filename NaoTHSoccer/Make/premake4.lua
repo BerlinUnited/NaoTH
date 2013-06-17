@@ -94,6 +94,7 @@ solution "NaoTHSoccer"
 	flags { "ExtraWarnings" }
 	if _OPTIONS["Wno-conversion"] == nil then
 		buildoptions {"-Wconversion"}
+		defines { "_NAOTH_CHECK_CONVERSION_" }
 	end
 
   -- additional defines for windows
@@ -121,6 +122,7 @@ solution "NaoTHSoccer"
 	
 	if _OPTIONS["Wno-conversion"] == nil then
 		buildoptions {"-Wconversion"}
+		defines { "_NAOTH_CHECK_CONVERSION_" }
 	end
 	
 	-- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
