@@ -61,7 +61,7 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
   std::stringstream dbgString;
   bool drawXHist = false;
   bool drawYHist = false;
-  bool drawChannelHist = false;
+  //bool drawChannelHist = false;
 
   DEBUG_REQUEST("ImageProcessor:Histogram:plotY", 
     histogramY.plot("Histograms:Y");
