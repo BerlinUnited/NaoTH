@@ -63,9 +63,8 @@ class Histograms: public naoth::Printable
 
   public:
     //color class histograms bottom image
-    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    Statistics::Histogram<UniformGrid::HACK_MAX_HEIGHT> xHistogram[ColorClasses::numOfColors];
-    Statistics::Histogram<UniformGrid::HACK_MAX_WIDTH > yHistogram[ColorClasses::numOfColors];
+    Statistics::Histogram<naoth::IMAGE_HEIGHT> xHistogram[ColorClasses::numOfColors];
+    Statistics::Histogram<naoth::IMAGE_WIDTH > yHistogram[ColorClasses::numOfColors];
     
     // color channel histograms bottomImage
     Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramY;
