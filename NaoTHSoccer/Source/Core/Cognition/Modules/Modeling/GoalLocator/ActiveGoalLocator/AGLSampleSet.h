@@ -68,7 +68,7 @@ public:
    */
   const AGLSample& operator[](int index) const {return samples[index];}
 
-  long unsigned int size() const { return samples.size(); }
+  size_t size() const { return samples.size(); }
 
   AGLSample meanOfLargestCluster(Moments2<2>& moments);
 
