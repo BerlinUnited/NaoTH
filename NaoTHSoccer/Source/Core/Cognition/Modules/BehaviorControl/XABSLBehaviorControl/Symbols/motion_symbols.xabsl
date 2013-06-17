@@ -42,6 +42,27 @@ namespace motion_symbols("Motion Symbols") {
   float output head.search.size.z [mm];
   bool output head.search.direction;
   
+  enum head.camera
+  {
+    Top,
+    Bottom
+  };
+
+  /** Set which camera is controlled by the head motion. */
+  enum head.camera output head.camera.id;
+  
+  /** Remark: not all arm motion ids are listed here */
+  enum arm.type 
+  {
+    arms_none,
+    arms_back,
+    arms_down
+  };
+
+  /** The currently requested motion type for the arms. */
+  enum arm.type output arm.type;
+
+  
   enum motion.type 
   {
     empty,
@@ -57,6 +78,7 @@ namespace motion_symbols("Motion Symbols") {
     
     stand_up_from_front,
     stand_up_from_back,
+    stand_up_from_back_arms_back,
 
     block_middle,
     goalie_get_down,

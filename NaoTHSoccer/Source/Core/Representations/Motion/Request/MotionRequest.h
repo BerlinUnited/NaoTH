@@ -16,6 +16,8 @@
 #include "MotionID.h"
 #include "KickRequest.h"
 #include "WalkRequest.h"
+#include "GraspRequest.h"
+#include "ArmMotionRequest.h"
 
 /**
  * This describes the MotionRequest
@@ -68,6 +70,12 @@ public:
   /** special parameters if walk is requested */
   WalkRequest walkRequest;
 
+  /** */
+  GraspRequest graspRequest;
+
+  /** */
+  ArmMotionRequest armMotionRequest;
+
 
   /** set the same default values as at construction */
   void reset() 
@@ -104,6 +112,12 @@ public:
       default:
         break;
     }//end switch
+
+    if(graspRequest.graspingState != GraspRequest::none)
+      graspRequest.print(stream);
+
+    armMotionRequest.print(stream); //TODO treat if no arm request
+
   }//end print
 };
 

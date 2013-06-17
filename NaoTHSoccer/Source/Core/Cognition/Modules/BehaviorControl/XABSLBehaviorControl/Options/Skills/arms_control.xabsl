@@ -1,0 +1,41 @@
+option arms_control
+{
+  initial state arms_normal
+  {
+    decision {
+      if(arm.control_mode == back)
+        goto arms_back;
+      else
+        stay;
+    }
+    action {
+      arm.type = arms_none;
+    }
+  }
+
+  state arms_back
+  {
+    decision {
+      if(arm.control_mode != back)
+        goto arms_take_down;
+      else
+        stay;
+    }
+    action {
+      arm.type = arms_back;
+    }
+  }
+
+  state arms_take_down
+  {
+    decision {
+      if(state_time > 1000)
+        goto arms_normal;
+      else
+        stay;
+    }
+    action {
+      arm.type = arms_down;
+    }
+  }
+}

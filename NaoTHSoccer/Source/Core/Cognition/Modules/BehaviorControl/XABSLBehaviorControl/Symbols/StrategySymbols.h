@@ -121,8 +121,8 @@ private:
   bool calculateSetPiecePose();
   void testArrangeRobots();
   void arrangeRobots(
-    const std::vector<Vector2<double> >& robots, 
-    const std::vector<Vector2<double> >& places, 
+    const std::vector<Vector2<double> >& robots,
+    const std::vector<Vector2<double> >& places,
     std::vector<int>& placesToRobots );
 
   static double setpiecePoseX();

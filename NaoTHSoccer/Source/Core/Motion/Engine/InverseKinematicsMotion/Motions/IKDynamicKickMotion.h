@@ -11,7 +11,7 @@
 // kinematic tools
 #include "IKMotion.h"
 #include "IKParameters.h"
-#include "ReachibilityGrid.h"
+#include "Tools/ReachibilityGrid.h"
 
 
 class KickPose

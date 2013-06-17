@@ -7,6 +7,7 @@ option stand_up
     decision
     {
       if(executed_motion.type == stand_up_from_back ||
+         executed_motion.type == stand_up_from_back_arms_back ||
          executed_motion.type == stand_up_from_front)
          stay;
       else if(fall_down_state == lying_on_front)
@@ -49,7 +50,8 @@ option stand_up
   {
     decision
     {
-      if(executed_motion.type == stand_up_from_back)
+      if(executed_motion.type == stand_up_from_back ||
+         executed_motion.type == stand_up_from_back_arms_back)
       {
         goto _initial;
       }
@@ -59,7 +61,7 @@ option stand_up
     action
     { 
       head.control_mode = look_straight_ahead;
-      motion.type = stand_up_from_back;   
+      motion.type = (arm.control_mode != back)?stand_up_from_back:stand_up_from_back_arms_back;   
       motion.execute_immediately = true;
     }
   }

@@ -83,7 +83,6 @@ solution "NaoTHSoccer"
   configuration { "OptDebug" }
     defines { "DEBUG" }
     flags { "Optimize", "FatalWarnings" }
-
   
   configuration{"Native"}
     targetdir "../dist/Native"
@@ -116,7 +115,7 @@ solution "NaoTHSoccer"
 	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-Wno-deprecated-declarations -Wconversion"}
     flags { "ExtraWarnings" }
     links {"pthread"}
 	

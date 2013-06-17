@@ -31,7 +31,6 @@
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
-
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(MotionStatus)
   REQUIRE(OdometryData)

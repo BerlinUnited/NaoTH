@@ -156,7 +156,7 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 }//end gotoAngle
 
 
-void HeadMotionEngine::moveByAngle(const Vector2<double>& target) 
+void HeadMotionEngine::moveByAngle(const Vector2d& target) 
 {
   double max_velocity_deg_in_second_fast = 60;
   double max_velocity_deg_in_second_slow = 120;
@@ -235,10 +235,11 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   */
 
   // little filter
+  // todo: this filter is unstable, make it a PID or so before use
   double maxAcceleration = 0.1;
   MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
-  static Vector2d velocity;
 
+  static Vector2d velocity;
   velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
 
   headPos += velocity;
@@ -532,13 +533,13 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d >& points)
 void HeadMotionEngine::lookStraightAhead()
 {
   const Pose3D& cameraTrans = getCameraInfo().transformation[getHeadMotionRequest().cameraID];
-  Vector2<double> target(0.0, -cameraTrans.rotation.getYAngle());
+  Vector2d target(0.0, -cameraTrans.rotation.getYAngle());
   gotoAngle(target);
-}//end lookStraightAhead
+}
 
 
 void HeadMotionEngine::lookStraightAheadWithStabilization()
 {
   Vector2d target(0.0, -getInertialModel().orientation.y);
   gotoAngle(target);
-}//end lookStraightAheadWithStabilization
+}
