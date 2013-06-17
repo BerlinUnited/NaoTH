@@ -1,57 +1,118 @@
 option search_ball_back_rot{
 
-initial state turn_left {
+common decision  {
+if(ball.was_seen)
+      goto finish;
+}
+
+initial state start {
 
 decision{
-    if(state_time>1000 )
-      goto turn_rigth;
+    else if(state_time>500 )
+      goto turn_left;
     else
       stay;
 }
 action{
       motion.type = walk;
+      motion.walk.style = fast;
       
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
       motion.walk_speed.x = -100;
       motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 45;
+      motion.walk_speed.rot = 0;
 
-      head.control_mode = search_for_ball;
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
 }
 }
 
-state turn_rigth {
+state turn_left {
 
 decision{
-    if(state_time>1000 )
+    else if(state_time>750 )
+      goto stop;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = -10000;
+      motion.walk_speed.rot = 20;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state stop {
+
+decision{
+    else if(state_time>500 )
+      goto turn_right;
+    else
+      stay;
+}
+action{
+      motion.type = stand;
+
+      motion.walk.stop_with_stand=false;
+      
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+
+}
+}
+
+state turn_right{
+decision{
+    else if(state_time>1500 )
       goto finish;
     else
       stay;
 }
 action{
       motion.type = walk;
+      motion.walk.style = fast;
       
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
-      motion.walk_speed.x = -100;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 90;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = 10000;
+      motion.walk_speed.rot = -20;
 
-      head.control_mode = search_for_ball;
-
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = -200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
 }
 }
 
 target state finish {
 
 decision{
-      stay;
+      else stay;
 }
 
 action{
+      motion.walk.stop_with_stand=false;
       motion.type = stand;
+
+      head.control_mode = search_for_ball;
+}
 }
 }
 
-}
