@@ -40,9 +40,6 @@
 //in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
 #define CYCLE_TIME 20
 
 class LogProvider;
