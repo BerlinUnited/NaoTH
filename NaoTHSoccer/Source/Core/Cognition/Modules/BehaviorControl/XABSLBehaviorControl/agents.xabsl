@@ -102,6 +102,9 @@ include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/clown_walk_test.xabsl";
 include "Options/Test/clown_walk_test_agent.xabsl";
 
+include "Options/Test/turn_around_ball_test_agent.xabsl";
+include "Options/Test/turn_around_ball_test.xabsl";
+
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
@@ -130,5 +133,6 @@ agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_b
 agent arm_back_test("arm_back_test_agent",arm_back_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 agent clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
+agent turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
 
 
