@@ -50,7 +50,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   double d_2 = 50/2;
   double horizon_height = std::min(getArtificialHorizon().begin().y, getArtificialHorizon().end().y);
 
-  for(int i = 0; i < 480; i++)
+  for(int i = 0; i < naoth::IMAGE_HEIGHT; i++)
   {
     // reset
     vertical_confidence[i] = 0.0;
@@ -74,7 +74,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:TopCam:expected_line_width",
     if(cameraID == CameraInfo::Top)
     {
-      for(int i = 0; i < 480; i++)
+      for(int i = 0; i < naoth::IMAGE_HEIGHT; i++)
       {
         unsigned char c = (unsigned char)(vertical_confidence[i]);
         TOP_POINT_PX(c, 0, 0, c, i);
@@ -84,7 +84,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:BottomCam:expected_line_width",
     if(cameraID == CameraInfo::Bottom)
     {
-      for(int i = 0; i < 480; i++)
+      for(int i = 0; i < naoth::IMAGE_HEIGHT; i++)
       {
         unsigned char c = (unsigned char)(vertical_confidence[i]);
         POINT_PX(c, 0, 0, c, i);
