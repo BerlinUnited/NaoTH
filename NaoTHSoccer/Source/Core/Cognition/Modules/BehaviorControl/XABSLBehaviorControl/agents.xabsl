@@ -104,6 +104,7 @@ include "Options/Test/clown_walk_test_agent.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
+agent penalty("Penalty", play_penalty);
 
 
 
