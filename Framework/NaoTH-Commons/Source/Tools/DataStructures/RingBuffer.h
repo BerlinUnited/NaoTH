@@ -82,13 +82,19 @@ template <class V, int maxSize> class RingBuffer
       return buffer[j];
     }
 
-    V& last ()
-    {
+    V& last () {
       return buffer[current];
     }
 
-    V& first ()
-    {
+    const V& last () const {
+      return buffer[current];
+    }
+
+    V& first () {
+      return getEntry(numberOfEntries - 1);
+    }
+
+    const V& first () const {
       return getEntry(numberOfEntries - 1);
     }
 

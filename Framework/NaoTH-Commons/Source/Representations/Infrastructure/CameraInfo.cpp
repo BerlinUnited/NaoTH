@@ -109,7 +109,7 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(cameraTrans[Top].offset.x) = 58.71;
   PARAMETER_REGISTER(cameraTrans[Top].offset.y) = 0;
   PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 63.64;
-  PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 0;
+  PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 1.2;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 50.71;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.y) = 0;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 17.74;

@@ -326,10 +326,10 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 
 
       // translocation of the line percept to the global coords
-      Vector2<double> abs_begin = sample*relPercept.begin();
-      Vector2<double> abs_end = sample*relPercept.end();
-      Vector2<double> abs_direction = abs_end - abs_begin;
-      Vector2<double> abs_mid = (abs_begin+abs_end)*0.5;
+      Vector2d abs_begin = sample*relPercept.begin();
+      Vector2d abs_end = sample*relPercept.end();
+      Vector2d abs_direction = abs_end - abs_begin;
+      Vector2d abs_mid = (abs_begin+abs_end)*0.5;
 
       // classify the line percept
       int length = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
@@ -364,9 +364,9 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       );
       */
       // project the perceived line to the reference
-      Vector2<double> p1 = ref_line.projection(abs_begin);
-      Vector2<double> p2 = ref_line.projection(abs_end);
-      Vector2<double> pm = p_mid.position;
+      Vector2d p1 = ref_line.projection(abs_begin);
+      Vector2d p2 = ref_line.projection(abs_end);
+      Vector2d pm = p_mid.position;
 
 
       DEBUG_REQUEST("MCSL:draw_corner_votes",
@@ -378,19 +378,19 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       );
 
       {
-        Vector2<double> relP1(sample/p1);
+        Vector2d relP1(sample/p1);
         sample.likelihood *= computeDistanceWeighting(relPercept.begin().abs(), relP1.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relPercept.begin().angle(), relP1.angle(), sigmaAngle, 1.0);
       }
       
       {
-        Vector2<double> relP2(sample/p2);
+        Vector2d relP2(sample/p2);
         sample.likelihood *= computeDistanceWeighting(relPercept.end().abs(), relP2.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relPercept.end().angle(), relP2.angle(), sigmaAngle, 1.0);
       }
       {
-        Vector2<double> relPM(sample/pm);
-        Vector2<double> relMidPoint = relPercept.point(0.5*relPercept.getLength());
+        Vector2d relPM(sample/pm);
+        Vector2d relMidPoint = relPercept.point(0.5*relPercept.getLength());
         sample.likelihood *= computeDistanceWeighting(relMidPoint.abs(), relPM.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relMidPoint.angle(), relPM.angle(), sigmaAngle, 1.0);
       }
