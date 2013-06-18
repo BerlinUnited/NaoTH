@@ -35,14 +35,7 @@ option turn_around_ball_test
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = walk;
-      
-      motion.walk.coordinate = right_foot;
-      motion.walk.style = normal;
-
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 120 - ball.radius);
-      motion.walk_speed.y = ball.preview.right_foot.y;
-      motion.walk_speed.rot = atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x);
+      go_to_ball(distance=200);
     }
   }
 
@@ -59,7 +52,9 @@ option turn_around_ball_test
     }
 	  action
 	  {
-	    move_around_ball();
+	    move_around_ball(direction=-30, radius=170);
+      head.control_mode = search_for_ball;
+      motion.walk.style = fast;
 	  }
   }
 
@@ -68,7 +63,7 @@ option turn_around_ball_test
     decision
     {
       else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
-        goto play;
+        goto approach_ball;
       else
         stay;
     }
