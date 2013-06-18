@@ -67,6 +67,7 @@ include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/penalty_kicker_test_agent.xabsl";
 // Test agents (options) ball search
 include "Options/Test/search_ball_back_rot_test_agent.xabsl";
+include "Options/Test/simple_search_ball_test_agent.xabsl";
 
 // Test options
 // Test options Kicks
@@ -93,6 +94,7 @@ include "Options/Test/obstacle_test_agent.xabsl";
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
+include "Options/Test/ball_search/simple_search_ball_test.xabsl";
 
 // Test arms
 include "Options/Test/arm_back_test.xabsl";
@@ -138,5 +140,6 @@ agent arm_back_test("arm_back_test_agent",arm_back_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 agent clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
 agent turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
+agent simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 
