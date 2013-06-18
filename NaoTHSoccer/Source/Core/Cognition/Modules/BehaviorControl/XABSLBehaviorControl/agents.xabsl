@@ -26,6 +26,7 @@ include "Options/Skills/arms_control.xabsl";
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
+include "Options/Skills/go_to_ball_with_foot.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
@@ -60,6 +61,7 @@ include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_test_agent.xabsl";
+include "Options/Test/go_to_ball_with_foot_test_agent.xabsl";
 include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
 // Test agents (options) Penalty
 include "Options/Test/penalty_kicker_test_agent.xabsl";
@@ -81,6 +83,7 @@ include "Options/Test/walk/walk_circularly_x.xabsl";
 include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
+include "Options/Test/walk/go_to_ball_with_foot_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
@@ -123,6 +126,7 @@ agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
+agent go_to_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
 agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
 agent obstacle_test("obstacle_test", obstacle_test_agent);
 
