@@ -53,8 +53,10 @@ public:
 
   inline bool isInside(const Pixel& pixel) const
   {
-    bool isGoal = pixel.y < maxY && pixel.y > minY &&
-      maxU > pixel.u &&
+    bool isGoal = 
+      pixel.y < maxY && 
+      pixel.y > minY &&
+      pixel.u < maxU &&
       pixel.v > minV && 
       pixel.v < minV + maxDistV;
 

@@ -19,6 +19,8 @@ SimpleGoalColorClassifier::SimpleGoalColorClassifier()
 {
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:TopCam:mark_yellow", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:BottomCam:mark_yellow", "", false);
+
+  // experimental (Claas)
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:TopCam:enable_plots", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:BottomCam:enable_plots", "", false);
 }
@@ -30,43 +32,82 @@ void SimpleGoalColorClassifier::execute()
   PixelT<int> fieldMax = getFieldColorPercept().range.getMax();
   PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
 
-  //getSimpleGoalColorPercept().minFieldV = min.v;
-  //getSimpleGoalColorPercept().maxFieldV = max.v;
-  //getSimpleGoalColorPercept().maxFieldU = max.u;
+  getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
+  getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
+  getSimpleGoalColorPercept().maxU = fieldMin.u; // the U value of yellow has to be below green
+  getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
+  getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
+  
+  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
+  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
+  getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u; // the U value of yellow has to be below green
+  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
+  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  
+  getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
+  getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
+
+
+  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:TopCam:mark_yellow",
+    for(unsigned int x = 0; x < getImageTop().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImageTop().height(); y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);        
+        if(getSimpleGoalColorPerceptTop().isInside(pixel)) {
+          TOP_POINT_PX(ColorClasses::yellow, x, y);
+        }
+      }
+    }
+  );
+
+  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:BottomCam:mark_yellow",
+    for(unsigned int x = 0; x < getImage().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y++)
+      {
+        const Pixel& pixel = getImage().get(x, y);        
+        if( getSimpleGoalColorPercept().isInside(pixel) ) {
+          POINT_PX(ColorClasses::yellow, x, y);        
+        }
+      }
+    }
+  );
+
+}//end execute
+
+
+void SimpleGoalColorClassifier::histogramExperiments()
+{
+  PixelT<int> fieldMaxTop = getFieldColorPerceptTop().range.getMax();
+  PixelT<int> fieldMinTop = getFieldColorPerceptTop().range.getMin();
+  PixelT<int> fieldMax = getFieldColorPercept().range.getMax();
+  PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
+
 
   for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
-    if(i < fieldMinTop.u)
-    {
+    if(i < fieldMinTop.u) {
       histTopU.set(i, getHistogramsTop().histogramU.rawData[i]);
-    }
-    else
-    {
+    } else {
       histTopU.set(i, 0);
     }
-    if(i < fieldMin.u)
-    {
+    
+    if(i < fieldMin.u) {
       histU.set(i, getHistograms().histogramU.rawData[i]);
-    }
-    else
-    {
+    } else {
       histU.set(i, 0);
     }
 
-    if(i > fieldMaxTop.v )
-    {
-        histTopV.set(i, getHistogramsTop().histogramV.rawData[i]);
-    }
-    else
-    {
+    if(i > fieldMaxTop.v ) {
+      histTopV.set(i, getHistogramsTop().histogramV.rawData[i]);
+    } else {
       histV.set(i, 0);
     }
-    if(i > fieldMax.v )
-    {
-        histV.set(i, getHistograms().histogramV.rawData[i]);
-    }
-    else
-    {
+
+    if(i > fieldMax.v ) {
+      histV.set(i, getHistograms().histogramV.rawData[i]);
+    } else {
       histV.set(i, 0);
     }
   }
@@ -75,16 +116,6 @@ void SimpleGoalColorClassifier::execute()
   //histU.calculate();
   //histV.calculate();
 
-  getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPercept().maxU = fieldMin.u;
-  getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
-  getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
-  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u;
-  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
-  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
   //int diffTop = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
   //int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;
   //double maxTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.7 - diffTop;
@@ -104,8 +135,6 @@ void SimpleGoalColorClassifier::execute()
   //getSimpleGoalColorPercept().minV = (int) (histV.mean - goalParams.strength * histV.sigma);
   //getSimpleGoalColorPercept().maxDistV = (int) (histV.sigma * 2 * goalParams.strength);
 
-  getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
-  getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
 
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:TopCam:enable_plots",
     for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -125,35 +154,4 @@ void SimpleGoalColorClassifier::execute()
       PLOT_GENERIC("SimpleGoalColorClassifier:BottomCam:histV", i, histV.rawData[i]);
     }
   );
-
-  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:TopCam:mark_yellow",
-    for(unsigned int x = 0; x < getImageTop().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImageTop().height(); y++)
-      {
-        const Pixel& pixel = getImageTop().get(x, y);        
-        if
-        (
-          getSimpleGoalColorPerceptTop().isInside(pixel)
-        )
-          TOP_POINT_PX(ColorClasses::yellow, x, y);        
-      }
-    }
-  );
-
-  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:BottomCam:mark_yellow",
-    for(unsigned int x = 0; x < getImage().width(); x++)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y++)
-      {
-        const Pixel& pixel = getImage().get(x, y);        
-        if
-        (
-          getSimpleGoalColorPercept().isInside(pixel)
-        )
-          POINT_PX(ColorClasses::yellow, x, y);        
-      }
-    }
-  );
-
-}//end execute
+}//end histogramExperiments

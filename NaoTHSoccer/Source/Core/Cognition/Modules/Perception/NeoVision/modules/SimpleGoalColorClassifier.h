@@ -49,20 +49,12 @@ END_DECLARE_MODULE(SimpleGoalColorClassifier)
 class SimpleGoalColorClassifier : public  SimpleGoalColorClassifierBase
 {
 public:
-  //double histV[COLOR_CHANNEL_VALUE_COUNT];
-  //double histU[COLOR_CHANNEL_VALUE_COUNT];
-  
   SimpleGoalColorClassifier();
   virtual ~SimpleGoalColorClassifier(){}
 
-  /** executes the module */
   void execute();
 
 private:
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histV;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopV;
 
   class Parameters: public ParameterList
   {
@@ -97,6 +89,19 @@ private:
   };
 
   Parameters goalParams;
+
+
+// experimental (Claas)
+private:
+  //double histV[COLOR_CHANNEL_VALUE_COUNT];
+  //double histU[COLOR_CHANNEL_VALUE_COUNT];
+
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histU;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histV;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopU;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopV;
+
+  void histogramExperiments();
 
 };
 
