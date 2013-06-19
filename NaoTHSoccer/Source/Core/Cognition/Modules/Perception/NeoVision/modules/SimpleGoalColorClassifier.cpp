@@ -70,39 +70,39 @@ void SimpleGoalColorClassifier::execute()
       histV.set(i, 0);
     }
   }
-  histTopU.calculate();
-  histTopV.calculate();
-  histU.calculate();
-  histV.calculate();
+  //histTopU.calculate();
+  //histTopV.calculate();
+  //histU.calculate();
+  //histV.calculate();
 
-  //getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
-  //getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
-  //getSimpleGoalColorPercept().maxU = fieldMin.u;
-  //getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
-  //getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
-  //getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
-  //getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
-  //getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u;
-  //getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
-  //getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
-  int diffTop = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
-  int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;
-  double maxTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.7 - diffTop;
-  double maxY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.7 - diff;
-  double minTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.3 - diffTop;
-  double minY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.3 - diff;
+  getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
+  getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
+  getSimpleGoalColorPercept().maxU = fieldMin.u;
+  getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
+  getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
+  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
+  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
+  getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u;
+  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
+  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  //int diffTop = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
+  //int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;
+  //double maxTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.7 - diffTop;
+  //double maxY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.7 - diff;
+  //double minTopY = getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * 0.3 - diffTop;
+  //double minY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.3 - diff;
 
-  getSimpleGoalColorPerceptTop().minY = (int) minTopY;//goalParams.goalColorMin.y;
-  getSimpleGoalColorPerceptTop().maxY = (int) maxTopY;//goalParams.goalColorMax.y;
-  getSimpleGoalColorPerceptTop().maxU = (int) (histTopU.mean + 1.5 * goalParams.strength * histTopU.sigma);
-  getSimpleGoalColorPerceptTop().minV = (int) (histTopV.mean - goalParams.strength * histTopV.sigma);
-  getSimpleGoalColorPerceptTop().maxDistV = (int) (histTopV.sigma * 2 * goalParams.strength);
+  //getSimpleGoalColorPerceptTop().minY = (int) minTopY;//goalParams.goalColorMin.y;
+  //getSimpleGoalColorPerceptTop().maxY = (int) maxTopY;//goalParams.goalColorMax.y;
+  //getSimpleGoalColorPerceptTop().maxU = (int) (histTopU.mean + 1.5 * goalParams.strength * histTopU.sigma);
+  //getSimpleGoalColorPerceptTop().minV = (int) (histTopV.mean - goalParams.strength * histTopV.sigma);
+  //getSimpleGoalColorPerceptTop().maxDistV = (int) (histTopV.sigma * 2 * goalParams.strength);
 
-  getSimpleGoalColorPercept().minY = (int) minY;//goalParams.goalColorMin.y;
-  getSimpleGoalColorPercept().maxY = (int) maxY;//goalParams.goalColorMax.y;
-  getSimpleGoalColorPercept().maxU = (int) (histU.mean + 1.5 * goalParams.strength * histU.sigma);
-  getSimpleGoalColorPercept().minV = (int) (histV.mean - goalParams.strength * histV.sigma);
-  getSimpleGoalColorPercept().maxDistV = (int) (histV.sigma * 2 * goalParams.strength);
+  //getSimpleGoalColorPercept().minY = (int) minY;//goalParams.goalColorMin.y;
+  //getSimpleGoalColorPercept().maxY = (int) maxY;//goalParams.goalColorMax.y;
+  //getSimpleGoalColorPercept().maxU = (int) (histU.mean + 1.5 * goalParams.strength * histU.sigma);
+  //getSimpleGoalColorPercept().minV = (int) (histV.mean - goalParams.strength * histV.sigma);
+  //getSimpleGoalColorPercept().maxDistV = (int) (histV.sigma * 2 * goalParams.strength);
 
   getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
   getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
