@@ -62,11 +62,12 @@ private:
 
     Parameters() : ParameterList("SimpleGoalColorClassifierParameters")
     {
-      PARAMETER_REGISTER(goalColorMin.y) = 80;
-      PARAMETER_REGISTER(goalColorMax.y) = 200;
-      PARAMETER_REGISTER(goalColorWidth.v) = 64;
-      PARAMETER_REGISTER(dist2green.v) = 12;
-      PARAMETER_REGISTER(strength) = 1.2;
+      //PARAMETER_REGISTER(goalColorMin.y) = 80;
+      //PARAMETER_REGISTER(goalColorMax.y) = 200;
+      //PARAMETER_REGISTER(goalColorWidth.v) = 64;
+      //PARAMETER_REGISTER(dist2green.v) = 12;
+      //PARAMETER_REGISTER(strength) = 1.2;
+      PARAMETER_REGISTER(vu_offset) = 45;
 
       syncWithConfig();
 
@@ -78,14 +79,14 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    double strength;
+    //double strength;
 
-    DoublePixel dist2green;
+    //DoublePixel dist2green;
+    //DoublePixel goalColorWidth;
+    //DoublePixel goalColorMax;
+    //DoublePixel goalColorMin;
 
-    DoublePixel goalColorWidth;
-
-    DoublePixel goalColorMax;
-    DoublePixel goalColorMin;
+    int vu_offset;
   };
 
   Parameters goalParams;

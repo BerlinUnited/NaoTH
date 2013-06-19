@@ -27,30 +27,32 @@ SimpleGoalColorClassifier::SimpleGoalColorClassifier()
 
 void SimpleGoalColorClassifier::execute()
 {
-  PixelT<int> fieldMaxTop = getFieldColorPerceptTop().range.getMax();
-  PixelT<int> fieldMinTop = getFieldColorPerceptTop().range.getMin();
-  PixelT<int> fieldMax = getFieldColorPercept().range.getMax();
-  PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
-
-  getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPercept().maxU = fieldMin.u; // the U value of yellow has to be below green
-  getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
-  getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
   
-  getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
-  getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
-  getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u; // the U value of yellow has to be below green
-  getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
-  getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  //PixelT<int> fieldMaxTop = getFieldColorPerceptTop().range.getMax();
+  //PixelT<int> fieldMinTop = getFieldColorPerceptTop().range.getMin();
+  //PixelT<int> fieldMax = getFieldColorPercept().range.getMax();
+  //PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
+
+  //getSimpleGoalColorPercept().minY = (int) goalParams.goalColorMin.y;
+  //getSimpleGoalColorPercept().maxY = (int) goalParams.goalColorMax.y;
+  //getSimpleGoalColorPercept().maxU = fieldMin.u; // the U value of yellow has to be below green
+  //getSimpleGoalColorPercept().minV = (int) goalParams.dist2green.v + fieldMax.v;
+  //getSimpleGoalColorPercept().maxDistV = (int) goalParams.goalColorWidth.v;
+  getSimpleGoalColorPercept().vu_offset = (int) goalParams.vu_offset;
+  
+  //getSimpleGoalColorPerceptTop().minY = (int) goalParams.goalColorMin.y;
+  //getSimpleGoalColorPerceptTop().maxY = (int) goalParams.goalColorMax.y;
+  //getSimpleGoalColorPerceptTop().maxU = fieldMinTop.u; // the U value of yellow has to be below green
+  //getSimpleGoalColorPerceptTop().minV = (int) goalParams.dist2green.v + fieldMaxTop.v;
+  //getSimpleGoalColorPerceptTop().maxDistV = (int) goalParams.goalColorWidth.v;
+  getSimpleGoalColorPerceptTop().vu_offset = (int) goalParams.vu_offset;
   
   getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
   getSimpleGoalColorPerceptTop().lastUpdated = getFrameInfo();
 
 
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:TopCam:mark_yellow",
-    for(unsigned int x = 0; x < getImageTop().width(); x++)
-    {
+    for(unsigned int x = 0; x < getImageTop().width(); x++) {
       for(unsigned int y = 0; y < getImageTop().height(); y++)
       {
         const Pixel& pixel = getImageTop().get(x, y);        
@@ -62,8 +64,7 @@ void SimpleGoalColorClassifier::execute()
   );
 
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:BottomCam:mark_yellow",
-    for(unsigned int x = 0; x < getImage().width(); x++)
-    {
+    for(unsigned int x = 0; x < getImage().width(); x++) {
       for(unsigned int y = 0; y < getImage().height(); y++)
       {
         const Pixel& pixel = getImage().get(x, y);        
