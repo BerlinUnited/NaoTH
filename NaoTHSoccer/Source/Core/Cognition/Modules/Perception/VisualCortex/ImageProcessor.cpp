@@ -69,10 +69,6 @@ void ImageProcessor::execute()
   getBallPerceptTop().reset();
   getGoalPercept().reset();
   getGoalPerceptTop().reset();
-  getScanLineEdgelPercept().reset();
-  getScanLineEdgelPerceptTop().reset();
-  //getLinePercept().reset();
-  //getLinePerceptTop().reset();
   getPlayersPercept().reset();
 
   GT_TRACE("executing HistogramFieldDetector");

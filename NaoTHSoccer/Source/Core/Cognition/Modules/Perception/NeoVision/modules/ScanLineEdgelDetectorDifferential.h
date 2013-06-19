@@ -103,6 +103,7 @@ public:
 
 private:
   CameraInfo::CameraID cameraID;
+  int current_scanlineID;
   double vertical_confidence[naoth::IMAGE_HEIGHT];
 
   void add_edgel(int x, int y) {
