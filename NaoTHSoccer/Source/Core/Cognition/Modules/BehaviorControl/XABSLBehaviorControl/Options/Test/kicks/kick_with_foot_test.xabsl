@@ -1,0 +1,143 @@
+/* Tests kick_with_foot */
+
+option kick_with_foot_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state kick_right
+  {
+    decision
+    {
+      else if(action_done)
+        //goto stand;
+        goto go_to_ball_left;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_with_foot(right = true);
+    }
+  }
+
+  state kick_left
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_with_foot(right = false);
+    }
+  }
+
+  state go_to_ball_right
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball_right;
+      else if(action_done)
+        goto kick_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = true, distance = 120);
+    }
+  }
+
+state go_to_ball_left
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball_left;
+      else if(action_done)
+        goto kick_left;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = false, distance = 120);
+    }
+  }
+
+  state search_ball_right
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state search_ball_left
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball_left;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      else if(state_time > 5000)
+        goto go_to_ball_right;
+      else stay;
+    }
+    action
+    {
+      motion.type = stand;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+}

@@ -1,4 +1,4 @@
-/** Omnidirectional kick */
+/** Omnidirectional kick for penalty shooting (slow!)*/
 option kick_ball_with_foot
 {
   float @direction [deg]; 

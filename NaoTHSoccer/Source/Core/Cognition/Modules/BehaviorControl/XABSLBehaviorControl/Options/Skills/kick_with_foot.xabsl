@@ -1,0 +1,249 @@
+/** Kick the ball fast (forward) with the given foot
+    assumes ball is infront of the foot **/
+
+option kick_with_foot
+{
+  bool @right;
+
+  initial state decide_foot
+  {
+    decision
+    {
+      if (state_time > 100)
+      {
+	      if (@right)
+	        goto prepare_right_kick;
+	      else if(!@right && executed_motion.step_control.left_movable)
+	        goto prepare_left_kick;
+        else
+          stay;
+      }
+        else 
+          stay;
+	  }
+    action
+    {
+      //motion.type = walk;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state prepare_right_kick
+  {
+    decision
+    {
+      if(state_time > 100 && executed_motion.step_control.right_movable)
+        goto kick_right_foot;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = left_foot;
+
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.left_foot.y + ball.radius + 20;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.stop_with_stand = false;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state prepare_left_kick
+  {
+    decision
+    {
+      if(state_time > 100 && executed_motion.step_control.left_movable)
+        goto kick_left_foot;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = right_foot;
+
+      motion.walk.step_control.foot = right;
+      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.right_foot.y - ball.radius - 20;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.stop_with_stand = false;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+  
+  state kick_right_foot
+  {
+    decision
+    {
+      if(state_time > 100 && executed_motion.step_control.left_movable)
+        goto reset_controls;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = right_foot;
+
+      motion.walk.step_control.foot = right;
+      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.right_foot.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 200;
+      motion.walk.stop_with_stand = false;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state kick_left_foot
+  {
+    decision
+    {
+      if(state_time > 100 && executed_motion.step_control.right_movable)
+        goto reset_controls;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = left_foot;
+
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.left_foot.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 200;
+      motion.walk.stop_with_stand = false;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state reset_controls
+  {
+    decision
+    {
+      if (state_time > 100)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk.step_control.foot = none;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = walk;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state stand_right_kick
+  {
+    decision
+    {
+      if (state_time > 5000)
+        goto kick_right_foot;
+      else stay;
+    }
+    action
+    {
+      motion.walk.stop_with_stand = false;
+      motion.type = stand;
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state stand_left_kick
+  {
+    decision
+    {
+      if (state_time > 5000)
+        goto kick_left_foot;
+      else stay;
+    }
+    action
+    {
+      motion.walk.stop_with_stand = false;
+      motion.type = stand;
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+}

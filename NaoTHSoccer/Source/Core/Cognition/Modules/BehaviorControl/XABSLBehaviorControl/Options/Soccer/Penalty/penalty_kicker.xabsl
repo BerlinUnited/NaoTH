@@ -61,7 +61,7 @@ option penalty_kicker
       motion.walk.style = stable;
       motion.walk.coordinate = right_foot;
       motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 500 - ball.radius);
-      motion.walk_speed.y = ball.preview.right_foot.y - 125;
+      motion.walk_speed.y = ball.preview.right_foot.y - 100;
       motion.walk_speed.rot = 0.25*atan2(y = ball.preview.right_foot.y - 125, x = ball.preview.right_foot.x - 500);
       
       head.control_mode = search_for_ball;
