@@ -44,6 +44,10 @@ include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 
+// simple soccer
+include "Options/Soccer/basic_striker_agent.xabsl";
+include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
+
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
@@ -115,6 +119,9 @@ include "Options/Test/clown_walk_test_agent.xabsl";
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+
+/** simple soccer agents **/
+agent basic_striker("basic_striker", basic_striker_agent);
 
 
 
