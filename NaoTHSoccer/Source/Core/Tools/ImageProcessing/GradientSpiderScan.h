@@ -77,6 +77,8 @@ public:
   void setDrawScanLines(bool draw);
   void setMaxBeamLength(unsigned int length);
   void setCurrentGradientThreshold(double threshold);
+  void setCurrentMeanThreshold(double threshold);
+  void setImageColorChannelNumber(int channelNumber);
   void setMaxNumberOfScans(unsigned int length);
 
 private:
@@ -93,6 +95,8 @@ private:
   bool drawScanLines;
   unsigned int max_length_of_beam;
   double currentGradientThreshold;
+  double currentMeanThreshold;
+  int imageChannelNumber;
   int maxNumberOfScans; //maximum number of scanlines ...
 
   CameraInfo::CameraID cameraID;
