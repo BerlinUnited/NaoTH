@@ -62,6 +62,7 @@ include "Options/Test/kick_direction_test_agent.xabsl";
 include "Options/Test/kick_attack_direction_test_agent.xabsl";
 include "Options/Test/omnidirectional_kick_test_agent.xabsl";
 include "Options/Test/kick_with_foot_test_agent.xabsl";
+include "Options/Test/walk_against_ball_test_agent.xabsl";
 // Test agents (options) Walk
 include "Options/Test/test_walk_lv1_agent.xabsl";
 include "Options/Test/test_walk_lv2_agent.xabsl";
@@ -84,6 +85,7 @@ include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
 include "Options/Test/kicks/omnidirectional_kick_test.xabsl";
 include "Options/Test/kicks/kick_with_foot_test.xabsl";
+include "Options/Test/kicks/walk_against_ball_test.xabsl";
 // Test options Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
@@ -132,6 +134,7 @@ agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack
 agent sidekick_test("sidekick_test_agent", sidekick_test_agent);
 agent omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
 agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent);
+agent walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);

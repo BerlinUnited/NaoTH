@@ -1,6 +1,6 @@
 /** Go to the ball with respect to the given foot 
   Note: No rotation with less then 20 cm distance! 
-  Parameter @distance for the distance foot-ball (use 120 as default)**/
+  Parameter @distance for the distance foot-ball (use 90 as default)**/
 
 option go_to_ball_with_foot
 {
@@ -26,8 +26,8 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) < 20
-        && abs(value = ball.preview.right_foot.y) < 20
-        && vector.abs(x=ball.speed.x, y=ball.speed.y) < 30)
+        && abs(value = ball.preview.right_foot.y) < 15)
+        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_right_foot_done;
       else
         stay;
@@ -36,9 +36,9 @@ option go_to_ball_with_foot
     {
       head.control_mode = search_for_ball;
       motion.type = walk;
-      
       motion.walk.coordinate = right_foot;
       motion.walk.style = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? normal : stable;
+      
       motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.right_foot.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
@@ -50,8 +50,8 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) < 20
-        && abs(value = ball.preview.left_foot.y) < 20
-        && vector.abs(x=ball.speed.x, y=ball.speed.y) < 30)
+        && abs(value = ball.preview.left_foot.y) < 15)
+        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_left_foot_done;
       else
         stay;
@@ -60,9 +60,9 @@ option go_to_ball_with_foot
     {
       head.control_mode = search_for_ball;
       motion.type = walk;
-      
       motion.walk.coordinate = left_foot;
       motion.walk.style = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? normal : stable;
+      
       motion.walk_speed.x = ((vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.left_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.left_foot.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
@@ -74,8 +74,8 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.right_foot.y) > 30
-        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
+        || abs(value = ball.preview.right_foot.y) > 25
+        || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_right_foot;
       else
         stay;
@@ -84,12 +84,12 @@ option go_to_ball_with_foot
     {
       head.control_mode = search_for_ball;
       motion.type = walk;
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = stable;
 
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - @distance - ball.radius);
+      motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.right_foot.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
+      motion.walk_speed.rot = 0;
     }
   }
 
@@ -98,8 +98,8 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.left_foot.y) > 30
-        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
+        || abs(value = ball.preview.left_foot.y) > 25
+        || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_left_foot;
       else
         stay;
@@ -108,12 +108,12 @@ option go_to_ball_with_foot
     {
       head.control_mode = search_for_ball;
       motion.type = walk;
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = stable;
 
-      motion.walk_speed.x = 0.7*(ball.preview.left_foot.x - @distance - ball.radius);
+      motion.walk_speed.x = 0.5*(ball.preview.left_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.left_foot.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
+      motion.walk_speed.rot = 0;
     }
   }
 }
