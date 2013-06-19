@@ -1,8 +1,9 @@
 // there is bug with ntohs in the GCC version <= 4.4
-#ifdef __GNUC__
-#if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 5)
-#pragma GCC diagnostic ignored "-Wconversion"
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
 #endif
+#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
 #include "TeamMessage.h"
@@ -87,4 +88,11 @@ namespace rctc
   }//end print
 
 }//end namespace rctc
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
