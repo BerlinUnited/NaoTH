@@ -27,6 +27,7 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/FieldPercept.h"
+#include <Representations/Infrastructure/FrameInfo.h>
 
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -55,6 +56,7 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   REQUIRE(FieldInfo)
+  REQUIRE(FrameInfo)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)

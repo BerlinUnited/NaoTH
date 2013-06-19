@@ -142,6 +142,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
         getBallPercept().radiusInImage = radiusBest;
         getBallPercept().centerInImage = centerBest;
         getBallPercept().ballWasSeen = true;
+        getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
       }
     }
   }
