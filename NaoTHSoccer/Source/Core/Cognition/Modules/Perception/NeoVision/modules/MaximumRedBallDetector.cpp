@@ -33,9 +33,6 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  double maxSize = 150;
-  double minSize = 5;
-  
   getBallPercept().reset();
 
   Vector2<int> start;
@@ -54,9 +51,9 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 
   if(!getBodyContour().isOccupied(start))
   {
-
     GradientSpiderScan spiderSearch(getImage(), cameraID);
     spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
+    spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
     spiderSearch.setMaxBeamLength(50);
 
     DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
@@ -66,230 +63,87 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
     // explore the border of the ball
     spiderSearch.scan(start, goodPoints, badPoints);
 
-    if(goodPoints.length > 2)
+    if(goodPoints.length > 3)
     {
       Vector2<double> center;
-      Vector2<double> centerOne;
-      Vector2<double> centerOneOnField;
-      Vector2<double> borderOneOnField;
-      Vector2<double> centerTwo;
-      Vector2<double> centerTwoOnField;
-      Vector2<double> borderTwoOnField;
-      Vector2<double> meanCenter;
       double radius;
-      double radiusOne;
-      double radiusTwo;
 
-      if(calculateCircle(goodPoints, centerOne, radiusOne))
+      int idxBest = -1;
+      int bestCount = 0;
+      Vector2<double> centerBest;
+      double radiusBest = 0;
+
+      int maxTries = Math::clamp(goodPoints.length, 4, 10);
+      for(int j = 0; j < goodPoints.length; j++)
       {
-        CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), 
-          getImage().cameraInfo,
-          centerOne.x, 
-          centerOne.y, 
-          getFieldInfo().ballRadius,
-          centerOneOnField);
-        borderOneOnField.x = centerOneOnField.x + radiusOne;
-        borderOneOnField.y = centerOneOnField.y;
-        CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), 
-          getImage().cameraInfo,
-          centerOne.x, 
-          centerOne.y, 
-          getFieldInfo().ballRadius,
-          borderOneOnField);
+        possibleModells[0].add(goodPoints[j]);
+      }
 
-        bool sizeOk = (centerOneOnField - borderOneOnField).abs() <= getFieldInfo().ballRadius * 1.1;
-
-        if(!getImage().isInside((int) centerOne.x, (int) centerOne.y) || !sizeOk || (radiusOne >= 30 && goodPoints.length < goodPoints.length / 2) || radiusOne < minSize || radiusOne > maxSize || (start - centerOne).abs() > 0.95 * radiusOne )
+      for(int i = 1; i < maxTries; i++)
+      {
+        int idxOut = rand() % maxTries;
+        possibleModells[i].clear();
+        double meanDist = 0;
+        for(int j = 0; j < goodPoints.length; j++)
         {
-          DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_outtakes",
-            CIRCLE_PX(ColorClasses::red, (int) centerOne.x, (int) centerOne.y, (int) radiusOne);
-          );
-          return;
+          if(j != idxOut)
+          {
+            possibleModells[i].add(goodPoints[j]);
+            meanDist += (goodPoints[j] - start).abs();
+          }
         }
-        DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
-          CIRCLE_PX(ColorClasses::skyblue, (int) centerOne.x, (int) centerOne.y, (int) radiusOne);
-        );
+        meanDist /= possibleModells[i].length;
 
-        //double radiusErrMax =  0.05 * radiusOne;
-        //for(int i = 0; i < goodPoints.length; i++)
-        //{
-        //  double err = fabs((centerOne - goodPoints[i]).abs() - radiusOne); 
-        //  if(err <= radiusErrMax)
-        //  {
-        //    bestPoints.add(goodPoints[i]);
-        //  }
-        //}
-
-        goodPoints.clear();
-        badPoints.clear();
-        spiderSearch.scan((centerOne + start) / 2, goodPoints, badPoints);
-
-        if(calculateCircle(goodPoints, centerTwo, radiusTwo))
+        if(calculateCircle(goodPoints, center, radius))
         {
-          CameraGeometry::imagePixelToFieldCoord(
-            getCameraMatrix(), 
-            getImage().cameraInfo,
-            centerOne.x, 
-            centerOne.y, 
-            getFieldInfo().ballRadius,
-            centerTwoOnField);
-          borderTwoOnField.x = centerTwoOnField.x + radiusTwo;
-          borderTwoOnField.y = centerTwoOnField.y;
-          CameraGeometry::imagePixelToFieldCoord(
-            getCameraMatrix(), 
-            getImage().cameraInfo,
-            centerOne.x, 
-            centerOne.y, 
-            getFieldInfo().ballRadius,
-            borderTwoOnField);
-
-          bool sizeOk = (centerTwoOnField - borderTwoOnField).abs() <= getFieldInfo().ballRadius * 1.1;
-
-          if(!getImage().isInside((int) centerTwo.x, (int) centerTwo.y) || !sizeOk || (radiusTwo >= 30 && goodPoints.length < goodPoints.length / 2) || radiusTwo < minSize || radiusTwo > maxSize || (start - centerTwo).abs() > 0.95 * radiusTwo)
+          if(meanDist < radius * 0.5)
           {
             DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_outtakes",
-              CIRCLE_PX(ColorClasses::red, (int) centerTwo.x, (int) centerTwo.y, (int) radiusTwo);
+              CIRCLE_PX(ColorClasses::red, (int) center.x, (int) center.y, (int) radius);
             );
             return;
           }
+
           DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
-            CIRCLE_PX(ColorClasses::blue, (int) centerTwo.x, (int) centerTwo.y, (int) radiusTwo);
+            CIRCLE_PX((ColorClasses::Color) (i % ColorClasses::numOfColors), (int) center.x, (int) center.y, (int) 20);
+            CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
           );
-          //double radiusErrMax =  0.05 * radiusTwo;
-          //int idxMaxErr = 0;
-          //double maxErr = 0;
-          //vector<int> testedErrIdx;
-          //while(idxMaxErr > 0)
-          //{
-          //  idxMaxErr = -1;
-          //  for(int i = 0; i < goodPoints.length; i++)
-          //  {
-          //    double err = fabs((centerTwo - goodPoints[i]).abs() - radiusTwo); 
-          //    if(err <= radiusErrMax && err > maxErr && testedErrIdx.)
-          //    {
-          //      maxErr = err;
-          //      idxMaxErr = i;
-          //    }
-          //    bestPoints.add(goodPoints[i]);
-          //  }
-          //  if(idxMaxErr > 0)
-          //  {
-          //    testedErrIdx.push_back(idxMaxErr);
-          //    bestPoints.remove(idxMaxErr);
-
-
-          //    if(calculateCircle(bestPoints, center, radius)))
-          //    {
-          //      for(int t = 0; t < 3; t++)
-          //      {
-          //      }
-          //    }
-          //  }
-            //for(int i = bestPoints.length; i >= 0; i--)
-            //{
-            //  double err = fabs((center - bestPoints[i]).abs() - radius); 
-            //  if(err > radiusErrMax)
-            //  {
-            //    bestPoints.remove(i);
-            //  }
-            //}
-            double radiusErrMax =  0.05 * radiusTwo;
-            for(int i = 0; i < goodPoints.length; i++)
+          double radiusErrMax =  0.05 * radius;
+          int count = 0;
+          for(int jj = 0; jj < goodPoints.length; jj++)
+          {
+            double err = fabs((center - possibleModells[i][jj]).abs() - radius); 
+            if(err <= radiusErrMax)
             {
-              double err = fabs((centerTwo - goodPoints[i]).abs() - radiusTwo); 
-              if(err <= radiusErrMax)
-              {
-                bestPoints.add(goodPoints[i]);
-              }
+               count++;
             }
-            if(calculateCircle(bestPoints, center, radius))
-            {
-
-              DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
-                CIRCLE_PX(ColorClasses::pink, (int) center.x, (int) center.y, (int) radius);
-              );
-
-              getBallPercept().ballWasSeen = true;
-              getBallPercept().centerInImage = center;
-              getBallPercept().radiusInImage = radius;
-              CameraGeometry::imagePixelToFieldCoord(
-                getCameraMatrix(), 
-                getImage().cameraInfo,
-                center.x, 
-                center.y, 
-                getFieldInfo().ballRadius,
-                getBallPercept().bearingBasedOffsetOnField);
-
-
-            }
-            //else
-            //{
-            //  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
-            //    CIRCLE_PX(ColorClasses::green, (int) centerTwo.x, (int) centerTwo.y, (int) radiusTwo);
-            //  );
-            //}
-
-          //}       
-
-          //double area = 2 * Math::pi * radius;
-          //double radiusErrMax =  0.05 * radius;
-          //bestPoints.clear();
-          //double minErr = 5000;
-          //int idxMin = -1; 
-          //int idxMax = -1; 
-          //double maxErr = 0;
-          ////std::cout << "-------" << std::endl;
-          //for(int i = 0; i < goodPoints.length; i++)
-          //{
-          //  double err = fabs((center - goodPoints[i]).abs() - radius); 
-          //  if(err <= radiusErrMax)
-          //  {
-          //    bestPoints.add(goodPoints[i]);
-          //    meanCenter += goodPoints[i];
-          //  }
-          //  //bestPoints.add(goodPoints[i]);
-          //  //std::cout << "err: " << err << std::endl;
-          //  //if(err > radiusErrMax && err > maxErr)
-          //  //{
-          //  //  idxMax = i;
-          //  //  maxErr = err;
-          //  //}
-          //  //if(err > radiusErrMax && err < minErr)
-          //  //{
-          //  //  idxMin = i;
-          //  //  minErr = err;
-          //  //}
-          //}
-          ////if(idxMax > 0)
-          ////{
-          ////   bestPoints.remove(idxMax);
-          ////}
-          ////if(idxMin > 0)
-          ////{
-          ////   bestPoints.remove(idxMin);
-          ////}
-
-          //meanCenter /= bestPoints.length;
-
-          //DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
-          //  CIRCLE_PX(ColorClasses::green, (int) center.x, (int) center.y, (int) radius);
-          //);
-
-          //double radius_;
-          //if(calculateCircle(bestPoints, meanCenter, radius_) && 2 * Math::pi * radius > area)
-          //{
-          //  center = meanCenter;
-          //  radius = radius_;
-          //  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
-          //    CIRCLE_PX(ColorClasses::blue, (int) meanCenter.x, (int) meanCenter.y, (int) radius_);
-          //  );
-          //}       
+          }
+          if(count > bestCount)
+          {
+            idxBest =  i;
+            centerBest = center;
+            radiusBest = radius;
+          }
         }
       }
-    }
 
+      if(idxBest >= 0 && possibleModells[idxBest].length >= goodPoints.length / 2)
+      {
+        DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
+          CIRCLE_PX(ColorClasses::green, (int) center.x, (int) center.y, (int) radius);
+        );
+        CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), 
+          getImage().cameraInfo,
+          centerBest.x, 
+          centerBest.y, 
+          getFieldInfo().ballRadius,
+          getBallPercept().bearingBasedOffsetOnField);
+        getBallPercept().radiusInImage = radiusBest;
+        getBallPercept().centerInImage = centerBest;
+        getBallPercept().ballWasSeen = true;
+      }
+    }
   }
 }//end execute
 

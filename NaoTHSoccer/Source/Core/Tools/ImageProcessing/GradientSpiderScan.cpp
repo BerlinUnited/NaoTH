@@ -26,6 +26,16 @@ void GradientSpiderScan::setCurrentGradientThreshold(double threshold)
   currentGradientThreshold = threshold;
 }
 
+void GradientSpiderScan::setCurrentMeanThreshold(double threshold)
+{
+  currentMeanThreshold = threshold;
+}
+
+void GradientSpiderScan::setImageColorChannelNumber(int channelNumber)
+{
+  imageChannelNumber = channelNumber;
+}
+
 void GradientSpiderScan::setMaxNumberOfScans(unsigned int maxScans)
 {
   maxNumberOfScans = maxScans;
@@ -35,7 +45,9 @@ void GradientSpiderScan::init()
 {
   drawScanLines = false;
   max_length_of_beam = 30; //maximum length of the scan line
-  currentGradientThreshold = 15; //...
+  currentGradientThreshold = 30; //...
+  currentMeanThreshold = 30; //...
+  imageChannelNumber = 2;
   maxNumberOfScans = 15; //maximum number of scanlines ...
   CANVAS_PX(cameraID);
 }
@@ -52,17 +64,16 @@ void GradientSpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoin
   scanPixelBuffer.init();
 
   //add the standard scan lines
-  scans.add(start, Vector2<int>( 0,-1));// down
-  scans.add(start, Vector2<int>(-1,-1));// to the lower left
-  scans.add(start, Vector2<int>(-1, 1));// to the upper left
-  scans.add(start, Vector2<int>(-1, 0));// to the left
-  scans.add(start, Vector2<int>( 1, 0));// to the right
-  scans.add(start, Vector2<int>( 1, 2));// to the upper right
-  scans.add(start, Vector2<int>( 1,-1));// to the lower right
-  scans.add(start, Vector2<int>( 0, 1));// up
+  scans.add(start, Vector2<int>( 0,-2));// down
+  scans.add(start, Vector2<int>(-2,-2));// to the lower left
+  scans.add(start, Vector2<int>(-2, 2));// to the upper left
+  scans.add(start, Vector2<int>(-2, 0));// to the left
+  scans.add(start, Vector2<int>( 2, 0));// to the right
+  scans.add(start, Vector2<int>( 2, 2));// to the upper right
+  scans.add(start, Vector2<int>( 2,-2));// to the lower right
+  scans.add(start, Vector2<int>( 0, 2));// up
   
   startPixel = theImage.get(start.x, start.y);
-  scanPixelBuffer.add(startPixel.v);
   scan(goodPoints, badPoints, scans);
 }
 
@@ -122,6 +133,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
   Vector2<int> lastSearchColorPoint(-1,-1);
 
   Pixel lastPixel = startPixel;
+  scanPixelBuffer.add(startPixel.channels[imageChannelNumber]);
   currentPoint += direction;
 
   //expand in the selected direction
@@ -141,7 +153,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
     Pixel pixel = theImage.get(currentPoint.x,currentPoint.y);
 
-    bool isBorder = abs(static_cast<int>(pixel.v - lastPixel.v)) > currentGradientThreshold || abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v)) > currentGradientThreshold;
+    bool isBorder = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber])) > currentGradientThreshold || abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber])) > currentMeanThreshold;
 
     if(isBorder)
     {
@@ -150,7 +162,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
     }
     else if(! borderPointFound)
     {
-      scanPixelBuffer.add(pixel.v);
+      scanPixelBuffer.add(pixel.channels[imageChannelNumber]);
     }//end if
 
     if(drawScanLines)

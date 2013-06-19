@@ -84,6 +84,8 @@ private:
 
   BallPointList bestPoints;
 
+  BallPointList possibleModells[10];
+
   void findMaximumRedPoint(Vector2<int>& peakPos);
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
 
@@ -93,7 +95,8 @@ private:
 
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
-      PARAMETER_REGISTER(gradientThreshold) = 15;
+      PARAMETER_REGISTER(gradientThreshold) = 30;
+      PARAMETER_REGISTER(meanThreshold) = 30;
       PARAMETER_REGISTER(stepSize) = 4;
 
       syncWithConfig();
@@ -106,6 +109,7 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
+    int meanThreshold;
     int gradientThreshold;
     int stepSize;
   };
