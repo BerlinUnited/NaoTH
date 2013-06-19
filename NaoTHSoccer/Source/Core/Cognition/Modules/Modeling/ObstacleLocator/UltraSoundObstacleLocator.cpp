@@ -189,7 +189,7 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   }
 
 
-  if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
+  if(model.leftDistance <= maxValidDistance || model.rightDistance <= maxValidDistance)
   {
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
   }

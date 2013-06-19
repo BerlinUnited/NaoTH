@@ -1,0 +1,44 @@
+option decide_arm_position_with_USOA{
+
+initial state take_arms_normal{
+  decision{
+    if(obstacle.ultrasound.blockedtime>500)
+      goto take_arms_back;
+    else
+      stay;
+  }
+  action{
+    arm.control_mode = normal;
+  }
+}
+
+state take_arms_back{
+  decision{
+    if(obstacle.ultrasound.blockedtime==-1)
+      goto to_normal_if_sure;
+    else
+      stay;
+  }
+  action{
+    arm.control_mode = back;
+  }
+}
+
+state to_normal_if_sure{
+  decision {
+    if(state_time>1000)
+      goto take_arms_normal;
+    else if (obstacle.ultrasound.blockedtime!=-1)
+      goto take_arms_back;
+    else 
+      stay;
+  }
+  
+  action {
+    arm.control_mode = back;
+  }
+}
+
+
+
+}

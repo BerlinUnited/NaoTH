@@ -8,6 +8,9 @@ option go_to_ball_with_USOA_test_agent
       basic_play();
 
       go_to_ball_with_USOA_test();
+
+      // control the arms
+      arms_control();
       
       // control head movement according to value of head.control_mode
       head_control();

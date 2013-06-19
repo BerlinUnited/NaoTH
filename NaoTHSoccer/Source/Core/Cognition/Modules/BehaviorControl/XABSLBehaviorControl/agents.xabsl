@@ -34,6 +34,7 @@ include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/go_to_ball_with_USOA.xabsl";
+include "Options/Skills/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/move_around_ball.xabsl";
