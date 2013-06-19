@@ -227,7 +227,7 @@ void ImageProcessor::execute()
 
     //project the old percept in the image
     DEBUG_REQUEST("ImageProcessor:TopCam:mark_previous_ball",
-      TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPerceptTop().radiusInImage);
+      TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBallTop.x, (int)projectedBallTop.y, (int)getBallPerceptTop().radiusInImage);
     );
     DEBUG_REQUEST("ImageProcessor:BottomCam:mark_previous_ball",
       CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
