@@ -148,63 +148,64 @@ void ImageProcessor::execute()
 
     // estimate the position of the relative to the camera based on the 
     // size of the ball
-    double y = getBallPercept().centerInImage.y - getImage().cameraInfo.getOpticalCenterY();
-    double yTop = getBallPerceptTop().centerInImage.y - getImageTop().cameraInfo.getOpticalCenterY();
-    double f = getImage().cameraInfo.getFocalLength();
-    double fTop = getImageTop().cameraInfo.getFocalLength();
     // HACK: +2 pixel because the ball is always recognized to small
     double ballRadiusOffset = 2.0;
     MODIFY("ImageProcessor:ballRadiusOffset", ballRadiusOffset);
+
+    // for the bottom image
+    double y = getBallPercept().centerInImage.y - getImage().cameraInfo.getOpticalCenterY();
+    double f = getImage().cameraInfo.getFocalLength();
     double r = getBallPercept().radiusInImage + ballRadiusOffset;
-    double rTop = getBallPerceptTop().radiusInImage + ballRadiusOffset;
-
     double alpha_y = atan2(y,f) - atan2(y-r,f);
-    double alpha_yTop = atan2(yTop,fTop) - atan2(yTop-rTop,fTop);
     double q = -1;
-    double qTop = -1;
-    //double pixesSize = 3.6 * 1e-3; // in mm
-
-    if(fabs(sin(alpha_y)) > 1e-3)
-    {
+    
+    if(fabs(sin(alpha_y)) > 1e-3) {
       q = getFieldInfo().ballRadius / sin(alpha_y);
     }
-    if(fabs(sin(alpha_yTop)) > 1e-3)
-    {
-      qTop = getFieldInfo().ballRadius / sin(alpha_yTop);
-    }
 
-    Vector3<double> ballCenter;
+    Vector3d ballCenter;
     ballCenter.x = getImage().cameraInfo.getFocalLength();
     ballCenter.y = -getBallPercept().centerInImage.x + getImage().cameraInfo.getOpticalCenterX();
     ballCenter.z = -getBallPercept().centerInImage.y + getImage().cameraInfo.getOpticalCenterY();
     ballCenter.normalize(q);
 
-    Vector3<double> ballCenterTop;
+    Vector3d ballCenterGlobal = getCameraMatrix()*ballCenter;
+    ballCenter = ballCenterGlobal; // in roboter coordinates
+    if(q > -1) {
+      getBallPercept().sizeBasedRelativePosition = ballCenter;
+    }
+    DEBUG_REQUEST("ImageProcessor:BottomCam:ballpos_relative_3d",
+      SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobal);
+      LINE_3D(ColorClasses::red, getCameraMatrix().translation, ballCenterGlobal);
+    );
+
+
+    // ... the same for the top image
+    double yTop = getBallPerceptTop().centerInImage.y - getImageTop().cameraInfo.getOpticalCenterY();
+    double fTop = getImageTop().cameraInfo.getFocalLength();
+    double rTop = getBallPerceptTop().radiusInImage + ballRadiusOffset;
+    double alpha_yTop = atan2(yTop,fTop) - atan2(yTop-rTop,fTop);
+    double qTop = -1;
+
+    if(fabs(sin(alpha_yTop)) > 1e-3) {
+      qTop = getFieldInfo().ballRadius / sin(alpha_yTop);
+    }
+
+    Vector3d ballCenterTop;
     ballCenterTop.x = getImageTop().cameraInfo.getFocalLength();
     ballCenterTop.y = -getBallPerceptTop().centerInImage.x + getImageTop().cameraInfo.getOpticalCenterX();
     ballCenterTop.z = -getBallPerceptTop().centerInImage.y + getImageTop().cameraInfo.getOpticalCenterY();
     ballCenterTop.normalize(qTop);
 
-    Vector3<double> ballCenterGlobal = getCameraMatrix()*ballCenter;
-    ballCenter = ballCenterGlobal; // in roboter coordinates
-    if(q > -1)
-    {
-      getBallPercept().sizeBasedRelativePosition = ballCenter;
-    }
-    Vector3<double> ballCenterGlobalTop = getCameraMatrixTop()*ballCenter;
+    Vector3d ballCenterGlobalTop = getCameraMatrixTop()*ballCenter;
     ballCenterTop = ballCenterGlobalTop; // in roboter coordinates
-    if(qTop > -1)
-    {
+    if(qTop > -1) {
       getBallPerceptTop().sizeBasedRelativePosition = ballCenterTop;
     }
 
     DEBUG_REQUEST("ImageProcessor:TopCam:ballpos_relative_3d",
       SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobalTop);
       LINE_3D(ColorClasses::red, getCameraMatrixTop().translation, ballCenterGlobalTop);
-    );
-    DEBUG_REQUEST("ImageProcessor:BottomCam:ballpos_relative_3d",
-      SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobal);
-      LINE_3D(ColorClasses::red, getCameraMatrix().translation, ballCenterGlobal);
     );
 
   }//end if ballWasSeen

@@ -39,7 +39,6 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getScanLineEdgelPercept().reset();
-  getScanLineEdgelPerceptTop().reset();
 
   cameraBrighness = getCurrentCameraSettings().data[CameraSettings::Brightness];
   if(cameraBrighness <= 0 || cameraBrighness > 255)
