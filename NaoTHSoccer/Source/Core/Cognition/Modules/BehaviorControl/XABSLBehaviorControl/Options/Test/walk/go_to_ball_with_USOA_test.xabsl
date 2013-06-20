@@ -25,16 +25,28 @@ option go_to_ball_with_USOA_test{
   {
   
   decision
-  {
+  { else if(action_done)
+      goto close_to_ball_situation;
     else
       stay;
   }
   action
   {
     go_to_ball_with_USOA();
-    decide_arm_position_with_USOA();
   }
   
+  }
+
+  state close_to_ball_situation{
+	  decision{
+	    else if(action_done)
+	      goto go;
+	    else
+	      stay;
+	  }
+	  action{
+	    close_to_ball_with_USOA_situation();
+	  }
   }
   
 }

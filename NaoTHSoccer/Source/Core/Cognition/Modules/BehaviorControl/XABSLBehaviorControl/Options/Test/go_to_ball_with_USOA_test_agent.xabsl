@@ -8,7 +8,8 @@ option go_to_ball_with_USOA_test_agent
       basic_play();
 
       go_to_ball_with_USOA_test();
-
+      
+      take_arms_back();
       // control the arms
       arms_control();
       

@@ -1,8 +1,28 @@
 option decide_arm_position_with_USOA{
 
-initial state take_arms_normal{
+common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto take_arms_normal;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+state take_arms_normal{
   decision{
-    if(obstacle.ultrasound.blockedtime>500)
+    else if(obstacle.ultrasound.blockedtime>500)
       goto take_arms_back;
     else
       stay;
@@ -12,9 +32,9 @@ initial state take_arms_normal{
   }
 }
 
-state take_arms_back{
+initial state take_arms_back{
   decision{
-    if(obstacle.ultrasound.blockedtime==-1)
+    else if(obstacle.ultrasound.blockedtime==-1)
       goto to_normal_if_sure;
     else
       stay;
@@ -26,7 +46,7 @@ state take_arms_back{
 
 state to_normal_if_sure{
   decision {
-    if(state_time>1000)
+    else if(state_time>1000)
       goto take_arms_normal;
     else if (obstacle.ultrasound.blockedtime!=-1)
       goto take_arms_back;
@@ -38,7 +58,6 @@ state to_normal_if_sure{
     arm.control_mode = back;
   }
 }
-
 
 
 }
