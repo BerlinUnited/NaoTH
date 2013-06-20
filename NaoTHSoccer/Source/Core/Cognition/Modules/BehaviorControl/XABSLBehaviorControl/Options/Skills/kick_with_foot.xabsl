@@ -9,22 +9,26 @@ option kick_with_foot
   {
     decision
     {
-      /*if (state_time > 400)
-      {*/
+      if (state_time > 500)
+      {
 	      if (@right && executed_motion.step_control.left_movable)
 	        goto prepare_right_kick;
 	      else if(!@right && executed_motion.step_control.right_movable)
 	        goto prepare_left_kick;
         else
           stay;
-      /*}
+      }
       else 
-        stay;*/
+        stay;
 	  }
     action
     {
-      motion.type = stand;
-      //head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = search_for_ball;
     }
   }
 

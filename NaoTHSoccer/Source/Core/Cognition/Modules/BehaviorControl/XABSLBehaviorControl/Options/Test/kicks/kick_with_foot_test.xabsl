@@ -67,7 +67,7 @@ option kick_with_foot_test
     }
     action 
     {
-      go_to_ball_with_foot(right = true, distance = 90);
+      go_to_ball_with_foot(right = true, distance = 120);
       //motion.walk.stop_with_stand = false;
     }
   }
@@ -85,7 +85,7 @@ state go_to_ball_left
     }
     action 
     {
-      go_to_ball_with_foot(right = false, distance = 90);
+      go_to_ball_with_foot(right = false, distance = 120);
       //motion.walk.stop_with_stand = false;
     }
   }

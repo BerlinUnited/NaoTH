@@ -37,7 +37,7 @@ option walk_against_ball_test
       head.control_mode = search_for_ball;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
-      motion.walk.style = fast;
+      motion.walk.style = normal;
       
       motion.walk_speed.x = 500;
       motion.walk_speed.y = 0;
@@ -59,7 +59,7 @@ option walk_against_ball_test
       head.control_mode = search_for_ball;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
-      motion.walk.style = fast;
+      motion.walk.style = normal;
       
       motion.walk_speed.x = 500;
       motion.walk_speed.y = 0;
@@ -80,7 +80,7 @@ option walk_against_ball_test
     }
     action 
     {
-      go_to_ball_with_foot(right = true, distance = 90);
+      go_to_ball_with_foot(right = true, distance = 140);
       //motion.walk.stop_with_stand = false;
     }
   }
@@ -98,7 +98,7 @@ state go_to_ball_left
     }
     action 
     {
-      go_to_ball_with_foot(right = false, distance = 90);
+      go_to_ball_with_foot(right = false, distance = 140);
       //motion.walk.stop_with_stand = false;
     }
   }

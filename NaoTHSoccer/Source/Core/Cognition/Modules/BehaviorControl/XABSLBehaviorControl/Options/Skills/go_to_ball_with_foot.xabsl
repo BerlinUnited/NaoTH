@@ -1,6 +1,6 @@
 /** Go to the ball with respect to the given foot 
-  Note: No rotation with less then 20 cm distance! 
-  Parameter @distance for the distance foot-ball (use 90 as default)**/
+  Note: No rotation with less then 25 cm distance! 
+  Parameter @distance for the distance foot-ball (use 120 as default)**/
 
 option go_to_ball_with_foot
 {
@@ -37,7 +37,7 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
-      motion.walk.style = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? normal : stable;
+      motion.walk.style = stable;
       
       motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.right_foot.y;
@@ -61,7 +61,7 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
-      motion.walk.style = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? normal : stable;
+      motion.walk.style = stable;
       
       motion.walk_speed.x = ((vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.left_foot.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.left_foot.y;
