@@ -89,8 +89,9 @@ private:
   BallPointList possibleModells[10];
 
   void findMaximumRedPoint(Vector2<int>& peakPos);
+  Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
-
+  
   class Parameters: public ParameterList
   {
   public:

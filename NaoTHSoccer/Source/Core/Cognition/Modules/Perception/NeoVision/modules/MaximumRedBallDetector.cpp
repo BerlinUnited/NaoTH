@@ -25,6 +25,8 @@ MaximumRedBallDetector::MaximumRedBallDetector()
   DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball_candidates","..", false);  
   DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball_outtakes","..", false);  
   DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball","..", false);  
+
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_size_ball_field", "draw the size based position of the ball on field", false);
 }
 
 
@@ -127,10 +129,14 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
         }
       }
 
+      // calculate the percept
       if(idxBest >= 0 && possibleModells[idxBest].length >= goodPoints.length / 2)
       {
         DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
           CIRCLE_PX(ColorClasses::green, (int) center.x, (int) center.y, (int) radius);
+        );
+        DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
+          CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);
         );
         CameraGeometry::imagePixelToFieldCoord(
           getCameraMatrix(), 
@@ -139,10 +145,15 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
           centerBest.y, 
           getFieldInfo().ballRadius,
           getBallPercept().bearingBasedOffsetOnField);
+
         getBallPercept().radiusInImage = radiusBest;
         getBallPercept().centerInImage = centerBest;
         getBallPercept().ballWasSeen = true;
         getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+
+        DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_size_ball_field",
+          estimatePositionBySize();
+        );
       }
     }
   }
@@ -188,20 +199,19 @@ void MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
   Pixel pixel;
   int maxRedPeak = 0;
   poly = getFieldPercept().getLargestValidPoly(getArtificialHorizon());
+  Vector2<int> point;
 
-  for(int y = min; y < max; y += params.stepSize)
+  for(point.y = min; point.y < max; point.y += params.stepSize) 
   {
-    for(int x = 0; x < (int) IMAGE_WIDTH; x += params.stepSize)
+    for(point.x = 0; point.x < (int) getImage().width(); point.x += params.stepSize)
     {
-      getImage().get(x, y, pixel);
-      if(poly.isInside(Vector2<int>(x, y)))
+      getImage().get(point.x, point.y, pixel);
+      if(maxRedPeak < pixel.v && 
+         poly.isInside_inline(point) && 
+         !getFieldColorPercept().isFieldColor(pixel))
       {
-        if(maxRedPeak < pixel.v && !getFieldColorPercept().isFieldColor(pixel))
-        {
-          maxRedPeak = pixel.v;
-          peakPos.y = y;
-          peakPos.x = x;
-        }
+        maxRedPeak = pixel.v;
+        peakPos = point;
       }
     }
   }
@@ -229,6 +239,40 @@ void MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
     POINT_PX(ColorClasses::skyblue, peakPos.x - 1, peakPos.y - 1);
   }
 }
+
+// not ready yet
+Vector2d MaximumRedBallDetector::estimatePositionBySize()
+{
+  double y = getBallPercept().centerInImage.y - getImage().cameraInfo.getOpticalCenterY();
+  double f = getImage().cameraInfo.getFocalLength();
+  double r = getBallPercept().radiusInImage;
+
+  double alpha_y = atan2(y,f) - atan2(y-r,f);
+  double q = -1;
+    
+  if(fabs(sin(alpha_y)) > 1e-3) {
+    q = getFieldInfo().ballRadius / sin(alpha_y);
+  }
+
+  if(q > -1) {
+    double h = getCameraMatrix().translation.z;
+    double d = sqrt(q*q - h*h);
+    // assume it is valid
+    Vector2d ballOffset = getBallPercept().bearingBasedOffsetOnField;
+    ballOffset.normalize(d);
+
+    DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_size_ball_field",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF00FF", 10);
+      CIRCLE(ballOffset.x, ballOffset.y, 32.5);
+    );
+
+    return ballOffset;
+  }
+
+  return Vector2d();
+}//end estimatePositionBySize
+
 
 /**********************************************************************************
     Mathematical Foundations

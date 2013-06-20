@@ -136,6 +136,9 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
   scanPixelBuffer.add(startPixel.channels[imageChannelNumber]);
   currentPoint += direction;
 
+  int maxJump = -1;
+  bool jumpFound = false;
+
   //expand in the selected direction
   for(unsigned int j = 1; j < max_length_of_beam  && !borderPointFound; j++)
   {
@@ -153,11 +156,29 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
     Pixel pixel = theImage.get(currentPoint.x,currentPoint.y);
 
-    bool isBorder = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber])) > currentGradientThreshold || abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber])) > currentMeanThreshold;
+    int newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
+    int meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
+
+    bool isBorder = false;
+
+    if(jumpFound) { // look for the maximal jump
+      if(newJump > maxJump) {
+        maxJump = newJump;
+        borderPoint = currentPoint - direction/2;
+      } else {
+        isBorder = true;
+      }
+    } else { // look for a jump
+      jumpFound = newJump > currentGradientThreshold || 
+                  meanJump > currentMeanThreshold;
+      
+      maxJump = newJump;
+      borderPoint = currentPoint - direction/2;
+    }
 
     if(isBorder)
     {
-      borderPoint = currentPoint;
+      //borderPoint = currentPoint;
       borderPointFound = true;
     }
     else if(! borderPointFound)
@@ -167,13 +188,10 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
     if(drawScanLines)
     {
-      if(!isBorder)
-      {
+      if(!isBorder) {
         POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-      }
-      else
-      {
-        POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+      } else {
+        POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
       }
     }
     lastPixel = pixel;
@@ -183,12 +201,9 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
   if(borderPointFound) //if a point was found ...
   {
     //that point was followed by a border pixel, does not lie at the images border or is the result of a scan along that border ...
-    if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2))
-    {
+    if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2)) {
       goodPoints.add(borderPoint); //it's good point
-    }
-    else
-    {
+    } else {
       badPoints.add(borderPoint);  //otherwise it's a bad one
     }
   }//end if
