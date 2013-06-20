@@ -57,6 +57,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
+  settingsOrder.push_back(CameraSettings::Exposure);
 
   // set our IDs
   initIDMapping();
@@ -897,7 +898,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     if(csConst[*it] != -1)
     {
       // only set if it was changed
-      if(data.data[*it] != currentSettings.data[*it])
+      if(data.data[*it] != currentSettings.data[*it] || csConst[*it] == V4L2_CID_EXPOSURE )
       {
         bool success = false;
         int realValue = data.data[*it];
