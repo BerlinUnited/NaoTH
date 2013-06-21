@@ -30,9 +30,9 @@ public class DeployUtils
       deleteDir(currentDeployDir);
     }
 
-    if( !currentDeployDir.mkdirs())
+    if(!currentDeployDir.mkdirs())
     {
-      parent.actionInfo("Error: Could not create deploy out directory");
+      parent.actionError("Error: Could not create deploy out directory");
       return false;
     }
 
@@ -71,7 +71,7 @@ public class DeployUtils
       }
       catch(IOException ioe)
       {
-        parent.actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
+        parent.actionError("I/O Error in prepareDeploy- " + ioe.toString());
       }
 
       copyFiles(parent, new File(cfg.localLibnaosmalPath() + "/naoth"), localExe);
@@ -103,7 +103,8 @@ public class DeployUtils
       File bodyIdConfigFile = new File(bodyIdConfigPath);
       if(!bodyIdConfigFile.isDirectory()) 
       {
-        parent.actionInfo("Directory for the body number " + e.getKey() + " doesn't exist!");
+        parent.actionError("Directory for the body number " 
+          + e.getKey() + " doesn't exist! You might need to enable \"copyConfig\"");
         continue;
       }
       

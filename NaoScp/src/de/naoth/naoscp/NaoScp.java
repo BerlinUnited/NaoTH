@@ -1387,6 +1387,16 @@ public class NaoScp extends NaoScpMainFrame
   {
     logBashColored(logtext);
   }//end log
+  
+  public final void actionError(String logtext)
+  {
+    logBashColored("[0;31m" + logtext + "\n[0m");
+  }
+  
+  public final void actionFinish(String logtext)
+  {
+    logBashColored("[0;32m" + logtext + "\n[0m");
+  }
 
   private void clearLog()
   {
@@ -1848,6 +1858,7 @@ public class NaoScp extends NaoScpMainFrame
 
     jDialog1 = new javax.swing.JDialog();
     wlanBtnGroup = new javax.swing.ButtonGroup();
+    fileChooserStick = new javax.swing.JFileChooser();
     jLabel12 = new javax.swing.JLabel();
     jSplitPane1 = new javax.swing.JSplitPane();
     mainTab = new javax.swing.JTabbedPane();
@@ -1960,6 +1971,10 @@ public class NaoScp extends NaoScpMainFrame
       .addGap(0, 300, Short.MAX_VALUE)
     );
 
+    fileChooserStick.setAcceptAllFileFilterUsed(false);
+    fileChooserStick.setDialogTitle("Select the USB stick path");
+    fileChooserStick.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
+
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("NaoSCP");
     addWindowListener(new java.awt.event.WindowAdapter()
@@ -1971,7 +1986,7 @@ public class NaoScp extends NaoScpMainFrame
     });
 
     jLabel12.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
-    jLabel12.setText("v0.4");
+    jLabel12.setText("v0.5");
 
     jLabel6.setText("Nao 1:");
 
@@ -3325,15 +3340,9 @@ public class NaoScp extends NaoScpMainFrame
 
     if(checkDirPath(true))
     {
-      JFileChooser chooser = new JFileChooser();
-      //chooser.setCurrentDirectory(new java.io.File("."));
-      chooser.setDialogTitle("Select the USB stick path");
-      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      chooser.setAcceptAllFileFilterUsed(false);
-
-      if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+      if(fileChooserStick.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       {
-        String usbStickPath = String.valueOf(chooser.getSelectedFile());
+        String usbStickPath = String.valueOf(fileChooserStick.getSelectedFile());
         
         Map<String,Integer> bodyIdToPlayerNumber = new HashMap<String, Integer>();
         if(!this.txtNaonamePlayer1.getText().isEmpty()) {
@@ -3353,8 +3362,13 @@ public class NaoScp extends NaoScpMainFrame
         }
         
         NaoScpConfig cfg = createDeployConfig();
-        DeployUtils.assembleDeployDir(this, cfg, usbStickPath + "/deploy");
-        DeployUtils.configureUSBDeployDir(this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+        actionInfo("Starting to copy files");
+        if(DeployUtils.assembleDeployDir(this, cfg, usbStickPath + "/deploy"))
+        {
+          actionInfo("Configuring files on stick");
+          DeployUtils.configureUSBDeployDir(this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+          actionFinish("Finished");
+        }
       }
     }
   }//GEN-LAST:event_btWriteToStickActionPerformed
@@ -3374,6 +3388,7 @@ public class NaoScp extends NaoScpMainFrame
   private javax.swing.JCheckBox cbRestartNaoqi;
   private javax.swing.JCheckBox cbRestartNaoth;
   private javax.swing.JButton copyButton;
+  private javax.swing.JFileChooser fileChooserStick;
   private javax.swing.JComboBox jBackupBox;
   private javax.swing.JButton jButtonInitRobotSystem;
   private javax.swing.JButton jButtonRefreshData;
