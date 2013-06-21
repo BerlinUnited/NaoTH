@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# stop at the first error
+
 export EXTERN_DIR="$PWD"
 
 
@@ -35,6 +37,10 @@ if [ ! -d downloads ]; then
   echo ".::ERROR::. will exit"
   exit -1
 fi
+
+# create target directories for installation
+mkdir -p "./include/sfsexp"
+mkdir -p "./lib"
 
 # create extracted dir and step into it
 mkdir -p extracted

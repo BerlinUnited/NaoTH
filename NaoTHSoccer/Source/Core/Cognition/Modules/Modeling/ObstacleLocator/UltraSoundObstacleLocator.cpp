@@ -20,13 +20,18 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)
 {
 
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacles", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_2", "right Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_3", "right Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_4", "left and right Transmitter and Receiver in two captures with one command", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_12", "left and right Transmitter and Receiver in two captures with one command and two transmitters at same time", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacle", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
+
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_LEFT", "left Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_RIGHT", "right Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_BOTH", "left and right capture", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_LEFT", "left Transmitter", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_RIGHT", "right Transmitter", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_BOTH", "left and right transmitter", false);
+
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:PERIODIC", "send US periodically", false);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -44,39 +49,61 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
 
-  unsigned int mode = UltraSoundSendData::TWO_CAPTURES + UltraSoundSendData::TWO_TRANSMITTERS;
+  unsigned int transmitter = UltraSoundSendData::TRANSMIT_BOTH;
+  unsigned int receiver = UltraSoundSendData::CAPTURE_BOTH;
 
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_0",
-    mode = 0;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_LEFT",
+    receiver = UltraSoundSendData::CAPTURE_LEFT;
   );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_2",
-    mode = 2;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_RIGHT",
+    receiver = UltraSoundSendData::CAPTURE_RIGHT;
   );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_3",
-    mode = 3;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_BOTH",
+    receiver = UltraSoundSendData::CAPTURE_BOTH;
   );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_4",
-    mode = 4;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_LEFT",
+    transmitter = UltraSoundSendData::TRANSMIT_LEFT;
   );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_12",
-    mode = 12;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_RIGHT",
+    transmitter = UltraSoundSendData::TRANSMIT_RIGHT;
   );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_1",
-    mode = 1;
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_BOTH",
+    transmitter = UltraSoundSendData::TRANSMIT_BOTH;
+  );
+
+  unsigned int mode = transmitter + receiver;
+
+  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:PERIODIC",
+    mode += UltraSoundSendData::PERIODIC;
   );
 
   // Update mode 
-  if(mode != getUltraSoundSendData().mode)
-  {
+  if(mode != getUltraSoundSendData().mode) {
     getUltraSoundSendData().setMode(mode);
   }
-
 }//end execute
 
 void UltraSoundObstacleLocator::drawObstacleModel()
 {
-  // Inits
-  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacles",
+  
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawBuffer",
+    FIELD_DRAWING_CONTEXT;
+    
+    PEN("FF0000", 25);
+    for(int i = 0; i < bufferLeft.getNumberOfEntries(); i++) {
+      double dist = bufferLeft[i];
+      CIRCLE( dist, dist, 10);
+    }
+
+    PEN("0000FF", 25);
+    for(int i = 0; i < bufferRight.getNumberOfEntries(); i++) {
+      double dist = bufferRight[i];
+      CIRCLE( dist, -dist, 10);
+    }
+  );
+
+
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawSensorData",
     FIELD_DRAWING_CONTEXT;
     DebugDrawings::Color colorLeft(ColorClasses::blue);
     DebugDrawings::Color colorRight(ColorClasses::red);
@@ -102,77 +129,64 @@ void UltraSoundObstacleLocator::drawObstacleModel()
         -distRight,
         50);
     }//end for
-
-    // draw model
-    colorLeft[DebugDrawings::Color::alpha] = 1.0;
-    colorRight[DebugDrawings::Color::alpha] = 1.0;
-
-    PEN(colorLeft, 50);
+  );
+  
+  // draw model
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+    PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,
       getObstacleModel().leftDistance,
       50);
 
-    PEN(colorRight, 50);
+    PEN("0000FF", 50);
     CIRCLE(
       getObstacleModel().rightDistance,
       -getObstacleModel().rightDistance,
       50);
 
-    DebugDrawings::Color colorFront(ColorClasses::black);
-    PEN(colorFront, 50);
+    PEN("000000", 50);
     LINE(getObstacleModel().frontDistance, -200, getObstacleModel().frontDistance, 200);
-
   );
 } //end drawObstacleMode
 
 void UltraSoundObstacleLocator::fillBuffer()
 {
-  bufferLeft.add(getUltraSoundReceiveData().dataLeft[UltraSoundData::echo_0] * 1000.0);
-  bufferRight.add(getUltraSoundReceiveData().dataRight[UltraSoundData::echo_0] * 1000.0);
-}
+  double leftMeasurement = getUltraSoundReceiveData().dataLeft[0];
+  double rightMeasurement = getUltraSoundReceiveData().dataRight[0];
+
+  if(rightMeasurement >= UltraSoundReceiveData::MIN_DIST && 
+     rightMeasurement < UltraSoundReceiveData::INVALIDE &&
+     bufferRight.last() != rightMeasurement)
+  {
+    bufferRight.add(rightMeasurement * 1000.0);
+  }
+
+  if(leftMeasurement >= UltraSoundReceiveData::MIN_DIST && 
+     leftMeasurement < UltraSoundReceiveData::INVALIDE &&
+     bufferLeft.last() != leftMeasurement)
+  {
+    bufferLeft.add(leftMeasurement * 1000.0);
+  }
+}//end fillBuffer
 
 void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 {
-  double sum = 0.0;
-  int count = 0;
-  for(int i=0; i < bufferLeft.getNumberOfEntries(); i++)
-  {
-    if(bufferLeft[i] <= maxValidDistance)
-    {
-      sum += bufferLeft[i];
-      count++;
-    }
-  }
+  
   ObstacleModel& model = getObstacleModel();
 
-  if(count == 0)
-  {
+  if(bufferLeft.getNumberOfEntries() == 0) {
     model.leftDistance = invalidDistanceValue;
-  }
-  else
-  {
-    model.leftDistance = sum / (double) count;
+  } else {
+    model.leftDistance = bufferLeft.getMedian();
   }
 
-  sum = 0.0;
-  count = 0;
-  for(int i=0; i < bufferRight.getNumberOfEntries(); i++)
-  {
-    if(bufferRight[i] <= maxValidDistance)
-    {
-      sum += bufferRight[i];
-      count++;
-    }
-  }
-  if(count == 0)
-  {
+  if(bufferRight.getNumberOfEntries() == 0) {
     model.rightDistance = invalidDistanceValue;
+  } else {
+    model.rightDistance = bufferRight.getMedian();
   }
-  else
-  {
-    model.rightDistance = sum / (double) count;
-  }
+
 
   if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
   {

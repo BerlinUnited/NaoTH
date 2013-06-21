@@ -5,6 +5,13 @@
 // v1.03, Apr. 16, 2011 - Added support for optimized Huffman code tables, optimized dynamic memory allocation down to only 1 alloc.
 //                        Also from Alex Evans: Added RGBA support, linear memory allocator (no longer needed in v1.03).
 
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 #include "jpge.h"
 
 #include <stdlib.h>
@@ -1090,3 +1097,11 @@ bool compress_image_to_jpeg_file_in_memory(void *pBuf, int &buf_size, int width,
 }
 
 } // namespace jpge
+
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#endif

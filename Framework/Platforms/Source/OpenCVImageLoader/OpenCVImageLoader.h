@@ -32,10 +32,22 @@
 #include "PlatformInterface/PlatformInterface.h"
 #include "DebugCommunication/DebugServer.h"
 
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 //opencv:
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#endif
 
 //glib 2.0
 #include <glib.h>
@@ -88,7 +100,7 @@ private:
   //vector containing all file names in directory
   vector<string> allFiles;
   //current position
-  unsigned int currentPos;
+  size_t currentPos;
 
   GameData theGameData;
   unsigned int time;

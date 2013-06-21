@@ -228,7 +228,7 @@ RotationMatrix ForwardKinematics::calcChestFeetRotation(const KinematicChain& th
   Pose3D localFootLeft(body.local(footLeft));
   Pose3D localFootRight(body.local(footRight));
     
-  if(abs(localFootLeft.translation.z - localFootRight.translation.z) < 3.f/* magic number */)
+  if(fabs(localFootLeft.translation.z - localFootRight.translation.z) < 3.f/* magic number */)
   {
     // use average of the calculated rotation of each leg
     double meanX = (localFootLeft.rotation.getXAngle() + localFootRight.rotation.getXAngle())*0.5;

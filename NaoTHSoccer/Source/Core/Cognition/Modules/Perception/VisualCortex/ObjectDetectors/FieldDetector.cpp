@@ -66,7 +66,7 @@ void FieldDetector::execute()
 
 
     DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
-      int idx = result.size()-1;
+      int idx = static_cast<int> (result.size())-1;
       ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
       for(unsigned int i = 0; i < result.size(); i++)
       {

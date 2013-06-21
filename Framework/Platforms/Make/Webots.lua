@@ -23,11 +23,4 @@ print("Generating files for webots")
 
   targetname "nao_team_0"
   
-  
-  -- todo: put it somewhere else
-  targetdir "../nao_robocup/controllers/nao_team_0/"
-
-  postbuildcommands {
-    "premake4 webots_copy"
-  }
 -- END Webots

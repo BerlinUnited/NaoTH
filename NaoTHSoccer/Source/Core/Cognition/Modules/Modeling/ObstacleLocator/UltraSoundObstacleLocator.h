@@ -13,7 +13,7 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/DataStructures/RingBuffer.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
@@ -64,8 +64,8 @@ private:
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
 
-  RingBuffer<double,12> bufferLeft;
-  RingBuffer<double,12> bufferRight;
+  RingBufferWithSum<double,5> bufferLeft;
+  RingBufferWithSum<double,5> bufferRight;
 
   void provideToLocalObstacleModel();
   void fillBuffer();

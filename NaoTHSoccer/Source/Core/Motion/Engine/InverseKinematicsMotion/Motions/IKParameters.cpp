@@ -20,46 +20,65 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   
-  // walk parameter
-  PARAMETER_REGISTER(walk.stiffness) = 0.7;
 
-  PARAMETER_REGISTER(walk.comHeight) = 260;
-  PARAMETER_REGISTER(walk.ZMPOffsetY) = 5;
-  PARAMETER_REGISTER(walk.ZMPOffsetYByCharacter) = 0;
 
-  PARAMETER_REGISTER(walk.singleSupportTime) = 300;
-  PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
-  PARAMETER_REGISTER(walk.maxExtendDoubleSupportTime) = 20;
-  PARAMETER_REGISTER(walk.extendDoubleSupportTimeByCharacter) = 0;
-  PARAMETER_REGISTER(walk.stepHeight) = 10;
-//  PARAMETER_REGISTER(walk.curveFactor) = 7;
+  // walk parameter:
+  // General
+  PARAMETER_REGISTER(walk.general.stiffness) = 0.7;
+  PARAMETER_REGISTER(walk.general.useArm) = false;
+  PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorLeft) = 0.4;
+  PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorRight) = 0.4;
 
-  PARAMETER_REGISTER(walk.maxTurnInner) = 10;
-  PARAMETER_REGISTER(walk.maxStepTurn) = 30;
-  PARAMETER_REGISTER(walk.maxStepLength) = 50;
-  PARAMETER_REGISTER(walk.maxStepLengthBack) = 50;
-  PARAMETER_REGISTER(walk.maxStepWidth) = 50;
-  PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
+  // hip trajectory geometry
+  PARAMETER_REGISTER(walk.hip.comHeight) = 260;
+  PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
+  PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
-  PARAMETER_REGISTER(walk.enableFSRProtection) = true;
-  PARAMETER_REGISTER(walk.enableWaitLanding) = false;
-  PARAMETER_REGISTER(walk.minFSRProtectionCount) = 0;
-  PARAMETER_REGISTER(walk.maxUnsupportedCount) = 0;
-  PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
+  // step geometry
+  PARAMETER_REGISTER(walk.step.singleSupportTime) = 300;
+  PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
+  PARAMETER_REGISTER(walk.step.maxExtendDoubleSupportTime) = 20;
+  PARAMETER_REGISTER(walk.step.extendDoubleSupportTimeByCharacter) = 0;
+  PARAMETER_REGISTER(walk.step.stepHeight) = 10;
+//  PARAMETER_REGISTER(walk.step.curveFactor) = 7;
 
-  PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;
-  PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.4;
-  PARAMETER_REGISTER(walk.rotationStabilize) = true;
+  // step limits
+  PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
+  PARAMETER_REGISTER(walk.limits.maxStepTurn) = 30;
+  PARAMETER_REGISTER(walk.limits.maxStepLength) = 50;
+  PARAMETER_REGISTER(walk.limits.maxStepLengthBack) = 50;
+  PARAMETER_REGISTER(walk.limits.maxStepWidth) = 50;
+  PARAMETER_REGISTER(walk.limits.maxStepChange) = 0.5;
 
-  PARAMETER_REGISTER(walk.stabilizeFeet) = true;
-  PARAMETER_REGISTER(walk.stabilizeFeetP.x) = 0.0;
-  PARAMETER_REGISTER(walk.stabilizeFeetP.y) = 0.0;
-  PARAMETER_REGISTER(walk.stabilizeFeetD.x) = 0.0;
-  PARAMETER_REGISTER(walk.stabilizeFeetD.y) = 0.0;
+  // step control
+  PARAMETER_REGISTER(walk.limits.maxCtrlTurn) = 30;
+  PARAMETER_REGISTER(walk.limits.maxCtrlLength) = 80;
+  PARAMETER_REGISTER(walk.limits.maxCtrlWidth) = 50;
 
-  PARAMETER_REGISTER(walk.dynamicStepsize) = true;
+  // Stabilization
+  PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
+  PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
+  PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
 
-  PARAMETER_REGISTER(walk.useArm) = false;
+  PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
+  PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationD.x) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationD.y) = 0;
+
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeet) = true;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.x) = 0.04;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.y) = 0.035;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.x) = -0.4;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.y) = -0.3;
+
+  PARAMETER_REGISTER(walk.stabilization.dynamicStepsize) = true;
+
+  
+
+
 
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
@@ -74,6 +93,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(arm.alwaysEnabled)  = false;
   PARAMETER_REGISTER(arm.kickEnabled) = true;
   PARAMETER_REGISTER(arm.walkEnabled) = true;
+  PARAMETER_REGISTER(arm.takeBack) = false;
 
   // kick parameter
   PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;

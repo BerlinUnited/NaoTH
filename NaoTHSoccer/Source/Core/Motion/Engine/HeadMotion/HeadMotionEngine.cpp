@@ -260,7 +260,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
 
 
 // needed by lookAtWorldPoint
-Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<double>& pointInWorld)
+Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
   theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
   theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
@@ -274,11 +274,11 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 
   // the point in the image which should point to the pointInWorld
-  Vector2<double> projectionPointInImage(
+  Vector2d projectionPointInImage(
         getCameraInfo().getOpticalCenterX(),
         getCameraInfo().getOpticalCenterY());
 
-  Vector3<double> direction = CameraGeometry::imagePixelToCameraCoords(
+  Vector3d direction = CameraGeometry::imagePixelToCameraCoords(
     cameraMatrix, 
     getCameraInfo(),
     projectionPointInImage.x, 
@@ -290,12 +290,12 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 }//end g
 
 
-void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
+void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
 {
-  // HACK: transform the head motion request to the support foot coordinates
+  // HACK: transform the head motion request to hip from the support foot coordinates
   const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
-  Vector3<double> target(origTarget);
+  Vector3d target(origTarget);
 
   // left foot is the support foot
   if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot)
@@ -311,33 +311,33 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
 
   double y = 0.0;
   double p = 0.0;
-  Vector2<double> x(y,p);
+  Vector2d x(y,p);
   double epsylon = 1e-8;
 
   // perform only one GN-Step
   for(int i = 0; i < 1; i++)
   {
     // approximate the derivative Dg(x)=(dg1, dg2) of g at point x=(y,p)
-    Vector3<double> dg11 = g(x.x+epsylon, x.y,  target);
-    Vector3<double> dg12 = g(x.x-epsylon, x.y,  target);
-    Vector3<double> dg1 = (dg11 - dg12) / (2*epsylon);
+    Vector3d dg11 = g(x.x+epsylon, x.y,  target);
+    Vector3d dg12 = g(x.x-epsylon, x.y,  target);
+    Vector3d dg1 = (dg11 - dg12) / (2*epsylon);
 
-    Vector3<double> dg21 = g(x.x, x.y+epsylon,  target);
-    Vector3<double> dg22 = g(x.x, x.y-epsylon,  target);
-    Vector3<double> dg2 = (dg21 - dg22) / (2*epsylon);
+    Vector3d dg21 = g(x.x, x.y+epsylon,  target);
+    Vector3d dg22 = g(x.x, x.y-epsylon,  target);
+    Vector3d dg2 = (dg21 - dg22) / (2*epsylon);
 
     // Dg(x)^T*Dg(x)
     double dgTdg11 = dg1*dg1;
     double dgTdg22 = dg2*dg2;
     double dgTdg12 = dg1*dg2;
-    Matrix2x2<double> DgTDg(Vector2<double>(dgTdg11, dgTdg12), Vector2<double>(dgTdg12, dgTdg22));
+    Matrix2x2<double> DgTDg(Vector2d(dgTdg11, dgTdg12), Vector2d(dgTdg12, dgTdg22));
 
     // g(x) - target
-    Vector3<double> w = g(x.x, x.y, target);
+    Vector3d w = g(x.x, x.y, target);
     w -= target;
 
     // Dg(x)^T*(g(x) - target)
-    Vector2<double> DgTw(dg1*w, dg2*w);
+    Vector2d DgTw(dg1*w, dg2*w);
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
     if(DgTDg.det() <= 1e-13)
@@ -345,7 +345,7 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
       // debug output
       std::cerr << "bad matrix" << std::endl;
     }
-    Vector2<double> z_GN = (-(DgTDg.invert()*DgTw));
+    Vector2d z_GN = (-(DgTDg.invert()*DgTw));
     x += z_GN;
   }//end for
 
@@ -464,7 +464,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& p
   // return value
   // is true if the end of the trajectory is reached
   bool finished = false;
-  int MAXSTATE = points.size();
+  int MAXSTATE = static_cast<int> (points.size());
 
   // this may happens if the trajectory changes
   if(headMotionState >= MAXSTATE)

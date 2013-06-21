@@ -2,6 +2,7 @@
 * @file IKParameters.h
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
 * Declaration of parameters for IK motion
 */
 
@@ -14,71 +15,105 @@
 class IKParameters : public ParameterList
 {
 public:
+
+  // TODO: what are those parameters?
   double bodyPitchOffset;
   double hipOffsetX;
   double footOffsetY;
   
-  struct Stand {
+  struct Stand 
+  {
     double speed;
     bool enableStabilization;
   } stand;
 
-  struct Walk {
-    double stiffness;
+
+  struct Walk 
+  {
+    struct General
+    {
+      double stiffness;
+      bool useArm;
+
+      // hip joint correction
+      double hipRollSingleSupFactorLeft;
+      double hipRollSingleSupFactorRight;
+    } general;
+
 
     // hip trajectory geometry
-    double comHeight;
-    double ZMPOffsetY;
-    double ZMPOffsetYByCharacter;
-    
+    struct Hip
+    {
+      double comHeight;
+      double ZMPOffsetY;
+      double ZMPOffsetYByCharacter;
+    } hip;
+
     // step geometry
-    double singleSupportTime;
-    double doubleSupportTime;
-    double maxExtendDoubleSupportTime;
-    double extendDoubleSupportTimeByCharacter;
+    struct Step
+    {
+      double singleSupportTime;
+      double doubleSupportTime;
+      double maxExtendDoubleSupportTime;
+      double extendDoubleSupportTimeByCharacter;
     
-    double stepHeight;
-    //double curveFactor;
+      double stepHeight;
+      //double curveFactor;
+    } step;
     
-    // step parameters
-    double maxTurnInner;
-    double maxStepTurn;
-    double maxStepLength;
-    double maxStepLengthBack;
-    double maxStepWidth;
-    double maxStepChange; // (0 - 1]
+    // step limits
+    struct Limits
+    {
+      double maxTurnInner;
+      double maxStepTurn;
+      double maxStepLength;
+      double maxStepLengthBack;
+      double maxStepWidth;
+      double maxStepChange; // (0 - 1]
+
+      // step control
+      double maxCtrlTurn;
+      double maxCtrlLength;
+      double maxCtrlWidth;
+    } limits;
     
-    // FSR stabilizators
-    bool enableFSRProtection;
-    bool enableWaitLanding;
-    unsigned int minFSRProtectionCount;
+
+    struct Stabilization
+    {
+      // FSR stabilizators
+      bool enableFSRProtection;
+      bool enableWaitLanding;
+      unsigned int minFSRProtectionCount;
     
-    int maxUnsupportedCount;
-    int maxWaitLandingCount; // <0 means wait for ever until landing
+      int maxUnsupportedCount;
+      int maxWaitLandingCount; // <0 means wait for ever until landing
 
-    double leftHipRollSingleSupFactor;
-    double rightHipRollSingleSupFactor;
+      // enable stabilization by rotating the body
+      bool rotationStabilize;
 
-    bool rotationStabilize;
+      // enable the PD-control for the feet
+      bool stabilizeFeet;
+      // differential and proportional factors for rotation on x- and y- axes
+      Vector2d stabilizeFeetP;
+      Vector2d stabilizeFeetD;
 
-    // enable the PD-control for the feet
-    bool stabilizeFeet;
-    // differential and proportional factors for rotation on x- and y- axes
-    Vector2<double> stabilizeFeetP;
-    Vector2<double> stabilizeFeetD;
+      Vector2d rotationP;
+      Vector2d rotationD;
 
-    // enable the synamic adaptation of the stepsize
-    bool dynamicStepsize;
-
-    bool useArm;
+      // enable the synamic adaptation of the stepsize
+      bool dynamicStepsize;
+    } stabilization;
   } walk;
 
-  struct RotationStabilize {
-      Vector2<double> k;
-      Vector2<double> threshold;
+
+  struct RotationStabilize 
+  {
+      Vector2d k;
+      Vector2d threshold;
   } rotationStabilize;
 
-  struct Arm {
+  struct Arm 
+  {
     // move shoulder according to interial sensor
     double shoulderPitchInterialSensorRate;
     double shoulderRollInterialSensorRate;
@@ -88,9 +123,11 @@ public:
     bool alwaysEnabled;
     bool kickEnabled;
     bool walkEnabled;
+    bool takeBack;
   } arm;
 
-  struct KickParameters {
+  struct KickParameters 
+  {
     // 
     double shiftSpeed;
 
@@ -145,7 +182,8 @@ public:
     double shiftOffsetYRight;
   } kick;
   
-  struct BalanceCoMParameter {
+  struct BalanceCoMParameter 
+  {
     double kP;
     double kI;
     double kD;

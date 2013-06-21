@@ -59,7 +59,7 @@ public:
   bool loadFromFile(const std::string& fileName);
 
 
-  inline ColorClasses::Color getColorClass(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
+  inline ColorClasses::Color getColorClass(unsigned char channel1, unsigned char channel2, unsigned char channel3) const
   {
     unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
     ASSERT(idx < colorTableLength);

@@ -37,12 +37,13 @@ SPLGameController::SPLGameController()
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.team = data.teamNumber;
-    dataOut.player = data.playerNumber;
+    dataOut.team = static_cast<uint16>(data.teamNumber);
+    dataOut.player = static_cast<uint16>(data.playerNumber);
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
-    if (!g_thread_supported())
+    if (!g_thread_supported()) {
       g_thread_init(NULL);
+	}
     dataMutex = g_mutex_new();
     returnDataMutex = g_mutex_new();
 
@@ -64,7 +65,7 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<guint16>(port));
 
   g_socket_bind(socket, socketAddress, true, &err);
 
@@ -73,7 +74,7 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
   string broadcastAddr = NetAddr::getBroadcastAddr("wlan0");
   GInetAddress* address = g_inet_address_new_from_string(broadcastAddr.c_str());
-  broadcastAddress = g_inet_socket_address_new(address, port);
+  broadcastAddress = g_inet_socket_address_new(address, static_cast<guint16>(port));
   g_object_unref(address);
 
   return err;
@@ -199,7 +200,7 @@ bool SPLGameController::update()
         data.playMode = GameData::game_over;
       }
 
-      unsigned char playerNumberForGameController = data.playerNumber - 1; // gamecontroller starts counting at 0
+      unsigned char playerNumberForGameController = static_cast<unsigned char>(data.playerNumber - 1); // gamecontroller starts counting at 0
 
       if(playerNumberForGameController < MAX_NUM_PLAYERS)
       {

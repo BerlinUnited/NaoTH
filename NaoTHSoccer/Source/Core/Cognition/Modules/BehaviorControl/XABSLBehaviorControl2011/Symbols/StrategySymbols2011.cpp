@@ -468,7 +468,7 @@ void StrategySymbols2011::arrangeRobots(
   for(size_t i = 0; i < numberOfPlaces; i++)
   {
     //int robotIndex = (int)(Math::random()*(numberOfRobots-1)+0.5);
-    robotsToPlaces[placesToRobots[i]] = i;
+    robotsToPlaces[placesToRobots[i]] = static_cast<int> (i);
 
     // place i <= robotIndex
     //placesToRobots[i] = i;
@@ -479,12 +479,12 @@ void StrategySymbols2011::arrangeRobots(
   for(int i = 0; i < numberOfIterations; i++)
   {
     // select place
-    int placeIndexOne = (int)(Math::random()*(numberOfPlaces-1)+0.5);
+    int placeIndexOne = (int)(Math::random()*(static_cast<double> (numberOfPlaces)-1)+0.5);
     // take the robot assighned to this place
     int robotIndexOne = placesToRobots[placeIndexOne];
 
     // select another robot
-    int robotIndexTwo = (int)(Math::random()*(numberOfRobots-1)+0.5);
+    int robotIndexTwo = (int)(Math::random()*(static_cast<double> (numberOfRobots)-1)+0.5);
     // take the place of this robot (!!!could be -1)
     int placeIndexTwo = robotsToPlaces[robotIndexTwo];
 

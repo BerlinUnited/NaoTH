@@ -12,8 +12,9 @@ for previewTime = 0.1:0.1:1.0 %s
   for z = 0.2:0.001:0.3
     [A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, previewTime);
     
-    filename = strcat(previewTimeDir, '/', sprintf('%d.txt', round(z*1000)));
+    filename = strcat(previewTimeDir, '/', sprintf('%d.prm', round(z*1000)));
     lenF = length(F);
+	A = A';
     save(filename,'A', 'b', 'c', 'Ki', 'Ks', 'lenF', 'F', '-ascii');
     fprintf('%s saved!\n', filename);
   end

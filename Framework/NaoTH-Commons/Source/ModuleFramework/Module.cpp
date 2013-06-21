@@ -62,7 +62,7 @@ std::ostream& operator <<(std::ostream &stream, const Module& module)
 
 std::string get_sub_core_module_path(std::string fullpath)
 {
-  unsigned p = fullpath.find("core");
+  unsigned p = static_cast<unsigned int> (fullpath.find("core"));
   if (p < fullpath.size()-5) {
     return fullpath.substr(p+5); // size of "core/"
   } else {

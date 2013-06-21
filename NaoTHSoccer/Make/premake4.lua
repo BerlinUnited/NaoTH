@@ -23,6 +23,10 @@ end
 -- test
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
+newoption {
+   trigger     = "Wno-conversion",
+   description = "Disable te -Wconversion warnin for gCC"
+}
 
 -- definition of the solution
 solution "NaoTHSoccer"
@@ -58,7 +62,7 @@ solution "NaoTHSoccer"
   invokeprotoc(
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", 
 	 FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
-    FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
+     FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/"}
   )
@@ -78,9 +82,8 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    -- flags { "Optimize", "FatalWarnings" }
-    flags { "Optimize" }
-         
+    flags { "Optimize", "FatalWarnings" }
+
   
   configuration{"Native"}
     targetdir "../dist/Native"
@@ -88,6 +91,11 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
+	flags { "ExtraWarnings" }
+	if _OPTIONS["Wno-conversion"] == nil then
+		buildoptions {"-Wconversion"}
+		defines { "_NAOTH_CHECK_CONVERSION_" }
+	end
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
@@ -97,7 +105,7 @@ solution "NaoTHSoccer"
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
 	links {"ws2_32"}
-	--debugdir ".."
+	debugdir "$(SolutionDir).."
   end
   
   configuration {"linux"}
@@ -111,6 +119,11 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-deprecated-declarations"}
     flags { "ExtraWarnings" }
     links {"pthread"}
+	
+	if _OPTIONS["Wno-conversion"] == nil then
+		buildoptions {"-Wconversion"}
+		defines { "_NAOTH_CHECK_CONVERSION_" }
+	end
 	
 	-- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
 	linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
@@ -138,6 +151,7 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  postbuildcommands { "premake4 webots_copy" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }

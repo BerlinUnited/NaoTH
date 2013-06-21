@@ -1,23 +1,23 @@
 -- An example project generator; see _example.lua for action description
-
+premake.qtcreator27 = { }
 -- 
 -- The project generation function, attached to the action in _example.lua.
 -- By now, premake.generate() has created the project file using the name
 -- provided in _example.lua, and redirected input to this new file.
 --
-	local qc = premake.qtcreator
+local qtc = premake.qtcreator27
 	
-  function premake.qtcreator.header()
+  function qtc.header()
     _p("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     _p("<!DOCTYPE QtCreatorProject>")
     _p("<!-- Written by NaoTH qtc generator script -->")
-	  _p("<qtcreator>")
+	_p("<qtcreator>")
 	  
-		_p(1, "<data>")
+	_p(1, "<data>")
     _p(2, "<variable>ProjectExplorer.Project.ActiveTarget</variable>")
     _p(2, "<value type=\"int\">0</value>")
-		_p(1, "</data>")
-		_p(1, "<data>")
+	_p(1, "</data>")
+	_p(1, "<data>")
     _p(1, "<variable>ProjectExplorer.Project.EditorSettings</variable>")
     _p(1, "<valuemap type=\"QVariantMap\">")
     _p(2, "<value type=\"bool\" key=\"EditorConfiguration.AutoIndent\">true</value>")
@@ -54,30 +54,28 @@
     _p(3, "<value type=\"bool\" key=\"EditorConfiguration.cleanWhitespace\">true</value>")
     _p(3, "<value type=\"bool\" key=\"EditorConfiguration.inEntireDocument\">true</value>")
     _p(2, "</valuemap>")
-		_p(1, "</data>")
-		_p(1, "<data>")
+	_p(1, "</data>")
+	_p(1, "<data>")
     _p(2, "<variable>ProjectExplorer.Project.PluginSettings</variable>")
     _p(2, "<valuemap type=\"QVariantMap\"/>")
-		_p(1, "</data>")
+	_p(1, "</data>")
 
-	
   end
   
-  function premake.qtcreator.footer()
-   
-  _p("<data>")
-  _p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
-  _p(1, "<value type=\"int\">12</value>")
-  _p("</data>")
+  function qtc.footer()
+	_p("<data>")
+	_p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
+	_p(1, "<value type=\"int\">12</value>")
+	_p("</data>")
   
-  _p("</qtcreator>")
+	_p("</qtcreator>")
   end
   
-  function premake.qtcreator.creator(prj)
+  function qtc.creator(prj)
     _p("[General]")
   end
   
-  function premake.qtcreator.run_configuration(prj, cfg, cfgCounter)
+  function qtc.run_configuration(prj, cfg, cfgCounter)
     _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.RunConfiguration.%d\">", cfgCounter)
     _p(3, "<value type=\"bool\" key=\"Analyzer.Project.UseGlobal\">true</value>")
     _p(3, "<valuelist type=\"QVariantList\" key=\"Analyzer.Valgrind.AddedSuppressionFiles\"/>")
@@ -127,7 +125,7 @@
     _p(2, "</valuemap>")
   end
   
-  function premake.qtcreator.build_configuration(prj, cfg, cfgCounter, platform)
+  function qtc.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.BuildConfiguration.%d\">", cfgCounter)
     _p(3, "<value type=\"QString\" key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\"></value>")    
     -- the build steps for "Make"
@@ -200,7 +198,7 @@
     _p(2, "</valuemap>") -- end configuration valuemap
   end
   
-	function premake.qtcreator.user(prj)
+	function qtc.user(prj)
 		-- If necessary, set an explicit line ending sequence
 		-- io.eol = '\r\n'
 		
@@ -211,7 +209,7 @@
 		end
 		local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 		
-		qc.header()
+		qtc.header()
 	  
     -- we need to set a valid "kit" ID as ProjectConfiguration.Id, otherwise the QtCreator will stop loading the project
     -- under *NIX-systems we can grab the configuration file
@@ -251,7 +249,7 @@
 		local cfgCounter = 0
 		for _, platform in ipairs(platforms) do
 		  for cfg in premake.eachconfig(prj, platform) do
- 		    qc.build_configuration(prj, cfg, cfgCounter, userPlatform)
+ 		    qtc.build_configuration(prj, cfg, cfgCounter, userPlatform)
     	  cfgCounter = cfgCounter + 1
 		  end
 		end
@@ -277,7 +275,7 @@
 	  for _, platform in ipairs(platforms) do
 	    for cfg in premake.eachconfig(prj, platform) do
         if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
-          qc.run_configuration(prj, cfg, cfgCounter)
+          qtc.run_configuration(prj, cfg, cfgCounter)
           cfgCounter = cfgCounter + 1
         end -- if kind == *App
 	    end
@@ -292,5 +290,5 @@
     _p(1, "<value type=\"int\">1</value>")
     _p("</data>")
 		
-		qc.footer()
+		qtc.footer()
 	end

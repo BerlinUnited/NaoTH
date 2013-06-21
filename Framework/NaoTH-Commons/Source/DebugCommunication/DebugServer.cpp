@@ -245,7 +245,7 @@ void DebugServer::parseCommand(
   naothmessages::CMD cmd;
   commandName = "invalidcommand";
 
-  if(cmd.ParseFromArray(cmdRaw->str, cmdRaw->len))
+  if(cmd.ParseFromArray(cmdRaw->str, static_cast<int> (cmdRaw->len)))
   {
     commandName = cmd.name();
 

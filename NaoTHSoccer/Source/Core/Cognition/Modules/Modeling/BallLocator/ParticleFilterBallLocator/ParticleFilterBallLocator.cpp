@@ -51,7 +51,7 @@ void ParticleFilterBallLocator::execute()
       }
       else
       {
-        int k = Math::random(theSampleSet.size());
+        int k = Math::random(static_cast<int> (theSampleSet.size()));
         theSampleSet[k] = generateNewSample();
       }
     }
@@ -81,7 +81,7 @@ void ParticleFilterBallLocator::execute()
     MODIFY("ParticleFilterBallLocator:numberOfMovingSamples", numberOfMovingSamples);
 
 
-    mean /= theSampleSet.size();
+    mean /= static_cast<double> (theSampleSet.size());
     if(numberOfMovingSamples > 1)
       meanSpeed /= numberOfMovingSamples;
 
@@ -269,7 +269,7 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // TODO: use memcopy?
   std::vector<Sample> oldSampleSet = sampleSet;
   
-  totalWeighting += resamplingThreshhold*oldSampleSet.size();
+  totalWeighting += resamplingThreshhold*static_cast<double> (oldSampleSet.size());
   for(unsigned int i = 0; i < oldSampleSet.size(); i++)
   {
     oldSampleSet[i].likelihood += resamplingThreshhold;
@@ -288,7 +288,7 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
   for(unsigned int m = 0; m < sampleSet.size(); m++)
   {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
+    sum += oldSampleSet[m].likelihood * static_cast<double> (oldSampleSet.size());
 
     // select the particle to copy
     while(count < sum && count < oldSampleSet.size())

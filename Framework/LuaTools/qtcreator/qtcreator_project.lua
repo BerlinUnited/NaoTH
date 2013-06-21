@@ -1,40 +1,39 @@
 -- An example project generator; see _example.lua for action description
-
+premake.qtcreator = { }
 -- 
 -- The project generation function, attached to the action in _example.lua.
 -- By now, premake.generate() has created the project file using the name
 -- provided in _example.lua, and redirected input to this new file.
 --
-	local qc = premake.qtcreator
+local qtc = premake.qtcreator
 	
-  function premake.qtcreator.header()
+  function qtc.header()
     _p("<!DOCTYPE QtCreatorProject>")
-	  _p("<qtcreator>")
+	_p("<qtcreator>")
 	  
-		_p("<data>")
+	_p("<data>")
     _p(1,"<variable>ProjectExplorer.Project.EditorSettings</variable>")
     _p(1,"<valuemap type=\"QVariantMap\">")
     _p(2,"<value key=\"EditorConfiguration.UseGlobal\" type=\"bool\">true</value>")
-		_p(1,"</valuemap>")
-		_p("</data>")
+	_p(1,"</valuemap>")
+	_p("</data>")
 	
   end
   
-  function premake.qtcreator.footer()
-   
-  _p("<data>")
-  _p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
-  _p(1, "<value type=\"int\">9</value>")
-  _p("</data>")
+  function qtc.footer()
+	_p("<data>")
+	_p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
+	_p(1, "<value type=\"int\">9</value>")
+	_p("</data>")
   
-  _p("</qtcreator>")
+	_p("</qtcreator>")
   end
   
-  function premake.qtcreator.creator(prj)
+  function qtc.creator(prj)
     _p("[General]")
   end
   
-  function premake.qtcreator.run_configuration(prj, cfg, cfgCounter)
+  function qtc.run_configuration(prj, cfg, cfgCounter)
     _p(2, "<valuemap key=\"ProjectExplorer.Target.RunConfiguration.%d\" type=\"QVariantMap\">", cfgCounter)
     _p(3, "<value key=\"ProjectExplorer.CustomExecutableRunConfiguration.Executable\" type=\"QString\">%s</value>", cfg.buildtarget.fullpath)
     _p(3, "<value key=\"ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal\" type=\"bool\">false</value>")
@@ -47,7 +46,7 @@
     _p(2, "</valuemap>");
   end
   
-  function premake.qtcreator.build_configuration(prj, cfg, cfgCounter, platform)
+  function qtc.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap key=\"ProjectExplorer.Target.BuildConfiguration.%d\" type=\"QVariantMap\">", cfgCounter)
     _p(3, "<value key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\" type=\"QString\">%s</value>", prj.solution.location)
     _p(3, "<value key=\"ProjectExplorer.BuildConfiguration.ToolChain\" type=\"QString\">INVALID</value>")
@@ -119,7 +118,7 @@
     _p(2, "</valuemap>") -- end configuration valuemap
   end
   
-	function premake.qtcreator.user(prj)
+	function qtc.user(prj)
 		-- If necessary, set an explicit line ending sequence
 		-- io.eol = '\r\n'
 		
@@ -130,7 +129,7 @@
 		end
 		local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 		
-		qc.header()
+		qtc.header()
 		
 	  _p("<data>")
     _p(1, "<variable>ProjectExplorer.Project.Target.0</variable>")
@@ -142,7 +141,7 @@
 		local cfgCounter = 0
 		for _, platform in ipairs(platforms) do
 		  for cfg in premake.eachconfig(prj, platform) do
-		    qc.build_configuration(prj, cfg, cfgCounter, userPlatform)
+		    qtc.build_configuration(prj, cfg, cfgCounter, userPlatform)
 		    cfgCounter = cfgCounter + 1
 		  end
 		end
@@ -153,7 +152,7 @@
 	  for _, platform in ipairs(platforms) do
 	    for cfg in premake.eachconfig(prj, platform) do
 	      if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
-	        qc.run_configuration(prj, cfg, cfgCounter)
+	        qtc.run_configuration(prj, cfg, cfgCounter)
 	        cfgCounter = cfgCounter + 1
 	      end -- if kind == *App
 	    end
@@ -173,5 +172,5 @@
     _p(1, "<value type=\"int\">1</value>")
     _p("</data>")
 		
-		qc.footer()
+		qtc.footer()
 	end

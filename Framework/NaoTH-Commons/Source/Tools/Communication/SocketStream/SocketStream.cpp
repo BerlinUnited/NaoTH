@@ -48,7 +48,7 @@ void SocketStream::send(const std::string& msg) throw(std::runtime_error)
     ASSERT(g_socket_get_blocking(socket) == false);
 #endif
 
-    int sendBytes = g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
+    int sendBytes = static_cast<int> (g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err));
     if(sendBytes < 1)
     {
       std::cerr << "ERROR in SocketStream send: sendBytes=" << sendBytes << std::endl;
@@ -87,7 +87,7 @@ int SocketStream::recv(std::string& msg) throw(std::runtime_error)
 
   memset(mRecvBuf, 0, mRecvBufSize + 1);
   GError* err = NULL;
-  int status = g_socket_receive(socket, mRecvBuf, mRecvBufSize, NULL, &err);
+  int status = static_cast<int> (g_socket_receive(socket, mRecvBuf, mRecvBufSize, NULL, &err));
   if (status < 0)
   {
     std::string errMsg = err->message;
@@ -138,7 +138,7 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runti
     if (mRecvdLen >= len) return true;
 
     /* there was not enough data in the read buffer, so let's try to get some more */
-    int res = g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL);
+    int res = static_cast<int> (g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL));
     
     if (res <= 0)
     {
@@ -159,18 +159,18 @@ int SocketStream::prefixedRecv(std::string& msg)
   msg = "";
   unsigned int messLen;
 
-  bool res = isFixedLengthDataAvailable(sizeof (unsigned int));
+  bool res = isFixedLengthDataAvailable(static_cast<unsigned int> (sizeof (unsigned int)));
   if (!res) return 0;
   //get the message length
   messLen = g_ntohl((*(unsigned int*) mRecvBuf));
 
   //try and get the data
-  res = isFixedLengthDataAvailable(messLen + sizeof (unsigned int));
+  res = isFixedLengthDataAvailable(messLen + static_cast<unsigned int> (sizeof (unsigned int)));
   if (!res) return 0;
 
   //we have to copy, skipping the sizeof(int) bytes at the beginning
   msg.insert(0, mRecvBuf + sizeof (unsigned int), messLen);
-  mRecvdLen -= (sizeof (unsigned int) +messLen);
+  mRecvdLen -= (static_cast<unsigned int> (sizeof (unsigned int)) +messLen);
   memmove(mRecvBuf, mRecvBuf + sizeof (unsigned int) +messLen, mRecvdLen);
   return messLen;
 }
