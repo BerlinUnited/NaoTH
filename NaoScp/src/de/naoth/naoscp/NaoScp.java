@@ -3367,6 +3367,18 @@ public class NaoScp extends NaoScpMainFrame
         {
           actionInfo("Configuring files on stick");
           DeployUtils.configureUSBDeployDir(this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+          
+          File scriptFile = new File(cfg.localSetupStickPath() + "/startBrainwashing.sh");
+          if(scriptFile.isFile())
+          {          
+            actionInfo("Copying brain wash script");
+            DeployUtils.copyFiles(this, scriptFile, new File(usbStickPath + "/startBrainwashing.sh"));
+          }
+          else
+          {
+            actionError("No brainwashing script found (should be " + scriptFile.getAbsolutePath() + ")");
+          }
+          
           actionFinish("Finished");
         }
       }
