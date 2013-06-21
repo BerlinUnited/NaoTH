@@ -156,6 +156,7 @@ public class NaoScpConfig
   public String localDeployInPath(String sNaoNo, String sNaoByte){return localDeployRootPath() + "/in/" + backupTimestamp + "-" + sNaoNo + "-" + sNaoByte;}
   public String localSetupScriptPath(){return jDirPathLabel + "/../Utils/NaoConfigFiles";}
   public String localSetupStickPath(){return jDirPathLabel + "/../Utils/SetupStick";}
+  public String localMediaPath(){return jDirPathLabel + "/Media";}
   public String localDeployOutPath(){return localDeployOutPath(sNaoNo);}
   public String localDeployOutPath(String sNaoNo){return localDeployRootPath() + "/out/" + sNaoNo;}
 
