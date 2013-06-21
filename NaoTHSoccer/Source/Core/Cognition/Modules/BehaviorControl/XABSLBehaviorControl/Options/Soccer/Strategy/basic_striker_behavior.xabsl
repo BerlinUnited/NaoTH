@@ -54,13 +54,15 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      go_to_ball(distance=200);
+      go_to_ball(distance=130);
     }
   }
 
   state decide_turning_direction {
     decision{
-      else if(attack.direction.preview<0)
+      else if(abs(value=attack.direction.preview)<10)
+        goto attack;
+      else if(attack.direction.preview>0)
         goto turn_right_around;
       else
         goto turn_left_around;
@@ -78,7 +80,7 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      move_around_ball(direction=30, radius=170);
+      move_around_ball(direction=30, radius=vector.abs(x=ball.preview.x, y=ball.preview.y));
     }
   }
 
@@ -90,7 +92,7 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      move_around_ball(direction=-30, radius=170);
+      move_around_ball(direction=-30, radius=vector.abs(x=ball.preview.x, y=ball.preview.y));
     }
   }
 
@@ -105,7 +107,7 @@ option basic_striker_behavior{
     action {
       motion.type = walk;
       motion.walk.style = fast;
-      motion.walk_speed.x=ball.preview.x;
+      motion.walk_speed.x=ball.preview.x+100;
       motion.walk_speed.y=ball.preview.y;
       motion.walk_speed.rot=0;
 
