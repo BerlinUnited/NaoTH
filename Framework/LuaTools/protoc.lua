@@ -57,6 +57,9 @@ local function protocCompile(inputFiles, cppOut, javaOut, ipaths)
   -- TODO: should we search on additional locations?
   compilerPath = os.pathsearch(compiler, EXTERN_PATH .. "/bin/")
   if compilerPath == nil then
+	compilerPath = os.pathsearch(compiler, EXTERN_PATH_NATIVE .. "/bin/")
+  end
+  if compilerPath == nil then
     print ("ERROR: could not find protoc compiler executable in \"" .. EXTERN_PATH .. "/bin/" .. "\"")
     return false
   end
@@ -80,10 +83,12 @@ local function protocCompile(inputFiles, cppOut, javaOut, ipaths)
   print("INFO: executing " .. cmd)
   local returnCode = os.execute(cmd)
   
-  -- add few lines to supress the conversion warnings to each of the generated *.cc files
-  add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
-  add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
-  --
+  if _OPTIONS["Wno-conversion"] == nil then
+	-- add few lines to supress the conversion warnings to each of the generated *.cc files
+	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
+	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
+	--
+  end
   
   return returnCode == 0
 end
@@ -94,7 +99,7 @@ function add_gcc_ignore_pragmas(files)
 	-- hack for the GCC version < 4.6.x
 	-- this is because "#pragma GCC diagnostic push/pop" was introduced in GCC 4.6
 	local prefix = "// added by NaoTH \n" ..
-				 "#ifdef __GNUC__\n" ..
+				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
 				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
 				 "#pragma GCC diagnostic push\n" ..
 				 "#endif\n" ..
@@ -103,7 +108,7 @@ function add_gcc_ignore_pragmas(files)
 	
 	-- enable the warnings at the end
 	local suffix = "\n\n// added by NaoTH \n" ..
-				 "#ifdef __GNUC__\n" ..
+				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
 				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
 				 "#pragma GCC diagnostic pop\n" ..
 				 "#else\n" ..
@@ -125,8 +130,11 @@ function add_gcc_ignore_pragmas(files)
 end
 
 function invokeprotoc(inputFiles, cppOut, javaOut, ipaths)
-    -- iterate over all files to check if any of them was changed
-    local compile = false        
+    
+	-- cack if protobuf compile is explicitely requested
+    local compile = (_OPTIONS["protoc"] ~= nil)
+
+	-- iterate over all files to check if any of them was changed
     for i = 1, #inputFiles do
       if(checkRecompileNeeded(inputFiles[i])) then
         compile = true
@@ -134,8 +142,8 @@ function invokeprotoc(inputFiles, cppOut, javaOut, ipaths)
       end
     end
 
+	
     if(compile) then
-      
       -- execute compile process for each file
       local time = os.time()
       
@@ -150,6 +158,10 @@ function invokeprotoc(inputFiles, cppOut, javaOut, ipaths)
     end -- end if compile
 end
 
+newoption {
+   trigger     = "protoc",
+   description = "Force to recompile the protbuf messages"
+}
 
 newoption {
   trigger = "protoc-ipath",

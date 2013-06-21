@@ -163,7 +163,7 @@ fi
 ldconfig;
 
 # allow everyone to shutdown
-chmod +x /sbin/shutdown
-chmod +x /sbin/reboot
+chmod +s /sbin/shutdown
+chmod +s /sbin/reboot
 
 

@@ -1,8 +1,8 @@
--- namespace
-	premake.qtcreator = { }
-	local qc = premake.qtcreator
-
+dofile "qtcreator_project.lua"
 	
+-- namespace
+	local qtc = premake.qtcreator
+
 ---- 
 -- action for creating new projects from a solution
 ----
@@ -21,11 +21,11 @@
 		},
 
 		onproject = function(prj)
-		  premake.generate(prj, "%%.creator", premake.qtcreator.creator)
-      premake.generate(prj, "%%.creator.user", premake.qtcreator.user)
-      premake.generate(prj, "%%.files", premake.qtcreator.files)
-      premake.generate(prj, "%%.includes", premake.qtcreator.includes)
-      premake.generate(prj, "%%.config", premake.qtcreator.defines)
+		  premake.generate(prj, "%%.creator", qtc.creator)
+      premake.generate(prj, "%%.creator.user", qtc.user)
+      premake.generate(prj, "%%.files", qtc.files)
+      premake.generate(prj, "%%.includes", qtc.includes)
+      premake.generate(prj, "%%.config", qtc.defines)
 		end,
 	
 		oncleanproject  = function(prj)
@@ -62,7 +62,7 @@
 		},
 
 		onproject = function(prj)
-      premake.generate(prj, "%%.includes", premake.qtcreator.includes)
+      premake.generate(prj, "%%.includes", qtc.includes)
 		end,
 	
 		oncleanproject  = function(prj)
@@ -89,7 +89,7 @@
 		},
 
 		onproject = function(prj)
-      premake.generate(prj, "%%.files", premake.qtcreator.files)
+      premake.generate(prj, "%%.files", qtc.files)
 		end,
 	
 		oncleanproject  = function(prj)
