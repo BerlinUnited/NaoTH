@@ -867,16 +867,6 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
     value = max;
   }
 
-  if(id == CameraSettings::Exposure)
-  {
-    value = (value << 2) >> 2;
-  }
-
-  if(id == CameraSettings::WhiteBalance)
-  {
-    value = ((value + 180) * 45) / 45 - 180;
-  }
-
   struct v4l2_control control_s;
   memset (&control_s, 0, sizeof (control_s));
   control_s.id = id;
