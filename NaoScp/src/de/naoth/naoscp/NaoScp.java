@@ -3379,17 +3379,6 @@ public class NaoScp extends NaoScpMainFrame
             actionError("No brainwashing script found (should be " + scriptFile.getAbsolutePath() + ")");
           }
           
-          File wavFile = new File(cfg.localMediaPath() + "/anDieArbeit.wav");
-          if(wavFile.isFile())
-          {          
-            actionInfo("Copying audio file");
-            DeployUtils.copyFiles(this, wavFile, new File(usbStickPath + "/anDieArbeit.wav"));
-          }
-          else
-          {
-            actionError("No brainwashing audio file found (should be " + wavFile.getAbsolutePath() + ")");
-          }
-          
           actionFinish("Finished");
         }
       }
