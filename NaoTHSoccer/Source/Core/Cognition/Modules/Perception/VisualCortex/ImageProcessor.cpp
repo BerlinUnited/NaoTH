@@ -16,18 +16,18 @@
 ImageProcessor::ImageProcessor()
 {
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:draw_horizon", "draws the artificial horizon", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:draw_horizon", "draws the artificial horizon", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_horizon", "draws the artificial horizon", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_horizon", "draws the artificial horizon", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:draw_ball_on_field", "draw the projection of the ball on the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:draw_ball_on_field", "draw the projection of the ball on the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:draw_ball_in_image", "draw ball in the image if found", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:draw_ball_in_image", "draw ball in the image if found", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_ball_on_field", "draw the projection of the ball on the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_ball_on_field", "draw the projection of the ball on the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_ball_in_image", "draw ball in the image if found", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_ball_in_image", "draw ball in the image if found", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
@@ -65,10 +65,6 @@ void ImageProcessor::execute()
 {
   //reset the Representations:
   //todo: for consistency reasonst this should be done within the detectors
-  getBallPercept().reset();
-  getBallPerceptTop().reset();
-  getGoalPercept().reset();
-  getGoalPerceptTop().reset();
   getPlayersPercept().reset();
 
   GT_TRACE("executing HistogramFieldDetector");
@@ -95,8 +91,8 @@ void ImageProcessor::execute()
 
   GT_TRACE("executing ScanLineEdgelDetector");
   STOPWATCH_START("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->execute();
-  theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
+  //theScanLineEdgelDetector->execute();
+  //theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
   STOPWATCH_STOP("ScanLineEdgelDetector");
 
   GT_TRACE("executing FieldDetector");
@@ -133,11 +129,11 @@ void ImageProcessor::execute()
 
     getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:BottomCam:draw_ball_in_image",
+    DEBUG_REQUEST("ImageProcessor:CamBottom:draw_ball_in_image",
       CIRCLE_PX(ColorClasses::red, (int)getBallPercept().centerInImage.x, (int)getBallPercept().centerInImage.y, (int)getBallPercept().radiusInImage);
     );
 
-    DEBUG_REQUEST("ImageProcessor:BottomCam:draw_ball_on_field",
+    DEBUG_REQUEST("ImageProcessor:CamBottom:draw_ball_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF9900", 20);
       CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
@@ -174,7 +170,7 @@ void ImageProcessor::execute()
     if(q > -1) {
       getBallPercept().sizeBasedRelativePosition = ballCenter;
     }
-    DEBUG_REQUEST("ImageProcessor:BottomCam:ballpos_relative_3d",
+    DEBUG_REQUEST("ImageProcessor:CamBottom:ballpos_relative_3d",
       SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobal);
       LINE_3D(ColorClasses::red, getCameraMatrix().translation, ballCenterGlobal);
     );
@@ -203,7 +199,7 @@ void ImageProcessor::execute()
       getBallPerceptTop().sizeBasedRelativePosition = ballCenterTop;
     }
 
-    DEBUG_REQUEST("ImageProcessor:TopCam:ballpos_relative_3d",
+    DEBUG_REQUEST("ImageProcessor:CamTop:ballpos_relative_3d",
       SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobalTop);
       LINE_3D(ColorClasses::red, getCameraMatrixTop().translation, ballCenterGlobalTop);
     );
@@ -223,10 +219,10 @@ void ImageProcessor::execute()
                         getFieldInfo().ballRadius));
 
     //project the old percept in the image
-    DEBUG_REQUEST("ImageProcessor:TopCam:mark_previous_ball",
+    DEBUG_REQUEST("ImageProcessor:CamTop:mark_previous_ball",
       TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBallTop.x, (int)projectedBallTop.y, (int)getBallPerceptTop().radiusInImage);
     );
-    DEBUG_REQUEST("ImageProcessor:BottomCam:mark_previous_ball",
+    DEBUG_REQUEST("ImageProcessor:CamBottom:mark_previous_ball",
       CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
     );
   }
@@ -246,11 +242,11 @@ void ImageProcessor::execute()
 
     getBallPerceptTop().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_in_image",
+    DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_in_image",
       TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
     );
 
-    DEBUG_REQUEST("ImageProcessor:TopCam:draw_ball_on_field",
+    DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF9900", 20);
       CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 
@@ -260,15 +256,15 @@ void ImageProcessor::execute()
   }
 
   //draw horizon to image
-  DEBUG_REQUEST("ImageProcessor:TopCam:draw_horizon",
-    Vector2<double> a(getArtificialHorizonTop().begin());
-    Vector2<double> b(getArtificialHorizonTop().end());
+  DEBUG_REQUEST("ImageProcessor:CamTop:draw_horizon",
+    Vector2d a(getArtificialHorizonTop().begin());
+    Vector2d b(getArtificialHorizonTop().end());
     TOP_LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 
-  DEBUG_REQUEST("ImageProcessor:BottomCam:draw_horizon",
-    Vector2<double> a(getArtificialHorizon().begin());
-    Vector2<double> b(getArtificialHorizon().end());
+  DEBUG_REQUEST("ImageProcessor:CamBottom:draw_horizon",
+    Vector2d a(getArtificialHorizon().begin());
+    Vector2d b(getArtificialHorizon().end());
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 

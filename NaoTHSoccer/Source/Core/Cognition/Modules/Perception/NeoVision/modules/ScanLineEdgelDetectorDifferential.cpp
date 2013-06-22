@@ -317,7 +317,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 
           double_edgel.center = (double_edgel.end + double_edgel.begin) / 2;
           double_edgel.center_angle = calculateMeanAngle(double_edgel.begin_angle, double_edgel.end_angle);
-          double_edgel.valid = true;
+          double_edgel.valid = fabs(Math::normalizeAngle(double_edgel.begin_angle - double_edgel.end_angle)) <= theParameters.double_edgel_angle_threshold;
 
           double_edgel.ScanLineID = current_scanlineID;
 

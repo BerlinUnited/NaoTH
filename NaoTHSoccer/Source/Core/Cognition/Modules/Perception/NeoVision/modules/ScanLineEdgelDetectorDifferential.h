@@ -80,6 +80,7 @@ public:
       PARAMETER_REGISTER(brightness_threshold) = 6;
       PARAMETER_REGISTER(scanline_count) = 31;
       PARAMETER_REGISTER(pixel_border_y) = 3;
+      PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
       syncWithConfig();
 
@@ -99,6 +100,8 @@ public:
 
     // don't scan the lower lines in the image
     int pixel_border_y;
+
+    double double_edgel_angle_threshold;
   } theParameters;
 
 private:
