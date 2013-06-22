@@ -5,8 +5,8 @@
  * Declaration of class WholeGoalLocator
  */
 
-#ifndef __WholeGoalLocator_h_
-#define __WholeGoalLocator_h_
+#ifndef _WholeGoalLocator_h_
+#define _WholeGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -15,7 +15,7 @@
 #include "Tools/Debug/DebugDrawings.h"
 
 #include "Tools/CameraGeometry.h"
-
+#include "Tools/DoubleCamHelpers.h"
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -31,22 +31,26 @@
 #include <Representations/Perception/FieldSidePercept.h>
 
 
-#include "PlatformInterface/Platform.h"
+//#include "PlatformInterface/Platform.h"
 
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(FieldSidePercept)
-  REQUIRE(GoalPercept)
+  
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(OdometryData)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
-  REQUIRE(CameraMatrix)
   REQUIRE(CameraInfo)
   REQUIRE(CompassDirection)
+
+  REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
   PROVIDE(CameraMatrixOffset)
   PROVIDE(SensingGoalModel)
@@ -58,12 +62,14 @@ class WholeGoalLocator : private WholeGoalLocatorBase
 {
 public:
   WholeGoalLocator();
+  virtual ~WholeGoalLocator(){}
 
-  ~WholeGoalLocator()
+  virtual void execute()
   {
-  };
-
-  virtual void execute();
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
+  }
+  void execute(CameraInfo::CameraID id);
 
 private:
   OdometryData lastRobotOdometry;
@@ -75,13 +81,19 @@ private:
   void correct_the_goal_percept(
     Vector2<double>& offset,
     GoalPercept::GoalPost& post1,
-    GoalPercept::GoalPost& post2);
+    GoalPercept::GoalPost& post2) const;
 
   double projectionError(
     double offsetX,
     double offsetY,
     const GoalPercept::GoalPost& post1,
-    const GoalPercept::GoalPost& post2);
+    const GoalPercept::GoalPost& post2) const;
+
+private:
+  CameraInfo::CameraID cameraID;
+
+  DOUBLE_CAM_REQUIRE(WholeGoalLocator, GoalPercept);
+  DOUBLE_CAM_REQUIRE(WholeGoalLocator, CameraMatrix);
 };
 
-#endif //__WholeGoalLocator_h_
+#endif //_WholeGoalLocator_h_
