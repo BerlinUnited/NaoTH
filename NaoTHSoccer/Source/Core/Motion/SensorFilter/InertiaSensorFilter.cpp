@@ -114,8 +114,8 @@ void InertiaSensorFilter::execute()
   PLOT("InertiaSensorFilter:mode", modePlot);
 
   // fill the representation
-  getInertialModel().orientation = Vector2<double>(
-                                  atan2(x.rotation[1].z, x.rotation[2].z),
+  getInertialModel().orientation = Vector2d(
+                                  atan2( x.rotation[1].z, x.rotation[2].z),
                                   atan2(-x.rotation[0].z, x.rotation[2].z));
   
   // this removes any kind of z-rotation from internal rotation
