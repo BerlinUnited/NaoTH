@@ -30,6 +30,9 @@ CameraMatrixCorrector::CameraMatrixCorrector()
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
     false);
 
+  DEBUG_REQUEST_REGISTER("CameraMatrix:CamTop","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrix:CamBottom","",false);
+
   DEBUG_REQUEST_REGISTER("CameraMatrix:reset_calibration", "set the calibration offsets of the CM to 0", false);
 
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:Camera", "Show the robot body in the 3D viewer.", false);
@@ -39,16 +42,36 @@ CameraMatrixCorrector::~CameraMatrixCorrector()
 {
 }
 
-void CameraMatrixCorrector::execute()
+void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
+
   double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
   udpateTime = getFrameInfo().getTime();
   
-  DEBUG_REQUEST("CameraMatrix:calibrate_camera_matrix", calibrate(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", getCameraInfoParameter().saveToConfig(); );
 
-  DEBUG_REQUEST("CameraMatrix:reset_calibration", reset_calibration(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", getCameraInfoParameter().saveToConfig(); );
+  CameraInfo::CameraID camera_to_calibrate = CameraInfo::numOfCamera;
+
+  DEBUG_REQUEST("CameraMatrix:CamTop", camera_to_calibrate = CameraInfo::Top; );
+  DEBUG_REQUEST("CameraMatrix:CamBottom", camera_to_calibrate = CameraInfo::Bottom; );
+
+  DEBUG_REQUEST("CameraMatrix:calibrate_camera_matrix", 
+    if(cameraID == camera_to_calibrate) {
+      calibrate();
+  });
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", 
+    if(cameraID == camera_to_calibrate) {
+      getCameraInfoParameter().saveToConfig(); 
+  });
+
+  DEBUG_REQUEST("CameraMatrix:reset_calibration", 
+    if(cameraID == camera_to_calibrate) {
+      reset_calibration(); 
+  });
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", 
+    if(cameraID == camera_to_calibrate) {
+      getCameraInfoParameter().saveToConfig(); 
+  });
 
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
@@ -80,8 +103,9 @@ void CameraMatrixCorrector::execute()
 void CameraMatrixCorrector::reset_calibration()
 {
   CameraInfoParameter& cameraInfo = getCameraInfoParameter();
-  cameraInfo.cameraRollOffset = 0.0;
-  cameraInfo.cameraTiltOffset = 0.0;
+  cameraInfo.correctionOffset[cameraID] = Vector2d();
+  //cameraInfo.cameraRollOffset = 0.0;
+  //cameraInfo.cameraTiltOffset = 0.0;
 }
 
 void CameraMatrixCorrector::calibrate()
@@ -128,16 +152,18 @@ void CameraMatrixCorrector::calibrate()
   CameraInfoParameter& cameraInfo = getCameraInfoParameter();
 
   double lambda = 0.01;
-  if (offset.abs() > lambda)
+  if (offset.abs() > lambda) {
     offset.normalize(lambda);
+  }
 
 
   double maxValue = Math::fromDegrees(10.0); // maximal correction offset
   offset.x = Math::clamp(offset.x, -maxValue, maxValue);
   offset.y = Math::clamp(offset.y, -maxValue, maxValue);
 
-  cameraInfo.cameraRollOffset += offset.x;
-  cameraInfo.cameraTiltOffset += offset.y;
+  //cameraInfo.cameraRollOffset += offset.x;
+  //cameraInfo.cameraTiltOffset += offset.y;
+  cameraInfo.correctionOffset[cameraID] += offset;
 
   // until now we only changed the parameters, change the pure CameraInfo as well
   getCameraInfo() = cameraInfo;

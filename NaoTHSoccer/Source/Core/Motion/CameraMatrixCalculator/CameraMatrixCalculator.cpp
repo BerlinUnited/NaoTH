@@ -16,13 +16,13 @@ void CameraMatrixCalculator::calculateCameraMatrix(
   // get the pose of the head
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
 
-  // apply the correction
-  pose.rotateY(theCameraInfo.cameraTiltOffset)
-      .rotateX(theCameraInfo.cameraRollOffset);
-
   // transformation from the head to the camera
   pose.conc(theCameraInfo.transformation[theCameraInfo.cameraID]);
   
+  // apply the correction
+  pose.rotateY(theCameraInfo.correctionOffset[theCameraInfo.cameraID].y) // tilt
+      .rotateX(theCameraInfo.correctionOffset[theCameraInfo.cameraID].x); // roll
+
   // copy the result
   theCameraMatrix = pose;
 

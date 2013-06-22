@@ -20,8 +20,6 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
-#include <Representations/Infrastructure/CameraInfo.h>
-#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/Image.h>
 
 
