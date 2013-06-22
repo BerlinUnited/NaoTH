@@ -23,34 +23,32 @@ PerceptProjector::~PerceptProjector()
 
 void PerceptProjector::execute()
 {
-  Vector2<double> offset(getCameraMatrixOffset().offsetByGoalModel);
+  Vector2d offset(getCameraMatrixOffset().offsetByGoalModel);
 //  bool updated = false;
   
+
+  // experimental: correct the CameraMatrix by the line percept
+  /*
+  to make it work you have to redefine the according operator
   if(false && getLinePercept().lines.size() > 1)
   {
-    // take two random lines
-    // (if they are the same no correction is made)
-    int idx1 = Math::random((int)getLinePercept().lines.size());
-    int idx2 = Math::random((int)getLinePercept().lines.size());
-    
-    if(idx1 != idx2 &&
-       getLinePercept().lines[idx1].type != LinePercept::C &&
-       getLinePercept().lines[idx2].type != LinePercept::C)
-    {
-      // TODO: select the lines randomized
-      Vector2<double> offset_line(offset);
-      if(correct_the_line_percept(
-          offset_line,
-          getLinePercept().lines[idx1].lineInImage.segment, 
-          getLinePercept().lines[idx2].lineInImage.segment
-          ))
-      {
-        offset = offset_line;
-//        updated = true;
-      }
+    Vector2d offset_line(offset);
+    if(solveGN21(offset_line,100,*this)) {
+      offset = offset_line;
     }
   }
+  */
   
+  if(false && getScanLineEdgelPerceptTop().numOfSeenEdgels > 10)
+  {
+    last_iteration = -1;
+    Vector2d offset_edgels(getCameraMatrixOffset().offset);
+    if(solveGN21(offset_edgels,100,*this)) {
+      offset = offset_edgels;
+      getCameraMatrixOffset().offset += (offset-getCameraMatrixOffset().offset)*0.1;
+    }
+  }
+
   /*
   if(getSensingGoalModel().someGoalWasSeen || updated)
     offsetBuffer.add(getCameraMatrixOffset().offset+offset);
@@ -61,7 +59,7 @@ void PerceptProjector::execute()
   PLOT("PerceptProjector:offset.x", offset.x);
   PLOT("PerceptProjector:offset.y", offset.y);
 
-  Vector2<double> averageOffset = offsetBuffer.getAverage();
+  Vector2d averageOffset = offsetBuffer.getAverage();
 
   PLOT("PerceptProjector:averageOffset.x", getCameraMatrixOffset().offset.x);
   PLOT("PerceptProjector:averageOffset.y", getCameraMatrixOffset().offset.y);
@@ -145,13 +143,11 @@ void PerceptProjector::execute()
 
 
 bool PerceptProjector::correct_the_line_percept(
-  Vector2<double>& offset,
+  Vector2d& offset,
   const Math::LineSegment& lineOne,
   const Math::LineSegment& lineTwo) const
 {
   const double epsylon = 1e-8;
-
-  // 
   const double minStepSize = Math::fromDegrees(0.1);
 
   // 
@@ -167,7 +163,7 @@ bool PerceptProjector::correct_the_line_percept(
     double dg2 = (dg21 - dg22) / (2 * epsylon);
 
     // Dg(x)^T*Dg(x)
-    Vector2<double> dg(dg1, dg2);
+    Vector2d dg(dg1, dg2);
 
     // derivative too small steps
     if (dg.abs() < epsylon) break;
@@ -181,7 +177,7 @@ bool PerceptProjector::correct_the_line_percept(
     ASSERT(w > 0 && !Math::isNan(w));
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
-    Vector2<double> z_GN = dg * (-w / (dg * dg));
+    Vector2d z_GN = dg * (-w / (dg * dg));
     offset += z_GN;
 
     // correction step too small
@@ -256,4 +252,31 @@ double PerceptProjector::projectionErrorLine(
 
   return min(error, error_orth);
 }//end projectionErrorLine
+
+
+double PerceptProjector::projectionErrorDoubleEdgel(
+    double offsetX,
+    double offsetY, 
+    const DoubleEdgel& edgel) const
+{
+  CameraMatrix tmpCM(getCameraMatrixTop());
+
+  tmpCM.rotateY(offsetY)
+       .rotateX(offsetX);
+
+  // project the goal posts
+  const CameraInfo& cameraInfo = getImage().cameraInfo;
+
+  Vector2d n(-sin(edgel.center_angle), cos(edgel.center_angle));
+  Vector2d a = Vector2d(edgel.center) + n*(n*Vector2d(edgel.begin-edgel.center));
+  Vector2d b = Vector2d(edgel.center) + n*(n*Vector2d(edgel.end  -edgel.center));
+
+  Vector2d pointOne; 
+  Vector2d pointTwo;
+
+  CameraGeometry::imagePixelToFieldCoord(tmpCM, cameraInfo, a, 0.0, pointOne);
+  CameraGeometry::imagePixelToFieldCoord(tmpCM, cameraInfo, b, 0.0, pointTwo);
+
+  return Math::sqr((pointOne - pointTwo).abs2() - 50.0*50.0);
+}
 
