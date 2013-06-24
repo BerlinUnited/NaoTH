@@ -61,6 +61,9 @@ option basic_play
       // it has to be after the decide_game_state because of the getup motion
       arm.control_mode = normal;
 
+      // team symbols
+      team.is_playing_as_striker = false;
+
       //set LED stuff
       // make here some initializations
       set_right_ear = game.player_number*3+1; // show player number

@@ -21,6 +21,7 @@ option play_soccer
     action 
     {
       arm.control_mode = back;
+      decide_role();
     }
   }
 
