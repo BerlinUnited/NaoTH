@@ -8,8 +8,12 @@ if(ball.was_seen)
 initial state start {
 
 decision{
-    else if(state_time>500 )
-      goto turn_left;
+    else if(state_time>500 ){
+        if (ball.preview.y>0)
+          goto turn_left_first;
+        else
+          goto turn_right_first;
+      }
     else
       stay;
 }
@@ -30,11 +34,11 @@ action{
 }
 }
 
-state turn_left {
+state turn_left_first{
 
 decision{
     else if(state_time>750 )
-      goto stop;
+      goto stop1;
     else
       stay;
 }
@@ -55,11 +59,58 @@ action{
 }
 }
 
-state stop {
+state turn_right_first{
+
+decision{
+    else if(state_time>750 )
+      goto stop2;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = 10000;
+      motion.walk_speed.rot = -20;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = -200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state stop1 {
 
 decision{
     else if(state_time>500 )
       goto turn_right;
+    else
+      stay;
+}
+action{
+      motion.type = stand;
+
+      motion.walk.stop_with_stand=false;
+      
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+
+}
+}
+
+state stop2 {
+
+decision{
+    else if(state_time>500 )
+      goto turn_left;
     else
       stay;
 }
@@ -96,6 +147,30 @@ action{
       head.control_mode = none;
       head.point_in_world.x = 200;
       head.point_in_world.y = -200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state turn_left{
+decision{
+    else if(state_time>1500 )
+      goto finish;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = -10000;
+      motion.walk_speed.rot = 20;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
 }

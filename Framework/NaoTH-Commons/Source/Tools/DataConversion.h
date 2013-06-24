@@ -13,6 +13,7 @@
 #include <sstream>
 #include "Messages/CommonTypes.pb.h"
 #include "Tools/Math/Pose2D.h"
+#include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Vector3.h"
 
 namespace naoth
@@ -47,6 +48,10 @@ namespace DataConversion
   // Pose2D
   void toMessage(const Pose2D& data, naothmessages::Pose2D& msg);
   void fromMessage(const naothmessages::Pose2D& msg, Pose2D& data);
+
+  // Pose3D
+  void toMessage(const Pose3D& data, naothmessages::Pose3D& msg);
+  void fromMessage(const naothmessages::Pose3D& msg, Pose3D& data);
 
 } // namespace DataConversion
 

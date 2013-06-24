@@ -26,6 +26,7 @@ option move_around_ball
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
       motion.walk.coordinate = hip;
+      head.control_mode = search_for_ball;
     }
   }
   
@@ -38,6 +39,7 @@ option move_around_ball
       motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=0, max=45)), min=100, max=100) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = hip;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -49,6 +51,7 @@ option move_around_ball
       motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=-45, max=0)), min=-100, max=-100) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = hip;
+      head.control_mode = search_for_ball;
     }
   }
 }

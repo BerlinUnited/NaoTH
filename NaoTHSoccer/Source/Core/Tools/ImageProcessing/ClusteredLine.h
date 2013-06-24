@@ -45,7 +45,7 @@ public:
 
     dSum = normal.rotateLeft() * edgel.center;
 
-    thickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+    thickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
     thicknessSum = thickness;
     count = 1;
   };
@@ -55,7 +55,7 @@ public:
   bool check(const DoubleEdgel& edgel) const
   {
     //
-    double edgelThickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+    double edgelThickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
     
     // the normal vector of the line in the hessian normalform
     Vector2<double> lineNormal;
@@ -112,7 +112,7 @@ public:
     if(check(edgel))
     {
       //TODO: don't repeat the calculation
-      double edgelThickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+      double edgelThickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
 
       end = edgel.center;
       

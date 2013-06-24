@@ -40,7 +40,6 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getScanLineEdgelPercept().reset();
 
-
   cameraBrighness = getCurrentCameraSettings().data[CameraSettings::Brightness];
   if(cameraBrighness <= 0 || cameraBrighness > 255)
   {
@@ -371,7 +370,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   
 
   // don't scan the two bottom lines
-  for(int i = 3; i < scanLine.numberOfPixels; i++ )
+  for(int i = 3; i < scanLine.numberOfPixels; i +=2 )
   {
     getImage().get(point.x,point.y,pixel);
     thisPixelBrightness = pixel.y;
@@ -532,6 +531,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     }
 
     // this one is a kind of slow but does not crash..
+    scanLine.getNext(point);
     scanLine.getNext(point);
     //point.y--; // CRASHES just go up
   }//end for

@@ -46,7 +46,30 @@ static void motion_wrapper_post()
 }
 //
 
+void* shutdownCallback(void* ref)
+{
 
+  // play a sound that the user knows we recognized his shutdown request
+  system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
+
+  // stop the user program
+  std::cout << "stopping naoth" << std::endl;
+  system("naoth stop");
+
+  sleep(5);
+
+  // we are the child process, do a blocking call to shutdown
+  system("/sbin/shutdown -h now");
+  std::cout << "System shutdown requested" << std::endl;
+
+  // await termination
+  while(1)
+  {
+    sleep(100);
+  }
+
+  return NULL;
+}//end soundThreadCallback
 
 // some low level debugging stuff
 //#define DEBUG_SMAL
@@ -78,6 +101,7 @@ void* debug_wrapper(void* ref)
 #else
 #define LNT (void)0
 #endif
+
 
 SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& pName )
   :
@@ -217,13 +241,6 @@ void SMALModule::motionCallbackPre()
     time_motionCallbackPre = (int)(stop - start);
     return;
   }
-  else if(shutdown_requested)
-  {
-    setWarningLED(true);
-    long long stop = NaoTime::getSystemTimeInMicroSeconds();
-    time_motionCallbackPre = (int)(stop - start);
-    return;
-  }
 
   bool stiffness_set = false;
 
@@ -284,14 +301,6 @@ void SMALModule::motionCallbackPost()
   long long start = NaoTime::getSystemTimeInMicroSeconds();
   static int drop_count = 10;
 
-
-  if(shutdown_requested)
-  {
-    // do nothing
-    return;
-  }
-
-
   NaoSensorData* sensorData = naoSensorData.writing();
 
   // current system time (System time, not nao time (!))
@@ -304,28 +313,15 @@ void SMALModule::motionCallbackPost()
   // each cycle needs 10ms so if the button was pressed for 30 seconds
   // these are 300 frames
   sensorData->get(theButtonData);
-  if(theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
+  if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
   {
     shutdown_requested = true;
 
-    if(fork() == 0)
+    GError* err = NULL;
+    g_thread_create(shutdownCallback, 0, true, &err);
+    if(err)
     {
-      // we are the child process
-
-      // play a sound that the user knows we recognized his shutdown request
-      system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
-
-      sleep(1); // give the parent process some time to set the LEDs
-
-      // we are the child process, do a blocking call to shutdown
-      system("/sbin/shutdown -h now");
-      std::cout << "System shutdown requested" << std::endl;
-
-      // await termination
-      while(1)
-      {
-        sleep(100);
-      }
+      g_warning("Could not shutdown thread: %s", err->message);
     }
   }
 
@@ -449,7 +445,7 @@ bool SMALModule::runningEmergencyMotion()
       initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
     }//end if
 
-    setWarningLED();
+    setWarningLED(shutdown_requested);
   }//end if
 
 

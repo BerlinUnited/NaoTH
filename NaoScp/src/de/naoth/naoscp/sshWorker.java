@@ -19,7 +19,7 @@ import java.util.regex.*;
  *
  * @author claas
  */
-abstract class sshWorker extends SwingWorker<Boolean, File>
+abstract class SshWorker extends SwingWorker<Boolean, File>
 {
   NaoScpConfig config;
 
@@ -124,7 +124,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
   }
 
-  public sshWorker(NaoScpConfig naoScpConfig, String ip, String sNaoNo, String sNaoByte)
+  public SshWorker(NaoScpConfig naoScpConfig, String ip, String sNaoNo, String sNaoByte)
   {
     config = naoScpConfig;
     config.addresses.clear();
@@ -132,7 +132,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     init(sNaoNo, sNaoByte);
   }
 
-  public sshWorker(NaoScpConfig naoScpConfig, String sNaoNo, String sNaoByte)
+  public SshWorker(NaoScpConfig naoScpConfig, String sNaoNo, String sNaoByte)
   {
     config = naoScpConfig;
     init(sNaoNo, sNaoByte);
@@ -371,7 +371,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
               {
                 setInfo("get " + lsEntry.getFilename());
                 FileOutputStream foo = new FileOutputStream(f);
-                c.get(remote + "/" + lsEntry.getFilename(), foo, new progressMonitor(config.progressBar));
+                c.get(remote + "/" + lsEntry.getFilename(), foo, new ProgressMonitor(config.progressBar));
               }
             }
           }
@@ -427,7 +427,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
                 }
                 setInfo("get " + lsEntry.getFilename());
                 FileOutputStream foo = new FileOutputStream(f);
-                c.get(remote + "/" + lsEntry.getFilename(), foo, new progressMonitor(config.progressBar));
+                c.get(remote + "/" + lsEntry.getFilename(), foo, new ProgressMonitor(config.progressBar));
               }
             }
           }
@@ -517,7 +517,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
             }//end try
             try
             {
-              c.put(src.getAbsolutePath(), dst, new progressMonitor(config.progressBar));
+              c.put(src.getAbsolutePath(), dst, new ProgressMonitor(config.progressBar));
             }
             catch(SftpException ex)
             {

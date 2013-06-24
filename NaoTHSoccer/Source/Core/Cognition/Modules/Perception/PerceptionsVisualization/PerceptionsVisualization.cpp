@@ -14,7 +14,11 @@
 using namespace std;
 
 PerceptionsVisualization::PerceptionsVisualization()
+  : cameraID(CameraInfo::numOfCamera)
 {
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamTop", "execute for the top cam", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamBottom", "execute for the bottom cam", false);
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:ball_percept", "draw ball percept", false);
@@ -31,10 +35,24 @@ PerceptionsVisualization::PerceptionsVisualization()
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:players_percept", "draw players percept", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:corrrect_camera_matrix","", false);
 }
 
 void PerceptionsVisualization::execute()
 {
+  DEBUG_REQUEST("PerceptionsVisualization:field:CamTop",
+    execute(CameraInfo::Top);
+  );
+  DEBUG_REQUEST("PerceptionsVisualization:field:CamBottom",
+    execute(CameraInfo::Bottom);
+  );
+}
+
+void PerceptionsVisualization::execute(CameraInfo::CameraID id)
+{
+  cameraID = id;
+
   //draw ball percept
   DEBUG_REQUEST("PerceptionsVisualization:field:ball_percept",
     FIELD_DRAWING_CONTEXT;
@@ -88,6 +106,12 @@ void PerceptionsVisualization::execute()
   DEBUG_REQUEST("PerceptionsVisualization:field:edgels_percept",
     FIELD_DRAWING_CONTEXT;
 
+    CameraMatrix cameraMatrix(getCameraMatrix());
+    DEBUG_REQUEST("PerceptionsVisualization:field:corrrect_camera_matrix",
+      cameraMatrix.rotateY(getCameraMatrixOffset().offset.y)
+                  .rotateX(getCameraMatrixOffset().offset.x);
+    );
+
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
@@ -115,7 +139,7 @@ void PerceptionsVisualization::execute()
       Vector2<double> edgelOnFieldDirectionBegin;
       Vector2<double> edgelOnFieldBegin;
       if(CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
+        cameraMatrix,
         getImage().cameraInfo,
         e.begin.x,
         e.begin.y,
@@ -133,7 +157,7 @@ void PerceptionsVisualization::execute()
         direction += e.begin;
         
         if(CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(),
+          cameraMatrix,
           getImage().cameraInfo,
           direction.x,
           direction.y,
@@ -150,7 +174,7 @@ void PerceptionsVisualization::execute()
       Vector2<double> edgelOnFieldDirectionEnd;
       Vector2<double> edgelOnFieldEnd;
       if(CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
+        cameraMatrix,
         getImage().cameraInfo,
         e.end.x,
         e.end.y,
@@ -168,7 +192,7 @@ void PerceptionsVisualization::execute()
         direction += e.end;
 
         if(CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(),
+          cameraMatrix,
           getImage().cameraInfo,
           direction.x,
           direction.y,
@@ -190,7 +214,7 @@ void PerceptionsVisualization::execute()
       Vector2<double> edgelOnFieldDirectionCenter;
 
       if(CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
+        cameraMatrix,
         getImage().cameraInfo,
         direction.x,
         direction.y,

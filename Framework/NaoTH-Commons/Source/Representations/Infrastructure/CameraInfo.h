@@ -40,8 +40,8 @@ namespace naoth
     b1(0.0),
     b2(0.0),
     cameraID(Bottom),
-    cameraRollOffset(0.0),
-    cameraTiltOffset(0.0),
+    //cameraRollOffset(0.0),
+    //cameraTiltOffset(0.0),
     transformation(),
     openingAngleDiagonal(0.0)
     {}
@@ -80,10 +80,11 @@ namespace naoth
     CameraID cameraID;
 
     // for calibration
-    double cameraRollOffset;
-    double cameraTiltOffset;
-
-    // offset to the neck joint
+    //double cameraRollOffset;
+    //double cameraTiltOffset;
+    Vector2d correctionOffset[numOfCamera];
+    
+      // offset to the neck joint
     Pose3D transformation[numOfCamera];
 
     // getter functions that use the existing values to calculate their result
@@ -102,14 +103,9 @@ namespace naoth
     {
       switch(id)
       {
-        case Top:
-          return "Top";
-
-        case Bottom:
-          return "Bottom";
-
-        default:
-          return "unknown";
+        case Top: return "Top";
+        case Bottom: return "Bottom";
+        default: return "unknown";
       }
     }
 
@@ -131,7 +127,7 @@ namespace naoth
   private:
     struct CameraTransInfo
     {
-      Vector3<double> offset;
+      Vector3d offset;
       double rotationY;
     };
 

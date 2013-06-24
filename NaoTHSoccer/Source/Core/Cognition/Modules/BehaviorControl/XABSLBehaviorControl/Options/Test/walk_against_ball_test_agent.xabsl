@@ -1,0 +1,16 @@
+/** walk against ball "kick" tester */
+option walk_against_ball_test_agent {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      walk_against_ball_test();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}

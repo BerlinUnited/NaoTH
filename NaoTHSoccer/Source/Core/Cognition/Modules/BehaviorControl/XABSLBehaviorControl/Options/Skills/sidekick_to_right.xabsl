@@ -1,4 +1,5 @@
-/** Side kick the ball to the right (with the left foot) in a 90 degree angle**/
+/** Side kick the ball to the right (with the left foot) in a 90 degree angle
+    assumes ball is infront of hip instead of foot **/
 
 option sidekick_to_right
 {

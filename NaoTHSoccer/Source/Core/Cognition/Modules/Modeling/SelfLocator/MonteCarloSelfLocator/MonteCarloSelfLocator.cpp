@@ -161,25 +161,24 @@ void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, doub
 }//end updateByPose
 
 
-void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const
 {
   const double sigmaAngle    = parameters.sigmaAngleGoalPost;
   const double sigmaDistance = parameters.sigmaDistanceGoalPost;
   const double cameraHeight  = getCameraMatrix().translation.z;
-
+  //const GoalPercept& goalPercept = getGoalPercept();
   
   //with the GoalPercept
-  for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+  for(int i = 0; i < goalPercept.getNumberOfSeenPosts(); i++)
   {
-    const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
+    const GoalPercept::GoalPost& seenPost = goalPercept.getPost(i);
 
     const double seenDistance = seenPost.position.abs();
     const double seenAngle = seenPost.position.angle();
 
     // classify the seen goal
-
-    const Vector2<double>* leftGoalPosition;
-    const Vector2<double>* rightGoalPosition;
+    const Vector2d* leftGoalPosition;
+    const Vector2d* rightGoalPosition;
     
     if( getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
         (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
@@ -188,48 +187,27 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     {
       leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
       rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
-    }
-    else
-    {
+    } else {
       // own goals are switched (!)
       leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
       rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
     }
 
-    
-    /*
-    //const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
-    if (seenPost.color == opponentGoalColor)
-    {
-      leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
-      rightGoalPosition = getFieldInfo().opponentGoalPostRight;
-    }else
-    {
-      // own goals are switched (!)
-      leftGoalPosition = getFieldInfo().ownGoalPostRight;
-      rightGoalPosition = getFieldInfo().ownGoalPostLeft;
-    }//end else
-    */
-
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     { 
       Sample& sample = sampleSet[j];
-      Vector2<double> expectedPostPosition;
+      Vector2d expectedPostPosition;
 
       // HACK:? each particle decides for itself
       if(fabs(Math::normalize(sample.rotation + seenAngle)) < Math::pi_2)
       {
         leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
         rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
-      }
-      else
-      {
+      } else {
         // own goals are switched (!)
         leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
         rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
       }
-
-
 
       if(seenPost.type == GoalPercept::GoalPost::rightPost)
       {
@@ -237,32 +215,32 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
         // switch if the robot is behind the goal
         if( (expectedPostPosition.x < 0 && sample.translation.x < expectedPostPosition.x) ||
             (expectedPostPosition.x > 0 && sample.translation.x > expectedPostPosition.x))
+        {
           expectedPostPosition = *leftGoalPosition;
-      }
-      else if(seenPost.type == GoalPercept::GoalPost::leftPost)
-      {
+        }
+      } else if(seenPost.type == GoalPercept::GoalPost::leftPost) {
         expectedPostPosition = *leftGoalPosition;
         // switch if the robot is behind the goal
         if( (expectedPostPosition.x < 0 && sample.translation.x < expectedPostPosition.x) ||
             (expectedPostPosition.x > 0 && sample.translation.x > expectedPostPosition.x))
+        {
           expectedPostPosition = *rightGoalPosition;
-      }
-      else // unknown post
-      {
-        Vector2<double> globalPercept = sample * seenPost.position;
+        }
+      } else { // unknown post
+        Vector2d globalPercept = sample * seenPost.position;
         // choose the closest one
-        if((globalPercept - *rightGoalPosition).abs() < (globalPercept - *leftGoalPosition).abs())
+        if((globalPercept - *rightGoalPosition).abs() < (globalPercept - *leftGoalPosition).abs()) {
           expectedPostPosition = *rightGoalPosition;
-        else
+        } else {
           expectedPostPosition = *leftGoalPosition;
+        }
       }
 
-      Vector2<double> relPost = sample/expectedPostPosition;
+      Vector2d relPost = sample/expectedPostPosition;
       double expectedDistance = relPost.abs();
       double expectedAngle = relPost.angle();
 
-      if(seenPost.positionReliable)
-      {
+      if(seenPost.positionReliable) {
         sample.likelihood *= computeDistanceWeighting(seenDistance, expectedDistance, cameraHeight, sigmaDistance, 1.0);
       }
       sample.likelihood *= computeAngleWeighting(seenAngle, expectedAngle, sigmaAngle, 1.0);
@@ -273,7 +251,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
 }//end updateByGoalPosts
 
 
-void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByLinesTable(const LinePercept& linePercept, SampleSet& sampleSet) const
 {
   const double cameraHeight = getCameraMatrix().translation.z;
   const double sigmaDistance = parameters.sigmaDistanceLine;
@@ -287,13 +265,13 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
   //for(lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
   for(int i = 0; i < 3; i++)
   {
-    int idx = Math::random((int)getLinePercept().lines.size());
+    int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle 
     // when the circle itself was detected
-    if(getLinePercept().lines[idx].type == LinePercept::C && getLinePercept().middleCircleWasSeen)
+    if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
       continue;
 
-    if(getLinePercept().lines[idx].lineOnField.getLength() < 300) // don't use too short lines
+    if(linePercept.lines[idx].lineOnField.getLength() < 300) // don't use too short lines
       continue;
 
     lp = idx;
@@ -304,7 +282,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
   {
     //const int centerLine_id = 4; // HACK: see FieldInfo
     // special treatment for the center line
-    //if(getLinePercept().lines[lp].seen_id == LinePercept::center_line)
+    //if(linePercept.lines[lp].seen_id == LinePercept::center_line)
     //{
       // get the center line
       //const Math::LineSegment& centerLine = getFieldInfo().fieldLinesTable.getLines()[centerLine_id];
@@ -315,7 +293,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
     //int lineVotes[30] = {0};
     //int maxIdx = 0;
 
-    const Math::LineSegment& relPercept = getLinePercept().lines[lp].lineOnField;
+    const Math::LineSegment& relPercept = linePercept.lines[lp].lineOnField;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
     {
@@ -324,17 +302,17 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       // statistics
       shortestLine = std::min(shortestLine, relPercept.getLength());
 
-
       // translocation of the line percept to the global coords
-      Vector2d abs_begin = sample*relPercept.begin();
-      Vector2d abs_end = sample*relPercept.end();
-      Vector2d abs_direction = abs_end - abs_begin;
-      Vector2d abs_mid = (abs_begin+abs_end)*0.5;
+      Vector2d abs_begin      = sample*relPercept.begin();
+      Vector2d abs_end        = sample*relPercept.end();
+      Vector2d abs_direction  = abs_end - abs_begin;
+      Vector2d abs_mid        = (abs_begin+abs_end)*0.5;
 
       // classify the line percept
-      int length = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
+      // todo: this may make problems when the lines are distored
+      int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type = (getLinePercept().lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
+      int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
 
       /*
       const LinesTable::NamedPoint& p_mid = 
@@ -348,8 +326,9 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       LinesTable::NamedPoint p_mid = getFieldInfo().fieldLinesTable.get_closest_point(abs_mid, type);
 
       // there is no such line
-      if(p_mid.id == -1)
+      if(p_mid.id == -1) {
         continue;
+      }
 
       // get the line
       const Math::LineSegment& ref_line = getFieldInfo().fieldLinesTable.getLines()[p_mid.id];
@@ -370,19 +349,16 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 
 
       DEBUG_REQUEST("MCSL:draw_corner_votes",
-        if(getLinePercept().lines[lp].type != LinePercept::C)
-        {
+        if(linePercept.lines[lp].type != LinePercept::C) {
           LINE(p1.x, p1.y, pm.x, pm.y);
           LINE(p2.x, p2.y, pm.x, pm.y);
-        }
-      );
+      });
 
       {
         Vector2d relP1(sample/p1);
         sample.likelihood *= computeDistanceWeighting(relPercept.begin().abs(), relP1.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relPercept.begin().angle(), relP1.angle(), sigmaAngle, 1.0);
       }
-      
       {
         Vector2d relP2(sample/p2);
         sample.likelihood *= computeDistanceWeighting(relPercept.end().abs(), relP2.abs(), cameraHeight, sigmaDistance, 1.0);
@@ -394,7 +370,6 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
         sample.likelihood *= computeDistanceWeighting(relMidPoint.abs(), relPM.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relMidPoint.angle(), relPM.angle(), sigmaAngle, 1.0);
       }
-      
     }//end for
 
     /*
@@ -433,17 +408,17 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 
 
 
-void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByCornersTable(const LinePercept& linePercept, SampleSet& sampleSet) const
 {
   const double sigmaDistance = parameters.sigmaDistanceCorner;
   const double sigmaAngle    = parameters.sigmaAngleCorner;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  for(unsigned int lp=0; lp < getLinePercept().intersections.size(); lp++)
+  for(unsigned int lp=0; lp < linePercept.intersections.size(); lp++)
   {
     // TODO: separate class
     const int numberOfCornerVotes = 30;
-    vector<int> cornerVotes(numberOfCornerVotes);
+    std::vector<int> cornerVotes(numberOfCornerVotes);
     int maxIdx = 0;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
@@ -451,12 +426,12 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
       Sample& sample = sampleSet[s];
 
       // current percept
-      const Vector2<double>& relPercept = getLinePercept().intersections[lp].getPosOnField();
+      const Vector2d& relPercept = linePercept.intersections[lp].getPosOnField();
       // transform the relative percept to the global coordinates
-      Vector2<double> absPercept = sample*relPercept;
+      Vector2d absPercept = sample*relPercept;
       
-      bool isXorT = ((getLinePercept().intersections[lp].getType() == Math::Intersection::T) ||(getLinePercept().intersections[lp].getType() == Math::Intersection::X));
-      bool isL = getLinePercept().intersections[lp].getType() == Math::Intersection::L;
+      bool isXorT = ((linePercept.intersections[lp].getType() == Math::Intersection::T) ||(linePercept.intersections[lp].getType() == Math::Intersection::X));
+      bool isL = linePercept.intersections[lp].getType() == Math::Intersection::L;
 
       LinesTable::NamedPoint p;
       if(isXorT) {
@@ -465,7 +440,7 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
         p = getFieldInfo().fieldLinesTable.get_closest_corner_point(absPercept);
       }else
       {
-        // circle or something like this :)
+        // circle or something like similar :)
         continue;
       }
       
@@ -473,16 +448,16 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
         // vote for the corner id
         ASSERT(p.id < numberOfCornerVotes);
         cornerVotes[p.id]++;
-        if(cornerVotes[p.id] > cornerVotes[maxIdx]) 
+        if(cornerVotes[p.id] > cornerVotes[maxIdx]) {
           maxIdx = p.id;
+        }
       );
 
-
-      Vector2<double> relPoint = sample/p.position;
-
+      Vector2d relPoint = sample/p.position;
       sample.likelihood *= computeDistanceWeighting(relPercept.abs(), relPoint.abs(), cameraHeight, sigmaDistance, 1.0);
       sample.likelihood *= computeAngleWeighting(relPercept.angle(), relPoint.angle(), sigmaAngle, 1.0);
     }//end for
+
 
     DEBUG_REQUEST("MCSL:draw_corner_votes",
       FIELD_DRAWING_CONTEXT;
@@ -507,23 +482,24 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
 }//end updateByCornersTable
 
 
-void MonteCarloSelfLocator::updateByMiddleCircle(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const
 {
-  if(!getLinePercept().middleCircleWasSeen)
+  if(!linePercept.middleCircleWasSeen) {
     return;
+  }
 
   double sigmaDistance = parameters.sigmaDistanceCenterCircle;
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
-  Vector2<double> centerCirclePosition; // (0,0)
+  Vector2d centerCirclePosition; // (0,0)
 
   for(unsigned int s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
 
     // translate the center circle to local coord 
-    Vector2<double> localCircle = sample/centerCirclePosition;
+    Vector2d localCircle = sample/centerCirclePosition;
 
     double expectedDistance = localCircle.abs();
     double expectedAngle = localCircle.angle();
@@ -558,7 +534,7 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
       Sample& sample = sampleSet[j];
 
       // translate the flag to local coord 
-      Vector2<double> localFlag = sample/flag.absolutePosOnField;
+      Vector2d localFlag = sample/flag.absolutePosOnField;
 
       double expectedDistance = localFlag.abs();
       double expectedAngle = localFlag.angle();
@@ -580,7 +556,6 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
 // sensor resetting by whole goal
   if(getSensingGoalModel().someGoalWasSeen)
   {
-    
     // currently, getCompassDirection() is in fact just the rotation of the robot pose
     Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
 
@@ -596,7 +571,7 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
     {
       Pose2D poseMirrored(pose);
       poseMirrored.translation *= -1;
-      poseMirrored.rotate(Math::pi); 
+      poseMirrored.rotate(Math::pi);
 
       if(isInsideCarpet(poseMirrored.translation))
       {
@@ -688,7 +663,6 @@ int MonteCarloSelfLocator::sensorResetByGoalPosts(SampleSet& sampleSet, int n) c
  
     }//end for i (goal posts)
   }//end if
-
 
 
   // WORK in progress
@@ -829,12 +803,10 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
 
   // add a uniform offset for stabilization
-  for(unsigned int i = 0; i < sampleSet.size(); i++)
-  {
+  for(unsigned int i = 0; i < sampleSet.size(); i++) {
     oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
   }//end for
   oldSampleSet.normalize();
-
 
   // resample 10% of particles
   int numberOfPartiklesToResample = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
@@ -886,21 +858,17 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   }//end for
 
 
-
   // sensor resetting by whole goal
-  if(n < oldSampleSet.size())
-  {
+  if(n < oldSampleSet.size()) {
     n = sensorResetBySensingGoalModel(sampleSet, n);
   }
 
   // sensor resetting by the goal posts
-  if(getGoalPercept().getNumberOfSeenPosts() > 0)
-  {
+  if(getGoalPercept().getNumberOfSeenPosts() > 0) {
     //TODO: does not work properly yet
     //n = sensorResetByGoalPosts(sampleSet, n);
   }
   
-
   // fill up by copying random samples
   // (shouldn't happen)
   while (n < sampleSet.size()) 
@@ -1009,9 +977,12 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   if(parameters.updateByGoals)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByGoals");
-    if(getGoalPercept().getNumberOfSeenPosts() > 0)
-    {
-      updateByGoalPosts(sampleSet);
+    if(getGoalPercept().getNumberOfSeenPosts() > 0) {
+      updateByGoalPosts(getGoalPercept() ,sampleSet);
+      sensorDataAvailable = true;
+    }
+    if(getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
+      updateByGoalPosts(getGoalPerceptTop() ,sampleSet);
       sensorDataAvailable = true;
     }
     STOPWATCH_STOP("MonteCarloSelfLocator ~ updateByGoals");
@@ -1026,35 +997,47 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   
 
   // II: lines
-  if(parameters.updateByLinesTable > 0 && getLinePercept().lines.size() > 0)
+  if(parameters.updateByLinesTable > 0)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByLines");
-    if(parameters.updateByLinesTable > 0)
-    {
-      updateByLinesTable(sampleSet);
+    if(getLinePercept().lines.size() > 0) {
+      updateByLinesTable(getLinePercept() ,sampleSet);
+      sensorDataAvailable = true;
+    }
+    if(getLinePerceptTop().lines.size() > 0) {
+      updateByLinesTable(getLinePerceptTop() ,sampleSet);
+      sensorDataAvailable = true;
     }
     STOPWATCH_STOP("MonteCarloSelfLocator ~ updateByLines");
-    sensorDataAvailable = true;
   }//end update by lines
 
 
   // III: corners
-  if(parameters.updateByCornerTable > 0 && getLinePercept().intersections.size() > 0)
+  if(parameters.updateByCornerTable > 0)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByCorners");
-    if(parameters.updateByCornerTable > 0)
-    {
-      updateByCornersTable(sampleSet);
+    if(getLinePercept().intersections.size() > 0) {
+      updateByCornersTable(getLinePercept(), sampleSet);
+      sensorDataAvailable = true;
+    }
+    if(getLinePerceptTop().intersections.size() > 0) {
+      updateByCornersTable(getLinePerceptTop(), sampleSet);
+      sensorDataAvailable = true;
     }
     STOPWATCH_STOP("MonteCarloSelfLocator ~ updateByCorners");
-    sensorDataAvailable = true;
   }//end update by corners
 
   // IV: center circle
-  if(parameters.updateByCenterCircle > 0 && getLinePercept().middleCircleWasSeen)
+  if(parameters.updateByCenterCircle > 0)
   {
-    updateByMiddleCircle(sampleSet);
-    sensorDataAvailable = true;
+    if(getLinePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getLinePercept(), sampleSet);
+      sensorDataAvailable = true;
+    }
+    if(getLinePerceptTop().middleCircleWasSeen) {
+      updateByMiddleCircle(getLinePerceptTop(), sampleSet);
+      sensorDataAvailable = true;
+    }
   }//end update by circle
 
 
@@ -1083,6 +1066,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   return sensorDataAvailable;
 }//end updateBySensors
+
 
 bool MonteCarloSelfLocator::hasSensorUpdate() const
 {
@@ -1216,8 +1200,8 @@ void MonteCarloSelfLocator::execute()
 
   // (III) treat the situation when the robot has been lifted from the ground
   // (keednapped)
-  if(getMotionStatus().currentMotion == motion::stand && // only in stand (!)
-     getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
+  if( getMotionStatus().currentMotion == motion::stand && // only in stand (!)
+      getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
   {
@@ -1252,7 +1236,7 @@ void MonteCarloSelfLocator::execute()
    * STEP III: sensor update
    ************************************/
   bool sensorDataAvailableByUpdate = updateBySensors(theSampleSet);
-  ASSERT(sensorDataAvailable == sensorDataAvailableByUpdate);
+  //ASSERT(sensorDataAvailable == sensorDataAvailableByUpdate);
 
   DEBUG_REQUEST("MCSL:draw_Samples",
     // draw the distribution of the importance 
@@ -1263,10 +1247,11 @@ void MonteCarloSelfLocator::execute()
   /************************************
    * STEP IV: resampling
    ************************************/
-  if(sensorDataAvailable)
+  if(sensorDataAvailableByUpdate)
   {
     resampleGT07(theSampleSet, true);
 
+    //todo: why is it here?
     theSampleSet.normalize();
   }//end if
   
@@ -1275,13 +1260,10 @@ void MonteCarloSelfLocator::execute()
    * STEP V: clustering
    ************************************/
 
-  //gridClustering.cluster();
-
   // try to track the hypothesis
   int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
-
   // a heap could collect more than 70% of all particles
   initialized = initialized || (clusterSize > 0.9*(double)theSampleSet.size());
   PLOT("MCSL:initialized", initialized);
@@ -1309,15 +1291,8 @@ void MonteCarloSelfLocator::execute()
       canopyClustering.cluster(theSampleSet, getRobotPose().translation);
     else // jump...
       getRobotPose().isValid = false;
+    }
   }//end if
-
-  // TODO: clear plot
-  /*
-  if(!getRobotPose().isValid)
-  {
-
-  }
-  */
 
   /************************************
    * STEP VI: estimate new position and update the model
@@ -1327,8 +1302,8 @@ void MonteCarloSelfLocator::execute()
   Moments2<2> moments;
   Sample newPose = theSampleSet.meanOfLargestCluster(moments);
 
-  Vector2<double> major;
-  Vector2<double> minor;
+  Vector2d major;
+  Vector2d minor;
   moments.getAxes(major, minor);
 
   getRobotPose().principleAxisMajor = major;
@@ -1593,11 +1568,10 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
   SampleSet sampleSet(xSize*ySize);
   int idx = 0;
 
-  for (int x = 0; x < xSize; x++)
-  {
+  for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
-      Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       sampleSet.samples[idx].translation = point;
       sampleSet.samples[idx].rotation = getRobotPose().rotation;
       sampleSet.samples[idx].likelihood = 1.0;
@@ -1609,8 +1583,7 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
   
   double maxValue = 0;
   idx = 0;
-  for (int x = 0; x < xSize; x++)
-  {
+  for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
       maxValue = max(maxValue, sampleSet.samples[idx++].likelihood);
@@ -1620,8 +1593,7 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
   if(maxValue == 0) return;
 
   idx = 0;
-  for (int x = 0; x < xSize; x++)
-  {
+  for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
       Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));

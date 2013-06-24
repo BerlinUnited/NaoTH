@@ -8,6 +8,7 @@
 
 #include "CameraInfo.h"
 
+#include "Tools/DataConversion.h"
 #include <Messages/Framework-Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
@@ -62,8 +63,8 @@ double CameraInfo::getOpeningAngleDiagonal() const
 void CameraInfo::print(ostream& stream) const
 {
   stream << "Camera selection: " << cameraID << endl
-         << "Roll Offset: "<< cameraRollOffset << " rad" << endl
-         << "Tilt Offset: "<< cameraTiltOffset << " rad" <<  endl
+         << "Roll Offset (x): "<< correctionOffset[cameraID].x << " rad" << endl
+         << "Tilt Offset: (y)"<< correctionOffset[cameraID].y << " rad" <<  endl
          << "Transformation: " << "x=" << transformation[cameraID].translation.x << ", "
             << " y=" <<transformation[cameraID].translation.y << ", "
             << " z=" <<transformation[cameraID].translation.z << ", "
@@ -85,8 +86,11 @@ void CameraInfo::print(ostream& stream) const
 CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
 {
   PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
-  PARAMETER_REGISTER(cameraRollOffset) = 0;
-  PARAMETER_REGISTER(cameraTiltOffset) = 0;
+  
+  PARAMETER_REGISTER(correctionOffset[Top].x) = 0;
+  PARAMETER_REGISTER(correctionOffset[Top].y) = 0;
+  PARAMETER_REGISTER(correctionOffset[Bottom].x) = 0;
+  PARAMETER_REGISTER(correctionOffset[Bottom].y) = 0;
 
   //size of an Pixel on the chip
   PARAMETER_REGISTER(pixelSize) = 0.0036;
@@ -110,6 +114,7 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(cameraTrans[Top].offset.y) = 0;
   PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 63.64;
   PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 1.2;
+
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 50.71;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.y) = 0;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 17.74;
@@ -140,8 +145,8 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_resolutionwidth(representation.resolutionWidth);
   msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
-  msg.set_camerarolloffset(representation.cameraRollOffset);
-  msg.set_cameratiltoffset(representation.cameraTiltOffset);
+  //msg.set_camerarolloffset(representation.cameraRollOffset);
+  //msg.set_cameratiltoffset(representation.cameraTiltOffset);
   msg.set_openinganglediagonal(representation.openingAngleDiagonal);
   msg.set_focus(representation.focus);
   msg.set_pixelsize(representation.pixelSize);
@@ -149,15 +154,8 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   // set transformations
   for(int camID=0; camID < CameraInfo::numOfCamera; camID++)
   {
-    naothmessages::Pose3D* pose3d = msg.add_transformation();
-    pose3d->mutable_translation()->set_x( representation.transformation[camID].translation.x );
-    pose3d->mutable_translation()->set_y( representation.transformation[camID].translation.y );
-    pose3d->mutable_translation()->set_z( representation.transformation[camID].translation.z );
-    for(int i=0; i<3; i++){
-      pose3d->add_rotation()->set_x( representation.transformation[camID].rotation[i].x );
-      pose3d->mutable_rotation(i)->set_y( representation.transformation[camID].rotation[i].y );
-      pose3d->mutable_rotation(i)->set_z( representation.transformation[camID].rotation[i].z );
-    }
+    naoth::DataConversion::toMessage(representation.transformation[camID], *msg.add_transformation());
+    naoth::DataConversion::toMessage(representation.correctionOffset[camID], *msg.add_correctionoffset());
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -173,8 +171,8 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.resolutionWidth = msg.resolutionwidth();
   r.resolutionHeight = msg.resolutionheight();
   r.cameraID = (CameraInfo::CameraID) msg.cameraid();
-  r.cameraRollOffset = msg.camerarolloffset();
-  r.cameraTiltOffset = msg.cameratiltoffset();
+  //r.cameraRollOffset = msg.camerarolloffset();
+  //r.cameraTiltOffset = msg.cameratiltoffset();
   r.focus = msg.focus();
   r.openingAngleDiagonal = msg.openinganglediagonal();
   r.pixelSize = msg.pixelsize();
@@ -183,15 +181,8 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   {
     for(int camID = 0; camID < CameraInfo::numOfCamera; camID++)
     {
-      r.transformation[camID].translation.x = msg.transformation(camID).translation().x();
-      r.transformation[camID].translation.y = msg.transformation(camID).translation().y();
-      r.transformation[camID].translation.z = msg.transformation(camID).translation().z();
-
-      for(int i=0; i<3; i++) {
-        r.transformation[camID].rotation[i].x = msg.transformation(camID).rotation(i).x();
-        r.transformation[camID].rotation[i].y = msg.transformation(camID).rotation(i).y();
-        r.transformation[camID].rotation[i].z = msg.transformation(camID).rotation(i).z();
-      }
+      naoth::DataConversion::fromMessage(msg.transformation(camID), r.transformation[camID]);
+      naoth::DataConversion::fromMessage(msg.correctionoffset(camID), r.correctionOffset[camID]);
     }
   }
 }

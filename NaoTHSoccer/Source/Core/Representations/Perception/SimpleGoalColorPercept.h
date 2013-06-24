@@ -20,10 +20,6 @@ class SimpleGoalColorPercept : public naoth::Printable
 public:
   bool valid;
 
-  //int minFieldV;
-  //int maxFieldV;
-  //int maxFieldU;
-
   int maxY;
   int maxU;
 
@@ -32,20 +28,20 @@ public:
   int minY;
   int minV;
 
+  int vu_offset;
+
   FrameInfo lastUpdated;
 
 
   SimpleGoalColorPercept()  
-  : 
-  valid(false),
-  //minFieldV(0),
-  //maxFieldV(127),
-  //maxFieldU(160),
-  maxY(200),
-  maxU(64),
-  maxDistV(64),
-  minY(80),
-  minV(127)
+    : 
+    valid(false),
+    maxY(200),
+    maxU(64),
+    maxDistV(64),
+    minY(80),
+    minV(127),
+    vu_offset(45)
   {}
 
   ~SimpleGoalColorPercept()
@@ -53,13 +49,23 @@ public:
 
   inline bool isInside(const Pixel& pixel) const
   {
-    bool isGoal = pixel.y < maxY && pixel.y > minY &&
-      maxU > pixel.u &&
-      pixel.v > minV && 
-      pixel.v < minV + maxDistV;
+    /*
+    bool isGoal = 
+      pixel.v > pixel.u + vu_offset && // difference in the v-u channel 
+      pixel.u < maxU &&
 
-    //isGoal |= maxFieldU < pixel.u &&
-    //  minFieldV <= pixel.v && pixel.v <= maxFieldV;
+      pixel.v > minV && 
+      pixel.v < minV + maxDistV &&
+
+      pixel.y < maxY &&
+      pixel.y > minY;
+      */
+
+    //isGoal = isGoal || (maxFieldU < pixel.u &&
+    //  minFieldV <= pixel.v && pixel.v <= maxFieldV);
+
+    bool isGoal = 
+      pixel.v > pixel.u + vu_offset; // difference in the v-u channel 
 
     return isGoal;
   }

@@ -30,6 +30,4 @@
       _p(def)
     end
   end
-  
-  
 

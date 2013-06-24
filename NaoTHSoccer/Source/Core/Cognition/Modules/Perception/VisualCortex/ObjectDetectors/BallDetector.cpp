@@ -56,6 +56,8 @@ BallDetector::BallDetector()
 void BallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  getBallPercept().reset();
+
   //if there is no field percept, then, there is also no goal ?!
   /*
   if(!getFieldPercept().isValid())
@@ -64,8 +66,6 @@ void BallDetector::execute(CameraInfo::CameraID id)
     return;
   }
   */
-  
-  getBallPercept().reset();
 
   //initialize blob finder
   //getBlobFinder().init();

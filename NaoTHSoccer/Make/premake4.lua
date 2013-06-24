@@ -115,7 +115,7 @@ solution "NaoTHSoccer"
 	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations -Wconversion"}
+    buildoptions {"-Wno-deprecated-declarations"}
     flags { "ExtraWarnings" }
     links {"pthread"}
 	
@@ -150,6 +150,7 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  --defines { "QVGA" }
 	  postbuildcommands { "premake4 webots_copy" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
 	  kind "ConsoleApp"

@@ -34,6 +34,10 @@ NeoVision::NeoVision()
   DEBUG_REQUEST_REGISTER("NeoVision:NeoLineDetector:execute", " ", false);
   theNeoLineDetector = registerModule<NeoLineDetector>("NeoLineDetector");
   theNeoLineDetector->setEnabled(true);
+
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:execute", " ", true);
+  theMaximumRedBallDetector = registerModule<MaximumRedBallDetector>("MaximumRedBallDetector");
+  theMaximumRedBallDetector->setEnabled(true);
 }//end constructor
 
 
@@ -79,6 +83,13 @@ void NeoVision::execute()
     STOPWATCH_START("NeoLineDetector");
     theNeoLineDetector->execute();
     STOPWATCH_STOP("NeoLineDetector");
+  );
+
+  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:execute",
+    GT_TRACE("executing MaximumRedBallDetector");
+    STOPWATCH_START("MaximumRedBallDetector");
+    theMaximumRedBallDetector->execute();
+    STOPWATCH_STOP("MaximumRedBallDetector");
   );
 }//end execute
 

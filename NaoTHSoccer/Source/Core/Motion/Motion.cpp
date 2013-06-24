@@ -253,8 +253,8 @@ void Motion::debugPlots()
   PLOT("Motion:AccelerometerData:y", getAccelerometerData().data.y);
   PLOT("Motion:AccelerometerData:z", getAccelerometerData().data.z);
 
-  PLOT("Motion:InertialSensorData:x", sin(getInertialSensorData().data.x));
-  PLOT("Motion:InertialSensorData:y", (getInertialSensorData().data.y));
+  PLOT("Motion:InertialSensorData:x", getInertialSensorData().data.x);
+  PLOT("Motion:InertialSensorData:y", getInertialSensorData().data.y);
 
   PLOT("Motion:KinematicChain:oriantation:model:x",
     getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()

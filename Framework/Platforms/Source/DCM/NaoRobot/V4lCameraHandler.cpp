@@ -57,6 +57,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
+  settingsOrder.push_back(CameraSettings::Exposure);
 
   // set our IDs
   initIDMapping();
@@ -866,16 +867,6 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
     value = max;
   }
 
-  if(id == CameraSettings::Exposure)
-  {
-    value = (value << 2) >> 2;
-  }
-
-  if(id == CameraSettings::WhiteBalance)
-  {
-    value = ((value + 180) * 45) / 45 - 180;
-  }
-
   struct v4l2_control control_s;
   memset (&control_s, 0, sizeof (control_s));
   control_s.id = id;
@@ -897,7 +888,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     if(csConst[*it] != -1)
     {
       // only set if it was changed
-      if(data.data[*it] != currentSettings.data[*it])
+      if(data.data[*it] != currentSettings.data[*it] || csConst[*it] == V4L2_CID_EXPOSURE )
       {
         bool success = false;
         int realValue = data.data[*it];

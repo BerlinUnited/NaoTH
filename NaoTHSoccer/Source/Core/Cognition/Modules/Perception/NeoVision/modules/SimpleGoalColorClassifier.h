@@ -49,20 +49,12 @@ END_DECLARE_MODULE(SimpleGoalColorClassifier)
 class SimpleGoalColorClassifier : public  SimpleGoalColorClassifierBase
 {
 public:
-  //double histV[COLOR_CHANNEL_VALUE_COUNT];
-  //double histU[COLOR_CHANNEL_VALUE_COUNT];
-  
   SimpleGoalColorClassifier();
   virtual ~SimpleGoalColorClassifier(){}
 
-  /** executes the module */
   void execute();
 
 private:
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histV;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopV;
 
   class Parameters: public ParameterList
   {
@@ -70,11 +62,12 @@ private:
 
     Parameters() : ParameterList("SimpleGoalColorClassifierParameters")
     {
-      PARAMETER_REGISTER(goalColorMin.y) = 80;
-      PARAMETER_REGISTER(goalColorMax.y) = 200;
-      PARAMETER_REGISTER(goalColorWidth.v) = 64;
-      PARAMETER_REGISTER(dist2green.v) = 12;
-      PARAMETER_REGISTER(strength) = 1.2;
+      //PARAMETER_REGISTER(goalColorMin.y) = 80;
+      //PARAMETER_REGISTER(goalColorMax.y) = 200;
+      //PARAMETER_REGISTER(goalColorWidth.v) = 64;
+      //PARAMETER_REGISTER(dist2green.v) = 12;
+      //PARAMETER_REGISTER(strength) = 1.2;
+      PARAMETER_REGISTER(vu_offset) = 45;
 
       syncWithConfig();
 
@@ -86,17 +79,30 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    double strength;
+    //double strength;
 
-    DoublePixel dist2green;
+    //DoublePixel dist2green;
+    //DoublePixel goalColorWidth;
+    //DoublePixel goalColorMax;
+    //DoublePixel goalColorMin;
 
-    DoublePixel goalColorWidth;
-
-    DoublePixel goalColorMax;
-    DoublePixel goalColorMin;
+    int vu_offset;
   };
 
   Parameters goalParams;
+
+
+// experimental (Claas)
+private:
+  //double histV[COLOR_CHANNEL_VALUE_COUNT];
+  //double histU[COLOR_CHANNEL_VALUE_COUNT];
+
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histU;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histV;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopU;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopV;
+
+  void histogramExperiments();
 
 };
 
