@@ -14,6 +14,8 @@ include "Symbols/sensor_symbols.xabsl";
 include "Symbols/internal_symbols.xabsl";
 include "Symbols/team_symbols.xabsl";
 include "Symbols/led_symbols.xabsl";
+include "Symbols/goal_symbols.xabsl";
+include "Symbols/selfloc_symbols.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
@@ -27,6 +29,7 @@ include "Options/Skills/take_arms_back.xabsl";
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
+include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
@@ -37,12 +40,19 @@ include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
 include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
+include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/move_around_ball.xabsl";
 
+// Debug
+include "Options/Debug/battery.xabsl";
+
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
+include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
+include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
+include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
@@ -127,8 +137,6 @@ agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
 agent basic_striker("basic_striker", basic_striker_agent);
-
-
 
 /** The Test agents */
 // Test agents Kicks

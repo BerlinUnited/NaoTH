@@ -12,7 +12,9 @@ option play_soccer
       goto idle;
   }  
 
-  initial state idle{action{}}
+  initial state idle{
+    action{}
+  }
 
   state play
   {
@@ -26,6 +28,9 @@ option play_soccer
   {
     action 
     {
+      arm.control_mode = back;
+      decide_and_go_to_ready_position();
     }
   }
+  
 }

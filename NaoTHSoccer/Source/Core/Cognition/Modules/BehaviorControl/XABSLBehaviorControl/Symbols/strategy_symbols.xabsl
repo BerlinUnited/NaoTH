@@ -79,7 +79,7 @@ namespace strategy("Strategy Symbols") {
 
   /** information for selflocator */
   bool output situationStatusOwnHalf; //true = own half, false = unknown!!!
-  bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
+  //bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
 
   /** Information for the ball model */
   bool output reactiveBallModelNeeded;  

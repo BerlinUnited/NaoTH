@@ -1,0 +1,110 @@
+option positioning_for_opp_kickoff
+{
+  initial state check_player_number
+  {
+    decision{
+      if(game.player_number == 1)
+          goto goto_opp_kickoff_position_goalie;
+      else if(game.player_number == 2)
+          goto goto_opp_kickoff_position_striker;
+      else if(game.player_number == 3)
+          goto goto_opp_kickoff_position_supporter;
+      else if(game.player_number == 4)
+          goto goto_opp_kickoff_position_defender;          
+      else if(game.player_number == 5)
+          goto goto_opp_kickoff_position_supporter2;
+      else
+          stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state goto_opp_kickoff_position_goalie
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+      go_to_point_with_USOA(x=-4400, y=0, rot=0);
+      head.control_mode = search_for_goal;
+      // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
+    }
+  }
+  
+  state goto_opp_kickoff_position_striker
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=-600, rot=0);
+      go_to_point_with_USOA(x=-1100, y=0, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_opp_kickoff_position_supporter
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point_with_USOA(x=-1800, y=1800, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_opp_kickoff_position_supporter2
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point_with_USOA(x=-1800, y=-1800, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_opp_kickoff_position_defender
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point_with_USOA(x=-3200, y=-800, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+  
+  target state arrived{
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}
