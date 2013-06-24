@@ -49,7 +49,8 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
 
-  unsigned int transmitter = UltraSoundSendData::TRANSMIT_BOTH;
+  // default state
+  unsigned int transmitter = UltraSoundSendData::TRANSMIT_LEFT;
   unsigned int receiver = UltraSoundSendData::CAPTURE_BOTH;
 
   DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_LEFT",
@@ -188,7 +189,7 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   }
 
 
-  if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
+  if(model.leftDistance <= maxValidDistance || model.rightDistance <= maxValidDistance)
   {
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
   }

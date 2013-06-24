@@ -240,4 +240,11 @@ public:
   int xDensity;
   int yDensity;
 };
+
+class BodyContourTop : public BodyContour
+{
+public:
+  virtual ~BodyContourTop() {}
+};
+
 #endif //_BodyContour_h_

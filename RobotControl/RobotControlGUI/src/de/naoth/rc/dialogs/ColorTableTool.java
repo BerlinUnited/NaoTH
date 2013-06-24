@@ -56,7 +56,7 @@ public class ColorTableTool extends AbstractDialog
   private int lastX;
   private int lastY;
   
-  private final Command getColorTableCommand = new Command("representation:get").addArg("ColorTable64");
+  private final Command getColorTableCommand = new Command("Cognition:representation:get").addArg("ColorTable64");
   private final String setColorTableCommandBase = "file::write";
   private final Command reloadColorTableCommand = new Command("colortable:load");
   private final Command pathColorTableCommand = new Command("colortable:file_path");

@@ -12,7 +12,7 @@ using namespace std;
 
 void GameSymbols::registerSymbols(xabsl::Engine& engine)
 {
-
+  // enum type for team color
   for(int i = 0; i < GameData::numOfTeamColor; i++)
   {
     string str("game.team_color");
@@ -24,7 +24,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedInputSymbol("game.opponent_team_color", "game.team_color", &getOpponentTeamColor);
 
 
-  // register the enum type for game state
+  // enum type for game state (spl)
   for(int i = 0; i < GameData::numOfGameState; i++)
   {
     string str("game.state.");
@@ -33,18 +33,18 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
       str.append("_");
       str.append(GameData::gameStateToString((GameData::GameState)i));
       str.append("_");
-    }
-    else
-    {
+    } else {
       str.append(GameData::gameStateToString((GameData::GameState)i));
     }
     engine.registerEnumElement("game.state", str.c_str(), i);
   }//end for
 
-  // register the game state
-  engine.registerEnumeratedInputSymbol("game.state", "game.state", (int*)&playerInfo.gameData.gameState);
+  // current game state
+  // (int*)&getPlayerInfo().gameData.gameState
+  engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
-  // register the enum type for play mode
+
+  // enum type for play mode (simulation)
   for(int i = 0; i < GameData::numOfPlayMode; i++)
   {
     string str("game.playmode.");
@@ -65,38 +65,33 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
 GameSymbols* GameSymbols::theInstance = NULL;
 
-void GameSymbols::execute()
-{
-}
 
 bool GameSymbols::getOwnKickOff()
 {
-  return theInstance->playerInfo.gameData.playMode == GameData::kick_off_own
-      || theInstance->playerInfo.gameData.playMode == GameData::penalty_kick_own;
-}//end getOwnKickOff
-
-double GameSymbols::getPlayerNumber()
-{
-  return theInstance->playerInfo.gameData.playerNumber;
-}//end setWalkSpeedRot
-
-double GameSymbols::getMsecsRemaining()
-{
-  return theInstance->playerInfo.gameData.msecsRemaining;
+  return theInstance->getPlayerInfo().gameData.playMode == GameData::kick_off_own
+      || theInstance->getPlayerInfo().gameData.playMode == GameData::penalty_kick_own;
 }
 
-int GameSymbols::getPlayMode()
-{
-  return theInstance->playerInfo.gameData.playMode;
-  //return 1;
-}//end getPlayMode
+double GameSymbols::getPlayerNumber() {
+  return theInstance->getPlayerInfo().gameData.playerNumber;
+}
 
-int GameSymbols::getOwnTeamColor()
-{
-  return theInstance->playerInfo.gameData.teamColor;
-}//end getOwnTeamColor
+double GameSymbols::getMsecsRemaining() {
+  return theInstance->getPlayerInfo().gameData.msecsRemaining;
+}
 
-int GameSymbols::getOpponentTeamColor()
-{
-  return !(theInstance->playerInfo.gameData.teamColor);
-}//end getOpponentTeamColor
+int GameSymbols::getGameState() {
+  return theInstance->getPlayerInfo().gameData.gameState;
+}
+
+int GameSymbols::getPlayMode() {
+  return theInstance->getPlayerInfo().gameData.playMode;
+}
+
+int GameSymbols::getOwnTeamColor() {
+  return theInstance->getPlayerInfo().gameData.teamColor;
+}
+
+int GameSymbols::getOpponentTeamColor() {
+  return !(theInstance->getPlayerInfo().gameData.teamColor);
+}

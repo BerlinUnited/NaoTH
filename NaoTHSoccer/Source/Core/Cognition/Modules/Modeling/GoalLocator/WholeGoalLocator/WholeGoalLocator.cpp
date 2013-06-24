@@ -10,6 +10,7 @@
 #include "WholeGoalLocator.h"
 
 WholeGoalLocator::WholeGoalLocator()
+  : cameraID(CameraInfo::numOfCamera)
 {
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawPost", "draw the modelled post on the field", false);
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawGoalModel", "draw the modelled goal on the field", false);
@@ -18,8 +19,10 @@ WholeGoalLocator::WholeGoalLocator()
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:correct_the_goal_percept", "correct the camera matrix when the whole goal is seen", true);
 }
 
-void WholeGoalLocator::execute()
+void WholeGoalLocator::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
+
   // reset the model
   getSensingGoalModel().someGoalWasSeen = false;
   getCameraMatrixOffset().offsetByGoalModel = Vector2d();
@@ -37,8 +40,7 @@ void WholeGoalLocator::execute()
   
 
   // try to find a pair of posts which form a goal
-  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts()-1; i++)
-  {
+  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts()-1; i++) {
     for (int j = i+1; j < getGoalPercept().getNumberOfSeenPosts(); j++)
     {
       if(checkAndCalculateSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(j)))
@@ -134,7 +136,7 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
 void WholeGoalLocator::correct_the_goal_percept(
   Vector2d& offset,
   GoalPercept::GoalPost& post1,
-  GoalPercept::GoalPost& post2)
+  GoalPercept::GoalPost& post2) const
 {
   // calibrate the camera matrix
   // currently it is in test-mode, the correction parameter
@@ -208,7 +210,7 @@ double WholeGoalLocator::projectionError(
   double offsetX,
   double offsetY,
   const GoalPercept::GoalPost& post1,
-  const GoalPercept::GoalPost& post2)
+  const GoalPercept::GoalPost& post2) const
 {
   CameraMatrix tmpCM(getCameraMatrix());
 

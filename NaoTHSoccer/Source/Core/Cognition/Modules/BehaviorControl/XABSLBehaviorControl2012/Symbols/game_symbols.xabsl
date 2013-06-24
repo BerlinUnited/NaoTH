@@ -1,0 +1,81 @@
+/* Symbols for accessing the data from the game controller object */
+namespace game_symbols("Game Control Symbols") {
+
+  /* Enumeration for team colors */
+  enum game.team_color
+  {
+    red,
+    blue
+  };
+  
+  /* Enumeration for game states */
+  enum game.state
+  {
+    _initial_,
+    ready,
+    set,
+    playing,
+    penalized,
+    finished,
+    unknown
+  };
+
+  /* Enumeration for play mode */
+  enum game.playmode
+  {
+    before_kick_off,
+    kick_off_own,
+    kick_off_opp,
+    play_on,
+    kick_in_own,
+    kick_in_opp,
+    corner_kick_own,
+    corner_kick_opp,
+    goal_kick_own,
+    goal_kick_opp,
+    offside_own,
+    offside_opp,
+    game_over,
+    goal_own,
+    goal_opp,
+    free_kick_own,
+    free_kick_opp,
+    unknownLocalPlayMode
+  };
+
+  /* State of the game */
+  enum game.state input game.state;
+
+  /* Play mode of the game */
+  enum game.playmode input game.playmode;
+  
+  /* Own team color */
+  enum game.team_color input game.own_team_color;
+  
+  /* Opponent team color */
+  enum game.team_color input game.opponent_team_color;
+  
+  /* my number */
+  float input game.player_number;
+
+  /* indicate whether we have a kick off */
+  bool input game.own_kickoff;
+
+  float input game.msecsRemaining;
+
+  /* */
+  bool internal special_kickoff_done;
+
+  /* */
+  bool internal last_state_was_penalized;
+
+  /** Wether a situtation can be aborted */
+  bool internal situation.abortable;
+
+  /** Wether a common situation is allowed to interfere */
+  bool internal common_decision.allowed;
+
+  /** Will be set once to true if the ball was outside the center circle */
+  bool internal ball_was_outside_circle;
+
+}

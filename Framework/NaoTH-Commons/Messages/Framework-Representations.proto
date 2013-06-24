@@ -40,9 +40,13 @@ message CameraInfo {
   optional int64 size = 10 [deprecated=true];
   optional int64 memorysize = 11 [deprecated=true];
 
-  optional double cameraRollOffset = 12;
-  optional double cameraTiltOffset = 13;
+  // these are replaced by correctionOffset
+  optional double cameraRollOffset = 12 [deprecated=true];
+  optional double cameraTiltOffset = 13 [deprecated=true];
 
+  // the array index is the camera id
+  repeated DoubleVector2 correctionOffset = 18;
+  
   // the array index is the camera id
   repeated Pose3D transformation = 14;
 

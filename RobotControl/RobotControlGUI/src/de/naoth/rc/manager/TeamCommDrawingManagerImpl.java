@@ -83,10 +83,6 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
     {
       throw new IllegalArgumentException(ex.toString());
     }
-    catch(IOException iox)
-    {
-        iox.printStackTrace(System.err);
-    }
 
     return drawingList;
   }//end convertByteArrayToType

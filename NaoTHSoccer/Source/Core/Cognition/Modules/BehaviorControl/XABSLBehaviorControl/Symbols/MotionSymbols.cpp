@@ -5,20 +5,17 @@
 * Implementation of class MotionSymbols
 */
 
-//DEBUG
+// debug
 #include "Tools/Debug/DebugBufferedOutput.h"
 
-
-
 #include "MotionSymbols.h"
-
 
 using namespace naoth;
 using namespace std;
 
 void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  // register the enum type for head motion
+  // enum type for head motion
   for(int i = 0; i < HeadMotionRequest::numOfHeadMotion; i++)
   {
     string str("head.motion_type.");
@@ -30,33 +27,41 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedOutputSymbol("head.motion_type", "head.motion_type", &setHeadMotionRequest, &getHeadMotionRequestId);
   engine.registerEnumeratedInputSymbol("head.executed_motion_type","head.motion_type", &getHeadMotionStatus);
 
-  engine.registerDecimalOutputSymbol("head.point_in_image.x", &headMotionRequest.targetPointInImage.x);
-  engine.registerDecimalOutputSymbol("head.point_in_image.y", &headMotionRequest.targetPointInImage.y);
+  engine.registerDecimalOutputSymbol("head.point_in_image.x", &getHeadMotionRequest().targetPointInImage.x);
+  engine.registerDecimalOutputSymbol("head.point_in_image.y", &getHeadMotionRequest().targetPointInImage.y);
 
-  engine.registerDecimalOutputSymbol("head.point_in_world.x", &headMotionRequest.targetPointInTheWorld.x);
-  engine.registerDecimalOutputSymbol("head.point_in_world.y", &headMotionRequest.targetPointInTheWorld.y);
-  engine.registerDecimalOutputSymbol("head.point_in_world.z", &headMotionRequest.targetPointInTheWorld.z);
+  engine.registerDecimalOutputSymbol("head.point_in_world.x", &getHeadMotionRequest().targetPointInTheWorld.x);
+  engine.registerDecimalOutputSymbol("head.point_in_world.y", &getHeadMotionRequest().targetPointInTheWorld.y);
+  engine.registerDecimalOutputSymbol("head.point_in_world.z", &getHeadMotionRequest().targetPointInTheWorld.z);
 
-  engine.registerDecimalOutputSymbol("head.point_on_grond.x", &headMotionRequest.targetPointOnTheGround.x);
-  engine.registerDecimalOutputSymbol("head.point_on_grond.y", &headMotionRequest.targetPointOnTheGround.y);
+  engine.registerDecimalOutputSymbol("head.point_on_grond.x", &getHeadMotionRequest().targetPointOnTheGround.x);
+  engine.registerDecimalOutputSymbol("head.point_on_grond.y", &getHeadMotionRequest().targetPointOnTheGround.y);
 
-  engine.registerDecimalOutputSymbol("head.search.center.x", &headMotionRequest.searchCenter.x);
-  engine.registerDecimalOutputSymbol("head.search.center.y", &headMotionRequest.searchCenter.y);
-  engine.registerDecimalOutputSymbol("head.search.center.z", &headMotionRequest.searchCenter.z);
-  engine.registerDecimalOutputSymbol("head.search.size.x", &headMotionRequest.searchSize.x);
-  engine.registerDecimalOutputSymbol("head.search.size.y", &headMotionRequest.searchSize.y);
-  engine.registerDecimalOutputSymbol("head.search.size.z", &headMotionRequest.searchSize.z);
-  engine.registerBooleanOutputSymbol("head.search.direction", &headMotionRequest.searchDirection);
+  engine.registerDecimalOutputSymbol("head.search.center.x", &getHeadMotionRequest().searchCenter.x);
+  engine.registerDecimalOutputSymbol("head.search.center.y", &getHeadMotionRequest().searchCenter.y);
+  engine.registerDecimalOutputSymbol("head.search.center.z", &getHeadMotionRequest().searchCenter.z);
+  engine.registerDecimalOutputSymbol("head.search.size.x", &getHeadMotionRequest().searchSize.x);
+  engine.registerDecimalOutputSymbol("head.search.size.y", &getHeadMotionRequest().searchSize.y);
+  engine.registerDecimalOutputSymbol("head.search.size.z", &getHeadMotionRequest().searchSize.z);
+  engine.registerBooleanOutputSymbol("head.search.direction", &getHeadMotionRequest().searchDirection);
 
+  engine.registerDecimalInputSymbol("head.pitch", &getHeadPitchAngle);
+  engine.registerDecimalInputSymbol("head.yaw", &getHeadYawAngle);
 
-  // enum type for camera
-  engine.registerEnumElement("head.camera.id", "head.camera.id.top", CameraInfo::Top);
-  engine.registerEnumElement("head.camera.id", "head.camera.id.bottom", CameraInfo::Bottom);
+  engine.registerEnumElement("head.camera", "head.camera.Top", naoth::CameraInfo::Top);
+  engine.registerEnumElement("head.camera", "head.camera.Bottom", naoth::CameraInfo::Bottom);
+  engine.registerEnumeratedOutputSymbol("head.camera.id", "head.camera", &setCameraId, &getCameraId);
 
-  // register the ...
-  engine.registerEnumeratedOutputSymbol("head.camera.id", "head.camera.id", &setCameraID, &getCameraID);
+  //arm motion
+  // enum type for motion
+  for(int i = 0; i <= ArmMotionRequest::numOfArmMotion; i++)
+  {
+    string str("arm.type.");
+    str.append(ArmMotionRequest::getName((ArmMotionRequest::ArmMotionID)i));
+    engine.registerEnumElement("arm.type", str.c_str(), i);
+  }//end for
 
-
+  engine.registerEnumeratedOutputSymbol("arm.type", "arm.type", &setArmRequestId, &getArmRequestId);
 
 
   // enum type for motion
@@ -69,8 +74,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 
   // motion request
   engine.registerEnumeratedOutputSymbol("motion.type", "motion.type", &setMotionRequestId, &getMotionRequestId);
-
-  engine.registerBooleanOutputSymbol("motion.execute_immediately", &motionRequest.forced);
+  engine.registerBooleanOutputSymbol("motion.execute_immediately", &getMotionRequest().forced);
 
   // walk type
   engine.registerDecimalOutputSymbol("motion.walk_speed.x", &setWalkSpeedX, &getWalkSpeedX);
@@ -87,8 +91,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedOutputSymbol("motion.walk.style", "motion.walk.style", (int*)&walkStyle);
 
   // walk offset
-  engine.registerDecimalOutputSymbol("motion.walk.offset.x", &motionRequest.walkRequest.offset.translation.x);
-  engine.registerDecimalOutputSymbol("motion.walk.offset.y", &motionRequest.walkRequest.offset.translation.y);
+  engine.registerDecimalOutputSymbol("motion.walk.offset.x", &getMotionRequest().walkRequest.offset.translation.x);
+  engine.registerDecimalOutputSymbol("motion.walk.offset.y", &getMotionRequest().walkRequest.offset.translation.y);
   engine.registerDecimalOutputSymbol("motion.walk.offset.rot", &setWalkOffsetRot, &getWalkOffsetRot);
 
   // walk coordinates origin
@@ -98,9 +102,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     str.append(WalkRequest::getCoordinateName((WalkRequest::Coordinate)i));
     engine.registerEnumElement("motion.walk.coordinate", str.c_str(), i);
   }//end for
-  engine.registerEnumeratedOutputSymbol("motion.walk.coordinate", "motion.walk.coordinate", (int*)&motionRequest.walkRequest.coordinate);
-  engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&motionRequest.standardStand);
-  engine.registerDecimalOutputSymbol("motion.standHeight",&motionRequest.standHeight);
+  engine.registerEnumeratedOutputSymbol("motion.walk.coordinate", "motion.walk.coordinate", (int*)&getMotionRequest().walkRequest.coordinate);
+  engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&getMotionRequest().standardStand);
+  engine.registerDecimalOutputSymbol("motion.standHeight",&getMotionRequest().standHeight);
 
   // step control
   for(int i = 0; i <= none; i++)
@@ -127,42 +131,12 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("direction", "direction.left", 1);
 
   // kick
-  engine.registerDecimalOutputSymbol("motion.kick.point.x", &motionRequest.kickRequest.kickPoint.x);
-  engine.registerDecimalOutputSymbol("motion.kick.point.y", &motionRequest.kickRequest.kickPoint.y);
-  engine.registerDecimalOutputSymbol("motion.kick.point.z", &motionRequest.kickRequest.kickPoint.z);
+  engine.registerDecimalOutputSymbol("motion.kick.point.x", &getMotionRequest().kickRequest.kickPoint.x);
+  engine.registerDecimalOutputSymbol("motion.kick.point.y", &getMotionRequest().kickRequest.kickPoint.y);
+  engine.registerDecimalOutputSymbol("motion.kick.point.z", &getMotionRequest().kickRequest.kickPoint.z);
   engine.registerDecimalOutputSymbol("motion.kick.direction", &setKickDirection, &getKickDirection);
-  engine.registerBooleanOutputSymbol("motion.kick.finish", &motionRequest.kickRequest.finishKick);
-  engine.registerEnumeratedOutputSymbol("motion.kick.foot", "direction", (int*)&motionRequest.kickRequest.kickFoot);
-
-  // relativeToLeftFootX
-  engine.registerDecimalInputSymbol("relativeToLeftFootX", &relativeToLeftFootX);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToLeftFootX", "relativeToLeftFootX.x", &relativeToLeftFootXx);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToLeftFootX", "relativeToLeftFootX.y", &relativeToLeftFootXy);
-  // relativeToLeftFootY
-  engine.registerDecimalInputSymbol("relativeToLeftFootY", &relativeToLeftFootY);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToLeftFootY", "relativeToLeftFootY.x", &relativeToLeftFootYx);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToLeftFootY", "relativeToLeftFootY.y", &relativeToLeftFootYy);
-  // relativeToLeftFootA
-  engine.registerDecimalInputSymbol("relativeToLeftFootA", &relativeToLeftFootA);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToLeftFootA", "relativeToLeftFootA.a", &relativeToLeftFootAa);
-  // relativeToRightFootX
-  engine.registerDecimalInputSymbol("relativeToRightFootX", &relativeToRightFootX);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToRightFootX", "relativeToRightFootX.x", &relativeToRightFootXx);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToRightFootX", "relativeToRightFootX.y", &relativeToRightFootXy);
-  // relativeToRightFootY
-  engine.registerDecimalInputSymbol("relativeToRightFootY", &relativeToRightFootY);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToRightFootY", "relativeToRightFootY.x", &relativeToRightFootYx);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToRightFootY", "relativeToRightFootY.y", &relativeToRightFootYy);
-  // relativeToRightFootA
-  engine.registerDecimalInputSymbol("relativeToRightFootA", &relativeToRightFootA);
-  engine.registerDecimalInputSymbolDecimalParameter("relativeToRightFootA", "relativeToRightFootA.a", &relativeToRightFootAa);
-
-  engine.registerBooleanOutputSymbol("motion.plan.avoid_obstacle", &setAvoidObstacle, &getAvoidObstacle);
-  isAvoidObstacle = false;
-
-  engine.registerDecimalInputSymbol("motion.head.pitch", &getHeadPitchAngle);
-  engine.registerDecimalInputSymbol("motion.head.yaw", &getHeadYawAngle);
-  engine.registerDecimalInputSymbol("motion.head.speed", &headSpeed);
+  engine.registerBooleanOutputSymbol("motion.kick.finish", &getMotionRequest().kickRequest.finishKick);
+  engine.registerEnumeratedOutputSymbol("motion.kick.foot", "direction", (int*)&getMotionRequest().kickRequest.kickFoot);
 
 }//end registerSymbols
 
@@ -172,315 +146,147 @@ void MotionSymbols::execute()
   // TODO: maybe better just to create new once?
   getMotionRequest().reset();
   getHeadMotionRequest().reset();
-
-
-  // Modell-Hack
-  double curHeadPitch = sensorJointData.position[JointData::HeadPitch];
-  double curHeadYaw   = sensorJointData.position[JointData::HeadYaw];
-  double curTime      = frameInfo.getTimeInSeconds();
-
-  if(headMotionBuffer.getNumberOfEntries() > 0)
-  {
-    //pick randomly one percept out of the buffer, the current information are not yet added to the buffer
-    int idx = Math::random(headMotionBuffer.getNumberOfEntries());
-
-    double timeDelta = curTime - headMotionBuffer.getEntry(idx).time;
-    ASSERT(timeDelta > 0);
-    double appHeadYawSpeed = (curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
-    double appHeadPitchSpeed = (curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
-
-    double normAppHeadYawSpeed = Math::normalize(curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
-    double normAppHeadPitchSpeed = Math::normalize(curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
-
-
-    Vector2<double> appHeadVelocity(appHeadYawSpeed, appHeadPitchSpeed);
-    Vector2<double> normAppHeadVelocity(normAppHeadYawSpeed, normAppHeadPitchSpeed);
-
-    headSpeed = Math::toDegrees(appHeadVelocity.abs());
-    PLOT("AngleVelocity~Head", headSpeed);
-  }//end if
-
-  //insertMotion
-  HeadMotion headMotion;
-  headMotion.time      = curTime;
-  headMotion.headPitch = curHeadPitch;
-  headMotion.headYaw   = curHeadYaw;
-  headMotionBuffer.add(headMotion);
 } //end update
 
 void MotionSymbols::updateOutputSymbols()
 {
     // set walk character according walk style
-    if ( theInstance->motionRequest.id == motion::walk )
+  if ( getMotionRequest().id == motion::walk )
+  {
+    switch(walkStyle)
     {
-      switch(walkStyle)
-      {
-        case stable:
-          theInstance->motionRequest.walkRequest.character = 0.3;
-          break;
-        case normal:
-          theInstance->motionRequest.walkRequest.character = 0.7;
-          break;
-        case fast:
-          theInstance->motionRequest.walkRequest.character = 1;
-          break;
-        default: ASSERT(false); break;
-      }
+      case stable:
+        getMotionRequest().walkRequest.character = 0.3;
+        break;
+      case normal:
+        getMotionRequest().walkRequest.character = 0.7;
+        break;
+      case fast:
+        getMotionRequest().walkRequest.character = 1;
+        break;
+      default: ASSERT(false); break;
     }
+  }
 
-    // step control
-    if (stepControlFoot !=  none)
-    {
-      WalkRequest::StepControlRequest& req = theInstance->motionRequest.walkRequest.stepControl;
-      req.stepID = theInstance->motionStatus.stepControl.stepID;
-      req.target.translation = theInstance->stepControlRequestTarget.translation;
-      req.target.rotation = Math::fromDegrees(theInstance->stepControlRequestTarget.rotation);
-      req.time = (int)(theInstance->stepControlRequestTime);
-      req.speedDirection = Math::fromDegrees(theInstance->stepControlRequestSpeedDirection);
-      req.moveLeftFoot = (stepControlFoot == left);
-    }
+  // step control
+  if (stepControlFoot != none)
+  {
+    WalkRequest::StepControlRequest& req = getMotionRequest().walkRequest.stepControl;
+    req.stepID = getMotionStatus().stepControl.stepID;
+    req.target.translation = stepControlRequestTarget.translation;
+    req.target.rotation = Math::fromDegrees(stepControlRequestTarget.rotation);
+    req.time = (int)(stepControlRequestTime);
+    req.speedDirection = Math::fromDegrees(stepControlRequestSpeedDirection);
+    req.moveLeftFoot = (stepControlFoot == left);
+  }
 }
 
 MotionSymbols* MotionSymbols::theInstance = NULL;
 
-// enum setter und getter
-void MotionSymbols::setHeadMotionRequest(int value){ theInstance->headMotionRequest.id = (HeadMotionRequest::HeadMotionID)value; }
-int MotionSymbols::getHeadMotionRequestId(){ return (int)(theInstance->headMotionRequest.id); }
 
-int MotionSymbols::getHeadMotionStatus(){ return (int)(theInstance->motionStatus.headMotion); }
+void MotionSymbols::setHeadMotionRequest(int value) { 
+  theInstance->getHeadMotionRequest().id = (HeadMotionRequest::HeadMotionID)value; 
+}
 
+int MotionSymbols::getHeadMotionRequestId() { 
+  return (int)(theInstance->getHeadMotionRequest().id); 
+}
 
-void MotionSymbols::setMotionRequestId(int value){ theInstance->motionRequest.id = (motion::MotionID)value; }
-int MotionSymbols::getMotionRequestId(){ return (int)(theInstance->motionRequest.id); }
+int MotionSymbols::getHeadMotionStatus() { 
+  return (int)(theInstance->getMotionStatus().headMotion); 
+}
 
-int MotionSymbols::getMotionStatusId(){ return (int)(theInstance->motionStatus.currentMotion); }
-double MotionSymbols::getMotionStatusTime(){ return theInstance->frameInfo.getTimeSince(theInstance->motionStatus.time); }
+void MotionSymbols::setCameraId(int value) { 
+  assert(value >= 0 && value < static_cast<int>(naoth::CameraInfo::numOfCamera));
+  theInstance->getHeadMotionRequest().cameraID = static_cast<naoth::CameraInfo::CameraID>(value);
+}
+
+int MotionSymbols::getCameraId() { 
+  return static_cast<int>(theInstance->getHeadMotionRequest().cameraID); 
+}
+
+void MotionSymbols::setArmRequestId(int value) { 
+  theInstance->getMotionRequest().armMotionRequest.id = (ArmMotionRequest::ArmMotionID)value; 
+}
+
+int MotionSymbols::getArmRequestId() { 
+  return (int)(theInstance->getMotionRequest().armMotionRequest.id); 
+}
+
+void MotionSymbols::setMotionRequestId(int value) { 
+  theInstance->getMotionRequest().id = (motion::MotionID)value; 
+}
+
+int MotionSymbols::getMotionRequestId() { 
+  return (int)(theInstance->getMotionRequest().id); 
+}
+
+int MotionSymbols::getMotionStatusId() { 
+  return (int)(theInstance->getMotionStatus().currentMotion); 
+}
+
+double MotionSymbols::getMotionStatusTime() { 
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getMotionStatus().time); 
+}
+
 bool MotionSymbols::getMotionStatusLeftMovable()
 { 
-  return theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
-      || theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::LEFT; 
+  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
+      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::LEFT; 
 }
 
 bool MotionSymbols::getMotionStatusRightMovable()
 { 
-  return theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
-      || theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT; 
+  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
+      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT; 
 }
 
-void MotionSymbols::setCameraID(int value){ theInstance->headMotionRequest.cameraID = (CameraInfo::CameraID)value; }
-int MotionSymbols::getCameraID(){ return (int)(theInstance->headMotionRequest.cameraID); }
-
-void MotionSymbols::setWalkOffsetRot(double rot)
-{
-  theInstance->motionRequest.walkRequest.offset.rotation = Math::fromDegrees(rot);
+void MotionSymbols::setWalkOffsetRot(double rot) {
+  theInstance->getMotionRequest().walkRequest.offset.rotation = Math::fromDegrees(rot);
 }
 
-double MotionSymbols::getWalkOffsetRot()
-{
-  return Math::toDegrees(theInstance->motionRequest.walkRequest.offset.rotation);
+double MotionSymbols::getWalkOffsetRot() {
+  return Math::toDegrees(theInstance->getMotionRequest().walkRequest.offset.rotation);
 }
 
-void MotionSymbols::setWalkSpeedRot(double rot)
-{
-  theInstance->motionRequest.walkRequest.target.rotation = Math::fromDegrees(rot);
-}//end setWalkSpeedRot
-
-void MotionSymbols::setWalkSpeedX(double x)
-{
-  theInstance->motionRequest.walkRequest.target.translation.x = x;
-}//end setWalkSpeedX
-
-void MotionSymbols::setWalkSpeedY(double y)
-{
-  theInstance->motionRequest.walkRequest.target.translation.y = y;
-}//end setWalkSpeedY
-
-void MotionSymbols::setKickDirection(double alpha)
-{
-  theInstance->motionRequest.kickRequest.kickDirection = Math::fromDegrees(alpha);
-}//end setKickDirection
-
-double MotionSymbols::getWalkSpeedRot()
-{
-  return Math::toDegrees(theInstance->motionRequest.walkRequest.target.rotation);
-}//end getWalkSpeedRot
-
-double MotionSymbols::getWalkSpeedX()
-{
-  return theInstance->motionRequest.walkRequest.target.translation.x;
-}//end getWalkSpeedX
-
-double MotionSymbols::getWalkSpeedY()
-{
-  return theInstance->motionRequest.walkRequest.target.translation.y;
-}//end getWalkSpeedY
-
-double MotionSymbols::getKickDirection()
-{
-  return Math::toDegrees(theInstance->motionRequest.kickRequest.kickDirection);
-}//end getKickDirection
-
-double MotionSymbols::relativeToLeftFootX()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::LFoot];
-  return relativeToX(theInstance->relativeToLeftFootXx, theInstance->relativeToLeftFootXy, l.R, l.p);
+void MotionSymbols::setWalkSpeedRot(double rot) {
+  theInstance->getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(rot);
 }
 
-double MotionSymbols::relativeToLeftFootY()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::LFoot];
-  return relativeToY(theInstance->relativeToLeftFootYx, theInstance->relativeToLeftFootYy, l.R, l.p);
+void MotionSymbols::setWalkSpeedX(double x) {
+  theInstance->getMotionRequest().walkRequest.target.translation.x = x;
 }
 
-double MotionSymbols::relativeToLeftFootA()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::LFoot];
-  return relativeToA(theInstance->relativeToLeftFootAa, l.R);
+void MotionSymbols::setWalkSpeedY(double y) {
+  theInstance->getMotionRequest().walkRequest.target.translation.y = y;
 }
 
-double MotionSymbols::relativeToRightFootX()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::RFoot];
-  return relativeToX(theInstance->relativeToRightFootXx, theInstance->relativeToRightFootXy, l.R, l.p);
+void MotionSymbols::setKickDirection(double alpha) {
+  theInstance->getMotionRequest().kickRequest.kickDirection = Math::fromDegrees(alpha);
 }
 
-double MotionSymbols::relativeToRightFootY()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::RFoot];
-  return relativeToY(theInstance->relativeToRightFootYx, theInstance->relativeToRightFootYy, l.R, l.p);
+double MotionSymbols::getWalkSpeedRot() {
+  return Math::toDegrees(theInstance->getMotionRequest().walkRequest.target.rotation);
 }
 
-double MotionSymbols::relativeToRightFootA()
-{
-  const Kinematics::Link& l = theInstance->kinematicChain.theLinks[KinematicChain::RFoot];
-  return relativeToA(theInstance->relativeToRightFootAa, l.R);
+double MotionSymbols::getWalkSpeedX() {
+  return theInstance->getMotionRequest().walkRequest.target.translation.x;
 }
 
-double MotionSymbols::relativeToX(double x, double y, const RotationMatrix& R, const Vector3<double>& p)
-{
-  return R[0].x * ( x - p.x ) + R[1].x *  ( y - p.y );
+double MotionSymbols::getWalkSpeedY() {
+  return theInstance->getMotionRequest().walkRequest.target.translation.y;
 }
 
-double MotionSymbols::relativeToY(double x, double y, const RotationMatrix& R, const Vector3<double>& p)
-{
-  return R[0].y * ( x - p.x ) + R[1].y * ( y - p.y );
+double MotionSymbols::getKickDirection() {
+  return Math::toDegrees(theInstance->getMotionRequest().kickRequest.kickDirection);
 }
 
-double MotionSymbols::relativeToA(double a, const RotationMatrix& R)
-{
-  return Math::toDegrees(Math::normalize(Math::fromDegrees(a) - R.getZAngle()));
+double MotionSymbols::getHeadPitchAngle() {
+  return Math::toDegrees(theInstance->getSensorJointData().position[JointData::HeadPitch]);
 }
 
-bool MotionSymbols::avoidObstacle()
-{
-  WalkRequest& wr = theInstance->motionRequest.walkRequest;
-  double dist = wr.target.translation.abs();
-  double dir = 0;
-  double targetDir = wr.target.translation.angle();
-  bool avoid = false;
-
-  unsigned int myNum = theInstance->playerInfo.gameData.playerNumber;
-  const PlayersModel& players = theInstance->playersModel;
-  unsigned int currentFrameNumber = theInstance->frameInfo.getFrameNumber();
-
-  const double radiusOfRobot = 550;//500;
-  // teammates
-  for( vector<PlayersModel::Player>::const_iterator iter=players.teammates.begin();
-    iter!=players.teammates.end(); ++iter)
-  {
-    if ( iter->number == myNum ) continue;
-
-    if ( iter->frameInfoWhenWasSeen.getFrameNumber() != currentFrameNumber ) continue;
-
-    double d = iter->pose.translation.abs();
-    if ( d < dist )
-    {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - targetDir);
-      if (abs(ang) < Math::pi_2)
-      {
-        double block = abs(d * tan(ang));
-        if (block < radiusOfRobot)
-        {
-          dist = d;
-          dir = ang;
-          avoid = true;
-        }
-      }
-    }
-  }
-
-  // opponents
-  for( vector<PlayersModel::Player>::const_iterator iter=players.opponents.begin();
-    iter!=players.opponents.end(); ++iter)
-  {
-    if ( iter->frameInfoWhenWasSeen.getFrameNumber() != currentFrameNumber ) continue;
-
-    double d = iter->pose.translation.abs();
-    if (d < dist)
-    {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - targetDir);
-      if (abs(ang) < Math::pi_2)
-      {
-        double block = abs(d * tan(ang));
-        if (block < radiusOfRobot)
-        {
-          dist = d;
-          dir = ang;
-          avoid = true;
-        }
-      }
-    }
-  }
-
-  // todo: avoid goals
-
-  if ( avoid )
-  {
-    double openAng = atan2(radiusOfRobot,dist);
-
-    ASSERT(openAng<=Math::pi_2);
-    ASSERT(openAng>=0);
-    ASSERT(abs(dir)<=openAng);
-    //openAng = Math::clamp(openAng, 0, Math::fromDegrees(45));
-    if ( dir > 0 )
-    {
-      ASSERT(dir-openAng<0);
-      wr.target.translation.rotate(dir-openAng);
-    }
-    else
-    {
-      ASSERT(dir+openAng>=0);
-      wr.target.translation.rotate(dir+openAng);
-    }
-    wr.target.translation.normalize(dist);
-    
-  }
-
-  return avoid;
-}
-
-void MotionSymbols::setAvoidObstacle(bool b)
-{
-  theInstance->isAvoidObstacle = b;
-  if ( theInstance->isAvoidObstacle )
-  {
-    theInstance->isAvoidObstacle = avoidObstacle();
-  }
-}
-
-bool MotionSymbols::getAvoidObstacle()
-{
-  return theInstance->isAvoidObstacle;
-}
-
-double MotionSymbols::getHeadPitchAngle()
-{
-  return Math::toDegrees(theInstance->sensorJointData.position[JointData::HeadPitch]);
-}
-
-double MotionSymbols::getHeadYawAngle()
-{
-  return Math::toDegrees(theInstance->sensorJointData.position[JointData::HeadYaw]);
+double MotionSymbols::getHeadYawAngle() {
+  return Math::toDegrees(theInstance->getSensorJointData().position[JointData::HeadYaw]);
 }
 
 string MotionSymbols::getWalkStyleName(WalkStyle i)

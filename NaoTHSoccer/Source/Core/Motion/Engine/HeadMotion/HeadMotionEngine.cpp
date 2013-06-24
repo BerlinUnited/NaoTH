@@ -113,11 +113,11 @@ void HeadMotionEngine::hold()
           getSensorJointData().position[JointData::HeadPitch];
 }//end hold
 
-void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
+void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
 {
-  Vector3<double> pointOnTheGround(target.x,target.y,0.0);
+  Vector3d pointOnTheGround(target.x,target.y,0.0);
   
-  Vector2<double> centerOnField;
+  Vector2d centerOnField;
   //TODO: handle the case if the projection is not possible
   CameraGeometry::imagePixelToFieldCoord(
     getCameraMatrix(), 
@@ -127,10 +127,10 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
     0.0,
     centerOnField);
   
-  std::vector<Vector3<double> > points;
+  std::vector<Vector3d > points;
   
 
-  points.push_back(Vector3<double>(centerOnField.x,centerOnField.y,0.0));
+  points.push_back(Vector3d(centerOnField.x,centerOnField.y,0.0));
   points.push_back(pointOnTheGround);
 
  
@@ -145,10 +145,10 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
 /*
  * move the head to the position target = (yaw, pitch)
  */
-void HeadMotionEngine::gotoAngle(const Vector2<double>& target) 
+void HeadMotionEngine::gotoAngle(const Vector2d& target) 
 {
   // current position
-  Vector2<double> headPos;
+  Vector2d headPos;
   headPos.x = getMotorJointData().position[JointData::HeadYaw];
   headPos.y = getMotorJointData().position[JointData::HeadPitch];
 
@@ -156,7 +156,7 @@ void HeadMotionEngine::gotoAngle(const Vector2<double>& target)
 }//end gotoAngle
 
 
-void HeadMotionEngine::moveByAngle(const Vector2<double>& target) 
+void HeadMotionEngine::moveByAngle(const Vector2d& target) 
 {
   double max_velocity_deg_in_second_fast = 60;
   double max_velocity_deg_in_second_slow = 120;
@@ -172,9 +172,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
     if(walking_speed > cutting_velocity)
     {
       max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
-    }
-    else
-    {
+    } else {
       double t = walking_speed/cutting_velocity;
       max_velocity_deg_in_second = (1.0 - t)*max_velocity_deg_in_second_slow + t*max_velocity_deg_in_second_fast;
     }
@@ -193,22 +191,18 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   MODIFY("HeadMotionEngine:gotoAngle:hardness", stiffness);
 
   // current position
-  Vector2<double> headPos(
+  Vector2d headPos(
     getMotorJointData().position[JointData::HeadYaw],
     getMotorJointData().position[JointData::HeadPitch]);
 
   // calculate the update step (normalize with speed if needed)
-  Vector2<double> update(
+  Vector2d update(
     Math::normalize(target.x),
     Math::normalize(target.y));
   
-  if (update.abs() > max_velocity)
-  {
+  if (update.abs() > max_velocity) {
     update = update.normalize(max_velocity);
   }
-
-
-
 
   // limit the acceleration
   //static Vector2<double> position(headPos);
@@ -241,10 +235,10 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   */
 
   // little filter
+  // todo: this filter is unstable, make it a PID or so before use
   double maxAcceleration = 0.1;
   MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
-  static Vector2<double> velocity;
-
+  static Vector2d velocity;
   velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
 
   headPos += velocity;
@@ -271,6 +265,7 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3d& po
   CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
     getCameraInfo(),
     theKinematicChain);
+  cameraMatrix.timestamp = getSensorJointData().timestamp;
 
   // the point in the image which should point to the pointInWorld
   Vector2d projectionPointInImage(
@@ -297,13 +292,11 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
   Vector3d target(origTarget);
 
   // left foot is the support foot
-  if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot)
-  {
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot) {
     target = lFoot*target;
   }
 
-  if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot)
-  {
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
     target = rFoot*target;
   }
 
@@ -351,9 +344,9 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3d& origTarget)
   moveByAngle(x);
 }//end lookAtWorldPoint
 
-void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
+void HeadMotionEngine::lookAtWorldPointSimple(const Vector3d& target)
 {
-  Vector3<double> vector = target - getCameraMatrix().translation;
+  Vector3d vector = target - getCameraMatrix().translation;
 
   //camera height for nao -535 for webcam -370
   //double neckHeigth = theBlackBoard.theCameraMatrix.translation.z;
@@ -369,7 +362,7 @@ void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
 
   double pitch = Math::pi_2 - atan2(d, -vector.z) - cameraTilt;
 
-  Vector2<double> targetPosition(yaw, pitch);
+  Vector2d targetPosition(yaw, pitch);
   gotoAngle(targetPosition);
 }//end lookAtWorldPointSimple
 
@@ -383,7 +376,7 @@ void HeadMotionEngine::lookAtPoint()
   double dev_x = getCameraInfo().getOpticalCenterX() - x;
   double dev_y = y - getCameraInfo().getOpticalCenterY();
    
-  Vector3<double> startingPointCamera(54,0,68);
+  Vector3d startingPointCamera(54,0,68);
 
   //double offsetX = startingPointCamera.x;
   //double offsetY = startingPointCamera.z;
@@ -391,7 +384,7 @@ void HeadMotionEngine::lookAtPoint()
   double divAngleX = atan2(dev_x, getCameraInfo().getFocalLength());
   double divAngleY = atan2(dev_y, getCameraInfo().getFocalLength());
 
-  Vector2<double> update(divAngleX, divAngleY);
+  Vector2d update(divAngleX, divAngleY);
 
   moveByAngle(update);
 }//end simpleLookAtPoint
@@ -402,16 +395,16 @@ void HeadMotionEngine::lookAtPoint()
  */
 void HeadMotionEngine::search() 
 {
-  std::vector<Vector3<double> > points;
+  std::vector<Vector3d > points;
 
-  const Vector3<double>& center = getHeadMotionRequest().searchCenter;
-  const Vector3<double>& size = getHeadMotionRequest().searchSize;
+  const Vector3d& center = getHeadMotionRequest().searchCenter;
+  const Vector3d& size = getHeadMotionRequest().searchSize;
 
 
-  points.push_back(Vector3<double>(center.x-size.x, center.y-size.y, center.z-size.z));
-  points.push_back(Vector3<double>(center.x-size.x, center.y+size.y, center.z-size.z));
-  points.push_back(Vector3<double>(center.x+size.x, center.y+size.y, center.z+size.z));
-  points.push_back(Vector3<double>(center.x+size.x, center.y-size.y, center.z+size.z));
+  points.push_back(Vector3d(center.x-size.x, center.y-size.y, center.z-size.z));
+  points.push_back(Vector3d(center.x-size.x, center.y+size.y, center.z-size.z));
+  points.push_back(Vector3d(center.x+size.x, center.y+size.y, center.z+size.z));
+  points.push_back(Vector3d(center.x+size.x, center.y-size.y, center.z+size.z));
 
   if (!getHeadMotionRequest().searchDirection)
   {
@@ -431,14 +424,14 @@ void HeadMotionEngine::search()
 void HeadMotionEngine::randomSearch()
 {
     static Vector3<double> randomPoint(0, 0, 0);
-    std::vector<Vector3<double> > points;
+    std::vector<Vector3d > points;
     points.push_back(randomPoint);
     if ( trajectoryHeadMove(points) ){
         static double lastDir = 0;
         double minAng = lastDir+Math::pi_2;
         double maxAng = minAng+Math::pi;
         lastDir = Math::random(minAng, maxAng);
-        randomPoint += (Vector3<double>(cos(lastDir), sin(lastDir), 0)).normalize(1000);
+        randomPoint += (Vector3d(cos(lastDir), sin(lastDir), 0)).normalize(1000);
         randomPoint.x = Math::clamp(randomPoint.x, 50.0, 500.0);
         randomPoint.y = Math::clamp(randomPoint.y, -500.0,500.0);
         randomPoint.z = Math::clamp(randomPoint.y, 0.0,500.0);
@@ -448,7 +441,7 @@ void HeadMotionEngine::randomSearch()
 /*
  * move the head in the specified trajectory
  */
-bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& points)
+bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d >& points)
 {
   // current state of the head motion
   // indicates the last visited point in the points list
@@ -510,7 +503,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& p
   }
   else
   {
-    Vector3<double> lookTo = points[nextMotionState] * s + points[headMotionState] * (1-s);
+    Vector3d lookTo = points[nextMotionState] * s + points[headMotionState] * (1-s);
 
     lookAtWorldPoint(lookTo);
 
@@ -539,13 +532,13 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& p
 void HeadMotionEngine::lookStraightAhead()
 {
   const Pose3D& cameraTrans = getCameraInfo().transformation[getHeadMotionRequest().cameraID];
-  Vector2<double> target(0.0, -cameraTrans.rotation.getYAngle());
+  Vector2d target(0.0, -cameraTrans.rotation.getYAngle());
   gotoAngle(target);
-}//end lookStraightAhead
+}
 
 
 void HeadMotionEngine::lookStraightAheadWithStabilization()
 {
-  Vector2<double> target(0.0, -getInertialModel().orientation.y);
+  Vector2d target(0.0, -getInertialModel().orientation.y);
   gotoAngle(target);
-}//end lookStraightAheadWithStabilization
+}

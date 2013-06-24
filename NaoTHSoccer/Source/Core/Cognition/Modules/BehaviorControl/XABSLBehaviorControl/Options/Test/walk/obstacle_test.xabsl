@@ -1,0 +1,100 @@
+option obstacle_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto play;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.left.distance < 400)
+        goto avoid_left;
+      else if(obstacle.ultrasound.right.distance < 400)
+        goto avoid_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = look_straight_ahead;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state avoid_left
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.left.distance < 400)
+        stay;
+      else if(obstacle.ultrasound.right.distance < 400)
+        goto avoid_right;
+      else
+        goto play;
+    }
+    action 
+    {
+      head.control_mode = look_straight_ahead;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    {
+      else if(obstacle.ultrasound.right.distance < 400)
+        stay;
+      else if(obstacle.ultrasound.left.distance < 400)
+        goto avoid_left;
+      else
+        goto play;
+    }
+    action 
+    {
+      head.control_mode = look_straight_ahead;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+  
+}

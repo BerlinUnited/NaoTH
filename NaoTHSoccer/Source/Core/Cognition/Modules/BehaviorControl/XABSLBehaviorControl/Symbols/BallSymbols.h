@@ -5,8 +5,8 @@
 * Definition of class BallSymbols
 */
 
-#ifndef __BallSymbols_H_
-#define __BallSymbols_H_
+#ifndef _BallSymbols_H_
+#define _BallSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -38,83 +38,33 @@ class BallSymbols: public BallSymbolsBase
 {
 
 public:
-  BallSymbols()
-    :
-    ballModel(getBallModel()),
-    ballPercept(getBallPercept()),
-    frameInfo(getFrameInfo()),
-    robotPose(getRobotPose()),
-    teamBallModel(getTeamBallModel()),
-    fieldInfo(getFieldInfo()),
-    kinematicChain(getKinematicChain()),
-    soccerStrategy(getSoccerStrategy()),
-
-    futureBallPosX_t(0.0),
-    futureBallPosY_t(0.0),
-    futureBallDistance_t(0.0),
-
-    goToPointX(0.0),
-    goToPointY(0.0),
-    goToPointDistanceX(0.0),
-    goToPointDistanceY(0.0)
-
-  {
+  BallSymbols() {
     theInstance = this;
-  };
+  }
   virtual ~BallSymbols(){}
   
-  /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
   
   virtual void execute();
 
 private:
-
   static BallSymbols* theInstance;
-
-  // representations
-  BallModel const& ballModel;
-  BallPercept const& ballPercept;
-  FrameInfo const& frameInfo;
-  RobotPose const& robotPose;
-  TeamBallModel const& teamBallModel;
-  FieldInfo const& fieldInfo;
-  const KinematicChain& kinematicChain;
-  SoccerStrategy const& soccerStrategy;
 
   // setter and getter
   static double getBallDistance();
-
-  static double getFutureBallPosX();
-  static double getFutureBallPosY();
-  static double getFutureBallDistance();
-  double futureBallPosX_t;
-  double futureBallPosY_t;
-  double futureBallDistance_t;
-
   static double getBallAngle();
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
   static double getTeamBallTimeSinceLastUpdate();
   static double getTeamBallGoalieTimeSinceLastUpdate();
   static double getTeamBallStrikerTimeSinceLastUpdate();
-  static double getBallSpeed();
-
-  static void calculatePosBehindBallFuture();
-  static double getPosBehindBallFutureX();
-  static double getPosBehindBallFutureY();
-  static double getPosBehindBallFutureRotation();
-  Pose2D posBehindBall;
-  double goToPointX;
-  double goToPointY;
-  double goToPointDistanceX;
-  double goToPointDistanceY;
 
   // some local members
-  Vector2 <double> ballPositionField;
+  Vector2d ballPositionField;
 
-  Vector2 <double> ballLeftFoot;
-  Vector2 <double> ballRightFoot;
+  Vector2d ballLeftFoot;
+  Vector2d ballRightFoot;
+
 };//end class BallSymbols
 
-#endif // __BallSymbols_H_
+#endif // _BallSymbols_H_

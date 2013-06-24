@@ -73,8 +73,11 @@ NaoController::NaoController()
   /*  REGISTER IO  */
   // camera
   registerInput<Image>(*this);
+  registerInput<ImageTop>(*this);
   registerInput<CurrentCameraSettings>(*this);
+  registerInput<CurrentCameraSettingsTop>(*this);
   registerOutput<const CameraSettingsRequest>(*this);
+  registerOutput<const CameraSettingsRequestTop>(*this);
     
   // sound
   registerOutput<const SoundPlayData>(*this);
@@ -155,6 +158,11 @@ NaoController::NaoController()
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
+
+  std::cout << "Init CameraHandler (bottom)" << std::endl;
+  theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
+  std::cout << "Init CameraHandler (top)" << std::endl;
+  theTopCameraHandler.init("/dev/video0", CameraInfo::Bottom, false);
 }
 
 NaoController::~NaoController()
@@ -168,13 +176,17 @@ NaoController::~NaoController()
   delete theRCTCBroadCastListener;
 }
 
-void NaoController::set(const CameraSettingsRequest& data)
+void NaoController::setCameraSettingsInternal(const CameraSettingsRequest &data,
+                        CameraInfo::CameraID camID)
 {
+  V4lCameraHandler& cameraHandler = camID == CameraInfo::Bottom
+      ? theBottomCameraHandler : theTopCameraHandler;
+
   bool somethingChanged = false;
-  if(theCameraHandler.isRunning())
+  if(cameraHandler.isRunning())
   {
     CurrentCameraSettings current;
-    theCameraHandler.getCameraSettings(current, data.queryCameraSettings);
+    cameraHandler.getCameraSettings(current, data.queryCameraSettings);
 
     if(data.queryCameraSettings)
     {
@@ -196,18 +208,23 @@ void NaoController::set(const CameraSettingsRequest& data)
       }
     }
   }
-  else
-  {
-    somethingChanged = true;
-  }
-
   if(somethingChanged)
   {
-    std::cout << "Init CameraHandler and settting camera settings" << endl;
-    theCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom);
+    std::cout << "Settting camera settings ("
+              << (camID == CameraInfo::Bottom ? "bottom" : "top") << ")" << endl;
+    cameraHandler.setAllCameraParams(data);
   }
 }//end set CameraSettingsRequest
 
+void NaoController::set(const CameraSettingsRequest &data)
+{
+  setCameraSettingsInternal(data, CameraInfo::Bottom);
+}
+
+void NaoController::set(const CameraSettingsRequestTop &data)
+{
+  setCameraSettingsInternal(data, CameraInfo::Top);
+}
 
 void NaoController::get(RCTCTeamMessageDataIn& data) 
 { 

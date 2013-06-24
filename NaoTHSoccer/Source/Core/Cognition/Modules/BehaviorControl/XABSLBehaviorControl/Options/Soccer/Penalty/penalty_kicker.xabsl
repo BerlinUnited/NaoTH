@@ -1,3 +1,5 @@
+/* If walking in a slight curve fails, read comment in the look for ball state */
+
 option penalty_kicker
 {
   initial state look_for_ball
@@ -5,7 +7,12 @@ option penalty_kicker
     decision
     {
       if(ball.was_seen && state_time > 3000)
-        goto approach_ball;
+        //Uncomment this if approaching fails: goto approach_ball
+        //Comment the following to deactivate the slight approach curves
+        if (random > 0.5)
+          goto approach_ball_offset_right;
+        else
+          goto approach_ball_offset_left;
       else
         stay;
     }
@@ -15,27 +22,75 @@ option penalty_kicker
       head.control_mode = search_for_ball;
     }
   }
-  
+
+
+  state approach_ball_offset_left
+  {
+    decision
+    {
+      if (ball.preview.right_foot.x < 500)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk.coordinate = right_foot;
+      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 500 - ball.radius);
+      motion.walk_speed.y = ball.preview.right_foot.y + 250;
+      motion.walk_speed.rot = 0.25*atan2(y = ball.preview.right_foot.y + 250, x = ball.preview.right_foot.x - 500);
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state approach_ball_offset_right
+  {
+    decision
+    {
+      if (ball.preview.right_foot.x < 500)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk.coordinate = right_foot;
+      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 500 - ball.radius);
+      motion.walk_speed.y = ball.preview.right_foot.y - 100;
+      motion.walk_speed.rot = 0.25*atan2(y = ball.preview.right_foot.y - 125, x = ball.preview.right_foot.x - 500);
+      
+      head.control_mode = search_for_ball;
+    }
+  }
 
   state approach_ball
   {
     decision
     {
-      if(action_done)
+      if (abs(value = (ball.preview.right_foot.x - 120 - ball.radius)) < 25
+        && abs(value = ball.preview.right_foot.y) < 10
+        && atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 10)
         goto prepare_kick;
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
-      go_to_ball_cool(distance = 170, right_foot=true,
-                      errorX=30, errorY=30, errorR=15);
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk.coordinate = right_foot;
+      motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - 120 - ball.radius);
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x);
+      
       head.control_mode = search_for_ball;
-      motion.walk.style = (ball.distance < 500)?stable:normal;
     }
   }
-  
 
   state prepare_kick
   {
@@ -43,44 +98,56 @@ option penalty_kicker
     {
       if(state_time > 3000)
       {
-        if(action_done)
-          goto do_kick;
-        else
+        if( abs(value = (ball.preview.right_foot.x - 120 - ball.radius)) > 35
+          || abs(value = ball.preview.right_foot.y) > 30
+          || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 25)
           goto approach_ball;
+        else
+          goto wait;
       }
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
-      go_to_ball_cool(distance = 170, right_foot=true,
-                      errorX=30, errorY=30, errorR=15);
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
   }
 
+  state wait
+  {
+    decision
+    {
+      if (state_time > 4000)
+        goto do_kick;
+      else
+        stay;
+     }
+     action
+     {
+     }
+   }
 
   state do_kick
   {
     decision
     {
       if(action_done)
-        goto play_normal_striker;
+        goto finished;
       else
         stay;
     }
     action
     {
-      situationStatusOppHalf = true;
+      situation.abortable = false;
       kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
     }
   }
 
 
-  state play_normal_striker
+  target state finished
   {
     decision
     {
@@ -88,8 +155,8 @@ option penalty_kicker
     }
     action
     {
-      situationStatusOppHalf = false;
-      spl_playing_striker();
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
     }
   }
 

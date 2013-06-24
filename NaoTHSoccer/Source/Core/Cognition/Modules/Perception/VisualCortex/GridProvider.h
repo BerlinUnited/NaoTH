@@ -12,7 +12,7 @@
 
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
@@ -23,12 +23,16 @@
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(CameraMatrix)
 
   PROVIDE(ColoredGrid)
-  PROVIDE(Histogram)
+  PROVIDE(ColoredGridTop)
+  PROVIDE(Histograms)
+  PROVIDE(HistogramsTop)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

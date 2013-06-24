@@ -30,6 +30,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(Actuator)
   
   REQUIRE(CameraSettingsRequest)
+  REQUIRE(CameraSettingsRequestTop)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(FrameInfo)
   REQUIRE(RCTCTeamMessageDataOut)
   REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

@@ -50,7 +50,12 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+  
+  #ifndef WIN32
+    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), static_cast<socklen_t> (sizeof(int)));
+  #else
+    setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), (sizeof(int)));
+  #endif
 
   string broadcast = NetAddr::getBroadcastAddr(interfaceName);
   if("unknown" != broadcast)

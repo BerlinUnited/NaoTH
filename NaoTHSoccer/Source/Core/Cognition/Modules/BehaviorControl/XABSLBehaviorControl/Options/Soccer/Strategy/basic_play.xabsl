@@ -1,0 +1,65 @@
+option basic_play
+{
+
+  initial state initialize {
+    decision {
+      if (game.state != _initial_)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      game.current_mode = init;
+      head.control_mode = stay_as_forced;
+      motion.type = init;
+      arm.control_mode = normal;
+    }
+  }
+
+  // this is part of the initial precedure
+  // to ensure that the robot stands before doing anything
+  state stand {
+    decision {
+      if(executed_motion.type == stand)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      game.current_mode = init;
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+      arm.control_mode = normal;
+    }
+  }
+
+
+  state play {
+    decision {
+      if (game.state == _initial_)
+        goto initialize;
+      else
+        stay;
+    }
+    action {
+    
+      //IMPORTANT: reset some stuff(!)
+      motion.type = stand;
+      motion.execute_immediately = false;
+      motion.standHeight = -1;
+      motion.walk.step_control.foot = none;
+      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      head.control_mode = stay_as_forced;
+      
+      // react to the game controller and observe fall down
+      decide_game_state();
+
+      // it has to be after the decide_game_state because of the getup motion
+      arm.control_mode = normal;
+    }
+  }
+}

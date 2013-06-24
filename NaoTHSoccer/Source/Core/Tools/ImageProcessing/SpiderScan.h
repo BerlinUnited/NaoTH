@@ -76,6 +76,7 @@ public:
   void scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints);
   void scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans scans);
   void setDrawScanLines(bool draw);
+  void setDrawScanLinesTop(bool draw);
   void setMaxBeamLength(unsigned int length);
   void setCurrentColorSimThreshold(double threshold);
   void setMaxColorPointsToSkip(unsigned int length);
@@ -95,6 +96,7 @@ private:
   const ColorClassificationModel& theColorClassifier;
 
   bool drawScanLines;
+  bool drawScanLinesTop;
   vector<ColorClasses::Color> searchColors;
   vector<ColorClasses::Color> borderColors;
   unsigned int max_length_of_beam;

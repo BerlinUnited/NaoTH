@@ -34,25 +34,31 @@
 //
 #include "SampleSet.h"
 #include "CanopyClustering.h"
-#include "GridClustering.h"
 
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(FieldSidePercept)
+  
   REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
+  REQUIRE(LinePercept)
+  REQUIRE(LinePerceptTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+
   REQUIRE(SensingGoalModel)
   REQUIRE(LocalGoalModel)
-  REQUIRE(OdometryData)
-  REQUIRE(CameraMatrix)
-  REQUIRE(PlayerInfo)
-  REQUIRE(MotionStatus)
-  REQUIRE(LinePercept)
-  REQUIRE(FieldInfo)
-  REQUIRE(BodyState)
-  REQUIRE(FrameInfo)
   REQUIRE(CompassDirection)
+ 
+  REQUIRE(PlayerInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(FrameInfo)
+  REQUIRE(OdometryData)
+  REQUIRE(MotionStatus)
+  REQUIRE(BodyState)
+  
   REQUIRE(SituationStatus)
 
   PROVIDE(RobotPose)
@@ -77,7 +83,6 @@ private:
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
 
-  //GridClustering gridClustering;
   CanopyClustering<SampleSet> canopyClustering;
 
   bool initialized;
@@ -98,7 +103,7 @@ private:
   Vector2<double> fieldMax;
 
   /** */
-  bool isInsideCarpet(const Vector2<double>& p) const;
+  bool isInsideCarpet(const Vector2d& p) const;
 
   /** */
   void createRandomSample(Sample& sample) const;
@@ -138,19 +143,20 @@ private:
     update methods
    ****************************************/
   void updateByOdometry(SampleSet& sampleSet, bool noise) const;
-  void updateByGoalPosts(SampleSet& sampleSet) const;
   void updateByGoalModel(SampleSet& sampleSet) const;
 
-  void updateByLinesTable(SampleSet& sampleSet) const;
-  void updateByCornersTable(SampleSet& sampleSet) const;
-  void updateByMiddleCircle(SampleSet& sampleSet) const;
+  void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
+  void updateByLinesTable(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByCornersTable(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  
+  // for simulation only
   void updateByFlags(SampleSet& sampleSet) const;
 
   void updateFallDown(SampleSet& sampleSet) const;
 
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double sigmaAngle) const;
   void updateByOldPose(SampleSet& sampleSet) const;
-
 
   /** apply all the updates ba any avaliable sensor data */
   bool updateBySensors(SampleSet& sampleSet) const;
@@ -169,7 +175,6 @@ private:
 
   /****************************************/
   SampleSet setBeforeResampling;
-
 };
 
-#endif //__MonteCarloSelfLocator_h_
+#endif //_MonteCarloSelfLocator_h_

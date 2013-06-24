@@ -41,45 +41,26 @@ namespace motion_symbols("Motion Symbols") {
   float output head.search.size.y [mm];
   float output head.search.size.z [mm];
   bool output head.search.direction;
-
-  /** The head motion control modes. This specifies how behavior should be moving the head. */
-  enum head.control_mode internal 
-  {
-    none,
-    look_straight_ahead,
-    stabilize,
-    search_for_ball,
-    search_for_ball_force_model,
-    stay_as_forced,
-    search_for_own_goal,
-    search_for_opp_goal,
-    search_for_goal,
-    search_for_goal_after_penalized,
-    search_for_whole_goal,
-    search_for_line,
-    //search_for_line,
-    look_around,
-    goalie_look_around,
-    smart_search,
-
-    //Test case
-    search_for_ball_test
-  };
-
-  enum head.control_mode internal head.control_mode;
-
-  /** 0=always ball, 1=always goal, 0.0..01 to 0.999... > percentage of goal */
-  float internal head.smart_search.rate [0..1];
-
-  /** indicates wich camera has to be used */
-  enum head.camera.id
-  {
-    top,
-    bottom
-  };
   
-  enum head.camera.id output head.camera.id;
+  enum head.camera
+  {
+    Top,
+    Bottom
+  };
 
+  /** Set which camera is controlled by the head motion. */
+  enum head.camera output head.camera.id;
+  
+  /** Remark: not all arm motion ids are listed here */
+  enum arm.type 
+  {
+    arms_none,
+    arms_back,
+    arms_down
+  };
+
+  /** The currently requested motion type for the arms. */
+  enum arm.type output arm.type;
 
   
   enum motion.type 
@@ -97,6 +78,7 @@ namespace motion_symbols("Motion Symbols") {
     
     stand_up_from_front,
     stand_up_from_back,
+    stand_up_from_back_arms_back,
 
     block_middle,
     goalie_get_down,
@@ -176,31 +158,10 @@ namespace motion_symbols("Motion Symbols") {
   bool output motion.kick.finish;
   enum direction output motion.kick.foot;
 
-    
-   /** Parameter of the turn_circle */  
-   float output motion.turn_circle.radius [mm];  
-   enum direction output motion.turn_circle.direction;
 
-   /** distance which the goalie moved to ball out of the goal */
-   float internal distance_out_of_goal;
-
-   /** Calculates the position and direction in the current left foot coordination */
-   float input relativeToLeftFootX "mm" (x [..] "mm"; y [..] "mm";);
-   float input relativeToLeftFootY "mm" (x [..] "mm"; y [..] "mm";);
-   float input relativeToLeftFootA "deg" (a [..] "deg";);
-   /** Calculates the position and direction in the current right foot coordination */
-   float input relativeToRightFootX "mm" (x [..] "mm"; y [..] "mm";);
-   float input relativeToRightFootY "mm" (x [..] "mm"; y [..] "mm";);
-   float input relativeToRightFootA "deg" (a [..] "deg";);
-
-   /** avoid obstacle, return if necessary */
-   bool output motion.plan.avoid_obstacle;
-
-
-   /** head motion symbols (especially for the goalie dive )*/
-   float input motion.head.pitch "deg";
-   float input motion.head.yaw "deg";
-   float input motion.head.speed;
+  /** head motion symbols (especially for the goalie dive )*/
+  float input head.pitch "deg";
+  float input head.yaw "deg";
 
   /** walk style */
   enum motion.walk.style

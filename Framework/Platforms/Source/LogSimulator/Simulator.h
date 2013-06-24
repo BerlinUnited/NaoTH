@@ -31,13 +31,14 @@
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/GameData.h>
 
-//
-
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 
 #include <Tools/Debug/DebugRequest.h>
 #include <ModuleFramework/Module.h>
+
+//in runtime as constant defined width and heigth of the input image
+#include "Representations/Infrastructure/CameraInfoConstants.h"
 
 #define CYCLE_TIME 20
 
@@ -64,6 +65,7 @@ public:
     exludeMap["AccelerometerData"] = "";
     exludeMap["SensorJointData"] = "";
     exludeMap["Image"] = "";
+    exludeMap["ImageTop"] = "";
     exludeMap["FSRData"] = "";
     exludeMap["GyrometerData"] = "";
     exludeMap["InertialSensorData"] = "";
@@ -164,6 +166,7 @@ public:
   SIM_GET(SensorJointData);
   SIM_GET(AccelerometerData);
   SIM_GET(Image);
+  SIM_GET(ImageTop);
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);

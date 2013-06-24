@@ -229,6 +229,12 @@ public:
 
 };
 
+class LinePerceptTop : public LinePercept
+{
+public:
+  virtual ~LinePerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -238,6 +244,11 @@ namespace naoth
     static void serialize(const LinePercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, LinePercept& representation);
   };
+
+  template<>
+  class Serializer<LinePerceptTop> : public Serializer<LinePercept>
+  {};
+
 }
 
 #endif // _LinePercept_h_

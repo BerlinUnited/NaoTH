@@ -2,11 +2,17 @@
 
 BaseColorRegionParameters::BaseColorRegionParameters()
 :
+  whiteLineParamsTop("WhiteLinesTop"),
   whiteLineParams("WhiteLines"),
+  yellowGoalParamsTop("YellowGoalTop"),
   yellowGoalParams("YellowGoal"),
+  blueGoalParamsTop("BlueGoalTop"),
   blueGoalParams("BlueGoal"),
+  orangeBallParamsTop("OrangeBallTop"),
   orangeBallParams("OrangeBall"),
-  pinkWaistBandParams("PinkWaistBand"),
-  blueWaistBandParams("BlueWaistBand")
+  redTeamParamsTop("RedTeamTop"),
+  redTeamParams("RedTeam"),
+  blueTeamParamsTop("BlueTeamTop"),
+  blueTeamParams("BlueTeam")
 {}
 

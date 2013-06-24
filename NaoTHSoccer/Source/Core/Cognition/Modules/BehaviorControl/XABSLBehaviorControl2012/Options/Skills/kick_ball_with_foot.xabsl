@@ -1,0 +1,139 @@
+/**  */
+option kick_ball_with_foot
+{
+  float @direction [deg]; 
+  bool @right;
+
+  initial state kick
+  {
+    decision {
+      if(!@right)
+        goto adjust_kick_left;
+      else
+        goto adjust_kick_right;
+    }
+    action {
+    
+    }
+  }
+
+
+  state adjust_kick_left
+  {
+    decision {
+      if(executed_motion.type == kick && state_time > 2000)
+        goto kick_left;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = left;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = @direction;
+      motion.kick.finish = false; // don't kick, just adjust
+      
+    }
+  }
+
+
+  state adjust_kick_right
+  {
+    decision {
+      if(executed_motion.type == kick  && state_time > 2000)
+        goto kick_right;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = right;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = @direction;
+      motion.kick.finish = false; // don't kick, just adjsust
+    }
+  }
+  
+  state kick_left
+  {
+    decision {
+      if(executed_motion.type == kick)
+        goto wait_until_kick_finished;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = left;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = @direction;
+      motion.kick.finish = true; // kick as fast as posible
+      
+    }
+  }
+
+
+  state kick_right
+  {
+    decision {
+      if(executed_motion.type == kick)
+        goto wait_until_kick_finished;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = right;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = @direction;
+      motion.kick.finish = true; // kick as fast as posible
+    }
+  }
+
+  state wait_until_kick_finished
+  {
+    decision {
+      if(executed_motion.type != kick)
+        goto kick_finished;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+      // important: the kick is still being executed,
+      // the ball parameter have to passed to adjust the kick
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      
+      motion.type = stand;
+    }
+  }
+
+  target state kick_finished
+  {
+    decision {
+      goto kick;
+    }
+    action {
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
+      motion.type = stand;    
+    }
+  }
+}

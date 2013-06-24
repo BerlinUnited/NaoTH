@@ -31,7 +31,6 @@
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
-
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(MotionStatus)
   REQUIRE(OdometryData)
@@ -40,6 +39,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   //PROVIDE(FSRPositions)// TODO:strange...
   PROVIDE(CameraMatrix)// TODO:strange...
+  PROVIDE(CameraMatrixTop)// TODO:strange...
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
@@ -59,6 +59,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // from cognition
   PROVIDE(CameraInfo)
+  PROVIDE(CameraInfoTop)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Motion)
@@ -95,7 +96,7 @@ private:
 
 private:
   void debugPlots();
-  void updateCameraMatrix();
+  void updateCameraMatrix(string name, CameraMatrix &cameraMatrix, const CameraInfo &cameraInfo);
   void guard_cognition();
 
 private:

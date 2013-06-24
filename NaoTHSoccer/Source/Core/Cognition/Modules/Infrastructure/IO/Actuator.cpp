@@ -23,12 +23,14 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(UltraSoundSendData);
 
   REG_OUTPUT(CameraSettingsRequest);
+  REG_OUTPUT(CameraSettingsRequestTop);
   REG_OUTPUT(SoundPlayData);
   REG_OUTPUT(TeamMessageDataOut);
   REG_OUTPUT(RCTCTeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
 
   platformInterface.registerOutputChanel(getCameraInfo());
+  platformInterface.registerOutputChanel(getCameraInfoTop());
   platformInterface.registerOutputChanel(getHeadMotionRequest());
   platformInterface.registerOutputChanel(getMotionRequest());
 }//end init

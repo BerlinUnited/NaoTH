@@ -61,13 +61,13 @@ void DebugBufferedOutput::executeDebugCommand(
     naothmessages::Plots plotsMsg;
 
     // serialize all the plots
-    std::map<std::string, RingBuffer<Vector2<double>, 100> >::const_iterator iter;
+    std::map<std::string, RingBuffer<Vector2<double>, maxPlotStrokes> >::const_iterator iter;
     for(iter = plotStrokes.begin(); iter != plotStrokes.end(); ++iter)
     {
       naothmessages::PlotStroke2D* plotMsg = plotsMsg.add_plotstrokes();
       plotMsg->set_name(iter->first);
 
-      const RingBuffer<Vector2<double>, 100>& plotBuffer = iter->second;
+      const RingBuffer<Vector2<double>, maxPlotStrokes>& plotBuffer = iter->second;
       for(int i = plotBuffer.getNumberOfEntries()-1; i >= 0; i--)
       {
         naothmessages::DoubleVector2* point = plotMsg->add_points();

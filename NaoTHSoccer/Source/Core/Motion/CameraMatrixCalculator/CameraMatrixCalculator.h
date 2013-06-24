@@ -5,8 +5,8 @@
 * Declaration of class CameraMatrixCalculator
 */
 
-#ifndef __CameraMatrixCalculator_h_
-#define __CameraMatrixCalculator_h_
+#ifndef _CameraMatrixCalculator_h_
+#define _CameraMatrixCalculator_h_
 
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>
@@ -27,4 +27,4 @@ public:
   );
 };
 
-#endif //__CameraMatrixCalculator_h_
+#endif //_CameraMatrixCalculator_h_

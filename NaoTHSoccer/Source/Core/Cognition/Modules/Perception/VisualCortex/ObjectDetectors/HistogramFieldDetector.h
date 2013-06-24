@@ -21,12 +21,11 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 #include "Tools/Debug/DebugRequest.h"
@@ -38,14 +37,19 @@
 
 BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
 //  REQUIRE(ColorTable64)
-  REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
   REQUIRE(ColoredGrid)
-  REQUIRE(Histogram)
+  REQUIRE(ColoredGridTop)
+  REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
 
   PROVIDE(FieldPercept)
+  PROVIDE(FieldPerceptTop)
 END_DECLARE_MODULE(HistogramFieldDetector)
 
 class HistogramFieldDetector: private HistogramFieldDetectorBase
@@ -54,19 +58,93 @@ public:
   HistogramFieldDetector();
   ~HistogramFieldDetector(){}
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
 
 private:
-  void getFieldRectFromHistogram(Vector2<int>& min, Vector2<int>& max);
+ CameraInfo::CameraID cameraID;
+
+ void getFieldRectFromHistogram(Vector2<int>& min, Vector2<int>& max);
   FieldPercept::FieldRect largestAreaRectangle;
 
   ColorClasses::Color fieldColor;
   ColorClasses::Color lineColor;
 
-  const ColorClassificationModel& getColorTable64() const
+  const Image& getImage() const
   {
-    return getColorClassificationModel();
-  }
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getImageTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getImage();
+    }
+  };
+  
+  const ColoredGrid& getColoredGrid() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getColoredGridTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getColoredGrid();
+    }
+  };
+
+  const CameraMatrix& getCameraMatrix() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getCameraMatrixTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getCameraMatrix();
+    }
+  };
+
+  const ArtificialHorizon& getArtificialHorizon() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getArtificialHorizonTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getArtificialHorizon();
+    }
+  };
+
+  const Histograms& getHistograms() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getHistogramsTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getHistograms();
+    }
+  };
+
+  FieldPercept& getFieldPercept()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return HistogramFieldDetectorBase::getFieldPerceptTop();
+    }
+    else
+    {
+      return HistogramFieldDetectorBase::getFieldPercept();
+    }
+  };
 };//end class HistogramFieldDetector
 
 

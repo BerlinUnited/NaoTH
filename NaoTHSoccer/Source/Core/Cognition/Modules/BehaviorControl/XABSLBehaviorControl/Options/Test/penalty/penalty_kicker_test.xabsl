@@ -1,0 +1,55 @@
+/* Tests the penalty kicker */
+
+option penalty_kicker_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto penalty_kick;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state penalty_kick
+  {
+    decision
+    {
+      else if(action_done)
+        goto wait;
+      else
+        stay;
+    }
+    action 
+    {
+      penalty_kicker();
+    }
+  }
+
+  state wait
+  {
+    decision
+    {
+      else if(state_time > 3000)
+        goto penalty_kick;
+      else
+        stay;
+    }
+    action 
+    {
+      motion.type = stand;
+    }
+  }
+}

@@ -2,78 +2,22 @@
 
 option penalty_set_penalized_play
 {  
-  common decision {
-    /* do nothing if it is not our turn */
-    if(game.player_number == 1 && game.own_kickoff)
-    {
-      // goalie does not perform kickoff
-      goto _initial;
-    }
-    else if(game.player_number > 1 && !game.own_kickoff)
-    {
-      // attacker does not protect the goal
-      goto _initial;
-    }
-    else if (game.state == _initial_)
-    {
-      goto _initial;
-    }
-    else if (game.state == ready)
-    {
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode == playing)
+      goto play;
+    else if(game.current_mode == ready)
       goto ready;
-    }
-    else if (game.state == set)
-    {
-      goto set;
-    }
-    else if (game.state == playing)
-    {  //HACK -> goalie should lay down!
-      if(fall_down_state != upright && game.player_number != 1)
-        goto stand_up;
-      else   
-        goto playing;
-    }
-    else if (game.state == penalized)
-    {  
-      goto penalized;
-    }
-    else if (game.state == finished)
-    {
-      goto finished;
-    }
-  }
-    
-  initial state _initial {
-    action
-    {
-      last_state_was_penalized = false;
-      head.control_mode = stay_as_forced;
-      motion.type = init;
-    }
+    else if(true)
+      goto idle;
   }
   
-  state ready {
-    action
-    {
-      last_state_was_penalized = false;
-      // todo: goto position
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-    }
-  }
+
+  initial state idle{action{}}  
   
-  state set {
-    action
-    {
-      last_state_was_penalized = false;
-      special_kickoff_done = false;
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-    }
-  }
-  
-  
-  state playing {
+  state play {
     action 
     {
       //sound.request = (state_time == 0)  ? playing : off;
@@ -83,31 +27,10 @@ option penalty_set_penalized_play
     }
   }
 
-  
-  state penalized {
-    action
-    {
-      last_state_was_penalized = true;
-      sound.request = (state_time == 0) ? penalized : off;
-      head.control_mode = stay_as_forced;
-      motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
-    }
-  }
-  
-  state finished {
-    action
-    {
-      last_state_was_penalized = false;
-      head.control_mode = stay_as_forced;
-      motion.type = stand;
-    }
-  }
-
-  state stand_up
+  state ready
   {
     action 
     {
-      stand_up();
     }
   }
 }
