@@ -52,6 +52,11 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
 
   int aktIdx = 0;
 
+  for(int i = 0; i < 5; i++)
+  {
+     features[i].clear();
+  }
+
   if(p1.y > 15 && p2.y > 15 && p1.y < (int) getImage().height() - 15 && p2.y < (int) getImage().height() - 15)
   {
     double response = 0.0;
@@ -74,7 +79,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
       isCandidate = false;
       Vector2<int> pos((int) p1.x + 2, y);
       BresenhamLineScan scanner(pos, direction, getImage().cameraInfo);
-      features[aktIdx].clear();
       do
       {
         pointBuffer.add(pos);
@@ -160,122 +164,122 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
       while(pos.x < (int) getImage().width() - 2);
       aktIdx++;
     }//end for
-  }//end if
 
-  Vector2<double> dir(-direction.y, direction.x);
+    Vector2<double> dir(-direction.y, direction.x);
 
-  memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
-  bool goalPostFound = false;
-  goalPosts.clear();
-  //std::cout << std::endl << " ------ " << std::endl;
-  for(unsigned i = 0; i < features[0].size(); i++)
-  {
-    Feature& candidate = features[0][i];
+    memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
+    bool goalPostFound = false;
+    goalPosts.clear();
 
-    BresenhamLineScan footPointScanner(candidate.center, dir, getImage().cameraInfo);
 
-    int goodPointsCount = 0;
-
-    Vector2<int> pos = candidate.center;
-    for(int y = 1; y < 5; y++)
+    //std::cout << std::endl << " ------ " << std::endl;
+    for(unsigned i = 0; i < features[0].size(); i++)
     {
-      footPointScanner.getNext(pos);
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-        POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-      );
-      footPointScanner.getNext(pos);
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-        POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-      );
-      footPointScanner.getNext(pos);
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-        POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-      );
-      footPointScanner.getNext(pos);
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-        POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-      );
-      footPointScanner.getNext(pos);
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-        POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-      );
-      unsigned j = lastTestFeatureIdx[y];
-      bool stop = false;
-      while (!stop && j < features[y].size())
+      Feature& candidate = features[0][i];
+
+      BresenhamLineScan footPointScanner(candidate.center, dir, getImage().cameraInfo);
+
+      int goodPointsCount = 0;
+
+      Vector2<int> pos = candidate.center;
+      for(int y = 1; y < 5; y++)
       {
-        int dist = (pos - features[y][j].center).abs();
-
-        if(dist < params.dist)
-        {
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScanGoodPoints", 
-            POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
-          );
-          lastTestFeatureIdx[y] = j;
-          goodPointsCount++;
-          stop = true;
-          //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
-        }
-        j++;
-      }
-
-    }
-
-    if(goodPointsCount >= 3)
-    {
-      bool footPointFound = false;
-      int c = 0;
-      Pixel pixel;
-      while(!footPointFound && footPointScanner.getNextWithCheck(pos))
-      {
+        footPointScanner.getNext(pos);
         DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-          POINT_PX(ColorClasses::white, pos.x, pos.y);
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
         );
-        getImage().get(pos.x, pos.y, pixel);
-        if(c % 2 == 0 && getFieldColorPercept().isFieldColor(pixel))
+        footPointScanner.getNext(pos);
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+        );
+        footPointScanner.getNext(pos);
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+        );
+        footPointScanner.getNext(pos);
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+        );
+        footPointScanner.getNext(pos);
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+        );
+        unsigned j = lastTestFeatureIdx[y];
+        bool stop = false;
+        while (!stop && j < features[y].size())
         {
-          footPointFound = true;
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
-            CIRCLE_PX(ColorClasses::yellowOrange, pos.x, pos.y, 10);
-          );
+          int dist = (pos - features[y][j].center).abs();
+
+          if(dist < params.dist)
+          {
+            DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScanGoodPoints", 
+              POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
+            );
+            lastTestFeatureIdx[y] = j;
+            goodPointsCount++;
+            stop = true;
+            //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
+          }
+          j++;
         }
-        c++;
+
       }
-      if(footPointFound)
+
+      if(goodPointsCount >= 3)
       {
-        goalPostFound = true;
-        GoalPercept::GoalPost post;
+        bool footPointFound = false;
+        int c = 0;
+        Pixel pixel;
+        while(!footPointFound && footPointScanner.getNextWithCheck(pos))
+        {
+          DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+            POINT_PX(ColorClasses::white, pos.x, pos.y);
+          );
+          getImage().get(pos.x, pos.y, pixel);
+          if(c % 2 == 0 && getFieldColorPercept().isFieldColor(pixel))
+          {
+            footPointFound = true;
+            DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+              CIRCLE_PX(ColorClasses::yellowOrange, pos.x, pos.y, 10);
+            );
+          }
+          c++;
+        }
+        if(footPointFound)
+        {
+          goalPostFound = true;
+          GoalPercept::GoalPost post;
 
-        post.basePoint = pos;
-        CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        post.basePoint.x, post.basePoint.y, 0.0,
-        post.position);
+          post.basePoint = pos;
+          CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(),
+          getImage().cameraInfo,
+          post.basePoint.x, post.basePoint.y, 0.0,
+          post.position);
 
-        post.positionReliable = true;
-        goalPosts.push_back(post);
-        getGoalPercept().add(post);
+          post.positionReliable = true;
+          goalPosts.push_back(post);
+          getGoalPercept().add(post);
+        }
+
+
       }
 
 
-    }
-
-
-    if(candidate.possibleObstacle)
-    {
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
-        POINT_PX(ColorClasses::pink, candidate.center.x, candidate.center.y);
-      );
-    }
-    else
-    {
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
-        POINT_PX(ColorClasses::red, candidate.center.x, candidate.center.y);
-      );
-    }
-
-
-  }
+      if(candidate.possibleObstacle)
+      {
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+          POINT_PX(ColorClasses::pink, candidate.center.x, candidate.center.y);
+        );
+      }
+      else
+      {
+        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+          POINT_PX(ColorClasses::red, candidate.center.x, candidate.center.y);
+        );
+      }
+    }//end for
+  }//end if
 
 }//end execute
 
