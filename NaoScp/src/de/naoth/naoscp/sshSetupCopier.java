@@ -12,17 +12,17 @@ import java.io.*;
  *
  * @author claas
  */
-abstract class sshSetupCopier extends sshCopier
+abstract class SshSetupCopier extends SshCopier
 {
   protected String mode;
 
-  sshSetupCopier(NaoScpConfig config, String sNaoNo, String mode)
+  SshSetupCopier(NaoScpConfig config, String sNaoNo, String mode)
   {
     super(config, "0", sNaoNo);
     this.mode = mode;
   }
 
-  sshSetupCopier(NaoScpConfig config, String Ip, String sNaoNo, String mode)
+  SshSetupCopier(NaoScpConfig config, String Ip, String sNaoNo, String mode)
   {
     super(config, Ip, "0", sNaoNo);
     this.mode = mode;

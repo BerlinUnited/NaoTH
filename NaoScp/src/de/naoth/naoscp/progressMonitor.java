@@ -12,7 +12,7 @@ import javax.swing.*;
  *
  * @author claas
  */
-class progressMonitor implements SftpProgressMonitor
+class ProgressMonitor implements SftpProgressMonitor
 {
 
   long count = 0;
@@ -20,7 +20,7 @@ class progressMonitor implements SftpProgressMonitor
   private long percent = -1;
   private JProgressBar progressbar;
 
-  public progressMonitor(JProgressBar progressbar)
+  public ProgressMonitor(JProgressBar progressbar)
   {
     this.progressbar = progressbar;
   }

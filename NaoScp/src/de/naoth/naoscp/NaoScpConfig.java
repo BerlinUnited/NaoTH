@@ -28,6 +28,7 @@ public class NaoScpConfig
 
   boolean backupIsSelected;
 
+  String comment; // comment for the current deploy
   String jDirPathLabel;
 
   String stagingLibDir;
@@ -39,6 +40,11 @@ public class NaoScpConfig
   String actIp;
   String sNaoNo;
   String sNaoByte;
+  
+  String sTeamCommPort;
+  String scheme;
+  String teamNumber;
+  String teamColor;
 
   String sshUser;
   String sshPassword;
@@ -149,6 +155,8 @@ public class NaoScpConfig
   public String localDeployInPath(){return localDeployInPath(sNaoNo, sNaoByte);}
   public String localDeployInPath(String sNaoNo, String sNaoByte){return localDeployRootPath() + "/in/" + backupTimestamp + "-" + sNaoNo + "-" + sNaoByte;}
   public String localSetupScriptPath(){return jDirPathLabel + "/../Utils/NaoConfigFiles";}
+  public String localSetupStickPath(){return jDirPathLabel + "/../Utils/SetupStick";}
+  public String localMediaPath(){return jDirPathLabel + "/Media";}
   public String localDeployOutPath(){return localDeployOutPath(sNaoNo);}
   public String localDeployOutPath(String sNaoNo){return localDeployRootPath() + "/out/" + sNaoNo;}
 
