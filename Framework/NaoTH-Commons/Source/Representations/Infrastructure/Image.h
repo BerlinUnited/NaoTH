@@ -299,6 +299,19 @@ namespace naoth
     static void deserialize(std::istream& stream, Image& representation);
   };
 
+  /**
+   * @brief An image from a secondary camera
+   */
+  class ImageTop : public Image
+  {
+  public:
+    virtual ~ImageTop() {}
+  };
+
+  template<>
+  class Serializer<ImageTop> : public Serializer<Image>
+  {};
+
 } // end namespace naoth
 
-#endif //__Image_h_
+#endif //_Image_h_

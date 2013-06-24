@@ -32,8 +32,11 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(SensorJointData)
   REQUIRE(KinematicChain)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   PROVIDE(BodyContour)
+  PROVIDE(BodyContourTop)
 END_DECLARE_MODULE(BodyContourProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -51,7 +54,12 @@ public:
   
   virtual ~BodyContourProvider(){};
 
-  virtual void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Bottom);
+  };
 
 protected:
 
@@ -107,6 +115,58 @@ private:
   CameraInfo ci;
   BodyParts bodyparts;
   int lineNumber;
+
+  CameraInfo::CameraID cameraID;
+
+  const Image& getImage() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return BodyContourProviderBase::getImageTop();
+    }
+    else
+    {
+      return BodyContourProviderBase::getImage();
+    }
+  };
+  
+  const CameraMatrix& getCameraMatrix() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return BodyContourProviderBase::getCameraMatrixTop();
+    }
+    else
+    {
+      return BodyContourProviderBase::getCameraMatrix();
+    }
+  }
+
+
+  BodyContour& getBodyContour()
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return BodyContourProviderBase::getBodyContourTop();
+    }
+    else
+    {
+      return BodyContourProviderBase::getBodyContour();
+    }
+  }
+
+  const BodyContour& getBodyContour() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return BodyContourProviderBase::getBodyContourTop();
+    }
+    else
+    {
+      return BodyContourProviderBase::getBodyContour();
+    }
+  }
+
 };// end class BodyContourProvider
 
 #endif // _BodyContourProvider_h_

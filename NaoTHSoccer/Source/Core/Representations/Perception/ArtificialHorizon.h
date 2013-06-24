@@ -27,4 +27,10 @@ public:
   virtual ~ArtificialHorizon();
 };
 
+class ArtificialHorizonTop : public ArtificialHorizon
+{
+public:
+  virtual ~ArtificialHorizonTop() {}
+};
+
 #endif // ARTIFICIALHORIZON_H

@@ -1,12 +1,12 @@
 /*
- * File:   histogram.h
+ * File:   histograms.h
  * Author: claas
  *
  * Created on 9. Juli 2009, 13:40
  */
 
-#ifndef _Histogram_H
-#define  _Histogram_H
+#ifndef _Histograms_H
+#define  _Histograms_H
 
 #include <sstream>
 
@@ -18,6 +18,8 @@
 #include "Tools/ImageProcessing/ImagePrimitives.h"
 #include "Tools/DataStructures/Printable.h"
 
+#include "Tools/DataStructures/Histogram.h"
+
 //Representations
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "ColoredGrid.h"
@@ -25,46 +27,58 @@
 
 #define COLOR_CHANNEL_VALUE_COUNT 256
 
-class Histogram: public naoth::Printable
+class Histograms: public naoth::Printable
 {
  public:
-    Histogram();
-    ~Histogram(){}
+    Histograms();
+    ~Histograms(){}
 
     void init();
     void execute();
 
     inline void increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
     {
-      xHistogram[color][y]++;
-      yHistogram[color][x]++;
+      xHistogram[color].add(y);
+      yHistogram[color].add(x);
     }//end increaseValue
 
     inline void increaseValue(const Vector2<int> pixel, const ColorClasses::Color& color)
     {
-      xHistogram[color][pixel.y]++;
-      yHistogram[color][pixel.x]++;
+      xHistogram[color].add(pixel.y);
+      yHistogram[color].add(pixel.x);
     }//end increaseValue
 
     inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
     {
-      colorChannelHistogramField[pixel.v]++;
+      histogramY.add(pixel.y);
+      histogramU.add(pixel.u);
+      histogramV.add(pixel.v);
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
+    void createFromColoredGridTop(const ColoredGrid& coloredGrid);
     void showDebugInfos(const UniformGrid& grid, const naoth::CameraInfo& cameraInfo) const;
     virtual void print(std::ostream& stream) const;
 
   public:
-    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
-    int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
-
-    int colorChannelHistogramField[COLOR_CHANNEL_VALUE_COUNT];
+    //color class histograms bottom image
+    Statistics::Histogram<naoth::IMAGE_HEIGHT> xHistogram[ColorClasses::numOfColors];
+    Statistics::Histogram<naoth::IMAGE_WIDTH > yHistogram[ColorClasses::numOfColors];
+    
+    // color channel histograms bottomImage
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramY;
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramU;
+    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramV;
 
     unsigned int colorChannelIsUptodate;
 
+};
+
+class HistogramsTop : public Histograms
+{
+public:
+  virtual ~HistogramsTop() {}
 };
 
 

@@ -6,10 +6,10 @@ import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.Colors;
 import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.manager.SecondaryImageManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -32,32 +32,41 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  CNR
  */
 @PluginImplementation
-public class ColorCalibrationTool extends AbstractDialog implements ObjectListener<JanusImage>, PropertyChangeListener
+public class ColorCalibrationTool extends AbstractDialog implements /*ObjectListener<JanusImage>,*/ PropertyChangeListener
 {
 
   @InjectPlugin
   public RobotControl parent;
   @InjectPlugin
   public ImageManager imageManager;
+  @InjectPlugin
+  public SecondaryImageManager secondaryImageManager;
 
   private ImagePanel imageCanvas;
   private final String cameraAutoParam = "camera:switch_auto_parameters";
   
-  private final String showCalibArea = "ImageProcessor:BaseColorClassifier:calibration_areas:";
-  private final String showCalibPixel = "ImageProcessor:BaseColorClassifier:set_[OBJECT]_in_image";
-  private final String showCalibPixelField = "ImageProcessor:FieldColorClassifier:set_in_image";
+  private final String showCalibArea = "ImageProcessor:BaseColorClassifier:[CAMERA]:calibration_areas:";
+  private final String showCalibPixel = "ImageProcessor:BaseColorClassifier:[CAMERA]:set_[OBJECT]_in_image";
+  private final String showCalibPixelField = "ImageProcessor:FieldColorClassifier:[CAMERA]:set_in_image";
   private final String getSetCalibAreaRect = "ParameterList:CalibrationAreaRect_";
-  private final String toggleCalibCommand = "ImageProcessor:BaseColorClassifier:calibrate_colors:";
-  private final String toggleCalibCommandField = "ImageProcessor:FieldColorClassifier:calibrate:";
-  private final String getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
+  private final String toggleCalibCommand = "ImageProcessor:BaseColorClassifier:[CAMERA]:calibrate_colors:";
+  private final String toggleCalibCommandField = "ImageProcessor:FieldColorClassifier:[CAMERA]:calibrate:";
+  private final String getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]";
   private final String getSetCalibValuesField = "ParameterList:FieldColorParameters:";
-    
+  
+  private final String getSetCalibStrength = "ParameterList:BCC_Parameters";
+          
   private boolean drawRect = false;
   private Color CalibColor;
   private Integer CalibColorIndex;
   private Colors.ColorClass colorClass;
 
   private HashMap<Colors.ColorClass, Boolean> classifiedPixelShowStateList;
+
+  BottomImageListener bottomImageListener;
+  TopImageListener topImageListener;
+  
+  private String activeCamera;
   
   /** Creates new form ImageViewer */
   public ColorCalibrationTool()
@@ -68,20 +77,31 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   @Init
   public void init()
   {
-
+    this.activeCamera = "";
     // setup the image-views
-    imageCanvas = new ImagePanel();
+    this.imageCanvas = new ImagePanel();
     this.imagePanel.add(imageCanvas);
     this.imagePanel.addMouseListener(imageCanvas);
     this.imagePanel.addMouseMotionListener(imageCanvas);
-    classifiedPixelShowStateList = new HashMap<Colors.ColorClass, Boolean>();
+
+    this.bottomImageListener = new BottomImageListener();
+    this.topImageListener = new TopImageListener();
+
+    this.classifiedPixelShowStateList = new HashMap<Colors.ColorClass, Boolean>();
     for(Colors.ColorClass c: Colors.ColorClass.values())
     {
-      classifiedPixelShowStateList.put(c,false);
+      this.classifiedPixelShowStateList.put(c,false);
     }
-    
+    setStrength(10);
   }//end init
 
+  private void setStrength(int value)
+  {
+    this.jSliderStrength.setValue(value);
+    Double val = value / 10.0;
+    this.jTextFieldStrength.setText(val.toString());
+  }
+  
   @Override
   public JPanel getPanel()
   {
@@ -98,7 +118,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
 
         fileChooser = new de.naoth.rc.dialogs.panels.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
-        btReceiveImages = new javax.swing.JToggleButton();
+        btReceiveBottomImages = new javax.swing.JToggleButton();
+        btReceiveTopImages = new javax.swing.JToggleButton();
         btAutoCameraParameters = new javax.swing.JToggleButton();
         btCalibrate = new javax.swing.JToggleButton();
         jPanel3 = new javax.swing.JPanel();
@@ -106,6 +127,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         imagePanel = new javax.swing.JPanel();
         coloredObjectChooserPanel = new de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel();
         colorValueSlidersPanel = new de.naoth.rc.dialogs.panels.ColorValueSlidersPanel();
+        jSliderStrength = new javax.swing.JSlider();
+        jTextFieldStrength = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(800, 663));
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -117,15 +140,27 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        btReceiveImages.setText("Receive Images");
-        btReceiveImages.addActionListener(new java.awt.event.ActionListener() {
+        btReceiveBottomImages.setText("Receive Bottom Images");
+        btReceiveBottomImages.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReceiveImagesActionPerformed(evt);
+                btReceiveBottomImagesActionPerformed(evt);
             }
         });
-        jToolBar1.add(btReceiveImages);
+        jToolBar1.add(btReceiveBottomImages);
+
+        btReceiveTopImages.setText("Receive Top Images");
+        btReceiveTopImages.setFocusable(false);
+        btReceiveTopImages.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btReceiveTopImages.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btReceiveTopImages.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btReceiveTopImagesActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btReceiveTopImages);
 
         btAutoCameraParameters.setText("Auto Camera Params");
+        btAutoCameraParameters.setEnabled(false);
         btAutoCameraParameters.setFocusable(false);
         btAutoCameraParameters.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btAutoCameraParameters.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -202,6 +237,20 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             }
         });
 
+        jSliderStrength.setMajorTickSpacing(10);
+        jSliderStrength.setMaximum(30);
+        jSliderStrength.setMinorTickSpacing(1);
+        jSliderStrength.setPaintTicks(true);
+        jSliderStrength.setSnapToTicks(true);
+        jSliderStrength.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSliderStrengthStateChanged(evt);
+            }
+        });
+
+        jTextFieldStrength.setEditable(false);
+        jTextFieldStrength.setText("1.0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -210,45 +259,69 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSliderStrength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jSliderStrength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jTextFieldStrength, javax.swing.GroupLayout.Alignment.TRAILING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addContainerGap(112, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
-  private void btReceiveImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesActionPerformed
+  private void btReceiveBottomImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveBottomImagesActionPerformed
 
-    if(btReceiveImages.isSelected())
+    if(this.btReceiveBottomImages.isSelected())
     {
-      if(parent.checkConnected())
+      if(this.parent.checkConnected())
       {
-        imageManager.addListener(this);
+        this.imageManager.addListener(this.bottomImageListener);
+        this.coloredObjectChooserPanel.setEnabled(true);
+        this.btAutoCameraParameters.setEnabled(true);
+        this.btReceiveTopImages.setEnabled(false);
+        this.activeCamera = "BottomCam";
+        if(this.coloredObjectChooserPanel.getSelectedColor() != Colors.ColorClass.none)
+        {
+          this.btCalibrate.setEnabled(true);
+        }
       }
       else
       {
-        btReceiveImages.setSelected(false);
+//        this.btReceiveTopImages.setEnabled(true);
+        this.btReceiveBottomImages.setSelected(false);
+//        this.activeCamera = "";
+//        this.btCalibrate.setEnabled(false);
       }
     }
     else
     {
-      imageManager.removeListener(this);
+      this.btReceiveTopImages.setEnabled(true);
+      this.imageManager.removeListener(this.bottomImageListener);
+      this.coloredObjectChooserPanel.setEnabled(false);
+      this.btAutoCameraParameters.setEnabled(false);
+      this.activeCamera = "";
+      this.btCalibrate.setEnabled(false);
     }
-  }//GEN-LAST:event_btReceiveImagesActionPerformed
+  }//GEN-LAST:event_btReceiveBottomImagesActionPerformed
 
   private void imagePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseMoved
   }//GEN-LAST:event_imagePanelMouseMoved
@@ -262,8 +335,8 @@ private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_
 private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAutoCameraParametersActionPerformed
 {//GEN-HEADEREND:event_btAutoCameraParametersActionPerformed
 
-  boolean on = btAutoCameraParameters.isSelected();
-  Command cmd = new Command(cameraAutoParam).addArg(on ? "on"  : "off");
+  boolean on = this.btAutoCameraParameters.isSelected();
+  Command cmd = new Command(this.cameraAutoParam).addArg(on ? "on"  : "off");
   sendCommand(cmd);
 }//GEN-LAST:event_btAutoCameraParametersActionPerformed
 
@@ -272,78 +345,174 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
  }//GEN-LAST:event_btCalibrateStateChanged
   
   private void btCalibrateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_btCalibrateItemStateChanged
-    if(evt.getStateChange() == ItemEvent.SELECTED)
-    {
-      if(colorClass != null)
-      {
-        this.colorValueSlidersPanel.setEnabled(false);
-//        if(colorValueSlidersPanel.showColoredPixels())
-//        {
-//          sendShowObjectsPixels(colorClass, "on");
-//        }
-        sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
-        sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("off"));
-        sendColorCalibCommand(colorClass, "on");     
-      }
-    }
-    if(evt.getStateChange() == ItemEvent.DESELECTED)
-    {
-      btCalibrate.setSelected(false);
-      for(Colors.ColorClass c: Colors.ColorClass.values())
-      {
-        if
-        (
-          c == Colors.ColorClass.green || 
-          c == Colors.ColorClass.white || 
-          c == Colors.ColorClass.orange || 
-          c == Colors.ColorClass.yellow ||
-          c == Colors.ColorClass.skyblue || 
-          c == Colors.ColorClass.red || 
-          c == Colors.ColorClass.blue
-        )
-        {
-          if(colorValueSlidersPanel.showColoredPixels())
-          {
-            sendShowObjectsPixels(c, "off");
-          }
-          sendColorCalibCommand(c, "off");          
-        }
-      }
-      sendGetColorValueCommand(colorClass, "get");
-      this.colorValueSlidersPanel.setEnabled(true);
-    }
   }//GEN-LAST:event_btCalibrateItemStateChanged
 
   private void btCalibrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalibrateActionPerformed
+    if(this.parent.getMessageServer().isConnected())
+    {
+      if(this.btCalibrate.isSelected())
+      {
+        if(this.colorClass != null)
+        {
+          this.coloredObjectChooserPanel.setEnabled(false);
+          this.colorValueSlidersPanel.setEnabled(false);
+          this.btReceiveBottomImages.setEnabled(false);
+//          if(colorValueSlidersPanel.showColoredPixels())
+//          {
+//            sendShowObjectsPixels(colorClass, "on");
+//          }
+          sendCommand(new Command(this.toggleCalibCommand + "reset_data").addArg("on"));
+          try 
+          {
+            Thread.sleep(30);
+          }
+          catch (Exception ex)
+          {}
+          sendCommand(new Command(this.toggleCalibCommand + "reset_data").addArg("off"));
+          try 
+          {
+            Thread.sleep(30);
+          }
+          catch (Exception ex)
+          {}
+          if(!sendColorCalibCommand(this.colorClass, "on"))
+          {
+            this.coloredObjectChooserPanel.setEnabled(true);
+            this.colorValueSlidersPanel.setEnabled(true);
+            this.btReceiveBottomImages.setEnabled(true);
+            this.btCalibrate.setSelected(false);
+            
+            try 
+            {
+              Thread.sleep(30);
+            }
+            catch (Exception ex)
+            {}
+//            sendShowObjectsPixels(this.colorClass, "on");
+          }
+        }
+      }
+      else
+      {
+        for(Colors.ColorClass c: Colors.ColorClass.values())
+        {
+          if
+          (
+            c == Colors.ColorClass.green || 
+            c == Colors.ColorClass.white || 
+            c == Colors.ColorClass.orange || 
+            c == Colors.ColorClass.yellow ||
+            c == Colors.ColorClass.skyblue || 
+            c == Colors.ColorClass.red || 
+            c == Colors.ColorClass.blue
+          )
+          {
+//            if(colorValueSlidersPanel.showColoredPixels())
+//            {
+//              sendShowObjectsPixels(c, "off");
+//            }
+            sendColorCalibCommand(c, "off");          
+          }
+        }
+        try 
+        {
+          Thread.sleep(30);
+        }
+        catch (Exception ex)
+        {}
+        if(sendGetColorValueCommand(this.colorClass, "get"))
+        {
+          this.colorValueSlidersPanel.setEnabled(true);
+          this.coloredObjectChooserPanel.setEnabled(true);
+          this.btReceiveBottomImages.setEnabled(true);
+        }
+        else
+        {
+          this.btCalibrate.setSelected(true);
+          this.colorValueSlidersPanel.setEnabled(false);
+          this.coloredObjectChooserPanel.setEnabled(false);
+          this.btReceiveBottomImages.setEnabled(false);
+        }
+      }
+    }
   }//GEN-LAST:event_btCalibrateActionPerformed
 
   private void coloredObjectChooserPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_coloredObjectChooserPanelMouseClicked
   }//GEN-LAST:event_coloredObjectChooserPanelMouseClicked
 
-  @Override
-  public void newObjectReceived(JanusImage object)
-  {
-    imageCanvas.setImage(object);
-  }
+  private void jSliderStrengthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSliderStrengthStateChanged
+    setStrength(this.jSliderStrength.getValue());        
+    Double val = this.jSliderStrength.getValue() / 10.0;
+    if(this.parent.getMessageServer().isConnected())
+    {
+      sendCommand(new Command(this.getSetCalibStrength + ":set").addArg("calibrationStrength", val.toString()));
+    }
+  }//GEN-LAST:event_jSliderStrengthStateChanged
 
-  @Override
-  public void errorOccured(String cause)
-  {
-    btReceiveImages.setSelected(false);
-    imageManager.removeListener(this);
-    JOptionPane.showMessageDialog(this,
-      cause, "Error", JOptionPane.ERROR_MESSAGE);
-  }
+  private void btCalibrateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btCalibrateMouseClicked
+    
+  }//GEN-LAST:event_btCalibrateMouseClicked
+
+  private void btReceiveTopImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveTopImagesActionPerformed
+    
+    if(this.btReceiveTopImages.isSelected())
+    {
+      if(this.parent.checkConnected())
+      {
+        this.secondaryImageManager.addListener(this.topImageListener);
+        this.coloredObjectChooserPanel.setEnabled(true);
+        this.btAutoCameraParameters.setEnabled(true);
+        this.btReceiveBottomImages.setEnabled(false);
+        this.activeCamera = "TopCam";
+        if(this.coloredObjectChooserPanel.getSelectedColor() != Colors.ColorClass.none)
+        {
+          this.btCalibrate.setEnabled(true);
+        }
+      }
+      else
+      {
+        this.btReceiveTopImages.setSelected(false);
+//        this.btReceiveBottomImages.setEnabled(true);
+//        this.activeCamera = "";
+//        this.btCalibrate.setEnabled(false);
+      }
+    }
+    else
+    {
+      this.btReceiveBottomImages.setEnabled(true);
+      this.secondaryImageManager.removeListener(this.topImageListener);
+      this.coloredObjectChooserPanel.setEnabled(false);
+      this.btAutoCameraParameters.setEnabled(false);
+      this.activeCamera = "";
+      this.btCalibrate.setEnabled(false);
+    }
+    
+  }//GEN-LAST:event_btReceiveTopImagesActionPerformed
+
+//  @Override
+//  public void newObjectReceived(JanusImage object)
+//  {
+//    imageCanvas.setImage(object);
+//  }
+//
+//  @Override
+//  public void errorOccured(String cause)
+//  {
+//    btReceiveBottomImages.setSelected(false);
+//    imageManager.removeListener(this);
+//    JOptionPane.showMessageDialog(this,
+//      cause, "Error", JOptionPane.ERROR_MESSAGE);
+//  }
   
   private void sendShowObjectsPixels(Colors.ColorClass colorClass, String mode)
   {
     if(colorClass != null)
     {
-      String cmdString = showCalibPixel;
+      String cmdString = this.showCalibPixel;
       switch(colorClass)
       {
         case green:
-            cmdString = showCalibPixelField;
+            cmdString = this.showCalibPixelField;
           break;
 
         case white:
@@ -359,71 +528,94 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
             cmdString = cmdString.replace("[OBJECT]", "ball");
           break;
 
+        case pink:
         case red:
-         case blue:
-            cmdString = cmdString.replace("[OBJECT]", "waistband") + mode;
+            cmdString = cmdString.replace("[OBJECT]", "red_team");
           break;
+
+        case blue:
+            cmdString = cmdString.replace("[OBJECT]", "blue_team");
+          break;
+           
+        default:
+           return;
       }
+      cmdString = cmdString.replace("[CAMERA]", activeCamera);
+      System.out.println(cmdString);
       sendCommand(new Command(cmdString).addArg(mode));
     }
   }
 
-  private void sendGetColorValueCommand(Colors.ColorClass colorClass, String mode)
+  private boolean sendGetColorValueCommand(Colors.ColorClass colorClass, String mode)
   {
+    mode = ":" + mode;
     if(colorClass != null)
     {
-      String cmdString = getSetCalibValues;
+      String cmdString = this.getSetCalibValues;
+      String camera = "";
+      if(activeCamera.equals("TopCam"))
+        camera = "Top";
       switch(colorClass)
       {
         case green:
-            cmdString = getSetCalibValuesField + mode;
+            cmdString = this.getSetCalibValuesField + mode;
           break;
 
         case white:
-            cmdString = cmdString.replace("[COLOR]", "white").replace("[OBJECT]", "WhiteLines") + mode;
+            cmdString = cmdString.replace("[COLOR]", "white").replace("[OBJECT]", "WhiteLines") + camera + mode;
           break;
 
         case yellow:
-            cmdString = cmdString.replace("[COLOR]", "yellow").replace("[OBJECT]", "YellowGoal") + mode;
+            cmdString = cmdString.replace("[COLOR]", "yellow").replace("[OBJECT]", "YellowGoal") + camera + mode;
           break;
 
         case skyblue:
-            cmdString = cmdString.replace("[COLOR]", "yellow").replace("[OBJECT]", "YellowGoal") + mode;
+            cmdString = cmdString.replace("[COLOR]", "yellow").replace("[OBJECT]", "YellowGoal") + camera + mode;
             //cmdString += cmdString.replace("[COLOR]", "skyblue").replace("[OBJECT]", "BlueGoal") + mode;
           break;
 
         case orange:
-            cmdString = cmdString.replace("[COLOR]", "orange").replace("[OBJECT]", "OrangeBall") + mode;
+            cmdString = cmdString.replace("[COLOR]", "orange").replace("[OBJECT]", "OrangeBall") + camera + mode;
           break;
 
         case red:
-            cmdString = cmdString.replace("[COLOR]", "pink").replace("[OBJECT]", "PinkWaistBand") + mode;
+            cmdString = cmdString.replace("[COLOR]", "pink").replace("[OBJECT]", "RedTeam") + camera + mode;
           break;
 
         case blue:
-            cmdString = cmdString.replace("[COLOR]", "blue").replace("[OBJECT]", "BlueWaistBand") + mode;
+            cmdString = cmdString.replace("[COLOR]", "blue").replace("[OBJECT]", "BlueTeam") + camera + mode;
           break;
+          
+        default:
+          return true;
       }
+      System.out.println(cmdString);
       Command cmd = new Command(cmdString);
       if(mode.equals("set"))
       {
-        String[][] values = colorValueSlidersPanel.getControlValues();
+        String[][] values = this.colorValueSlidersPanel.getControlValues();
         for(int i = 0; i < values.length; i++)
         {
           cmd.addArg(values[i][0], values[i][1]);
         }
       }
-      sendCommand(cmd);
+//      else
+//      {
+//        sendCommand(new Command(getSetCalibStrength + ":get"));  
+//       }
+      return sendCommand(cmd);
+        
     }
+    return false;
   }
 
-  private void sendColorCalibCommand(Colors.ColorClass colorClass, String arg)
+  private boolean sendColorCalibCommand(Colors.ColorClass colorClass, String arg)
   {
-    String cmdString = toggleCalibCommand;
+    String cmdString = this.toggleCalibCommand;
     switch(colorClass)
     {
       case green:
-            cmdString = toggleCalibCommandField;
+            cmdString = this.toggleCalibCommandField;
         break;
 
       case white:
@@ -443,25 +635,31 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         break;
 
       case red:
-          cmdString += "pinkWaistBand";
+          cmdString += "red_team";
         break;
 
       case blue:
-          cmdString += "blueWaistBand";
+          cmdString += "blue_team";
         break;
+        
+      default:
+        return true;
     }
-    sendCommand(new Command(cmdString).addArg(arg));
+    cmdString = cmdString.replace("[CAMERA]", activeCamera);
+    System.out.println(cmdString);
+    return sendCommand(new Command(cmdString).addArg(arg));
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) 
   {
-    String property = evt.getPropertyName().replace("ColorCalibrationTool:", "");
+    String property = evt.getPropertyName().replace("ColorCalibrationTool:", "").replace("Top", "");;
     String changedProperty = property.replace(":changed", "");
     String switchedProperty = property.replace(":switched", "");
     
     if(evt.getNewValue() != null && evt.getNewValue() instanceof Boolean )
     {
+//      System.out.println(switchedProperty);
       String mode = "off";
       if((Boolean) evt.getNewValue())
       {
@@ -477,11 +675,11 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       {
         c = Colors.ColorClass.yellow;
       }
-      else if(switchedProperty.equals("PinkWaistBand"))
+      else if(switchedProperty.equals("RedTeam"))
       {
         c = Colors.ColorClass.pink;
       }
-      else if(switchedProperty.equals("BlueWaistBand"))
+      else if(switchedProperty.equals("BlueTeam"))
       {
         c = Colors.ColorClass.blue;
       }
@@ -494,7 +692,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         c = Colors.ColorClass.green;
       }
       sendShowObjectsPixels(c, mode);
-      classifiedPixelShowStateList.put(c, (Boolean) evt.getNewValue());     
+      this.classifiedPixelShowStateList.put(c, (Boolean) evt.getNewValue());     
     }
     else if(evt.getNewValue() != null && evt.getNewValue() instanceof Integer)
     {
@@ -506,11 +704,11 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       {
         sendGetColorValueCommand(Colors.ColorClass.yellow, "set");
       }
-      else if(changedProperty.equals("PinkWaistBand"))
+      else if(changedProperty.equals("RedTeam"))
       {
         sendGetColorValueCommand(Colors.ColorClass.pink, "set");
       }
-      else if(changedProperty.equals("BlueWaistBand"))
+      else if(changedProperty.equals("BlueTeam"))
       {
         sendGetColorValueCommand(Colors.ColorClass.blue, "set");
       }
@@ -525,16 +723,59 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     }
   }
 
+  private class BottomImageListener implements ObjectListener<JanusImage>
+  {
+
+    @Override
+    public void newObjectReceived(JanusImage object)
+    {
+      if(object == null) return;
+      
+      imageCanvas.setImage(object.getRgb());
+      imageCanvas.repaint();
+    }//end newObjectReceived
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btReceiveBottomImages.setSelected(false);
+      imageManager.removeListener(this);
+      imageCanvas.setVisible(false);
+    }//end errorOccured
+  }//end ImageListener
+  
+  private class TopImageListener implements ObjectListener<JanusImage>
+  {
+
+    @Override
+    public void newObjectReceived(JanusImage object)
+    {
+      if(object == null) return;
+      
+      imageCanvas.setImage(object.getRgb());
+      imageCanvas.repaint();
+
+    }//end newObjectReceived
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btReceiveTopImages.setSelected(false);
+      secondaryImageManager.removeListener(this);
+      imageCanvas.setVisible(false);
+    }//end errorOccured
+  }//end ImageListener
+  
   private class ImagePanel extends JPanel implements MouseMotionListener, MouseListener//, ComponentListener
   {
 
     private JanusImage image;
     
-    private java.awt.Point[] lowerLeft;
-    private java.awt.Point[] upperRight;
+    private java.awt.Point[][] lowerLeft;
+    private java.awt.Point[][] upperRight;
     
-    private java.awt.Point[] lowerLeftAnim;
-    private java.awt.Point[] upperRightAnim;
+    private java.awt.Point[][] lowerLeftAnim;
+    private java.awt.Point[][] upperRightAnim;
     
     private Double scale;
 
@@ -546,18 +787,21 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       this.setSize(imagePanel.getSize());
       this.scale = 2.0;
       
-      lowerLeft = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
-      upperRight = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
+      this.lowerLeft = new java.awt.Point[2][Colors.ColorClass.numOfColors.ordinal()];
+      this.upperRight = new java.awt.Point[2][Colors.ColorClass.numOfColors.ordinal()];
       
-      lowerLeftAnim = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
-      upperRightAnim = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
+      this.lowerLeftAnim = new java.awt.Point[2][Colors.ColorClass.numOfColors.ordinal()];
+      this.upperRightAnim = new java.awt.Point[2][Colors.ColorClass.numOfColors.ordinal()];
       
       for(int i = 0; i < Colors.ColorClass.numOfColors.ordinal(); i++)
       {
-        lowerLeft[i] = new java.awt.Point(0, 0);
-        upperRight[i] = new java.awt.Point(0, 0);
-        lowerLeftAnim[i] = new java.awt.Point(0, 0);
-        upperRightAnim[i] = new java.awt.Point(0, 0);
+        for(int j = 0; j < 2; j++)
+        {
+          this.lowerLeft[j][i] = new java.awt.Point(0, 0);
+          this.upperRight[j][i] = new java.awt.Point(0, 0);
+          this.lowerLeftAnim[j][i] = new java.awt.Point(0, 0);
+          this.upperRightAnim[j][i] = new java.awt.Point(0, 0);
+        }
       }
       CalibColorIndex = null;
       CalibColor = Color.black;
@@ -567,12 +811,22 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     public void setImage(JanusImage image)
     {
       this.image = image;
-      this.backgroundImage = image.getRgb();
+      this.setImage(this.image.getRgb());
+    }
+
+    private void setImage(BufferedImage rgb) 
+    {
+      this.backgroundImage = rgb;
+      Dimension dim = imagePanel.getSize();
+      double heightPanel = dim.height;
+      double heightImage = this.backgroundImage.getHeight();
+      this.scale = heightPanel / heightImage;
+      
       this.setSize(imagePanel.getSize()); 
       getColor();
       this.repaint();
     }
-    
+
     public JanusImage getImage()
     {
       return this.image;
@@ -584,12 +838,14 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       
       if(newColorClass != colorClass)
       {        
+        sendShowObjectsPixels(colorClass, "off");
+        colorValueSlidersPanel.setShowColoredPixels(false);
         if(newColorClass == Colors.ColorClass.none)
         {
           btCalibrate.setEnabled(false);
         }
         if(colorClass != null && newColorClass != null )
-        {
+        {         
           colorValueSlidersPanel.removeControls();
         }
         
@@ -609,31 +865,35 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
             sendShowColorAreaCommand(c, "off");
           }
         }
-        btCalibrate.setSelected(false);
-        btCalibrate.setEnabled(true);
+        if(!activeCamera.equals(""))
+        {
+          btCalibrate.setSelected(false);
+          btCalibrate.setEnabled(true);
+        }
         sendGetColorValueCommand(newColorClass, "get");
 //        colorValueSlidersPanel.removeControls();
 //        this.validateTree();
-      }
-      colorClass = newColorClass;
-      if(colorClass != null)
-      {
-        try 
+        colorClass = newColorClass;
+        if(colorClass != null)
         {
-          CalibColor = Colors.GetColor(colorClass);
-        } catch (Exception ex) 
-        {
-          Logger.getLogger(ColorCalibrationTool.class.getName()).log(Level.SEVERE, null, ex);
+          try 
+          {
+            CalibColor = Colors.GetColor(colorClass);
+          } 
+          catch (Exception ex) 
+          {
+            Logger.getLogger(ColorCalibrationTool.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          CalibColorIndex = coloredObjectChooserPanel.getSelectedColorIndex();
+  //        sendGetColorValueCommand(colorClass, "get");
+          sendShowColorAreaCommand(colorClass, "on");
         }
-        CalibColorIndex = coloredObjectChooserPanel.getSelectedColorIndex();
-//        sendGetColorValueCommand(colorClass, "get");
-        sendShowColorAreaCommand(colorClass, "on");
+        else
+        {
+          CalibColor = null;
+          CalibColorIndex = null;
+        }      
       }
-      else
-      {
-        CalibColor = null;
-        CalibColorIndex = null;
-      }      
     }
     
     private void sendColorAreaCommand(Colors.ColorClass colorClass)
@@ -647,88 +907,112 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
 //          break;
           
         case white:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "WhiteLinesTop:set";
+           else
             cmdString += "WhiteLines:set";
           break;
           
         case yellow:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "YellowGoalPostLeftTop:set";
+           else
             cmdString += "YellowGoalPostLeft:set";
           break;
           
         case skyblue:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "YellowGoalPostRightTop:set";
+           else
             cmdString += "YellowGoalPostRight:set";
           break;
           
         case orange:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "OrangeBallTop:set";
+           else
             cmdString += "OrangeBall:set";
           break;
           
         case red:
-            cmdString += "PinkWaistBand:set";
+          if(activeCamera.equals("TopCam"))
+            cmdString += "RedTeamTop:set";
+           else
+            cmdString += "RedTeam:set";
           break;
           
         case blue:
-            cmdString += "BlueWaistBand:set";
+          if(activeCamera.equals("TopCam"))
+            cmdString += "BlueTeamTop:set";
+           else
+            cmdString += "BlueTeam:set";
           break;
         
         default:
           return;
       }
+      System.out.println(cmdString);
       Command cmd = new Command(cmdString); 
-      
-      if(lowerLeft[index].x > 639)
+      int cam = 0;
+      if(activeCamera.equals("BottomCam"))
       {
-        lowerLeft[index].x = 639;
-      }
-      if(lowerLeft[index].y > 479)
-      {
-        lowerLeft[index].y = 479;
+        cam++;
       }
       
-      if(lowerLeft[index].x < 0)
+      if(this.lowerLeft[cam][index].x > 639)
       {
-        lowerLeft[index].x = 0;
+        this.lowerLeft[cam][index].x = 639;
       }
-      if(lowerLeft[index].y < 0)
+      if(this.lowerLeft[cam][index].y > 479)
       {
-        lowerLeft[index].y = 0;
-      }
-      
-      if(upperRight[index].x > 639)
-      {
-        upperRight[index].x = 639;
-      }
-      if(upperRight[index].y > 479)
-      {
-        upperRight[index].y = 479;
+        this.lowerLeft[cam][index].y = 479;
       }
       
-      if(upperRight[index].x < 0)
+      if(this.lowerLeft[cam][index].x < 0)
       {
-        upperRight[index].x = 0;
+        this.lowerLeft[cam][index].x = 0;
       }
-      if(upperRight[index].y < 0)
+      if(this.lowerLeft[cam][index].y < 0)
       {
-        upperRight[index].y = 0;
-      }
-      
-      if(lowerLeft[index].x > upperRight[index].x)
-      {
-        int x = upperRight[index].x;
-        upperRight[index].x = lowerLeft[index].x;
-        lowerLeft[index].x = x;
+        this.lowerLeft[cam][index].y = 0;
       }
       
-      if(lowerLeft[index].y > upperRight[index].y)
+      if(this.upperRight[cam][index].x > 639)
       {
-        int y = upperRight[index].y;
-        upperRight[index].y = lowerLeft[index].y;
-        lowerLeft[index].y = y;
+        this.upperRight[cam][index].x = 639;
+      }
+      if(this.upperRight[cam][index].y > 479)
+      {
+        this.upperRight[cam][index].y = 479;
+      }
+      
+      if(this.upperRight[cam][index].x < 0)
+      {
+        this.upperRight[cam][index].x = 0;
+      }
+      if(this.upperRight[cam][index].y < 0)
+      {
+        this.upperRight[cam][index].y = 0;
+      }
+      
+      if(this.lowerLeft[cam][index].x > this.upperRight[cam][index].x)
+      {
+        int x = this.upperRight[cam][index].x;
+        this.upperRight[cam][index].x = this.lowerLeft[cam][index].x;
+        this.lowerLeft[cam][index].x = x;
+      }
+      
+      if(lowerLeft[cam][index].y > this.upperRight[cam][index].y)
+      {
+        int y = this.upperRight[cam][index].y;
+        this.upperRight[cam][index].y = this.lowerLeft[cam][index].y;
+        this.lowerLeft[cam][index].y = y;
       }      
       
-      cmd.addArg("lowerLeft.x", String.valueOf((int) (lowerLeft[index].x / scale)));
-      cmd.addArg("lowerLeft.y", String.valueOf((int) (lowerLeft[index].y / scale)));
-      cmd.addArg("upperRight.x", String.valueOf((int) (upperRight[index].x / scale)));
-      cmd.addArg("upperRight.y", String.valueOf((int) (upperRight[index].y / scale)));
+      cmd.addArg("lowerLeft.x", String.valueOf((int) (this.lowerLeft[cam][index].x / this.scale)));
+      cmd.addArg("lowerLeft.y", String.valueOf((int) (this.lowerLeft[cam][index].y / this.scale)));
+      cmd.addArg("upperRight.x", String.valueOf((int) (this.upperRight[cam][index].x / this.scale)));
+      cmd.addArg("upperRight.y", String.valueOf((int) (this.upperRight[cam][index].y / this.scale)));
       sendCommand(cmd);
       
       cmdString = getSetCalibAreaRect;
@@ -736,24 +1020,33 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       switch(colorClass)
       {
         case yellow:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "BlueGoalPostLeftTop:set";
+           else
             cmdString += "BlueGoalPostLeft:set";
           break;
           
         case skyblue:
+          if(activeCamera.equals("TopCam"))
+            cmdString += "BlueGoalPostRightTop:set";
+           else
             cmdString += "BlueGoalPostRight:set";
           break;
       }      
       cmd = new Command(cmdString);    
-      cmd.addArg("lowerLeft.x", String.valueOf(lowerLeft[index].x / 2));
-      cmd.addArg("lowerLeft.y", String.valueOf(lowerLeft[index].y / 2));
-      cmd.addArg("upperRight.x", String.valueOf(upperRight[index].x / 2));
-      cmd.addArg("upperRight.y", String.valueOf(upperRight[index].y / 2));
+      cmd.addArg("lowerLeft.x", String.valueOf(this.lowerLeft[cam][index].x / 2));
+      cmd.addArg("lowerLeft.y", String.valueOf(this.lowerLeft[cam][index].y / 2));
+      cmd.addArg("upperRight.x", String.valueOf(this.upperRight[cam][index].x / 2));
+      cmd.addArg("upperRight.y", String.valueOf(this.upperRight[cam][index].y / 2));
       sendCommand(cmd);
     }
    
     private void sendShowColorAreaCommand(Colors.ColorClass colorClass, String arg)
     {
       String cmdString = showCalibArea;
+      
+      if(colorClass == null) return;
+      
       switch(colorClass)
       {
 //        case green:
@@ -777,17 +1070,18 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           break;
           
         case red:
-            cmdString += "show_pinkWaistBand_area";
+            cmdString += "show_red_team_area";
           break;
           
         case blue:
-            cmdString += "show_blueWaistBand_area";
+            cmdString += "show_blue_team_area";
           break;
         
         default:
           return;
       }
-      
+      cmdString = cmdString.replace("[CAMERA]", activeCamera);
+      System.out.println(cmdString);
       sendCommand(new Command(cmdString).addArg(arg));
     }
 
@@ -800,7 +1094,12 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     public void mouseDragged(MouseEvent e) {
       if(CalibColorIndex != null)
       {
-        upperRightAnim[CalibColorIndex] = e.getPoint();
+        int cam = 0;
+        if(activeCamera.equals("BottomCam"))
+        {
+          cam++;
+        }
+        this.upperRightAnim[cam][CalibColorIndex] = e.getPoint();
         this.repaint();
       }
      }
@@ -821,8 +1120,13 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       getColor();
       if(CalibColorIndex != null && CalibColor != null)
       {
-        lowerLeftAnim[CalibColorIndex] = e.getPoint();
-        upperRightAnim[CalibColorIndex] = e.getPoint();
+        int cam = 0;
+        if(activeCamera.equals("BottomCam"))
+        {
+          cam++;
+        }
+        this.lowerLeftAnim[cam][CalibColorIndex] = e.getPoint();
+        this.upperRightAnim[cam][CalibColorIndex] = e.getPoint();
 //        lowerLeft[CalibColorIndex] = e.getPoint();
 //        upperRight[CalibColorIndex] = e.getPoint();
         drawRect = true;
@@ -834,11 +1138,16 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     public void mouseReleased(MouseEvent e) {
       if(CalibColorIndex != null && CalibColor != null)
       {
-        upperRightAnim[CalibColorIndex] = e.getPoint();
+        int cam = 0;
+        if(activeCamera.equals("BottomCam"))
+        {
+          cam++;
+        }
+        this.upperRightAnim[cam][CalibColorIndex] = e.getPoint();
         if(isValidRect(CalibColorIndex))
         {
-          lowerLeft[CalibColorIndex] = lowerLeftAnim[CalibColorIndex];
-          upperRight[CalibColorIndex] = upperRightAnim[CalibColorIndex];
+          this.lowerLeft[cam][CalibColorIndex] = this.lowerLeftAnim[cam][CalibColorIndex];
+          this.upperRight[cam][CalibColorIndex] = this.upperRightAnim[cam][CalibColorIndex];
           sendShowColorAreaCommand(colorClass, "on");
           sendGetColorValueCommand(colorClass, "get");
           sendColorAreaCommand(colorClass);
@@ -857,9 +1166,9 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       super.paintComponent(g);
       Graphics2D g2d = (Graphics2D) g;
 
-      if(backgroundImage != null)
+      if(this.backgroundImage != null)
       {
-        g2d.drawImage(backgroundImage, new AffineTransform(this.scale, 0, 0, this.scale, 0, 0), null);
+        g2d.drawImage(this.backgroundImage, new AffineTransform(this.scale, 0, 0, this.scale, 0, 0), null);
       }
       if
       (
@@ -889,27 +1198,37 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
 
     private boolean isValidRect(int index)
     {
-      return Math.abs(lowerLeftAnim[index].x - upperRightAnim[index].x) > 1 && Math.abs(lowerLeftAnim[index].y - upperRightAnim[index].y) > 1;
+      int cam = 0;
+      if(activeCamera.equals("BottomCam"))
+      {
+        cam++;
+      }
+      return Math.abs(this.lowerLeftAnim[cam][index].x - this.upperRightAnim[cam][index].x) > 1 && Math.abs(this.lowerLeftAnim[cam][index].y - this.upperRightAnim[cam][index].y) > 1;
     }
     
     public void drawRect(Graphics2D g2d, int index, Color color)
     {
       if(isValidRect(index))
       {
-        int x = lowerLeftAnim[index].x;
-        int y = lowerLeftAnim[index].y;
-
-        int width = Math.abs(upperRightAnim[index].x - lowerLeftAnim[index].x);
-        int height = Math.abs(upperRightAnim[index].y - lowerLeftAnim[index].y);
-
-        if(upperRightAnim[index].x < lowerLeftAnim[index].x)
+        int cam = 0;
+        if(activeCamera.equals("BottomCam"))
         {
-          x = upperRightAnim[index].x;
+          cam++;
+        }
+        int x = this.lowerLeftAnim[cam][index].x;
+        int y = this.lowerLeftAnim[cam][index].y;
+
+        int width = Math.abs(this.upperRightAnim[cam][index].x - this.lowerLeftAnim[cam][index].x);
+        int height = Math.abs(this.upperRightAnim[cam][index].y - this.lowerLeftAnim[cam][index].y);
+
+        if(this.upperRightAnim[cam][index].x < this.lowerLeftAnim[cam][index].x)
+        {
+          x = this.upperRightAnim[cam][index].x;
         }
 
-        if(upperRightAnim[index].y < lowerLeftAnim[index].y)
+        if(this.upperRightAnim[cam][index].y < this.lowerLeftAnim[cam][index].y)
         {
-          y = upperRightAnim[index].y;
+          y = this.upperRightAnim[cam][index].y;
         }        
         g2d.setColor(color);
         Stroke drawingStroke = new BasicStroke(1);
@@ -938,6 +1257,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
 //    public void componentHidden(ComponentEvent e) {
 ////      throw new UnsupportedOperationException("Not supported yet.");
 //    }
+
   }//end class ImagePanel
 
   public void addUpdateControls(String name, String result)
@@ -948,92 +1268,106 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       String[] parts = params[i].split("=");
       if(parts.length == 2)
       {
-        colorValueSlidersPanel.addControl(name, parts[0], Integer.parseInt(parts[1]), this, classifiedPixelShowStateList.get(colorClass));
+        this.colorValueSlidersPanel.addControl(name, parts[0], Integer.parseInt(parts[1]), this, this.classifiedPixelShowStateList.get(this.colorClass));
       }
     }
   }
   
-  private void sendCommand(Command command)
+  private boolean sendCommand(Command command)
   {
     final Command commandToExecute = command;
     final ColorCalibrationTool thisFinal = this;
-    this.parent.getMessageServer().executeSingleCommand(new CommandSender()
+    
+    if(this.parent.getMessageServer().isConnected())
     {
-      @Override
-      public void handleResponse(byte[] result, Command originalCommand)
+      this.parent.getMessageServer().executeSingleCommand(new CommandSender()
       {
-        //getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
-        String strResult = new String(result);
-        if
-        (
-          originalCommand.getName().contains("ParameterList:") &&
-          originalCommand.getName().contains("ColorRegion_") &&
-          originalCommand.getName().contains(":get")
-        )
+        @Override
+        public void handleResponse(byte[] result, Command originalCommand)
         {
-          int idx = originalCommand.getName().indexOf("ColorRegion_");
-          String name = originalCommand.getName().substring(idx).replace("ColorRegion_", "").replace(":get", "");
-          
-          addUpdateControls(name, strResult);
-        }
-        else if((getSetCalibValuesField + "get").equals(originalCommand.getName()))
-        {
-          addUpdateControls("Field", strResult);
-        }
-        else if(originalCommand.getName().equals(cameraAutoParam)
-          && originalCommand.getArguments().size() >= 1
-          && originalCommand.getArguments().keySet().contains("off"))
-        {
-          String answer = new String(result);
-          if(answer.endsWith("parameter were saved"))
+          //getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
+          String strResult = new String(result);
+          if
+          (
+            originalCommand.getName().contains("ParameterList:") &&
+            originalCommand.getName().contains("ColorRegion_") &&
+            originalCommand.getName().contains(":get")
+          )
           {
-            JOptionPane.showMessageDialog(thisFinal,
-              "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+            int idx = originalCommand.getName().indexOf("ColorRegion_");
+            String name = originalCommand.getName().substring(idx).replace("ColorRegion_", "").replace(":get", "");
+
+            addUpdateControls(name, strResult);
           }
-          else
+          else if((getSetCalibValuesField + "get").equals(originalCommand.getName()))
           {
-            JOptionPane.showMessageDialog(thisFinal,
-                answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
+            addUpdateControls("Field", strResult);
           }
-          
+          else if(originalCommand.getName().equals(cameraAutoParam)
+            && originalCommand.getArguments().size() >= 1
+            && originalCommand.getArguments().keySet().contains("off"))
+          {
+            String answer = new String(result);
+            if(answer.endsWith("parameter were saved"))
+            {
+              JOptionPane.showMessageDialog(thisFinal,
+                "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else
+            {
+              JOptionPane.showMessageDialog(thisFinal,
+                  answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+          }
+
+        }//end handleResponse
+
+        @Override
+        public void handleError(int code)
+        {
+          JOptionPane.showMessageDialog(thisFinal,
+                "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
         }
 
-      }//end handleResponse
-
-      @Override
-      public void handleError(int code)
-      {
-        JOptionPane.showMessageDialog(thisFinal,
-              "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
-
-      @Override
-      public Command getCurrentCommand()
-      {
-        return commandToExecute;
-      }
-    }, command);
+        @Override
+        public Command getCurrentCommand()
+        {
+          return commandToExecute;
+        }
+      }, command);
+      return true;
+    }
+    else
+    {
+      this.parent.checkConnected();
+    }
+    return false;
   }//end sendCommand
 
   @Override
   public void dispose()
   {
-    //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-    btReceiveImages.setSelected(false);
-    imageManager.removeListener(this);
-    btCalibrate.setSelected(false);
-    colorValueSlidersPanel.removeControls();
+    this.btReceiveBottomImages.setSelected(false);
+    this.btReceiveTopImages.setSelected(false);
+    this.imageManager.removeListener(bottomImageListener);
+    this.secondaryImageManager.removeListener(topImageListener);
+    this.btCalibrate.setSelected(false);
+    this.colorValueSlidersPanel.removeControls();
   }//end dispose
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btAutoCameraParameters;
     private javax.swing.JToggleButton btCalibrate;
-    private javax.swing.JToggleButton btReceiveImages;
+    private javax.swing.JToggleButton btReceiveBottomImages;
+    private javax.swing.JToggleButton btReceiveTopImages;
     private de.naoth.rc.dialogs.panels.ColorValueSlidersPanel colorValueSlidersPanel;
     private de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel coloredObjectChooserPanel;
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JSlider jSliderStrength;
+    private javax.swing.JTextField jTextFieldStrength;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel originalImageContainer;
     // End of variables declaration//GEN-END:variables

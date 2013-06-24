@@ -8,8 +8,8 @@
 #include "Edgel.h"
 #include "LineDetectorConstParameters.h"
 
-#ifndef __ClusteredLine_H_
-#define __ClusteredLine_H_
+#ifndef _ClusteredLine_H_
+#define _ClusteredLine_H_
 
 class ClusteredLine
 {
@@ -31,7 +31,7 @@ public:
   {
   };
 
-  ClusteredLine(Edgel edgel, int clusterId)
+  ClusteredLine(DoubleEdgel edgel, int clusterId)
     :
     clusterId(clusterId)
   {
@@ -45,17 +45,17 @@ public:
 
     dSum = normal.rotateLeft() * edgel.center;
 
-    thickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+    thickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
     thicknessSum = thickness;
     count = 1;
   };
 
   ~ClusteredLine(){}
 
-  bool check(const Edgel& edgel) const
+  bool check(const DoubleEdgel& edgel) const
   {
     //
-    double edgelThickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+    double edgelThickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
     
     // the normal vector of the line in the hessian normalform
     Vector2<double> lineNormal;
@@ -107,12 +107,12 @@ public:
     );
   }//end check
 
-  bool add(const Edgel& edgel)
+  bool add(const DoubleEdgel& edgel)
   {
     if(check(edgel))
     {
       //TODO: don't repeat the calculation
-      double edgelThickness = ((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle);
+      double edgelThickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
 
       end = edgel.center;
       
@@ -135,7 +135,7 @@ public:
 
   int id(){ return clusterId; }
 
-  Edgel edgels[SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1)];
+  DoubleEdgel edgels[SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1)];
   int count;
   double angle;
   double thickness;
@@ -144,4 +144,4 @@ public:
 //  double hDist;
 };
 
-#endif //__ClusteredLine_H_
+#endif //_ClusteredLine_H_

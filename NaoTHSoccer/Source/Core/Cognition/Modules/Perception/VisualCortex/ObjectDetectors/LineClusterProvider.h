@@ -1,11 +1,11 @@
 /* 
- * File:   ScanLineEdgelDetectorDifferentialDifferential.h
+ * File:   LineClusterProviderDifferential.h
  * Author: Heinrich Mellmann
  *
  */
 
-#ifndef _ScanLineEdgelDetectorDifferentialDifferential_H_
-#define _ScanLineEdgelDetectorDifferentialDifferential_H_
+#ifndef _LineClusterProviderDifferential_H_
+#define _LineClusterProviderDifferential_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -18,16 +18,14 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-//#include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
+
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
-//#include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BodyContour.h"
 
@@ -35,24 +33,24 @@
 #include <Tools/DataStructures/ParameterList.h>
 
 
-BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
+BEGIN_DECLARE_MODULE(LineClusterProvider)
   REQUIRE(Image)
   REQUIRE(ColorClassificationModel)
   //REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
-  REQUIRE(ArtificialHorizon)
   REQUIRE(FieldPercept)
   REQUIRE(BodyContour)
 
-  PROVIDE(ScanLineEdgelPercept)
-END_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
+  REQUIRE(ScanLineEdgelPercept)
+END_DECLARE_MODULE(LineClusterProvider)
 
 
-class ScanLineEdgelDetectorDifferential : private ScanLineEdgelDetectorDifferentialBase
+class LineClusterProvider : private LineClusterProviderBase
 {
 public:
-  ScanLineEdgelDetectorDifferential();
-  virtual ~ScanLineEdgelDetectorDifferential();
+  LineClusterProvider();
+  virtual ~LineClusterProvider();
+
 
   void execute();
 
@@ -60,7 +58,7 @@ public:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("ScanLineParameters")
+    Parameters() : ParameterList("LineClusterProvider")
     {
       PARAMETER_REGISTER(brightness_threshold) = 6;
       PARAMETER_REGISTER(scanline_count) = 23;
@@ -86,21 +84,9 @@ public:
     int pixel_border_y;
   } theParameters;
 
-private:
 
-  /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
-  ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end) const;
-
-  /** */
-  ColorClasses::Color estimateColorOfSegment(const Vector2<int>& begin, const Vector2<int>& end) const;
-
-  /** Estimates the angle of the gray-gradient at the point by a Sobel Operator. */
-  double getPointsAngle(const Vector2<int>& point) const;
-
-  /** */
-  double calculateMeanAngle(double angle1, double angle2) const;
 
 };
 
-#endif  /* _ScanLineEdgelDetectorDifferential_H_ */
+#endif  /* _LineClusterProvider_H_ */
 

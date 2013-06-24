@@ -294,6 +294,7 @@ public:
     ColorRegion(regionColor),
     ParameterList(std::string( ColorClasses::getColorName(regionColor)) + "ColorRegion_" + regionName)
   {
+    std::cout << std::string( ColorClasses::getColorName(regionColor)) + "ColorRegion_" + regionName << std::endl;
     if
     (
       regionColor == ColorClasses::orange
@@ -304,9 +305,11 @@ public:
     )
     {
       //colorChannelDistance.Y = 128;
+      PARAMETER_REGISTER(colorChannelDistance.Y) = colorChannelDistance.Y;        
       PARAMETER_REGISTER(colorChannelDistance.U) = colorChannelDistance.U;        
       PARAMETER_REGISTER(colorChannelDistance.V) = colorChannelDistance.V;
       //colorChannelIndex.Y = 127;
+      PARAMETER_REGISTER(colorChannelIndex.Y) = colorChannelIndex.Y;        
       PARAMETER_REGISTER(colorChannelIndex.U) = colorChannelIndex.U;        
       PARAMETER_REGISTER(colorChannelIndex.V) = colorChannelIndex.V;
       PARAMETER_REGISTER(colorDifferenceDistance.VminusU) = colorDifferenceDistance.VminusU;
@@ -409,6 +412,7 @@ public:
     int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
             chLow.V <= pixel.v && pixel.v <= chHigh.V && 
+            chLow.Y <= pixel.y && pixel.y <= chHigh.Y && 
             cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };

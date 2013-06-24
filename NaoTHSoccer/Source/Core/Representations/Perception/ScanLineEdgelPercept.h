@@ -4,8 +4,8 @@
  * Declaration of class ScanLineEdgelPercept
  */
 
-#ifndef __ScanLineEdgelPercept_h_
-#define __ScanLineEdgelPercept_h_
+#ifndef _ScanLineEdgelPercept_h_
+#define _ScanLineEdgelPercept_h_
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/ImageProcessing/LineDetectorConstParameters.h"
@@ -40,13 +40,14 @@ public:
   /** */
   unsigned int numOfSeenEdgels;
   /** */
-  Edgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
+  DoubleEdgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
 
   /** */
   std::vector<EndPoint> endPoints;
 
+  std::vector<Edgel> edgels;
 
-  void add(const Edgel& edgel)
+  void add(const DoubleEdgel& edgel)
   {
     if(numOfSeenEdgels < MAX_NUMBER_OF_SCANLINE_EDGELS)
     {
@@ -60,6 +61,7 @@ public:
   {
     numOfSeenEdgels = 0;
     endPoints.clear();
+    edgels.clear();
   }//end reset
 
   virtual void print(std::ostream& stream) const
@@ -77,6 +79,12 @@ public:
   }//end print
 };
 
+class ScanLineEdgelPerceptTop : public ScanLineEdgelPercept
+{
+public:
+  virtual ~ScanLineEdgelPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -86,6 +94,11 @@ namespace naoth
     static void serialize(const ScanLineEdgelPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, ScanLineEdgelPercept& representation);
   };
+
+  template<>
+  class Serializer<ScanLineEdgelPerceptTop> : public Serializer<ScanLineEdgelPercept>
+  {};
+
 }
 
-#endif //__ScanLineEdgelPercept_h_
+#endif //_ScanLineEdgelPercept_h_

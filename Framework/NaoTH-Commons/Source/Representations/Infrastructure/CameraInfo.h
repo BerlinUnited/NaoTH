@@ -8,6 +8,7 @@
 #ifndef _CAMERAINFO_H
 #define _CAMERAINFO_H
 
+#include "CameraInfoConstants.h"
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
 #include "Tools/DataStructures/ParameterList.h"
@@ -25,8 +26,8 @@ namespace naoth
     
     CameraInfo()
     :
-    resolutionWidth(320),
-    resolutionHeight(240),
+    resolutionWidth(IMAGE_WIDTH),
+    resolutionHeight(IMAGE_HEIGHT),
     pixelSize(0.0),
     focus(0.0),
     xp(0.0),
@@ -39,8 +40,8 @@ namespace naoth
     b1(0.0),
     b2(0.0),
     cameraID(Bottom),
-    cameraRollOffset(0.0),
-    cameraTiltOffset(0.0),
+    //cameraRollOffset(0.0),
+    //cameraTiltOffset(0.0),
     transformation(),
     openingAngleDiagonal(0.0)
     {}
@@ -79,10 +80,11 @@ namespace naoth
     CameraID cameraID;
 
     // for calibration
-    double cameraRollOffset;
-    double cameraTiltOffset;
-
-    // offset to the neck joint
+    //double cameraRollOffset;
+    //double cameraTiltOffset;
+    Vector2d correctionOffset[numOfCamera];
+    
+      // offset to the neck joint
     Pose3D transformation[numOfCamera];
 
     // getter functions that use the existing values to calculate their result
@@ -95,8 +97,17 @@ namespace naoth
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
 
-
     virtual void print(std::ostream& stream) const;
+
+    std::string getCameraIDName(CameraID id)
+    {
+      switch(id)
+      {
+        case Top: return "Top";
+        case Bottom: return "Bottom";
+        default: return "unknown";
+      }
+    }
 
   protected:
 
@@ -104,19 +115,23 @@ namespace naoth
 
   };
 
+  class CameraInfoTop : public CameraInfo
+  {
+  public:
+    using CameraInfo::operator =;
+    virtual ~CameraInfoTop() {}
+  };
 
   class CameraInfoParameter : public CameraInfo, public ParameterList
   {
   private:
     struct CameraTransInfo
     {
-      Vector3<double> offset;
+      Vector3d offset;
       double rotationY;
     };
 
     CameraTransInfo cameraTrans[numOfCamera];
-
-
     void setCameraTrans();
 
   public:
@@ -124,13 +139,21 @@ namespace naoth
     void init();
 
   };
-  
+
   template<>
   class Serializer<CameraInfo>
   {
     public:
     static void serialize(const CameraInfo& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, CameraInfo& representation);
+  };
+
+  template<>
+  class Serializer<CameraInfoTop>
+  {
+    public:
+    static void serialize(const CameraInfoTop& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfoTop& representation);
   };
   
 }

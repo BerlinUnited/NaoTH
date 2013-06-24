@@ -24,29 +24,34 @@
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
 
+#include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(InertialModel)
-  REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
   REQUIRE(Image)
   REQUIRE(FieldInfo)
   REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
 //  REQUIRE(CameraMatrixOffset)
+
+  REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
+  REQUIRE(GoalPerceptTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
   // TODO: put offset to extra config
   PROVIDE(CameraInfoParameter)
-  PROVIDE(CameraInfo)
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
+
+  PROVIDE(CameraInfo)
+  PROVIDE(CameraInfoTop)
 
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
-
 
 class CameraMatrixCorrector: public CameraMatrixCorrectorBase
 {
@@ -56,16 +61,26 @@ public:
   ~CameraMatrixCorrector();
 
 
-  /** executes the module */
-  void execute();
+  void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
+  }
 
 private:
   unsigned int udpateTime;
-  Vector3<double> theFSRPos[FSRData::numOfFSR];
+  Vector3d theFSRPos[FSRData::numOfFSR];
+  CameraInfo::CameraID cameraID;
 
   void calibrate();
   void reset_calibration();
   double projectionError(double offsetX, double offsetY);
+
+  DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,GoalPercept);  
+  DOUBLE_CAM_PROVIDE(CameraMatrixCorrector,CameraInfo); 
 };
 
 #endif //_CameraMatrixCorrector_h_

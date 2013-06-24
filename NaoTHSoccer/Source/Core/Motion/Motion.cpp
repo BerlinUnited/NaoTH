@@ -99,6 +99,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from motion to cognition
   platformInterface.registerOutputChanel(getCameraMatrix());
+  platformInterface.registerOutputChanel(getCameraMatrixTop());
   platformInterface.registerOutputChanel(getMotionStatus());
   platformInterface.registerOutputChanel(getOdometryData());
   //platformInterface.registerOutputChanel(getCalibrationData);
@@ -106,6 +107,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
+  platformInterface.registerInputChanel(getCameraInfoTop());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
 
@@ -194,7 +196,8 @@ void Motion::processSensorData()
   theSupportPolygonGenerator->execute();
 
   //
-  updateCameraMatrix();
+  updateCameraMatrix("CameraMatrix", getCameraMatrix(), getCameraInfo());
+  updateCameraMatrix("CameraMatrixTop", getCameraMatrixTop(), getCameraInfoTop());
 
   //
   theOdometryCalculator->execute();
@@ -208,6 +211,8 @@ void Motion::processSensorData()
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+
+  debugPlots();
 }//end processSensorData
 
 
@@ -248,8 +253,8 @@ void Motion::debugPlots()
   PLOT("Motion:AccelerometerData:y", getAccelerometerData().data.y);
   PLOT("Motion:AccelerometerData:z", getAccelerometerData().data.z);
 
-  PLOT("Motion:InertialSensorData:x", sin(getInertialSensorData().data.x));
-  PLOT("Motion:InertialSensorData:y", (getInertialSensorData().data.y));
+  PLOT("Motion:InertialSensorData:x", getInertialSensorData().data.x);
+  PLOT("Motion:InertialSensorData:y", getInertialSensorData().data.y);
 
   PLOT("Motion:KinematicChain:oriantation:model:x",
     getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
@@ -299,33 +304,67 @@ void Motion::debugPlots()
   PLOT_JOINT(RAnkleRoll);
   PLOT_JOINT(LAnkleRoll);
 
+
+  
+#define PLOT_JOINT_ERROR(name) \
+  {double e = getMotorJointData().position[JointData::name] - getSensorJointData().position[JointData::name];\
+  PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e));}
+
+  PLOT_JOINT_ERROR(HeadPitch);
+  PLOT_JOINT_ERROR(HeadYaw);
+
+  PLOT_JOINT_ERROR(RShoulderRoll);
+  PLOT_JOINT_ERROR(LShoulderRoll);
+  PLOT_JOINT_ERROR(RShoulderPitch);
+  PLOT_JOINT_ERROR(LShoulderPitch);
+  PLOT_JOINT_ERROR(RElbowRoll);
+  PLOT_JOINT_ERROR(LElbowRoll);
+  PLOT_JOINT_ERROR(RElbowYaw);
+  PLOT_JOINT_ERROR(LElbowYaw);
+
+  PLOT_JOINT_ERROR(RHipYawPitch);
+  PLOT_JOINT_ERROR(LHipYawPitch);
+  PLOT_JOINT_ERROR(RHipPitch);
+  PLOT_JOINT_ERROR(LHipPitch);
+  PLOT_JOINT_ERROR(RHipRoll);
+  PLOT_JOINT_ERROR(LHipRoll);
+  PLOT_JOINT_ERROR(RKneePitch);
+  PLOT_JOINT_ERROR(LKneePitch);
+  PLOT_JOINT_ERROR(RAnklePitch);
+  PLOT_JOINT_ERROR(LAnklePitch);
+  PLOT_JOINT_ERROR(RAnkleRoll);
+  PLOT_JOINT_ERROR(LAnkleRoll);
+
 }//end debugPlots
 
 
-void Motion::updateCameraMatrix()
+void Motion::updateCameraMatrix(
+                                std::string name,
+                                CameraMatrix& cameraMatrix,
+                                const CameraInfo& cameraInfo)
 {
-  CameraMatrix& cameraMatrix = getCameraMatrix();
   CameraMatrixCalculator::calculateCameraMatrix(
     cameraMatrix,
-    getCameraInfo(),
+    cameraInfo,
     getKinematicChainSensor());
-
+  cameraMatrix.timestamp = getSensorJointData().timestamp;
   cameraMatrix.valid = true;
 
-  MODIFY("CameraMatrix:translation:x", cameraMatrix.translation.x);
-  MODIFY("CameraMatrix:translation:y", cameraMatrix.translation.y);
-  MODIFY("CameraMatrix:translation:z", cameraMatrix.translation.z);
+  MODIFY(name + ":translation:x", cameraMatrix.translation.x);
+  MODIFY(name + ":translation:y", cameraMatrix.translation.y);
+  MODIFY(name + ":translation:z", cameraMatrix.translation.z);
 
   double correctionAngleX = 0.0;
   double correctionAngleY = 0.0;
   double correctionAngleZ = 0.0;
-  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
-  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
-  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
+  MODIFY(name + ":correctionAngle:x", correctionAngleX);
+  MODIFY(name + ":correctionAngle:y", correctionAngleY);
+  MODIFY(name + ":correctionAngle:z", correctionAngleZ);
 
   cameraMatrix.rotation.rotateX(correctionAngleX);
   cameraMatrix.rotation.rotateY(correctionAngleY);
   cameraMatrix.rotation.rotateZ(correctionAngleZ);
+
 
 }// end updateCameraMatrix
 

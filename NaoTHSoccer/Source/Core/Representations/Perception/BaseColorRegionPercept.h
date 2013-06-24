@@ -79,7 +79,7 @@ class BaseColorRegionPercept : public naoth::Printable
 
     inline bool inside(const int& y, const int& u, const int& v) const
     {
-     return min.y <= y && y <= max.y && min.u <= u && u <= max.u && min.v <= v && v <= max.v;
+      return min.y <= y && y <= max.y && min.u <= u && u <= max.u && min.v <= v && v <= max.v;
     }//end inside
   };
 
@@ -100,6 +100,11 @@ public:
 
   PixelT<double> meanEnv;
   PixelT<double> meanImg;
+
+  PixelT<double> minEnv;
+  PixelT<double> maxEnv;
+
+  PixelT<int> spanWidthEnv;
 
   PixelT<double> diff;
 
@@ -149,8 +154,8 @@ public:
   yellowColorRegion yellowGoal;
   skyblueColorRegion blueGoal;
   orangeColorRegion orangeBall;
-  pinkColorRegion pinkWaistBand;
-  blueColorRegion blueWaistBand;
+  pinkColorRegion redTeam;
+  blueColorRegion blueTeam;
   whiteColorRegion whiteLine;
 
   FrameInfo lastUpdated;
@@ -170,6 +175,17 @@ public:
     meanImg.v = 127.0;
 
     meanEnv = meanImg;
+
+    minEnv.y = 0.0;
+    minEnv.u = 0.0;
+    minEnv.v = 0.0;
+    maxEnv.y = 255.0;
+    maxEnv.u = 255.0;
+    maxEnv.v = 255.0;
+
+    spanWidthEnv.y = 255;
+    spanWidthEnv.u = 255;
+    spanWidthEnv.v = 255;
 
     fieldImageMean = meanImg;
     goalImageMean = meanImg;
@@ -425,50 +441,55 @@ public:
     return isWhite(pixel.y, pixel.u, pixel.v);
   }
 
-  inline void print(ostream& stream) const
+  inline void print(std::ostream& stream) const
   {
-    stream << "meanEnv.y: " << meanEnv.y << endl;
-    stream << "meanEnv.u: " << meanEnv.u << endl;
-    stream << "meanEnv.v: " << meanEnv.v << endl;
-    stream << "meanImg.y: " << meanImg.y << endl;
-    stream << "meanImg.u: " << meanImg.u << endl;
-    stream << "meanImg.v: " << meanImg.v << endl;
+    stream << "meanEnv.y: " << meanEnv.y << std::endl;
+    stream << "meanEnv.u: " << meanEnv.u << std::endl;
+    stream << "meanEnv.v: " << meanEnv.v << std::endl;
+    stream << "meanImg.y: " << meanImg.y << std::endl;
+    stream << "meanImg.u: " << meanImg.u << std::endl;
+    stream << "meanImg.v: " << meanImg.v << std::endl;
 
-    stream << "fieldIndexY: " << fieldIndex.y << endl;
-    stream << "fieldIndexU: " << fieldIndex.u << endl;
-    stream << "fieldIndexV: " << fieldIndex.v << endl;
-    stream << "fieldDistY: " << fieldDist.y << endl;
-    stream << "fieldDistU: " << fieldDist.u << endl;
-    stream << "fieldDistV: " << fieldDist.v << endl;
+    stream << "fieldIndexY: " << fieldIndex.y << std::endl;
+    stream << "fieldIndexU: " << fieldIndex.u << std::endl;
+    stream << "fieldIndexV: " << fieldIndex.v << std::endl;
+    stream << "fieldDistY: " << fieldDist.y << std::endl;
+    stream << "fieldDistU: " << fieldDist.u << std::endl;
+    stream << "fieldDistV: " << fieldDist.v << std::endl;
     
-    stream << "goalVUdistanceMin: " << goalVUdistanceMin << endl;
-    stream << "goalVUdistanceMax: " << goalVUdistanceMax << endl;
+    stream << "goalVUdistanceMin: " << goalVUdistanceMin << std::endl;
+    stream << "goalVUdistanceMax: " << goalVUdistanceMax << std::endl;
 
-    stream << "goalIndexY: " << goalIndex.y << endl;
-    stream << "goalIndexU: " << goalIndex.u << endl;
-    stream << "goalIndexV: " << goalIndex.v << endl;
-    stream << "goalDistY: " << goalDist.y << endl;
-    stream << "goalDistU: " << goalDist.u << endl;
-    stream << "goalDistV: " << goalDist.v << endl;
+    stream << "goalIndexY: " << goalIndex.y << std::endl;
+    stream << "goalIndexU: " << goalIndex.u << std::endl;
+    stream << "goalIndexV: " << goalIndex.v << std::endl;
+    stream << "goalDistY: " << goalDist.y << std::endl;
+    stream << "goalDistU: " << goalDist.u << std::endl;
+    stream << "goalDistV: " << goalDist.v << std::endl;
 
-    stream << "ballIndexY: " << ballIndex.y << endl;
-    stream << "ballIndexU: " << ballIndex.u << endl;
-    stream << "ballIndexV: " << ballIndex.v << endl;
-    stream << "ballDistY: " << ballDist.y << endl;
-    stream << "ballDistU: " << ballDist.u << endl;
-    stream << "ballDistV: " << ballDist.v << endl;
+    stream << "ballIndexY: " << ballIndex.y << std::endl;
+    stream << "ballIndexU: " << ballIndex.u << std::endl;
+    stream << "ballIndexV: " << ballIndex.v << std::endl;
+    stream << "ballDistY: " << ballDist.y << std::endl;
+    stream << "ballDistU: " << ballDist.u << std::endl;
+    stream << "ballDistV: " << ballDist.v << std::endl;
 
-    stream << "lineIndexY: " << lineIndex.y << endl;
-    stream << "lineIndexU: " << lineIndex.u << endl;
-    stream << "lineIndexV: " << lineIndex.v << endl;
-    stream << "lineDistY: " << lineDist.y << endl;
-    stream << "lineDistU: " << lineDist.u << endl;
-    stream << "lineDistV: " << lineDist.v << endl;
-  }//end prshort
+    stream << "lineIndexY: " << lineIndex.y << std::endl;
+    stream << "lineIndexU: " << lineIndex.u << std::endl;
+    stream << "lineIndexV: " << lineIndex.v << std::endl;
+    stream << "lineDistY: " << lineDist.y << std::endl;
+    stream << "lineDistU: " << lineDist.u << std::endl;
+    stream << "lineDistV: " << lineDist.v << std::endl;
+  }//end print
 
 
 };
 
+class BaseColorRegionPerceptTop : public BaseColorRegionPercept
+{
+public:
+  virtual ~BaseColorRegionPerceptTop() {}
+};
 
 
 #endif // BASECOLORREGIONPERCEPT_H

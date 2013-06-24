@@ -9,17 +9,22 @@
 #include "HistogramFieldDetector.h"
 
 HistogramFieldDetector::HistogramFieldDetector()
+:
+  cameraID(CameraInfo::Bottom)
 {
   fieldColor = ColorClasses::green;
   lineColor = ColorClasses::white;
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:TopCam:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:BottomCam:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
 
   getFieldPercept().setDimension(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+  getFieldPerceptTop().setDimension(Vector2<int>(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
 }
 
-void HistogramFieldDetector::execute()
+void HistogramFieldDetector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
   getFieldPercept().reset();
   largestAreaRectangle.clear();
 
@@ -36,16 +41,33 @@ void HistogramFieldDetector::execute()
   {
     getFieldPercept().setValid(true);
   }
-  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
-    ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-      RECT_PX
-      (
-          color,
-          getFieldPercept().getLargestValidRect().points[0].x,
-          getFieldPercept().getLargestValidRect().points[0].y,
-          getFieldPercept().getLargestValidRect().points[2].x,
-          getFieldPercept().getLargestValidRect().points[2].y
-      );
+  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:TopCam:mark_rectangle",
+    if(cameraID == CameraInfo::Top)
+    {
+      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+        TOP_RECT_PX
+        (
+            color,
+            getFieldPercept().getLargestValidRect().points[0].x,
+            getFieldPercept().getLargestValidRect().points[0].y,
+            getFieldPercept().getLargestValidRect().points[2].x,
+            getFieldPercept().getLargestValidRect().points[2].y
+        );
+    }
+  );
+  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:BottomCam:mark_rectangle",
+    if(cameraID == CameraInfo::Bottom)
+    {
+      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+        RECT_PX
+        (
+            color,
+            getFieldPercept().getLargestValidRect().points[0].x,
+            getFieldPercept().getLargestValidRect().points[0].y,
+            getFieldPercept().getLargestValidRect().points[2].x,
+            getFieldPercept().getLargestValidRect().points[2].y
+        );
+    }
   );
 }//end execute
 
@@ -65,14 +87,14 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
     if
     (
       (
-      getHistogram().xHistogram[fieldColor][y] >= minXHistLevel
-      || 0.9 * getHistogram().xHistogram[fieldColor][y] + 0.1 * getHistogram().xHistogram[lineColor][y] >= minXHistLevel
+      getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel
+      || 0.9 * getHistograms().xHistogram[fieldColor].rawData[y] + 0.1 * getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel
       )
       && whiteCount <= LINE_THICKNESS
     )
     {
       otherCount = 0;
-      if(getHistogram().xHistogram[fieldColor][y] >= minXHistLevel)
+      if(getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel)
       {
         if(whiteCount > 0)
         {
@@ -89,7 +111,7 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
         actMax.y = y;
       }
     }
-    else if(getHistogram().xHistogram[lineColor][y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
+    else if(getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
     {
       whiteCount++;
       otherCount = 0;
@@ -122,8 +144,8 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
     if
     (
       (
-      getHistogram().yHistogram[fieldColor][x] >= minYHistLevel
-      || 0.9 * getHistogram().yHistogram[fieldColor][x] + 0.1 * getHistogram().yHistogram[lineColor][x] >= minYHistLevel
+      getHistograms().yHistogram[fieldColor].rawData[x] >= minYHistLevel
+      || 0.9 * getHistograms().yHistogram[fieldColor].rawData[x] + 0.1 * getHistograms().yHistogram[lineColor].rawData[x] >= minYHistLevel
       )
     )
     {

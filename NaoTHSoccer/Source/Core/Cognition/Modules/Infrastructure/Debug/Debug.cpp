@@ -52,6 +52,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   // parameter list
   DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
 }
 
 void Debug::execute()
@@ -75,18 +76,27 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     GT_TRACE("Debug::executeDebugCommand() handling image");
     // add the drawings to the image
     GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
-    DebugImageDrawings::getInstance().drawToImage(getImage());
     
-    if(arguments.find("jpeg") != arguments.end())
+    if(arguments.find("secondary") != arguments.end())
     {
-      // TODO: do jpeg compression
+      DebugTopImageDrawings::getInstance().drawToImage(getImageTop());
+      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(getImageTop());
+      GT_TRACE("Debug::executeDebugCommand() before serialize");
+      STOPWATCH_START("sendImageTop");
+      Serializer<Image>::serialize(getImageTop(), outstream);
+      STOPWATCH_STOP("sendImageTop");
+      GT_TRACE("Debug::executeDebugCommand() after serialize");
+    }
+    else
+    {
+      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(getImage());
+      GT_TRACE("Debug::executeDebugCommand() before serialize");
+      STOPWATCH_START("sendImage");
+      Serializer<Image>::serialize(getImage(), outstream);
+      STOPWATCH_STOP("sendImage");
+      GT_TRACE("Debug::executeDebugCommand() after serialize");
     }
 
-    GT_TRACE("Debug::executeDebugCommand() before serialize");
-    STOPWATCH_START("sendImage");
-    Serializer<Image>::serialize(getImage(), outstream);
-    STOPWATCH_STOP("sendImage");
-    GT_TRACE("Debug::executeDebugCommand() after serialize");
   }
   else if(command == "ping")
   {

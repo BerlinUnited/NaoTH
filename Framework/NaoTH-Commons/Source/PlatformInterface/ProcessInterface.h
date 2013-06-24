@@ -58,6 +58,15 @@ public:
     return (action != NULL);
   }
 
+  template<class T, int maxSize>
+  bool registerBufferedInputChanel(RingBuffer<T, maxSize>& buffer)
+  {
+    AbstractAction* action =
+        environment.channelActionCreator.createBufferedInputChanelAction<T, maxSize>(buffer);
+    if(action != NULL) process.preActions.push_back(action);
+    return (action != NULL);
+  }
+
   template<class T>
   bool registerOutputChanel(const T& data)
   { 

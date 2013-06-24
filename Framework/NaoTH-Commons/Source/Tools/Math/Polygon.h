@@ -58,7 +58,12 @@ class Polygon: public PointList<MAX_NUMBER_OF_POINTS>, public Area<int>
     {
       //return testCrossingNumber(point) == 1;
       return testWindingNumber(point) != 0;
-    };
+    }
+
+    bool isInside_inline(const Vector2<int>& point) const
+    {
+      return testWindingNumber(point) != 0;
+    }
 
   private:
     // Copyright 2001, softSurfer (www.softsurfer.com)

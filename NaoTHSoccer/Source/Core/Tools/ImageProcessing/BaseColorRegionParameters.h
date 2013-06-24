@@ -9,12 +9,18 @@ using namespace naoth;
 class BaseColorRegionParameters
 {
 public:
+  whiteParamColorRegion whiteLineParamsTop;
   whiteParamColorRegion whiteLineParams;
+  yellowParamColorRegion yellowGoalParamsTop;
   yellowParamColorRegion yellowGoalParams;
+  skyblueParamColorRegion blueGoalParamsTop;
   skyblueParamColorRegion blueGoalParams;
+  orangeParamColorRegion orangeBallParamsTop;
   orangeParamColorRegion orangeBallParams;
-  pinkParamColorRegion pinkWaistBandParams;
-  blueParamColorRegion blueWaistBandParams;
+  pinkParamColorRegion redTeamParamsTop;
+  pinkParamColorRegion redTeamParams;
+  blueParamColorRegion blueTeamParamsTop;
+  blueParamColorRegion blueTeamParams;
 
   BaseColorRegionParameters();
   ~BaseColorRegionParameters(){};

@@ -4,6 +4,7 @@
  */
 package de.naoth.rc.dialogs.panels;//ColorValueSlidersPanel
 
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -78,6 +79,19 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
   {
     ColorPixelOnOffControl pixelOnOffControl = (ColorPixelOnOffControl) this.getComponent(onOffControlIdx);
     return pixelOnOffControl.showColoredPixels();
+  }
+            
+  public void setShowColoredPixels(boolean value)
+  {
+    if(this.getComponentCount() > onOffControlIdx)
+    {
+      Component comp = this.getComponent(onOffControlIdx);
+      if(comp != null && comp instanceof ColorPixelOnOffControl)
+      {
+        ColorPixelOnOffControl pixelOnOffControl = (ColorPixelOnOffControl) comp;
+        pixelOnOffControl.setShowColoredPixels(value);
+      }
+    }
   }
             
   @Override

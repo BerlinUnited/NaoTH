@@ -22,28 +22,98 @@ using namespace naoth;
 
 class FieldColorPercept : public naoth::Printable
 {
+
+  class ColorRange
+  {
+  protected:
+    PixelT<int> min;
+    PixelT<int> max;
+
+  public:
+
+    ColorRange()
+    {
+      
+    }
+
+    void set(int minY, int minU, int minV, int maxY, int maxU, int maxV)
+    {
+      min.y = minY;
+      min.u = minU;
+      min.v = minV;
+      max.y = maxY;
+      max.u = maxU;
+      max.v = maxV;
+    }
+
+    PixelT<int> getMax() const
+    {
+      return max;
+    }
+
+    PixelT<int> getMin() const
+    {
+      return min;
+    }
+
+    inline bool inside(const Pixel& pixel) const
+    {
+      return  min.y <= pixel.y && pixel.y <= max.y && 
+              min.u <= pixel.u && pixel.u <= max.u && 
+              min.v <= pixel.v && pixel.v <= max.v;
+    }
+
+    inline bool inside(int y, int u, int v) const
+    {
+      return  min.y <= y && y <= max.y && 
+              min.u <= u && u <= max.u && 
+              min.v <= v && v <= max.v;
+    }
+  };
+
+
 public:
   bool valid;
+  double distY;
+  double distU;
   double distV;
+  int indexY;
+  int indexU;
   int indexV;
+
+  double maxRateY;
+  double maxRateU;
+  double maxRateV;
 
   int borderLeftV;
   int borderRightV;
 
   int maxY;
   int maxU;
+  int minU;
 
   FrameInfo lastUpdated;
+  ColorRange range;
 
   FieldColorPercept()  
   : 
   valid(false),
-  distV(5.0),
-  indexV(100),
+  distY(5),
+  distU(5),
+  distV(5),
+  indexY(0),
+  indexU(0),
+  indexV(0),
+  maxRateY(0.0),
+  maxRateU(0.0),
+  maxRateV(0.0),
+  //distV(5.0),
+  //indexV(100),
   borderLeftV(0),
   borderRightV(0),
   maxY(127),
-  maxU(127)
+  maxU(127),
+  minU(0)
   {}
 
   ~FieldColorPercept()
@@ -53,11 +123,17 @@ public:
   {
     borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
     borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
+    range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
-  inline bool isFieldColor(int yy, int cb, int cr) const
+  inline bool isFieldColorOld(int yy, int cb, int cr) const
   {
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
+  }
+
+  inline bool isFieldColor(const int& y, const int& u, const int& v) const
+  {
+    return range.inside(y, u, v);
   }
 
   inline bool isFieldColor(const Pixel& pixel) const
@@ -73,6 +149,12 @@ public:
     stream << "index in Cr (V) channel = " << indexV << std::endl;
   }//end print
 
+};
+
+class FieldColorPerceptTop : public FieldColorPercept
+{
+public:
+  virtual ~FieldColorPerceptTop() {}
 };
 
 

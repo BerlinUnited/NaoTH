@@ -29,11 +29,6 @@ public:
     delete[] pointsCoordinates;
   }
 
-  // HACK: remove the constants
-  const static unsigned int HACK_MAX_WIDTH = 640;
-  // HACK: remove the constants
-  const static unsigned int HACK_MAX_HEIGHT = 480;
-
   const unsigned int maxNumberOfPoints;
   const unsigned int& numberOfGridPoints;
 

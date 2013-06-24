@@ -15,8 +15,10 @@ import de.naoth.rc.dialogs.Tools.Colors;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
 
@@ -93,8 +95,19 @@ public class ColoredObjectChooserPanel extends javax.swing.JPanel {
       {
         Helper.handleException(e);
       }
+      setEnabled(false);
     }
 
+  @Override
+    public void setEnabled(boolean value)
+    {
+      Enumeration<AbstractButton> buttons = this.colorClassButtonGroup.getElements();
+      while(buttons.hasMoreElements())
+      {
+        buttons.nextElement().setEnabled(value);
+      }
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

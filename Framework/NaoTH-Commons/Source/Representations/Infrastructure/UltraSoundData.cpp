@@ -59,8 +59,9 @@ void Serializer<UltraSoundReceiveData>::deserialize(std::istream& stream, UltraS
 
   representation.rawdata = message.rawdata();
 
-  ASSERT(message.dataleft_size() == message.dataright_size());
-  ASSERT(message.dataleft_size() == representation.numOfUSEcho);
+  // some logfiles crash, because we usedto have 9 echos
+  ASSERT(message.dataleft_size() <= message.dataright_size());
+  ASSERT(message.dataleft_size() <= representation.numOfUSEcho);
 
   for(int i = 0; i < message.dataleft_size(); i++)
   {

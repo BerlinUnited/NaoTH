@@ -191,6 +191,12 @@ public:
 
 };
 
+class FieldPerceptTop : public FieldPercept
+{
+public:
+  virtual ~FieldPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -200,7 +206,13 @@ namespace naoth
     static void serialize(const FieldPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, FieldPercept& representation);
   };
+
+  template<>
+  class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>
+  {};
+
 }
+
 
 #endif /* _FIELDPERCEPT_H */
 

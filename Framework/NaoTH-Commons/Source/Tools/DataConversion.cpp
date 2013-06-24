@@ -53,5 +53,21 @@ void fromMessage(const naothmessages::Pose2D& msg, Pose2D& data)
   data.rotation = msg.rotation();
 }
 
+void toMessage(const Pose3D& data, naothmessages::Pose3D& msg)
+{
+  toMessage(data.translation, *msg.mutable_translation());
+  for(int i=0; i<3; i++){
+    toMessage(data.rotation[i], *msg.add_rotation());
+  }
+}
+
+void fromMessage(const naothmessages::Pose3D& msg, Pose3D& data)
+{
+  fromMessage(msg.translation(), data.translation);
+  for(int i=0; i<3; i++) {
+    fromMessage(msg.rotation(i), data.rotation[i]);
+  }
+}
+
 } // namespace DataConversion
 } // namespace naoth

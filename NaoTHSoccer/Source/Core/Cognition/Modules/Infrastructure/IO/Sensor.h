@@ -35,6 +35,7 @@
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
 #include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Perception/CameraMatrixBuffer.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -47,6 +48,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   
   PROVIDE(SerialSensorData)
   PROVIDE(Image)
+  PROVIDE(ImageTop)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
@@ -54,6 +56,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SensorJointData)
   PROVIDE(IRReceiveData)
   PROVIDE(CurrentCameraSettings)
+  PROVIDE(CurrentCameraSettingsTop)
   PROVIDE(ButtonData)
   PROVIDE(BatteryData)
   PROVIDE(UltraSoundReceiveData)
@@ -71,8 +74,8 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
-  PROVIDE(CameraMatrix)
-
+  PROVIDE(CameraMatrixBuffer)
+  PROVIDE(CameraMatrixBuffer2)
   //PROVIDE(CalibrationData)
   
 END_DECLARE_MODULE(Sensor)
