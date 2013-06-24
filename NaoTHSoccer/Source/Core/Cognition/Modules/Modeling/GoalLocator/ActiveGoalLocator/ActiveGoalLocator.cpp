@@ -130,7 +130,7 @@ void ActiveGoalLocator::execute()
 
   // A ~ goal posts
   // B ~ hypotheses
-  Assoziation sensorAssoziation(getGoalPercept().getNumberOfSeenPosts(), postHypotheses.size());
+  Assoziation sensorAssoziation(getGoalPercept().getNumberOfSeenPosts(), (int)postHypotheses.size());
 
   // find the best association of the measurenets with the filters
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
@@ -357,7 +357,7 @@ void ActiveGoalLocator::calculateGoalModelAssosiations()
 {
   // A ~ hypotheses
   // B ~ hypotheses
-  Assoziation goalModelAssociation(postHypotheses.size(), postHypotheses.size());
+  Assoziation goalModelAssociation((int)postHypotheses.size(), (int)postHypotheses.size());
 
   for (unsigned int x = 0; x < postHypotheses.size(); x++ ) {
     PostHypothesis& hypothesisOne = postHypotheses[x];

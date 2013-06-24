@@ -31,8 +31,8 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  PixelT<int> max = getFieldColorPercept().range.getMax();
-  PixelT<int> maxTop = getFieldColorPerceptTop().range.getMax();
+  //PixelT<int> max = getFieldColorPercept().range.getMax();
+  //PixelT<int> maxTop = getFieldColorPerceptTop().range.getMax();
   
   getSimpleBallColorPercept().minV = (int) ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV;
   getSimpleBallColorPercept().maxY = (int) ballParams.ballColorMax.y;

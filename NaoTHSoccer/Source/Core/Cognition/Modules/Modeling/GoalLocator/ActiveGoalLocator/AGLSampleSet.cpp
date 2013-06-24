@@ -11,7 +11,7 @@
 
 void AGLSampleSet::sort()
 {
-  quicksort(0, samples.size()-1);
+  quicksort(0, (int)samples.size()-1);
 }//end sort
 
 void AGLSampleSet::quicksort(int low, int high)

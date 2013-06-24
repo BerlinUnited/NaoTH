@@ -86,7 +86,7 @@ double PostParticleFilter::getMeanVerticalDeviation(const GoalPercept::GoalPost&
     }
   }//end for
 
-  return meanVerticalError /= sampleSet.size();
+  return meanVerticalError /= (double)sampleSet.size();
 }//end getMeanVerticalDeviation
 
 double PostParticleFilter::getMeanHorizontalDeviation(const GoalPercept::GoalPost& post) const
@@ -98,7 +98,7 @@ double PostParticleFilter::getMeanHorizontalDeviation(const GoalPercept::GoalPos
     meanHorizontalError += angleDiff;
   }//end for
 
-  return meanHorizontalError /= sampleSet.size();
+  return meanHorizontalError /= (double)sampleSet.size();
 }//end getMeanHorizontalDeviation
 
 
@@ -110,7 +110,7 @@ double PostParticleFilter::getConfidenceForObservation(const GoalPercept::GoalPo
     weighting += getWeightingByPercept(sampleSet[i], post, cameraHeight);
   }
 
-  return weighting / sampleSet.size();
+  return weighting / (double)sampleSet.size();
 }//end getWeightingOfPerceptAngle
 
 
@@ -183,7 +183,7 @@ void PostParticleFilter::resampleGT07(bool noise)
   //low variance sampling
   for(m = 0; m < oldSampleSet.size(); m++)
   {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
+    sum += oldSampleSet[m].likelihood * (double)oldSampleSet.size();
 
     // select the particle to copy
     while(n < sum && n < oldSampleSet.size())
@@ -215,9 +215,9 @@ void PostParticleFilter::resampleGT07(bool noise)
     //later w_low/w_fast instead numberOf...
     for (unsigned int i = 0; i < (unsigned int)countOfSensorReset; i++)
     {
-      unsigned int iToResetSample = Math::random(sampleSet.size());
+      unsigned int iToResetSample = Math::random((int)sampleSet.size());
 
-      unsigned int iToResetObserv = Math::random(PerceptBuffer.size());
+      unsigned int iToResetObserv = Math::random((int)PerceptBuffer.size());
 
       sampleSet[iToResetSample].translation.x = PerceptBuffer.getEntry(iToResetObserv).x;
       sampleSet[iToResetSample].translation.y = PerceptBuffer.getEntry(iToResetObserv).y;
