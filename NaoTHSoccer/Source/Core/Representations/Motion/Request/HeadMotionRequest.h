@@ -67,13 +67,13 @@ public:
   {
     id = hold;
     cameraID = naoth::CameraInfo::Bottom;
-    targetJointPosition = Vector2<double>();
-    targetPointInImage = Vector2<double>();
-    targetPointInTheWorld = Vector3<double>();
-    targetPointOnTheGround = Vector2<double>();
+    targetJointPosition = Vector2d();
+    targetPointInImage = Vector2d();
+    targetPointInTheWorld = Vector3d();
+    targetPointOnTheGround = Vector2d();
     coordinate = Hip;
-    searchCenter = Vector3<double>();
-    searchSize = Vector3<double>(90, 45, 0),
+    searchCenter = Vector3d();
+    searchSize = Vector3d(90, 45, 0),
     searchDirection = true;
   }
 

@@ -69,6 +69,11 @@ private:
   static void setHeadMotionRequest(int value);
   static int getHeadMotionRequestId();
   static int getHeadMotionStatus();
+  static void setCameraId(int value);
+  static int getCameraId();
+
+  static void setArmRequestId(int value);
+  static int getArmRequestId();
 
   static void setMotionRequestId(int value);
   static int getMotionRequestId();

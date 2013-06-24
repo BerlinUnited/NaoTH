@@ -1,0 +1,15 @@
+option search_ball_back_rot_test_agent {
+
+initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      search_ball_back_rot_test();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}

@@ -83,6 +83,8 @@
 #include "Modules/BehaviorControl/XABSLBehaviorControl2012/XABSLBehaviorControl2012.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
+#include "Modules/BehaviorControl/GraspingBehaviorControl/GraspingBehaviorControl.h"
+#include "Modules/BehaviorControl/ArmMotionBehaviorControl/ArmMotionBehaviorControl.h"
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
@@ -188,6 +190,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(XABSLBehaviorControl2011);
   REGISTER_MODULE(XABSLBehaviorControl2012);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(GraspingBehaviorControl);
+  REGISTER_MODULE(ArmMotionBehaviorControl);
 
   // experiment
   REGISTER_MODULE(Evolution);

@@ -1,0 +1,52 @@
+option go_to_ball_with_USOA_test{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state go
+  {
+  
+  decision
+  { else if(action_done)
+      goto close_to_ball_situation;
+    else
+      stay;
+  }
+  action
+  {
+    go_to_ball_with_USOA();
+  }
+  
+  }
+
+  state close_to_ball_situation{
+	  decision{
+	    else if(action_done)
+	      goto go;
+	    else
+	      stay;
+	  }
+	  action{
+	    close_to_ball_with_USOA_situation();
+	  }
+  }
+  
+}

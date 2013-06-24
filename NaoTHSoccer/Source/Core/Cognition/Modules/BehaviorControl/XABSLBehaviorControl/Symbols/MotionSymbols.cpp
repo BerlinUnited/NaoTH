@@ -48,6 +48,22 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("head.pitch", &getHeadPitchAngle);
   engine.registerDecimalInputSymbol("head.yaw", &getHeadYawAngle);
 
+  engine.registerEnumElement("head.camera", "head.camera.Top", naoth::CameraInfo::Top);
+  engine.registerEnumElement("head.camera", "head.camera.Bottom", naoth::CameraInfo::Bottom);
+  engine.registerEnumeratedOutputSymbol("head.camera.id", "head.camera", &setCameraId, &getCameraId);
+
+  //arm motion
+  // enum type for motion
+  for(int i = 0; i <= ArmMotionRequest::numOfArmMotion; i++)
+  {
+    string str("arm.type.");
+    str.append(ArmMotionRequest::getName((ArmMotionRequest::ArmMotionID)i));
+    engine.registerEnumElement("arm.type", str.c_str(), i);
+  }//end for
+
+  engine.registerEnumeratedOutputSymbol("arm.type", "arm.type", &setArmRequestId, &getArmRequestId);
+
+
   // enum type for motion
   for(int i = 0; i <= motion::num_of_motions; i++)
   {
@@ -178,6 +194,23 @@ int MotionSymbols::getHeadMotionRequestId() {
 
 int MotionSymbols::getHeadMotionStatus() { 
   return (int)(theInstance->getMotionStatus().headMotion); 
+}
+
+void MotionSymbols::setCameraId(int value) { 
+  assert(value >= 0 && value < static_cast<int>(naoth::CameraInfo::numOfCamera));
+  theInstance->getHeadMotionRequest().cameraID = static_cast<naoth::CameraInfo::CameraID>(value);
+}
+
+int MotionSymbols::getCameraId() { 
+  return static_cast<int>(theInstance->getHeadMotionRequest().cameraID); 
+}
+
+void MotionSymbols::setArmRequestId(int value) { 
+  theInstance->getMotionRequest().armMotionRequest.id = (ArmMotionRequest::ArmMotionID)value; 
+}
+
+int MotionSymbols::getArmRequestId() { 
+  return (int)(theInstance->getMotionRequest().armMotionRequest.id); 
 }
 
 void MotionSymbols::setMotionRequestId(int value) { 

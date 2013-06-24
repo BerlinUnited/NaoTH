@@ -162,9 +162,6 @@ option kick_direction
     action
     {
       motion.type = stand;
-    
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
 
       //loook at percept
       head.control_mode = none;

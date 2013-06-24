@@ -156,8 +156,12 @@ double InverseKinematics::gotoTargetJacobianTranspose(const list<Link*>& linkLis
 
 double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const
 {
-  // TODO: parameter?  
-  const double alpha = 0.00001; 
+  // ACHTUNG: the end effector should never be the same as the last joint (!)
+  // this check is here, because it happend from time to time
+  assert(offset.abs2() > 0 && "the end effector should never be the same as the last joint (!)");
+
+  // TODO: parameter?
+  const double alpha = 0.00001;
   const double max_error = Math::fromDegrees(1);
   const int max_iterations = 1000; //was 100
 
@@ -172,6 +176,7 @@ double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3
   const RotationMatrix& ud = target.rotation;
 
   calculateAffector(linkList, offset, affector);
+
   for (int i = 0; i < max_iterations; i++)
   {
     double delta = 0;
@@ -182,35 +187,51 @@ double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3
       Link* link = *iter;
       if (lock[link->jointID] || link->q == NULL ) continue;
 
+      // vector: joint --> target
       Vector3<double> Pid = target.translation - link->p;
       const double Lid = Pid.abs();
-      Vector3<double> axis = link->R * link->a;
+      
+      // vector: joint --> affector
       Vector3<double> Pic = affector.translation - link->p;
+
+      // ignore some dimensions if requested
       if (0 == (mask & MASK_X)) Pic[0] = 0;
       if (0 == (mask & MASK_Y)) Pic[1] = 0;
       if (0 == (mask & MASK_Z)) Pic[2] = 0;
       const double Lic = Pic.abs();
+
+      // ??
       const double ruo = std::min(Lid, Lic) / std::max(Lid, Lic);
 
       ASSERT(!Math::isNan(ruo));
+      
+      // rotation axis of the joint?
+      Vector3<double> axis = link->R * link->a;
 
+      // ??
       const double wp = alpha * (1 + ruo);
 
+      // calculate correction for the joint angle?
       double k1 = wp * (Pid * axis)*(Pic * axis) + (wo0 * (ud[0] * axis)*(uc[0] * axis) + wo1 * (ud[1] * axis)*(uc[1] * axis) + wo2 * (ud[2] * axis)*(uc[2] * axis));
       double k2 = wp * (Pid * Pic) + (ud[0] * uc[0] * wo0 + ud[1] * uc[1] * wo1 + ud[2] * uc[2] * wo2);
       double k3 = axis * ((Pic^Pid) * wp + (uc[0]^ud[0]) * wo0 + (uc[1]^ud[1]) * wo1 + (uc[2]^ud[2]) * wo2);
       double theta = atan2(k3, k2 - k1) * wi;
 
+      // apply correction and accumulate the error
       (*(link->q)) += theta; // modify the joint
+
       delta += fabs(theta);
+
+      // new position of the effector
       calculateAffector(linkList, link, offset, affector);
-    }
+    }//end for linkList
+
     if (delta < max_error)
     {
       //            cout << "break @ " << i << endl;
       break;
     }
-  }//end for
+  }//end for iterations
 
   // calcluate the error of result
   Vector_n<double,6> err;
@@ -644,7 +665,7 @@ void InverseKinematics::testArms()
 
   theKinematicChain.theLinks[KinematicChain::Torso].p = Vector3<double>(0, 0, 0);
   theKinematicChain.theLinks[KinematicChain::Torso].R = RotationMatrix::getRotationZ(0);
-  Vector3<double> handOffset(0, 0, 0);
+  Vector3<double> handOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX, 0, 0);
   Pose3D leftTarget, rightTarget;
   calculateAffector(leftList, handOffset, leftTarget);
   calculateAffector(rightList, handOffset, rightTarget);

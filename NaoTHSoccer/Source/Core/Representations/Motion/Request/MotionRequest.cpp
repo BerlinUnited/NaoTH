@@ -32,6 +32,12 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
     //TODO
     break;
   }
+
+  //
+  Serializer<GraspRequest>::serialize(representation.graspRequest, message.mutable_grasprequest());
+
+  Serializer<ArmMotionRequest>::serialize(representation.armMotionRequest, message.mutable_armmotionrequest());
+ 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -65,5 +71,13 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   if(message.has_cognitionframenumber())
   {
     representation.cognitionFrameNumber = message.cognitionframenumber();
+  }
+  if(message.has_grasprequest())
+  {
+    Serializer<GraspRequest>::deserialize(&(message.grasprequest()), representation.graspRequest);
+  }
+  if(message.has_armmotionrequest())
+  {
+    Serializer<ArmMotionRequest>::deserialize(&(message.armmotionrequest()), representation.armMotionRequest);
   }
 }

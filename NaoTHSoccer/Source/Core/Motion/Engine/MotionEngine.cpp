@@ -13,6 +13,9 @@ MotionEngine::MotionEngine()
   theEmptyMotion = registerModule<EmptyMotion>("EmptyMotion");
 
   theHeadMotionEngine = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
+  theIKArmGrasping = registerModule<IKArmGrasping>("IKArmGrasping", true);
+  theArmMotionEngine = registerModule<ArmMotionEngine>("ArmMotionEngine", true);
+
 
   theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<InverseKinematicsMotionFactory>("InverseKinematicsMotionFactory", true)->getModuleT());
@@ -72,11 +75,23 @@ void MotionEngine::execute()
   // cf. InverseKinematicsMotionEngine::controlCenterOfMass(...)
   theHeadMotionEngine->execute();
 
-  // motion engine execute
+  // select a new motion if necessary
   selectMotion();
   ASSERT(NULL!=currentlyExecutedMotion);
   
+  //
   currentlyExecutedMotion->execute();
+
+
+  // TODO: a good place to execute arms?
+  // HACK: only certain motions allow arms
+  if ( getMotionStatus().currentMotion == motion::stand ||
+       getMotionStatus().currentMotion == motion::walk ||
+       getMotionStatus().currentMotion == motion::sit)
+  {
+    theIKArmGrasping->execute();
+    theArmMotionEngine->execute();
+  }
 
   getMotionStatus().currentMotionState = getMotionLock().state;
 }//end execute

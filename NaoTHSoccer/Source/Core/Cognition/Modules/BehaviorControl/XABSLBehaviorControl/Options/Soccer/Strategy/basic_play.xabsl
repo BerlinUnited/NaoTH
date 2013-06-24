@@ -1,5 +1,6 @@
 option basic_play
 {
+
   initial state initialize {
     decision {
       if (game.state != _initial_)
@@ -12,6 +13,7 @@ option basic_play
       game.current_mode = init;
       head.control_mode = stay_as_forced;
       motion.type = init;
+      arm.control_mode = normal;
     }
   }
 
@@ -28,6 +30,7 @@ option basic_play
       game.current_mode = init;
       head.control_mode = stay_as_forced;
       motion.type = stand;
+      arm.control_mode = normal;
     }
   }
 
@@ -51,9 +54,12 @@ option basic_play
       motion.walk.style = normal;
 
       head.control_mode = stay_as_forced;
-
+      
       // react to the game controller and observe fall down
       decide_game_state();
+
+      // it has to be after the decide_game_state because of the getup motion
+      arm.control_mode = normal;
     }
   }
 }

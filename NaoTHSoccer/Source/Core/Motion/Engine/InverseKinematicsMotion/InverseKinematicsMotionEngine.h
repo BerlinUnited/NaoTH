@@ -81,6 +81,16 @@ public:
   }
 
 
+  template<typename T>
+  T interpolateArms(const T& sp, const T& tp, double t) const 
+  {
+    T p;
+    p.body() = Pose3D::interpolate(sp.body(), tp.body(), t);
+    p.arms.left = Pose3D::interpolate(sp.arms.left, tp.arms.left, t);
+    p.arms.right = Pose3D::interpolate(sp.arms.right, tp.arms.right, t);
+    return p;
+  }
+
 
   InverseKinematic::HipFeetPose controlCenterOfMass(
     const naoth::MotorJointData& theMotorJointData,
@@ -144,6 +154,16 @@ public:
   
   const IKParameters& getParameters() const { return theParameters; }
   
+  /**
+   * Solves the inverse kinematic for the hands
+   * @return squared sum error for the estimated joint positions
+   */
+  double solveHandsIK(
+    const Pose3D& chest,
+    const Pose3D& leftHand,
+    const Pose3D& rightHand,
+    double (&position)[naoth::JointData::numOfJoint]);
+
   void autoArms(
     const naoth::RobotInfo& theRobotInfo,
     const InverseKinematic::HipFeetPose& pose, 
