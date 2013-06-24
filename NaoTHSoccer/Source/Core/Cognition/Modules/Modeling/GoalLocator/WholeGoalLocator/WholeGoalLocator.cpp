@@ -88,11 +88,14 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
       !post2.positionReliable ||
   // HACK: there is a bug in goal detector!!!
       (post1.position - post2.position).abs() < 300)
+  {
     return false;
+  }
 
   // posts have the same color
-  if(post1.color != post2.color)
+  if(post1.color != post2.color) {
     return false;
+  }
 
   GoalPercept::GoalPost postLeft =
     (post1.type == GoalPercept::GoalPost::leftPost) ? post1 : post2;
@@ -101,8 +104,9 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
 
   // one left and one right post?
   if(postLeft.type != GoalPercept::GoalPost::leftPost ||
-     postRight.type != GoalPercept::GoalPost::rightPost)
+     postRight.type != GoalPercept::GoalPost::rightPost) {
      return false;
+  }
 
 
   // correct the posts
