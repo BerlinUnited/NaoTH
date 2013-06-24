@@ -20,8 +20,6 @@ import javax.jmdns.ServiceListener;
  */
 abstract class NaoScpMainFrame  extends javax.swing.JFrame
 {
-  protected NaoScpConfig config;  
-  
   protected abstract void addJmdnsListenerService(ServiceEvent event, int idx);
   protected abstract void resolveJmdnsListenerService(ServiceEvent event, int idx);
   protected abstract void removeJmdnsListenerService(ServiceEvent event, int idx);
@@ -41,7 +39,7 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
   protected abstract void copyIsDone(String sNaoNo);
   protected abstract void copyIsDone(int naoNo);
 
-  class remoteScriptRunner extends sshScriptRunner
+  class remoteScriptRunner extends SshScriptRunner
   {
     public remoteScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
     {
@@ -110,7 +108,7 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
     }
   }
 
-  class remoteSetupCopier extends sshSetupCopier
+  class remoteSetupCopier extends SshSetupCopier
   {
     public remoteSetupCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
     {
@@ -203,7 +201,7 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   }
 
-  class remoteCopier extends sshCopier
+  class remoteCopier extends SshCopier
   {
     public remoteCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
     {
