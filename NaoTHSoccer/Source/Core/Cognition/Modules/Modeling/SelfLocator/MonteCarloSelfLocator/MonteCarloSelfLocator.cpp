@@ -1287,9 +1287,9 @@ void MonteCarloSelfLocator::execute()
 
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
-    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size())
+    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
       canopyClustering.cluster(theSampleSet, getRobotPose().translation);
-    else // jump...
+    } else { // jump...
       getRobotPose().isValid = false;
     }
   }//end if
