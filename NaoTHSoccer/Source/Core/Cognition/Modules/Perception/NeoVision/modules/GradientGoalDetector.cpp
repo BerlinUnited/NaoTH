@@ -166,6 +166,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
 
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
   bool goalPostFound = false;
+  goalPosts.clear();
   //std::cout << std::endl << " ------ " << std::endl;
   for(unsigned i = 0; i < features[0].size(); i++)
   {
@@ -239,11 +240,21 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
         }
         c++;
       }
-      if (footPointFound)
+      if(footPointFound)
       {
         goalPostFound = true;
+        GoalPercept::GoalPost post;
 
+        post.basePoint = pos;
+        CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        post.basePoint.x, post.basePoint.y, 0.0,
+        post.position);
 
+        post.positionReliable = true;
+        goalPosts.push_back(post);
+        getGoalPercept().add(post);
       }
 
 
@@ -264,10 +275,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
     }
 
 
-  }
-  if(goalPostFound)
-  {
-    //getGoalPercept().
   }
 
 }//end execute

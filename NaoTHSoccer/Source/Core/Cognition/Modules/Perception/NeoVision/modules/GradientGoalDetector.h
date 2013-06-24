@@ -6,8 +6,8 @@
 * Definition of class GradientGoalDetector
 */
 
-#ifndef __GradientGoalDetector_H_
-#define __GradientGoalDetector_H_
+#ifndef _GradientGoalDetector_H_
+#define _GradientGoalDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -140,6 +140,7 @@ private:
 
   vector<Feature> features[5];
   int lastTestFeatureIdx[5];
+  vector<GoalPercept::GoalPost> goalPosts;
 
   const Image& getImage() const
   {
@@ -239,4 +240,4 @@ private:
           
 };//end class GradientGoalDetector
 
-#endif // __GradientGoalDetector_H_
+#endif // _GradientGoalDetector_H_
