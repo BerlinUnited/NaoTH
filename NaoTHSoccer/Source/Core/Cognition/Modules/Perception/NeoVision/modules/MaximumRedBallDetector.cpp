@@ -137,7 +137,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
       }
 
       // calculate the percept
-      if(idxBest >= 0)//&& bestCount >= 4 )//goodPoints.length / 2)
+      if(idxBest >= 0 && bestCount >= 4 )//goodPoints.length / 2)
       {
         DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
           CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);
