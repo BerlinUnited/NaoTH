@@ -14,7 +14,7 @@ import java.awt.event.*;
  *
  * @author claas
  */
-abstract class sshScriptRunner extends sshWorker
+abstract class SshScriptRunner extends SshWorker
 {
   private String scriptName;
 //  private String hostname;
@@ -25,14 +25,14 @@ abstract class sshScriptRunner extends sshWorker
   private OutputStream out;
   private String lastOut;
 
-  public sshScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public SshScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
     super(config, sNaoNo, sNaoByte);
     init(scriptName);
     config.reboot = reboot;
   }
 
-  public sshScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public SshScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
     super(config, Ip, sNaoNo, sNaoByte);
     init(scriptName);

@@ -13,14 +13,14 @@ import javax.swing.SwingUtilities;
  *
  * @author claas
  */
-abstract class sshCopier extends sshWorker
+abstract class SshCopier extends SshWorker
 {   
-  public sshCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
+  public SshCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
   {
     super(config, sNaoNo, sNaoByte);
   }
 
-  public sshCopier(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
+  public SshCopier(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
   {
     super(config, Ip, sNaoNo, sNaoByte);
   }
@@ -161,7 +161,7 @@ abstract class sshCopier extends sshWorker
               config.remoteLibPath() + "libnaosmal.so",
               new FileOutputStream(config.localDeployInPath() + "/libnaosmal.so")
                     ,
-              new progressMonitor(config.progressBar)
+              new ProgressMonitor(config.progressBar)
             );
           }
         }
@@ -179,7 +179,7 @@ abstract class sshCopier extends sshWorker
             (
               config.remoteLibPath() + "comment.cfg",
               new FileOutputStream(config.localDeployInPath() + "/comment.cfg"),
-              new progressMonitor(config.progressBar)
+              new ProgressMonitor(config.progressBar)
             );
           }
         }
@@ -199,7 +199,7 @@ abstract class sshCopier extends sshWorker
               config.remoteBinPath() + "naoth",
               new FileOutputStream(config.localDeployInPath() + "/naoth")
                     ,
-              new progressMonitor(config.progressBar)
+              new ProgressMonitor(config.progressBar)
             );
 
           }
