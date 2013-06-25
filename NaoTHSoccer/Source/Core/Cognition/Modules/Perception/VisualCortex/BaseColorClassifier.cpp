@@ -41,51 +41,51 @@ BaseColorClassifier::BaseColorClassifier()
   whiteLinesColorCalibratorTop("WhiteLinesTop", ColorClasses::white),
   whiteLinesColorCalibrator("WhiteLines", ColorClasses::white)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_field_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_field_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_ball_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_ball_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_goal_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_goal_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_red_team_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_red_team_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_blue_team_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_blue_team_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:set_lines_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:set_lines_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_field_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_field_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_ball_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_ball_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_goal_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_goal_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_red_team_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_red_team_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_blue_team_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_blue_team_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:set_lines_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:set_lines_in_image", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:field", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:field", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:line", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:line", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:ball", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:ball", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:blue_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:blue_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:yellow_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:yellow_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:red_team", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:red_team", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:blue_team", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:blue_team", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:field", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:field", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:line", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:line", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:ball", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:ball", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:blue_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:blue_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:yellow_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:yellow_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:red_team", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:red_team", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:blue_team", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:blue_team", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_field_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_field_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_line_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_line_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_ball_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_ball_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_blue_goal_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_blue_goal_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_yellow_goal_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_yellow_goal_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_red_team_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_red_team_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_blue_team_area", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_blue_team_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_field_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_field_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_line_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_line_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_ball_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_ball_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_blue_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_blue_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_yellow_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_yellow_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_red_team_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_red_team_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_blue_team_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_blue_team_area", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:reset_data", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:reset_data", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:reset_data", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:reset_data", " ", false);
   
   lastMeanY = getColoredGrid().meanBrightness;
   lastMeanU = getColoredGrid().meanBlue;
@@ -276,7 +276,7 @@ void BaseColorClassifier::execute()
     getBaseColorRegionPerceptTop().spanWidthEnv.y = (int) spanWidthTopY.getAverage();
   }
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:reset_data",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:reset_data",
     orangeBallColorCalibratorTop.reset();
     yellowGoalColorCalibratorTop.reset();
     blueGoalColorCalibratorTop.reset();
@@ -284,7 +284,7 @@ void BaseColorClassifier::execute()
     redTeamColorCalibratorTop.reset();
     whiteLinesColorCalibratorTop.reset();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:reset_data",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:reset_data",
     orangeBallColorCalibrator.reset();
     yellowGoalColorCalibrator.reset();
     blueGoalColorCalibrator.reset();
@@ -321,7 +321,7 @@ void BaseColorClassifier::calibrateColorRegions()
   chDist.u = 0; 
   chDist.v = 0;
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:ball",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:ball",
     orangeBallColorCalibratorTop.setStrength(params.calibrationStrength);
     orangeBallColorCalibratorTop.execute(getImageTop());
     orangeBallColorCalibratorTop.get(                chIdx, chDist);
@@ -335,7 +335,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.orangeBallParamsTop.saveToConfig();
     regionParams.orangeBallParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:ball",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:ball",
     orangeBallColorCalibrator.setStrength(params.calibrationStrength);
     orangeBallColorCalibrator.execute(getImage());
     orangeBallColorCalibrator.get(                chIdx, chDist);
@@ -350,7 +350,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.orangeBallParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:yellow_goal",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:yellow_goal",
     yellowGoalColorCalibratorTop.setStrength(params.calibrationStrength);
     yellowGoalColorCalibratorTop.execute(getImageTop());
     yellowGoalColorCalibratorTop.get(                chIdx, chDist);
@@ -364,7 +364,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.yellowGoalParamsTop.saveToConfig();
     regionParams.yellowGoalParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:yellow_goal",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:yellow_goal",
     yellowGoalColorCalibrator.setStrength(params.calibrationStrength);
     yellowGoalColorCalibrator.execute(getImage());
     yellowGoalColorCalibrator.get(                chIdx, chDist);
@@ -379,7 +379,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.yellowGoalParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:blue_goal", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:blue_goal", 
     blueGoalColorCalibratorTop.setStrength(params.calibrationStrength);
     blueGoalColorCalibratorTop.execute(getImageTop());
     blueGoalColorCalibratorTop.get(                  chIdx, chDist);
@@ -393,7 +393,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueGoalParamsTop.saveToConfig();
     regionParams.blueGoalParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:blue_goal", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:blue_goal", 
     blueGoalColorCalibrator.setStrength(params.calibrationStrength);
     blueGoalColorCalibrator.execute(getImage());
     blueGoalColorCalibrator.get(                  chIdx, chDist);
@@ -408,7 +408,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueGoalParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:blue_team", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:blue_team", 
     blueTeamColorCalibratorTop.setStrength(params.calibrationStrength);
     blueTeamColorCalibratorTop.execute(getImageTop());
     blueTeamColorCalibratorTop.get(             chIdx, chDist);
@@ -418,7 +418,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueTeamParamsTop.saveToConfig();
     regionParams.blueTeamParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:blue_team", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:blue_team", 
     blueTeamColorCalibrator.setStrength(params.calibrationStrength);
     blueTeamColorCalibrator.execute(getImage());
     blueTeamColorCalibrator.get(             chIdx, chDist);
@@ -429,7 +429,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueTeamParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:red_team",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:red_team",
     redTeamColorCalibratorTop.setStrength(params.calibrationStrength);
     redTeamColorCalibratorTop.execute(getImageTop());
     redTeamColorCalibratorTop.get(             chIdx, chDist);
@@ -439,7 +439,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.redTeamParamsTop.saveToConfig();
     regionParams.redTeamParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:red_team",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:red_team",
     redTeamColorCalibrator.setStrength(params.calibrationStrength);
     redTeamColorCalibrator.execute(getImage());
     redTeamColorCalibrator.get(             chIdx, chDist);
@@ -450,7 +450,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.redTeamParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibrate_colors:line",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibrate_colors:line",
     whiteLinesColorCalibratorTop.setStrength(params.calibrationStrength);
     whiteLinesColorCalibratorTop.execute(getImageTop());
     whiteLinesColorCalibratorTop.get(                chIdx, chDist);
@@ -460,7 +460,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.whiteLineParamsTop.saveToConfig();
     regionParams.whiteLineParamsTop.syncWithConfig();
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibrate_colors:line",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibrate_colors:line",
     whiteLinesColorCalibrator.setStrength(params.calibrationStrength);
     whiteLinesColorCalibrator.execute(getImage());
     whiteLinesColorCalibrator.get(                chIdx, chDist);
@@ -474,52 +474,52 @@ void BaseColorClassifier::calibrateColorRegions()
 
 void BaseColorClassifier::runDebugRequests()
 {
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_line_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_line_area",
     whiteLinesColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_line_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_line_area",
     whiteLinesColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_ball_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_ball_area",
     orangeBallColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);  
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_ball_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_ball_area",
     orangeBallColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);  
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_blue_goal_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_blue_goal_area",
     blueGoalColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_blue_goal_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_blue_goal_area",
     blueGoalColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_yellow_goal_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_yellow_goal_area",
     yellowGoalColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_yellow_goal_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_yellow_goal_area",
     yellowGoalColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_red_team_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_red_team_area",
     redTeamColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_red_team_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_red_team_area",
     redTeamColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:calibration_areas:show_blue_team_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:calibration_areas:show_blue_team_area",
     blueTeamColorCalibratorTop.drawCalibrationAreaRects(CameraInfo::Top);
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:calibration_areas:show_blue_team_area",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:calibration_areas:show_blue_team_area",
     blueTeamColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
   int imageWidth = getImageTop().cameraInfo.resolutionWidth;
   int imageHeight = getImageTop().cameraInfo.resolutionHeight;
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:set_ball_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_ball_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -535,7 +535,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:set_goal_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_goal_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -556,7 +556,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:set_red_team_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_red_team_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -571,7 +571,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:set_blue_team_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_blue_team_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -589,7 +589,7 @@ void BaseColorClassifier::runDebugRequests()
   imageWidth = getImage().cameraInfo.resolutionWidth;
   imageHeight = getImage().cameraInfo.resolutionHeight;
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:set_ball_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_ball_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -605,7 +605,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:set_goal_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_goal_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -626,7 +626,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:set_red_team_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_red_team_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -641,7 +641,7 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:set_blue_team_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_blue_team_in_image",
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -659,7 +659,7 @@ void BaseColorClassifier::runDebugRequests()
   double fEnvY = 0.5;
   MODIFY("ImageProcessor:BaseColorClassifier:fEnvY", fEnvY);
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:TopCam:set_lines_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_lines_in_image",
     int imageWidth = getImageTop().cameraInfo.resolutionWidth;
     int imageHeight = getImageTop().cameraInfo.resolutionHeight;
     int diff = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
@@ -682,7 +682,7 @@ void BaseColorClassifier::runDebugRequests()
       }
     }
   );
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:BottomCam:set_lines_in_image",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_lines_in_image",
     int imageWidth = getImage().cameraInfo.resolutionWidth;
     int imageHeight = getImage().cameraInfo.resolutionHeight;
     int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;

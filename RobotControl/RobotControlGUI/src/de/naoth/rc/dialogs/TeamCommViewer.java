@@ -67,7 +67,8 @@ public class TeamCommViewer extends AbstractDialog
      */
     @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
 
     robotStatusPanel = new javax.swing.JPanel();
     btListen = new javax.swing.JToggleButton();
@@ -76,8 +77,10 @@ public class TeamCommViewer extends AbstractDialog
     robotStatusPanel.setLayout(new javax.swing.BoxLayout(robotStatusPanel, javax.swing.BoxLayout.Y_AXIS));
 
     btListen.setText("Listen to TeamComm");
-    btListen.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    btListen.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         btListenActionPerformed(evt);
       }
     });

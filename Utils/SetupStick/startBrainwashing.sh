@@ -41,9 +41,6 @@ if [ -d "./deploy/home/nao/bin" ]; then
   sudo -u nao cp ./deploy/home/nao/bin/* /home/nao/bin/
 fi
 
-mkdir -p /home/nao/Media/
-cp ./anDieArbeit.wav /home/nao/Media/
-
 # start naoqi/naoth again
 if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
   /etc/init.d/naoqi start

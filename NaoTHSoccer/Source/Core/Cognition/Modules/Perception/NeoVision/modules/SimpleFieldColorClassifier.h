@@ -15,7 +15,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Tools/ImageProcessing/Histograms.h"
-//#include "Tools/ImageProcessing/ColoredGrid.h"
+#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Representations/Infrastructure/Image.h" // just for debug
 
 
@@ -25,11 +25,13 @@
 #include <Tools/DataStructures/ParameterList.h>
 
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
-  //REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
   REQUIRE(FrameInfo)
   REQUIRE(Histograms)
   REQUIRE(HistogramsTop)
@@ -89,35 +91,18 @@ private:
 
   Parameters fieldParams;
 
+
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> filteredHistogramY;
+  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> filteredHistogramU;
+
+
   // id of the camera the module is curently running on
   CameraInfo::CameraID cameraID;
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return SimpleFieldColorClassifierBase::getImageTop();
-    } else {
-      return SimpleFieldColorClassifierBase::getImage();
-    }
-  }
-
-  const Histograms& getHistograms() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return SimpleFieldColorClassifierBase::getHistogramsTop();
-    } else {
-      return SimpleFieldColorClassifierBase::getHistograms();
-    }
-  }
-
-  FieldColorPercept& getFieldColorPercept() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return SimpleFieldColorClassifierBase::getFieldColorPerceptTop();
-    } else {
-      return SimpleFieldColorClassifierBase::getFieldColorPercept();
-    }
-  }
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Histograms);
+  DOUBLE_CAM_PROVIDE(SimpleFieldColorClassifier,FieldColorPercept);
 };
 
 #endif  /* _SimpleFieldColorClassifier_H_ */

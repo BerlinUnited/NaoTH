@@ -109,6 +109,8 @@ public class NaoScpConfig
     fhIsTesting = config.fhIsTesting;
 
     progressBar = config.progressBar;
+    
+    comment = config.comment;
   }
 
   public String setupScriptPath()

@@ -1130,7 +1130,7 @@ void MonteCarloSelfLocator::execute()
     // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
-    fieldMax.x = 0.0;
+    fieldMax.x = 1000.0; // max one meter into the opponent half
 
     if(!init_own_half)
     {

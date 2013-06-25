@@ -14,6 +14,9 @@ GradientSpiderScan::GradientSpiderScan(const Image& theImage, CameraInfo::Camera
   cameraID(camID)
 {
   init();
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:Y_Channel","..", false); 
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:U_Channel","..", false); 
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:V_Channel","..", false); 
 }
 
 void GradientSpiderScan::setMaxBeamLength(unsigned int length)
@@ -29,6 +32,12 @@ void GradientSpiderScan::setCurrentGradientThreshold(double threshold)
 void GradientSpiderScan::setCurrentMeanThreshold(double threshold)
 {
   currentMeanThreshold = threshold;
+}
+
+void GradientSpiderScan::setDynamicThresholdY(double threshold)
+{
+  dynamicThresholdY = threshold;
+  useDynamicThresholdY = true;
 }
 
 void GradientSpiderScan::setImageColorChannelNumber(int channelNumber)
@@ -47,9 +56,13 @@ void GradientSpiderScan::init()
   max_length_of_beam = 30; //maximum length of the scan line
   currentGradientThreshold = 30; //...
   currentMeanThreshold = 30; //...
+  dynamicThresholdY = 0;
+  useDynamicThresholdY = false;
   imageChannelNumber = 2;
+  imageChannelValidate = 1;
   maxNumberOfScans = 15; //maximum number of scanlines ...
   CANVAS_PX(cameraID);
+  maxChannelDif = 0.5;
 }
 
 void GradientSpiderScan::setDrawScanLines(bool draw)
@@ -75,6 +88,7 @@ void GradientSpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoin
   
   startPixel = theImage.get(start.x, start.y);
   scan(goodPoints, badPoints, scans);
+  useDynamicThresholdY = false;
 }
 
 void GradientSpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans scans)
@@ -138,6 +152,10 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
   int maxJump = -1;
   bool jumpFound = false;
+  bool isBright = false;
+  Vector2<int> brightBeginPoint;
+  bool brightPointFound = false;
+  bool brightRegionEndFound = false;
 
   //expand in the selected direction
   for(unsigned int j = 1; j < max_length_of_beam  && !borderPointFound; j++)
@@ -155,8 +173,11 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
     ////////////////////////////////
 
     Pixel pixel = theImage.get(currentPoint.x,currentPoint.y);
+	/*DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:Y_Channel",
+					);*/
 
     int newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
+	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
     int meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
 
     bool isBorder = false;
@@ -169,7 +190,25 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
         isBorder = true;
       }
     } else { // look for a jump
-      jumpFound = newJump > currentGradientThreshold || 
+    if(!isBright && useDynamicThresholdY && pixel.y > dynamicThresholdY)
+    {
+		  isBright = true;
+      brightBeginPoint = currentPoint;
+      brightPointFound = true;
+      if(drawScanLines)
+      {
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-4), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+4), (unsigned int)(brightBeginPoint.y));
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-4), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+4));
+      }
+    }
+    else if(isBright && useDynamicThresholdY && pixel.y < dynamicThresholdY)
+    {
+      brightRegionEndFound = true;
+      isBright = false;
+    }
+
+//      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
+		jumpFound = newJump > currentGradientThreshold  || 
                   meanJump > currentMeanThreshold;
       
       maxJump = newJump;
@@ -188,21 +227,36 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
     if(drawScanLines)
     {
-      if(!isBorder) {
-        POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-      } else {
-        POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+      if(!isBorder) 
+      {
+        // POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+		    POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+      } 
+      else 
+      {
+        //POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+    	  LINE_PX(ColorClasses::green, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
     lastPixel = pixel;
     currentPoint += direction;
   }//end for
 
+  // no valid border point fount, but a ver y bright one (maybe line)
+  // or a valid
+  if( (!borderPointFound  && brightPointFound) || (borderPointFound && brightPointFound && !brightRegionEndFound))
+  {
+    borderPoint = brightBeginPoint;
+    borderPointFound = true;
+    LINE_PX(ColorClasses::skyblue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+  }
   if(borderPointFound) //if a point was found ...
   {
     //that point was followed by a border pixel, does not lie at the images border or is the result of a scan along that border ...
     if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2)) {
       goodPoints.add(borderPoint); //it's good point
+		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x-4), (unsigned int)(borderPoint.y), (unsigned int)(borderPoint.x+4), (unsigned int)(borderPoint.y));
+		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y-4), (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y+4));
     } else {
       badPoints.add(borderPoint);  //otherwise it's a bad one
     }

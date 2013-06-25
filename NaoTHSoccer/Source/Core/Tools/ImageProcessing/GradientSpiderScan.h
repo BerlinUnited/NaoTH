@@ -77,6 +77,7 @@ public:
   void setDrawScanLines(bool draw);
   void setMaxBeamLength(unsigned int length);
   void setCurrentGradientThreshold(double threshold);
+  void setDynamicThresholdY(double threshold);
   void setCurrentMeanThreshold(double threshold);
   void setImageColorChannelNumber(int channelNumber);
   void setMaxNumberOfScans(unsigned int length);
@@ -87,7 +88,7 @@ private:
   inline bool isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const;
 
   inline bool pixelInImage(const Vector2<int>& pixel) const;
-  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;
+  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;  
 
   const Image& theImage;
   RingBufferWithSum<int, 24> scanPixelBuffer;
@@ -96,9 +97,12 @@ private:
   unsigned int max_length_of_beam;
   double currentGradientThreshold;
   double currentMeanThreshold;
+  double dynamicThresholdY;
+  bool useDynamicThresholdY;
   int imageChannelNumber;
+  int imageChannelValidate;
   int maxNumberOfScans; //maximum number of scanlines ...
-
+  double maxChannelDif;
   CameraInfo::CameraID cameraID;
 };
 

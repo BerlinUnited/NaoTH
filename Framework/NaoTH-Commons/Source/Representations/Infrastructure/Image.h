@@ -22,6 +22,8 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ShadingCorrection.h"
 
+#include "Tools/Debug/NaoTHAssert.h"
+
 #define SIZE_OF_YUV422_PIXEL 2
 
 namespace naoth
@@ -105,7 +107,7 @@ namespace naoth
      */
     inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       return yuv422[2 * (y * cameraInfo.resolutionWidth + x)];
     }
 
