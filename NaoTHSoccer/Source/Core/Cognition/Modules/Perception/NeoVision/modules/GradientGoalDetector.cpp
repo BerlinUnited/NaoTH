@@ -38,11 +38,24 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
 
   getGoalPercept().reset();
 
-  Vector2<double> p1(getArtificialHorizon().begin());
-  Vector2<double> p2(getArtificialHorizon().end());
-
-  Vector2<double> direction = getArtificialHorizon().getDirection();
+  Vector2d p1(getArtificialHorizon().begin());
+  Vector2d p2(getArtificialHorizon().end());
+  Vector2d direction = getArtificialHorizon().getDirection();
   
+  int imageBorderOffset = 15;
+  int heightOfHorizon = (int)((p1.y + p2.y) * 0.5 + 0.5);
+  // image over the horizon
+  if(heightOfHorizon > (int)getImage().cameraInfo.resolutionHeight-10) { 
+    return;
+  }
+
+  // adjust the scan height in case of the bottom camera
+  if(cameraID == CameraInfo::Bottom) {
+    // clamp the scanline
+    p1.y = Math::clamp((int)p1.y, imageBorderOffset+5, (int)getImage().cameraInfo.resolutionHeight-imageBorderOffset-5);
+    p2.y = Math::clamp((int)p2.y, imageBorderOffset+5, (int)getImage().cameraInfo.resolutionHeight-imageBorderOffset-5);
+  }
+
   //double horizont = min(p1.y, p2.y);
 
   double threshold = params.gradientThreshold;
@@ -57,7 +70,10 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
      features[i].clear();
   }
 
-  if(p1.y > 15 && p2.y > 15 && p1.y < (int) getImage().height() - 15 && p2.y < (int) getImage().height() - 15)
+  if(p1.y > imageBorderOffset && 
+     p2.y > imageBorderOffset && 
+     p1.y < (int) getImage().height() - imageBorderOffset && 
+     p2.y < (int) getImage().height() - imageBorderOffset)
   {
     double response = 0.0;
     double responseY = 0.0;
