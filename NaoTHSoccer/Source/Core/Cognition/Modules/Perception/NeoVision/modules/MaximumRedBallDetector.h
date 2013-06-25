@@ -86,7 +86,7 @@ private:
 
   BallPointList bestPoints;
 
-  BallPointList possibleModells[10];
+  BallPointList possibleModells[60];
 
   void findMaximumRedPoint(Vector2<int>& peakPos);
   Vector2d estimatePositionBySize();
