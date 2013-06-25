@@ -34,6 +34,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
+  Pixel pixel;
 
   getBallPercept().reset();
 
@@ -46,19 +47,24 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   {
     return;
   }
-
+  getImage().get(start.x, start.y, pixel);
   goodPoints.clear();
   badPoints.clear();
   bestPoints.clear();
-
-  if(!getBodyContour().isOccupied(start))
+ // if(pixel.y > getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * fEnvY - diff)
+  double dynamicThresholdY = getBaseColorRegionPercept().maxEnv.y + 
+						(255 - getBaseColorRegionPercept().maxEnv.y) * 0.5 - getBaseColorRegionPercept().spanWidthEnv.y / 100;
+  bool isBright = pixel.y > dynamicThresholdY;
+  if (isBright) {
+	isBright = isBright;
+  }
+  if(!getBodyContour().isOccupied(start) && !isBright)
   {
     GradientSpiderScan spiderSearch(getImage(), cameraID);
     spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
     spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
     spiderSearch.setMaxBeamLength(50);
-
-    DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
+	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
       spiderSearch.setDrawScanLines(true);
     );
   
