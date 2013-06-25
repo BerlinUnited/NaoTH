@@ -29,7 +29,7 @@ option arms_control
   state arms_take_down
   {
     decision {
-      if(state_time > 1000)
+      if(state_time > 1500)
         goto arms_normal;
       else
         stay;

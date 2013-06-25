@@ -49,7 +49,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_lokalize(x=-1500, y=-600, rot=0);
-      go_to_point_with_USOA(x=-200, y=0, rot=0);
+      go_to_point_with_USOA(x=-500, y=0, rot=0);
       head.control_mode = look_around;
     }
   }

@@ -4,20 +4,48 @@ option play_soccer
   {
     if(!body.ready_to_walk)
       goto idle;
-    else if(game.current_mode == playing)
-      goto play;
-    else if(game.current_mode == ready)
-      goto ready;
-    else if(true)
-      goto idle;
   }  
 
   initial state idle{
+    decision{
+      else if (( (game.current_mode == playing)||(game.current_mode == ready) ))
+        goto calibrate_before_ready_or_play;
+      else
+        stay;
+    }
     action{}
+  }
+
+  state calibrate_before_ready_or_play
+  {
+    decision
+    {
+      else if((state_time>2000) && (game.current_mode == playing))
+        goto play;
+      else if((state_time>2000) && (game.current_mode == ready))
+        goto ready;
+      else if (!( (game.current_mode == playing)||(game.current_mode == ready) ))  
+        goto idle;
+      else 
+        stay;
+    }
+    action
+    {
+    }
+  
   }
 
   state play
   {
+    decision
+    {
+      else if (game.current_mode == ready)
+        goto ready;
+      else if (!(game.current_mode == playing))
+        goto idle;
+      else 
+        stay;
+    }
     action 
     {
       arm.control_mode = back;
@@ -27,6 +55,15 @@ option play_soccer
 
   state ready
   {
+    decision
+    {
+      else if (game.current_mode == playing)
+        goto play;
+      else if (!(game.current_mode == ready))
+        goto idle;
+      else 
+        stay;
+    }
     action 
     {
       arm.control_mode = back;
