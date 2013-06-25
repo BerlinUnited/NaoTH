@@ -170,6 +170,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 		possibleModells[i].add(goodPoints[thirdPoint]);
 		double meanDist = (goodPoints[firstPoint] - start).abs() + (goodPoints[secondPoint] - start).abs() + (goodPoints[thirdPoint] - start).abs();		
 		meanDist /= possibleModells[i].length;
+
 		if(calculateCircle(possibleModells[i], center, radius))
 		{
 			if(meanDist < radius * params.percentOfRadius)
