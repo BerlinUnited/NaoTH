@@ -127,6 +127,7 @@ private:
 
   unsigned char* currentImage;
 
+  bool atLeastOneImageRetrieved;
   bool wasQueried;
   bool isCapturing;
   bool bufferSwitched;
@@ -134,6 +135,7 @@ private:
 
   int csConst[CameraSettings::numOfCameraSetting];
   int allowedTolerance[CameraSettings::numOfCameraSetting];
+  int waitTime[CameraSettings::numOfCameraSetting];
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
 

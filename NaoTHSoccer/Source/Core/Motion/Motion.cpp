@@ -387,7 +387,7 @@ void Motion::guard_cognition()
     frameNumSinceLastMotionRequest = 0;
   }
 
-  if(frameNumSinceLastMotionRequest > 1500)
+  if(frameNumSinceLastMotionRequest > 4000)
   {
     std::cerr << "+==================================+" << std::endl;
     std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
@@ -403,7 +403,7 @@ void Motion::guard_cognition()
     std::cerr << " finished." << std::endl;
     #endif
 
-    ASSERT(frameNumSinceLastMotionRequest <= 500);
+    ASSERT(false && "frameNumSinceLastMotionRequest check failed");
   }//end if
 }//end guard_cognition
 
