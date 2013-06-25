@@ -96,8 +96,7 @@ private:
       PARAMETER_REGISTER(minY) = 140;
       PARAMETER_REGISTER(dist) = 5;
       PARAMETER_REGISTER(responseHoldFactor) = 0.8;
-      PARAMETER_REGISTER(minGoodPoints) = 4;
-      PARAMETER_REGISTER(minScanPointsAfterGoodPoints) = 15;
+      PARAMETER_REGISTER(minGoodPoints) = 3;
 
       syncWithConfig();
 
