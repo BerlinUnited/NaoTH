@@ -96,6 +96,7 @@ private:
   bool findBall ();
   bool getBestModel(BallPointList& pointList);
   bool checkIfPixelIsOrange (Vector2d coord);
+  void clearDublicatePoints ( BallPointList& ballPoints);
   
   class Parameters: public ParameterList
   {
@@ -108,7 +109,7 @@ private:
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
-	    PARAMETER_REGISTER(maxBlueValue) = 60;
+	  PARAMETER_REGISTER(maxBlueValue) = 60;
 
       syncWithConfig();
 

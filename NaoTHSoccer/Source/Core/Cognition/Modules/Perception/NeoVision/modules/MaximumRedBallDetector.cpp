@@ -358,6 +358,7 @@ bool MaximumRedBallDetector::findBall () {
 
 bool MaximumRedBallDetector::getBestModel(BallPointList& pointList)
 {
+	clearDublicatePoints(pointList);
 	if(pointList.length > 3)
 	{
 		Vector2<double> center;
@@ -488,7 +489,7 @@ bool MaximumRedBallDetector::getBestModel(BallPointList& pointList)
 						meanErr += err;
 					}
 				}
-        meanErr /= pointList.length;
+				meanErr /= pointList.length;
 				if(count >= 4 && count >= pointList.length / 2 && (count >= bestCount || meanErr < bestErr || bestErr < 0) )
 				{
 					idxBest =  i;
@@ -550,5 +551,28 @@ bool MaximumRedBallDetector::checkIfPixelIsOrange(Vector2d coord)
 	if (pixel.v > pixel.u + params.maxBlueValue)
 		return true;
 	return false;
+}
+
+void MaximumRedBallDetector::clearDublicatePoints (BallPointList& ballPoints) {
+	vector<Vector2<int>> dublicatePointList;
+	bool foundDublicate = false;
+	for (int i=0;i<ballPoints.length; i++){
+		for(int j=i+1; j<ballPoints.length; j++) {
+			if (ballPoints[i]==ballPoints[j]) {
+				foundDublicate = true;	
+			}
+		}
+		if (!foundDublicate) {
+			dublicatePointList.push_back(ballPoints[i]);
+		} else {
+			foundDublicate = false;
+		}
+	}
+	if (dublicatePointList.size()>0) {
+		ballPoints.clear();
+		for (int i=0; i <(int) dublicatePointList.size(); i++) {
+			ballPoints.add(dublicatePointList[i]);			
+		}	
+	}
 }
 
