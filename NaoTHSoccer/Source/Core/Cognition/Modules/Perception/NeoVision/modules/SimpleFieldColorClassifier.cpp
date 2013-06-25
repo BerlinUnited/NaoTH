@@ -113,40 +113,24 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   STOPWATCH_STOP("SimpleFieldColorClassifier:Cr_filtering");
   
 
-  
-  /*
   // Step 3: calculate the Y and Cb histograms based on the points 
   //         which satisfy the "green"-condition based on Cr histogram
   STOPWATCH_START("SimpleFieldColorClassifier:GridWalk");
-  double meanFieldY = 0.0;
-  double meanFieldCountY = 0.0;
-  Pixel pixel;
 
+  Pixel pixel;
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
     
-    if( abs((int)pixel.v  - (int) maxWeightedIndexCr) < (int) maxDistCr )
+    if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v )
     {
-      weightedHistY[pixel.y]++;
-      weightedHistCb[pixel.u]++;
-
-      meanFieldY += pixel.y;
-      meanFieldCountY++;
+      filteredHistogramY.add(pixel.y);
+      filteredHistogramU.add(pixel.u);
     }
   }//end for
-  
-  // estimate the mean Y of the green candidates
-  if(meanFieldCountY <= 0.0)
-  {
-    return;
-  }
-
-  meanFieldY /= meanFieldCountY;
-
   STOPWATCH_STOP("SimpleFieldColorClassifier:GridWalk");
-  */
+
 
   STOPWATCH_START("SimpleFieldColorClassifier:Y_filtering");
   
@@ -160,7 +144,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   {
     // weight based on the mean value  (255 - i)/255
     double wCb = 1.0 - i*histogramStep;
-    double weightedCb = wCb * (double) getHistograms().histogramU.rawData[i];
+    double weightedCb = wCb * (double) filteredHistogramU.rawData[i];
 
     // calculate the Cb maximum
     if(weightedCb > maxWeightedCb)
@@ -169,14 +153,15 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
       maxWeightedIndexCb = i;
     }
 
-    meanFieldY += getHistograms().histogramY.rawData[i]*i;
-    numberOfFieldY += getHistograms().histogramY.rawData[i];
+    meanFieldY += filteredHistogramY.rawData[i]*i;
+    numberOfFieldY += filteredHistogramY.rawData[i];
   }//end for
 
+  // estimate the mean Y of the green candidates
   if(numberOfFieldY > 0) {
     meanFieldY /= numberOfFieldY;
   }
-
+  
   //check how it works in other conditions
   int maxWeightedIndexY = (int)Math::clamp(meanFieldY,0.0, 255.0);
 

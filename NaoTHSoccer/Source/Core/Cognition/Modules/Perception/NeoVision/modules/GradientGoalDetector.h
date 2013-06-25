@@ -1,13 +1,13 @@
 /**
-* @file MaximumRedBallDetector.h
+* @file GradientGoalDetector.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
-* Definition of class MaximumRedBallDetector
+* Definition of class GradientGoalDetector
 */
 
-#ifndef __MaximumRedBallDetector_H_
-#define __MaximumRedBallDetector_H_
+#ifndef _GradientGoalDetector_H_
+#define _GradientGoalDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -32,14 +32,14 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
 // tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/GradientSpiderScan.h"
 
-BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
+BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
@@ -58,16 +58,17 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
 
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
-END_DECLARE_MODULE(MaximumRedBallDetector)
+  PROVIDE(GoalPercept)
+  PROVIDE(GoalPerceptTop)
+END_DECLARE_MODULE(GradientGoalDetector)
 
 
-class MaximumRedBallDetector: private MaximumRedBallDetectorBase
+class GradientGoalDetector: private GradientGoalDetectorBase
 {
 public:
-  MaximumRedBallDetector();
-  ~MaximumRedBallDetector(){};
+
+  GradientGoalDetector();
+  ~GradientGoalDetector(){};
 
   // override the Module execute method
   virtual void execute(CameraInfo::CameraID id);
@@ -80,29 +81,20 @@ public:
  
 private:
   CameraInfo::CameraID cameraID;
-  typedef PointList<20> BallPointList;
-  BallPointList goodPoints;
-  BallPointList badPoints;
 
-  BallPointList bestPoints;
+  RingBuffer<Vector2<double>, 5> pointBuffer;
+  RingBufferWithSum<double, 5> valueBuffer;
+  RingBufferWithSum<double, 5> valueBufferY;
 
-  BallPointList possibleModells[10];
-
-  void findMaximumRedPoint(Vector2<int>& peakPos);
-  Vector2d estimatePositionBySize();
-  bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
-  
   class Parameters: public ParameterList
   {
   public:
 
-    Parameters() : ParameterList("MaximumRedBallDetectorParameters")
+    Parameters() : ParameterList("GradientGoalDetectorParameters")
     {
-      PARAMETER_REGISTER(gradientThreshold) = 30;
-      PARAMETER_REGISTER(meanThreshold) = 30;
-      PARAMETER_REGISTER(stepSize) = 4;
-      PARAMETER_REGISTER(percentOfRadius) = 0.5;
-      PARAMETER_REGISTER(ransacPercentValid) = 0.05;
+      PARAMETER_REGISTER(gradientThreshold) = 60;
+      PARAMETER_REGISTER(minY) = 140;
+      PARAMETER_REGISTER(dist) = 5;
 
       syncWithConfig();
 
@@ -114,24 +106,51 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    int meanThreshold;
     int gradientThreshold;
-    int stepSize;
-    double percentOfRadius;
-    double ransacPercentValid;
+    int minY;
+    int dist;
   };
 
   Parameters params;
+
+  class Feature
+  {
+  public:
+    Vector2<int> begin;
+    Vector2<int> center;
+    Vector2<int> end;
+
+    Vector2<double> responseAtBegin;
+    Vector2<double> responseAtEnd;
+
+    bool possibleObstacle;
+
+    Feature()
+    :
+      begin(-1,-1),
+      end(-1, -1),
+      responseAtBegin(0.0, 0.0),
+      responseAtEnd(0.0, 0.0),
+      possibleObstacle(false)
+    {
+
+    }
+
+  };
+
+  vector<Feature> features[5];
+  int lastTestFeatureIdx[5];
+  vector<GoalPercept::GoalPost> goalPosts;
 
   const Image& getImage() const
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getImageTop();
+      return GradientGoalDetectorBase::getImageTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getImage();
+      return GradientGoalDetectorBase::getImage();
     }
   };
   
@@ -139,11 +158,11 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getCameraMatrixTop();
+      return GradientGoalDetectorBase::getCameraMatrixTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getCameraMatrix();
+      return GradientGoalDetectorBase::getCameraMatrix();
     }
   };
 
@@ -151,11 +170,11 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getCameraInfoTop();
+      return GradientGoalDetectorBase::getCameraInfoTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getCameraInfo();
+      return GradientGoalDetectorBase::getCameraInfo();
     }
   };
 
@@ -163,11 +182,11 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getArtificialHorizonTop();
+      return GradientGoalDetectorBase::getArtificialHorizonTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getArtificialHorizon();
+      return GradientGoalDetectorBase::getArtificialHorizon();
     }
   };
 
@@ -175,11 +194,11 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getFieldColorPerceptTop();
+      return GradientGoalDetectorBase::getFieldColorPerceptTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getFieldColorPercept();
+      return GradientGoalDetectorBase::getFieldColorPercept();
     }
   };
 
@@ -187,11 +206,11 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getFieldPerceptTop();
+      return GradientGoalDetectorBase::getFieldPerceptTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getFieldPercept();
+      return GradientGoalDetectorBase::getFieldPercept();
     }
   };
 
@@ -199,26 +218,26 @@ private:
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getBodyContourTop();
+      return GradientGoalDetectorBase::getBodyContourTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getBodyContour();
+      return GradientGoalDetectorBase::getBodyContour();
     }
   };
   
-  BallPercept& getBallPercept()
+  GoalPercept& getGoalPercept()
   {
     if(cameraID == CameraInfo::Top)
     {
-      return MaximumRedBallDetectorBase::getBallPerceptTop();
+      return GradientGoalDetectorBase::getGoalPerceptTop();
     }
     else
     {
-      return MaximumRedBallDetectorBase::getBallPercept();
+      return GradientGoalDetectorBase::getGoalPercept();
     }
   };
           
-};//end class MaximumRedBallDetector
+};//end class GradientGoalDetector
 
-#endif // __MaximumRedBallDetector_H_
+#endif // _GradientGoalDetector_H_

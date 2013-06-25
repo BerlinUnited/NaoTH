@@ -38,6 +38,10 @@ NeoVision::NeoVision()
   DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:execute", " ", true);
   theMaximumRedBallDetector = registerModule<MaximumRedBallDetector>("MaximumRedBallDetector");
   theMaximumRedBallDetector->setEnabled(true);
+  
+  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:execute", " ", true);
+  theGradientGoalDetector = registerModule<GradientGoalDetector>("GradientGoalDetector");
+  theGradientGoalDetector->setEnabled(true);
 }//end constructor
 
 
@@ -90,6 +94,13 @@ void NeoVision::execute()
     STOPWATCH_START("MaximumRedBallDetector");
     theMaximumRedBallDetector->execute();
     STOPWATCH_STOP("MaximumRedBallDetector");
+  );
+
+  DEBUG_REQUEST("NeoVision:GradientGoalDetector:execute",
+    GT_TRACE("executing GradientGoalDetector");
+    STOPWATCH_START("GradientGoalDetector");
+    theGradientGoalDetector->execute();
+    STOPWATCH_STOP("GradientGoalDetector");
   );
 }//end execute
 
