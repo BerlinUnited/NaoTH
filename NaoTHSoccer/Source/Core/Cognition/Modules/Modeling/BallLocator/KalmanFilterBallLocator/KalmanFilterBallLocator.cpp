@@ -9,6 +9,7 @@
 
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugModify.h"
 
 KalmanFilterBallLocator::KalmanFilterBallLocator()
   : 
@@ -16,11 +17,13 @@ KalmanFilterBallLocator::KalmanFilterBallLocator()
 {
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_ball_on_field", "draw the modelled ball on the field", false);
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:hold_ball_prediction_in_10s", "draw the ball prediction for 10s.", false);
-  DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_ball_percept", "draw the ball percept", false);
+  DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_ball_percept_after_buffering", "draw the buffered ball percept", false);
+  DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_real_ball_percept", "draw the real incomming ball percept", false);
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:test_model", "set the initial speed to 100mm/s", false);
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:reset_matrices", "reset the model matrices (from Parameterlist)", false);
+  DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_smoothPercept_buffer", "Draw the buffer for smoothing the perception", false);
 
-  reset();
+  reset(getBallPercept());
   resetMatrices();
 }
 
@@ -64,6 +67,104 @@ void KalmanFilterBallLocator::resetMatrices()
 void KalmanFilterBallLocator::execute()
 {
 
+    if(getBallPercept().ballWasSeen) {
+        //to check correctness of the prediction
+        DEBUG_REQUEST("KalmanFilterBallLocator:draw_real_ball_percept",
+
+          PEN("FF0000", 10);
+          CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+        );
+    }
+
+    DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_on_field",
+      FIELD_DRAWING_CONTEXT;
+
+      PEN("FF0000", 30);
+      CIRCLE( getBallModel().positionPreview.x, getBallModel().positionPreview.y, getFieldInfo().ballRadius-10);
+    );
+
+    double useBuffer = 0;
+    MODIFY("KalmanFilterBallLocator:useBuffer", useBuffer);
+    if (useBuffer == 0)  {
+        executeKalman(getBallPercept());
+        return;
+    }
+
+    //odometry Update
+    Pose2D odometryDelta = lastRobotOdometryAll - getOdometryData();
+
+    //update the ballBuffer
+    for (int i = 0; i < smoothingPerceptBuffer.getNumberOfEntries(); i++)
+    {
+      BallPercept& ball = smoothingPerceptBuffer.getEntry(i);
+      ball.bearingBasedOffsetOnField = odometryDelta * ball.bearingBasedOffsetOnField;
+    }
+
+    lastRobotOdometryAll = getOdometryData();
+
+
+    if(getBallPercept().ballWasSeen
+      && getBodyState().fall_down_state == BodyState::upright)
+    {
+
+
+        const BallPercept currentPercept = getBallPercept();
+
+        unsigned int idxMax = 0;
+        if (smoothingPerceptBuffer.getNumberOfEntries() > 4)
+            idxMax = smoothingPerceptBuffer.getNumberOfEntries()-1;
+        else {
+            smoothingPerceptBuffer.add(currentPercept);
+            return;
+        }
+
+        const double currentX = currentPercept.bearingBasedOffsetOnField.x;
+        const double currentY = currentPercept.bearingBasedOffsetOnField.y;
+
+        BallPercept meanPercept = getBallPercept();
+
+        //add percept
+        int similarPercepts = 0;
+
+        if (fabs(currentX - smoothingPerceptBuffer[idxMax].bearingBasedOffsetOnField.x) < 1000
+         && fabs(currentY - smoothingPerceptBuffer[idxMax].bearingBasedOffsetOnField.y) < 1000) {
+
+              similarPercepts++;
+              //meanPercept.bearingBasedOffsetOnField += smoothingPerceptBuffer[idxMax].bearingBasedOffsetOnField/2;
+        }
+
+        for (int i = idxMax-1; idxMax > 0 && i > 0 && similarPercepts < 6; i--) {
+
+            if (fabs(currentX - smoothingPerceptBuffer[i-1].bearingBasedOffsetOnField.x) < 1000
+             && fabs(currentY - smoothingPerceptBuffer[i-1].bearingBasedOffsetOnField.y) < 1000) {
+              similarPercepts++;
+              //meanPercept.bearingBasedOffsetOnField += smoothingPerceptBuffer[i].bearingBasedOffsetOnField/2;
+            }
+        }
+
+
+        if (similarPercepts > 4) {
+            executeKalman(meanPercept);
+            //smoothingPerceptBuffer.clear(); better not clearing -> not reactive anymore
+        } else {
+            smoothingPerceptBuffer.add(currentPercept);
+        }
+    } //end if perceptSeen
+
+    DEBUG_REQUEST("KalmanFilterBallLocator:draw_smoothPercept_buffer",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 50);
+      for (int i = 0; i < smoothingPerceptBuffer.getNumberOfEntries(); i++)
+      {
+        CIRCLE(smoothingPerceptBuffer[i].bearingBasedOffsetOnField.x, smoothingPerceptBuffer[i].bearingBasedOffsetOnField.y, 20);
+      }//end for
+    );
+
+} //end execute
+
+void KalmanFilterBallLocator::executeKalman(BallPercept newPercept)
+{
+
   DEBUG_REQUEST("KalmanFilterBallLocator:reset_matrices",
     resetMatrices();
   );
@@ -73,7 +174,7 @@ void KalmanFilterBallLocator::execute()
     resetMatrices();
   }
   
-  if(getBallPercept().ballWasSeen)
+  if(newPercept.ballWasSeen)
   {
     getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
   }
@@ -110,14 +211,14 @@ void KalmanFilterBallLocator::execute()
   // sensor-update
   //////////////////////////////////
 
-  if(getBallPercept().ballWasSeen 
+  if(newPercept.ballWasSeen
     && getBodyState().fall_down_state == BodyState::upright)
   {
 
     //TODO should be also reseted when ball wasnt seen!?
     if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0) // 10s
     {
-      reset();
+      reset(newPercept);
       modelIsValid = false; // model is not valid enymore after 10s
     }
     else if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 500.0)
@@ -127,8 +228,8 @@ void KalmanFilterBallLocator::execute()
       //////////////////////////////////
       Vector2<double> Zx, Zy;
       // observated position
-      Zx.x = getBallPercept().bearingBasedOffsetOnField.x;
-      Zy.x = getBallPercept().bearingBasedOffsetOnField.y;
+      Zx.x = newPercept.bearingBasedOffsetOnField.x;
+      Zy.x = newPercept.bearingBasedOffsetOnField.y;
 
       // observated speed
       // select actual and one random observation, or the one and the last!
@@ -148,7 +249,7 @@ void KalmanFilterBallLocator::execute()
       }
 
       ASSERT(timeDelta > 0);
-      Vector2<double> speed = (getBallPercept().bearingBasedOffsetOnField-pickedSeenBall) / timeDelta;
+      Vector2<double> speed = (newPercept.bearingBasedOffsetOnField-pickedSeenBall) / timeDelta;
 
       // clip speed to max 4m/s
       if(speed.abs() > 2000.0) speed.normalize(2000.0); // ~7kmh
@@ -184,12 +285,12 @@ void KalmanFilterBallLocator::execute()
       modelIsValid = true;
     }//end else
 
-    lastSeenBall = getBallPercept().bearingBasedOffsetOnField;
+    lastSeenBall = newPercept.bearingBasedOffsetOnField;
 
     //insert in buffer
     LocalBallPercept ball;
     ball.lastFrameInfoWhenBallSeen = getFrameInfo();
-    ball.lastSeenBall = getBallPercept().bearingBasedOffsetOnField;
+    ball.lastSeenBall = newPercept.bearingBasedOffsetOnField;
     ballBuffer.add(ball);
 
     lastFrameInfoWhenBallSeen = getFrameInfo();
@@ -248,7 +349,7 @@ void KalmanFilterBallLocator::execute()
     
     if(getBallModel().valid)
     {
-      if(getBallPercept().ballWasSeen)
+      if(newPercept.ballWasSeen)
         PEN("FF9900", 20);
       else
         PEN("0099FF", 20);
@@ -278,7 +379,7 @@ void KalmanFilterBallLocator::execute()
   DEBUG_REQUEST("KalmanFilterBallLocator:hold_ball_prediction_in_10s",
 
     //For easier experiments: just switch on if ball was seen.
-    if (getBallPercept().ballWasSeen) {
+    if (newPercept.ballWasSeen) {
 
       static unsigned int oldFrameNumber = getFrameInfo().getFrameNumber();
       unsigned int newFrameNumber = getFrameInfo().getFrameNumber();
@@ -301,24 +402,17 @@ void KalmanFilterBallLocator::execute()
     }
   );
 
-  DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_on_field",
-    FIELD_DRAWING_CONTEXT;
-    
-    PEN("FF0000", 30);
-    CIRCLE( getBallModel().positionPreview.x, getBallModel().positionPreview.y, getFieldInfo().ballRadius-10);
-  );
-
   //to check correctness of the prediction
-  DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_percept",
+  DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_percept_after_buffering",
 
     PEN("FF0000", 10);
-    CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+    CIRCLE(newPercept.bearingBasedOffsetOnField.x, newPercept.bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
   );
 
 
   lastFrameInfo = getFrameInfo();
   wasReactiveInLastFrame = getSituationStatus().reactiveBallModelNeeded;
-}//end execute
+}//end executeKalman
 
 
 
@@ -374,9 +468,9 @@ void KalmanFilterBallLocator::predictByMotionModel(Vector2<double>& position, Ve
 }//end predictByMotionModel
 
 
-void KalmanFilterBallLocator::reset()
+void KalmanFilterBallLocator::reset(BallPercept newPercept)
 {
-  if(!getBallPercept().ballWasSeen)
+  if(!newPercept.ballWasSeen)
   {
     // Kalman-Position
     Sx.x = 0;
@@ -391,8 +485,8 @@ void KalmanFilterBallLocator::reset()
   }else
   {
     // Kalman-Position
-    Sx.x = getBallPercept().bearingBasedOffsetOnField.x;
-    Sy.x = getBallPercept().bearingBasedOffsetOnField.y;
+    Sx.x = newPercept.bearingBasedOffsetOnField.x;
+    Sy.x = newPercept.bearingBasedOffsetOnField.y;
 
     // Kalman-Speed
     Sx.y = 0;
