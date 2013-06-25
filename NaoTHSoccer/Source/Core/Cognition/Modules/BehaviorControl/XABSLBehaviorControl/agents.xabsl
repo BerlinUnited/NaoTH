@@ -52,6 +52,7 @@ include "Options/Debug/battery.xabsl";
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
+include "Options/Soccer/Strategy/decide_and_go_to_passive_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 include "Options/Soccer/Strategy/play_soccer.xabsl";
@@ -61,6 +62,7 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
+include "Options/Soccer/Strategy/passive_behavior.xabsl";
 
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";

@@ -1,0 +1,110 @@
+option passive_behavior{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if((game.current_mode == playing) && (ball.time_since_last_seen>3000))
+        goto search_first_near_then_far;
+      else if(ball.was_seen)
+        goto look_at_ball;
+      else
+        stay;
+    }
+    action {
+      
+    }
+  }
+
+  state look_at_ball {
+	  decision {
+	    else if (abs(value=atan2(y=ball.preview.y, x=ball.preview.x))>30)
+	      goto turn_to_ball;
+	    else if ((!ball.was_seen)&&(state_time>3000))
+	      goto search_first_near_then_far;
+	    else
+	      stay;
+	  }
+	  action {
+	    head.control_mode = search_for_ball;
+	    motion.type = stand;
+	  }
+	}
+
+  state turn_to_ball {
+    decision { 
+       else if (abs(value=atan2(y=ball.preview.y, x=ball.preview.x))<10)
+          goto look_at_ball;
+       else if ((!ball.was_seen)&&(state_time>3000))
+          goto search_first_near_then_far;
+       else
+          stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.preview.y, x=ball.preview.x);
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state search_first_near_then_far {
+    decision {
+      else if(action_done)
+        goto search_far;
+      else
+        stay;
+    }
+    action {
+      search_ball_back_rot();
+    }
+  }
+
+  state search_far {
+    decision {
+      else if(state_time>4000)
+        goto wait_and_continue_search;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball();
+    }
+  }
+
+
+  state wait_and_continue_search {
+	  decision {
+      else if(state_time>30000)
+        goto search_just_near;
+      else
+        stay;
+	  }
+	  action {
+      motion.type=stand;
+      head.control_mode = search_for_ball;      
+	  }
+	}
+
+  state search_just_near {
+    decision {
+      else if((action_done) && (state_time>30000))
+        goto search_first_near_then_far;
+      else 
+        stay;
+    }
+    action {
+      search_ball_back_rot();
+    }
+  }
+
+  
+  
+
+}
