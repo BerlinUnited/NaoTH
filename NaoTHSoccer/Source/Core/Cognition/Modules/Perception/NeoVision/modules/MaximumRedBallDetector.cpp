@@ -305,7 +305,7 @@ bool MaximumRedBallDetector::findBall () {
 
 	Vector2<double> p1(getArtificialHorizon().begin());
 	Vector2<double> p2(getArtificialHorizon().end());
-	if(start.y <= min(p1.y, p2.y)) 
+	if(start.y <= min(p1.y, p2.y) || !checkIfPixelIsOrange(start)) 
 	{
 		return false;
 	}
@@ -332,21 +332,26 @@ bool MaximumRedBallDetector::findBall () {
 		spiderSearch.scan(start, goodPoints, badPoints);
 		for (int i=0; i<goodPoints.length; i++) {
 			bestPoints.add(goodPoints[i]);
+		}		
+	
+		if (goodPoints.length>0) {
+			start = getCenterOfMass(goodPoints);
+			if(start.y <= min(p1.y, p2.y) || !checkIfPixelIsOrange(start)) 
+			{
+				return false;
+			}
+			goodPoints.clear();
+			badPoints.clear();
+			spiderSearch.scan(start, goodPoints, badPoints);
+			for (int i=0; i<goodPoints.length; i++) {
+				bestPoints.add(goodPoints[i]);
+			}
 		}
-		start = getCenterOfMass(goodPoints);
-	}
-	if (goodPoints.length>0) {
-		goodPoints.clear();
-		badPoints.clear();
-		spiderSearch.scan(start, goodPoints, badPoints);
-		for (int i=0; i<goodPoints.length; i++) {
-			bestPoints.add(goodPoints[i]);
-		}
-	}
 
-	if (bestPoints.length>0) {
-		getBestModel(bestPoints);
-		return true;
+		if (bestPoints.length>0) {
+			getBestModel(bestPoints);
+			return true;
+		}
 	}
 	return false;
 }
@@ -359,7 +364,7 @@ void MaximumRedBallDetector::getBestModel(BallPointList& pointList)
 		  double radius;
 
 		  int idxBest = -1;
-		  int bestCount = 0;
+		  int bestCount = 4;
 		  double bestErr = -1;
 		  Vector2<double> centerBest;
 		  double radiusBest = 0;
@@ -472,28 +477,29 @@ void MaximumRedBallDetector::getBestModel(BallPointList& pointList)
 					double meanErr = 0;
 					for(int jj = 0; jj < pointList.length; jj++)
 					{
-						double err = fabs((center - goodPoints[jj]).abs() - radius);
+						double err = fabs((center - pointList[jj]).abs() - radius);
             
 						if(err <= radiusErrMax)
 						{
 							count++;
 							meanErr += err;
 						}
-						}
-						if(count > bestCount && (meanErr < bestErr || bestErr < 0) )
-						{
-							idxBest =  i;
-							centerBest = center;
-							radiusBest = radius;
-							bestCount = count;
-							bestErr = meanErr;
-						}
+					}
+					meanErr /= pointList.length;
+					if(count >= pointList.length/2 && (count >= bestCount || meanErr < bestErr || bestErr < 0))
+					{
+						idxBest =  i;
+						centerBest = center;
+						radiusBest = radius;
+						bestCount = count;
+						bestErr = meanErr;
+					}
 				//}
 			}
 		  }
 
 		  // calculate the percept
-		  if(idxBest >= 0 && bestCount >= 4 /*&& radiusBest > 4 && radiusBest < 130*/)//pointList.length / 2)
+		  if(idxBest >= 0 && radiusBest > 4 && radiusBest < 130)//pointList.length / 2)
 		  {
 			DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
 			  CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);
@@ -529,5 +535,13 @@ Vector2<int> MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList) 
 	x = x / pointList.length;
 	y = y / pointList.length;
 	return Vector2<int>(x,y);
+}
+
+bool MaximumRedBallDetector::checkIfPixelIsOrange(Vector2<int> coord) {
+	Pixel pixel;
+	getImage().get(coord.x, coord.y, pixel);
+	if (pixel.v > pixel.u + params.maxBlueValue)
+		return true;
+	return false;
 }
 

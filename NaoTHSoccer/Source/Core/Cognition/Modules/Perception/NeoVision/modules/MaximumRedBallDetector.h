@@ -95,6 +95,7 @@ private:
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
   bool findBall ();
   void getBestModel(BallPointList& pointList);
+  bool checkIfPixelIsOrange (Vector2<int> coord);
   
   class Parameters: public ParameterList
   {
@@ -106,7 +107,8 @@ private:
       PARAMETER_REGISTER(meanThreshold) = 60;
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
-      PARAMETER_REGISTER(ransacPercentValid) = 0.05;
+      PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
+	  PARAMETER_REGISTER(maxBlueValue) = 50;
 
       syncWithConfig();
 
@@ -123,6 +125,7 @@ private:
     int stepSize;
     double percentOfRadius;
     double ransacPercentValid;
+	int maxBlueValue;
   };
 
   Parameters params;
