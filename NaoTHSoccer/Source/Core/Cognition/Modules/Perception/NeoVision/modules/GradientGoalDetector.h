@@ -95,6 +95,9 @@ private:
       PARAMETER_REGISTER(gradientThreshold) = 60;
       PARAMETER_REGISTER(minY) = 140;
       PARAMETER_REGISTER(dist) = 5;
+      PARAMETER_REGISTER(responseHoldFactor) = 0.8;
+      PARAMETER_REGISTER(minGoodPoints) = 4;
+      PARAMETER_REGISTER(minScanPointsAfterGoodPoints) = 15;
 
       syncWithConfig();
 
@@ -109,6 +112,9 @@ private:
     int gradientThreshold;
     int minY;
     int dist;
+    double responseHoldFactor;
+    int minGoodPoints;
+    int minScanPointsAfterGoodPoints;
   };
 
   Parameters params;
