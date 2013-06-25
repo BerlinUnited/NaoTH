@@ -18,7 +18,8 @@
 // tools
 #include "Tools/LinearClassifier.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
-
+#include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(FootGroundContactDetector)
   PROVIDE(FSRData)
@@ -38,6 +39,33 @@ private:
 
   RingBufferWithSum<double, 100> leftFSRBuffer;
   RingBufferWithSum<double, 100> rightFSRBuffer;
+
+  class Parameters: public ParameterList
+  {
+  public:
+
+    Parameters() : ParameterList("FootGroundContactParameters")
+    {
+      PARAMETER_REGISTER(left) = 3;
+      PARAMETER_REGISTER(right) = 3;
+      PARAMETER_REGISTER(invalid) = 100;
+
+      syncWithConfig();
+
+      DebugParameterList::getInstance().add(this);
+    }
+
+    ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    int left;
+    int right;
+    int invalid;
+  };
+
+  Parameters footParams;
 
 };
 
