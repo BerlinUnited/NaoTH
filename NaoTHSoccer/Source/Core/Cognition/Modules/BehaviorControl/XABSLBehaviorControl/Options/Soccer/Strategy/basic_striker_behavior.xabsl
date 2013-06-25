@@ -4,22 +4,32 @@ option basic_striker_behavior{
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
-    else if((ball.time_since_last_seen>1000)&&(vector.abs(y=ball.preview.y,x=ball.preview.x)<250))
-      goto search_ball_close;
-    else if((ball.time_since_last_seen>1000)&&(vector.abs(y=ball.preview.y,x=ball.preview.x)>250))
-      goto search_ball_far;
   }
   
   initial state idle {
     decision {
-      else if(game.current_mode == playing)
-        goto search_ball_close;
+      else if((game.current_mode == playing) && (ball.time_since_last_seen>1000))
+        goto decide_search_far_or_close;
+      else if(ball.was_seen)
+        goto go_to_ball;
       else
         stay;
     }
     action {
       
     }
+  }
+
+  state decide_search_far_or_close{
+    decision{
+      else if(vector.abs(y=ball.preview.y,x=ball.preview.x)<250)
+        goto search_ball_close;
+      else 
+        goto search_ball_far;
+    }
+    action{
+    }
+  
   }
   
   state search_ball_close {
@@ -48,6 +58,8 @@ option basic_striker_behavior{
 
   state go_to_ball {
     decision {
+      else if (ball.time_since_last_seen>1000)
+        goto decide_search_far_or_close;
       else if(action_done)
         goto decide_turning_direction;
       else
@@ -60,6 +72,8 @@ option basic_striker_behavior{
 
   state decide_turning_direction {
     decision{
+      else if (ball.time_since_last_seen>1000)
+        goto decide_search_far_or_close;
       else if(abs(value=attack.direction.preview)<10)
         goto attack;
       else if(attack.direction.preview>0)
@@ -74,6 +88,8 @@ option basic_striker_behavior{
 
   state turn_right_around {
     decision {
+      else if (ball.time_since_last_seen>1000)
+        goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>150)
         goto go_to_ball;
       else if(abs(value=attack.direction.preview)<10)
@@ -88,6 +104,8 @@ option basic_striker_behavior{
 
   state turn_left_around {
     decision {
+      else if (ball.time_since_last_seen>1000)
+        goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>150)
         goto go_to_ball;
       else if(abs(value=attack.direction.preview)<10)
@@ -103,6 +121,8 @@ option basic_striker_behavior{
 
   state attack {
     decision {
+      else if (ball.time_since_last_seen>1000)
+        goto decide_search_far_or_close;
       else if(action_done)
         goto go_to_ball;
       else
