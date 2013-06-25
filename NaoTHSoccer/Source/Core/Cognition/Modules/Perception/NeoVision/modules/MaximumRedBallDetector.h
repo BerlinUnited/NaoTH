@@ -86,7 +86,7 @@ private:
 
   BallPointList bestPoints;
 
-  BallPointList possibleModells[10];
+  BallPointList possibleModells[60];
 
   void findMaximumRedPoint(Vector2<int>& peakPos);
   Vector2d estimatePositionBySize();
@@ -98,10 +98,10 @@ private:
 
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
-      PARAMETER_REGISTER(gradientThreshold) = 30;
+      PARAMETER_REGISTER(gradientThreshold) = 20;
       PARAMETER_REGISTER(meanThreshold) = 30;
       PARAMETER_REGISTER(stepSize) = 4;
-      PARAMETER_REGISTER(percentOfRadius) = 0.5;
+      PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;
 
       syncWithConfig();

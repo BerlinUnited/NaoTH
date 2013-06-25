@@ -31,30 +31,41 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:execute", " ", true);
   theHistogramFieldDetector = registerModule<HistogramFieldDetector>("HistogramFieldDetector");
   theHistogramFieldDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BodyContourProvider:execute", " ", true);
   theBodyContourProvider = registerModule<BodyContourProvider>("BodyContourProvider");
   theBodyContourProvider->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:execute", " ", false);
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
   theScanLineEdgelDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:execute", " ", true);
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:execute", " ", false);
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:execute", " ", false);
   theRobotDetector = registerModule<RobotDetector>("RobotDetector");
   theRobotDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:execute", " ", true);
   theLineDetector = registerModule<LineDetector>("LineDetector");
   theLineDetector->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineClusterProvider:execute", " ", false);
   theLineClusterProvider = registerModule<LineClusterProvider>("LineClusterProvider");
   theLineClusterProvider->setEnabled(true);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:execute", " ", false);
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
 
@@ -67,53 +78,70 @@ void ImageProcessor::execute()
   //todo: for consistency reasonst this should be done within the detectors
   getPlayersPercept().reset();
 
-  GT_TRACE("executing HistogramFieldDetector");
-  STOPWATCH_START("HistogramFieldDetector");
-  theHistogramFieldDetector->execute();
-  theHistogramFieldDetector->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("HistogramFieldDetector");
+  DEBUG_REQUEST("ImageProcessor:HistogramFieldDetector:execute",
+    GT_TRACE("executing HistogramFieldDetector");
+    STOPWATCH_START("HistogramFieldDetector");
+    theHistogramFieldDetector->execute();
+    theHistogramFieldDetector->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("HistogramFieldDetector");
+  );
 
-  GT_TRACE("executing BodyContourProvider");
-  STOPWATCH_START("BodyContourProvider");
-  theBodyContourProvider->execute();
-  theBodyContourProvider->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("BodyContourProvider");
+  DEBUG_REQUEST("ImageProcessor:BodyContourProvider:execute",
+    GT_TRACE("executing BodyContourProvider");
+    STOPWATCH_START("BodyContourProvider");
+    theBodyContourProvider->execute();
+    theBodyContourProvider->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("BodyContourProvider");
+  );
 
-  GT_TRACE("executing RobotDetector");
-  STOPWATCH_START("RobotDetector");
-  theRobotDetector->execute();
-  STOPWATCH_STOP("RobotDetector");
+  DEBUG_REQUEST("ImageProcessor:RobotDetector:execute",
+    GT_TRACE("executing RobotDetector");
+    STOPWATCH_START("RobotDetector");
+    theRobotDetector->execute();
+    STOPWATCH_STOP("RobotDetector");
+  );
 
-  GT_TRACE("executing GoalDetector");
-  STOPWATCH_START("GoalDetector");
-  theGoalDetector->execute();
-  STOPWATCH_STOP("GoalDetector");
+  DEBUG_REQUEST("ImageProcessor:GoalDetector:execute",
+    GT_TRACE("executing GoalDetector");
+    STOPWATCH_START("GoalDetector");
+    theGoalDetector->execute();
+    STOPWATCH_STOP("GoalDetector");
+  );
 
-  GT_TRACE("executing ScanLineEdgelDetector");
-  STOPWATCH_START("ScanLineEdgelDetector");
-  //theScanLineEdgelDetector->execute();
-  //theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("ScanLineEdgelDetector");
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:execute",
+    GT_TRACE("executing ScanLineEdgelDetector");
+    STOPWATCH_START("ScanLineEdgelDetector");
+    theScanLineEdgelDetector->execute();
+    theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("ScanLineEdgelDetector");
+  );
 
-  GT_TRACE("executing FieldDetector");
-  STOPWATCH_START("FieldDetector");
-  theFieldDetector->execute();
-  theFieldDetector->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("FieldDetector");
+  DEBUG_REQUEST("ImageProcessor:FieldDetector:execute",
+    GT_TRACE("executing FieldDetector");
+    STOPWATCH_START("FieldDetector");
+    theFieldDetector->execute();
+    theFieldDetector->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("FieldDetector");
+  );
 
-  GT_TRACE("executing BallDetector");
-  STOPWATCH_START("BallDetector");
-  theBallDetector->execute();
-  theBallDetector->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("BallDetector");
+  DEBUG_REQUEST("ImageProcessor:BallDetector:execute",
+    GT_TRACE("executing BallDetector");
+    STOPWATCH_START("BallDetector");
+    theBallDetector->execute();
+    theBallDetector->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("BallDetector");
+  );
 
-  GT_TRACE("executing LineDetector");
-  STOPWATCH_START("LineDetector");
-  theLineDetector->execute();
-  theLineDetector->getModuleT()->execute(CameraInfo::Top);
-  STOPWATCH_STOP("LineDetector");
+  DEBUG_REQUEST("ImageProcessor:LineDetector:execute",
+    GT_TRACE("executing LineDetector");
+    STOPWATCH_START("LineDetector");
+    theLineDetector->execute();
+    theLineDetector->getModuleT()->execute(CameraInfo::Top);
+    STOPWATCH_STOP("LineDetector");
+  );
 
   GT_TRACE("executing rest of ImageProcessor::execute()");
+
 
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)

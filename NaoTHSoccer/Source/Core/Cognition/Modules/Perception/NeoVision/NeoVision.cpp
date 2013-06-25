@@ -19,15 +19,15 @@ NeoVision::NeoVision()
   theSimpleFieldColorClassifier = registerModule<SimpleFieldColorClassifier>("SimpleFieldColorClassifier");
   theSimpleFieldColorClassifier->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:execute", " ", true);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:execute", " ", false);
   theSimpleGoalColorClassifier = registerModule<SimpleGoalColorClassifier>("SimpleGoalColorClassifier");
   theSimpleGoalColorClassifier->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:execute", " ", true);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:execute", " ", false);
   theSimpleBallColorClassifier = registerModule<SimpleBallColorClassifier>("SimpleBallColorClassifier");
   theSimpleBallColorClassifier->setEnabled(true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", true);
   theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
   theScanLineEdgelDetectorDifferential->setEnabled(true);
 
