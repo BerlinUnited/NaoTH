@@ -34,6 +34,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
+  Pixel pixel;
 
   getBallPercept().reset();
 
@@ -46,19 +47,21 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   {
     return;
   }
-
   goodPoints.clear();
   badPoints.clear();
   bestPoints.clear();
-
-  if(!getBodyContour().isOccupied(start))
+  getImage().get(start.x, start.y, pixel);
+  double dynamicThresholdY = getBaseColorRegionPercept().maxEnv.y + 
+						(255 - getBaseColorRegionPercept().maxEnv.y) * 0.5 - getBaseColorRegionPercept().spanWidthEnv.y / 100;
+  bool isBright = pixel.y > dynamicThresholdY;
+  if(!getBodyContour().isOccupied(start) && !isBright)
   {
     GradientSpiderScan spiderSearch(getImage(), cameraID);
     spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
+    spiderSearch.setDynamicThresholdY(dynamicThresholdY);
     spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
     spiderSearch.setMaxBeamLength(50);
-
-    DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
+	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
       spiderSearch.setDrawScanLines(true);
     );
   
@@ -167,6 +170,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 		possibleModells[i].add(goodPoints[thirdPoint]);
 		double meanDist = (goodPoints[firstPoint] - start).abs() + (goodPoints[secondPoint] - start).abs() + (goodPoints[thirdPoint] - start).abs();		
 		meanDist /= possibleModells[i].length;
+
 		if(calculateCircle(possibleModells[i], center, radius))
 		{
 			if(meanDist < radius * params.percentOfRadius)
@@ -204,7 +208,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
       }
 
       // calculate the percept
-      if(idxBest >= 0 && bestCount >= 4 )//goodPoints.length / 2)
+      if(idxBest >= 0 && bestCount >= 4 && radiusBest > 4 && radiusBest < 130)//goodPoints.length / 2)
       {
         DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
           CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);

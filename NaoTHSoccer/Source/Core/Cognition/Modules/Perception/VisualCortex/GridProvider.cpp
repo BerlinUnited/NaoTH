@@ -13,14 +13,14 @@
 
 GridProvider::GridProvider()
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:show_grid", "show the image processing grid", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:show_grid", "show the image processing grid", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:show_grid", "show the image processing grid", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:show_grid", "show the image processing grid", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:TopCam:show_classified_image", "draw the image represented by uniformGrid", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BottomCam:show_classified_image", "draw the image represented by uniformGrid", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:show_classified_image", "draw the image represented by uniformGrid", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:show_classified_image", "draw the image represented by uniformGrid", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:TopCam:enable_debug", "Enables the debug output for the histogram", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:BottomCam:enable_debug", "Enables the debug output for the histogram", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:CamTop:enable_debug", "Enables the debug output for the histogram", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:CamBottom:enable_debug", "Enables the debug output for the histogram", false);
 }
 
 
@@ -30,14 +30,14 @@ void GridProvider::execute()
   calculateColoredGrid();
 
   // make some debug
-  DEBUG_REQUEST("ImageProcessor:Histogram:TopCam:enable_debug",
+  DEBUG_REQUEST("ImageProcessor:Histogram:CamTop:enable_debug",
     getHistogramsTop().showDebugInfos(getColoredGridTop().uniformGrid, getImageTop().cameraInfo);
   );
-  DEBUG_REQUEST("ImageProcessor:Histogram:BottomCam:enable_debug",
+  DEBUG_REQUEST("ImageProcessor:Histogram:CamBottom:enable_debug",
     getHistograms().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
   );
 
-  DEBUG_REQUEST("ImageProcessor:TopCam:show_classified_image",
+  DEBUG_REQUEST("ImageProcessor:CamTop:show_classified_image",
     for(unsigned int x=0; x<getColoredGridTop().uniformGrid.width; x++)
     {
       for(unsigned int y=0; y<getColoredGridTop().uniformGrid.height; y++)
@@ -46,7 +46,7 @@ void GridProvider::execute()
       } 
     }
   );//end DEBUG
-  DEBUG_REQUEST("ImageProcessor:BottomCam:show_classified_image",
+  DEBUG_REQUEST("ImageProcessor:CamBottom:show_classified_image",
     for(unsigned int x=0; x<getColoredGrid().uniformGrid.width; x++)
     {
       for(unsigned int y=0; y<getColoredGrid().uniformGrid.height; y++)
@@ -134,14 +134,14 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
   STOPWATCH_STOP("Histogram+ColoredGrid");
 
-  DEBUG_REQUEST("ImageProcessor:TopCam:show_grid",
+  DEBUG_REQUEST("ImageProcessor:CamTop:show_grid",
     for(unsigned int i = 0; i < getColoredGridTop().uniformGrid.numberOfGridPoints; i++)
     {
       Vector2<int> point = getColoredGridTop().uniformGrid.getPoint(i);
       TOP_POINT_PX(getColoredGridTop().pointsColors[i], point.x, point.y);
     }//end for
   );
-  DEBUG_REQUEST("ImageProcessor:BottomCam:show_grid",
+  DEBUG_REQUEST("ImageProcessor:CamBottom:show_grid",
     for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
     {
       Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);

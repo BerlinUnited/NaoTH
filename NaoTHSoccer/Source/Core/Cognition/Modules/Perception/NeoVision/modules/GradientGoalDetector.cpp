@@ -203,7 +203,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
 
     BresenhamLineScan footPointScanner(candidate.center, dir, getImage().cameraInfo);
 
-    int goodPointsCount = 0;
+    int goodPointsCount = 1;
 
     Vector2<int> pos = candidate.center;
     valueBuffer.init();
@@ -264,7 +264,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
       
       bool footPointFound = false;
       bool stop = false;
-      int c = 0;
       Pixel pixel1;
       Pixel pixel2;
       Pixel pixel3;
@@ -345,7 +344,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
             }
           }
         }
-        c++;
       }
       if(footPointFound)
       {

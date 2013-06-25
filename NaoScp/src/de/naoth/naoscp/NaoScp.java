@@ -873,12 +873,14 @@ public class NaoScp extends NaoScpMainFrame
       {
         libRT.delete();
       }
-
-      String mySetupPath = mySetupScriptPath + "/etc";
-      File mySetupDir = new File(mySetupPath);
-      mySetupDir.mkdirs();
-
-      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDir);
+      File mySetupDirEtc = new File(mySetupScriptPath + "/etc");
+      mySetupDirEtc.mkdirs();
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDirEtc);
+      
+      File mySetupDirBin = new File(mySetupScriptPath + "/usr/bin");
+      mySetupDirBin.mkdirs();
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/bin"), mySetupDirBin);
+      
       
       setConfdNet(cfg, sNaoByte);
       setHostname(cfg, sNaoByte);
@@ -1698,11 +1700,15 @@ public class NaoScp extends NaoScpMainFrame
     config.sshPassword = this.sshPassword.getText();
     config.sshRootPassword = this.sshRootPassword.getText();
     config.progressBar = this.progressBar;
+    config.comment = jCommentTextArea.getText();
+    config.scheme = jSchemeBox.getSelectedItem().toString();
   }
   
   private void initializeRobot()
   {
     updateConfig();
+    
+    config.comment = "Initialized Robot on " + new Date().toString();
     
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);
