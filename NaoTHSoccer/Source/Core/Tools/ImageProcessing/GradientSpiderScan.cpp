@@ -40,7 +40,6 @@ void GradientSpiderScan::setDynamicThresholdY(double threshold)
   useDynamicThresholdY = true;
 }
 
-
 void GradientSpiderScan::setImageColorChannelNumber(int channelNumber)
 {
   imageChannelNumber = channelNumber;
@@ -190,7 +189,6 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
         isBorder = true;
       }
     } else { // look for a jump
-
     if(!isBright && useDynamicThresholdY && pixel.y > dynamicThresholdY)
     {
 		  isBright = true;
@@ -207,6 +205,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
       isBright = false;
     }
 
+//      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
 		jumpFound = newJump > currentGradientThreshold  || 
                   meanJump > currentMeanThreshold;
       
