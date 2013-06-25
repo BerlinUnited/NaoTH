@@ -103,7 +103,7 @@ private:
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
       PARAMETER_REGISTER(gradientThreshold) = 20;
-      PARAMETER_REGISTER(meanThreshold) = 30;
+      PARAMETER_REGISTER(meanThreshold) = 60;
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;
@@ -208,6 +208,18 @@ private:
     else
     {
       return MaximumRedBallDetectorBase::getBodyContour();
+    }
+  };
+
+  const BaseColorRegionPercept& getBaseColorRegionPercept() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return MaximumRedBallDetectorBase::getBaseColorRegionPerceptTop();
+    }
+    else
+    {
+      return MaximumRedBallDetectorBase::getBaseColorRegionPercept();
     }
   };
   
