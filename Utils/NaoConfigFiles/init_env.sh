@@ -59,18 +59,18 @@ else
 fi
 
 # brainwashinit
-if [ -f ./brainwashinit ]
+if [ -f ./usr/bin/brainwash ]
 then
-    echo "adding start script brainwashinit";
-    cp -f ./brainwashinit /usr/bin/brainwashinit;
-    chown root:root /usr/bin/brainwashinit;
-    chmod 755 /usr/bin/brainwashinit;
+    echo "adding start script brainwash";
+    cp -f ./usr/bin/brainwash /usr/bin/brainwash;
+    chown root:root /usr/bin/brainwash;
+    chmod 755 /usr/bin/brainwash;
 else
-    echo "brainwashinit script is missing";
+    echo "brainwash script is missing";
 fi
 
 # brainwash udev rule
-if [ -f ./etc/udev/rules.d/brainwashing.rules]
+if [ -f ./etc/udev/rules.d/brainwashing.rules ]
 then
     echo "setting udev brainwashing.rules";
     cp -f ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules;
