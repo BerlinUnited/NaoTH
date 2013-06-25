@@ -198,7 +198,8 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
       brightPointFound = true;
       if(drawScanLines)
       {
-		    POINT_PX(ColorClasses::black, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y));
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-1), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+1), (unsigned int)(brightBeginPoint.y));
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-1), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+1));
       }
     }
     else if(isBright && useDynamicThresholdY && pixel.y < dynamicThresholdY)
