@@ -1698,11 +1698,15 @@ public class NaoScp extends NaoScpMainFrame
     config.sshPassword = this.sshPassword.getText();
     config.sshRootPassword = this.sshRootPassword.getText();
     config.progressBar = this.progressBar;
+    config.comment = jCommentTextArea.getText();
+    config.scheme = jSchemeBox.getSelectedItem().toString();
   }
   
   private void initializeRobot()
   {
     updateConfig();
+    
+    config.comment = "Initialized Robot on " + new Date().toString();
     
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);

@@ -180,7 +180,7 @@ public class DeployUtils
    */
   public static void writeScheme(NaoScp parent, String scheme, File schemeCfg)
   {
-    if(!"n/a".equals(scheme))
+    if(scheme != null && !scheme.isEmpty() && !"n/a".equals(scheme))
     {
       try
       {
