@@ -13,6 +13,8 @@ option head_control
       goto search_for_ball;
     else if (head.control_mode == look_around)
       goto look_around;
+    else if (head.control_mode == search_for_goal)
+      goto search_for_goal;
   }
 
   initial state none
@@ -57,6 +59,15 @@ option head_control
     {
       look_around();
       head.camera.id = Bottom;
+    }
+  }
+
+  state search_for_goal
+  {
+    action
+    {
+      search_for_goal(own=true,opp=true);
+      head.camera.id = Top;
     }
   }
 

@@ -20,6 +20,7 @@ include "Symbols/selfloc_symbols.xabsl";
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
+include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 
 // Arm Control
@@ -61,6 +62,7 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
+include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_behavior.xabsl";
 
@@ -144,6 +146,8 @@ agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
 agent basic_striker("basic_striker", basic_striker_agent);
+
+agent passive_player("passive_player", passive_player_agent);
 
 /** The Test agents */
 // Test agents Kicks

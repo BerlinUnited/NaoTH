@@ -14,7 +14,6 @@ option search_for_goal
         stay;
     }
     action {
-      head.camera.id = bottom;
       head.motion_type = look_straight_ahead;
     }
   }
@@ -30,7 +29,6 @@ option search_for_goal
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
       head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
@@ -50,7 +48,6 @@ option search_for_goal
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = search;
       head.search.center.x = 1000;
       head.search.center.y = 0;
@@ -72,8 +69,7 @@ option search_for_goal
         goto search_for_goal;
     }
     action
-    {
-      head.camera.id = bottom;      
+    {     
       head.motion_type = look_at_world_point;      
       head.point_in_world.x = goal.centroid.x;//goal.opp.x;      
       head.point_in_world.y = goal.centroid.y;//goal.opp.y;      
@@ -94,7 +90,6 @@ option search_for_goal
     }
     action
     {
-      head.camera.id = bottom;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = goal.centroid.x;
       head.point_in_world.y = goal.centroid.y;
