@@ -99,9 +99,9 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
         }
         meanDist /= possibleModells[i].length;
 
-        if(calculateCircle(goodPoints, center, radius))
+        if(calculateCircle(possibleModells[i], center, radius))
         {
-          if(meanDist < radius * 0.5)
+          if(meanDist < radius * params.percentOfRadius)
           {
             DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_outtakes",
               CIRCLE_PX(ColorClasses::red, (int) center.x, (int) center.y, (int) radius);
@@ -112,7 +112,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
           DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
             CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
           );
-          double radiusErrMax =  0.05 * radius;
+          double radiusErrMax =  params.ransacPercentValid * radius;
           int count = 0;
           double meanErr = 0;
           for(int jj = 0; jj < goodPoints.length; jj++)
