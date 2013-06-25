@@ -297,7 +297,8 @@ bool MaximumRedBallDetector::calculateCircle( const BallPointList& ballPoints, V
 }//end calculateCircle
 
 
-bool MaximumRedBallDetector::findBall () {
+bool MaximumRedBallDetector::findBall () 
+{
 	Vector2<int> start;
 	findMaximumRedPoint(start);
 
@@ -462,17 +463,9 @@ bool MaximumRedBallDetector::getBestModel(BallPointList& pointList)
 			possibleModells[i].add(pointList[firstPoint]);
 			possibleModells[i].add(pointList[secondPoint]);
 			possibleModells[i].add(pointList[thirdPoint]);
-			/*double meanDist = (pointList[firstPoint] - start).abs() + (pointList[secondPoint] - start).abs() + (pointList[thirdPoint] - start).abs();		
-			meanDist /= possibleModells[i].length;*/
 
 			if(calculateCircle(possibleModells[i], center, radius))
 			{
-			/*	if(meanDist < radius * params.percentOfRadius)
-				{
-					DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_outtakes",
-						CIRCLE_PX(ColorClasses::red, (int) center.x, (int) center.y, (int) radius);
-					);			
-				} else {*/
 				DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
 					CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
 				);
