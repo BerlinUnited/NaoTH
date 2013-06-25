@@ -44,7 +44,7 @@
   }\
 }
 #else
-#define ASSERT(cond) assert(cond)
+#define ASSERT(cond) if(!(cond)) {Trace::getInstance().dump(); assert(false);}
 #endif
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.

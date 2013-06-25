@@ -155,6 +155,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
   bool isBright = false;
   Vector2<int> brightBeginPoint;
   bool brightPointFound = false;
+  bool brightRegionEndFound = false;
 
   //expand in the selected direction
   for(unsigned int j = 1; j < max_length_of_beam  && !borderPointFound; j++)
@@ -176,7 +177,7 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 					);*/
 
     int newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
-	int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
+	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
     int meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
 
     bool isBorder = false;
@@ -196,12 +197,13 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
       brightPointFound = true;
       if(drawScanLines)
       {
-		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-1), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+1), (unsigned int)(brightBeginPoint.y));
-		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-1), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+1));
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-4), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+4), (unsigned int)(brightBeginPoint.y));
+		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-4), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+4));
       }
     }
     else if(isBright && useDynamicThresholdY && pixel.y < dynamicThresholdY)
     {
+      brightRegionEndFound = true;
       isBright = false;
     }
 
@@ -225,31 +227,39 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 
     if(drawScanLines)
     {
-      if(!isBorder) {
-       // POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-		  POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
-      } else {
-       // POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
-		  POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+      if(!isBorder) 
+      {
+        // POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+		    POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+      } 
+      else 
+      {
+        //POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+    	  LINE_PX(ColorClasses::green, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
     lastPixel = pixel;
     currentPoint += direction;
   }//end for
 
-  if(!borderPointFound && brightPointFound)
+  // no valid border point fount, but a ver y bright one (maybe line)
+  // or a valid
+  if( (!borderPointFound  && brightPointFound) || (borderPointFound && brightPointFound && !brightRegionEndFound))
   {
     borderPoint = brightBeginPoint;
     borderPointFound = true;
+    LINE_PX(ColorClasses::skyblue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
   }
   if(borderPointFound) //if a point was found ...
   {
     //that point was followed by a border pixel, does not lie at the images border or is the result of a scan along that border ...
-    //if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2)) {
+    if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2)) {
       goodPoints.add(borderPoint); //it's good point
-    //} else {
-    //  badPoints.add(borderPoint);  //otherwise it's a bad one
-    //}
+		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x-4), (unsigned int)(borderPoint.y), (unsigned int)(borderPoint.x+4), (unsigned int)(borderPoint.y));
+		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y-4), (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y+4));
+    } else {
+      badPoints.add(borderPoint);  //otherwise it's a bad one
+    }
   }//end if
 
   return borderPointFound; //return if a borderpoint was found

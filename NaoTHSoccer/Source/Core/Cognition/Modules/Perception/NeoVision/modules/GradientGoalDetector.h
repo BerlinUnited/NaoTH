@@ -71,13 +71,16 @@ public:
   ~GradientGoalDetector(){};
 
   // override the Module execute method
-  virtual void execute(CameraInfo::CameraID id);
+  virtual void execute(CameraInfo::CameraID id, bool horizon = true);
 
   void execute()
   {
-     execute(CameraInfo::Top);
-     execute(CameraInfo::Bottom);
-  };
+    execute(CameraInfo::Top);
+    if( getGoalPercept().getNumberOfSeenPosts() == 0) {
+      execute(CameraInfo::Top, false);
+    }
+    execute(CameraInfo::Bottom);
+  }
  
 private:
   CameraInfo::CameraID cameraID;
