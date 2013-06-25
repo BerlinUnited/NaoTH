@@ -80,9 +80,8 @@ namespace naoth
     CameraID cameraID;
 
     // for calibration
-    //double cameraRollOffset;
-    //double cameraTiltOffset;
     Vector2d correctionOffset[numOfCamera];
+    Vector2d headJointOffset[numOfCamera];
     
       // offset to the neck joint
     Pose3D transformation[numOfCamera];

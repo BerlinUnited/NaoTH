@@ -31,6 +31,7 @@ V4lCameraHandler::V4lCameraHandler()
 //  selMethodIO(IO_USERPTR),
 //  selMethodIO(IO_READ),
   n_buffers(0),
+  atLeastOneImageRetrieved(false),
   wasQueried(false),
   isCapturing(false)
 {
@@ -40,9 +41,18 @@ V4lCameraHandler::V4lCameraHandler()
     allowedTolerance[i] = -1;
   }
 
-  allowedTolerance[CameraSettings::Brightness] = 5;
-  allowedTolerance[CameraSettings::WhiteBalance] = 1;
+//  allowedTolerance[CameraSettings::Brightness] = 5;
+//  allowedTolerance[CameraSettings::WhiteBalance] = 1;
 
+  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+  {
+    waitTime[i] = -1;
+  }
+
+  waitTime[CameraSettings::AutoWhiteBalancing] = 3000000;
+
+  settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
   settingsOrder.push_back(CameraSettings::Brightness);
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
@@ -50,13 +60,15 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::VerticalFlip);
   settingsOrder.push_back(CameraSettings::HorizontalFlip);
   settingsOrder.push_back(CameraSettings::Sharpness);
-  settingsOrder.push_back(CameraSettings::AutoExposition);
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
   settingsOrder.push_back(CameraSettings::Gain);
-  settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
+  settingsOrder.push_back(CameraSettings::Exposure);
+  // HACK: somehow this helps but we have to find out why
+  settingsOrder.push_back(CameraSettings::Exposure);
+  settingsOrder.push_back(CameraSettings::Exposure);
+  settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Exposure);
 
   // set our IDs
@@ -81,7 +93,12 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID,
   initDevice();
 
 //  setFlipParameters(camID == CameraInfo::Top);
-  internalUpdateCameraSettings();
+//  internalUpdateCameraSettings();
+
+  for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+  {
+    currentSettings.data[i] = -1;
+  }
 
   // start capturing
   startCapturing();
@@ -473,6 +490,7 @@ void V4lCameraHandler::startCapturing()
     wasQueried = false;
     bufferSwitched = true;
     lastBuf = currentBuf;
+    atLeastOneImageRetrieved = false;
   }
 }
 
@@ -670,7 +688,7 @@ void V4lCameraHandler::get(Image& theImage)
 
     if (resultCode < 0)
     {
-      std::cerr << "[V4L get] Could not get image, error code " << resultCode
+      std::cerr << "[V4L get!!!] Could not get image, error code " << resultCode
                 << "/" << errno << " (" << strerror(errno) << ")" << std::endl;
     }
     else
@@ -698,6 +716,8 @@ void V4lCameraHandler::get(Image& theImage)
           (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
                             ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
                           NaoTime::startingTimeInMilliSeconds);
+
+        atLeastOneImageRetrieved = true;
       }
     }
   }
@@ -882,13 +902,20 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
+  if(!atLeastOneImageRetrieved)
+  {
+    // do nothing if no image was retrieved yet
+    std::cerr << "CAN NOT SET PARAMETER YET" << std::endl;
+    return;
+  }
+
   for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
       it != settingsOrder.end(); it++)
   {
     if(csConst[*it] != -1)
     {
       // only set if it was changed
-      if(data.data[*it] != currentSettings.data[*it] || csConst[*it] == V4L2_CID_EXPOSURE )
+      if(data.data[*it] != currentSettings.data[*it])
       {
         bool success = false;
         int realValue = data.data[*it];
@@ -905,6 +932,11 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           if(clippedValue != data.data[*it])
           {
             std::cout << "(clipped " << clippedValue << ")";
+          }
+
+          if(waitTime[*it] > 0)
+          {
+            usleep(waitTime[*it]);
           }
 
           if(allowedTolerance[*it] == -1)

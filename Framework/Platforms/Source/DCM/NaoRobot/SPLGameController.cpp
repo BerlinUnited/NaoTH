@@ -281,9 +281,11 @@ void SPLGameController::socketLoop()
       }
       g_mutex_unlock(dataMutex);
 
-      g_mutex_lock(returnDataMutex);
-      sendData(dataOut);
-      g_mutex_unlock(returnDataMutex);
+      // TODO: check how we can reliable send back game controller messages
+      // in XX.XX.255.255 broadcasts
+//      g_mutex_lock(returnDataMutex);
+//      sendData(dataOut);
+//      g_mutex_unlock(returnDataMutex);
     }
   }
 }
