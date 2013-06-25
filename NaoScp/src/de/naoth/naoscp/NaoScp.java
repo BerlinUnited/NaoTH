@@ -873,12 +873,14 @@ public class NaoScp extends NaoScpMainFrame
       {
         libRT.delete();
       }
-
-      String mySetupPath = mySetupScriptPath + "/etc";
-      File mySetupDir = new File(mySetupPath);
-      mySetupDir.mkdirs();
-
-      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDir);
+      File mySetupDirEtc = new File(mySetupScriptPath + "/etc");
+      mySetupDirEtc.mkdirs();
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDirEtc);
+      
+      File mySetupDirBin = new File(mySetupScriptPath + "/usr/bin");
+      mySetupDirBin.mkdirs();
+      DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/bin"), mySetupDirBin);
+      
       
       setConfdNet(cfg, sNaoByte);
       setHostname(cfg, sNaoByte);
