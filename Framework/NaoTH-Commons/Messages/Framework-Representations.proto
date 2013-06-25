@@ -46,6 +46,9 @@ message CameraInfo {
 
   // the array index is the camera id
   repeated DoubleVector2 correctionOffset = 18;
+
+  // the array index is the camera id
+  repeated DoubleVector2 headJointOffset = 19;
   
   // the array index is the camera id
   repeated Pose3D transformation = 14;

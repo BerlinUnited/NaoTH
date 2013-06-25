@@ -65,6 +65,8 @@ void CameraInfo::print(ostream& stream) const
   stream << "Camera selection: " << cameraID << endl
          << "Roll Offset (x): "<< correctionOffset[cameraID].x << " rad" << endl
          << "Tilt Offset: (y)"<< correctionOffset[cameraID].y << " rad" <<  endl
+         << "Head Joint Roll Offset (x): "<< headJointOffset[cameraID].x << " rad" << endl
+         << "Head Joint Tilt Offset: (y)"<< headJointOffset[cameraID].y << " rad" <<  endl
          << "Transformation: " << "x=" << transformation[cameraID].translation.x << ", "
             << " y=" <<transformation[cameraID].translation.y << ", "
             << " z=" <<transformation[cameraID].translation.z << ", "
@@ -91,6 +93,11 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(correctionOffset[Top].y) = 0;
   PARAMETER_REGISTER(correctionOffset[Bottom].x) = 0;
   PARAMETER_REGISTER(correctionOffset[Bottom].y) = 0;
+
+  PARAMETER_REGISTER(headJointOffset[Top].x) = 0;
+  PARAMETER_REGISTER(headJointOffset[Top].y) = 0;
+  PARAMETER_REGISTER(headJointOffset[Bottom].x) = 0;
+  PARAMETER_REGISTER(headJointOffset[Bottom].y) = 0;
 
   //size of an Pixel on the chip
   PARAMETER_REGISTER(pixelSize) = 0.0036;
@@ -156,6 +163,8 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   {
     naoth::DataConversion::toMessage(representation.transformation[camID], *msg.add_transformation());
     naoth::DataConversion::toMessage(representation.correctionOffset[camID], *msg.add_correctionoffset());
+
+    naoth::DataConversion::toMessage(representation.headJointOffset[camID], *msg.add_headjointoffset());
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -183,6 +192,8 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
     {
       naoth::DataConversion::fromMessage(msg.transformation(camID), r.transformation[camID]);
       naoth::DataConversion::fromMessage(msg.correctionoffset(camID), r.correctionOffset[camID]);
+
+      naoth::DataConversion::fromMessage(msg.headjointoffset(camID), r.headJointOffset[camID]);
     }
   }
 }
