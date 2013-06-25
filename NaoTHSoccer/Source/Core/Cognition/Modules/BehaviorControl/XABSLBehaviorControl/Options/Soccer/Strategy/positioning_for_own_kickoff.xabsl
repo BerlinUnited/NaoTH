@@ -33,6 +33,7 @@ option positioning_for_own_kickoff
     action {
       go_to_point_with_USOA(x=-4400, y=0, rot=0);
       head.control_mode = search_for_goal;
+      motion.walk.style = stable;
       // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
     }
   }
