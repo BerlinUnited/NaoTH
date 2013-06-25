@@ -14,7 +14,7 @@ option decide_and_go_to_ready_position
     }
     action
     {
-      head.control_mode =  search_for_goal;
+      head.control_mode = look_around;
       motion.type = stand;
       
       //only the first we know that we are in our own half
