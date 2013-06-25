@@ -32,7 +32,7 @@ option go_to_ball_with_USOA_test{
   }
   action
   {
-    go_to_ball_with_USOA();
+    go_to_ball_with_USOA(distance=130);
   }
   
   }

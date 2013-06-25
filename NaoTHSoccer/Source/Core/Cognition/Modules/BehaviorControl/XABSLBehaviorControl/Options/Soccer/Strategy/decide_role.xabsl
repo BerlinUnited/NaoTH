@@ -28,6 +28,15 @@ option decide_role
     }
   }
 
+  // has to be initial state, otherwise there might be problems with role switching
+  initial state passive
+  {
+    action
+    {
+      
+    }
+  }
+
   state goalie
   {
     action
@@ -90,12 +99,5 @@ option decide_role
     }
   }*/
 
-  // has to be initial state, otherwise there might be problems with role switching
-  initial state passive
-  {
-    action
-    {
-      
-    }
-  }
+  
 }

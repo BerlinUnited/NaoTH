@@ -41,13 +41,19 @@ option close_to_ball_with_USOA_situation{
 
   state behave_normal{
     decision{
-      if(action_done)
+      if(state_time>1000)
         goto finish;
       else
         stay;
     }
     action{
-      kick_direction(direction=attack.direction.preview);
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.x=ball.preview.x+100;
+      motion.walk_speed.y=ball.preview.y;
+      motion.walk_speed.rot=0;
+
+      head.control_mode = search_for_ball;
     }
   }
 

@@ -1,6 +1,7 @@
 // go to ball while avoiding obstacles using ultra sonic 
 option go_to_ball_with_USOA
 {
+ float @distance;
 
  initial state go
   {
@@ -20,7 +21,7 @@ option go_to_ball_with_USOA
     }
     action 
     {
-      go_to_ball(distance=130);
+      go_to_ball(distance=@distance);
     }
   }
 
