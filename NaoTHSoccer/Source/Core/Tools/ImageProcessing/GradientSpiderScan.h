@@ -88,7 +88,7 @@ private:
   inline bool isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const;
 
   inline bool pixelInImage(const Vector2<int>& pixel) const;
-  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;
+  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;  
 
   const Image& theImage;
   RingBufferWithSum<int, 24> scanPixelBuffer;

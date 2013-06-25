@@ -86,12 +86,15 @@ private:
   BallPointList badPoints;
 
   BallPointList bestPoints;
-
-  BallPointList possibleModells[60];
-
+  /************************************/
+  BallPointList possibleModells[570];
+  /***********************************/
   void findMaximumRedPoint(Vector2<int>& peakPos);
+  Vector2<int> getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
+  bool findBall ();
+  void getBestModel(BallPointList& pointList);
   
   class Parameters: public ParameterList
   {
