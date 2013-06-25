@@ -28,20 +28,48 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:draw_difference","..", false);  
   DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScans","..", false);  
   DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScanResponse","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScanGoodPoints","..", false);    
+  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScanGoodPoints","..", false);   
+
+  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:use_horizon","..", false);
 }
 
 
-void GradientGoalDetector::execute(CameraInfo::CameraID id)
+void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
 
   getGoalPercept().reset();
 
-  Vector2d p1(getArtificialHorizon().begin());
-  Vector2d p2(getArtificialHorizon().end());
-  Vector2d direction = getArtificialHorizon().getDirection();
+
+
+  //if(cameraID == CameraInfo::Top)
+  {
+    Vector3d zem = CameraGeometry::imagePixelToWorld(getCameraMatrix(), getImage().cameraInfo,
+      getImage().cameraInfo.getOpticalCenterX(), getImage().cameraInfo.getOpticalCenterY(),
+      300);
+
+    zem.y = 0;
+    zem.x = 500;
+    zem.z = getCameraMatrix().translation.z;
+
+    Vector2<int> pp = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,zem);
+
+    if(pp.x > 40 && pp.x < 640 - 40 && pp.y > 0 && pp.y < 480)
+    {
+      LINE_PX(ColorClasses::red, pp.x - 20, pp.y, pp.x+20, pp.y);
+    }
+  }
+
+  Vector2d p1(0, getImage().cameraInfo.getOpticalCenterY());
+  Vector2d p2(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.getOpticalCenterY());
+  Vector2d direction(1,0);
+
+  if(horizon) {
+    p1 = getArtificialHorizon().begin();
+    p2 = getArtificialHorizon().end();
+    direction = getArtificialHorizon().getDirection();
+  }
   
   int imageBorderOffset = 25;
   int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
@@ -199,7 +227,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
   //std::cout << std::endl << " ------ " << std::endl;
   for(unsigned i = 0; i < features[0].size(); i++)
   {
-    Feature& candidate = features[0][i];
+    const Feature& candidate = features[0][i];
 
     BresenhamLineScan footPointScanner(candidate.center, dir, getImage().cameraInfo);
 
@@ -257,7 +285,8 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
         }
         j++;
       }
-    }
+    }//end for
+
 
     if(goodPointsCount >= params.minGoodPoints)
     {
@@ -344,7 +373,8 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
             }
           }
         }
-      }
+      }//end while
+
       if(footPointFound)
       {
         goalPostFound = true;
@@ -352,10 +382,10 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
 
         post.basePoint = Vector2<int>(pointBuffer[2]);
         CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        post.basePoint.x, post.basePoint.y, 0.0,
-        post.position);
+          getCameraMatrix(),
+          getImage().cameraInfo,
+          post.basePoint.x, post.basePoint.y, 0.0,
+          post.position);
 
         post.positionReliable = true;
         goalPosts.push_back(post);
@@ -373,7 +403,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
       }
 
 
-    }
+    }//end if
 
 
     if(candidate.possibleObstacle)
@@ -389,8 +419,23 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id)
       );
     }
 
+  }//end for features[0].size()
 
+  
+  // exactly two posts are seen => assign site labels
+  if(getGoalPercept().getNumberOfSeenPosts() == 2) {
+    GoalPercept::GoalPost& postOne = getGoalPercept().getPost(0);
+    GoalPercept::GoalPost& postTwo = getGoalPercept().getPost(1);
+    
+    // sort: which one is left or right
+    if(postOne.basePoint.x > postTwo.basePoint.x)
+    {
+      postOne.type = GoalPercept::GoalPost::rightPost;
+      postTwo.type = GoalPercept::GoalPost::leftPost;
+    } else {
+      postOne.type = GoalPercept::GoalPost::leftPost;
+      postTwo.type = GoalPercept::GoalPost::rightPost;
+    }
   }
-
 }//end execute
 

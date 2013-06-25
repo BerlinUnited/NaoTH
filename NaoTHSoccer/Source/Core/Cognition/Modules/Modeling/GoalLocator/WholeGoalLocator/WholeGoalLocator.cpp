@@ -23,6 +23,10 @@ void WholeGoalLocator::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
+  if(cameraID == CameraInfo::Bottom && getSensingGoalModel().someGoalWasSeen) {
+    return;
+  }
+
   // reset the model
   getSensingGoalModel().someGoalWasSeen = false;
   getCameraMatrixOffset().offsetByGoalModel = Vector2d();

@@ -91,6 +91,7 @@
 //#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
+#include "Tools/Debug/Trace.h"
 
 using namespace std;
 
@@ -264,9 +265,8 @@ void Cognition::call()
     AbstractModuleCreator* module = *iter;//getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
-      //std::string name(module->getModule()->getName());
-
-      //GT_TRACE("executing " << name);
+      std::string name(module->getModule()->getName());
+      GT_TRACE("executing " << name);
       module->execute();
     }//end if
   }//end for all modules

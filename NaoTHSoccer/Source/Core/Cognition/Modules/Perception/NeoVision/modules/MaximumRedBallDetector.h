@@ -94,7 +94,9 @@ private:
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
   bool findBall ();
-  void getBestModel(BallPointList& pointList);
+  bool getBestModel(BallPointList& pointList);
+  bool checkIfPixelIsOrange (Vector2d coord);
+  void clearDublicatePoints ( BallPointList& ballPoints);
   
   class Parameters: public ParameterList
   {
@@ -103,10 +105,11 @@ private:
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
       PARAMETER_REGISTER(gradientThreshold) = 20;
-      PARAMETER_REGISTER(meanThreshold) = 30;
+      PARAMETER_REGISTER(meanThreshold) = 60;
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
-      PARAMETER_REGISTER(ransacPercentValid) = 0.05;
+      PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
+	  PARAMETER_REGISTER(maxBlueValue) = 60;
 
       syncWithConfig();
 
@@ -123,6 +126,7 @@ private:
     int stepSize;
     double percentOfRadius;
     double ransacPercentValid;
+	int maxBlueValue;
   };
 
   Parameters params;
@@ -208,6 +212,18 @@ private:
     else
     {
       return MaximumRedBallDetectorBase::getBodyContour();
+    }
+  };
+
+  const BaseColorRegionPercept& getBaseColorRegionPercept() const
+  {
+    if(cameraID == CameraInfo::Top)
+    {
+      return MaximumRedBallDetectorBase::getBaseColorRegionPerceptTop();
+    }
+    else
+    {
+      return MaximumRedBallDetectorBase::getBaseColorRegionPercept();
     }
   };
   
