@@ -101,6 +101,8 @@ private:
       PARAMETER_REGISTER(gradientThreshold) = 30;
       PARAMETER_REGISTER(meanThreshold) = 30;
       PARAMETER_REGISTER(stepSize) = 4;
+      PARAMETER_REGISTER(percentOfRadius) = 0.5;
+      PARAMETER_REGISTER(ransacPercentValid) = 0.05;
 
       syncWithConfig();
 
@@ -115,6 +117,8 @@ private:
     int meanThreshold;
     int gradientThreshold;
     int stepSize;
+    double percentOfRadius;
+    double ransacPercentValid;
   };
 
   Parameters params;
