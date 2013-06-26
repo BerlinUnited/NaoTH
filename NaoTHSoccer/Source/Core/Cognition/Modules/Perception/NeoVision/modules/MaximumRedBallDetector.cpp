@@ -373,7 +373,6 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, V
 void MaximumRedBallDetector::drawUsedPoints(const Vector2d& center, const double& radius)
 {
 	double radiusErrMax =  params.ransacPercentValid * radius;
-	int count = 0;
 	for(int i = 0; i < bestPoints.length; i++)
 	{
 		double err = fabs((center - Vector2d(bestPoints[i])).abs2() - radius*radius);
