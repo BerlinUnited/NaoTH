@@ -5,8 +5,8 @@
 * Declaration of class BodyStateProvider
 */
 
-#ifndef __BodyStateProvider_h_
-#define __BodyStateProvider_h_
+#ifndef _BodyStateProvider_h_
+#define _BodyStateProvider_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -20,6 +20,8 @@
 
 // Tools
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -39,12 +41,32 @@ class BodyStateProvider : public BodyStateProviderBase
 public:
 
   BodyStateProvider();
-  ~BodyStateProvider(){}
+  virtual ~BodyStateProvider(){}
 
-  /** executes the module */
   void execute();
 
 private:
+  class Parameters: public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("BodyStateParameters")
+    {
+      PARAMETER_REGISTER(getup_threshold) = 1.2;
+      PARAMETER_REGISTER(foot_threshold) = 1;
+
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    double foot_threshold;
+    double getup_threshold;
+  } theParams;
+
 
   void updateTheFallDownState();
 

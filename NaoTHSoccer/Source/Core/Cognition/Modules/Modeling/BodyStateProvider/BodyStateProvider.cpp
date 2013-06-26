@@ -16,7 +16,6 @@ BodyStateProvider::BodyStateProvider()
 
 }
 
-
 void BodyStateProvider::execute()
 {
   // update the fall down state (written by Heinrich Mellmann at 1 am in Magdeburg)
@@ -35,11 +34,8 @@ void BodyStateProvider::updateTheFootState()
   bool old_standByLeftFoot = getBodyState().standByLeftFoot;
   bool old_standByRightFoot = getBodyState().standByRightFoot;
 
-  double foot_threshold = 1;
-  MODIFY("BodyStateProvider:foot_threshold", foot_threshold);
-
-  getBodyState().standByLeftFoot = getFSRData().forceLeft() > foot_threshold;
-  getBodyState().standByRightFoot = getFSRData().forceRight() > foot_threshold;
+  getBodyState().standByLeftFoot = getFSRData().forceLeft() > theParams.foot_threshold;
+  getBodyState().standByRightFoot = getFSRData().forceRight() > theParams.foot_threshold;
 
   if(old_standByLeftFoot != getBodyState().standByLeftFoot ||
      old_standByRightFoot != getBodyState().standByRightFoot)
@@ -56,27 +52,25 @@ void BodyStateProvider::updateTheFallDownState()
   // buffer the inertial data
   inertialBuffer.add(getInertialSensorData().data);
 
-  Vector2<double> avg = inertialBuffer.getAverage();
+  Vector2d avg = inertialBuffer.getAverage();
   double inertialXaverage = avg.x;
   double inertialYaverage = avg.y;
 
   getBodyState().fall_down_state = BodyState::upright;
 
-  double threshold = 1.2; // for simulation 0.8
-  MODIFY("BodyStateProvider:getup_threshold", threshold);
-
-  if(inertialXaverage < -threshold)
+  if(inertialXaverage < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_left_side;
-  else if(inertialXaverage > threshold)
+  } else if(inertialXaverage > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_right_side;
+  }
 
-  if(inertialYaverage < -threshold)
+  if(inertialYaverage < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_back;
-  else if(inertialYaverage > threshold)
+  } else if(inertialYaverage > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_front;
+  }
 
-  if(old_fall_down_state != getBodyState().fall_down_state)
-  {
+  if(old_fall_down_state != getBodyState().fall_down_state) {
     getBodyState().fall_down_state_time = getFrameInfo().getTime();
   }
 }//end updateTheFallDownState
@@ -101,7 +95,6 @@ void BodyStateProvider::updateTheLegTemperature()
     naoth::JointData::RAnklePitch,
     naoth::JointData::RAnkleRoll
   };
-
 
   double tempL(0);
   double tempR(0);
