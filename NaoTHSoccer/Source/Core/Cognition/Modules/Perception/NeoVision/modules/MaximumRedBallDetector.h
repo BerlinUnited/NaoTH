@@ -91,18 +91,19 @@ private:
 
   BallPointList bestPoints;
   /************************************/
-  BallPointList possibleModells[570];
+  std::vector<BallPointList> possibleModells;
   /***********************************/
-  void findMaximumRedPoint(Vector2<int>& peakPos);
+  bool findMaximumRedPoint(Vector2<int>& peakPos);
+
   Vector2<int> getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
   bool findBall();
-  bool getBestModel(BallPointList& pointList);
-  bool checkIfPixelIsOrange (Vector2<int> point);
-  void clearDublicatePoints ( BallPointList& ballPoints);
-  bool getBestBallBruteForce(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
-  bool getBestBallRansac(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestModel(const BallPointList& pointList);
+  bool checkIfPixelIsOrange (const Pixel& pixel);
+  void clearDublicatePoints (BallPointList& ballPoints);
+  bool getBestBallBruteForce(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
   
   class Parameters: public ParameterList
   {
@@ -132,7 +133,7 @@ private:
     int stepSize;
     double percentOfRadius;
     double ransacPercentValid;
-	int maxBlueValue;
+	  int maxBlueValue;
   };
 
   Parameters params;
