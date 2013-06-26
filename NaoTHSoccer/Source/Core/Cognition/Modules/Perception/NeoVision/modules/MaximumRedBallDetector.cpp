@@ -194,7 +194,7 @@ bool MaximumRedBallDetector::findBall ()
     {
       goodPoints.clear();
 		  badPoints.clear();
-		  spiderSearch.scan(start, goodPoints, badPoints);
+		  spiderSearch.scan(center, goodPoints, badPoints);
     
 		  for (int i = 0; i < goodPoints.length; i++) {
 			  bestPoints.add(goodPoints[i]);
@@ -235,7 +235,7 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
   if(useBruteForce) {
     bestModelFound = getBestBallBruteForce(pointList, start, centerBest, radiusBest);
   } else {
-    bestModelFound = getBestBallRansac(pointList, centerBest, radiusBest);
+    bestModelFound = getBestBallRansac(pointList, start, centerBest, radiusBest);
   }
 
 	// calculate the percept
@@ -366,7 +366,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
   return idxBest >= 0;
 }
 
-bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest)
+bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, const Vector2<int>& start, Vector2<double>& centerBest, double& radiusBest)
 {
 	int maxTries = min(pointList.length, params.maxRansacTries);
 	int idxBest = -1;
@@ -399,7 +399,7 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, V
     possibleModells[i].add(pointList[idx2]);
     possibleModells[i].add(pointList[idx3]);
 
-	  if(Geometry::calculateCircle(possibleModells[i], center, radius))
+    if(Geometry::calculateCircle(possibleModells[i], center, radius))
 	  {
 		  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
 			  CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
@@ -421,10 +421,14 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, V
 		  }
 
       if(pointList.length > 0) {
-        meanError /= pointList.length;
+        meanError /= (double)(pointList.length);
       }
 
-		  if(count*2 >= pointList.length && (count > bestCount || (count == bestCount && meanError < bestErr) ))
+		  if( count*2 >= pointList.length && 
+          (count > bestCount || (count == bestCount && meanError < bestErr) ) &&
+          (Vector2d(start) - center).abs2() <= radius*radius &&
+          radius >= params.minSizeInImage && radius <= params.maxSizeInImage
+      )
 		  {
 			  centerBest = center;
 			  radiusBest = radius;
@@ -439,16 +443,6 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, V
 		  }
 	  }
   }
-
-  bestMatchedBallpoints.clear();
-	double radiusErrMax =  params.ransacPercentValid * radius;
-	for(int j = 0; j < pointList.length; j++)
-	{
-		double err = fabs((center - Vector2d(pointList[j])).abs() - radius);
-		if(err <= radiusErrMax) {
-      bestMatchedBallpoints.add(pointList[j]);
-		}
-	}
 
 	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:mark_best_matching_points",
     if(idxBest >= 0)

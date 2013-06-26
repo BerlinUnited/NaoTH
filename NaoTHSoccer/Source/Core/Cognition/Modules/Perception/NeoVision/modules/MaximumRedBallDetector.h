@@ -105,7 +105,7 @@ private:
   bool checkIfPixelIsOrange (const Pixel& pixel);
   void clearDublicatePoints (BallPointList& ballPoints);
   bool getBestBallBruteForce(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
-  bool getBestBallRansac(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
   void drawUsedPoints(const BallPointList& pointList);
   
   class Parameters: public ParameterList
