@@ -1,3 +1,4 @@
+// doesn't work with a robot which has number 1
 option passive_player_agent{
 
   initial state test {    
@@ -6,7 +7,7 @@ option passive_player_agent{
       // react to the game controller and handle fall down
       basic_play();
 
-      passive_behavior();
+      decide_and_go_to_passive_position();
 
       // control the arms
       arms_control();

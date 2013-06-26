@@ -50,8 +50,8 @@ option go_to_point_with_USOA
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = walk;
       
+      motion.type = walk;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
@@ -81,8 +81,8 @@ option go_to_point_with_USOA
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = walk;
       
+      motion.type = walk;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
@@ -111,7 +111,6 @@ option go_to_point_with_USOA
 
   action
   {
-      head.control_mode = search_for_ball;
       motion.type = walk;
       motion.walk.style = stable;
       
@@ -138,6 +137,7 @@ option go_to_point_with_USOA
 
     action{
       head.control_mode = search_for_ball;
+      
       motion.type = walk;
       motion.walk.style = stable;
 
@@ -159,8 +159,9 @@ option go_to_point_with_USOA
     }
     action
     {
-      motion.type = stand;
       head.control_mode = search_for_ball;
+      
+      motion.type = stand;
     }
   }
   

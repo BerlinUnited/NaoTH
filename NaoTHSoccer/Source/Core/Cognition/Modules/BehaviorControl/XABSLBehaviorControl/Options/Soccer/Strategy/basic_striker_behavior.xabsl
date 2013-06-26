@@ -22,12 +22,17 @@ option basic_striker_behavior{
 
   state decide_search_far_or_close{
     decision{
-      else if(vector.abs(y=ball.preview.y,x=ball.preview.x)<250)
+      else if((vector.abs(y=ball.preview.y,x=ball.preview.x)<250) && (state_time>3000))
         goto search_ball_close;
-      else 
+      else  if(state_time>3000)
         goto search_ball_far;
+      else
+        stay;
     }
     action{
+      motion.type = stand;
+
+      head.control_mode = search_for_ball;
     }
   
   }
