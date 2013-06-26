@@ -44,14 +44,6 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if( state_time > 3000 && 
-        // there is still hope for the old model to be valid
-        (ball.time_since_last_seen < 15000 || @force_ball_model_check) && 
-        // ball model is reachable by moving my head only
-        abs(value=ball.angle) < 60)
-       goto try_to_look_at_the_old_ball;
-      //else if( head.executed_motion_type != search )
-       //goto search_for_ball_near;
       else if(state_time>2000)
         goto search_for_ball_left;
       else
@@ -72,14 +64,6 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if( state_time > 3000 && 
-        // there is still hope for the old model to be valid
-        (ball.time_since_last_seen < 15000 || @force_ball_model_check) && 
-        // ball model is reachable by moving my head only
-        abs(value=ball.angle) < 60)
-       goto try_to_look_at_the_old_ball;
-      //else if( head.executed_motion_type != search )
-       //goto search_for_ball_near;
       else if(state_time>2000)
         goto search_for_ball_right;
       else
@@ -99,14 +83,12 @@ option search_for_ball
   {
     decision
     {
-      if (ball.time_since_last_seen > 1000)
+      if (ball.time_since_last_seen > 3000)
       {
-        if((state_time > 1000)&&(ball.y>0))// I've seen the ball for a while => look at the old model
+        if(ball.y>0)// I've seen the ball for a while => look at the old model
           goto search_for_ball_left;
-        else if(state_time>1000)
+        else
           goto search_for_ball_right;
-        else        
-          stay;
       }
       else
         stay;

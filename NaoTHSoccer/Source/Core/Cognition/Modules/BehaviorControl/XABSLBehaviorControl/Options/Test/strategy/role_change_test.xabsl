@@ -37,6 +37,7 @@ option role_change_test
       motion.type = stand;
       head.control_mode = search_for_ball;
       set_left_ear = platform.frameNumber % 10;
+      set_right_ear = platform.frameNumber % 10;
     }
   }
 
