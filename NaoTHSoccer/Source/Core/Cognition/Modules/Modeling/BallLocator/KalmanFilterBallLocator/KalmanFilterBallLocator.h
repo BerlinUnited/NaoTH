@@ -66,7 +66,8 @@ private:
     Vector2d lastSeenBall;
   };
 
-  RingBuffer<BallPercept, 20> smoothingPerceptBuffer;
+  //RingBuffer<BallPercept, 20> smoothingPerceptBuffer;
+  RingBuffer<BallPercept, 20> badPerceptBuffer;
 
   //stores last 10 BallPercepts
   RingBuffer<LocalBallPercept, 10 > ballBuffer;
@@ -96,6 +97,8 @@ private:
   void predictByMotionModelContineously(Vector2<double>& position, Vector2<double>& speed, double time);
 
   void updatePreviewModel();
+
+  void removePerceptsByFrameNumber(RingBuffer<BallPercept, 20>& buffer, const unsigned int maxFrames) const;
 
 
   const BallPercept& getBallPercept() const

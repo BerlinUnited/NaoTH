@@ -80,10 +80,81 @@ void KalmanFilterBallLocator::execute()
       FIELD_DRAWING_CONTEXT;
 
       PEN("FF0000", 30);
-      CIRCLE( getBallModel().positionPreview.x, getBallModel().positionPreview.y, getFieldInfo().ballRadius-10);
+      CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
     );
 
-    double useBuffer = 0;
+    double validatePerceptWithModel = 0;
+    MODIFY("KalmanFilterBallLocator:validatePerceptWithModel", validatePerceptWithModel);
+    if (validatePerceptWithModel == 0)  {
+        executeKalman(getBallPercept());
+        return;
+    }
+
+    double deltaModelpercept = 2000;
+    MODIFY("KalmanFilterBallLocator:deltaModelpercept", deltaModelpercept);
+
+    //updateByTime
+    if( badPerceptBuffer.getNumberOfEntries() > 0 &&
+        getFrameInfo().getFrameNumber() - badPerceptBuffer.first().frameInfoWhenBallWasSeen.getFrameNumber() > 200)
+    {
+      badPerceptBuffer.removeFirst();
+    }
+
+    //updateByOdometry
+    Pose2D odometryDelta = lastRobotOdometryAll - getOdometryData();
+
+    //update the badPerceptBuffer
+    for (int i = 0; i < badPerceptBuffer.getNumberOfEntries(); i++)
+    {
+      BallPercept& ball = badPerceptBuffer.getEntry(i);
+      ball.bearingBasedOffsetOnField = odometryDelta * ball.bearingBasedOffsetOnField;
+    }
+
+    lastRobotOdometryAll = getOdometryData();
+
+
+    if(getBallPercept().ballWasSeen
+        && getBodyState().fall_down_state == BodyState::upright)
+    {
+
+
+        double perceptX = getBallPercept().bearingBasedOffsetOnField.x;
+        double perceptY = getBallPercept().bearingBasedOffsetOnField.y;
+
+        double modelX = getBallModel().position.x;
+        double modelY = getBallModel().position.y;
+
+        if(fabs( perceptX - modelX) < deltaModelpercept
+                   && fabs(perceptY - modelY) < deltaModelpercept)
+        {
+
+            executeKalman(getBallPercept());
+            return;
+
+        } else {
+
+            badPerceptBuffer.add(getBallPercept());
+            //std::cout << " " << std::endl;
+            //std::cout <<badPerceptBuffer.getNumberOfEntries() << std::endl;
+        }
+
+
+    }
+
+    if (badPerceptBuffer.getNumberOfEntries() > 10) {
+
+      reset(badPerceptBuffer.first());
+      badPerceptBuffer.clear();
+
+    } //reset
+
+
+
+
+    /* Mitteln der percepte zur selektion auf perceptebene (mit vergleichen von percepten)
+     *
+     *
+     *double useBuffer = 0;
     MODIFY("KalmanFilterBallLocator:useBuffer", useBuffer);
     if (useBuffer == 0)  {
         executeKalman(getBallPercept());
@@ -158,7 +229,7 @@ void KalmanFilterBallLocator::execute()
       {
         CIRCLE(smoothingPerceptBuffer[i].bearingBasedOffsetOnField.x, smoothingPerceptBuffer[i].bearingBasedOffsetOnField.y, 20);
       }//end for
-    );
+    );*/
 
 } //end execute
 
@@ -413,8 +484,6 @@ void KalmanFilterBallLocator::executeKalman(BallPercept newPercept)
   lastFrameInfo = getFrameInfo();
   wasReactiveInLastFrame = getSituationStatus().reactiveBallModelNeeded;
 }//end executeKalman
-
-
 
 void KalmanFilterBallLocator::updateMotion(Vector2<double>& Sx_, Vector2<double>& Sy_)
 {
