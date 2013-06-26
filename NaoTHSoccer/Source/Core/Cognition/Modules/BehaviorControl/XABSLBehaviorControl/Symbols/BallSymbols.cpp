@@ -16,9 +16,9 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.radius", &getFieldInfo().ballRadius);
 
   // percept
-  engine.registerDecimalInputSymbol("ball.percept.x", &getBallPercept().bearingBasedOffsetOnField.x);
-  engine.registerDecimalInputSymbol("ball.percept.y", &getBallPercept().bearingBasedOffsetOnField.y);
-  engine.registerBooleanInputSymbol("ball.was_seen", &getBallPercept().ballWasSeen);
+  engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
+  engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
+  engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -99,10 +99,24 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ballRightFoot:x", ballRightFoot.x);
     PLOT("XABSL:BallSymbols:ballRightFoot:y", ballRightFoot.y);
   );
+
+
+
+
+  ballPerceptSeen = false;
+
+  if(theInstance->getBallPercept().ballWasSeen) {
+    ballPerceptPos = getBallPercept().bearingBasedOffsetOnField;
+    ballPerceptSeen = true;
+  } else if(theInstance->getBallPerceptTop().ballWasSeen) {
+    ballPerceptPos = getBallPerceptTop().bearingBasedOffsetOnField;
+    ballPerceptSeen = true;
+  } 
 }//end update
 
 
 BallSymbols* BallSymbols::theInstance = NULL;
+
 
 
 double BallSymbols::getBallDistance() {
