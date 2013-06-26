@@ -47,7 +47,10 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  getBallPercept().reset();  
+  getBallPercept().reset();
+
+  double diff = getBaseColorRegionPercept().spanWidthEnv.y / 100;
+	dynamicThresholdY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.5 - diff;
 
   findBall();
 }//end execute

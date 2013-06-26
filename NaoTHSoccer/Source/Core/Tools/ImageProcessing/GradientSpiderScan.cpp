@@ -14,9 +14,6 @@ GradientSpiderScan::GradientSpiderScan(const Image& theImage, CameraInfo::Camera
   cameraID(camID)
 {
   init();
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:Y_Channel","..", false); 
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:U_Channel","..", false); 
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:V_Channel","..", false); 
 }
 
 void GradientSpiderScan::setMaxBeamLength(unsigned int length)
@@ -178,8 +175,6 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
     ////////////////////////////////
 
     Pixel pixel = theImage.get(currentPoint.x, currentPoint.y);
-	/*DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:Y_Channel",
-					);*/
 
     int newJump = 0;
     int meanJump = 0;
