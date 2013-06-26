@@ -15,7 +15,7 @@ option simple_search_ball
     }
     action
     {
-      head.control_mode = look_around;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -30,7 +30,7 @@ option simple_search_ball
     }
     action
     {
-      head.control_mode = look_around;
+      head.control_mode = search_for_ball;
       search_ball.search_direction = 1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
@@ -51,7 +51,7 @@ option simple_search_ball
     }
     action
     {
-      head.control_mode = look_around;
+      head.control_mode = search_for_ball;
       search_ball.search_direction = -1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm

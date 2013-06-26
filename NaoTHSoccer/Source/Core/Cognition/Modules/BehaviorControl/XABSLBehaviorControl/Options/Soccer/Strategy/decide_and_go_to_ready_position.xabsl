@@ -5,7 +5,7 @@ option decide_and_go_to_ready_position
     decision
     {
       /* relocalize in initial kickoff */
-      if((!robot_pose.is_valid)&&(state_time>2000))
+      if((!robot_pose.is_valid)||(state_time>10000))
         stay;
       else if(game.own_kickoff)
         goto own_kickoff;
@@ -14,7 +14,7 @@ option decide_and_go_to_ready_position
     }
     action
     {
-      head.control_mode = look_around;
+      head.control_mode = search_for_goal;
       motion.type = stand;
       
       //only the first we know that we are in our own half
@@ -27,7 +27,6 @@ option decide_and_go_to_ready_position
         stay;
     }
     action{
-      situationStatusOwnHalf = false;
       situationStatusOwnHalf = (game.msecsRemaining >= 600000);
       positioning_for_own_kickoff();
     }
@@ -38,7 +37,6 @@ option decide_and_go_to_ready_position
         stay;
     }
     action{
-      situationStatusOwnHalf = false;
       situationStatusOwnHalf = (game.msecsRemaining >= 600000);
       positioning_for_opp_kickoff();
     }
