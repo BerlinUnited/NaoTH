@@ -91,18 +91,22 @@ private:
 
   BallPointList bestPoints;
   /************************************/
-  BallPointList possibleModells[570];
+  std::vector<BallPointList> possibleModells;
   /***********************************/
-  void findMaximumRedPoint(Vector2<int>& peakPos);
+  bool findMaximumRedPoint(Vector2<int>& peakPos);
+
   Vector2<int> getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
-  bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
+  bool calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius );
   bool findBall();
-  bool getBestModel(BallPointList& pointList);
-  bool checkIfPixelIsOrange (Vector2<int> point);
-  void clearDublicatePoints ( BallPointList& ballPoints);
-  bool getBestBallBruteForce(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
-  bool getBestBallRansac(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestModel(const BallPointList& pointList);
+  bool checkIfPixelIsOrange (const Pixel& pixel);
+  void clearDublicatePoints (BallPointList& ballPoints);
+  bool getBestBallBruteForce(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
+  bool checkModel(const BallPointList& pointList, Vector2d& center, double& radius, 
+                  int& bestCount, Vector2d& centerBest, double& radiusBest);
+  void drawUsedPoints(const Vector2d& center, const double& radius);
   
   class Parameters: public ParameterList
   {
@@ -116,6 +120,10 @@ private:
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
 	    PARAMETER_REGISTER(maxBlueValue) = 60;
+      PARAMETER_REGISTER(minSizeInImage) = 3;
+      PARAMETER_REGISTER(maxSizeInImage) = 130;
+      PARAMETER_REGISTER(maxRansacTries) = 40;
+      PARAMETER_REGISTER(maxScanlineSteps) = 50;
 
       syncWithConfig();
 
@@ -132,7 +140,11 @@ private:
     int stepSize;
     double percentOfRadius;
     double ransacPercentValid;
-	int maxBlueValue;
+	  int maxBlueValue;
+    int minSizeInImage;
+    int maxSizeInImage;
+    int maxRansacTries;
+    int maxScanlineSteps;
   };
 
   Parameters params;

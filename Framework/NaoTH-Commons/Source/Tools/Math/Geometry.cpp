@@ -158,7 +158,7 @@ bool Geometry::getIntersectionPointsOfLineAndRectangle(
 **********************************************************************************/
 
 
-bool Geometry::calculateCircle( const PointList<20>& pointList, Vector2<double>& center, double& radius )
+bool Geometry::calculateCircle( const PointList<20>& pointList, Vector2d& center, double& radius )
 {
   if (pointList.length < 3)
     return false;

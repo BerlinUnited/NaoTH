@@ -18,6 +18,12 @@
 #include <Representations/Infrastructure/CameraInfoConstants.h>
 
 
+#define IMG_GET(x,y,p) \
+  if(!getImage().isInside(x,y)) { \
+    std::cout << __FILE__ << ":" << __LINE__ << "SCHEISSE!!!" << std::endl; \
+  } \
+  getImage().get(x, y, p);
+
 GradientGoalDetector::GradientGoalDetector()
 : 
   cameraID(CameraInfo::Bottom)
@@ -40,24 +46,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   CANVAS_PX(cameraID);
 
   getGoalPercept().reset();
-
-  //if(cameraID == CameraInfo::Top)
-  {
-    Vector3d zem = CameraGeometry::imagePixelToWorld(getCameraMatrix(), getImage().cameraInfo,
-      getImage().cameraInfo.getOpticalCenterX(), getImage().cameraInfo.getOpticalCenterY(),
-      300);
-
-    zem.y = 0;
-    zem.x = 500;
-    zem.z = getCameraMatrix().translation.z;
-
-    Vector2<int> pp = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,zem);
-
-    if(pp.x > 40 && pp.x < 640 - 40 && pp.y > 0 && pp.y < 480)
-    {
-      LINE_PX(ColorClasses::red, pp.x - 20, pp.y, pp.x+20, pp.y);
-    }
-  }
 
   Vector2d p1(0, getImage().cameraInfo.getOpticalCenterY());
   Vector2d p2(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.getOpticalCenterY());
@@ -131,12 +119,12 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       do
       {
         pointBuffer.add(pos);
-        getImage().get(pos.x, pos.y, pixel);
+        IMG_GET(pos.x, pos.y, pixel);
         diffVU = (int) pixel.v - (int) pixel.u;
         valueBuffer.add(diffVU);
         valueBufferY.add(pixel.y);
 
-        if(pos.x > 3)
+        if(pointBuffer.isFull())
         {
           response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
           //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
@@ -219,6 +207,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   Vector2<double> dir(-direction.y, direction.x);
 
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
+  //bool goalPostFound = false;
   goalPosts.clear();
 
   //std::cout << std::endl << " ------ " << std::endl;
@@ -248,7 +237,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
             POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
           );
           pointBuffer.add(pos);
-          getImage().get(pos.x, pos.y, pixel);
+          IMG_GET(pos.x, pos.y, pixel);
           int diffVU = (int) pixel.v - (int) pixel.u;
           valueBuffer.add(diffVU);
           valueBufferY.add(pixel.y);
@@ -300,7 +289,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       while(!stop && footPointScanner.getNextWithCheck(pos))
       {
         pointBuffer.add(pos);
-        getImage().get(pos.x, pos.y, pixel);
+        IMG_GET(pos.x, pos.y, pixel);
         int diffVU = (int) pixel.v - (int) pixel.u;
         valueBuffer.add(diffVU);
         valueBufferY.add(pixel.y);
@@ -327,9 +316,9 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
         lastDiffVU = diffVU;
         lastResponse = (int) response;
  
-        getImage().get((int) pointBuffer[4].x, (int) pointBuffer[4].y, pixel1);
-        getImage().get((int) pointBuffer[3].x, (int) pointBuffer[3].y, pixel2);
-        getImage().get((int) pointBuffer[2].x, (int) pointBuffer[2].y, pixel3);
+        IMG_GET((int) pointBuffer[4].x, (int) pointBuffer[4].y, pixel1);
+        IMG_GET((int) pointBuffer[3].x, (int) pointBuffer[3].y, pixel2);
+        IMG_GET((int) pointBuffer[2].x, (int) pointBuffer[2].y, pixel3);
         if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
         {
           stop = true;
@@ -347,7 +336,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
             int count = 0;
             while( t < 10 && footPointScanner.getNextWithCheck(pos))
             {
-              getImage().get(pos.x, pos.y, pixel);
+              IMG_GET(pos.x, pos.y, pixel);
               if(getFieldColorPercept().isFieldColor(pixel))
               {
                 count++;
@@ -374,6 +363,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
       if(footPointFound)
       {
+        //goalPostFound = true;
         GoalPercept::GoalPost post;
 
         post.basePoint = Vector2<int>(pointBuffer[2]);

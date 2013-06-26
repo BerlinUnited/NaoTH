@@ -97,7 +97,7 @@ public:
   */
   static bool calculateCircle( 
     const PointList<20>& pointList, 
-    Vector2<double>& center, 
+    Vector2d& center, 
     double& radius);
 
 };
