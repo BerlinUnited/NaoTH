@@ -222,8 +222,8 @@ bool Geometry::calculateCircle( const PointList<20>& pointList, Vector2d& center
     Vector_n<double, 3> x;
     x = M.solve(v);
     
-    center.x = (int)(-x[0] / 2.0);
-    center.y = (int)(-x[1] / 2.0);
+    center.x = -x[0] * 0.5;
+    center.y = -x[1] * 0.5;
     
 
     double tmpWurzel = x[0]*x[0]/4.0 + x[1]*x[1]/4.0 - x[2];

@@ -88,8 +88,10 @@ private:
   typedef PointList<20> BallPointList;
   BallPointList goodPoints;
   BallPointList badPoints;
-
   BallPointList bestPoints;
+
+  BallPointList bestMatchedBallpoints;
+
   /************************************/
   std::vector<BallPointList> possibleModells;
   /***********************************/
@@ -99,14 +101,12 @@ private:
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius );
   bool findBall();
-  bool getBestModel(const BallPointList& pointList);
+  bool getBestModel(const BallPointList& pointList, const Vector2<int>& start);
   bool checkIfPixelIsOrange (const Pixel& pixel);
   void clearDublicatePoints (BallPointList& ballPoints);
-  bool getBestBallBruteForce(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
-  bool getBestBallRansac(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
-  bool checkModel(const BallPointList& pointList, Vector2d& center, double& radius, 
-                  int& bestCount, Vector2d& centerBest, double& radiusBest);
-  void drawUsedPoints(const Vector2d& center, const double& radius);
+  bool getBestBallBruteForce(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
+  void drawUsedPoints(const BallPointList& pointList);
   
   class Parameters: public ParameterList
   {
@@ -144,7 +144,7 @@ private:
     int minSizeInImage;
     int maxSizeInImage;
     int maxRansacTries;
-    int maxScanlineSteps;
+    int maxScanlineSteps;    
   };
 
   Parameters params;
