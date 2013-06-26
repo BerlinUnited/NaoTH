@@ -207,25 +207,27 @@ bool MaximumRedBallDetector::findBall ()
 		spiderSearch.scan(start, goodPoints, badPoints);
     double radius = 0;
     Vector2d center;
-    if(Geometry::calculateCircle(goodPoints, center, radius) && checkIfPixelIsOrange(center))
+    if(goodPoints.length > 0)
     {
 		  for (int i = 0; i < goodPoints.length; i++) 
       {
 			  bestPoints.add(goodPoints[i]);
 		  }
-      goodPoints.clear();
-		  badPoints.clear();
-      start.x = (int) center.x;
-      start.y = (int) center.y;
-		  spiderSearch.scan(start, goodPoints, badPoints);
-      if(Geometry::calculateCircle(goodPoints, center, radius))
+      start = getCenterOfMass(goodPoints);
+      if(getImage().isInside(start.x, start.y) && checkIfPixelIsOrange(center))
       {
-		    for (int i = 0; i < goodPoints.length; i++) 
+        goodPoints.clear();
+		    badPoints.clear();
+		    spiderSearch.scan(start, goodPoints, badPoints);
+        if(Geometry::calculateCircle(goodPoints, center, radius))
         {
-			    bestPoints.add(goodPoints[i]);
-		    }
+		      for (int i = 0; i < goodPoints.length; i++) 
+          {
+			      bestPoints.add(goodPoints[i]);
+		      }
       
-	    }
+	      }
+      }
     }
 		return getBestModel(bestPoints);
   }
@@ -408,15 +410,14 @@ bool MaximumRedBallDetector::getBestBallRansac(BallPointList& pointList, Vector2
 
 Vector2<int> MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList) 
 {
-	int x = 0;
-	int y = 0;
-	for (int i =0; i< pointList.length; i++){
-		x += pointList[i].x;
-		y += pointList[i].y;
+ 	Vector2d mean;
+  ASSERT(pointList.length > 0);
+	for (int i =0; i< pointList.length; i++)
+  {
+		mean += pointList[i];
 	}
-	x = x / pointList.length;
-	y = y / pointList.length;
-	return Vector2<int>(x,y);
+	mean /= pointList.length;
+	return mean;
 }
 
 bool MaximumRedBallDetector::checkIfPixelIsOrange(Vector2<int> point) 

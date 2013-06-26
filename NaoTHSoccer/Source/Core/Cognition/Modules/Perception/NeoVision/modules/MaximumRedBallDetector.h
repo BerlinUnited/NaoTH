@@ -137,7 +137,6 @@ private:
 
   Parameters params;
 
-
   // double cam stuff
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, Image);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, CameraMatrix);
