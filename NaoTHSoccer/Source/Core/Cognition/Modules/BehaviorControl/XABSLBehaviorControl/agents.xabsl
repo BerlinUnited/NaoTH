@@ -48,6 +48,8 @@ include "Options/Skills/move_around_ball.xabsl";
 
 // Debug
 include "Options/Debug/battery.xabsl";
+include "Options/Debug/show_calibration.xabsl";
+
 
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";

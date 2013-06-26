@@ -5,8 +5,22 @@ option basic_striker_behavior{
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
   }
+
+  initial state kickoff{
+    decision{
+      else if(game.own_kickoff)
+        goto idle;
+      else if(!game.own_kickoff && state_time < 10000)
+        stay;
+      else
+        stay;
+    }
+    action{
+      head.motion_type = search;
+    }
+  }
   
-  initial state idle {
+  state idle {
     decision {
       else if((game.current_mode == playing) && (ball.time_since_last_seen>1000))
         goto decide_search_far_or_close;
