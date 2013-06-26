@@ -158,7 +158,7 @@ bool MaximumRedBallDetector::findBall ()
 	spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
 	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
-	spiderSearch.setMaxBeamLength(50);
+	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
 
   DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
@@ -237,8 +237,7 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList)
   }
 
 	// calculate the percept
-  // TODO: makke them parameter
-	if(bestModelFound && radiusBest > 4 && radiusBest < 130)
+	if(bestModelFound && radiusBest > params.minSizeInImage && radiusBest < params.maxSizeInImage)
 	{
 		bool projectionOK = CameraGeometry::imagePixelToFieldCoord(
 		  getCameraMatrix(), 
@@ -338,7 +337,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 
 bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest)
 {
-	int maxTries = min(pointList.length, 40); //todo: make parameter
+	int maxTries = min(pointList.length, params.maxRansacTries);
   int bestCount = 0;
   Vector2d center;
   double radius = 0;

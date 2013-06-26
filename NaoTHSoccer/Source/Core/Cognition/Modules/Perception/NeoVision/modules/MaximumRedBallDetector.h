@@ -117,6 +117,10 @@ private:
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
 	    PARAMETER_REGISTER(maxBlueValue) = 60;
+      PARAMETER_REGISTER(minSizeInImage) = 3;
+      PARAMETER_REGISTER(maxSizeInImage) = 130;
+      PARAMETER_REGISTER(maxRansacTries) = 40;
+      PARAMETER_REGISTER(maxScanlineSteps) = 50;
 
       syncWithConfig();
 
@@ -134,6 +138,10 @@ private:
     double percentOfRadius;
     double ransacPercentValid;
 	  int maxBlueValue;
+    int minSizeInImage;
+    int maxSizeInImage;
+    int maxRansacTries;
+    int maxScanlineSteps;
   };
 
   Parameters params;
