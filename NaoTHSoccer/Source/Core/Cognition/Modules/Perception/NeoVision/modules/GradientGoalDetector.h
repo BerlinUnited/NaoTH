@@ -38,6 +38,7 @@
 // tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/GradientSpiderScan.h"
+#include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(Image)
@@ -150,101 +151,16 @@ private:
   int lastTestFeatureIdx[5];
   vector<GoalPercept::GoalPost> goalPosts;
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getImageTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getImage();
-    }
-  };
-  
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getCameraMatrix();
-    }
-  };
+  // double cam stuff
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, Image);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(GradientGoalDetector, BodyContour);
 
-  const CameraInfo& getCameraInfo() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getCameraInfoTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getCameraInfo();
-    }
-  };
-
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  const FieldColorPercept& getFieldColorPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getFieldColorPerceptTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getFieldColorPercept();
-    }
-  };
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getFieldPercept();
-    }
-  };
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getBodyContourTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getBodyContour();
-    }
-  };
-  
-  GoalPercept& getGoalPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GradientGoalDetectorBase::getGoalPerceptTop();
-    }
-    else
-    {
-      return GradientGoalDetectorBase::getGoalPercept();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPercept);
           
 };//end class GradientGoalDetector
 

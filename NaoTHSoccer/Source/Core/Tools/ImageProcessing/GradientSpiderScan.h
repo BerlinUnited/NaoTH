@@ -83,6 +83,7 @@ public:
   void setCurrentMeanThreshold(double threshold);
   void setImageColorChannelNumber(int channelNumber);
   void setMaxNumberOfScans(unsigned int length);
+  void setUseVUdifference(bool value);
 
 private:
   Pixel startPixel;
@@ -105,6 +106,7 @@ private:
   int imageChannelValidate;
   int maxNumberOfScans; //maximum number of scanlines ...
   double maxChannelDif;
+  bool useVUdifference;
   CameraInfo::CameraID cameraID;
 };
 

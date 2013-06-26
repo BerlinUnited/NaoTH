@@ -50,6 +50,11 @@ void GradientSpiderScan::setMaxNumberOfScans(unsigned int maxScans)
   maxNumberOfScans = maxScans;
 }
 
+void GradientSpiderScan::setUseVUdifference(bool value)
+{
+  useVUdifference = value;
+}
+
 void GradientSpiderScan::init()
 {
   drawScanLines = false;
@@ -172,43 +177,60 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
     // process the current point
     ////////////////////////////////
 
-    Pixel pixel = theImage.get(currentPoint.x,currentPoint.y);
+    Pixel pixel = theImage.get(currentPoint.x, currentPoint.y);
 	/*DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:Y_Channel",
 					);*/
 
-    int newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
-	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
-    int meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
+    int newJump = 0;
+    int meanJump = 0;
+
+    if(useVUdifference)
+    {
+      newJump = abs(static_cast<int>(pixel.v - pixel.u - (lastPixel.v - lastPixel.u)));
+      meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v - lastPixel.u));
+    }
+    else
+    {
+      newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
+      abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
+  	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
+    }
 
     bool isBorder = false;
 
-    if(jumpFound) { // look for the maximal jump
-      if(newJump > maxJump) {
+    if(jumpFound) 
+    { // look for the maximal jump
+      if(newJump > maxJump) 
+      {
         maxJump = newJump;
         borderPoint = currentPoint - direction/2;
-      } else {
+      } 
+      else 
+      {
         isBorder = true;
       }
-    } else { // look for a jump
-    if(!isBright && useDynamicThresholdY && pixel.y > dynamicThresholdY)
-    {
-		  isBright = true;
-      brightBeginPoint = currentPoint;
-      brightPointFound = true;
-      if(drawScanLines)
+    } 
+    else 
+    { // look for a jump
+      if(!isBright && useDynamicThresholdY && pixel.y > dynamicThresholdY)
       {
-		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-4), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+4), (unsigned int)(brightBeginPoint.y));
-		    LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-4), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+4));
+		    isBright = true;
+        brightBeginPoint = currentPoint;
+        brightPointFound = true;
+        if(drawScanLines)
+        {
+		      LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x-4), (unsigned int)(brightBeginPoint.y), (unsigned int)(brightBeginPoint.x+4), (unsigned int)(brightBeginPoint.y));
+		      LINE_PX(ColorClasses::pink, (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y-4), (unsigned int)(brightBeginPoint.x), (unsigned int)(brightBeginPoint.y+4));
+        }
       }
-    }
-    else if(isBright && useDynamicThresholdY && pixel.y < dynamicThresholdY)
-    {
-      brightRegionEndFound = true;
-      isBright = false;
-    }
+      else if(isBright && useDynamicThresholdY && pixel.y < dynamicThresholdY)
+      {
+        brightRegionEndFound = true;
+        isBright = false;
+      }
 
-//      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
-		jumpFound = newJump > currentGradientThreshold  || 
+  //      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
+		  jumpFound = newJump > currentGradientThreshold  || 
                   meanJump > currentMeanThreshold;
       
       maxJump = newJump;
