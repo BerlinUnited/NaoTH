@@ -16,7 +16,7 @@ option basic_striker_behavior{
         stay;
     }
     action{
-      head.motion_type = search_for_ball;
+      head.control_mode = search_for_ball;
     }
   }
   
