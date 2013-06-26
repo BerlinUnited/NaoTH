@@ -97,13 +97,16 @@ private:
 
   Vector2<int> getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
-  bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
+  bool calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius );
   bool findBall();
   bool getBestModel(const BallPointList& pointList);
   bool checkIfPixelIsOrange (const Pixel& pixel);
   void clearDublicatePoints (BallPointList& ballPoints);
-  bool getBestBallBruteForce(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
-  bool getBestBallRansac(const BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestBallBruteForce(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
+  bool checkModel(const BallPointList& pointList, Vector2d& center, double& radius, 
+                  int& bestCount, Vector2d& centerBest, double& radiusBest);
+  void drawUsedPoints(const BallPointList& pointList, const Vector2d& center, const double& radius);
   
   class Parameters: public ParameterList
   {
