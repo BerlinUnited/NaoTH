@@ -300,9 +300,9 @@ bool MaximumRedBallDetector::calculateCircle( const BallPointList& ballPoints, V
 
 bool MaximumRedBallDetector::findBall () 
 {
-	Vector2<int> start;
+	Vector2<int> start, oldStart;
 	findMaximumRedPoint(start);
-
+  oldStart = start;
 	Vector2<double> p1(getArtificialHorizon().begin());
 	Vector2<double> p2(getArtificialHorizon().end());
 	if(start.y <= min(p1.y, p2.y) || !checkIfPixelIsOrange(start)) 
@@ -342,6 +342,7 @@ bool MaximumRedBallDetector::findBall ()
 		  //start = getCenterOfMass(goodPoints);
       goodPoints.clear();
 		  badPoints.clear();
+      start = center;
 		  spiderSearch.scan(start, goodPoints, badPoints);
       if(calculateCircle(goodPoints, center, radius))
       {
