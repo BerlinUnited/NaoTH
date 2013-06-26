@@ -554,7 +554,7 @@ bool MaximumRedBallDetector::checkIfPixelIsOrange(Vector2d coord)
 }
 
 void MaximumRedBallDetector::clearDublicatePoints (BallPointList& ballPoints) {
-    vector<Vector2<int > > dublicatePointList;
+	vector<Vector2<int> > dublicatePointList;
 	bool foundDublicate = false;
 	for (int i=0;i<ballPoints.length; i++){
 		for(int j=i+1; j<ballPoints.length; j++) {
