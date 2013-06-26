@@ -33,6 +33,7 @@ option play_soccer
     }
     action
     {
+      show_calibration();
       motion.type = stand;
       head.control_mode = look_straight_ahead;
     }
