@@ -8,8 +8,10 @@ option play_soccer
 
   initial state idle{
     decision{
-      else if (( (game.current_mode == playing)||(game.current_mode == ready) ))
+      else if ( (game.current_mode == playing)||(game.current_mode == ready) )
         goto calibrate_before_ready_or_play;
+      else if (game.current_mode == set)
+        goto set;
       else
         stay;
     }

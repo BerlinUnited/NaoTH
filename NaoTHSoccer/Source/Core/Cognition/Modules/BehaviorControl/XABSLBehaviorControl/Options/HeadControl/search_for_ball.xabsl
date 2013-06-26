@@ -94,41 +94,19 @@ option search_for_ball
     }
   }
 
-  // TODO: does this state include try_to_look_at_the_old_ball?
-  state search_for_ball_around_ball
-  {
-    decision
-    {
-      if (ball.was_seen)
-        goto look_at_ball_percept;
-      else if(state_time > 2000)
-        goto search_for_ball_right;
-      else
-        stay;
-    }
-    action
-    {
-      head.motion_type = search;
-
-      head.search.center.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.search.center.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.search.center.z = ball.radius;
-      head.search.size.x = 200;
-      head.search.size.y = 200;
-      head.search.size.z = 0;
-    }
-  }
-  
+    
   state look_at_ball
   {
     decision
     {
       if (ball.time_since_last_seen > 1000)
       {
-        if(state_time > 1000)// I've seen the ball for a while => look at the old model
-          goto search_for_ball_around_ball;
-        else // I'just came here, but there is no ball => search for it
+        if((state_time > 1000)&&(ball.y>0))// I've seen the ball for a while => look at the old model
+          goto search_for_ball_left;
+        else if(state_time>1000)
           goto search_for_ball_right;
+        else        
+          stay;
       }
       else
         stay;

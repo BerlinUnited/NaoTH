@@ -60,9 +60,9 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    int left;
-    int right;
-    int invalid;
+    double left;
+    double right;
+    double invalid;
   };
 
   Parameters footParams;

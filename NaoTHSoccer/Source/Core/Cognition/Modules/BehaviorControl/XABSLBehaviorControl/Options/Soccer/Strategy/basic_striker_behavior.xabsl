@@ -95,7 +95,7 @@ option basic_striker_behavior{
     decision {
       else if (ball.time_since_last_seen>1000)
         goto decide_search_far_or_close;
-      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>150)
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
       else if(abs(value=attack.direction.preview)<10)
         goto attack;
@@ -112,7 +112,7 @@ option basic_striker_behavior{
     decision {
       else if (ball.time_since_last_seen>1000)
         goto decide_search_far_or_close;
-      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>150)
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
       else if(abs(value=attack.direction.preview)<10)
         goto attack;
