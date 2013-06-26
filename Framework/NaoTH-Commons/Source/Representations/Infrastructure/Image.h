@@ -120,7 +120,7 @@ namespace naoth
     // TODO: remove unsigned to prevent strange implicite casts
     inline Pixel get(const unsigned int x, const unsigned int y) const
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
@@ -141,7 +141,7 @@ namespace naoth
      */
     inline void get(const unsigned int x, const unsigned int y, Pixel& p) const
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       p.y = yuv422[yOffset];      
@@ -171,7 +171,7 @@ namespace naoth
      */
     inline Pixel getCorrected(const unsigned int x, const unsigned int y) const
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
@@ -193,7 +193,7 @@ namespace naoth
      */
     inline void getCorrected(const unsigned int x, const unsigned int y, Pixel& p) const
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       p.y = (unsigned char) Math::clamp<int>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
@@ -207,7 +207,7 @@ namespace naoth
 
     inline void set(const unsigned int x, const unsigned int y, const Pixel& p)
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
       yuv422[yOffset] = p.y;
 
@@ -239,7 +239,7 @@ namespace naoth
       const unsigned char& cr // v
     )
     {
-      assert(isInside(x,y));
+      ASSERT(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
       yuv422[yOffset] = yy;
 

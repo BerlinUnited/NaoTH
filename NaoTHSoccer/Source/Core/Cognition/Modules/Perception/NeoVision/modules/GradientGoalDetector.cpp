@@ -41,8 +41,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   getGoalPercept().reset();
 
-
-
   //if(cameraID == CameraInfo::Top)
   {
     Vector3d zem = CameraGeometry::imagePixelToWorld(getCameraMatrix(), getImage().cameraInfo,
@@ -221,7 +219,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   Vector2<double> dir(-direction.y, direction.x);
 
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
-  //bool goalPostFound = false;
   goalPosts.clear();
 
   //std::cout << std::endl << " ------ " << std::endl;
@@ -375,11 +372,8 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
         }
       }//end while
 
-      bool goalPostFound = false;
       if(footPointFound)
       {
-
-        goalPostFound = true;
         GoalPercept::GoalPost post;
 
         post.basePoint = Vector2<int>(pointBuffer[2]);

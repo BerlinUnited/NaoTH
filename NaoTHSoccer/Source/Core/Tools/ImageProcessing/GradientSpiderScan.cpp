@@ -70,7 +70,7 @@ void GradientSpiderScan::setDrawScanLines(bool draw)
   drawScanLines = draw;
 }
 
-void GradientSpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints)
+void GradientSpiderScan::scan(const Vector2<int>& start, ScanPointList& goodPoints, ScanPointList& badPoints)
 {
   Scans scans; //a list of scans to perform
 
@@ -91,7 +91,7 @@ void GradientSpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoin
   useDynamicThresholdY = false;
 }
 
-void GradientSpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans scans)
+void GradientSpiderScan::scan(ScanPointList& goodPoints, ScanPointList& badPoints, Scans scans)
 {
   //remember the number of performed scans
   int numberOfScans = 0;
@@ -138,7 +138,7 @@ void GradientSpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoint
 
 }//end spiderSearch
 
-bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& direction, PointList<20>& goodPoints, PointList<20>& badPoints)
+bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& direction, ScanPointList& goodPoints, ScanPointList& badPoints)
 {
   Vector2<int> currentPoint(start);  //set the starting point
   Vector2<int> borderPoint;      // to remember the border point ...
@@ -248,15 +248,21 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
   {
     borderPoint = brightBeginPoint;
     borderPointFound = true;
-    LINE_PX(ColorClasses::skyblue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+    if(drawScanLines)
+    {
+      LINE_PX(ColorClasses::skyblue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
+    }
   }
   if(borderPointFound) //if a point was found ...
   {
     //that point was followed by a border pixel, does not lie at the images border or is the result of a scan along that border ...
     if(!pixelAtImageBorder(borderPoint, 2) || isBorderScan(borderPoint, direction, 2)) {
       goodPoints.add(borderPoint); //it's good point
-		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x-4), (unsigned int)(borderPoint.y), (unsigned int)(borderPoint.x+4), (unsigned int)(borderPoint.y));
-		  LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y-4), (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y+4));
+      if(drawScanLines)
+      {
+		    LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x-4), (unsigned int)(borderPoint.y), (unsigned int)(borderPoint.x+4), (unsigned int)(borderPoint.y));
+		    LINE_PX(ColorClasses::blue, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y-4), (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y+4));
+      }
     } else {
       badPoints.add(borderPoint);  //otherwise it's a bad one
     }

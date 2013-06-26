@@ -3,11 +3,12 @@
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
+* @author <a href="mailto:woltersd@informatik.hu-berlin.de">Peter Woltersdorf</a>
 * Definition of class MaximumRedBallDetector
 */
 
-#ifndef __MaximumRedBallDetector_H_
-#define __MaximumRedBallDetector_H_
+#ifndef _MaximumRedBallDetector_H_
+#define _MaximumRedBallDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -38,6 +39,7 @@
 // tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/GradientSpiderScan.h"
+#include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(Image)
@@ -97,6 +99,8 @@ private:
   bool getBestModel(BallPointList& pointList);
   bool checkIfPixelIsOrange (Vector2d coord);
   void clearDublicatePoints ( BallPointList& ballPoints);
+  bool getBestBallBruteForce(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestBallRansac(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
   
   class Parameters: public ParameterList
   {
@@ -109,7 +113,7 @@ private:
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
-	  PARAMETER_REGISTER(maxBlueValue) = 60;
+	    PARAMETER_REGISTER(maxBlueValue) = 60;
 
       syncWithConfig();
 
@@ -131,114 +135,19 @@ private:
 
   Parameters params;
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getImageTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getImage();
-    }
-  };
-  
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getCameraMatrix();
-    }
-  };
 
-  const CameraInfo& getCameraInfo() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getCameraInfoTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getCameraInfo();
-    }
-  };
+  // double cam stuff
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, Image);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BodyContour);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BaseColorRegionPercept);
 
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  const FieldColorPercept& getFieldColorPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getFieldColorPerceptTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getFieldColorPercept();
-    }
-  };
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getFieldPercept();
-    }
-  };
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getBodyContourTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getBodyContour();
-    }
-  };
-
-  const BaseColorRegionPercept& getBaseColorRegionPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getBaseColorRegionPerceptTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getBaseColorRegionPercept();
-    }
-  };
-  
-  BallPercept& getBallPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return MaximumRedBallDetectorBase::getBallPerceptTop();
-    }
-    else
-    {
-      return MaximumRedBallDetectorBase::getBallPercept();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(MaximumRedBallDetector, BallPercept);
           
 };//end class MaximumRedBallDetector
 
-#endif // __MaximumRedBallDetector_H_
+#endif // _MaximumRedBallDetector_H_
