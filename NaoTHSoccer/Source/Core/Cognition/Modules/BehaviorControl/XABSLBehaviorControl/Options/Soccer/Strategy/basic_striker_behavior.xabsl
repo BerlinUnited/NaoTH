@@ -98,7 +98,8 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      move_around_ball(direction=30, radius=vector.abs(x=ball.preview.x, y=ball.preview.y));
+      move_around_ball(direction=30, radius=170);
+      motion.walk.style = fast;
     }
   }
 
@@ -114,7 +115,8 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      move_around_ball(direction=-30, radius=vector.abs(x=ball.preview.x, y=ball.preview.y));
+      move_around_ball(direction=-30, radius=170);
+      motion.walk.style = fast;
     }
   }
 
