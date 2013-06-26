@@ -206,7 +206,8 @@ bool MaximumRedBallDetector::findBall ()
   // display the final points
   DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:mark_best_points",
     for(int i = 0; i < bestPoints.length; i++) {
-      POINT_PX(ColorClasses::red, bestPoints[i].x, bestPoints[i].y);
+      LINE_PX(ColorClasses::red, bestPoints[i].x-2, bestPoints[i].y, bestPoints[i].x-2, bestPoints[i].y);
+      LINE_PX(ColorClasses::red, bestPoints[i].x, bestPoints[i].y-2, bestPoints[i].x, bestPoints[i].y+2);
     }
   );
 
