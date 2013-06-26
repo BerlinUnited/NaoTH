@@ -552,34 +552,38 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 
 int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const
 {
-// sensor resetting by whole goal
-  if(getSensingGoalModel().someGoalWasSeen)
+  // sensor resetting by whole goal
+  if(!getSensingGoalModel().someGoalWasSeen || 
+     !getSensingGoalModel().horizonScan ||
+     getSensingGoalModel().goal.calculateCenter().angle() > Math::fromDegrees(60))
   {
-    // currently, getCompassDirection() is in fact just the rotation of the robot pose
-    Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
+    return n;
+  }
+    
+  // currently, getCompassDirection() is in fact just the rotation of the robot pose
+  Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
 
-    if(isInsideCarpet(pose.translation))
+  if(isInsideCarpet(pose.translation))
+  {
+    sampleSet[n].translation = pose.translation;
+    sampleSet[n].rotation = pose.rotation;
+    n++;
+  }
+    
+  // HACK: generate a mirrored pose
+  if(n < (int)sampleSet.size() && !getRobotPose().isValid)
+  {
+    Pose2D poseMirrored(pose);
+    poseMirrored.translation *= -1;
+    poseMirrored.rotate(Math::pi);
+
+    if(isInsideCarpet(poseMirrored.translation))
     {
       sampleSet[n].translation = pose.translation;
       sampleSet[n].rotation = pose.rotation;
       n++;
     }
-    
-    // HACK: generate a mirrored pose
-    if(n < (int)sampleSet.size() && !getRobotPose().isValid)
-    {
-      Pose2D poseMirrored(pose);
-      poseMirrored.translation *= -1;
-      poseMirrored.rotate(Math::pi);
-
-      if(isInsideCarpet(poseMirrored.translation))
-      {
-        sampleSet[n].translation = pose.translation;
-        sampleSet[n].rotation = pose.rotation;
-        n++;
-      }
-    }
-  }//end if
+  }
 
   return n;
 }//end sensorResetBySensingGoalModel

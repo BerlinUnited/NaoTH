@@ -386,6 +386,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
         post.positionReliable = true;
         goalPosts.push_back(post);
         getGoalPercept().add(post);
+        getGoalPercept().horizonScan = horizon;
 
         DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
           CIRCLE_PX(ColorClasses::yellowOrange, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
