@@ -60,8 +60,10 @@
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/ActiveGoalLocator/CompareGoalModels.h"
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/GoalLocator/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/TestPostParticleFilter/TestPostParticleFilter.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
@@ -169,6 +171,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ParticleFilterBallLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(ActiveGoalLocator);
+  REGISTER_MODULE(CompareGoalModels);
+  REGISTER_MODULE(TestPostParticleFilter);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(UltraSoundObstacleLocator);

@@ -18,7 +18,8 @@ using namespace std;
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
-    canopyClustering(theSampleSet, parameters.thresholdCanopy),
+    //gridClustering(sampleSet),
+    canopyClustering(parameters.thresholdCanopy),
     initialized(false),
     // ...whole field by default
     fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
@@ -552,34 +553,38 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 
 int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const
 {
-// sensor resetting by whole goal
-  if(getSensingGoalModel().someGoalWasSeen)
+  // sensor resetting by whole goal
+  if(!getSensingGoalModel().someGoalWasSeen || 
+     !getSensingGoalModel().horizonScan ||
+     getSensingGoalModel().goal.calculateCenter().angle() > Math::fromDegrees(60))
   {
-    // currently, getCompassDirection() is in fact just the rotation of the robot pose
-    Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
+    return n;
+  }
+    
+  // currently, getCompassDirection() is in fact just the rotation of the robot pose
+  Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
 
-    if(isInsideCarpet(pose.translation))
+  if(isInsideCarpet(pose.translation))
+  {
+    sampleSet[n].translation = pose.translation;
+    sampleSet[n].rotation = pose.rotation;
+    n++;
+  }
+    
+  // HACK: generate a mirrored pose
+  if(n < (int)sampleSet.size() && !getRobotPose().isValid)
+  {
+    Pose2D poseMirrored(pose);
+    poseMirrored.translation *= -1;
+    poseMirrored.rotate(Math::pi);
+
+    if(isInsideCarpet(poseMirrored.translation))
     {
       sampleSet[n].translation = pose.translation;
       sampleSet[n].rotation = pose.rotation;
       n++;
     }
-    
-    // HACK: generate a mirrored pose
-    if(n < (int)sampleSet.size() && !getRobotPose().isValid)
-    {
-      Pose2D poseMirrored(pose);
-      poseMirrored.translation *= -1;
-      poseMirrored.rotate(Math::pi);
-
-      if(isInsideCarpet(poseMirrored.translation))
-      {
-        sampleSet[n].translation = pose.translation;
-        sampleSet[n].rotation = pose.rotation;
-        n++;
-      }
-    }
-  }//end if
+  }
 
   return n;
 }//end sensorResetBySensingGoalModel
@@ -1260,7 +1265,7 @@ void MonteCarloSelfLocator::execute()
    ************************************/
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.cluster(getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
   // a heap could collect more than 70% of all particles
@@ -1278,7 +1283,7 @@ void MonteCarloSelfLocator::execute()
   if(clusterSize < 0.3*(double)theSampleSet.size())
   {
     // make new cluseter
-    canopyClustering.cluster();
+    canopyClustering.cluster(theSampleSet);
 
     // find the largest cluster
     Moments2<2> tmpMoments;
@@ -1287,7 +1292,7 @@ void MonteCarloSelfLocator::execute()
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
     if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
-      canopyClustering.cluster(getRobotPose().translation);
+      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
     } else { // jump...
       getRobotPose().isValid = false;
     }

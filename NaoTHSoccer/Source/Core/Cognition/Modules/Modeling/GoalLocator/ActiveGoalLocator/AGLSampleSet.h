@@ -5,8 +5,8 @@
 * Declaration of class AGLSampleSet
 */
 
-#ifndef __AGLSampleSet_h_
-#define __AGLSampleSet_h_
+#ifndef _AGLSampleSet_h_
+#define _AGLSampleSet_h_
 
 #include "AGLSample.h"
 #include <Tools/Math/Moments2.h>
@@ -14,18 +14,13 @@
 
 class AGLSampleSet
 {
-public:
-  const unsigned int& numberOfParticles; /** TODO: make it as parameter */
-
 private:
-  unsigned int _numberOfParticles;
+  unsigned int numberOfParticles;
   bool isValid;
 
 public: 
   AGLSampleSet(unsigned int n = 10)
     : 
-    numberOfParticles(_numberOfParticles),
-    _numberOfParticles(n),
     isValid(false),
     samples(n),
     lastTotalWeighting(1.2) //choosen by observation for usual initial values
@@ -54,7 +49,7 @@ public:
 
   void setUnValid();
 
-  bool getIsValid();
+  bool getIsValid() const;
 
   /** 
    * reset the likelihoods of patricle to 1/numberOfParticles
@@ -73,11 +68,13 @@ public:
    */
   const AGLSample& operator[](int index) const {return samples[index];}
 
-  unsigned int size() const { return numberOfParticles; }
+  size_t size() const { return samples.size(); }
 
   AGLSample meanOfLargestCluster(Moments2<2>& moments);
 
   void drawCluster(unsigned int clusterId);
+
+  
 
 private:
   void quicksort(int low, int high);

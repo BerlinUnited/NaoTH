@@ -29,6 +29,7 @@ void WholeGoalLocator::execute(CameraInfo::CameraID id)
 
   // reset the model
   getSensingGoalModel().someGoalWasSeen = false;
+  getSensingGoalModel().horizonScan = false;
   getCameraMatrixOffset().offsetByGoalModel = Vector2d();
 
   // negative odometry
@@ -49,6 +50,7 @@ void WholeGoalLocator::execute(CameraInfo::CameraID id)
     {
       if(checkAndCalculateSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(j)))
       {
+        getSensingGoalModel().horizonScan = getGoalPercept().horizonScan;
         break; // a goal was found
       }
     }//end for

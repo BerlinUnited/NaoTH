@@ -2,48 +2,54 @@
  * @file ActiveGoalLocator.h
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
- * Declaration of class ActiveGoalLocatorSimpleParticle
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * Declaration of class ActiveGoalLocator
  */
 
-#ifndef __ActiveGoalLocator_h_
-#define __ActiveGoalLocator_h_
+#ifndef _ActiveGoalLocator_h_
+#define _ActiveGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
-#include "AGLParameters.h"
-#include "AGLSampleSet.h"
-#include "AGLSampleBuffer.h"
-
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/CameraMatrix.h" //for particlefilter
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 
 // Tools
 #include <vector>
-#include "Tools/Math/Geometry.h"
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
+#include "Tools/CameraGeometry.h" //???
+
+
+// local stuff
+#include "AGLParameters.h"
+#include "AGLSampleSet.h"
+#include "PostParticleFilter.h"
+#include "Assoziation.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(ActiveGoalLocator)
   REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  
   REQUIRE(PlayerInfo)
   REQUIRE(BodyState)
-  REQUIRE(CameraMatrix)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
   REQUIRE(CompassDirection)
+  REQUIRE(CameraInfo)
 
   PROVIDE(LocalGoalModel)
 END_DECLARE_MODULE(ActiveGoalLocator)
@@ -55,50 +61,66 @@ class ActiveGoalLocator : private ActiveGoalLocatorBase
 
 public:
   ActiveGoalLocator();
-  ~ActiveGoalLocator(){}
+  virtual ~ActiveGoalLocator(){}
 
+  /** */
   virtual void execute();
 
 private:
 
-  double goalWidth;
+  /** */
+  typedef PostParticleFilter PostHypothesis;
 
+
+  /** */
   AGLParameters parameters;
 
-  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
-  AGLSampleBuffer theSampleBuffer;
-
+  /** */
   OdometryData lastRobotOdometry;
 
-  class Cluster
-  {
-  public:
-      Cluster():
-          canopyClustering(sampleSet){}
+  /** short term percept buffer */
+  typedef RingBuffer<AGLBSample, 67> AGLSampleBuffer;
+  AGLSampleBuffer theSampleBuffer;
+  CanopyClustering<AGLSampleBuffer> ccSampleBuffer;
+  
+  /** */
+  std::vector<PostHypothesis> postHypotheses;
 
-      CanopyClustering<AGLSampleSet> canopyClustering;
-      AGLSampleSet sampleSet;
-  };
 
-  Cluster ccSamples[10];
+private:
 
+  void removeSamplesByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int maxFrames) const;
+
+  /** odometry update */
+  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
+  
+  /** check if a new hypothesis may be creted */
+  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
+
+  /** create a new hypothsis */
+  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
+  
+  void estimateGoalModel();
+
+  // experimental
+  void calculateGoalModelAssosiations();
+
+  /** debug visualization */
   void debugDrawings();
   void debugPlots();
   void debugStdOut();
 
-  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
-
-  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
-  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
-  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
-  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
-  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
-  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
-  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
-
   //Tools
   std::string convertIntToString(int number);
 
+
+  const GoalPercept& getGoalPercept() {
+    return ActiveGoalLocatorBase::getGoalPerceptTop();
+  }
+
+  const CameraMatrix& getCameraMatrix() {
+    return ActiveGoalLocatorBase::getCameraMatrixTop();
+  }
 };
 
-#endif //__ActiveGoalLocator_h_
+#endif //_ActiveGoalLocator_h_

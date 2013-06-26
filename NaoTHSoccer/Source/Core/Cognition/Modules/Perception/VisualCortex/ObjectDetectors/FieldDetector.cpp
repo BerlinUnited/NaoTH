@@ -73,7 +73,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       {
         int idx = static_cast<int>(result.size())-1;
         ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        for(unsigned int i = 0; i < result.size(); i++)
+        for(int i = 0; i < (int)result.size(); i++)
         {
           TOP_LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
           idx = i;
@@ -85,7 +85,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       {
         int idx = static_cast<int>(result.size())-1;
         ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        for(unsigned int i = 0; i < result.size(); i++)
+        for(int i = 0; i < (int)result.size(); i++)
         {
           LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
           idx = i;

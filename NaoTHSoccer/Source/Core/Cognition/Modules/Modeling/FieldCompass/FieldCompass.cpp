@@ -9,9 +9,9 @@
 
 FieldCompass::FieldCompass()
 {
-}//Constructor
+}
 
 void FieldCompass::execute()
 {
   getCompassDirection().angle = getRobotPose().rotation;
-}//end FieldCompass::execute()
+}

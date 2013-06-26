@@ -169,7 +169,8 @@ void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInf
 
 SensingGoalModel::SensingGoalModel()
   : 
-  someGoalWasSeen(false)
+  someGoalWasSeen(false),
+  horizonScan(false)
 {
 }
 

@@ -150,14 +150,15 @@ void BroadCaster::socketSend(const std::string& data)
 
   GError *error = NULL;
   int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
-  if ( result != static_cast<int>(data.size()) )
-  {
-    g_warning("broadcast error, sended size = %d", result);
-  }
   if (error)
   {
     g_warning("g_socket_send_to error: %s", error->message);
     g_error_free(error);
   }
+  else if ( result != static_cast<int>(data.size()) )
+  {
+    g_warning("broadcast error, sended size = %d", result);
+  }
+
 }
 

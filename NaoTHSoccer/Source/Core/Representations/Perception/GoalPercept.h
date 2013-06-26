@@ -19,6 +19,7 @@ public:
   GoalPercept()
     : 
     angleToSeenGoal(0),
+    horizonScan(false),
     numberOfSeenPosts(0)
   {}
 
@@ -57,7 +58,6 @@ public:
     /* the posts base point on the ground */
     Vector2<double> position;
 
-
     static const char* getPostTypeName(PostType type)
     {
       switch(type) 
@@ -87,6 +87,8 @@ public:
   /* estimated position of the goal-centroid relative to the robot */
   Vector3<double> goalCentroid;
 
+  // the goal was found at the horizon
+  bool horizonScan; 
 
 private:
   /* number of seen posts */
@@ -126,6 +128,7 @@ public:
   {
     numberOfSeenPosts = 0;
     angleToSeenGoal = 0; 
+    horizonScan = false;
   }//end reset
 
 
@@ -133,6 +136,8 @@ public:
   {
     stream << "angleToSeenGoal=" << angleToSeenGoal << std::endl;
     stream << "goalCentroid=" << goalCentroid << std::endl;
+    stream << "horizonScan=" << (horizonScan?"true":"false") << std::endl;
+    
     for(unsigned int n=0; n<numberOfSeenPosts; n++)
     {
       stream << "=====Post " << n << "=====" << std::endl;

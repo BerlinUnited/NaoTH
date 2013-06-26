@@ -5,8 +5,8 @@
 * Declaration of class Sample
 */
 
-#ifndef __Sample_h_
-#define __Sample_h_
+#ifndef _Sample_h_
+#define _Sample_h_
 
 #include "Tools/Math/Pose2D.h"
 

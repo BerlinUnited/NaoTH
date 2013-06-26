@@ -103,6 +103,7 @@ public:
 
   //indicates whether a complete goal was seen in the last frame
   bool someGoalWasSeen;
+  bool horizonScan;
 };
 
 #endif // __GoalModel_h_

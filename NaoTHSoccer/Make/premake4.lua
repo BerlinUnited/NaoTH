@@ -83,7 +83,6 @@ solution "NaoTHSoccer"
   configuration { "OptDebug" }
     defines { "DEBUG" }
     flags { "Optimize", "FatalWarnings" }
-
   
   configuration{"Native"}
     targetdir "../dist/Native"

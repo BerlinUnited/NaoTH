@@ -5,8 +5,8 @@
 * Declaration of class Sample
 */
 
-#ifndef __AGLSample_h_
-#define __AGLSample_h_
+#ifndef _AGLSample_h_
+#define _AGLSample_h_
 
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/Sample.h"
 #include "Tools/ColorClasses.h"
@@ -15,7 +15,7 @@ class AGLSample: public Sample2D
 {
 public: 
   AGLSample() : likelihood(0.0){}
-  ~AGLSample() {}
+  virtual ~AGLSample() {}
 
   double likelihood;
   Vector2<double> translation;
@@ -25,7 +25,18 @@ public:
   {
     return translation;
   }
-
 };
 
-#endif //__AGLSample_h_
+class AGLBSample: public AGLSample
+{
+public:
+  AGLBSample()
+    : 
+    frameNumber(0)
+  {}
+  virtual ~AGLBSample() {}
+
+  unsigned int frameNumber;
+};
+
+#endif //_AGLSample_h_

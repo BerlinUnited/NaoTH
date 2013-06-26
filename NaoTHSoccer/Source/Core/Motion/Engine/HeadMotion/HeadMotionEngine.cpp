@@ -238,6 +238,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   // todo: this filter is unstable, make it a PID or so before use
   double maxAcceleration = 0.1;
   MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
+
   static Vector2d velocity;
   velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
 
