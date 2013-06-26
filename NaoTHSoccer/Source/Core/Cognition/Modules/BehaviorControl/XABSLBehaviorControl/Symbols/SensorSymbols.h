@@ -25,6 +25,7 @@
 #include "Representations/Modeling/CollisionModel.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/CalibrationData.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
 
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   PROVIDE(Path)
   REQUIRE(Image)
   REQUIRE(CollisionModel)
+  REQUIRE(CalibrationData)
 
   REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols)
@@ -66,7 +68,6 @@ public:
     radarGrid(getRadarGrid()),
     path(getPath()),
     image(getImage()),
-    enableInertialSensorCalibrate(false),
     forceGetCameraSettings(false),
     forceGetCameraSettingsOldValue(false),
     resetingCamera(false),
@@ -97,8 +98,6 @@ private:
   Path& path;
   Image const& image;
 
-
-  bool enableInertialSensorCalibrate;
   bool forceGetCameraSettings;
   bool forceGetCameraSettingsOldValue;
 

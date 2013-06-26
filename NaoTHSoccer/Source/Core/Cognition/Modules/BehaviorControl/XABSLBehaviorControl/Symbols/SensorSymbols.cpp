@@ -16,8 +16,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.inertial.x", &getInertialSensorX);
   engine.registerDecimalInputSymbol("sensor.inertial.y", &getInertialSensorY);
 
-  // not used now
-  engine.registerBooleanOutputSymbol("sensor.inertial.calibrate", &enableInertialSensorCalibrate);
+  engine.registerBooleanInputSymbol("sensor.inertial.calibrated", &getCalibrationData().calibrated);
 
   engine.registerDecimalInputSymbol("sensor.ultrasound", &ultraSoundReceiveData.rawdata);
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);

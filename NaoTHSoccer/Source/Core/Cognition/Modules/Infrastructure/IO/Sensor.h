@@ -27,7 +27,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-//#include <Representations/Infrastructure/CalibrationData.h>
+#include "Representations/Infrastructure/CalibrationData.h"
 
 
 #include "Representations/Infrastructure/SerialSensorData.h"
@@ -76,7 +76,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(InertialModel)
   PROVIDE(CameraMatrixBuffer)
   PROVIDE(CameraMatrixBuffer2)
-  //PROVIDE(CalibrationData)
+  PROVIDE(CalibrationData)
   
 END_DECLARE_MODULE(Sensor)
 

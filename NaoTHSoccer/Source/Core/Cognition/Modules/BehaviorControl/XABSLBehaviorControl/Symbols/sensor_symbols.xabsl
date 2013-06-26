@@ -12,6 +12,9 @@ namespace sensor("Sensor Symbols") {
 
   /** Inertial Y */
   float input sensor.inertial.y;
+  
+  /** indicates whether the inertial sensors are calibrated */
+  bool output sensor.inertial.calibrated;
 
   /** Calibrate inertial sensor */
   bool output sensor.inertial.calibrate;

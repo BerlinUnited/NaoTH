@@ -59,7 +59,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer2());
   platformInterface.registerInputChanel(getMotionStatus());
   platformInterface.registerInputChanel(getOdometryData());
-  //platformInterface.registerInputChanel(getCalibrationData());
+  platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
 }//end init
 

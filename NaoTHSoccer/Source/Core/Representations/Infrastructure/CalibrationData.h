@@ -29,6 +29,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
+    stream << "calibrated" << (calibrated?"true":"false") << std::endl;
     stream << "inertialSensorOffset = " << inertialSensorOffset << std::endl;
     stream << "gyroSensorOffset = " << gyroSensorOffset << std::endl;
     stream << "accSensorOffset = " << accSensorOffset << std::endl;
@@ -43,10 +44,20 @@ namespace naoth
   public:
     static void serialize(const CalibrationData& representation, naothmessages::CalibrationData* msg)
     {
+      msg->set_calibrated(representation.calibrated);
       DataConversion::toMessage(representation.inertialSensorOffset, *(msg->mutable_inertialsensoroffset()));
       DataConversion::toMessage(representation.gyroSensorOffset, *(msg->mutable_gyrosensoroffset()));
       DataConversion::toMessage(representation.accSensorOffset, *(msg->mutable_accsensoroffset()));
     }
+
+    static void deserialize(const naothmessages::CalibrationData* msg, CalibrationData& representation)
+    {
+      representation.calibrated = msg->calibrated();
+      DataConversion::fromMessage(msg->inertialsensoroffset(), representation.inertialSensorOffset);
+      DataConversion::fromMessage(msg->gyrosensoroffset(), representation.gyroSensorOffset);
+      DataConversion::fromMessage(msg->accsensoroffset(), representation.accSensorOffset);
+    }
+
 
     static void serialize(const CalibrationData& representation, std::ostream& stream)
     {
@@ -54,13 +65,6 @@ namespace naoth
       serialize(representation, &message);
       google::protobuf::io::OstreamOutputStream buf(&stream);
       message.SerializeToZeroCopyStream(&buf);
-    }
-
-    static void deserialize(const naothmessages::CalibrationData* msg, CalibrationData& representation)
-    {
-      DataConversion::fromMessage(msg->inertialsensoroffset(), representation.inertialSensorOffset);
-      DataConversion::fromMessage(msg->gyrosensoroffset(), representation.gyroSensorOffset);
-      DataConversion::fromMessage(msg->accsensoroffset(), representation.accSensorOffset);
     }
 
     static void deserialize(std::istream& stream, CalibrationData& representation)
