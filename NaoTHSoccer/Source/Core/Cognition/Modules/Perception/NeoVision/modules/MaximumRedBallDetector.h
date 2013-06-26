@@ -106,7 +106,7 @@ private:
   bool getBestBallRansac(const BallPointList& pointList, Vector2d& centerBest, double& radiusBest);
   bool checkModel(const BallPointList& pointList, Vector2d& center, double& radius, 
                   int& bestCount, Vector2d& centerBest, double& radiusBest);
-  void drawUsedPoints(const BallPointList& pointList, const Vector2d& center, const double& radius);
+  void drawUsedPoints(const Vector2d& center, const double& radius);
   
   class Parameters: public ParameterList
   {
