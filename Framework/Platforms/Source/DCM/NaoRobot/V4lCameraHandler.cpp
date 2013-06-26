@@ -65,11 +65,6 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   settingsOrder.push_back(CameraSettings::Exposure);
-  // HACK: somehow this helps but we have to find out why
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Exposure);
 
   // set our IDs
   initIDMapping();
@@ -927,6 +922,12 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
         int errorNumber = 0;
         while(!success && errorNumber < 100)
         {
+          if(*it == CameraSettings::Exposure)
+          {
+            // HACK: set first two other values
+            setSingleCameraParameter(csConst[*it], data.data[*it]-1);
+            setSingleCameraParameter(csConst[*it], data.data[*it]+1);
+          }
           int clippedValue = setSingleCameraParameter(csConst[*it], data.data[*it]);
           usleep(1000);
           if(clippedValue != data.data[*it])
@@ -946,16 +947,6 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           else
           {
             realValue = getSingleCameraParameter(csConst[*it]);
-            if(csConst[*it] == CameraSettings::Exposure)
-            {
-              clippedValue = (clippedValue << 2) >> 2;
-            }
-
-            if(csConst[*it] == CameraSettings::WhiteBalance)
-            {
-              clippedValue = ((clippedValue + 180) * 45) / 45 - 180;
-            }
-
             success = abs(realValue - clippedValue) <= allowedTolerance[*it];
 
             if(!success)
