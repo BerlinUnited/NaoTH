@@ -97,6 +97,8 @@ private:
   bool getBestModel(BallPointList& pointList);
   bool checkIfPixelIsOrange (Vector2d coord);
   void clearDublicatePoints ( BallPointList& ballPoints);
+  bool getBestBallBruteForce(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
+  bool getBestBallRansac(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
   
   class Parameters: public ParameterList
   {

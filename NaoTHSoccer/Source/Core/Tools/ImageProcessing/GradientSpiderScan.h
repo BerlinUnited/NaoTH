@@ -30,6 +30,8 @@ using namespace naoth;
 class GradientSpiderScan
 {
 public:
+  typedef PointList<20> ScanPointList;
+
   GradientSpiderScan(const Image& theImage, CameraInfo::CameraID camID);
 
   void init();
@@ -72,8 +74,8 @@ public:
     }//end remove
   };//end class Scans
 
-  void scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints);
-  void scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans scans);
+  void scan(const Vector2<int>& start, ScanPointList& goodPoints, ScanPointList& badPoints);
+  void scan(ScanPointList& goodPoints, ScanPointList& badPoints, Scans scans);
   void setDrawScanLines(bool draw);
   void setMaxBeamLength(unsigned int length);
   void setCurrentGradientThreshold(double threshold);
@@ -84,7 +86,7 @@ public:
 
 private:
   Pixel startPixel;
-  bool scanLine(const Vector2<int>& start, const Vector2<int>& direction, PointList<20>& goodPoints, PointList<20>& badPoints);
+  bool scanLine(const Vector2<int>& start, const Vector2<int>& direction, ScanPointList& goodPoints, ScanPointList& badPoints);
   inline bool isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const;
 
   inline bool pixelInImage(const Vector2<int>& pixel) const;
