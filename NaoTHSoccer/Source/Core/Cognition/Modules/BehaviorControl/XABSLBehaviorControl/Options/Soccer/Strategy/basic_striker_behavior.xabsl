@@ -10,13 +10,13 @@ option basic_striker_behavior{
     decision{
       else if(game.own_kickoff)
         goto idle;
-      else if(!game.own_kickoff && state_time < 10000)
-        stay;
+      else if(!game.own_kickoff && state_time > 10000)
+        goto idle;
       else
         stay;
     }
     action{
-      head.motion_type = search;
+      head.motion_type = search_for_ball;
     }
   }
   
