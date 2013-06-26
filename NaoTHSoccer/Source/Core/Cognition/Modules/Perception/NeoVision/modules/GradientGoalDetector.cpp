@@ -47,14 +47,24 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   getGoalPercept().reset();
 
-  Vector2d p1(0, getImage().cameraInfo.getOpticalCenterY());
-  Vector2d p2(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.getOpticalCenterY());
+  Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
+  Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
   Vector2d direction(1,0);
 
   if(horizon) {
     p1 = getArtificialHorizon().begin();
     p2 = getArtificialHorizon().end();
     direction = getArtificialHorizon().getDirection();
+  }
+
+  // sanity check
+  if( p1.x != 0 || 
+      p2.x != getImage().width()-1 ||
+      p1.y < 5 || p1.y > getImage().height() - 5 ||
+      p2.y < 5 || p2.y > getImage().height() - 5
+      ) 
+  {
+    return;
   }
   
   int imageBorderOffset = 25;
