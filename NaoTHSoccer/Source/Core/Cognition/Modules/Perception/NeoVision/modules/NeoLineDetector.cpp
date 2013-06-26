@@ -70,7 +70,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         const Edgel& edgelTwo = getScanLineEdgelPercept().edgels[j_max];
         LINE_PX(ColorClasses::red, edgelOne.point.x, edgelOne.point.y, edgelTwo.point.x, edgelTwo.point.y);
       );
-      edgelPairs.push_back(Vector2<int>(i,j_max));
+      edgelPairs.push_back(Vector2<int>((int)i,j_max));
     }
   }//end for i
   

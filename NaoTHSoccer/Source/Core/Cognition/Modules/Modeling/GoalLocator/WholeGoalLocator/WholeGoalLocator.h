@@ -38,7 +38,6 @@
 
 BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(FieldSidePercept)
-  
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(OdometryData)

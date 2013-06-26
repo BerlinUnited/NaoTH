@@ -18,7 +18,8 @@ using namespace std;
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
-    canopyClustering(theSampleSet, parameters.thresholdCanopy),
+    //gridClustering(sampleSet),
+    canopyClustering(parameters.thresholdCanopy),
     initialized(false),
     // ...whole field by default
     fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
@@ -1264,7 +1265,7 @@ void MonteCarloSelfLocator::execute()
    ************************************/
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.cluster(getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
   // a heap could collect more than 70% of all particles
@@ -1282,7 +1283,7 @@ void MonteCarloSelfLocator::execute()
   if(clusterSize < 0.3*(double)theSampleSet.size())
   {
     // make new cluseter
-    canopyClustering.cluster();
+    canopyClustering.cluster(theSampleSet);
 
     // find the largest cluster
     Moments2<2> tmpMoments;
@@ -1291,7 +1292,7 @@ void MonteCarloSelfLocator::execute()
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
     if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
-      canopyClustering.cluster(getRobotPose().translation);
+      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
     } else { // jump...
       getRobotPose().isValid = false;
     }

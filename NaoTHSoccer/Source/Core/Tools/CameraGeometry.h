@@ -34,6 +34,14 @@ public:
                                                    const double imgX,
                                                    const double imgY);
 
+
+  /**
+  * the same as relativePointToImage but without rounding to int
+  */
+  static Vector2<double> relativePointToImageDouble( const CameraMatrix& cameraMatrix,
+                                                     const naoth::CameraInfo& cameraInfo,
+                                                     const Vector3<double>& point);
+
   /**
    * Calculate the projection of a point in relative coordinates of the robot 
    * in the image. If the point is behind the image plane the result is (-1,-1)

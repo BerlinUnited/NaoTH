@@ -57,13 +57,17 @@ public:
 
 private:
   KFBLParameters parameters;
-  OdometryData lastRobotOdometry;
+  OdometryData lastRobotOdometry; //just for prebuffered percepts
+  OdometryData lastRobotOdometryAll;
 
   struct LocalBallPercept
   {
     FrameInfo lastFrameInfoWhenBallSeen;
     Vector2d lastSeenBall;
   };
+
+  //RingBuffer<BallPercept, 20> smoothingPerceptBuffer;
+  RingBuffer<BallPercept, 20> badPerceptBuffer;
 
   //stores last 10 BallPercepts
   RingBuffer<LocalBallPercept, 10 > ballBuffer;
@@ -83,7 +87,9 @@ private:
   bool modelIsValid;
   bool wasReactiveInLastFrame;
 
-  void reset();
+  void executeKalman(BallPercept getPercept);
+
+  void reset(BallPercept newPercept);
   void resetMatrices();
   void updateMotion(Vector2<double>& Sx_, Vector2<double>& Sy_);
 
@@ -91,6 +97,8 @@ private:
   void predictByMotionModelContineously(Vector2<double>& position, Vector2<double>& speed, double time);
 
   void updatePreviewModel();
+
+  void removePerceptsByFrameNumber(RingBuffer<BallPercept, 20>& buffer, const unsigned int maxFrames) const;
 
 
   const BallPercept& getBallPercept() const

@@ -11,7 +11,7 @@
 
 void AGLSampleSet::sort()
 {
-  quicksort(0, numberOfParticles-1);
+  quicksort(0, (int)samples.size()-1);
 }//end sort
 
 void AGLSampleSet::quicksort(int low, int high)
@@ -57,14 +57,14 @@ void AGLSampleSet::quicksort(int low, int high)
 void AGLSampleSet::normalize()
 {
   double sum = 0;
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < samples.size(); i++)
   {
     sum += samples[i].likelihood;
   }
 
   if(sum == 0) return;
 
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < samples.size(); i++)
   {
     samples[i].likelihood /= sum;
   }
@@ -81,15 +81,15 @@ void AGLSampleSet::setUnValid()
   isValid = false;
 }//end setUnvalid
 
-bool AGLSampleSet::getIsValid()
+bool AGLSampleSet::getIsValid() const
 {
   return isValid;
 }//end getIsValid;
 
 void AGLSampleSet::resetLikelihood()
 {
-  double likelihood = 1.0/static_cast<double>(numberOfParticles);
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  double likelihood = 1.0/static_cast<double>(samples.size());
+  for(unsigned int i = 0; i < samples.size(); i++)
   {
     samples[i].likelihood = likelihood;
   }
@@ -100,15 +100,15 @@ void AGLSampleSet::resetLikelihood()
 AGLSample AGLSampleSet::meanOfLargestCluster(Moments2<2>& moments)
 {
   // TODO: make it better
-  std::vector<int> cluster(numberOfParticles);
-  std::vector<Vector2<double> > averageTranslation(numberOfParticles);
-  //std::vector<Vector2<double> > averageRotation(numberOfParticles);
+  std::vector<int> cluster(samples.size());
+  std::vector<Vector2<double> > averageTranslation(samples.size());
+  //std::vector<Vector2<double> > averageRotation(samples.size());
   unsigned int maxIndex = 0;
   double maxNumber = 0;
 
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < samples.size(); i++)
   {
-    if(samples[i].cluster >= 0 && samples[i].cluster < (int)numberOfParticles)
+    if(samples[i].cluster >= 0 && samples[i].cluster < (int)samples.size())
     {
       int idx = samples[i].cluster;
       cluster[idx]++;
@@ -131,7 +131,7 @@ AGLSample AGLSampleSet::meanOfLargestCluster(Moments2<2>& moments)
 
 
   // calculate the covariance of the largest cluster
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < samples.size(); i++)
   {
     const AGLSample& sample = samples[i];
     if(sample.cluster == (int)maxIndex)
@@ -147,7 +147,7 @@ AGLSample AGLSampleSet::meanOfLargestCluster(Moments2<2>& moments)
 void AGLSampleSet::drawCluster(unsigned int clusterId)
 {
   FIELD_DRAWING_CONTEXT;
-  for (unsigned int i = 0; i < numberOfParticles; i++)
+  for (unsigned int i = 0; i < samples.size(); i++)
   {
     if (samples[i].cluster == (int)clusterId)
       PEN("FFFFFF", 20);

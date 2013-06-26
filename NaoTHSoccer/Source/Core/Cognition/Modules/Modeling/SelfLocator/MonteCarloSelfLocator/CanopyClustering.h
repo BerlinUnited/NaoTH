@@ -6,8 +6,8 @@
 * Declaration of class CanopyClustering
 */
 
-#ifndef __CanopyClustering_h_
-#define __CanopyClustering_h_
+#ifndef _CanopyClustering_h_
+#define _CanopyClustering_h_
 
 #include "SampleSet.h"
 
@@ -15,15 +15,17 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 
+#include <vector>
+
 template<class C>
 class CanopyClustering
 {
 public: 
-  CanopyClustering(C& sampleSet, double clusterThreshold = 0)
+  CanopyClustering(double clusterThreshold = 0, int maxNumberOfClusters = 100)
     :
-    sampleSet(sampleSet),
     numOfClusters(0),
     largestCluster(-1),
+    clusters(maxNumberOfClusters),
     clusterThreshold(clusterThreshold)
   {
   }
@@ -64,26 +66,27 @@ public:
 
   unsigned int size() { return numOfClusters; }
   const CanopyCluster& operator[](int index) const { ASSERT(index >= 0 && (unsigned int)index < this->numOfClusters); return clusters[index];}
-  const CanopyCluster& getLargestCluster() const {return (*this).clusters[largestCluster];  }
+  const CanopyCluster& getLargestCluster() const { ASSERT(largestCluster >= 0 && (unsigned int)largestCluster < this->numOfClusters); return (*this).clusters[largestCluster];  }
   const int& getLargestClusterID() const {return this->largestCluster;}
 
   void setClusterThreshold(const double clusterThreshold) {this->clusterThreshold = clusterThreshold;}
 
-  void cluster()
+  void cluster(C& sampleSet)
   {
     numOfClusters = 0;
     largestCluster = -1;
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
-      sampleSet[j].cluster = -1; // no cluster
+      Sample2D& sample = sampleSet[j];
+      sample.cluster = -1; // no cluster
 
       // look for a cluster with the smallest distance
       double minDistance = 10000; // 10m
       int minIdx = -1;
 
       for (unsigned int k = 0; k < numOfClusters; k++) {
-        double dist = clusters[k].distance(sampleSet[j].getPos());
+        double dist = clusters[k].distance(sample.getPos());
         if(dist < minDistance)
         {
           minIdx = (int)k;
@@ -92,20 +95,20 @@ public:
       }//end for
 
       // try to add to the nearest cluster
-      if(minIdx != -1 && isInCluster(clusters[minIdx], sampleSet[j]))
+      if(minIdx != -1 && isInCluster(clusters[minIdx], sample))
       {
-        sampleSet[j].cluster = minIdx;
-        clusters[minIdx].add(sampleSet[j].getPos());
+        sample.cluster = minIdx;
+        clusters[minIdx].add(sample.getPos());
 
         if(clusters[minIdx].size() > clusters[largestCluster].size())
           largestCluster = minIdx;
       }
       // othervise create new cluster
-      else if(numOfClusters < maxNumberOfClusters)
+      else if(numOfClusters < clusters.size()) // ACHTUNG: don't resize clusters
       {
         // initialize a new cluster
-        clusters[numOfClusters].set(sampleSet[j].getPos());
-        sampleSet[j].cluster = (int)numOfClusters;
+        clusters[numOfClusters].set(sample.getPos());
+        sample.cluster = (int)numOfClusters;
         
         if(largestCluster == -1)
           largestCluster = numOfClusters;
@@ -116,13 +119,16 @@ public:
 
 
     // merge close clusters
+    // note: don't consider clusters smaller than minClusterSize
+    const int minClusterSize = 4;
     for(unsigned int k = 0; k < numOfClusters; k++)
     {
-      if(clusters[k].size() < 4) {
+      if((int)clusters[k].size() < minClusterSize) {
         continue;
       }
-      for(unsigned int j = k+1; j < numOfClusters; j++) {
-        if ( clusters[j].size() < 4) {
+      for(unsigned int j = k+1; j < numOfClusters; j++) 
+      {
+        if ( (int)clusters[j].size() < minClusterSize) {
           continue;
         }
         // merge the clusters k and j
@@ -147,7 +153,7 @@ public:
   }//end cluster
 
 
-  unsigned int cluster(const Vector2<double>& start)
+  unsigned int cluster(C& sampleSet, const Vector2<double>& start)
   {
     numOfClusters = 1;
     largestCluster = 0;
@@ -174,7 +180,7 @@ private:
   class CanopyClusterBuilder: public CanopyCluster
   {
   public:
-    ~CanopyClusterBuilder(){}
+    virtual ~CanopyClusterBuilder(){}
     CanopyClusterBuilder(){}
     CanopyClusterBuilder(const Vector2<double>& point)
     {
@@ -229,14 +235,13 @@ private:
     return cluster.distance(sample.getPos()) < clusterThreshold;
   }
 
-
-  C& sampleSet;
-  static const unsigned int maxNumberOfClusters = 100;
-  CanopyClusterBuilder clusters[maxNumberOfClusters];  //FIXME
+  // results of the clustering
   unsigned int numOfClusters;
   int largestCluster;
+  std::vector<CanopyClusterBuilder> clusters;  //FIXME
 
+  // parameter of clustering
   double clusterThreshold;
 };
 
-#endif //__CanopyClustering_h_
+#endif //_CanopyClustering_h_

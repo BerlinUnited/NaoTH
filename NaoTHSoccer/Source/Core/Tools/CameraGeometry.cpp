@@ -26,7 +26,7 @@ Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cam
 }//end imagePixelCameraCoords
 
 
-Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMatrix,
+Vector2d CameraGeometry::relativePointToImageDouble( const CameraMatrix& cameraMatrix,
                                              const CameraInfo& cameraInfo,
                                              const Vector3<double>& point)
 {
@@ -43,9 +43,23 @@ Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMat
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
   
+  Vector2d pointInImage;
+  pointInImage.x = -(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX();
+  pointInImage.y = -(vectorToPoint.z * factor) + 0.5 +  cameraInfo.getOpticalCenterY();
+
+  return pointInImage;
+}//end relativePointToImageDouble
+
+Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMatrix,
+                                             const CameraInfo& cameraInfo,
+                                             const Vector3<double>& point)
+{
+  Vector2d pointInImageDouble = relativePointToImageDouble(cameraMatrix,cameraInfo,point);
+  
+  // round to pixel
   Vector2<int> pointInImage;
-  pointInImage.x = (int)floor(-(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX());
-  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 +  cameraInfo.getOpticalCenterY());
+  pointInImage.x = (int)floor(pointInImageDouble.x + 0.5);
+  pointInImage.y = (int)floor(pointInImageDouble.y + 0.5);
 
   return pointInImage;
 }//end relativePointToImage
