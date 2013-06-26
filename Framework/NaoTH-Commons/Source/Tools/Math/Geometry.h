@@ -13,6 +13,7 @@
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
+#include "Tools/Math/PointList.h"
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
@@ -87,6 +88,18 @@ public:
     const Math::Line& line,
     Vector2<int>& point1, 
     Vector2<int>& point2);
+
+  /**
+  * Calculated a cricle out of up to 20 points
+  * @param pointList The list of points
+  * @param center The calulated center returned if ready
+  * @param radius The calulated radius returned if ready
+  */
+  static bool calculateCircle( 
+    const PointList<20>& pointList, 
+    Vector2<double>& center, 
+    double& radius);
+
 };
 
 #endif //__Geometry_h____

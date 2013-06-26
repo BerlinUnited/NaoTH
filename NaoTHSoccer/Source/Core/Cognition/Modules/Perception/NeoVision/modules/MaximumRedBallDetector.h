@@ -83,6 +83,8 @@ public:
  
 private:
   CameraInfo::CameraID cameraID;
+  double dynamicThresholdY;
+
   typedef PointList<20> BallPointList;
   BallPointList goodPoints;
   BallPointList badPoints;
@@ -95,9 +97,9 @@ private:
   Vector2<int> getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
-  bool findBall ();
+  bool findBall();
   bool getBestModel(BallPointList& pointList);
-  bool checkIfPixelIsOrange (Vector2d coord);
+  bool checkIfPixelIsOrange (Vector2<int> point);
   void clearDublicatePoints ( BallPointList& ballPoints);
   bool getBestBallBruteForce(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
   bool getBestBallRansac(BallPointList& pointList, Vector2<double>& centerBest, double& radiusBest);
@@ -134,7 +136,6 @@ private:
   };
 
   Parameters params;
-
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, Image);
