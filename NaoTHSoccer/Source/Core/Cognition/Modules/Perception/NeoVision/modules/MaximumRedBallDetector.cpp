@@ -47,7 +47,10 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  getBallPercept().reset();  
+  getBallPercept().reset();
+
+  double diff = getBaseColorRegionPercept().spanWidthEnv.y / 100;
+	dynamicThresholdY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.5 - diff;
 
   findBall();
 }//end execute
@@ -274,12 +277,22 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 	Vector2d center;
 	double radius = 0;
 	double bestErr = 10000.0;
+  Vector2<int> boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
+  Vector2<int> boundingBoxMax;
 
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
-	for(int j = 0; j < pointList.length; j++) {
+	for(int j = 0; j < pointList.length; j++) 
+  {
 		possibleModells[0].add(pointList[j]);
+
+    boundingBoxMin.x = min(boundingBoxMin.x, pointList[j].x);
+    boundingBoxMin.y = min(boundingBoxMin.y, pointList[j].y);
+    boundingBoxMax.x = max(boundingBoxMax.x, pointList[j].x);
+    boundingBoxMax.y = max(boundingBoxMax.y, pointList[j].y);
 	}
+
+  double diag2 = (boundingBoxMax - boundingBoxMin).abs2();
 
 	int firstPoint = -1;
 	int	secondPoint = 1;
@@ -338,7 +351,8 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 		  if( count*2 >= pointList.length && 
           (count > bestCount || (count == bestCount && meanError < bestErr) ) &&
           (Vector2d(start) - center).abs2() <= radius*radius &&
-          radius >= params.minSizeInImage && radius <= params.maxSizeInImage
+          radius >= params.minSizeInImage && radius <= params.maxSizeInImage &&
+          diag2 > radius * radius 
       )
 		  {
 			  centerBest = center;
@@ -375,14 +389,23 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 	double radius = 0;
 	double bestErr = 10000.0;
   BallPointList list;
+  Vector2<int> boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
+  Vector2<int> boundingBoxMax;
 
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
-	for(int j = 0; j < pointList.length; j++) {
+	for(int j = 0; j < pointList.length; j++) 
+  {
 		possibleModells[0].add(pointList[j]);
+    boundingBoxMin.x = min(boundingBoxMin.x, pointList[j].x);
+    boundingBoxMin.y = min(boundingBoxMin.y, pointList[j].y);
+    boundingBoxMax.x = max(boundingBoxMax.x, pointList[j].x);
+    boundingBoxMax.y = max(boundingBoxMax.y, pointList[j].y);
 	}
 
-	for(int i = 1; i < maxTries; i++)
+  double diag2 = (boundingBoxMax - boundingBoxMin).abs2();
+
+  for(int i = 1; i < maxTries; i++)
 	{
     int idx1 = Math::random(pointList.length);
 		int idx2 = Math::random(pointList.length);
@@ -427,7 +450,8 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 		  if( count*2 >= pointList.length && 
           (count > bestCount || (count == bestCount && meanError < bestErr) ) &&
           (Vector2d(start) - center).abs2() <= radius*radius &&
-          radius >= params.minSizeInImage && radius <= params.maxSizeInImage
+          radius >= params.minSizeInImage && radius <= params.maxSizeInImage &&
+          diag2 > radius * radius 
       )
 		  {
 			  centerBest = center;
