@@ -26,6 +26,7 @@
 BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
+  REQUIRE(BallPerceptTop)
   REQUIRE(FrameInfo)
   REQUIRE(RobotPose)
   REQUIRE(TeamBallModel)
@@ -64,6 +65,10 @@ private:
 
   Vector2d ballLeftFoot;
   Vector2d ballRightFoot;
+
+
+  Vector2d ballPerceptPos;
+  bool ballPerceptSeen;
 
 };//end class BallSymbols
 
