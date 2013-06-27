@@ -84,6 +84,8 @@ option play_soccer
   {
     decision
     {
+      else if (game.current_mode == playing && team.calc_if_is_striker)
+        goto initial_striker;
       else if (game.current_mode == playing)
         goto play;
       else if (game.current_mode == ready)
@@ -96,8 +98,27 @@ option play_soccer
     action 
     {
       head.control_mode = search_for_ball;
+      situationStatusOwnHalf = true;
     }
     
+  }
+
+  state initial_striker {
+	  decision {
+	    else if (game.current_mode == ready)
+        goto ready;
+      else if (game.current_mode == set)
+        goto set;
+      else if (!(game.current_mode == playing))
+        goto idle;
+	    else if(team.calc_if_is_striker)
+	      stay;  
+	    else
+	      goto play;
+	  }
+	  action {
+	    initial_striker();
+	  }
   }
 
   // from set to play: if would be striker -> be inital striker for e.i. 20 sec?

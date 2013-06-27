@@ -2,7 +2,7 @@ option initial_striker{
 
   initial state kickoff{
     decision{
-      else if(game.own_kickoff)
+      if(game.own_kickoff)
         goto be_striker;
       else if(!game.own_kickoff && state_time > 10000)
         goto be_striker;
@@ -16,7 +16,7 @@ option initial_striker{
 
   state be_striker{
     action{
-      basic_striker_behavior;
+      basic_striker_behavior();
     }
   }
     

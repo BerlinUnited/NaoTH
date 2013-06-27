@@ -14,6 +14,17 @@ option basic_play
       head.control_mode = stay_as_forced;
       motion.type = init;
       arm.control_mode = normal;
+
+      battery();
+
+      //set LED stuff
+      // make here some initializations
+      set_right_ear = game.player_number*3+1; // show player number
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
+          
+      set_left_eye = ball.was_seen ? green : off;   
     }
   }
 
@@ -64,12 +75,16 @@ option basic_play
       // team symbols
       team.is_playing_as_striker = false;
 
+      // supports localization, only set to true if in game state set
+      situationStatusOwnHalf = false;
+
       //set LED stuff
       // make here some initializations
       set_right_ear = game.player_number*3+1; // show player number
       set_right_eye = 
           goal.own.was_seen ? blue 
           : (goal.opp.was_seen ? red : off );
+          
       set_left_eye = ball.was_seen ? green : off;   
 
       battery();
