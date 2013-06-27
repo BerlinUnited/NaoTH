@@ -18,7 +18,7 @@ option decide_and_go_to_ready_position
       motion.type = stand;
       
       //only the first we know that we are in our own half
-      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
+      //situationStatusOwnHalf = (game.msecsRemaining >= 600000);
     }
   }
 
@@ -27,7 +27,7 @@ option decide_and_go_to_ready_position
         stay;
     }
     action{
-      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
+      //situationStatusOwnHalf = (game.msecsRemaining >= 600000);
       positioning_for_own_kickoff();
     }
   }
@@ -37,7 +37,7 @@ option decide_and_go_to_ready_position
         stay;
     }
     action{
-      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
+      //situationStatusOwnHalf = (game.msecsRemaining >= 600000);
       positioning_for_opp_kickoff();
     }
   }

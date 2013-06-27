@@ -12,7 +12,7 @@ option go_to_and_keep_passive_position{
 
   initial state go {
 	  decision {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 30
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
           && abs(value=robot_pose.planned.rotation - @rot) < 10 )
        goto behave_passive;
       else
@@ -28,7 +28,7 @@ option go_to_and_keep_passive_position{
 
   state behave_passive {
     decision {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300)
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 500)
         goto go;
       else
         stay;

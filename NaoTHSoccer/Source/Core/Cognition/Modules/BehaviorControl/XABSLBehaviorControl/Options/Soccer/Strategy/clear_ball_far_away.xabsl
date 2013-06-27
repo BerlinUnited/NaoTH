@@ -1,0 +1,69 @@
+// go to the ball and kick if there is no abstacle then go back into goal looking to opp goal
+option clear_ball_far_away{
+
+    initial state approach_ball
+  {
+    decision
+    {
+      if(action_done)
+        //Uncomment this if approaching fails: goto approach_ball
+        //Comment the following to deactivate the slight approach curves
+          goto wait;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_with_foot(right=true, distance=140);
+    }
+  }
+
+
+  state wait
+  {
+    decision
+    {
+      if (state_time > 1000)
+        goto do_kick;
+      else
+        stay;
+     }
+     action
+     {
+     }
+   }
+
+  state do_kick
+  {
+    decision
+    {
+      if(action_done)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      situation.abortable = false;
+      kick_ball_with_foot(direction = 0, right = true);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      if(ball.distance > 600)
+         stay;
+      else
+        goto approach_ball;
+    } 
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+}
