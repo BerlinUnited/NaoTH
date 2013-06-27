@@ -205,6 +205,7 @@ bool MaximumRedBallDetector::findBall ()
     }
   );
 
+  GT_TRACE("MaximumRedBallDetector:4");
   clearDublicatePoints(bestPoints);
 
   // display the final points
@@ -215,12 +216,14 @@ bool MaximumRedBallDetector::findBall ()
     }
   );
 
+  GT_TRACE("MaximumRedBallDetector:5");
   // STEP 3: try to match a ball model
 	return getBestModel(bestPoints, start);
 }
 
 bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const Vector2<int>& start)
 {
+  GT_TRACE("MaximumRedBallDetector:2");
   if(pointList.length < 3) {
     return false;
   }
@@ -279,7 +282,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 	double bestErr = 10000.0;
   Vector2<int> boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
   Vector2<int> boundingBoxMax;
-
+  	GT_TRACE("MaximumRedBallDetector:1");
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
 	for(int j = 0; j < pointList.length; j++) 
@@ -300,7 +303,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 			
   BallPointList list;
 
-  for(size_t i = 1; possibleModells.size(); i++)
+  for(size_t i = 1; i < possibleModells.size(); i++)
 	{
 		firstPoint++;
 		if (firstPoint == secondPoint)
@@ -405,11 +408,12 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 
   double diag2 = (boundingBoxMax - boundingBoxMin).abs2();
 
-  for(int i = 1; i < maxTries; i++)
+  for(int i = 1; i < maxTries && i < (int)possibleModells.size(); i++)
 	{
     int idx1 = Math::random(pointList.length);
 		int idx2 = Math::random(pointList.length);
 		int idx3 = Math::random(pointList.length);
+
 		for (int j=0;j<maxTries && (idx1==idx2 || idx2==idx3 || idx1==idx3); j++) 
     {
 			idx1 = Math::random(pointList.length);
@@ -418,6 +422,11 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 		}
 
 		possibleModells[i].clear();
+
+    if(idx1==idx2 || idx2==idx3 || idx1==idx3) {
+      continue;
+    }
+
     possibleModells[i].add(pointList[idx1]);
     possibleModells[i].add(pointList[idx2]);
     possibleModells[i].add(pointList[idx3]);

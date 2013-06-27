@@ -46,7 +46,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   CANVAS_PX(cameraID);
 
   getGoalPercept().reset();
-
+	GT_TRACE("GradientGoalDetector:start");
   Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
   Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
   Vector2d direction(1,0);
@@ -75,6 +75,8 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     return;
   }
 
+  GT_TRACE("GradientGoalDetector:1");
+  
   // adjust the scan height in case of the bottom camera
   //if(cameraID == CameraInfo::Bottom) 
   {
@@ -102,6 +104,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
      features[i].clear();
   }
 
+  GT_TRACE("GradientGoalDetector:2");
   if
   (
     p1.y > imageBorderOffset && 
@@ -216,6 +219,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }//end if
   Vector2<double> dir(-direction.y, direction.x);
 
+  GT_TRACE("GradientGoalDetector:3");
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
   //bool goalPostFound = false;
   goalPosts.clear();
@@ -283,7 +287,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       }
     }//end for
 
-
+GT_TRACE("GradientGoalDetector:4");
     if(goodPointsCount >= params.minGoodPoints)
     {
       
@@ -371,6 +375,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
         }
       }//end while
 
+	  GT_TRACE("GradientGoalDetector:5");
       if(footPointFound)
       {
         //goalPostFound = true;
@@ -417,7 +422,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     }
 
   }//end for features[0].size()
-
+GT_TRACE("GradientGoalDetector:6");
   
   // exactly two posts are seen => assign site labels
   if(getGoalPercept().getNumberOfSeenPosts() == 2) {
