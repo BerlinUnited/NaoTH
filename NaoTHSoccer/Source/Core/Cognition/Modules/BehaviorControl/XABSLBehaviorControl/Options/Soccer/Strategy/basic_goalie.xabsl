@@ -1,0 +1,14 @@
+option basic_goalie
+{
+  initial state stand {
+	  decision 
+	  {
+        stay;
+	  }
+	  action 
+	  {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+	  }
+	}  
+}

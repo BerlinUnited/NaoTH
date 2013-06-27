@@ -63,6 +63,7 @@ include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
+include "Options/Soccer/Strategy/basic_goalie.xabsl";
 
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
