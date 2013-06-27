@@ -1,0 +1,23 @@
+option initial_striker{
+
+  initial state kickoff{
+    decision{
+      else if(game.own_kickoff)
+        goto be_striker;
+      else if(!game.own_kickoff && state_time > 10000)
+        goto be_striker;
+      else
+        stay;
+    }
+    action{
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state be_striker{
+    action{
+      basic_striker_behavior;
+    }
+  }
+    
+}

@@ -2,18 +2,24 @@ option close_to_ball_with_USOA_situation{
 
   initial state differentiate_situation{
     decision{
-      if (obstacle.ultrasound.distance>400)
-        goto behave_normal;
-      else if (obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
-        goto obstacle_to_left;
+      if (abs(value=attack.direction.preview) < 60)
+        {  if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+             goto sidekick_to_right_state; //obstacle_to_left;
+           else
+             goto sidekick_to_left_state; //obstacle_to_right;
+        }
+      else if (attack.direction.preview>0)
+        goto sidekick_to_left_state;
       else
-        goto obstacle_to_right;
+        goto sidekick_to_right_state;
     }
     action{
     }
   }
 
-  state obstacle_to_right{
+
+
+  state sidekick_to_left_state{ //obstacle_to_right{
     decision{
       if(action_done)
         goto finish;
@@ -26,7 +32,7 @@ option close_to_ball_with_USOA_situation{
     }
   }
 
-  state obstacle_to_left{
+  state sidekick_to_right_state{ //obstacle_to_left{
     decision{
       if(action_done)
         goto finish;
@@ -36,24 +42,6 @@ option close_to_ball_with_USOA_situation{
     action{
       sidekick_to_right();
       motion.walk.style = stable;
-    }
-  }
-
-  state behave_normal{
-    decision{
-      if(state_time>1000)
-        goto finish;
-      else
-        stay;
-    }
-    action{
-      motion.type = walk;
-      motion.walk.style = fast;
-      motion.walk_speed.x=ball.preview.x+100;
-      motion.walk_speed.y=ball.preview.y;
-      motion.walk_speed.rot=0;
-
-      head.control_mode = search_for_ball;
     }
   }
 

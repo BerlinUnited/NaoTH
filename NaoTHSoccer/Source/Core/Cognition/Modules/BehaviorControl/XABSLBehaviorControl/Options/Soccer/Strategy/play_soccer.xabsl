@@ -99,5 +99,7 @@ option play_soccer
     }
     
   }
+
+  // from set to play: if would be striker -> be inital striker for e.i. 20 sec?
   
 }
