@@ -21,11 +21,14 @@
 
 BEGIN_DECLARE_MODULE(DummyActiveGoalLocator)
   REQUIRE(FrameInfo)
-  REQUIRE(GoalPercept)
+  
   REQUIRE(SelfLocGoalModel)
   REQUIRE(SensingGoalModel)
   REQUIRE(CompassDirection)
   REQUIRE(FieldInfo)
+
+  REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
 
   PROVIDE(LocalGoalModel)
 END_DECLARE_MODULE(DummyActiveGoalLocator)
