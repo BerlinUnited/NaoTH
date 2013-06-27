@@ -6,6 +6,8 @@ option basic_goali_agent{
       // react to the game controller and handle fall down
       basic_play();
 
+      situationStatusOwnHalf = true;
+
       basic_goalie();
 
       // control the arms

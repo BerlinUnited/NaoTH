@@ -23,7 +23,7 @@ option basic_goalie
   {
        decision 
        {
-         else if (ball.distance < 600 && ball.time_since_last_seen < 1000)
+         else if (ball.distance < 1200 && ball.time_since_last_seen < 1000)
            goto clear_ball;
          else if (action_done)
          {
@@ -39,7 +39,7 @@ option basic_goalie
 
   state stand_and_look_at_ball {
 	  decision {
-      else if (ball.distance < 600 && ball.time_since_last_seen < 1000)
+      else if (ball.distance < 1200 && ball.time_since_last_seen < 1000)
         goto clear_ball;
       else 
         stay;
@@ -54,7 +54,7 @@ option basic_goalie
   state  clear_ball {   
    decision {
        else if (action_done 
-           || (ball.distance > 600 && ball.time_since_last_seen < 1000)
+           || (ball.distance > 1200 && ball.time_since_last_seen < 1000)
            || (ball.time_since_last_seen > 2000)) 
        {
          goto go_to_strategy_point;

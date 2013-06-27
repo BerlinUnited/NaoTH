@@ -23,13 +23,17 @@ option clear_ball_far_away{
   {
     decision
     {
-      if (state_time > 1000)
+      if (abs(value=robot_pose.rotation) > 100)
+        goto stay_forever;
+      else if (state_time > 1000)
         goto do_kick;
       else
         stay;
      }
      action
      {
+       motion.type = stand;
+       head.control_mode = search_for_ball;
      }
    }
 
@@ -64,6 +68,14 @@ option clear_ball_far_away{
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
+  }
+
+  state stay_forever{
+  
+  action {
+    motion.type = stand;
+    head.control_mode = search_for_ball;
+  }
   }
 
 }
