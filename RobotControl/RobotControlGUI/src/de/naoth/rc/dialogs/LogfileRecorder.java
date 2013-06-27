@@ -60,8 +60,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     selectionLists.put("Basic Perception",     
         Arrays.asList( 
                 "Image", 
+                "ImageTop",
                 "FrameInfo", 
-                "CameraMatrix", 
+                "CameraMatrix",
+                "CameraMatrixTop",
                 "SensorJointData", 
                 "FSRData",
                 "GyrometerData",
