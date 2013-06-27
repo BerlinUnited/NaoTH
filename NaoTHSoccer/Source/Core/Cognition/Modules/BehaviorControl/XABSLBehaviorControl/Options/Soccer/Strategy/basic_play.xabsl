@@ -64,6 +64,12 @@ option basic_play
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
+      // team symbols
+      team.is_playing_as_striker = false;
+
+      // supports localization, only set to true if in game state set
+      situationStatusOwnHalf = false;
+
       head.control_mode = stay_as_forced;
       
       // react to the game controller and observe fall down
@@ -71,12 +77,6 @@ option basic_play
 
       // it has to be after the decide_game_state because of the getup motion
       arm.control_mode = normal;
-
-      // team symbols
-      team.is_playing_as_striker = false;
-
-      // supports localization, only set to true if in game state set
-      situationStatusOwnHalf = false;
 
       //set LED stuff
       // make here some initializations

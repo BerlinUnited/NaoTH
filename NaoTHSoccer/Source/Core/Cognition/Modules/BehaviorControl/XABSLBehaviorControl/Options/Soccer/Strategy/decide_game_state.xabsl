@@ -62,6 +62,7 @@ option decide_game_state
       game.current_mode = penalized;
       motion.type = stand;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+      situationStatusOwnHalf = true;
     }
   }
   
