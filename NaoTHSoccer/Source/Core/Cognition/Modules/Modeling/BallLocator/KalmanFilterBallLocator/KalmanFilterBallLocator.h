@@ -37,6 +37,7 @@ BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
   REQUIRE(SituationStatus)
+
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
 
@@ -87,7 +88,7 @@ private:
   bool modelIsValid;
   bool wasReactiveInLastFrame;
 
-  void executeKalman(BallPercept getPercept);
+  void executeKalman(const BallPercept& getPercept);
 
   void reset(BallPercept newPercept);
   void resetMatrices();

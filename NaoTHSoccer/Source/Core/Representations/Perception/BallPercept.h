@@ -57,7 +57,7 @@ public:
     stream << "centerInImage = " << centerInImage << std::endl;
     stream << "radiusInImage = " << radiusInImage << std::endl;
     stream << "bearingBasedOffsetOnField = " << bearingBasedOffsetOnField << std::endl;
-    //stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << std::endl;
+    stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << std::endl;
     stream << "ball color:\n" << ColorClasses::getColorName(ballColor) << std::endl;
   }//end print
 };

@@ -83,7 +83,7 @@ void KalmanFilterBallLocator::execute()
       CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
     );
 
-    double validatePerceptWithModel = 1;
+    double validatePerceptWithModel = 0;
     MODIFY("KalmanFilterBallLocator:validatePerceptWithModel", validatePerceptWithModel);
     if (validatePerceptWithModel == 0)  {
         executeKalman(getBallPercept());
@@ -233,7 +233,7 @@ void KalmanFilterBallLocator::execute()
 
 } //end execute
 
-void KalmanFilterBallLocator::executeKalman(BallPercept newPercept)
+void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
 {
 
   DEBUG_REQUEST("KalmanFilterBallLocator:reset_matrices",
