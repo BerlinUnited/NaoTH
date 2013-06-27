@@ -255,7 +255,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 
 
 // needed by lookAtWorldPoint
-Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
+Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
   theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
   theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
@@ -263,8 +263,9 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3d& po
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
   CameraMatrix cameraMatrix;
-  CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
-    getCameraInfo(),
+  CameraMatrixCalculator::calculateCameraMatrix(
+    cameraMatrix,
+    (getHeadMotionRequest().cameraID == CameraInfo::Top)?getCameraInfoTop():getCameraInfo(),
     theKinematicChain);
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 

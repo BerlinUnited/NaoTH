@@ -36,7 +36,8 @@ namespace internal_symbols("Internal Symbols") {
     look_straight_ahead,
     search_for_ball,
     search_for_goal,
-    look_around
+    look_around,
+    look_at_ball_percept
   };
 
   enum head.control_mode internal head.control_mode;

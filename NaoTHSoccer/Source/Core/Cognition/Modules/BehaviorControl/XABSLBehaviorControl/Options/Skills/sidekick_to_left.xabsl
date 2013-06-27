@@ -51,10 +51,7 @@ option sidekick_to_left
 
       //loook at percept
       head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.control_mode = look_at_ball_percept;
     }
   }
 
@@ -77,11 +74,7 @@ option sidekick_to_left
       motion.walk.step_control.foot = none;
 
       //loook at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.control_mode = look_at_ball_percept;
     }
   }
 
@@ -99,11 +92,7 @@ option sidekick_to_left
       motion.walk.style = normal;
 
       //loook at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.control_mode = look_at_ball_percept;
 	  }
   }
 }

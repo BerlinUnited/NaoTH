@@ -27,12 +27,15 @@
 
 BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(RobotInfo)
-  REQUIRE(CameraInfo)
   REQUIRE(InertialModel)
   REQUIRE(KinematicChainSensor)
   REQUIRE(HeadMotionRequest)
   REQUIRE(SensorJointData)
+  
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)

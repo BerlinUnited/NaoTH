@@ -22,6 +22,7 @@ include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
+include "Options/HeadControl/look_at_ball_percept.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
