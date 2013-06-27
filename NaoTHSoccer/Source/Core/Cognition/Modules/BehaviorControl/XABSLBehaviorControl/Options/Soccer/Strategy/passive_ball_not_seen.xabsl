@@ -1,0 +1,67 @@
+option passive_ball_not_seen
+{
+  common decision 
+  {
+    if(ball.was_seen)
+      goto turn_to_ball;
+  }
+
+  initial state look_around
+  {
+    decision {
+      else if(state_time > 3000)
+        goto search_far;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state search_far {
+    decision {
+      else if(state_time>10000)
+        goto turn_to_opponent_direction;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball();
+    }
+  }
+
+  state turn_to_opponent_direction {
+    decision {
+      else if(abs(value=(0-robot_pose.planned.rotation))<10)
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot= abs(value=(0-robot_pose.planned.rotation))>10?(0-robot_pose.planned.rotation):0;
+      head.control_mode = search_for_ball;      
+    }
+  }
+
+  target state turn_to_ball 
+  {
+    decision {
+      else if(ball.time_since_last_seen > 1000)
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.preview.y, x=ball.preview.x);
+      head.control_mode = search_for_ball;
+    }
+  }
+}

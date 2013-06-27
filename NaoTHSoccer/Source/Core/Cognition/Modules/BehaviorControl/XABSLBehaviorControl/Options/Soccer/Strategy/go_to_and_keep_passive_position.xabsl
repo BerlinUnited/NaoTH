@@ -22,7 +22,6 @@ option go_to_and_keep_passive_position{
       go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
       
       head.control_mode = search_for_goal;
-      
 	  }
 	}
 

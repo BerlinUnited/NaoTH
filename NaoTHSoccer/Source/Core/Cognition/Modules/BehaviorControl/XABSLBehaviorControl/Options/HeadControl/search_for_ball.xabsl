@@ -11,7 +11,9 @@ option search_for_ball
 	       @force_ball_model_check) && 
 	       abs(value=ball.angle) < 60)
 	      goto try_to_look_at_the_old_ball;
-	    else
+	    else if(ball.angle > 0)
+        goto search_for_ball_left;
+      else
 	      goto search_for_ball_right;
 	  }
 	  action 
@@ -45,7 +47,8 @@ option search_for_ball
       if (ball.was_seen)
         goto look_at_ball_percept;
       else if(state_time>2000)
-        goto search_for_ball_left;
+        goto search_for_ball_left_high;
+        //goto search_for_ball_left;
       else
        stay;
     }
@@ -78,6 +81,45 @@ option search_for_ball
     }
   }
 
+  state search_for_ball_right_high
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time>2000)
+        goto search_for_ball_left;
+      else
+       stay;
+    }
+    action
+    {
+        head.point_in_world.x = 500;
+        head.point_in_world.y = -500;
+        head.point_in_world.z = 0;
+        head.motion_type = look_at_world_point;
+    }
+  }
+
+  state search_for_ball_left_high
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time>2000)
+        goto search_for_ball_right_high;
+      else
+       stay;
+    }
+    action
+    {
+      head.point_in_world.x = 500;
+      head.point_in_world.y = 500;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+    }
+  }
     
   state look_at_ball
   {

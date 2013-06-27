@@ -72,6 +72,8 @@ include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_behavior.xabsl";
+include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
+include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 
 // penalty
@@ -144,7 +146,7 @@ include "Options/Test/arm_back_test_agent.xabsl";
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
-
+include "Options/Test/passive_behavior_test_agent.xabsl";
 
 
 
@@ -187,3 +189,5 @@ agent role_change_test ("role_change_test_agent",role_change_test_agent);
 agent clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
 agent turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
 agent simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
+
+agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
