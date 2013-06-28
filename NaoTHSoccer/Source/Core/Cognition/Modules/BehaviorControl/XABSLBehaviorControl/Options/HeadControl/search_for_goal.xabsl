@@ -24,7 +24,7 @@ option search_for_goal
     {
       if (state_time > 1000)
         goto search_for_goal_right;
-      else 
+      else
         stay;
     }
     action
@@ -39,15 +39,14 @@ option search_for_goal
   // make it to search for goal left and right
   state search_for_goal_right 
   {
-    decision
-    {
+    decision{
       if ((goal.own.was_seen && @own)|| 
           (goal.opp.was_seen && @opp))
         goto look_at_goal_percept;
       else if(state_time>2000)
         goto search_for_goal_left;
       else
-        stay;
+       stay;
     }
     action
     {
@@ -92,8 +91,9 @@ state search_for_goal_left
     action
     {     
       head.motion_type = look_at_world_point;      
-      head.point_in_world.x = goal.centroid.x;      
-      head.point_in_world.y = goal.centroid.y;      
+      
+      head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
+      head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
       head.point_in_world.z = 500;    
     }
   }
@@ -112,8 +112,8 @@ state search_for_goal_left
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = goal.centroid.x;
-      head.point_in_world.y = goal.centroid.y;
+      head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
+      head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
       head.point_in_world.z = 500;
     }
   }
