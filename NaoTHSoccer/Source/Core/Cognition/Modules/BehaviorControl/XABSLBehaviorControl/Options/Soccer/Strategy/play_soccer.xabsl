@@ -77,6 +77,9 @@ option play_soccer
     {
       arm.control_mode = back;
       decide_and_go_to_ready_position();
+      
+      //only the first we know that we are in our own half
+      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
     }
   }
 

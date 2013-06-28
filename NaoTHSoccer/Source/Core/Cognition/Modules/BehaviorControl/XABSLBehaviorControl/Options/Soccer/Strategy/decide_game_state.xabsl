@@ -23,6 +23,7 @@ option decide_game_state
       game.current_mode = init;
       motion.type = init;
       head.control_mode = stay_as_forced;
+      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
     }
   }
   
