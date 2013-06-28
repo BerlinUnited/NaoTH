@@ -31,7 +31,7 @@ option sidekick_to_right
     decision
     {
       if(state_time > 100 && executed_motion.step_control.right_movable)
-        goto reset_controls;
+        goto turn_right;
       else
         stay;
     }
@@ -55,11 +55,29 @@ option sidekick_to_right
     }
   }
 
+  state turn_right {
+    decision {
+      if(state_time > 500)
+        goto reset_controls;
+      else 
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = none;
+      motion.walk_speed.rot = -18;
+
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
   state reset_controls
   {
     decision
     {
-      if (state_time > 1000)
+      if (state_time > 500) //uerspruenglich 1000
         goto finished;
       else
         stay;

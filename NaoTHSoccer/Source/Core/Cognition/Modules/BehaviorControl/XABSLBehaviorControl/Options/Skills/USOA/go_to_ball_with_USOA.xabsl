@@ -8,11 +8,11 @@ option go_to_ball_with_USOA
     decision
     {
       if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
-            &&(obstacle.ultrasound.distance<400))
+            &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 200))
           goto approach_carefully;
-      else if(obstacle.ultrasound.left.distance < 400)
+      else if(obstacle.ultrasound.left.distance < 400 && obstacle.ultrasound.blockedtime > 200)
           goto avoid_left;
-      else if(obstacle.ultrasound.right.distance < 400)
+      else if(obstacle.ultrasound.right.distance < 400 && obstacle.ultrasound.blockedtime > 200)
           goto avoid_right;
       else if(action_done)
         goto finish;
@@ -29,13 +29,13 @@ option go_to_ball_with_USOA
   {
     decision
     { if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
-            &&(obstacle.ultrasound.distance<400))
+            &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 200))
         goto approach_carefully;
       else if(state_time > 3000)
         goto push;
-      else if(obstacle.ultrasound.left.distance < 400)
+      else if(obstacle.ultrasound.left.distance < 400  && obstacle.ultrasound.blockedtime > 200)
         stay;
-      else if(obstacle.ultrasound.right.distance < 400)
+      else if(obstacle.ultrasound.right.distance < 400 && obstacle.ultrasound.blockedtime > 200)
         goto avoid_right;
       else
         goto go;
@@ -60,13 +60,13 @@ option go_to_ball_with_USOA
   {
     decision
     { if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
-            &&(obstacle.ultrasound.distance<400))
+            &&(obstacle.ultrasound.distance<400) && obstacle.ultrasound.blockedtime > 200)
         goto approach_carefully;
       else if(state_time > 3000)
         goto push;
-      else if(obstacle.ultrasound.right.distance < 400)
+      else if(obstacle.ultrasound.right.distance < 400 && obstacle.ultrasound.blockedtime > 200)
         stay;
-      else if(obstacle.ultrasound.left.distance < 400)
+      else if(obstacle.ultrasound.left.distance < 400 && obstacle.ultrasound.blockedtime > 200)
         goto avoid_left;
       else
         goto go;
@@ -94,9 +94,9 @@ option go_to_ball_with_USOA
         //&& abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 20
         && vector.abs(x=ball.speed.x, y=ball.speed.y) < 30)
         goto finish;
-      else if((obstacle.ultrasound.left.distance < 400)&&(state_time>1500))
+      else if((obstacle.ultrasound.left.distance < 400 && obstacle.ultrasound.blockedtime > 200)&&(state_time>1500))
         goto avoid_left;
-      else if((obstacle.ultrasound.right.distance < 400)&&(state_time>1500))
+      else if((obstacle.ultrasound.right.distance < 400 && obstacle.ultrasound.blockedtime > 200)&&(state_time>1500))
         goto avoid_right;
       else if(obstacle.ultrasound.distance>400)
         goto go;
