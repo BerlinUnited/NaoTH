@@ -512,6 +512,7 @@ bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel)
 {
   return
     pixel.v > pixel.u + params.maxBlueValue && // check the UV-difference
+    pixel.v > params.maxRedValue &&
     !getFieldColorPercept().isFieldColor(pixel) && // check green
     pixel.y < dynamicThresholdY; // check too bright (white etc.)
 }
