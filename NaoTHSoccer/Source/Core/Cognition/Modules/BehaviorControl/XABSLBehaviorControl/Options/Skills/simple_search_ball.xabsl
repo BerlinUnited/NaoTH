@@ -6,7 +6,7 @@ option simple_search_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
       else if ( ball.angle < 0 )
         goto turning_right;
@@ -23,7 +23,7 @@ option simple_search_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
       else
         stay;
@@ -44,7 +44,7 @@ option simple_search_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
       else
         stay;
@@ -65,7 +65,7 @@ option simple_search_ball
   {
     decision
     {
-      if (!ball.was_seen)
+      if (ball.time_since_last_seen > 500)
         goto start_turning;
       else
         stay;

@@ -1,7 +1,7 @@
 option search_ball_back_rot{
 
 common decision  {
-if(ball.was_seen)
+if(ball.was_seen || ball.time_since_last_seen < 100)
       goto finish;
 }
 

@@ -107,6 +107,8 @@ include "Options/Test/penalty_kicker_test_agent.xabsl";
 // Test agents (options) ball search
 include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";
+include "Options/Test/ball_search/only_ball_looking.xabsl";
+include "Options/Test/ball_search/only_goal_looking.xabsl";
 
 // Test options
 // Test options Kicks
@@ -191,3 +193,7 @@ agent turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test
 agent simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
+
+// Test agents search
+agent only_looking_for_ball("only_looking_for_ball",only_ball_looking);
+agent only_looking_for_goal("only_looking_for_goal",only_goal_looking);
