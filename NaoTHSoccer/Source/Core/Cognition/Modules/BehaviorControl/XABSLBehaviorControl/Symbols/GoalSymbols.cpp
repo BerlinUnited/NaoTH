@@ -146,26 +146,15 @@ double GoalSymbols::getTimeSinceOwnGoalSeen()
     theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceOpponentGoalSeen
 
-
-//FIXME not via color decideable!
 bool GoalSymbols::getOpponentGoalWasSeen()
 {
- /*
-  ColorClasses::Color goalColor = (theInstance->playerInfo.gameData.teamColor == GameData::blue)?ColorClasses::yellow:ColorClasses::skyblue;
-
-  for(unsigned int i = 0; i < theInstance->goalPercept.getNumberOfSeenPosts(); i++)
-    if(theInstance->goalPercept.getPost(i).color == goalColor && 
-       theInstance->goalPercept.getPost(i).positionReliable)
-      return true;
-*/
-
-  return theInstance->localGoalModel.opponentGoalIsValid && 
-    theInstance->localGoalModel.someGoalWasSeen;
-}//end getOpponentGoalWasSeen
+  return  theInstance->localGoalModel.opponentGoalIsValid && 
+          theInstance->localGoalModel.someGoalWasSeen;
+}
 
 bool GoalSymbols::getOwnGoalWasSeen()
 {
-  return theInstance->localGoalModel.ownGoalIsValid && 
-    theInstance->localGoalModel.someGoalWasSeen;
-}//end getOpponentGoalWasSeen
+  return  theInstance->localGoalModel.ownGoalIsValid && 
+          theInstance->localGoalModel.someGoalWasSeen;
+}
 
