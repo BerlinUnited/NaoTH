@@ -9,12 +9,19 @@ option go_to_and_keep_passive_position{
  /** absolute rotation on field */
  float @rot; // -180...180 "deg";
 
-
   initial state go {
 	  decision {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
+      if (ball.time_since_last_seen < 100) {
+          if (vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
+            goto go_with_search_for_ball;
+          else
+            goto pay_attention_to_ball;
+          }
+      else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
           && abs(value=robot_pose.planned.rotation - @rot) < 10 )
-       goto behave_passive;
+        goto behave_passive;
+      else if (state_time > 4000)
+        goto go_with_search_for_ball;
       else
         stay;
 	  }
@@ -24,6 +31,39 @@ option go_to_and_keep_passive_position{
       head.control_mode = search_for_goal;
 	  }
 	}
+
+  state go_with_search_for_ball {
+    decision {
+      if (ball.time_since_last_seen < 100 && vector.abs(x=ball.preview.x, y=ball.preview.y)<3000)
+        goto pay_attention_to_ball;
+      else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
+          && abs(value=robot_pose.planned.rotation - @rot) < 10 )
+        goto behave_passive;
+      else if (state_time > 6000)
+        goto go;
+      else
+        stay;
+    }
+    action {
+      go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
+      
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state pay_attention_to_ball {
+    decision {
+      if (ball.time_since_last_seen > 1500)
+        goto go_with_search_for_ball;
+      else if (ball.time_since_last_seen < 100 && vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
+        goto go_with_search_for_ball;
+      else
+        stay;    
+    }
+    action {
+      passive_behavior();
+    }
+  }
 
   state behave_passive {
     decision {
