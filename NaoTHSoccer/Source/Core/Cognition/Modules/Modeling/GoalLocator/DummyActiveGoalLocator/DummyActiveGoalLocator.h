@@ -14,6 +14,7 @@
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -23,6 +24,8 @@ BEGIN_DECLARE_MODULE(DummyActiveGoalLocator)
   REQUIRE(FrameInfo)
   
   REQUIRE(SelfLocGoalModel)
+  REQUIRE(RobotPose)
+
   REQUIRE(SensingGoalModel)
   REQUIRE(CompassDirection)
   REQUIRE(FieldInfo)

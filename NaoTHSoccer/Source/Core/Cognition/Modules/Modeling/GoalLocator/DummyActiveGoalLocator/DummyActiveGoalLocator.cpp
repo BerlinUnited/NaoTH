@@ -25,19 +25,32 @@ void DummyActiveGoalLocator::execute()
   getLocalGoalModel().someGoalWasSeen = 
     getGoalPercept().getNumberOfSeenPosts() > 0 ||
     getGoalPerceptTop().getNumberOfSeenPosts() > 0; //getSensingGoalModel().someGoalWasSeen;
-  
-  // opp goal is in front of me
-  const GoalModel::Goal& oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
-  if(((oppGoal.leftPost+oppGoal.leftPost)*0.5).x > 0) {
-    getLocalGoalModel().opponentGoalIsValid = true;
-  } else {
-    getLocalGoalModel().ownGoalIsValid = true;
+
+
+  if(getLocalGoalModel().someGoalWasSeen) {
+    if(getGoalPercept().getNumberOfSeenPosts() > 0) {
+      Vector2d v(1.0,0);
+      v.rotate(getGoalPercept().getPost(0).position.angle() + getCompassDirection().angle); // vector towards the goal
+      getLocalGoalModel().ownGoalIsValid = v.x < 0;
+    } else if(getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
+      Vector2d v(1.0,0);
+      v.rotate(getGoalPerceptTop().getPost(0).position.angle() + getCompassDirection().angle); // vector towards the goal
+      getLocalGoalModel().ownGoalIsValid = v.x < 0;
+    }
+
+    getLocalGoalModel().opponentGoalIsValid = !getLocalGoalModel().ownGoalIsValid;
   }
 
 
   // copy the self loc goal
-  getLocalGoalModel().goal = getSelfLocGoalModel().goal;
-  
+  if(getLocalGoalModel().opponentGoalIsValid) {
+    const GoalModel::Goal& oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+    getLocalGoalModel().goal = oppGoal;
+  } else {
+    const GoalModel::Goal& ownGoal = getSelfLocGoalModel().getOwnGoal(getCompassDirection(), getFieldInfo());
+    getLocalGoalModel().goal = ownGoal;
+  }
+
   //frame Info when goal was seen not useful! New: some_goal_was seen
   if(getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts())
   {
