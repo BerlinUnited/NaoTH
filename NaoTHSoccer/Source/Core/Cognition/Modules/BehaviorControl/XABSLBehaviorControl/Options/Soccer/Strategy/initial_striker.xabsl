@@ -22,7 +22,7 @@ option initial_striker{
         stay;
 	  }
 	  action {
-	      go_to_ball_with_foot(right=true, distance=140);
+	      go_to_ball_with_foot(right=true, distance=190);
 	  }
   }
 
@@ -55,7 +55,7 @@ option initial_striker{
     action
     {
        arm.control_mode = normal;
-       kick_ball_with_foot(direction = 0, right = true);
+       kick_with_foot(right = true);
        head.control_mode = search_for_ball;
     }
   }

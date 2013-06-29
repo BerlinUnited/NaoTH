@@ -107,10 +107,11 @@ option basic_striker_behavior{
     decision{
       else if (ball.time_since_last_seen>1500)
         goto decide_search_far_or_close;
-      else if(abs(value=attack.direction.preview)<20)
+      else if(abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500)
         goto preattack;
-      else if((abs(value=robot_pose.planned.x)<3500 || abs(value=robot_pose.planned.y) < 1100)
-              && abs(value=attack.direction.preview)>70){
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+            {
               if(attack.direction.preview>0)
                 goto sidekick_to_left_state;
               else
@@ -133,7 +134,7 @@ option basic_striker_behavior{
         goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
-      else if(abs(value=attack.direction.preview)<20)
+      else if(abs(value=attack.direction.preview)<12)
         goto preattack;
       else
         stay;
@@ -152,7 +153,7 @@ option basic_striker_behavior{
         goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
-      else if(abs(value=attack.direction.preview)<20)
+      else if(abs(value=attack.direction.preview)<12)
         goto preattack;
       else
         stay;
@@ -223,7 +224,7 @@ option basic_striker_behavior{
       stay;
   }
   action {
-    kick_with_foot(right=true);
+    kick_with_foot(right = true);
   }
 }
 
