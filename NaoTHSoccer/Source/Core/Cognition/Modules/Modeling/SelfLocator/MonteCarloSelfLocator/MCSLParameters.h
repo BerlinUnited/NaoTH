@@ -59,6 +59,9 @@ public:
   double treatFallDown;
   double treatLiftUp;
 
+  double minUpdateWeight;
+  double downWeightFactorOwnHalf;
+
   virtual void print(std::ostream& stream) const {}
 
 };

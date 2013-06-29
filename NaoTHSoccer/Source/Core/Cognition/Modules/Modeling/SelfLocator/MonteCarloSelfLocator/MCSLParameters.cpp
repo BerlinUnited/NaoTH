@@ -50,6 +50,9 @@ MCSLParameters::MCSLParameters()
   PARAMETER_REGISTER(treatFallDown) = 0;
   PARAMETER_REGISTER(treatLiftUp) = 0;
 
+  PARAMETER_REGISTER(minUpdateWeight) = 0;
+  PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
+
   // load from the file after registering all parameters
   syncWithConfig();
 

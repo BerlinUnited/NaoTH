@@ -85,7 +85,7 @@ private:
 
   CanopyClustering<SampleSet> canopyClustering;
 
-  bool initialized;
+  bool initialized; // particles did cluster
 
   // sample set tools
   void resetSampleSet(SampleSet& sampleSet);
@@ -163,6 +163,8 @@ private:
 
   /** should be always a logical mirror of updateBySensor */
   bool hasSensorUpdate() const;
+
+  void updateByOwnHalf(SampleSet& sampleSet) const;
 
 
   /****************************************

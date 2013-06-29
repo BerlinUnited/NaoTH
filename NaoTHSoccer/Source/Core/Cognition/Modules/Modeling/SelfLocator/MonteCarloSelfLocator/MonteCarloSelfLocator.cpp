@@ -74,6 +74,9 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 
 
   DEBUG_REQUEST_REGISTER("MCSL:plots", "enables the debug plots", false);
+
+  DEBUG_REQUEST_REGISTER("MCSL:draw_avaliable_field","", false);
+  DEBUG_REQUEST_REGISTER("MCSL:draw_sensorResetBySensingGoalModel","", false);
 }
 
 
@@ -519,6 +522,20 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
 }//end updateByMiddleCircle
 
 
+
+void MonteCarloSelfLocator::updateByOwnHalf(SampleSet& sampleSet) const
+{
+  for(unsigned int s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!isInsideCarpet(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+  }//end for
+}//end updateByOwnHalf
+
+
 void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 {
   double sigmaDistance = parameters.sigmaDistanceGoalPost;
@@ -569,10 +586,38 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
     sampleSet[n].translation = pose.translation;
     sampleSet[n].rotation = pose.rotation;
     n++;
+
+    DEBUG_REQUEST("MCSL:draw_sensorResetBySensingGoalModel",
+      FIELD_DRAWING_CONTEXT;
+      PEN("0000FF", 20);
+      ARROW(pose.translation.x, pose.translation.y, 
+            pose.translation.x + 100*cos(pose.rotation), 
+            pose.translation.y + 100*sin(pose.rotation));
+    );
+  } else {
+    Pose2D poseMirrored(pose);
+    poseMirrored.translation *= -1;
+    poseMirrored.rotate(Math::pi);
+
+    // HACK: try the mirrored pose
+    if(isInsideCarpet(poseMirrored.translation))
+    {
+      sampleSet[n].translation = pose.translation;
+      sampleSet[n].rotation = pose.rotation;
+      n++;
+
+      DEBUG_REQUEST("MCSL:draw_sensorResetBySensingGoalModel",
+        FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 20);
+        ARROW(poseMirrored.translation.x, poseMirrored.translation.y, 
+              poseMirrored.translation.x + 100*cos(poseMirrored.rotation), 
+              poseMirrored.translation.y + 100*sin(poseMirrored.rotation));
+      );
+    }
   }
     
   // HACK: generate a mirrored pose
-  if(n < (int)sampleSet.size() && !getRobotPose().isValid)
+  if(false && n < (int)sampleSet.size() && !getRobotPose().isValid)
   {
     Pose2D poseMirrored(pose);
     poseMirrored.translation *= -1;
@@ -1120,6 +1165,8 @@ bool MonteCarloSelfLocator::hasSensorUpdate() const
 
 void MonteCarloSelfLocator::execute()
 {
+  // reset particles before anything happens
+  theSampleSet.resetLikelihood();
 
   /************************************
    * STEP I: treat some special situations:
@@ -1134,14 +1181,17 @@ void MonteCarloSelfLocator::execute()
     // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
-    fieldMax.x = 1000.0; // max one meter into the opponent half
+    fieldMax.x = 0.0;
 
     if(!init_own_half)
     {
-      resetSampleSet(theSampleSet);
+      //resetSampleSet(theSampleSet);
+      clampSampleSetToField(theSampleSet);
       initialized = false;
     }
-    clampSampleSetToField(theSampleSet);
+    //clampSampleSetToField(theSampleSet);
+
+    updateByOwnHalf(theSampleSet);
     init_own_half = true;
   }
   else
@@ -1158,10 +1208,12 @@ void MonteCarloSelfLocator::execute()
 
     if(!init_opp_half)
     {
-      resetSampleSet(theSampleSet);
+      //resetSampleSet(theSampleSet);
+      clampSampleSetToField(theSampleSet);
       initialized = false;
     }
-    clampSampleSetToField(theSampleSet);
+    //clampSampleSetToField(theSampleSet);
+    updateByOwnHalf(theSampleSet);
     init_opp_half = true;
   }
   else
@@ -1204,7 +1256,10 @@ void MonteCarloSelfLocator::execute()
 
   // (III) treat the situation when the robot has been lifted from the ground
   // (keednapped)
-  if( getMotionStatus().currentMotion == motion::stand && // only in stand (!)
+  bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
+                   getMotionStatus().currentMotion == motion::init;
+
+  if( motion_ok && // only in stand or init(!)
       getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
@@ -1218,9 +1273,6 @@ void MonteCarloSelfLocator::execute()
     return;
   }//end if
 
-
-  // reset particles
-  theSampleSet.resetLikelihood();
 
   // check if there is any sensor data
   bool sensorDataAvailable = hasSensorUpdate();
@@ -1259,7 +1311,6 @@ void MonteCarloSelfLocator::execute()
     theSampleSet.normalize();
   }//end if
   
-
   /************************************
    * STEP V: clustering
    ************************************/
@@ -1268,7 +1319,7 @@ void MonteCarloSelfLocator::execute()
   int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
-  // a heap could collect more than 70% of all particles
+  // a heap could collect more than 90% of all particles
   initialized = initialized || (clusterSize > 0.9*(double)theSampleSet.size());
   PLOT("MCSL:initialized", initialized);
 
@@ -1422,6 +1473,16 @@ void MonteCarloSelfLocator::execute()
     getFieldInfo().fieldLinesTable.draw_closest_tcrossing_points();
   );
 
+  
+  
+  DEBUG_REQUEST("MCSL:draw_avaliable_field",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  );
+
 }//end execute
 
 
@@ -1429,6 +1490,7 @@ void MonteCarloSelfLocator::execute()
 void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
 {
   initialized = false;
+  getRobotPose() = Pose2D(); // reset the pose (!)
 
   double likelihood = 1.0/static_cast<double>(sampleSet.size());
   for (unsigned int i = 0; i < sampleSet.size(); i++)
