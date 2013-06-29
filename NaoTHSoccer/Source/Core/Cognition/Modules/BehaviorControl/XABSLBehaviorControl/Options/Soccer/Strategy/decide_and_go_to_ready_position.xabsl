@@ -5,7 +5,7 @@ option decide_and_go_to_ready_position
     decision
     {
       /* relocalize in initial kickoff */
-      if((robot_pose.is_valid && state_time>10000) || state_time>30000)
+      if((robot_pose.is_valid && state_time>8000) || state_time>30000)
         {
           if(game.own_kickoff)
             goto own_kickoff;

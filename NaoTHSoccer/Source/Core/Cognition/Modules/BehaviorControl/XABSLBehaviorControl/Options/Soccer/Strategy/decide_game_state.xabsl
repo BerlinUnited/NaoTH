@@ -24,6 +24,7 @@ option decide_game_state
       motion.type = init;
       head.control_mode = stay_as_forced;
       situationStatusOwnHalf = (game.msecsRemaining >= 600000);
+      last_state_was_penalized = false;
     }
   }
   
@@ -34,6 +35,7 @@ option decide_game_state
       motion.type = stand;
       head.control_mode = stay_as_forced;
       fall_down_and_stand_up();
+      last_state_was_penalized = false;
     }
   }
   
@@ -43,6 +45,7 @@ option decide_game_state
       game.current_mode = set;
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      last_state_was_penalized = false;
     }
   }
   
@@ -54,6 +57,8 @@ option decide_game_state
       motion.type = stand;
       head.control_mode = stay_as_forced;
       fall_down_and_stand_up();
+      //achtung: don't set false
+      //last_state_was_penalized = false;
     }
   }
   
@@ -64,6 +69,7 @@ option decide_game_state
       motion.type = stand;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
       situationStatusOwnHalf = true;
+      last_state_was_penalized = true;
     }
   }
   
@@ -73,6 +79,7 @@ option decide_game_state
       game.current_mode = finished;
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      last_state_was_penalized = false;
     }
   }
 
@@ -82,6 +89,7 @@ option decide_game_state
       game.current_mode = unknown;
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      last_state_was_penalized = false;
     }
   }
 }

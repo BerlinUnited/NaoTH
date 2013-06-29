@@ -40,7 +40,27 @@ option play_soccer
   
   }
 
+  // actualy check for localize
   state play
+  {
+    decision
+    {
+      else if(!last_state_was_penalized ||
+        (robot_pose.is_valid && state_time>6000) || 
+        state_time>12000)
+        goto real_play;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_goal;
+      situationStatusOwnHalf = true;
+      motion.type = stand;
+    }
+  }
+
+  state real_play
   {
     decision
     {
@@ -56,9 +76,11 @@ option play_soccer
     action 
     {
       arm.control_mode = back;
+      last_state_was_penalized = false; // important!!!
       decide_role();
     }
   }
+
 
   state ready
   {
