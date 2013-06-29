@@ -25,6 +25,7 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 //#include "Representations/Perception/BlobPercept.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
@@ -60,6 +61,7 @@ BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(FieldPerceptTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
+  REQUIRE(FrameInfo)
 //  REQUIRE(BlobPercept)
   REQUIRE(FieldInfo)
 
