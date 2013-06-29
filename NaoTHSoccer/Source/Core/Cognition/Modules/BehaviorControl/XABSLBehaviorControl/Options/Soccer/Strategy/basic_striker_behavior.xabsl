@@ -134,6 +134,15 @@ option basic_striker_behavior{
         goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
+        
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+            {
+              if(attack.direction.preview>0)
+                goto sidekick_to_left_state;
+              else
+                goto sidekick_to_right_state;
+            }
       else if(abs(value=attack.direction.preview)<12)
         goto preattack;
       else
@@ -153,6 +162,15 @@ option basic_striker_behavior{
         goto decide_search_far_or_close;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>190)
         goto go_to_ball;
+      
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+            {
+              if(attack.direction.preview>0)
+                goto sidekick_to_left_state;
+              else
+                goto sidekick_to_right_state;
+            }
       else if(abs(value=attack.direction.preview)<12)
         goto preattack;
       else
