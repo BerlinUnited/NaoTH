@@ -33,7 +33,6 @@ option basic_striker_behavior{
     }
     action{
       motion.type = stand;
-
       head.control_mode = search_for_ball;
     }
   
@@ -170,14 +169,15 @@ option basic_striker_behavior{
         goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search_far_or_close;
-      //else //if (random < 0.4)
-        //goto approach_for_kick;
+      //else if (random < 0.3)
+      //  goto approach_for_kick;
       else
         goto attack;
 
     }
     action{
       go_to_ball_with_foot(right=true, distance=190);
+      motion.walk.style = normal;
     }
   }
 
@@ -200,9 +200,9 @@ option basic_striker_behavior{
     }
   }
 
-  state approach_for_kick{
+  /*state approach_for_kick{
     decision{
-      else if(abs(value=attack.direction.preview)>30)
+      else if(abs(value=attack.direction.preview)>30 && ball.preview.y < 100)
           goto go_to_ball;
       else if(action_done)
           goto do_kick;
@@ -213,9 +213,9 @@ option basic_striker_behavior{
     {
       go_to_ball_with_foot(right=true, distance=190);
     }
-  }
+  }*/
 
-  state do_kick {
+  /*state do_kick {
   decision {
     else if(action_done)
       goto go_to_ball;
@@ -225,7 +225,7 @@ option basic_striker_behavior{
   action {
     kick_with_foot(right=true);
   }
-}
+}*/
 
   state sidekick_to_left_state{ 
     decision{
@@ -236,6 +236,8 @@ option basic_striker_behavior{
     }
     action{
       sidekick_to_left();
+      
+      motion.walk.style = normal;
       //motion.walk.style = stable;
     }
   }
@@ -249,6 +251,8 @@ option basic_striker_behavior{
     }
     action{
       sidekick_to_right();
+      
+      motion.walk.style = normal;
       //motion.walk.style = stable;
     }
   }
