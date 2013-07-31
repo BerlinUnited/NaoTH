@@ -13,15 +13,6 @@
 #include "Representations/Infrastructure/Configuration.h"
 
 
-class KinematicChainGeberic : public naoth::Printable
-{
-public:
-
-
-
-};//end class KinematicChainGeberic
-
-
 class KinematicChain : public naoth::Printable
 {
 public:
@@ -70,7 +61,7 @@ private:
 public:
 
   Kinematics::Link theLinks[numOfLinks];
-  Vector3<double> CoM; // center of mass
+  Vector3d CoM; // center of mass
 
   inline Kinematics::Link& getLink(LinkID id)
   {
@@ -87,15 +78,15 @@ public:
   void init(naoth::JointData& jointData);
 
   void updateCoM();
-  Vector2<double> calculateZMP() const;
+  Vector2d calculateZMP() const;
 
   virtual void print(std::ostream& stream) const;
 
   bool is_initialized() { return initialized; }
 
 private:
-    double sumMass;
-    bool initialized;
+  double sumMass;
+  bool initialized;
 };
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);

@@ -6,8 +6,8 @@
 * Definition of class ObstacleModel
 */
 
-#ifndef __ObstacleModel_h_
-#define __ObstacleModel_h_
+#ifndef _ObstacleModel_h_
+#define _ObstacleModel_h_
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
@@ -23,13 +23,6 @@
 class ObstacleModel : public naoth::Printable
 {
 public:
-  struct Obstacle
-  {
-    Obstacle():distance(0){}
-
-    naoth::FrameInfo frameInfoObstacleWasSeen;
-    double distance;
-  };
   ObstacleModel();
 
   double leftDistance;
@@ -39,7 +32,6 @@ public:
   int blockedTime;
 
   virtual void print(std::ostream& stream) const;
-};//end class ObstacleModel
+};
 
-
-#endif// __ObstacleModel_h_
+#endif// _ObstacleModel_h_

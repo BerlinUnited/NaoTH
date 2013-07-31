@@ -12,7 +12,6 @@
 using namespace naoth;
 using namespace std;
 
-//KinematicChain-Class
 KinematicChain::KinematicChain()
   : initialized(false)
 {
@@ -117,6 +116,8 @@ void KinematicChain::initMassesInfo()
 {
   const Configuration& cfg = Platform::getInstance().theConfiguration;
   string gn = "mass";
+  sumMass = 0;
+
   for( int i = 0; i<numOfLinks; i++)
   {
     string name = getLinkName((LinkID)i);
@@ -126,49 +127,33 @@ void KinematicChain::initMassesInfo()
     string keyZ = name+"CoG.z";
     
     double m = 0;
-    Vector3<double> cog;
+    Vector3d cog;
     
-    if ( cfg.hasKey(gn, keyMass) )
-    {
+    if ( cfg.hasKey(gn, keyMass) ) {
       m = cfg.getDouble(gn, keyMass);
-    }
-    else
-    {
+    } else {
       THROW("KinematicChain can not get mass of "+name);
     }
     
-    if ( cfg.hasKey(gn, keyX) )
-    {
+    if ( cfg.hasKey(gn, keyX) ) {
       cog.x = cfg.getDouble(gn, keyX);
-    }
-    else
-    {
+    } else {
       THROW("KinematicChain can not get cog.x of "+name);
     }
     
-    if ( cfg.hasKey(gn, keyY) )
-    {
+    if ( cfg.hasKey(gn, keyY) ) {
       cog.y = cfg.getDouble(gn, keyY);
-    }
-    else
-    {
+    } else {
       THROW("KinematicChain can not get cog.y of "+name);
     }
     
-    if ( cfg.hasKey(gn, keyZ) )
-    {
+    if ( cfg.hasKey(gn, keyZ) ) {
       cog.z = cfg.getDouble(gn, keyZ);
-    }
-    else
-    {
+    } else {
       THROW("KinematicChain can not get cog.z of "+name);
     }
-    theLinks[i].setMass(m, cog);
-  }
 
-  sumMass = 0;
-  for (int i = 0; i < numOfLinks; i++)
-  {
+    theLinks[i].setMass(m, cog);
     sumMass += theLinks[i].mass;
   }
 
@@ -347,12 +332,12 @@ void KinematicChain::updateCoM()
   CoM/=sumMass;
 }//end updateCoM
 
-Vector2<double> KinematicChain::calculateZMP() const
+Vector2d KinematicChain::calculateZMP() const
 {
   // Px = S((z''+g)x-(z-Pz)x'') / S(z''+g)
   const static double g = -9810;
   const static double pz = 0;
-  Vector2<double> zmp;
+  Vector2d zmp;
   double as = 0;
   for(int i=0; i<numOfLinks; i++)
   {

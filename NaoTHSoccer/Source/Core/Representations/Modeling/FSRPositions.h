@@ -17,7 +17,7 @@
 class FSRPositions
 {
 public:
-  Vector3<double> pos[naoth::FSRData::numOfFSR];
+  Vector3d pos[naoth::FSRData::numOfFSR];
 };
 
 #endif // _FSRPositions_h_

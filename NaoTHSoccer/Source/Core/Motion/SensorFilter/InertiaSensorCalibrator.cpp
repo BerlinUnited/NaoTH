@@ -44,7 +44,7 @@ void InertiaSensorCalibrator::reset()
   calibrated = false;
   
   collectionStartTime = 0;
-  cleanCollectionStartTime = 0;
+  stableStartTime = 0;
 }//end reset
 
 
@@ -60,15 +60,15 @@ void InertiaSensorCalibrator::execute()
   MODIFY("InertiaSensorCalibrator:inertialBiasMeasurementNoise.y", inertialBiasMeasurementNoise.y);
 
   // gyro params
-  Vector2d gyroBiasProcessNoise(0.05f, 0.05f);
-  Vector2d gyroBiasMeasurementNoise(0.01f, 0.01f); // stand
-  //Vector2d gyroBiasWalkMeasurementNoise(0.1f, 0.1f);
+  static const Vector2d gyroBiasProcessNoise(0.05f, 0.05f);
+  static const Vector2d gyroBiasMeasurementNoise(0.01f, 0.01f); // stand
+  //static const Vector2d gyroBiasWalkMeasurementNoise(0.1f, 0.1f);
 
 
   // acc params
-  Vector3d accBiasProcessNoise = Vector3d(0.01f, 0.01f, 0.01f);
-  Vector3d accBiasStandMeasurementNoise = Vector3d(0.1f, 0.1f, 0.1f);
-  //Vector3d accBiasWalkMeasurementNoise = Vector3d(1.f, 1.f, 1.f);
+  static const Vector3d accBiasProcessNoise = Vector3d(0.01f, 0.01f, 0.01f);
+  static const Vector3d accBiasStandMeasurementNoise = Vector3d(0.1f, 0.1f, 0.1f);
+  //static const Vector3d accBiasWalkMeasurementNoise = Vector3d(1.f, 1.f, 1.f);
   const Vector3d& accBiasMeasurementNoise = accBiasStandMeasurementNoise;
 
   // collecting time
@@ -78,18 +78,20 @@ void InertiaSensorCalibrator::execute()
   timeFrame = (unsigned int)tmp;
 
 
-  // frame time check
+  // frame time check: ansure the monotonical time increase
+  // TODO: do we need it?
   if(getFrameInfo().getTime() <= lastTime)
   {
-    if(getFrameInfo().getTime() == lastTime)
+    if(getFrameInfo().getTime() == lastTime) {
       return; // done!
+    }
     reset();
   }
 
   // it's prediction time!
   if(lastTime && calibrated)
   {
-    const double timeDiff = double(getFrameInfo().getTimeSince(lastTime)) * 0.001; // in seconds
+    const double timeDiff = static_cast<double>(getFrameInfo().getTimeSince(lastTime)) * 0.001; // in seconds
     inertialXBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.x * timeDiff));
     inertialYBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.y * timeDiff));
     accXBias.predict(0.0, Math::sqr(accBiasProcessNoise.x * timeDiff));
@@ -105,38 +107,38 @@ void InertiaSensorCalibrator::execute()
         getMotionStatus().currentMotion != motion::stand
     || !getGroundContactModel().leftGroundContact
     || !getGroundContactModel().rightGroundContact;
-
-  DEBUG_REQUEST("InertiaSensorCalibrator:force_calibrate", unstable=false; );
-
     //|| intentionallyMoving()
     //|| !( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) );
 
+
+  DEBUG_REQUEST("InertiaSensorCalibrator:force_calibrate", unstable=false; );
   PLOT("InertiaSensorCalibrator:unstable", unstable);
 
   // update cleanCollectionStartTime
-  if(unstable)
-    cleanCollectionStartTime = 0;
-  else if(!cleanCollectionStartTime)
-    cleanCollectionStartTime = getFrameInfo().getTime();
-
-
-
+  if(unstable) {
+    stableStartTime = 0;
+  } else if(!stableStartTime) {
+    stableStartTime = getFrameInfo().getTime();
+  }
 
   // restart sensor value collecting?
   if(unstable || (getFrameInfo().getTimeSince(collectionStartTime) > 1000))
   {
     // add collection within the time frame to the collection buffer
-    if(cleanCollectionStartTime && getFrameInfo().getTimeSince(cleanCollectionStartTime) > (int)timeFrame &&
+    if(stableStartTime && getFrameInfo().getTimeSince(stableStartTime) > (int)timeFrame &&
        inertialValues.getNumberOfEntries())
     {
       //ASSERT(collections.getNumberOfEntries() < collections.getMaxEntries());
       collections.add(Collection(inertialValues.getAverage(),
                                  accValues.getAverage(),
                                  gyroValues.getAverage(),
-                                 collectionStartTime + (getFrameInfo().getTimeSince(collectionStartTime)) / 2));
+                                 // mean time of the collection
+                                 collectionStartTime + getFrameInfo().getTimeSince(collectionStartTime) / 2));
     }
 
     // restart collecting
+    accValues.init();
+    gyroValues.init();
     inertialValues.init();
     collectionStartTime = 0;
 
@@ -144,9 +146,11 @@ void InertiaSensorCalibrator::execute()
     for(int i = collections.getNumberOfEntries() - 1; i >= 0; --i)
     {
       const Collection& collection(collections.getEntry(i));
-      if(getFrameInfo().getTimeSince(collection.timeStamp) < (int)timeFrame)
+      if(getFrameInfo().getTimeSince(collection.timeStamp) < (int)timeFrame) {
         break;
-      if(cleanCollectionStartTime && cleanCollectionStartTime < collection.timeStamp)
+      }
+
+      if(stableStartTime && stableStartTime < collection.timeStamp)
       {
         // use this collection
         if(!calibrated)
@@ -187,16 +191,17 @@ void InertiaSensorCalibrator::execute()
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
-    Vector3d accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
-    accGravOnly *= -Math::g;
+    Vector3d accExpected(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
+    accExpected *= -Math::g;
 
     // add sensor reading to the collection
     inertialValues.add(inertialExpected - getInertialSensorData().data);
-    accValues.add(getAccelerometerData().data - accGravOnly);
+    accValues.add(getAccelerometerData().data - accExpected);
     gyroValues.add( -getGyrometerData().data );
 
-    if(!collectionStartTime)
+    if(!collectionStartTime) {
       collectionStartTime = getFrameInfo().getTime();
+    }
   }//end if !unstable
 
 
@@ -236,4 +241,4 @@ void InertiaSensorCalibrator::execute()
   PLOT("InertiaSensorCalibrator:accOffset.y", getCalibrationData().accSensorOffset.y);
   PLOT("InertiaSensorCalibrator:accOffset.z", getCalibrationData().accSensorOffset.z);
 
-}//end update
+}//end execute
