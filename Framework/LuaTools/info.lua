@@ -8,13 +8,12 @@ function get_info(cmd, default)
   return default
 end
 
-REVISION = get_info("bzr revno --tree", -1)
-USER_NAME = get_info("bzr whoami", "-")
-BRANCH_PATH = get_info("bzr info", "-")
+REVISION = get_info("git rev-parse HEAD", -1)
+USER_NAME = get_info("git config user.name", "-")
+BRANCH_PATH = get_info("git branch -a", -1)
 
 REVISION = string.gsub(REVISION,"\n", "")
 USER_NAME = string.gsub(USER_NAME,"\n", "")
-BRANCH_PATH = "todo"--string.match(BRANCH_PATH,"checkout root: (.-)\n")
 
 print("INFO: repository info")
 print("  REVISION = " .. REVISION)
