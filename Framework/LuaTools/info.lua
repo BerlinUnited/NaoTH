@@ -1,7 +1,11 @@
 function get_info(cmd, default)
-  local f = io.popen (cmd, "r");
-  local rev = f:read("*a")
-  f:close ();
+  local f = io.popen (cmd, "r")
+  local rev = nil
+  if f ~= nil then
+	f:read("*a")
+	f:close ()
+  end
+  
   if rev ~= nil then 
 	return rev
   end  
@@ -10,7 +14,7 @@ end
 
 REVISION = get_info("git rev-parse HEAD", -1)
 USER_NAME = get_info("git config user.name", -1)
-BRANCH_PATH = get_info("git branch -a", -1)
+BRANCH_PATH = get_info("git branch -a", "no branch info\n")
 
 REVISION = string.gsub(REVISION,"\n", "")
 USER_NAME = string.gsub(USER_NAME,"\n", "")
