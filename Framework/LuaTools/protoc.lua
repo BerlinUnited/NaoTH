@@ -78,8 +78,13 @@ local function protocCompile(inputFiles, cppOut, javaOut, ipaths)
   end 
 
   args = args .. table.concat(inputFiles, " ")
-  
   local cmd = compilerPath .. "/" .. compiler .. " " .. args
+  
+  -- HACK: create the output directories if needed
+  os.mkdir(cppOut)
+  os.mkdir(javaOut)
+  
+  -- generate the message files
   print("INFO: executing " .. cmd)
   local returnCode = os.execute(cmd)
   
