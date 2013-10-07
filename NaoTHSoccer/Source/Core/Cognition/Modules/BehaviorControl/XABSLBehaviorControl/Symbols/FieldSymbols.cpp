@@ -1,3 +1,13 @@
+/**
+ * @file FieldSymbols.cpp
+ *
+ * Implementation of class FieldSymbols
+ *
+ * Currently not used
+ * Experimental feature
+ *
+ */
+
 #include "FieldSymbols.h"
 
 void FieldSymbols::registerSymbols(xabsl::Engine& engine)

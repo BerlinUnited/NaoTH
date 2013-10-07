@@ -2,6 +2,10 @@
  * @file SoundSymbols.cpp
  *
  * Implementation of class SoundSymbols
+  *
+ * Currently not used
+ * Experimental feature
+ *
  */
 
 
