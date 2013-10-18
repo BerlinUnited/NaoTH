@@ -10,7 +10,7 @@ class OpenCVImage
 {
 public:
 
-  cv::Mat data;
+  cv::Mat image;
 
   OpenCVImage();
 

@@ -4,12 +4,10 @@
 
 #include <ModuleFramework/Module.h>
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/OpenCVGrayScale.h"
 #include "Representations/Perception/OpenCVImage.h"
 
 BEGIN_DECLARE_MODULE(OpenCVImageProvider)
   REQUIRE(Image)
-  PROVIDE(OpenCVGrayScale)
   PROVIDE(OpenCVImage)
 END_DECLARE_MODULE(OpenCVImageProvider)
 

@@ -12,7 +12,7 @@ void OpenCVDebug::execute()
 
   DEBUG_REQUEST("OpenCVDebug:show_debug_image",
   // write result to real image (for debugging...)
-  cv::Mat result = getOpenCVGrayScale().image;
+  cv::Mat result = getOpenCVImage().image;
   for(unsigned int i=0; i < theImage.getIndexSize(); i++)
   {
     int x = theImage.getXOffsetFromIndex(i);

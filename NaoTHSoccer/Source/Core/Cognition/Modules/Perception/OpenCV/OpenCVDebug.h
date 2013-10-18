@@ -3,10 +3,10 @@
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/Image.h>
-#include <Representations/Perception/OpenCVGrayScale.h>
+#include <Representations/Perception/OpenCVImage.h>
 
 BEGIN_DECLARE_MODULE(OpenCVDebug)
-  REQUIRE(OpenCVGrayScale)
+  REQUIRE(OpenCVImage)
   PROVIDE(Image)
 END_DECLARE_MODULE(OpenCVDebug)
 

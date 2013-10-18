@@ -7,12 +7,15 @@ OpenCVImageProvider::OpenCVImageProvider()
 void OpenCVImageProvider::execute()
 {
   const Image& image = getImage();
-  if(image.cameraInfo.resolutionWidth == 320 && image.cameraInfo.resolutionHeight == 240)
-  {
-    OpenCVGrayScale::createSmallGrayScaleFromRaw(image.yuv422, getOpenCVGrayScale().image);
-  }
 
-  getOpenCVImage().data = OpenCVImage::convertFromNaoImage(image);
+  getOpenCVImage().image = OpenCVImage::convertFromNaoImage(image);
+
+  // debug
+//  cv::Mat asRgb;
+//  cv::cvtColor(getOpenCVImage().image, asRgb, CV_YCrCb2RGB);
+//  cv::namedWindow("cv", cv::WINDOW_AUTOSIZE);
+//  cv::imshow("cv",asRgb);
+//  cv::waitKey(1);
 
 }
 

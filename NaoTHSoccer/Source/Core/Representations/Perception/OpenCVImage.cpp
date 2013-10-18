@@ -8,17 +8,17 @@ OpenCVImage::OpenCVImage()
 
 OpenCVImage::OpenCVImage(const Image &orig)
 {
-  data = convertFromNaoImage(orig);
+  image = convertFromNaoImage(orig);
 }
 
 cv::Mat OpenCVImage::convertFromNaoImage(const Image &orig)
 {
   // construct a matrix that has an column for each color value of each pixel
-  cv::Mat newImg = cv::Mat::zeros(orig.height(), orig.width()*3, CV_8SC1);
+  cv::Mat newImg = cv::Mat::zeros(orig.height(), orig.width()/2, CV_8UC(6));
 
   // wrap the original one in a way that uses 4 columns for two pixels
-  cv::Mat wrappedYUV422((int) orig.height(), (int) orig.height()*2,
-                        CV_8SC1,
+  cv::Mat wrappedYUV422((int) orig.height(), (int) orig.width()/2,
+                        CV_8UC4,
                         (void*) orig.yuv422);
 
   std::vector<cv::Mat> src(1);
