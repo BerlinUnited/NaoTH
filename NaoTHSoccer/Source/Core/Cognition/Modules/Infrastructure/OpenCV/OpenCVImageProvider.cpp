@@ -11,6 +11,9 @@ void OpenCVImageProvider::execute()
   {
     OpenCVGrayScale::createSmallGrayScaleFromRaw(image.yuv422, getOpenCVGrayScale().image);
   }
+
+  getOpenCVImage().data = OpenCVImage::convertFromNaoImage(image);
+
 }
 
 OpenCVImageProvider::~OpenCVImageProvider()
