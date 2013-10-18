@@ -36,5 +36,8 @@ cv::Mat OpenCVImage::convertFromNaoImage(const Image &orig)
 
   cv::mixChannels(src, dst, fromTo, 6);
 
-  return newImg;
+  // we now have a real matrix with correct color values for each pixel,
+  // reshape to a true YUV-color model to make the life easier for users
+  // of this matrix
+  return newImg.reshape(3);
 }
