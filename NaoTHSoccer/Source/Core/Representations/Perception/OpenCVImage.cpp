@@ -64,3 +64,11 @@ cv::Mat OpenCVImage::convertFromNaoImage(const Image &orig, cv::Mat reuseMatrix)
   // of this matrix
   return newImg.reshape(3);
 }
+
+cv::Mat OpenCVImage::convertGrayscaleFromNaoImage(const Image &orig, cv::Mat reuseMatrix)
+{
+  cv::Mat wrappedYUV422((int) orig.height(), (int) orig.width(),
+                        CV_8UC2,
+                        (void*) orig.yuv422);
+  return wrappedYUV422;
+}

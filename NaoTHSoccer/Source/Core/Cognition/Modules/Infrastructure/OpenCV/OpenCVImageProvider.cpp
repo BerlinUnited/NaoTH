@@ -9,6 +9,8 @@ void OpenCVImageProvider::execute()
   const Image& image = getImage();
 
   getOpenCVImage().image = OpenCVImage::convertFromNaoImage(image, getOpenCVImage().image);
+  //getOpenCVImage().image = OpenCVImage::convertGrayscaleFromNaoImage(
+  //      image, getOpenCVImage().image);
 
   // debug
 //  cv::Mat asRgb;

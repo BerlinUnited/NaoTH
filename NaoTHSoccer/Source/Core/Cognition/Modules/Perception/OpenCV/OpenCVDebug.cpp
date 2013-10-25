@@ -36,6 +36,14 @@ void OpenCVDebug::execute()
         p.u = value[1];
         p.v = value[3];
       }
+      else if(result.channels() == 2)
+      {
+        // ignore the second channel and treat like grayscale
+        cv::Vec2b& value = result.at<cv::Vec2b>(y,x);
+        p.y = value[0];
+        p.u = 128;
+        p.v = 128;
+      }
       else if(result.channels() == 1)
       {
         uchar value = result.at<uchar>(y,x);

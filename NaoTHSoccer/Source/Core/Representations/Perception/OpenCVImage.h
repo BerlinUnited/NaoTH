@@ -17,6 +17,7 @@ public:
   OpenCVImage(const Image& orig);
 
   static cv::Mat convertFromNaoImage(const Image& orig, cv::Mat reuseMatrix = cv::Mat());
+  static cv::Mat convertGrayscaleFromNaoImage(const Image& orig, cv::Mat reuseMatrix = cv::Mat());
 };
 
 #endif // OPENCVIMAGE_H
