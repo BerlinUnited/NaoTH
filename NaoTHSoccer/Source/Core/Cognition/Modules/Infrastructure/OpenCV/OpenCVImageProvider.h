@@ -4,11 +4,13 @@
 
 #include <ModuleFramework/Module.h>
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/OpenCVImage.h"
+#include "Representations/Perception/CVImage.h"
 
 BEGIN_DECLARE_MODULE(OpenCVImageProvider)
   REQUIRE(Image)
-  PROVIDE(OpenCVImage)
+  REQUIRE(ImageTop)
+  PROVIDE(CVImage)
+  PROVIDE(CVImageTop)
 END_DECLARE_MODULE(OpenCVImageProvider)
 
 class OpenCVImageProvider : public OpenCVImageProviderBase

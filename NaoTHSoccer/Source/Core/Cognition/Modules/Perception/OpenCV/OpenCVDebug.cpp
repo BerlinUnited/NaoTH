@@ -8,11 +8,22 @@ OpenCVDebug::OpenCVDebug()
 
 void OpenCVDebug::execute()
 {
-  Image& theImage = getImage();
-
   DEBUG_REQUEST("OpenCVDebug:show_debug_image",
+    cv::Mat result = getCVImage().image;
+    Image& theImage = getImage();
+    writeToImage(result, theImage);
+
+    result = getCVImageTop().image;
+    Image& theImageTop = getImageTop();
+    writeToImage(result, theImageTop);
+  );
+
+}
+
+void OpenCVDebug::writeToImage(cv::Mat result, Image& theImage)
+{
   // write result to real image (for debugging...)
-  cv::Mat result = getOpenCVImage().image;
+
   for(unsigned int i=0; i < theImage.getIndexSize(); i++)
   {
     int x = theImage.getXOffsetFromIndex(i);
@@ -68,6 +79,4 @@ void OpenCVDebug::execute()
       theImage.set(x,y,p);
     }
   }
-  );
-
 }

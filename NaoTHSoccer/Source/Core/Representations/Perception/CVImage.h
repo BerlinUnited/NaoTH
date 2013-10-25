@@ -6,18 +6,29 @@
 
 using namespace naoth;
 
-class OpenCVImage
+/**
+ * @brief The CVImage class contains the robots camera image as OpenCV matrix
+ */
+class CVImage
 {
 public:
 
   cv::Mat image;
 
-  OpenCVImage();
+  CVImage();
 
-  OpenCVImage(const Image& orig);
+  CVImage(const Image& orig);
+
+  virtual ~CVImage() {}
 
   static cv::Mat convertFromNaoImage(const Image& orig, cv::Mat reuseMatrix = cv::Mat());
   static cv::Mat convertGrayscaleFromNaoImage(const Image& orig, cv::Mat reuseMatrix = cv::Mat());
+};
+
+class CVImageTop : public CVImage
+{
+public:
+  virtual ~CVImageTop() {}
 };
 
 #endif // OPENCVIMAGE_H
