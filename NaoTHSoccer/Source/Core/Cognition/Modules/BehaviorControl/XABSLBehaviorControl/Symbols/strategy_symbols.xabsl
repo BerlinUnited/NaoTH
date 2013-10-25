@@ -1,5 +1,8 @@
 /** Symbols for accessing all strategy relevant information */
 namespace strategy("Strategy Symbols") {
+  float input goalie_blub_ready_position.x;
+  float input goalie_blub_ready_position.y;
+  float input goalie_blub_ready_position.rot;
 
   /**  */
   float input attention.mi_point.x;

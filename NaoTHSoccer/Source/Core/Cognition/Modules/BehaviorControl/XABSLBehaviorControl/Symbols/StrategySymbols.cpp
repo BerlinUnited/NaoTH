@@ -75,6 +75,10 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &soccerStrategy.formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &soccerStrategy.formation.y);
 
+  engine.registerDecimalInputSymbol("goalie_blub_ready_position.x", &GoalieBlubReadyPositionX);
+  engine.registerDecimalInputSymbol("goalie_blub_ready_position.y", &GoalieBlubReadyPositionY);
+  engine.registerDecimalInputSymbol("goalie_blub_ready_position.rot", &GoalieBlubReadyPositionR);
+
   // XABSL-Option (current situation) symbol for some models.
   // informs about the currently used option (option itself must set this variable!)
   // register the enum type for head motion
@@ -149,6 +153,18 @@ void StrategySymbols::execute()
 //int StrategySymbols::getSituationStatusId(){ 
 //	return (int)(theInstance->situationStatus.id); 
 //}
+double StrategySymbols::GoalieBlubReadyPositionX(){
+	return -4400;
+}
+
+double StrategySymbols::GoalieBlubReadyPositionY(){
+	return 0;
+}
+
+double StrategySymbols::GoalieBlubReadyPositionR(){
+	return 0;
+}
+
 
 bool StrategySymbols::getSituationStatusOwnHalf(){ 
 	return (theInstance->getSituationStatus().ownHalf); 

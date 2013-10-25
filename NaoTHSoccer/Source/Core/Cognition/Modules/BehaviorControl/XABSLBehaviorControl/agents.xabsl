@@ -16,6 +16,8 @@ include "Symbols/team_symbols.xabsl";
 include "Symbols/led_symbols.xabsl";
 include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
+//Experimental
+include "Symbols/field_symbols.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
