@@ -38,6 +38,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(CurrentCameraSettingsTop);
   REG_INPUT(VirtualVision);
+  REG_INPUT(VirtualVisionTop);
   REG_INPUT(FrameInfo);
 
   REG_INPUT(AccelerometerData);

@@ -27,6 +27,7 @@
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/BatteryData.h>
+#include <Representations/Infrastructure/GPSData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/GameData.h>
@@ -61,6 +62,7 @@ private:
   bool isNewImage;
   bool isNewVirtualVision;
   VirtualVision theVirtualVision;
+  VirtualVisionTop theVirtualVisionTop;
   base64::Decoder theBase64Decoder;
 
   SensorJointData theLastSensorJointData;
@@ -68,6 +70,8 @@ private:
   AccelerometerData theAccelerometerData;
   FSRData theFSRData;
   FrameInfo theFrameInfo;
+  BatteryData theBatteryData;
+  GPSData theGPSData;
 
   int theCameraId;
   CameraInfo theCameraInfo;
@@ -125,9 +129,10 @@ public:
 
   void get(CurrentCameraSettings& data);
 
-  void get(BatteryData& data) {data.charge = 1.0;}
+  void get(BatteryData& data);
 
   void get(VirtualVision& data);
+  void get(VirtualVisionTop& data);
 
   void get(TeamMessageDataIn& data);
 
@@ -161,22 +166,17 @@ private:
   int parseString(char* data, std::string& value);
   int parseInt(char* data, int& value);
   int paseImage(char* data);
-
+  bool parsePoint3D(const sexp_t* sexp, Vector3d& result) const;
 
   bool updateImage(const sexp_t* sexp);
-
   bool updateHingeJoint(const sexp_t* sexp);
-
   bool updateGyro(const sexp_t* sexp);
-
   bool updateAccelerometer(const sexp_t* sexp);
-
+  bool updateBattery(const sexp_t* sexp);
+  bool updateGPS(const sexp_t* sexp);
   bool updateGameInfo(const sexp_t* sexp);
-
   bool updateFSR(const sexp_t* sexp);
-
-  bool updateSee(const std::string& preName, const sexp_t* sexp);
-
+  bool updateSee(VirtualVision& virtualVision, const sexp_t* sexp);
   bool updateIMU(const sexp_t* sexp);
 
   Vector3d decomposeForce(double f, double fx, double fy, const Vector3d& c0, const Vector3d& c1, const Vector3d& c2);

@@ -68,6 +68,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
+  PROVIDE(VirtualVisionTop)
   PROVIDE(DebugMessageIn)
 
   // from motion
