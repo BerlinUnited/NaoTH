@@ -44,6 +44,7 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<CurrentCameraSettings>(*this);
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
+  registerInput<VirtualVisionTop>(*this);
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
 
@@ -106,8 +107,10 @@ SimSparkController::SimSparkController(const std::string& name)
   theJointMotorNameMap[JointData::RAnklePitch] = "rle5";
   theJointMotorNameMap[JointData::RAnkleRoll] = "rle6";
 
-  if (!g_thread_supported())
+  if (!g_thread_supported()) {
     g_thread_init(NULL);
+  }
+
   theCognitionInputMutex = g_mutex_new();
   theCognitionOutputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
@@ -142,11 +145,13 @@ SimSparkController::~SimSparkController()
   g_cond_free(theSensorDataCond);
   g_mutex_free(theActDataMutex);
 
-  if (socket != NULL)
+  if (socket != NULL) {
     g_socket_close(socket, NULL);
+  }
 
-  if (theImageData != NULL)
+  if (theImageData != NULL) {
     delete [] theImageData;
+  }
 }
 
 string SimSparkController::getBodyNickName() const
@@ -168,36 +173,36 @@ bool SimSparkController::connect(const std::string& host, int port)
 {
   if(socket != NULL)
   {
-  gboolean conn = false;
-  GError** error = NULL;
-  GCancellable* cancellable = NULL;
-  GSocketAddress* sockaddr = NULL;
-  GError* conn_error = NULL;
+	gboolean conn = false;
+	GError** error = NULL;
+	GCancellable* cancellable = NULL;
+	GSocketAddress* sockaddr = NULL;
+	GError* conn_error = NULL;
 
-  GSocketConnectable* addr = g_network_address_new(host.c_str(),static_cast<guint16> (port));
-  GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
-  g_object_unref(addr);
+	GSocketConnectable* addr = g_network_address_new(host.c_str(),static_cast<guint16> (port));
+	GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
+	g_object_unref(addr);
 
-  while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, error)))
+	while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, error)))
     {
-    conn = g_socket_connect(socket, sockaddr, NULL, conn_error ? NULL : &conn_error);
-    g_object_unref(sockaddr);
+	  conn = g_socket_connect(socket, sockaddr, NULL, conn_error ? NULL : &conn_error);
+	  g_object_unref(sockaddr);
     }
-  g_object_unref(enumerator);
+	g_object_unref(enumerator);
 
-  if (conn)
+    if (conn)
     {
       return true;
     }
-  else if (error)
+    else if (error)
     {
-    if (conn_error){
-      g_warning("Could not connect. Error message:\n%s", conn_error->message);
-      g_error_free(conn_error);
-    }
+      if (conn_error){
+        g_warning("Could not connect. Error message:\n%s", conn_error->message);
+        g_error_free(conn_error);
+      }
       return false;
     }
-  else
+    else
     {
       g_propagate_error(error, conn_error);
       return false;
@@ -205,7 +210,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   }
 
   return false;
-}
+}//end connect
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
@@ -226,7 +231,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   // send create command to simulator
 
-  theSocket << "(scene rsg/agent/nao/nao.rsg)" << theSync << send;
+  theSocket << "(scene rsg/agent/naov4/nao.rsg)" << theSync << send;
   // wait the response
   getSensorData(theSensorData);
   updateSensors(theSensorData);
@@ -269,12 +274,9 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
 void SimSparkController::main()
 {
-  if ( theSyncMode )
-  {
+  if ( theSyncMode ) {
     singleThreadMain();
-  }
-  else
-  {
+  } else {
     multiThreadsMain();
   }
 }
@@ -546,28 +548,40 @@ bool SimSparkController::updateSensors(std::string& msg)
     {
       bool ok = true;
       string name(t->val);
-      if ("HJ" == name) ok = updateHingeJoint(t->next); // hinge joint
-      else if ("FRP" == name)
+      if ("HJ" == name) // hinge joint
+	  {
+		  ok = updateHingeJoint(t->next); 
+	  }
+      else if ("FRP" == name) // force sensor
       {
-        ok = updateFSR(t->next); // force sensor
-      } else if ("See" == name)
-      {// See
-        theVirtualVision.clear();
-        ok = updateSee("", t->next);
+        ok = updateFSR(t->next); 
+      }
+	  else if ("BottomCamera" == name || "See" == name)
+	  {
+		theVirtualVision.clear();
+		ok = updateSee(theVirtualVision, t->next);
         if ( ok ) isNewVirtualVision = true;
         
         //HACK: assume the image is behind of "See"
         int offset = paseImage(pcont->lastPos);
         pcont->lastPos = &(pcont->lastPos[offset]);
         isNewImage = offset > 0;
-      } else if ("time" == name)
+	  }
+	  else if ("TopCamera" == name)
+	  {
+		theVirtualVisionTop.clear();
+		ok = updateSee(theVirtualVisionTop, t->next);
+        if ( ok ) isNewVirtualVision = true;
+	  }
+	  else if ("time" == name)
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
         theFrameInfo.setTime( static_cast<unsigned int>(theSenseTime * 1000.0) );
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
           cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
-      } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
+      } 
+	  else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
       else if ("ACC" == name) ok = updateAccelerometer(t->next);
       else if ("GS" == name) ok = updateGameInfo(t->next); // game state
       else if ("hear" == name)  ok = hear(t->next);// hear
@@ -579,8 +593,20 @@ bool SimSparkController::updateSensors(std::string& msg)
         //ok = updateImage(t->next); // image from camera
         //if (ok) isNewImage = true;
       }
-      else cerr << " Perception unknow name: " << string(t->val) << endl;
-      if (!ok)
+	  else if ("GPS" == name) //
+	  {
+		ok = updateGPS(t->next);
+	  }
+	  else if ("BAT" == name) // Batterie
+	  {
+		ok = updateBattery(t->next);
+	  }
+      else 
+	  {
+		cerr << " Perception unknow name: " << string(t->val) << endl;
+	  }
+      
+	  if (!ok)
       {
         cerr << " Perception update failed: " << string(t->val) << endl;
         return false;
@@ -824,6 +850,7 @@ bool SimSparkController::updateGyro(const sexp_t* sexp)
   return true;
 }
 
+// message format: (ACC (n <name>) (a <x> <y> <z>))
 bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
 {
   // get the name
@@ -840,7 +867,7 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
     return false;
   }
 
-  Vector3<double> acc;
+  Vector3d acc;
   if (!SexpParser::parseGivenArrayValue(sexp->next, "a", 3, &(acc.x)))
   {
     cerr << "can not get the Accelerometer data!\n";
@@ -855,6 +882,50 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
   return true;
 }//end updateAccelerometer
 
+// Example message: (BAT 1.00)
+bool SimSparkController::updateBattery(const sexp_t* sexp)
+{
+  if (!SexpParser::parseValue(sexp, theBatteryData.charge))
+  {
+    cerr << "SimSparkGameInfo::update failed battery value\n";
+	return false;
+  }
+
+  return true;
+}//end updateBattery
+
+
+// Example message:
+// (GPS (n torso) (tf 0.00 1.00 0.00 -2.00 -1.00 0.00 0.00 2.10 0.00 -0.00 1.00 0.40 0.00 -0.00 0.00 1.00))
+bool SimSparkController::updateGPS(const sexp_t* sexp)
+{
+  std::string name;
+  if (!SexpParser::parseGivenValue(sexp, "n", name))
+  {
+    cerr << "can not get the GPS name!\n";
+    return false;
+  }
+
+  // treat the position of the torso
+  if ("torso" == name)
+  {
+	double tf[16];
+    if (!SexpParser::parseGivenArrayValue(sexp->next, "tf", 16, &(tf[0])))
+    {
+      cerr << "can not get the GPS data!\n";
+      return false;
+    }
+	int i = 0;
+	Pose3D& p(theGPSData.data);
+	
+	p.rotation.c[0][0] = tf[i++]; p.rotation.c[0][1] = tf[i++]; p.rotation.c[0][2] = tf[i++]; p.translation[0] = tf[i++];
+	p.rotation.c[1][0] = tf[i++]; p.rotation.c[1][1] = tf[i++]; p.rotation.c[1][2] = tf[i++]; p.translation[0] = tf[i++];
+	p.rotation.c[2][0] = tf[i++]; p.rotation.c[2][1] = tf[i++]; p.rotation.c[2][2] = tf[i++]; p.translation[0] = tf[i++];
+	assert(tf[i++] == 0.0);       assert(tf[i++] == 0.0);       assert(tf[i++] == 0.0);       assert(tf[i++] == 1.0);
+  }
+
+  return true;
+}//end updateGPS
 
 // Example message: "(GS (t 0.00) (pm BeforeKickOff))"
 bool SimSparkController::updateGameInfo(const sexp_t* sexp)
@@ -1028,7 +1099,7 @@ void SimSparkController::calFSRForce(double f, double x, double y, FSRData::FSRI
   theFSRData.data[id2] += F.z;
 }
 
-bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
+bool SimSparkController::updateSee(VirtualVision& virtualVision, const sexp_t* sexp)
 {
   std::string name;
   while (sexp)
@@ -1038,54 +1109,74 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
     if (SEXP_VALUE == t->ty)
     {
       SexpParser::parseValue(t, name);
-      if ("P" == name) // a player
+      if ("P" == name) // parse a player
       {
         string teamName;
         t = t->next;
-        if (!SexpParser::parseGivenValue(t, "team", teamName))
+        if (!SexpParser::parseGivenValue(t, "team", teamName)) {
           cerr << "[SimSparkController] Vision can not get the Player's team" << endl;
+		}
 
         string id;
         t = t->next;
-        if (!SexpParser::parseGivenValue(t, "id", id))
+        if (!SexpParser::parseGivenValue(t, "id", id)) {
           cerr << "[SimSparkController] Vision can not get Player's id" << endl;
-        if ( !updateSee("P "+teamName+" "+id+" ", t->next) )
-          return false;
+		}
+		
+		// parse the players points
+		t = t->next;
+		while(t) {
+		  SexpParser::parseValue(t->list, name);
+		  // NOTE: if the parsePoint3D the map virtualVision contains an zero vector entry with the key name
+		  if(!parsePoint3D(t->list->next, virtualVision.data["P "+teamName+" "+id+" "+name])) {
+			cerr << "[SimSparkController] Vision can not parse the point " << name << " of the player " << teamName << ":"<< id << endl;
+		  }
+		  t = t->next;
+		}
+
       }
-      else if ("L"==name)
+      else if ("L" == name) // parse a line
       {
         double p0[3], p1[3];
-        if ( SexpParser::parseGivenArrayValue(t->next, "pol", 3, p0) && SexpParser::parseGivenArrayValue(t->next->next, "pol", 3, p1))
+        if ( SexpParser::parseGivenArrayValue(t->next, "pol", 3, p0) && 
+			 SexpParser::parseGivenArrayValue(t->next->next, "pol", 3, p1))
         {
           VirtualVision::Line l;
           l.p0 = Vector3d(p0[0]*1000, Math::fromDegrees(p0[1]), Math::fromDegrees(p0[2]));
           l.p1 = Vector3d(p1[0]*1000, Math::fromDegrees(p1[1]), Math::fromDegrees(p1[2]));
-          theVirtualVision.lines.push_back(l);
-        }
-        else
-        {
-          cerr<<"[SimSparkController] Vision can not process line! " << endl;
+          virtualVision.lines.push_back(l);
+        } else {
+          cerr << "[SimSparkController] Vision can not process line! " << endl;
         }
       }
-      else
+      else // parse other points
       {
-        double d[3];
-        if (SexpParser::parseGivenArrayValue(t->next, "pol", 3, d))
-        {
-          theVirtualVision.data[preName + name] = Vector3<double>(d[0]*1000, Math::fromDegrees(d[1]), Math::fromDegrees(d[2]));
-        } else if (SexpParser::parseArrayValue(t->next, 3, d))
-        {
-          theVirtualVision.data[preName + name] = Vector3d(d[0], d[1], d[2])*1000;
-        } else
-        {
-          cerr << "[SimSparkController] Vision can not get Object " << name << endl;
-        }
+		// NOTE: if the parsePoint3D the map virtualVision contains an zero vector entry with the key name
+        if(!parsePoint3D(t->next, virtualVision.data[name])) {
+			cerr << "[SimSparkController] Vision can not get Object " << name << endl;
+		}
       }
     }
     sexp = sexp->next;
   }
 
   return true;
+}
+
+bool SimSparkController::parsePoint3D(const sexp_t* sexp, Vector3d& result) const
+{
+  static double buffer[3];
+  if (SexpParser::parseGivenArrayValue(sexp, "pol", 3, buffer))
+  {
+	result = Vector3d(buffer[0]*1000, Math::fromDegrees(buffer[1]), Math::fromDegrees(buffer[2]));
+	return true;
+  } else if (SexpParser::parseArrayValue(sexp, 3, buffer))
+  {
+	result = Vector3d(buffer[0], buffer[1], buffer[2])*1000;
+	return true;
+  }
+
+  return false;
 }
 
 void SimSparkController::get(FrameInfo& data)
@@ -1112,6 +1203,11 @@ void SimSparkController::get(SensorJointData& data)
 void SimSparkController::get(AccelerometerData& data)
 {
   data = theAccelerometerData;
+}
+
+void SimSparkController::get(BatteryData& data)
+{
+  data = theBatteryData;
 }
 
 void SimSparkController::get(Image& data)
@@ -1171,6 +1267,11 @@ void SimSparkController::get(VirtualVision& data)
   data = theVirtualVision;
 }
 
+void SimSparkController::get(VirtualVisionTop& data)
+{
+  data = theVirtualVisionTop;
+}
+
 void SimSparkController::get(GameData& data)
 {
   if ( theGameData.valid )
@@ -1192,7 +1293,7 @@ void SimSparkController::updateInertialSensor()
   oldGyroY = gyrometer.y;
 
   // calculate intertial sensor data by accelerometer
-  const Vector3<double>& acc = theAccelerometerData.data;
+  const Vector3d& acc = theAccelerometerData.data;
   double len = acc.abs();
 
   if (len > 2 && len < 30)
@@ -1283,6 +1384,7 @@ void SimSparkController::get(CurrentCameraSettings& data)
 {
   data.data[CameraSettings::CameraSelection] = theCameraId;
 }
+
 
 void SimSparkController::say()
 {

@@ -7,7 +7,7 @@
  */
 
 #ifndef _VIRTUALVISION_H
-#define  _VIRTUALVISION_H
+#define _VIRTUALVISION_H
 
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/Printable.h"
@@ -24,13 +24,12 @@ namespace naoth
 
     ~VirtualVision();
 
-    typedef std::map<std::string, Vector3<double> > PointMap;
+    typedef std::map<std::string, Vector3d> PointMap;
     PointMap data;
 
     struct Line
     {
-      Vector3<double> p0;
-      Vector3<double> p1;
+      Vector3d p0, p1;
     };
     std::list<Line> lines;
 
@@ -38,6 +37,8 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
   };
+
+  class VirtualVisionTop: public VirtualVision {};
 }
 
 #endif  /* _VIRTUALVISION_H */
