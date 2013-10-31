@@ -152,6 +152,10 @@ include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
 
+//Benji Test
+include "Options/Test/test_benji_agent.xabsl";
+include "Options/Test/test_benji_lv1.xabsl";
+
 
 
 /** The soccer competition agent */
@@ -175,6 +179,8 @@ agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent
 agent walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
+agent test_benji("test benji level 1", test_benji_agent);
+
 agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);

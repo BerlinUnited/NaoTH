@@ -31,8 +31,19 @@ private:
 
   static FieldSymbols* theInstance;
 
+  
+
+
   // representations
   const FieldInfo& fieldInfo;
+
+  static double xPosFirstDefenseline();
+  static double xPosSecondDefenseline();
+  static double yPosLeftFlank();
+  static double yPosRightFlank();
+
+  static double xPosFirstAttackline();
+  static double xPosSecondAttackline();
 
 };//end class FieldSymbols
 
