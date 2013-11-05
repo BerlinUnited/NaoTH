@@ -130,6 +130,7 @@ public:
   void get(CurrentCameraSettings& data);
 
   void get(BatteryData& data);
+  void get(GPSData& data);
 
   void get(VirtualVision& data);
   void get(VirtualVisionTop& data);

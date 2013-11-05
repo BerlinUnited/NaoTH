@@ -47,6 +47,8 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<VirtualVisionTop>(*this);
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
+  registerInput<GPSData>(*this);
+  registerInput<BatteryData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -918,10 +920,19 @@ bool SimSparkController::updateGPS(const sexp_t* sexp)
 	int i = 0;
 	Pose3D& p(theGPSData.data);
 	
-	p.rotation.c[0][0] = tf[i++]; p.rotation.c[0][1] = tf[i++]; p.rotation.c[0][2] = tf[i++]; p.translation[0] = tf[i++];
-	p.rotation.c[1][0] = tf[i++]; p.rotation.c[1][1] = tf[i++]; p.rotation.c[1][2] = tf[i++]; p.translation[0] = tf[i++];
-	p.rotation.c[2][0] = tf[i++]; p.rotation.c[2][1] = tf[i++]; p.rotation.c[2][2] = tf[i++]; p.translation[0] = tf[i++];
+	p.rotation.c[0][0] = tf[i++]; p.rotation.c[1][0] = tf[i++]; p.rotation.c[2][0] = tf[i++]; p.translation[0] = tf[i++];
+	p.rotation.c[0][1] = tf[i++]; p.rotation.c[1][1] = tf[i++]; p.rotation.c[2][1] = tf[i++]; p.translation[1] = tf[i++];
+	p.rotation.c[0][2] = tf[i++]; p.rotation.c[1][2] = tf[i++]; p.rotation.c[2][2] = tf[i++]; p.translation[2] = tf[i++];
 	assert(tf[i++] == 0.0);       assert(tf[i++] == 0.0);       assert(tf[i++] == 0.0);       assert(tf[i++] == 1.0);
+
+	p.translation *= 1000.0; // convert from m to mm
+
+	// rotate the coordinate system if the own goal is right
+	if(theGameData.teamColor == GameData::red) {
+	  p.rotation.rotateZ(Math::pi);
+	  p.translation.x *= -1;
+	  p.translation.y *= -1;
+	}
   }
 
   return true;
@@ -1208,6 +1219,11 @@ void SimSparkController::get(AccelerometerData& data)
 void SimSparkController::get(BatteryData& data)
 {
   data = theBatteryData;
+}
+
+void SimSparkController::get(GPSData& data)
+{
+  data = theGPSData;
 }
 
 void SimSparkController::get(Image& data)
