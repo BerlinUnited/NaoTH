@@ -31,7 +31,7 @@ option positioning_for_own_kickoff
         stay;
     }
     action {
-      go_to_point_with_USOA(x=-4400, y=0, rot=0);
+      go_to_point_with_USOA(x=field.xPosOwnGroundline, y=0, rot=0);
       
       head.control_mode = search_for_goal;
       motion.walk.style = stable;
@@ -51,7 +51,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_lokalize(x=-1500, y=-600, rot=0);
-      go_to_point_with_USOA(x=-500, y=300, rot=-5);
+      go_to_point_with_USOA(x=field.xPosFirstDefenseline/2, y=field.yPosLeftSideline/10, rot=-5);
       head.control_mode = search_for_goal;
     }
   }
@@ -67,7 +67,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
-      go_to_point_with_USOA(x=-2500, y=900, rot=0);
+      go_to_point_with_USOA(x=field.xPosSecondDefenseline*5/4, y=field.yPosLeftSideline*3/10, rot=0);
       head.control_mode = search_for_goal;
     }
   }
@@ -83,7 +83,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
-      go_to_point_with_USOA(x=-2500, y=-900, rot=0);
+      go_to_point_with_USOA(x=field.xPosSecondDefenseline*5/4, y=-field.yPosLeftSideline*3/10, rot=0);
       head.control_mode = search_for_goal;
     }
   }
@@ -99,7 +99,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
-      go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
+      go_to_point_with_USOA(x=field.xPosOwnGroundline/3, y=field.yPosRightFlank, rot=10);
       head.control_mode = search_for_goal;
     }
   }

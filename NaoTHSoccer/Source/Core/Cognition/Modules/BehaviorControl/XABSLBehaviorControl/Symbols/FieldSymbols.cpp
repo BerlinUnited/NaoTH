@@ -30,6 +30,9 @@ void FieldSymbols::registerSymbols(xabsl::Engine& engine)
    engine.registerDecimalInputSymbol("field.yPosRightFlank", &yPosRightFlank);
    engine.registerDecimalInputSymbol("field.xPosFirstAttackline", &xPosFirstAttackline);
    engine.registerDecimalInputSymbol("field.xPosSecondAttackline", &xPosSecondAttackline);
+
+   engine.registerDecimalInputSymbol("field.yPosLeftSideline", &fieldInfo.yPosLeftSideline);
+   engine.registerDecimalInputSymbol("field.yPosRightSideline", &fieldInfo.yPosRightSideline);
 }//end registerSymbols
 
 
@@ -41,7 +44,7 @@ void FieldSymbols::execute()
 	 
 }
 double FieldSymbols::xPosFirstDefenseline(){
-	return theInstance->getFieldInfo().xPosOwnGroundline/3;
+	return theInstance->getFieldInfo().xPosOwnGroundline/3; //immer minus
 }
 /**
 
@@ -57,7 +60,7 @@ double FieldSymbols::xPosFirstDefenseline(){
 
 */
 double FieldSymbols::xPosSecondDefenseline(){
-	return theInstance->getFieldInfo().xPosOwnGroundline*2/3;
+	return theInstance->getFieldInfo().xPosOwnGroundline*2/3; //immer minus
 }
 /**
 
@@ -78,36 +81,37 @@ double FieldSymbols::yPosLeftFlank(){
 /**
 
     |---------------|---------------|
-    |               |               |
+    |---------------|---------------|
     |---|          _|_          |---|
     |   |        /  |  \        |   |
     |   |   +   (   |   )   +   |   |
     |   |        \ _|_ /        |   |
     |---|           |           |---|
-    |---------------|---------------|
+    |               |               |
     |---------------|---------------|
 
 */
+
 double FieldSymbols::yPosRightFlank(){
 	return theInstance->getFieldInfo().yPosRightSideline*6/10;
 }
 /**
 
     |---------------|---------------|
-    |---------------|---------------|
+    |               |               |
     |---|          _|_          |---|
     |   |        /  |  \        |   |
     |   |   +   (   |   )   +   |   |
     |   |        \ _|_ /        |   |
     |---|           |           |---|
-    |               |               |
+    |---------------|---------------|
     |---------------|---------------|
 
 */
 
 double FieldSymbols::xPosFirstAttackline(){
-	return -xPosFirstDefenseline();
+	return -xPosFirstDefenseline(); //ist positive
 }
 double FieldSymbols::xPosSecondAttackline(){
-	return -xPosSecondDefenseline();
+	return -xPosSecondDefenseline(); //ist positive
 }
