@@ -2,6 +2,7 @@
 * @file Walk.cpp
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrichm, Mellmann</a>
 *
 */
 
@@ -10,8 +11,6 @@
 #include "Walk/FootTrajectoryGenerator.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include <Tools/Math/MatrixBH.h>
-
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -31,7 +30,6 @@ Walk::Walk()
 void Walk::execute()
 {
   calculateError();
-  updateComObserver();
 
   {
     if ( !theWalkParameters.stabilization.enableWaitLanding || !waitLanding() )
@@ -92,7 +90,7 @@ void Walk::execute()
         getRobotInfo(),
         c, getMotorJointData().position);
     }
-
+	
     // force the hip joint
     if (getMotorJointData().position[JointData::LHipRoll] < 0) {
       getMotorJointData().position[JointData::LHipRoll] *= theWalkParameters.general.hipRollSingleSupFactorLeft;
@@ -804,53 +802,6 @@ void Walk::calculateError()
   PLOT("Walk:requested_com:y", requested_com.y);
   PLOT("Walk:requested_com:z", requested_com.z);
 }//end calculateError
-
-
-void Walk::updateComObserver()
-{
-  // parameter
-  Vector4f observerProcessDeviation(0.1f, 0.1f, 3.f, 3.f);
-
-  Vector2f observerMeasurementDeviationWhenInstable(20.f, 10.f);
-  Vector2f observerMeasurementDeviation(20.f, 20.f);
-
-
-  if(false && com_errors.getAverage() > 100)
-  {
-    observerMeasurementDeviation = observerMeasurementDeviationWhenInstable;
-  }
-
-  // observer
-  float deltaTime = (float)getRobotInfo().getBasicTimeStepInSecond();
-  static Matrix4x4f cov;
-
-  static const Matrix2x4f c(Vector2f(1, 0), Vector2f(0, 1), Vector2f(), Vector2f());
-  static const Matrix4x2f cTransposed = c.transpose();
-  static const Matrix4x4f a(Vector4f(1, 0, 0, 0), Vector4f(0, 1, 0, 0),
-                            Vector4f(deltaTime, 0, 1, 0), Vector4f(0, deltaTime, 0, 1));
-  static const Matrix4x4f aTransponsed = a.transpose();
-
-  cov = a * cov * aTransponsed;
-
-  for(int i = 0; i < 4; ++i)
-    cov[i][i] += Math::sqr(observerProcessDeviation[i]);
-
-  Matrix2x2f covPlusSensorCov = c * cov * cTransposed;
-
-  covPlusSensorCov[0][0] += Math::sqr(observerMeasurementDeviation[0]);
-  covPlusSensorCov[1][1] += Math::sqr(observerMeasurementDeviation[1]);
-  Matrix4x2f kalmanGain = cov * cTransposed * covPlusSensorCov.invert();
-  cov -= kalmanGain * c * cov;
-
-  // calculate the correction
-  Vector2f innovation((float)currentComError.x, (float)currentComError.y);
-  Vector4f correction = kalmanGain * innovation;
-
-  corrections.add(Vector2<double>(correction[0], correction[1]));
-
-  PLOT("Walk:executeStep:correction.x", correction[0]);
-  PLOT("Walk:executeStep:correction.y", correction[1]);
-}//end updateComObserver
 
 
 void Walk::updateMotionStatus(MotionStatus& motionStatus)
