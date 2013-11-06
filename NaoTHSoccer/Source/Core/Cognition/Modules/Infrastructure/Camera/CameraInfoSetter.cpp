@@ -48,6 +48,10 @@ void CameraInfoSetter::execute()
 
   // set param for image
   getImageTop().cameraInfo = getCameraInfoTop();
+
+  if(getCameraInfo().resolutionWidth != naoth::IMAGE_WIDTH || getCameraInfo().resolutionHeight != naoth::IMAGE_HEIGHT) {
+    THROW("Image size of the CameraInfo doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+  }
 }
 
 CameraInfoSetter::~CameraInfoSetter()
