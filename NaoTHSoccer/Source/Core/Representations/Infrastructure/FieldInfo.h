@@ -78,6 +78,7 @@ public:
   double yPosRightSideline;
   double yPosLeftPenaltyArea;
   double yPosRightPenaltyArea;
+  double xPenaltyMarkDistance;
 
   double yPosRightGoalpost;
   double yPosLeftGoalpost;

@@ -44,6 +44,8 @@ private:
 
   static double xPosFirstAttackline();
   static double xPosSecondAttackline();
+  static double xPosOppPenaltyMark();
+  static double xPosOwnPenaltyMark();
 
 };//end class FieldSymbols
 

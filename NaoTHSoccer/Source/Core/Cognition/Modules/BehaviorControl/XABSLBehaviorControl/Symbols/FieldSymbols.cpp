@@ -33,6 +33,10 @@ void FieldSymbols::registerSymbols(xabsl::Engine& engine)
 
    engine.registerDecimalInputSymbol("field.yPosLeftSideline", &fieldInfo.yPosLeftSideline);
    engine.registerDecimalInputSymbol("field.yPosRightSideline", &fieldInfo.yPosRightSideline);
+
+    engine.registerDecimalInputSymbol("field.xPenaltyMarkDistance", &fieldInfo.xPenaltyMarkDistance);
+	engine.registerDecimalInputSymbol("field.xPosOwnPenaltyMark", &xPosOwnPenaltyMark);
+	engine.registerDecimalInputSymbol("field.xPosOppPenaltyMark", &xPosOppPenaltyMark);
 }//end registerSymbols
 
 
@@ -42,6 +46,14 @@ FieldSymbols* FieldSymbols::theInstance = NULL;
 void FieldSymbols::execute()
 {
 	 
+}
+double FieldSymbols::xPosOppPenaltyMark(){
+	double a=theInstance->getFieldInfo().xPosOpponentPenaltyArea;
+	double b=theInstance->getFieldInfo().xPenaltyMarkDistance;
+		return a-b;
+}
+double FieldSymbols::xPosOwnPenaltyMark(){
+	return -xPosOppPenaltyMark();
 }
 double FieldSymbols::xPosFirstDefenseline(){
 	return theInstance->getFieldInfo().xPosOwnGroundline/3; //immer minus
