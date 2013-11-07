@@ -65,13 +65,6 @@ Pose2D GPS_SelfLocator::calculateFromGPS(const GPSData& gps) const
   pose.translation.y = gps.data.translation.y;
   pose.rotation = gps.data.rotation.getZAngle();
 
-  if ( getPlayerInfo().gameData.teamColor == GameData::blue )
-  {
-    //HACK (for webots): flip the position
-    //pose.translation *= -1;
-    pose.rotation = Math::normalizeAngle(pose.rotation+Math::pi);
-  }
-
   return pose;
 }//end calculateFromGPS
 

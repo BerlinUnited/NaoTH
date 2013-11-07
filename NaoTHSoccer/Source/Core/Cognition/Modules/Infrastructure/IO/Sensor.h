@@ -29,7 +29,7 @@
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
 
-
+#include "Representations/Infrastructure/GPSData.h"
 #include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
@@ -65,6 +65,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RCTCTeamMessageDataIn)
 
+  PROVIDE(GPSData)
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
