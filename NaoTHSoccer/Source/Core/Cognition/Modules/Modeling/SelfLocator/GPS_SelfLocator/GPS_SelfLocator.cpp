@@ -13,8 +13,8 @@
 
 GPS_SelfLocator::GPS_SelfLocator()
 {
-  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data (only avaiables in webots)", false); 
-  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:use_GPSData", "use the GPS data (only avaiables in webots)", false);
+  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data", false); 
+  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:use_GPSData", "use the GPS data", true);
 }
 
 
@@ -29,6 +29,10 @@ void GPS_SelfLocator::execute()
 
   DEBUG_REQUEST("GPS_SelfLocator:use_GPSData",
     getRobotPose() = gpsRobotPose;
+    getRobotPose().isValid = true;
+
+	// update the goal model based on the robot pose
+    getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
   );
 
   DEBUG_REQUEST("GPS_SelfLocator:draw_GPSData",

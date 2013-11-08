@@ -1,6 +1,8 @@
 /** Go straight to the ball with respect to hip coordinates 
-  Note: No rotation with less then 20 cm distance! 
-  Parameter @distance for the distance hip-ball (use 130 as default)**/
+  Note: robot doesn't rotate if closer then 200mm distance!
+  Note: the robot never go backwards!
+  Parameter @distance for the distance hip-ball (use 130 as default)
+**/
 
 option go_to_ball
 {

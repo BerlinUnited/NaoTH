@@ -4,6 +4,10 @@ option play_soccer
   {
     if(!body.ready_to_walk)
       goto idle;
+    else if(game.current_mode != playing &&
+            game.current_mode != ready &&
+            game.current_mode != set)
+      goto idle;
   }  
 
   initial state idle{
@@ -22,11 +26,11 @@ option play_soccer
   {
     decision
     {
-      else if((sensor.inertial.calibrated) && (game.current_mode == playing))
-        goto play;
-      else if((sensor.inertial.calibrated) && (game.current_mode == ready))
+      else if(sensor.inertial.calibrated && game.current_mode == playing)
+        goto localize_before_play;
+      else if(sensor.inertial.calibrated && game.current_mode == ready)
         goto ready;
-      else if (!( (game.current_mode == playing)||(game.current_mode == ready) ))  
+      else if (game.current_mode == set || game.current_mode != ready)  
         goto idle;
       else 
         stay;
@@ -37,18 +41,19 @@ option play_soccer
       motion.type = stand;
       head.control_mode = look_straight_ahead;
     }
-  
   }
 
   // actualy check for localize
-  state play
+  state localize_before_play
   {
     decision
     {
+      else if(game.current_mode != playing)
+        goto idle;
       else if(!last_state_was_penalized ||
         (robot_pose.is_valid && state_time>6000) || 
         state_time>12000)
-        goto real_play;
+        goto play;
       else
         stay;
     }
@@ -60,15 +65,11 @@ option play_soccer
     }
   }
 
-  state real_play
+  state play
   {
     decision
     {
-      else if (game.current_mode == ready)
-        goto ready;
-      else if (game.current_mode == set)
-        goto set;
-      else if (!(game.current_mode == playing))
+      else if (game.current_mode != playing)
         goto idle;
       else 
         stay;
@@ -86,11 +87,7 @@ option play_soccer
   {
     decision
     {
-      else if (game.current_mode == playing)
-        goto play;
-      else if (game.current_mode == set)
-        goto set;
-      else if (!(game.current_mode == ready))
+      else if (game.current_mode != ready)
         goto idle;
       else 
         stay;
@@ -109,13 +106,16 @@ option play_soccer
   {
     decision
     {
-      else if (game.current_mode == playing && team.calc_if_is_striker)
-        goto initial_striker;
       else if (game.current_mode == playing)
-        goto play;
+      {
+        if(team.calc_if_is_striker)
+          goto initial_striker;
+        else
+          goto localize_before_play;
+      }
       else if (game.current_mode == ready)
         goto ready;
-      else if (!(game.current_mode == set))
+      else if (game.current_mode != set)
         goto idle;
       else 
         stay;
@@ -125,7 +125,6 @@ option play_soccer
       head.control_mode = search_for_ball;
       situationStatusOwnHalf = true;
     }
-    
   }
 
   state initial_striker {
@@ -134,12 +133,12 @@ option play_soccer
         goto ready;
       else if (game.current_mode == set)
         goto set;
-      else if (!(game.current_mode == playing))
+      else if (game.current_mode != playing)
         goto idle;
 	    else if(team.calc_if_is_striker)
 	      stay;  
 	    else
-	      goto play;
+	      goto calibrate_before_ready_or_play; 
 	  }
 	  action {
 	    initial_striker();

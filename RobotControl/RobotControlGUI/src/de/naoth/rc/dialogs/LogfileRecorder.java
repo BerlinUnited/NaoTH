@@ -16,6 +16,7 @@ import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -72,6 +73,13 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
                 "InertialModel")
     );
     
+    // todo: load from config
+    javax.swing.DefaultComboBoxModel m = new javax.swing.DefaultComboBoxModel();
+    m.addElement("none");
+    m.addElement("Basic Perception");
+    m.addElement("Last Record");
+    
+    cbSelectionScheme.setModel(m);
     
   }
 
@@ -94,9 +102,16 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     if (originalCommand.getArguments().size() >= 1
       && originalCommand.getArguments().containsKey("open"))
     {
+        // remember selected stuff
+        ArrayList<String> selectedOptions = 
+                new ArrayList<String>(stringSelectionPanel.getSelection());
+        stringSelectionPanel.clear();
         String[] strings = (new String(result)).split(" ");
         stringSelectionPanel.addOptions(strings);
+        // restore previous selection
+        stringSelectionPanel.select(selectedOptions);
         stringSelectionPanel.setEnabled(true);
+        cbSelectionScheme.setEnabled(true);
     }
   }
 
@@ -124,8 +139,9 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     btRecord.setSelected(false);
     btRecord.setEnabled(false);
     btClose.setEnabled(false);
-    stringSelectionPanel.clear();
+    //stringSelectionPanel.clear();
     stringSelectionPanel.setEnabled(false);
+    cbSelectionScheme.setEnabled(false);
     
     btSave.setEnabled(true);
     btNew.setEnabled(true);
@@ -150,7 +166,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
    */
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
 
         saveFileChooser = new ExtendedFileChooser();
         tbLog = new javax.swing.JToolBar();
@@ -178,8 +195,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         cbLogName.setMaximumSize(new java.awt.Dimension(124, 29));
         cbLogName.setMinimumSize(new java.awt.Dimension(124, 29));
         cbLogName.setPreferredSize(new java.awt.Dimension(124, 29));
-        cbLogName.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbLogName.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 cbLogNameActionPerformed(evt);
             }
         });
@@ -190,8 +209,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btNew.setFocusable(false);
         btNew.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btNew.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btNew.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btNew.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btNewActionPerformed(evt);
             }
         });
@@ -203,8 +224,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btRecord.setFocusable(false);
         btRecord.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btRecord.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRecord.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btRecord.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btRecordActionPerformed(evt);
             }
         });
@@ -216,8 +239,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btClose.setFocusable(false);
         btClose.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btClose.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btClose.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btCloseActionPerformed(evt);
             }
         });
@@ -228,8 +253,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btSave.setFocusable(false);
         btSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btSave.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btSaveActionPerformed(evt);
             }
         });
@@ -247,9 +274,11 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         stringSelectionPanel.setToolTipText("Move Items to the right to select them.");
         stringSelectionPanel.setEnabled(false);
 
-        cbSelectionScheme.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "none", "Basic Perception" }));
-        cbSelectionScheme.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbSelectionScheme.setEnabled(false);
+        cbSelectionScheme.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 cbSelectionSchemeActionPerformed(evt);
             }
         });
@@ -260,31 +289,23 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(405, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-                .addContainerGap())
             .addComponent(tbLog, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 399, Short.MAX_VALUE))
+                    .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+                    .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -323,6 +344,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         txtTempFile.setEnabled(false);
         cbLogName.setEnabled(false);
         stringSelectionPanel.setEnabled(true);
+        cbSelectionScheme.setEnabled(true);
       }
     }//GEN-LAST:event_btNewActionPerformed
 
@@ -356,6 +378,11 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
               Command cmdActivate = new Command(selectedLog).addArg("activate", item);
               server.executeSingleCommand(this, cmdActivate);
           }
+          
+          // remember selected stuff
+          ArrayList<String> selectedOptions = 
+            new ArrayList<String>(stringSelectionPanel.getSelection());
+          selectionLists.put("Last Record", selectedOptions);
         }
         
         // activate permantent logging
@@ -367,6 +394,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         if(btRecord.isSelected())
         {
             stringSelectionPanel.setEnabled(!btRecord.isSelected());
+            cbSelectionScheme.setEnabled(!btRecord.isSelected());
             btNew.setEnabled(!btRecord.isSelected());
         }
       }//end if connected

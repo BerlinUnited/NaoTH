@@ -58,12 +58,9 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   
 
   // load the behavior from config
-  if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent"))
-  {
+  if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent")) {
     agentName = naoth::Platform::getInstance().theConfiguration.getString("agent", "agent");
-  }
-  else
-  {
+  } else {
     std::cerr << "could not load \"Config/behavior/agent.cfg\", defaulting to \"Soccer\" agent" << std::endl;
   }
 
@@ -165,12 +162,9 @@ void XABSLBehaviorControl::draw()
 
     bool kick_with_right_foot = oppGoal*ballPose > 0;
 
-    if(kick_with_right_foot)
-    {
+    if(kick_with_right_foot) {
       TEXT_DRAWING( - 100, - 100, "RIGHT");
-    }
-    else
-    {
+    } else {
       TEXT_DRAWING( - 100, - 100, "LEFT");
     }
   );
@@ -373,16 +367,13 @@ void XABSLBehaviorControl::fillAction(const xabsl::Action* source, naothmessages
     dest->set_name(behavior->n);
     dest->set_timeofexecution(behavior->timeOfExecution);
 
-    if (option)
-    {
+    if (option) {
       dest->set_activestate(option->activeState->n);
       dest->set_statetime(option->activeState->timeOfStateExecution);
       dest->set_type(naothmessages::XABSLAction_ActionType_Option);
-    }
-    else
-    {
+    } else {
       dest->set_type(naothmessages::XABSLAction_ActionType_BasicBehavior);
-    }//end if
+    }
 
     for (int j = 0; j < parameters->decimalValues.getSize(); j++)
     {
@@ -487,19 +478,20 @@ void XABSLBehaviorControl::fillRegisteredSymbols(naothmessages::BehaviorStatus &
   // enumeratedInputSymbols
   for (int i = 0; i < theEngine->enumeratedInputSymbols.getSize(); i++)
   {
+    xabsl::EnumeratedInputSymbol* s = theEngine->enumeratedInputSymbols[i];
     naothmessages::XABSLParameter* p = status.add_inputsymbols();
-    p->set_name(theEngine->enumeratedInputSymbols[i]->n);
+    p->set_name(s->n);
     p->set_type(naothmessages::XABSLParameter_ParamType_Enum);
     
-    int value = theEngine->enumeratedInputSymbols[i]->getValue();
+    int value = s->getValue();
     p->set_enumvalue("-"); // TODO: output the number "value" as default
 
     // find the name for enum value
-    for(int j = 0; j < theEngine->enumeratedInputSymbols[i]->enumeration->enumElements.getSize(); j++)
+    for(int j = 0; j < s->enumeration->enumElements.getSize(); j++)
     {
-      if(theEngine->enumeratedInputSymbols[i]->enumeration->enumElements[j]->v == value)
+      if(s->enumeration->enumElements[j]->v == value)
       {
-        p->set_enumvalue(theEngine->enumeratedInputSymbols[i]->enumeration->enumElements[j]->n);
+        p->set_enumvalue(s->enumeration->enumElements[j]->n);
         break;
       }
     }//end for
@@ -531,19 +523,20 @@ void XABSLBehaviorControl::fillRegisteredSymbols(naothmessages::BehaviorStatus &
   // enumeratedOutputSymbols
   for (int i = 0; i < theEngine->enumeratedOutputSymbols.getSize(); i++)
   {
+    xabsl::EnumeratedOutputSymbol* s = theEngine->enumeratedOutputSymbols[i];
     naothmessages::XABSLParameter* p = status.add_outputsymbols();
-    p->set_name(theEngine->enumeratedOutputSymbols[i]->n);
+    p->set_name(s->n);
     p->set_type(naothmessages::XABSLParameter_ParamType_Enum);
 
-    int value = theEngine->enumeratedOutputSymbols[i]->getValue();
+    int value = s->getValue();
     p->set_enumvalue("-"); // TODO: output the number "value" as default
 
     // find the name for enum value
-    for(int j = 0; j < theEngine->enumeratedOutputSymbols[i]->enumeration->enumElements.getSize(); j++)
+    for(int j = 0; j < s->enumeration->enumElements.getSize(); j++)
     {
-      if(theEngine->enumeratedOutputSymbols[i]->enumeration->enumElements[j]->v == value)
+      if(s->enumeration->enumElements[j]->v == value)
       {
-        p->set_enumvalue(theEngine->enumeratedOutputSymbols[i]->enumeration->enumElements[j]->n);
+        p->set_enumvalue(s->enumeration->enumElements[j]->n);
         break;
       }
     }//end for

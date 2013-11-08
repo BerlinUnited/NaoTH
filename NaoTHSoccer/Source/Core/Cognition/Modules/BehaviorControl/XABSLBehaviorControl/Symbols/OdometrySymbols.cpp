@@ -3,6 +3,11 @@
 *
 * @author <a href="mailto:martius@informatik.hu-berlin.de">Martin Martius</a>
 * Implementation of class OdometrySymbols
+ *
+ * Currently not used
+ * Experimental feature
+ *
+ *Using Odometry to walk to certain point relative to the players position
 */
 
 #include "OdometrySymbols.h"

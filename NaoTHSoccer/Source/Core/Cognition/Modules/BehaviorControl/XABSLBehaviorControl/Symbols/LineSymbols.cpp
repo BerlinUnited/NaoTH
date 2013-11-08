@@ -3,6 +3,11 @@
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
  * Implementation of class LineSymbols
+ *
+ * Currently not used
+ * Experimental feature
+ *
+ * In certain situations it is better to use local features like lines to navigate.
  */
 
 #include "LineSymbols.h"

@@ -77,7 +77,7 @@ private:
   unsigned int lastTime; /**< The time of the previous iteration. */
 
   unsigned int collectionStartTime; /**< When the current collection was started. */
-  unsigned int cleanCollectionStartTime; /**< When the last unstable situation was over. */
+  unsigned int stableStartTime; /**< When the last unstable situation was over. */
 
 
   RingBufferWithSum<Vector2d, 300> inertialValues; /**< Ringbuffer for collecting the acceleration sensor values of one walking phase or 1 sec. */
