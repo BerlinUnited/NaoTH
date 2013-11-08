@@ -8,7 +8,7 @@ option sidekick_to_left
   {
     decision
     {
-      if(state_time > 250 && executed_motion.step_control.right_movable)
+      if(state_time > 500 && executed_motion.step_control.right_movable)
       {
         goto sidekick_right_foot;
       }
@@ -30,8 +30,8 @@ option sidekick_to_left
   {
     decision
     {
-      if(state_time > 100 && executed_motion.step_control.left_movable)
-        goto turn_left;
+      if(state_time > 300 && executed_motion.step_control.left_movable)
+        goto short_freeze;
       else
         stay;
     }
@@ -44,56 +44,34 @@ option sidekick_to_left
 
       motion.walk.step_control.foot = right;
       motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
-      motion.walk.step_control.target.y = ball.preview.right_foot.y;
+      motion.walk.step_control.target.y = ball.preview.right_foot.y + 100;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 90;
       motion.walk.step_control.time = 300;
 
-      //loook at percept
-      head.control_mode = none;
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
 
-  state turn_left {
-	  decision {
+  state short_freeze {
+    decision {
       if(state_time > 500)
-        goto reset_controls;
-      else 
-        stay;
-	  }
-	  action {
-      motion.type = walk;
-      motion.walk.style = normal;
-      motion.walk.coordinate = hip;
-      motion.walk.step_control.foot = none;
-      motion.walk_speed.rot=18;
-
-      head.control_mode = look_at_ball_percept;
-	  }
-	}
-
-  state reset_controls
-  {
-    decision
-    {
-      if (state_time > 500) //uerspruenglich 1000
         goto finished;
-      else
-        stay;
+      else 
+        stay; 
     }
-    action
-    {
+    action {
       motion.type = stand;
-    
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
-
-      motion.walk.step_control.foot = none;
-
-      //loook at percept
+      motion.walk.stop_with_stand = false;
+      
       head.control_mode = look_at_ball_percept;
+
+      // really needed?
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = none;
     }
+  
   }
 
   target state finished
