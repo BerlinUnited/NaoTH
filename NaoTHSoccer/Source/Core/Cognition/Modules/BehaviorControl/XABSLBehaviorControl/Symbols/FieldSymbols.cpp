@@ -4,10 +4,8 @@
  * Implementation of class FieldSymbols
  *
  *@author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Benjamin</a>
- * Currently not used
- * Experimental feature
+ *Experimental feature
  *
- *Should be used soon
  */
 
 #include "FieldSymbols.h"
