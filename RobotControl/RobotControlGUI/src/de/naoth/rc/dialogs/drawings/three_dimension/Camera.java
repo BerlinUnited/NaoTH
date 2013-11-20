@@ -20,6 +20,7 @@ public class Camera extends Drawable
 {
 
   private Point3f[] vertex = new Point3f[4];
+  private String id = new String();
   
   public Camera(String[] tokens) throws DataFormatException
   {
@@ -28,19 +29,20 @@ public class Camera extends Drawable
   
   protected Camera(String[] tokens, String cameraIdentifier) throws DataFormatException
   {
-    float scale = 0.0012f;
-    if(tokens.length > 4 && tokens[0].equals(cameraIdentifier))
+    float scale = 0.0006f;
+    if(tokens.length > 5 && tokens[0].equals(cameraIdentifier))
     {
-      float focusLength = Float.parseFloat(tokens[1]) * scale;
-      float width = Float.parseFloat(tokens[2]) * scale;
-      float height = Float.parseFloat(tokens[3]) * scale;
+      id = tokens[1];
+      float focusLength = Float.parseFloat(tokens[2]) * scale;
+      float width = Float.parseFloat(tokens[3]) * scale;
+      float height = Float.parseFloat(tokens[4]) * scale;
 
-      Transform3D cameraTransform = parseTransform3D(tokens, 4);
+      Transform3D cameraTransform = parseTransform3D(tokens, 5);
 
-      if(tokens.length > 13 && tokens[13].equals("Robot"))
+      if(tokens.length > 14 && tokens[14].equals("Robot"))
       {
         Transform3D robotTransform;
-        robotTransform = parseTransform3D(tokens, 14);
+        robotTransform = parseTransform3D(tokens, 15);
 
         Matrix3f rotRobot = new Matrix3f();
         Vector3f transRobot = new Vector3f();
@@ -92,6 +94,10 @@ public class Camera extends Drawable
     }
   }
 
+  public String getId() {
+      return this.id;
+  }
+  
   public void addImage(JanusImage image)
   {
     if (null != image && vertex.length == 4)

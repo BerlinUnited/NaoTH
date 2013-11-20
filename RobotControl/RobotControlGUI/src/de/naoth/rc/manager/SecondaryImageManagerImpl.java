@@ -98,7 +98,7 @@ public class SecondaryImageManagerImpl extends AbstractManagerPlugin<JanusImage>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("image").addArg("secondary");
+    return new Command("image").addArg("top");
   }//end getCurrentCommand
 
 }//end class ImageManager
