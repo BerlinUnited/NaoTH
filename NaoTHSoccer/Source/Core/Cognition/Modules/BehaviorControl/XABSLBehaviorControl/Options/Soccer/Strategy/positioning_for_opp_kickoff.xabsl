@@ -32,6 +32,8 @@ option positioning_for_opp_kickoff
     }
     action {
       //go_to_point_with_USOA(x=-4400, y=0, rot=0);
+      //x=field.xPosOwnGroundline+Z da sonst genau auf der Linie steht
+      //und das eher so semi cool ist
       go_to_point_with_USOA(x=field.xPosOwnGroundline, y=0, rot=0);
       motion.walk.style = stable;
       head.control_mode = search_for_goal;
@@ -50,7 +52,7 @@ option positioning_for_opp_kickoff
     action
     {
       //go_to_point_with_USOA(x=-1100, y=0, rot=0);
-      go_to_point_with_USOA(x=field.xPosOwnGroundline/4, y=0, rot=0);
+      go_to_point_with_USOA(x=-field.centerCircleRadius-300, y=field.yPosLeftSideline/10, rot=-5)
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=-600, rot=0) alt;
 
