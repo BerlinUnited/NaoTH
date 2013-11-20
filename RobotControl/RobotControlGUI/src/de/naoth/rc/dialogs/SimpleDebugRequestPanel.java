@@ -57,6 +57,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     private void initComponents() {
 
         toolbarMain = new javax.swing.JToolBar();
+        btUpdate = new javax.swing.JToggleButton();
         btRefresh = new javax.swing.JToggleButton();
         jScrollPane = new javax.swing.JScrollPane();
         debugRequestTree = new de.naoth.rc.checkboxtree.CheckboxTree();
@@ -66,7 +67,18 @@ public class SimpleDebugRequestPanel extends AbstractDialog
         toolbarMain.setFloatable(false);
         toolbarMain.setRollover(true);
 
-        btRefresh.setText("Refresh");
+        btUpdate.setText("Update");
+        btUpdate.setFocusable(false);
+        btUpdate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btUpdate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btUpdateActionPerformed(evt);
+            }
+        });
+        toolbarMain.add(btUpdate);
+
+        btRefresh.setText("Reload");
         btRefresh.setFocusable(false);
         btRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -88,6 +100,8 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   private void btRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRefreshActionPerformed
   {//GEN-HEADEREND:event_btRefreshActionPerformed
 
+    this.debugRequestTree.clear();
+            
     if (btRefresh.isSelected())
     {
       if (parent.checkConnected()) {
@@ -100,8 +114,23 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     }
 
   }//GEN-LAST:event_btRefreshActionPerformed
+
+    private void btUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUpdateActionPerformed
+        if (btUpdate.isSelected())
+        {
+          if (parent.checkConnected()) {
+            dbgRequestManager.addListener(this);
+          } else {
+            btUpdate.setSelected(false);
+          }
+        } else {
+          dbgRequestManager.removeListener(this);
+        }
+    }//GEN-LAST:event_btUpdateActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btRefresh;
+    private javax.swing.JToggleButton btUpdate;
     private de.naoth.rc.checkboxtree.CheckboxTree debugRequestTree;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToolBar toolbarMain;
@@ -194,6 +223,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     
     this.debugRequestTree.repaint();
     btRefresh.setSelected(false);
+    btUpdate.setSelected(false);
     dbgRequestManager.removeListener(this);
   }
 

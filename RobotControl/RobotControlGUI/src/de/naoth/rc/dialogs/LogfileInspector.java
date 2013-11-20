@@ -841,14 +841,14 @@ public class LogfileInspector extends AbstractDialog
             FrameInfo frameInfo = FrameInfo.parseFrom(infoFrame.data); 
             
             // create a file
-            File outFile = new File("image_export/"+file_name+"/"+frameInfo.getTime()+"_bottom.png");
+            File outFile = new File("image_export/"+file_name+"/bottom/"+frameInfo.getFrameNumber()+".png");
             outFile.mkdirs();
             
             ImageManagerImpl im = new ImageManagerImpl();
             JanusImage janusImage = im.convertByteArrayToType(imageFrame.data);
             ImageIO.write(janusImage.getRgb(), "PNG", outFile);
             
-            File outFileTop = new File("image_export/"+file_name+"/"+frameInfo.getTime()+"_top.png");
+            File outFileTop = new File("image_export/"+file_name+"/top/"+frameInfo.getFrameNumber()+".png");
             outFileTop.mkdirs();
             
             ImageManagerImpl imTop = new ImageManagerImpl();

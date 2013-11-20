@@ -15,6 +15,7 @@ import de.naoth.rc.dialogs.drawings.three_dimension.Scene;
 import de.naoth.rc.dialogs.drawings.three_dimension.VirtualWorld;
 import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.manager.SecondaryImageManager;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
@@ -31,7 +32,6 @@ import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
 import javax.media.j3d.ViewPlatform;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
@@ -53,6 +53,8 @@ public class ThreeDimensionViewer extends AbstractDialog
       public static ThreeDimensionSceneManager threeDimensionSceneManager;
       @InjectPlugin
       public static ImageManager imageManager;
+      @InjectPlugin
+      public static SecondaryImageManager imageTopManager;
   }//end Plugin
   
   
@@ -64,8 +66,12 @@ public class ThreeDimensionViewer extends AbstractDialog
   private static boolean java3dAvailable = true;
   private final Command getColorTableCommand =
     new Command("Cognition:representation:get").addArg("ColorTable64");
+  
   private ObjectListener imageListener;
+  private ObjectListener imageListenerTop;
+  
   private JanusImage image;
+  private JanusImage imageTop;
 
   /** Creates new form ThreeDimensionViewer */
   public ThreeDimensionViewer()
@@ -272,6 +278,7 @@ public class ThreeDimensionViewer extends AbstractDialog
       if (Plugin.parent.checkConnected())
       {
         Plugin.imageManager.addListener(imageListener);
+        Plugin.imageTopManager.addListener(imageListenerTop);
       } else
       {
         jCheckBoxImage.setSelected(false);
@@ -279,6 +286,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     } else
     {
       Plugin.imageManager.removeListener(imageListener);
+      Plugin.imageTopManager.removeListener(imageListenerTop);
       image = null;
     }
   }//GEN-LAST:event_jCheckBoxImageActionPerformed
@@ -336,10 +344,32 @@ public class ThreeDimensionViewer extends AbstractDialog
       {
         jCheckBoxImage.setSelected(false);
         ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
+        ThreeDimensionViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
         image = null;
         Helper.handleException(cause, null);
       }
     };
+    
+    imageListenerTop = new ObjectListener<JanusImage>()
+    {
+
+      @Override
+      public void newObjectReceived(JanusImage object)
+      {
+        imageTop = object;
+      }
+
+      @Override
+      public void errorOccured(String cause)
+      {
+        jCheckBoxImage.setSelected(false);
+        ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
+        ThreeDimensionViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
+        image = null;
+        Helper.handleException(cause, null);
+      }
+    };
+    
   }
 
   private void createViewBranch(Vector3f homeViewPos)
@@ -390,7 +420,8 @@ public class ThreeDimensionViewer extends AbstractDialog
     }
 
     // attach the image of camera
-    object.addCameraImage(image);
+    object.addCameraImage(image, "bottom");
+    object.addCameraImage(imageTop, "top");    
     
     vw.add(object);
     if (activeScene != null)
@@ -413,6 +444,7 @@ public class ThreeDimensionViewer extends AbstractDialog
   {
     Plugin.threeDimensionSceneManager.removeListener(this);
     Plugin.imageManager.removeListener(imageListener);
+    Plugin.imageTopManager.removeListener(imageListenerTop);
     //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
   }//end dispose
 }

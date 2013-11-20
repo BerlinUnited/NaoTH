@@ -77,7 +77,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     // add the drawings to the image
     GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
     
-    if(arguments.find("secondary") != arguments.end())
+    if(arguments.find("top") != arguments.end())
     {
       DebugTopImageDrawings::getInstance().drawToImage(getImageTop());
       DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(getImageTop());
