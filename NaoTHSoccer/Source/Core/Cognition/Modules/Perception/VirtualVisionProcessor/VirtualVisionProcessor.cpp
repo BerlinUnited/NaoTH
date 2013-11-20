@@ -119,6 +119,7 @@ void VirtualVisionProcessor::updateGoal()
   const CameraInfo& theCameraInfo = getCameraInfo();
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
   theGoalPercept.reset();
+  theGoalPercept.horizonScan = true;
 
   GoalPercept::GoalPost yellowPostOne;
   GoalPercept::GoalPost yellowPostTwo;
