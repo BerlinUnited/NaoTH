@@ -157,7 +157,7 @@
       <SubComponents>
         <Component class="javax.swing.JToggleButton" name="btReceiveImages">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive Images"/>
+            <Property name="text" type="java.lang.String" value="Receive Bottom"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesActionPerformed"/>
@@ -165,9 +165,9 @@
         </Component>
         <Component class="javax.swing.JToggleButton" name="btReceiveSecondary">
           <Properties>
+            <Property name="text" type="java.lang.String" value="Receive Top"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="label" type="java.lang.String" value="Receive Secondary"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>

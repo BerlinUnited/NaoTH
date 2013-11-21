@@ -21,6 +21,9 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/OdometryData.h"
 
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/GoalModel.h"
+
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -28,8 +31,10 @@ BEGIN_DECLARE_MODULE(GPS_SelfLocator)
   REQUIRE(GPSData)
   REQUIRE(OdometryData)
   REQUIRE(PlayerInfo)
+  REQUIRE(FieldInfo)
 
   PROVIDE(RobotPose)
+  PROVIDE(SelfLocGoalModel)
 END_DECLARE_MODULE(GPS_SelfLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

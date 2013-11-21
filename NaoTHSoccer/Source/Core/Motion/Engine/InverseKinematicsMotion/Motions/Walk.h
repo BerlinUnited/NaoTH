@@ -124,9 +124,6 @@ private:
   /** calculate the COM error */
   void calculateError();
 
-  /** estimate the correction for the COM */
-  void updateComObserver();
-
   /** */
   void manageSteps(const WalkRequest& req);
 

@@ -24,15 +24,16 @@ public class Scene extends BranchGroup
     setCapability(Scene.ALLOW_CHILDREN_WRITE);
   }
 
-  public void addCameraImage(JanusImage image)
+  public void addCameraImage(JanusImage image, String id)
   {
     for ( Enumeration e = getAllChildren(); e.hasMoreElements();)
     {
       Object o = e.nextElement();
-      if (o instanceof Camera)
-      {
+      if (o instanceof Camera) {
         Camera c = (Camera)o;
-        c.addImage(image);
+        if(c.getId().equals(id)) {
+            c.addImage(image);
+        }
       }
     }
   }
