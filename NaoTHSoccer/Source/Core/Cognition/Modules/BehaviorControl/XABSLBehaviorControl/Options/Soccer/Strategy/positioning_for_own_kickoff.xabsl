@@ -32,6 +32,9 @@ option positioning_for_own_kickoff
     }
     action {
      //go_to_point_with_USOA(x=-4400, y=0, rot=0);
+     //x=field.xPosOwnGroundline+Z? da sonst genau auf der Linie steht
+      //und das eher so semi cool ist, aber dann sieht er vielleicht nicht ein ball
+      //der genau auf der Linie ist
       go_to_point_with_USOA(x=field.xPosOwnGroundline, y=0, rot=0);
       head.control_mode = search_for_goal;
       motion.walk.style = stable;
@@ -51,7 +54,7 @@ option positioning_for_own_kickoff
     {
       //go_to_point_with_USOA(x=-500, y=300, rot=-5);
       //300 is the assumed margin of error, should prevent robot from stepping into circle
-      go_to_point_with_USOA(x=-field.centerCircleRadius-300, y=field.yPosLeftSideline/10, rot=-5);
+      go_to_point_with_USOA(x=-300, y=0, rot=0);
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=-600, rot=0) alt;
 
@@ -69,7 +72,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_USOA(x=-2500, y=900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal, rot=0);
+       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark+(field.centerCircleRadius)/2), y=field.yPosRightFlank,rot=10);
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15)alt;
 
@@ -87,7 +90,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=0);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal,rot=0);
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15)alt;
     }
@@ -104,7 +107,7 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark+(-field.centerCircleRadius)/2), y=field.yPosRightGoal, rot=10);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal, rot=00);
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15)alt;
 

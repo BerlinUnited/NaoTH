@@ -43,7 +43,7 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=field.xPosOppPenaltyMark, y=0, rot=-180);
+      go_to_and_keep_passive_position(x=field.xPosOppPenaltyMark, y=field.yPosLeftPenaltyArea, rot=0);
     }
   }
 
@@ -55,7 +55,8 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=field.xPosOwnPenaltyMark, y=0, rot=-15);
+    //go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
+      go_to_and_keep_passive_position(x=field.xPosOppPenaltyMark, y=field.yPosRightFlank, rot=140);
     }
   }
 
@@ -67,7 +68,7 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
+      go_to_and_keep_passive_position(x=field.xPosOwnPenaltyMark, y=field.yPosLeftPenaltyArea, rot=-15);
     }
   }
 
@@ -79,7 +80,8 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
+    //go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
+      go_to_and_keep_passive_position(x=(field.xPosOwnPenaltyMark+(field.centerCircleRadius)/2), y=field.yPosRightPenaltyArea, rot=0);
     }
   }
 
