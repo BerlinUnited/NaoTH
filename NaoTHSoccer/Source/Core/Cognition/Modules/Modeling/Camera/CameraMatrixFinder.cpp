@@ -23,13 +23,13 @@ CameraMatrixFinder::CameraMatrixFinder()
 void CameraMatrixFinder::execute()
 {
   // BOTTOM CAMERA
-  if(getCameraMatrixBuffer().getNumberOfEntries() > 0)
+  if(getCameraMatrixBuffer().size() > 0)
   {
 
     int smallestDiff = std::numeric_limits<int>::max();
     unsigned int smallestIndex = 0; // default to last one
 
-    for(int i=0; i < getCameraMatrixBuffer().getNumberOfEntries(); i++)
+    for(int i=0; i < getCameraMatrixBuffer().size(); i++)
     {
       const CameraMatrix& m = getCameraMatrixBuffer().getEntry(i);
       // compare time stamp
@@ -59,12 +59,12 @@ void CameraMatrixFinder::execute()
   }
 
   // TOP CAMERA
-  if(getCameraMatrixBuffer2().getNumberOfEntries() > 0)
+  if(getCameraMatrixBuffer2().size() > 0)
   {
     int smallestDiff = std::numeric_limits<int>::max();
     unsigned int smallestIndex = 0; // default to last one
 
-    for(int i=0; i < getCameraMatrixBuffer2().getNumberOfEntries(); i++)
+    for(int i=0; i < getCameraMatrixBuffer2().size(); i++)
     {
       const CameraMatrix& m = getCameraMatrixBuffer2().getEntry(i);
       // compare time stamp

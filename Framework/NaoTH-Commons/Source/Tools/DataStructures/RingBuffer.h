@@ -18,14 +18,17 @@
  */
 template <class V, int maxSize> class RingBuffer
 {
-  public:
-    /** Constructor */
+public:
+    
     RingBuffer() : n(maxSize) {init();}
 
     /**
      * initializes the Ringbuffer
      */
-    void init () {current = n - 1; numberOfEntries = 0;}
+    void init () {
+      current = n - 1; 
+      numberOfEntries = 0;
+    }
 
     /**
      * adds an entry to the buffer
@@ -51,10 +54,10 @@ template <class V, int maxSize> class RingBuffer
     /**
      * removes the first added entry to the buffer
      */
-    void removeFirst () 
-    {
+    void removeFirst () {
       --numberOfEntries;
     }
+
     /**
      * returns an entry
      * \param i index of entry counting from last added (last=0,...)
@@ -116,8 +119,7 @@ template <class V, int maxSize> class RingBuffer
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
-    V& operator[] (int i)
-    {
+    V& operator[] (int i) {
       return getEntry(i);
     }
 
@@ -126,27 +128,18 @@ template <class V, int maxSize> class RingBuffer
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
-    const V& operator[] (int i) const
-    {
+    const V& operator[] (int i) const {
       return buffer[i > current ? n + current - i : current - i];
     }
 
     /**
     * clears the buffer
     */
-    void clear()
-    { 
+    void clear() { 
       numberOfEntries = 0; 
     }
 
-    // TODO: remove, obsolete
-    inline int getNumberOfEntries() const
-    {
-      return numberOfEntries;
-    }
-
-    inline unsigned int size() const
-    {
+    inline int size() const {
       return numberOfEntries;
     }
 
@@ -154,12 +147,15 @@ template <class V, int maxSize> class RingBuffer
     * Returns the maximum entry count.
     * \return The maximum entry count.
     */
-    inline int getMaxEntries() const
-    {
+    inline int getMaxEntries() const {
       return maxSize;
     }
 
-    void setMaxSize(int newMaxSize) {assert(newMaxSize <= maxSize); n = newMaxSize; init();}
+    void setMaxSize(int newMaxSize) {
+      assert(newMaxSize <= maxSize); 
+      n = newMaxSize; 
+      init();
+    }
 
     bool isFull() {return numberOfEntries == n;}
 
@@ -171,4 +167,4 @@ template <class V, int maxSize> class RingBuffer
 };
 
 
-#endif // __RingBuffer_h_
+#endif // _RingBuffer_h_

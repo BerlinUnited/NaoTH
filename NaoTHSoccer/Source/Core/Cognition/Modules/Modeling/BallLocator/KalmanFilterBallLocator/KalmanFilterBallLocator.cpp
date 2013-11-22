@@ -94,7 +94,7 @@ void KalmanFilterBallLocator::execute()
     MODIFY("KalmanFilterBallLocator:deltaModelpercept", deltaModelpercept);
 
     //updateByTime
-    if( badPerceptBuffer.getNumberOfEntries() > 0 &&
+    if( badPerceptBuffer.size() > 0 &&
         getFrameInfo().getFrameNumber() - badPerceptBuffer.first().frameInfoWhenBallWasSeen.getFrameNumber() > 200)
     {
       badPerceptBuffer.removeFirst();
@@ -104,7 +104,7 @@ void KalmanFilterBallLocator::execute()
     Pose2D odometryDelta = lastRobotOdometryAll - getOdometryData();
 
     //update the badPerceptBuffer
-    for (int i = 0; i < badPerceptBuffer.getNumberOfEntries(); i++)
+    for (int i = 0; i < badPerceptBuffer.size(); i++)
     {
       BallPercept& ball = badPerceptBuffer.getEntry(i);
       ball.bearingBasedOffsetOnField = odometryDelta * ball.bearingBasedOffsetOnField;
@@ -141,7 +141,7 @@ void KalmanFilterBallLocator::execute()
 
     }
 
-    if (badPerceptBuffer.getNumberOfEntries() > 10) {
+    if (badPerceptBuffer.size() > 10) {
 
       reset(badPerceptBuffer.first());
       badPerceptBuffer.clear();
@@ -261,7 +261,7 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
   lastSeenBall = odometryDelta * lastSeenBall;
 
   //update the ballBuffer
-  for (int i = 0; i < ballBuffer.getNumberOfEntries(); i++) 
+  for (int i = 0; i < ballBuffer.size(); i++) 
   {
     LocalBallPercept& ball = ballBuffer.getEntry(i);
     ball.lastSeenBall = odometryDelta * ball.lastSeenBall;
@@ -306,10 +306,10 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
       // select actual and one random observation, or the one and the last!
       double timeDelta;
       Vector2<double>  pickedSeenBall;
-      if (parameters.randomizeFrameSelection && ballBuffer.getNumberOfEntries() > 1) 
+      if (parameters.randomizeFrameSelection && ballBuffer.size() > 1) 
       {
         //pick random Element
-        const int idx = Math::random(ballBuffer.getNumberOfEntries());
+        const int idx = Math::random(ballBuffer.size());
         timeDelta       = getFrameInfo().getTimeInSeconds() - ballBuffer.getEntry(idx).lastFrameInfoWhenBallSeen.getTimeInSeconds();
         pickedSeenBall  = ballBuffer.getEntry(idx).lastSeenBall;
       } 

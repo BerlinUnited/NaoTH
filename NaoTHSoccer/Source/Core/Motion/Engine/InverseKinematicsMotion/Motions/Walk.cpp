@@ -414,7 +414,7 @@ void Walk::planStep()
   double factorY = 0;
   MODIFY("Walk:executeStep:correction.factorY", factorY);
 
-  if(corrections.getNumberOfEntries() > delay)
+  if(corrections.size() > delay)
   {
     zmpOffsetX += fabs(corrections[(int)delay].x)*factorX;
     zmpOffset  += fabs(corrections[(int)delay].y)*factorY;
@@ -757,7 +757,7 @@ void Walk::calculateError()
 
 
   int observerMeasurementDelay = 40;
-  int index = std::min(int(observerMeasurementDelay / 10 - 0.5), commandPoseBuffer.getNumberOfEntries() - 1);
+  int index = std::min(int(observerMeasurementDelay / 10 - 0.5), int(commandPoseBuffer.size() - 1));
   const InverseKinematic::CoMFeetPose& expectedCoMFeetPose = commandPoseBuffer[index];
 
   Vector3d requested_com;

@@ -35,7 +35,7 @@ void TeamCommReceiver::execute()
 
   // handle messages if buffer half full (so we get really old messages)
   if(usingDelayBuffer
-     && delayBuffer.getNumberOfEntries() >= delayBuffer.getMaxEntries()/2)
+     && delayBuffer.size() >= delayBuffer.getMaxEntries()/2)
   {
     // only handle a quarter of the messages
     for(int i=0; i < delayBuffer.getMaxEntries()/4; i++)

@@ -7,8 +7,8 @@
  * @author Tobias Oberlies
  */
 
-#ifndef __RingBufferWithSum_h_
-#define __RingBufferWithSum_h_
+#ifndef _RingBufferWithSum_h_
+#define _RingBufferWithSum_h_
 
 #include <algorithm>
 
@@ -43,22 +43,12 @@ template <class C, int n> class RingBufferWithSum
       buffer[current] = value;
     }
 
-    C& last ()
-    {
-      return buffer[current];
-    }
-
-    C& first ()
-    {
-      return getEntry(numberOfEntries - 1);
-    }
-
     /**
      * returns an entry
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
-    C getEntry (int i)
+    C& getEntry (int i)
     {
       int j = current - i;
       j %= n;
@@ -66,8 +56,7 @@ template <class C, int n> class RingBufferWithSum
       return buffer[j];
     }
 
-    C getSum()
-    {
+    C getSum() {
       return sum;
     }
 
@@ -92,7 +81,6 @@ template <class C, int n> class RingBufferWithSum
     {
       // Return 0 if buffer is empty
       if (0==numberOfEntries) return C();
-
       return (sum / numberOfEntries);
     }
 
@@ -106,13 +94,28 @@ template <class C, int n> class RingBufferWithSum
       return temp[mid];
     }
 
+    C& last () {
+      return buffer[current];
+    }
+
+    const C& last () const {
+      return buffer[current];
+    }
+
+    C& first () {
+      return getEntry(numberOfEntries - 1);
+    }
+
+    const C& first () const {
+      return getEntry(numberOfEntries - 1);
+    }
+
     /**
      * returns an entry
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
-    C operator[] (int i)
-    {
+    C& operator[] (int i) {
       return getEntry(i);
     }
 
@@ -121,13 +124,11 @@ template <class C, int n> class RingBufferWithSum
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
-    C operator[] (int i) const
-    {
+    const C& operator[] (int i) const {
       return buffer[i > current ? n + current - i : current - i];
     }
 
-    inline int getNumberOfEntries() const
-    {
+    inline int size() const {
       return numberOfEntries;
     }
 
@@ -135,8 +136,7 @@ template <class C, int n> class RingBufferWithSum
     * Returns the maximum entry count.
     * \return The maximum entry count.
     */
-    inline int getMaxEntries() const
-    {
+    inline int getMaxEntries() const {
       return n;
     }
 
@@ -147,5 +147,5 @@ template <class C, int n> class RingBufferWithSum
     C sum;
 };
 
-#endif // __RingBufferWithSum_h_
+#endif // _RingBufferWithSum_h_
 

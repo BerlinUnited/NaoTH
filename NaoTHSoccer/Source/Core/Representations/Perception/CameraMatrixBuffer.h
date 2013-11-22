@@ -9,7 +9,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    for(int i=0; i < getNumberOfEntries(); i++)
+    for(int i=0; i < size(); i++)
     {
       stream << "entry " << i << std::endl;
       stream << "=========" << std::endl;
@@ -27,7 +27,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    for(int i=0; i < getNumberOfEntries(); i++)
+    for(int i=0; i < size(); i++)
     {
       stream << "entry " << i << std::endl;
       stream << "=========" << std::endl;
