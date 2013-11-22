@@ -54,8 +54,8 @@ void PreviewController::loadParameter()
 {
   // generate the file name
   string path = naoth::Platform::getInstance().theConfigDirectory; 
-  path += "scheme/";
-  path += naoth::Platform::getInstance().theScheme;
+  path += "platform/";
+  path += naoth::Platform::getInstance().thePlatform;
   path += "/previewControl.prm";
   cout << "PreviewController load " << path << endl;
     
