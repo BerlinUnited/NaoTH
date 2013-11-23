@@ -280,8 +280,9 @@ Vector3<DATATYPE> pol2xyz(const Vector3<DATATYPE> & v)
     );
 }
 
-//typedef Vector3<float> Vector3f;
+typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
+typedef Vector3<double> Vector3i;
 
 #endif // __Vector3_h__
 
