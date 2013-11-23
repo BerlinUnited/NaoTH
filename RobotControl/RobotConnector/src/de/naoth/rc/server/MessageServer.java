@@ -52,9 +52,10 @@ public class MessageServer
   private final Lock SINGLE_EXE_LOCK = new ReentrantLock();
   
   public final static String STRING_ENCODING = "ISO-8859-15";
+  private final long updateIntervall = 33;
+  
   private SocketChannel serverSocket;
   private Thread senderThread;
-  private long updateIntervall = 33;
   private InetSocketAddress address;
   private List<CommandSender> listeners;
   private List<SingleExecEntry> singleExec;
@@ -123,6 +124,7 @@ public class MessageServer
     // create and start the sender thread
     this.senderThread = new Thread(new Runnable()
     {
+      @Override
       public void run()
       {
         try
@@ -229,7 +231,7 @@ public class MessageServer
   }//end getAddress
 
   
-  /** Return wether RC is connected to a robot */
+  /** Return whether RC is connected to a robot */
   public boolean isConnected()
   {
     return serverSocket != null && serverSocket.isConnected();
@@ -262,15 +264,15 @@ public class MessageServer
   }//end removeCommandSender
 
   /**
-   * Schedule a single command for execution. It is not guarantied when it
-   * will be executed but the {@link CommandSender} will be notfied using the
+   * Schedule a single command for execution. It is not guaranteed when it
+   * will be executed but the {@link CommandSender} will be notified using the
    * right command as argument.
    * 
    * @param commandSender The command sender responsible for this command.
    * @param command       Instead of using {@link CommandSender#getCurrentCommand()}
    *                      this command is used.
    * 
-   * @throws NotYetConnectedException is thrown if the sercer is not connected
+   * @throws NotYetConnectedException is thrown if the server is not connected
    */
   public void executeSingleCommand(CommandSender commandSender, Command command)
           throws NotYetConnectedException
