@@ -56,7 +56,7 @@ void DebugDrawings3D::addEntity(const std::string& name, const Pose3D& pose)
   addEntity(name, pose.rotation, pose.translation);
 }
 
-void DebugDrawings3D::addEntity(const std::string& name, const RotationMatrix& R, const Vector3<double>& p)
+void DebugDrawings3D::addEntity(const std::string& name, const RotationMatrix& R, const Vector3d& p)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Entity " << name << " ";
@@ -70,7 +70,7 @@ void DebugDrawings3D::addBox(ColorClasses::Color color, double xdim, double ydim
   addBox(ColorClasses::colorClassToHex(color), xdim, ydim, zdim, pose);
 }
 
-void DebugDrawings3D::addBox(ColorClasses::Color color, double xdim, double ydim, double zdim, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addBox(ColorClasses::Color color, double xdim, double ydim, double zdim, const RotationMatrix&R, const Vector3d& p)
 {
   addBox(ColorClasses::colorClassToHex(color), xdim, ydim, zdim, R, p);
 }
@@ -80,7 +80,7 @@ void DebugDrawings3D::addBox(const char* color, double xdim, double ydim, double
   addBox(color, xdim, ydim, zdim, pose.rotation, pose.translation);
 }
 
-void DebugDrawings3D::addBox(const char* color, double xdim, double ydim, double zdim, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addBox(const char* color, double xdim, double ydim, double zdim, const RotationMatrix&R, const Vector3d& p)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Box " << color << ' ' << xdim << ' ' << ydim << ' ' << zdim << ' ';
@@ -89,7 +89,7 @@ void DebugDrawings3D::addBox(const char* color, double xdim, double ydim, double
 //  pthread_mutex_unlock(&theMutex);
 }
 
-void DebugDrawings3D::addSphere(ColorClasses::Color color, double radius, const Vector3<double>& p)
+void DebugDrawings3D::addSphere(ColorClasses::Color color, double radius, const Vector3d& p)
 {
   addSphere(ColorClasses::colorClassToHex(color), radius, p);
 }
@@ -99,7 +99,7 @@ void DebugDrawings3D::addSphere(ColorClasses::Color color, double radius, double
   addSphere(ColorClasses::colorClassToHex(color), radius, x, y, z);
 }
 
-void DebugDrawings3D::addSphere(const char* color, double radius, const Vector3<double>& p)
+void DebugDrawings3D::addSphere(const char* color, double radius, const Vector3d& p)
 {
   addSphere(color, radius, p.x, p.y, p.z);
 }
@@ -116,7 +116,7 @@ void DebugDrawings3D::addCone(ColorClasses::Color color, double radius, double h
   addCone(ColorClasses::colorClassToHex(color), radius, height, pose);
 }
 
-void DebugDrawings3D::addCone(ColorClasses::Color color, double radius, double height, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addCone(ColorClasses::Color color, double radius, double height, const RotationMatrix&R, const Vector3d& p)
 {
   addCone(ColorClasses::colorClassToHex(color), radius, height, R, p);
 }
@@ -126,7 +126,7 @@ void DebugDrawings3D::addCone(const char* color, double radius, double height, c
   addCone(color, radius, height, pose.rotation, pose.translation);
 }
 
-void DebugDrawings3D::addCone(const char* color, double radius, double height, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addCone(const char* color, double radius, double height, const RotationMatrix&R, const Vector3d& p)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Cone " << color << ' ' << radius << ' ' << height << ' ';
@@ -140,7 +140,7 @@ void DebugDrawings3D::addCylinder(ColorClasses::Color color, double radius, doub
   addCylinder(ColorClasses::colorClassToHex(color), radius, height, pose);
 }
 
-void DebugDrawings3D::addCylinder(ColorClasses::Color color, double radius, double height, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addCylinder(ColorClasses::Color color, double radius, double height, const RotationMatrix&R, const Vector3d& p)
 {
   addCylinder(ColorClasses::colorClassToHex(color), radius, height, R, p);
 }
@@ -150,7 +150,7 @@ void DebugDrawings3D::addCylinder(const char* color, double radius, double heigh
   addCylinder(color, radius, height, pose.rotation, pose.translation);
 }
 
-void DebugDrawings3D::addCylinder(const char* color, double radius, double height, const RotationMatrix&R, const Vector3<double>& p)
+void DebugDrawings3D::addCylinder(const char* color, double radius, double height, const RotationMatrix&R, const Vector3d& p)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Cylinder " << color << ' ' << radius << ' ' << height << ' ';
@@ -159,43 +159,43 @@ void DebugDrawings3D::addCylinder(const char* color, double radius, double heigh
 //  pthread_mutex_unlock(&theMutex);
 }
 
-void DebugDrawings3D::addLine(ColorClasses::Color color, const Vector3<double>& p0, const Vector3<double>& p1)
+void DebugDrawings3D::addLine(ColorClasses::Color color, const Vector3d& p0, const Vector3d& p1)
 {
   addLine(ColorClasses::colorClassToHex(color), p0, p1);
 }
 
-void DebugDrawings3D::addLine(const char* color, const Vector3<double>& p0, const Vector3<double>& p1)
+void DebugDrawings3D::addLine(const char* color, const Vector3d& p0, const Vector3d& p1)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Line " << color << ' ' << p0 << ' ' << p1 << '\n';
 //  pthread_mutex_unlock(&theMutex);
 }
 
-void DebugDrawings3D::addText3D(ColorClasses::Color color, const string& text, const Vector3<double>& p)
+void DebugDrawings3D::addText3D(ColorClasses::Color color, const string& text, const Vector3d& p)
 {
   addText3D(ColorClasses::colorClassToHex(color), text, p);
 }
 
-void DebugDrawings3D::addText3D(const char* color, const string& text, const Vector3<double>& p)
+void DebugDrawings3D::addText3D(const char* color, const string& text, const Vector3d& p)
 {
 //  pthread_mutex_lock(&theMutex);
   outStream << "Text3D " << color << ' ' << text << ' ' << p << '\n';
 //  pthread_mutex_unlock(&theMutex);
 }
 
-void DebugDrawings3D::addCamera(const Pose3D& cm, double focusLength, unsigned int width, unsigned height)
+void DebugDrawings3D::addCamera(const std::string& id, const Pose3D& cm, double focusLength, unsigned int width, unsigned height)
 {
 //  pthread_mutex_lock(&theMutex);
-  outStream << "Camera " << focusLength << ' ' << width << ' ' << height << ' ';
+  outStream << "Camera " << id << ' ' << focusLength << ' ' << width << ' ' << height << ' ';
   cm.toCompactString(outStream);
   outStream << '\n';
 //  pthread_mutex_unlock(&theMutex);
 }
 
-void DebugDrawings3D::addCamera(const Pose3D& rp, const Pose3D& cm, double focusLength, unsigned int width, unsigned height)
+void DebugDrawings3D::addCamera(const std::string& id, const Pose3D& rp, const Pose3D& cm, double focusLength, unsigned int width, unsigned height)
 {
 //  pthread_mutex_lock(&theMutex);
-  outStream << "Camera " << focusLength << ' ' << width << ' ' << height << ' ';
+  outStream << "Camera " << id << ' ' << focusLength << ' ' << width << ' ' << height << ' ';
   cm.toCompactString(outStream);
   outStream << " Robot ";
   rp.toCompactString(outStream);

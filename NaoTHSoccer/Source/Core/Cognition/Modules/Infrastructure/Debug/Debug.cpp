@@ -240,27 +240,46 @@ Debug::~Debug()
 
 void Debug::draw3D()
 {
-  Pose3D robotPose;
+  Pose3D robotPose3D;
   DEBUG_REQUEST("3DViewer:Global",
-    robotPose.translation.x = getRobotPose().translation.x;
-    robotPose.translation.y = getRobotPose().translation.y;
-    robotPose.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation);
+    robotPose3D.translation.x = getRobotPose().translation.x;
+    robotPose3D.translation.y = getRobotPose().translation.y;
+    robotPose3D.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation);
     );
 
-  DEBUG_REQUEST("3DViewer:Robot:Body", drawRobot3D(robotPose););
+  DEBUG_REQUEST("3DViewer:Robot:Body", 
+    drawRobot3D(robotPose3D);
+  );
+
+  DEBUG_REQUEST("3DViewer:Robot:Camera",
+    Pose3D cameraPose = getCameraMatrix();
+    Pose3D cameraPoseTop = getCameraMatrixTop();
+
+    // transform the cameras into the robots coordinates
+		cameraPose = robotPose3D*cameraPose;
+		cameraPoseTop = robotPose3D*cameraPoseTop;
+
+    const CameraInfo& ci = getCameraInfoParameter();
+    DebugDrawings3D::getInstance().addCamera("top", cameraPoseTop,ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
+    DebugDrawings3D::getInstance().addCamera("bottom", cameraPose,ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
+  );
+
 
   DEBUG_REQUEST("3DViewer:Robot:CoM",
-    Vector3d p0 = robotPose * getKinematicChain().CoM;
+    Vector3d p0 = robotPose3D * getKinematicChain().CoM;
     Vector3d p1 = p0;
     p1.z = 0;
     LINE_3D(ColorClasses::red, p0, p1);
-    );
+  );
 
-  // draw ball in 3D viewer
-  Vector3d ballPos = robotPose * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
-  DEBUG_REQUEST("3DViewer:Ball", SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos););
+  // draw ball model in 3D viewer
+  DEBUG_REQUEST("3DViewer:Ball", 
+    Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
+    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+  );
 
 }//end draw3D
+
 
 void Debug::drawRobot3D(const Pose3D& robotPose)
 {
