@@ -11,6 +11,7 @@
 #define _RingBufferWithSum_h_
 
 #include <algorithm>
+#include <assert.h>
 
 /**
  * @class RingBufferWithSum
@@ -35,25 +36,12 @@ template <class C, int n> class RingBufferWithSum
      */
     void add (C value) 
     {
-      if(numberOfEntries == n) sum -= getEntry(numberOfEntries - 1);
+      if(numberOfEntries == n) sum -= (*this)[numberOfEntries - 1];
       sum += value;
       current++;
       if (current==n) current=0;
       if (++numberOfEntries >= n) numberOfEntries = n;
       buffer[current] = value;
-    }
-
-    /**
-     * returns an entry
-     * \param i index of entry counting from last added (last=0,...)
-     * \return a reference to the buffer entry
-     */
-    C& getEntry (int i)
-    {
-      int j = current - i;
-      j %= n;
-      if (j < 0) j += n;
-      return buffer[j];
     }
 
     C getSum() {
@@ -94,16 +82,8 @@ template <class C, int n> class RingBufferWithSum
       return temp[mid];
     }
 
-    C& last () {
-      return buffer[current];
-    }
-
     const C& last () const {
       return buffer[current];
-    }
-
-    C& first () {
-      return getEntry(numberOfEntries - 1);
     }
 
     const C& first () const {
@@ -111,19 +91,15 @@ template <class C, int n> class RingBufferWithSum
     }
 
     /**
-     * returns an entry
-     * \param i index of entry counting from last added (last=0,...)
-     * \return a reference to the buffer entry
-     */
-    C& operator[] (int i) {
-      return getEntry(i);
-    }
-
-    /**
      * returns a constant entry.
      * \param i index of entry counting from last added (last=0,...)
      * \return a reference to the buffer entry
      */
+    const C& getEntry (int i) const {
+      assert(i >= 0 && i < numberOfEntries);
+      return buffer[i > current ? n + current - i : current - i];
+    }
+
     const C& operator[] (int i) const {
       return buffer[i > current ? n + current - i : current - i];
     }

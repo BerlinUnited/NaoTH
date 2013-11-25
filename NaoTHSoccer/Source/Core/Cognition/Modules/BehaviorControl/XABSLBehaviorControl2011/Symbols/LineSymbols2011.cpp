@@ -55,7 +55,11 @@ void LineSymbols2011::execute()
 
   if(linePointsBuffer.size() > 0)
   {
-    linePointsBufferMean = linePointsBuffer.getAverage();
+    linePointsBufferMean = Vector2d();
+    for(int i = 0; i < linePointsBuffer.size(); i++) {
+      linePointsBufferMean += linePointsBuffer[i];
+    }
+    linePointsBufferMean /= linePointsBuffer.size();
   }
 
   lastRobotOdometry = getOdometryData();

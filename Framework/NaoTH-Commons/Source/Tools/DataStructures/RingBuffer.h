@@ -58,33 +58,6 @@ public:
       --numberOfEntries;
     }
 
-    /**
-     * returns an entry
-     * \param i index of entry counting from last added (last=0,...)
-     * \return a reference to the buffer entry
-     */
-    V& getEntry (int i)
-    {
-      int j = current - i;
-      j %= n;
-      if (j < 0) j += n;
-      return buffer[j];
-    }
-
-    /**
-     * returns an const entry
-     * \param i index of entry counting from last added (last=0,...)
-     * \return a reference to the buffer entry
-     */
-    const V& getEntry (int i) const
-    {
-      assert(i>=0 && i<numberOfEntries);
-      int j = current - i;
-      j %= n;
-      if (j < 0) j += n;
-      return buffer[j];
-    }
-
     V& last () {
       return buffer[current];
     }
@@ -112,7 +85,17 @@ public:
       j %= n;
       if (j < 0) j += n;
       buffer[j] = v;
-   }
+    }
+
+    V& getEntry (int i) {
+      assert(i >= 0 && i < numberOfEntries);
+      return buffer[i > current ? n + current - i : current - i];
+    }
+
+    const V& getEntry (int i) const {
+      assert(i >= 0 && i < numberOfEntries);
+      return buffer[i > current ? n + current - i : current - i];
+    }
 
     /**
      * returns an entry
@@ -120,7 +103,7 @@ public:
      * \return a reference to the buffer entry
      */
     V& operator[] (int i) {
-      return getEntry(i);
+      return buffer[i > current ? n + current - i : current - i];
     }
 
     /**
