@@ -84,7 +84,7 @@ void Image::setCameraInfo(const CameraInfo& ci)
   cameraInfo = ci;
 }
 
-void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
+void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int size)
 {
 //  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   ASSERT(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
@@ -97,7 +97,7 @@ void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
   selfCreatedImage = false;
 }
 
-void Image::copyImageDataYUV422(unsigned char* data, const unsigned int& size)
+void Image::copyImageDataYUV422(unsigned char* data, const unsigned int size)
 {
 //  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
   if(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL)
@@ -219,18 +219,6 @@ void Image::fromDataStream(istream& stream)
   }
   
 }//end fromDataStream
-
-void Image::drawPoint
-(
-  const unsigned int& x,
-  const unsigned int& y,
-  const unsigned char& a,
-  const unsigned char& b,
-  const unsigned char& c
-)
-{
-  set(x,y, a, b, c);
-}//end drawPoint
                        
 
 void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
@@ -297,8 +285,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   // "native" YUV422 data
   else if(img.format() == naothmessages::Image_Format_YUV422)
   {
-    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height)
-    {
+    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height) {
       return;
     }
 
