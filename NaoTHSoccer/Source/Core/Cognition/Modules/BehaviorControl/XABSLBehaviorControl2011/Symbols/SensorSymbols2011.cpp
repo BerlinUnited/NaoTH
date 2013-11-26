@@ -161,7 +161,7 @@ double SensorSymbols2011::getObstacleDistance()
 
 double SensorSymbols2011::getCameraBufferFailedCount()
 {
-  return (theInstance->image.possibleImageStuck)?1:0;
+  return 0;//(theInstance->image.possibleImageStuck)?1:0;
 }
 
 double SensorSymbols2011::getInertialSensorX()

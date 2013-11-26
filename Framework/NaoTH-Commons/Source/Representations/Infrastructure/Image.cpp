@@ -24,7 +24,6 @@ bufferCount(0),
 bufferFailedCount(0),
 wrongBufferSizeCount(0),
 meanBrightness(0.0),
-possibleImageStuck(false),
 selfCreatedImage(false)
 {
   yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
@@ -122,7 +121,6 @@ void Image::print(ostream& stream) const
           << "Image Buffer: "<< currentBuffer << " / " << bufferCount << endl
           << "Buffer Switching Fail Count: "<< bufferFailedCount << endl
           << "Wrong Buffer Size Count: "<< wrongBufferSizeCount << endl
-          << "Image stucked" << ((possibleImageStuck) ? "true"  : "false") << endl
           << "Camera Info:"<< endl
           << "============"<< endl
           << cameraInfo << endl

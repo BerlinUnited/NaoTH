@@ -77,10 +77,7 @@ namespace naoth
 
     // TODO: this should not be here
     double meanBrightness;
-
-    // TODO: does anybody need it?
-    bool possibleImageStuck;
-                             
+                    
     virtual void print(std::ostream& stream) const;
     virtual void toDataStream(std::ostream& stream) const;
     virtual void fromDataStream(std::istream& stream);
