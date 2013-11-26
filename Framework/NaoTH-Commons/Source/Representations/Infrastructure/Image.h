@@ -69,14 +69,11 @@ namespace naoth
 
     /** The time relative to the start of the programm when the image was recorded in ms */
     unsigned int timestamp;
+
     // TODO: comments: what is it and how to use it?
     unsigned int currentBuffer;
     unsigned int bufferCount;
-    unsigned int bufferFailedCount;
     unsigned int wrongBufferSizeCount;
-
-    // TODO: this should not be here
-    double meanBrightness;
                     
     virtual void print(std::ostream& stream) const;
     virtual void toDataStream(std::ostream& stream) const;

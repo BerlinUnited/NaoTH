@@ -16,15 +16,13 @@ using namespace naoth;
 using namespace std;
 
 Image::Image()
-:
-yuv422(NULL),
-timestamp(0),
-currentBuffer(0),
-bufferCount(0),
-bufferFailedCount(0),
-wrongBufferSizeCount(0),
-meanBrightness(0.0),
-selfCreatedImage(false)
+  :
+  yuv422(NULL),
+  timestamp(0),
+  currentBuffer(0),
+  bufferCount(0),
+  wrongBufferSizeCount(0),
+  selfCreatedImage(false)
 {
   yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
@@ -119,7 +117,6 @@ void Image::print(ostream& stream) const
 {
   stream  << "Timestamp: " << timestamp << endl
           << "Image Buffer: "<< currentBuffer << " / " << bufferCount << endl
-          << "Buffer Switching Fail Count: "<< bufferFailedCount << endl
           << "Wrong Buffer Size Count: "<< wrongBufferSizeCount << endl
           << "Camera Info:"<< endl
           << "============"<< endl
