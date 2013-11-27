@@ -30,6 +30,8 @@
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BodyContour.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -62,7 +64,8 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-  };
+     execute(CameraInfo::Top);
+  }
 
 private:
   CameraInfo::CameraID cameraID;
@@ -80,101 +83,24 @@ private:
   double getPointsAngle(Vector2<int>& point);
   double calculateMeanAngle(double angle1,double  angle2);
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getImageTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getImage();
-    }
-  };
-  
-  const ColorClassificationModel& getColorClassificationModel() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getColorClassificationModelTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getColorClassificationModel();
-    }
-  };
 
-  const CameraSettings& getCurrentCameraSettings() const
+  // double cam interface
+  inline const CameraSettings& getCurrentCameraSettings() const
   {
-    if(cameraID == CameraInfo::Top)
-    {
+    if(cameraID == CameraInfo::Top) {
       return ScanLineEdgelDetectorBase::getCurrentCameraSettingsTop();
-    }
-    else
-    {
+    } else {
       return ScanLineEdgelDetectorBase::getCurrentCameraSettings();
     }
-  };
-
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getCameraMatrix();
-    }
-  };
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getFieldPercept();
-    }
-  };
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getBodyContourTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getBodyContour();
-    }
-  };
+  }
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,Image);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,ColorClassificationModel);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,FieldPercept);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,BodyContour);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,ArtificialHorizon);
   
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  ScanLineEdgelPercept& getScanLineEdgelPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return ScanLineEdgelDetectorBase::getScanLineEdgelPerceptTop();
-    }
-    else
-    {
-      return ScanLineEdgelDetectorBase::getScanLineEdgelPercept();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(ScanLineEdgelDetector,ScanLineEdgelPercept);
 
 };
 #endif  /* _SCANLINEEDGELDETECTOR_H_ */

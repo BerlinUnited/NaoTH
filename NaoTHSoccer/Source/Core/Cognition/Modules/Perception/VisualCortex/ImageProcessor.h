@@ -27,47 +27,28 @@
 #include "ObjectDetectors/LineClusterProvider.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
-#include "../BodyContourProvider/BodyContourProvider.h"
+
+#include "Cognition/Modules/Perception/BodyContourProvider/BodyContourProvider.h"
+
+
+// TODO: this is from NeoVision
+#include "Cognition/Modules/Perception/NeoVision/modules/SimpleFieldColorClassifier.h"
+#include "Cognition/Modules/Perception/NeoVision/modules/ScanLineEdgelDetectorDifferential.h"
+#include "Cognition/Modules/Perception/NeoVision/modules/MaximumRedBallDetector.h"
+#include "Cognition/Modules/Perception/NeoVision/modules/GradientGoalDetector.h"
+
 
 // Representations
-#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
-
-#include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Infrastructure/ColorTable64.h"
-//#include "Representations/Perception/BlobPercept.h"
-#include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/BallPercept.h"
-#include "Representations/Perception/PlayersPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
-
 
 #include <sstream>
 
 BEGIN_DECLARE_MODULE(ImageProcessor)
-//  REQUIRE(ColorTable64)
-  REQUIRE(ColorClassificationModel)
-  REQUIRE(ColorClassificationModelTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
-  PROVIDE(PlayersPercept)
-  PROVIDE(LinePercept)
-  PROVIDE(LinePerceptTop)
-  PROVIDE(GoalPercept)
-  PROVIDE(GoalPerceptTop)
-  PROVIDE(ScanLineEdgelPercept)
-  PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ImageProcessor)
 
 class ImageProcessor: private ImageProcessorBase, private ModuleManager
@@ -80,21 +61,23 @@ public:
 
 private:
   ModuleCreator<HistogramFieldDetector>* theHistogramFieldDetector;
-  ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
   ModuleCreator<BodyContourProvider>* theBodyContourProvider;
+  ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
   ModuleCreator<FieldDetector>* theFieldDetector;
 
   ModuleCreator<BallDetector>* theBallDetector;
   ModuleCreator<RobotDetector>* theRobotDetector;
-  
   ModuleCreator<LineDetector>* theLineDetector;
   ModuleCreator<LineClusterProvider>* theLineClusterProvider;
   ModuleCreator<GoalDetector>* theGoalDetector;
 
-  const ColorClassificationModel& getColorTable64() const
-  {
-    return getColorClassificationModel();
-  }
+
+  // TODO: NeoVision stuff
+  ModuleCreator<SimpleFieldColorClassifier>* theSimpleFieldColorClassifier;
+  ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
+  ModuleCreator<MaximumRedBallDetector>* theMaximumRedBallDetector;
+  ModuleCreator<GradientGoalDetector>* theGradientGoalDetector;
+
 };//end class ImageProcessor
 
-#endif // __ImageProcessor_H_
+#endif // _ImageProcessor_H_

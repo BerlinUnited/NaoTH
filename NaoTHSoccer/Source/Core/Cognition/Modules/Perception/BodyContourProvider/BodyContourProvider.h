@@ -26,6 +26,8 @@
 #include "Representations/Infrastructure/Image.h"
 #include <vector>
 
+#include "Tools/DoubleCamHelpers.h"
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(BodyContourProvider)
@@ -59,7 +61,8 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-  };
+     execute(CameraInfo::Top);
+  }
 
 protected:
 
@@ -118,54 +121,13 @@ private:
 
   CameraInfo::CameraID cameraID;
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BodyContourProviderBase::getImageTop();
-    }
-    else
-    {
-      return BodyContourProviderBase::getImage();
-    }
-  };
-  
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BodyContourProviderBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return BodyContourProviderBase::getCameraMatrix();
-    }
-  }
 
+  // double cam interface
+  DOUBLE_CAM_REQUIRE(BodyContourProvider,Image);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraMatrix);
 
-  BodyContour& getBodyContour()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BodyContourProviderBase::getBodyContourTop();
-    }
-    else
-    {
-      return BodyContourProviderBase::getBodyContour();
-    }
-  }
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BodyContourProviderBase::getBodyContourTop();
-    }
-    else
-    {
-      return BodyContourProviderBase::getBodyContour();
-    }
-  }
+  DOUBLE_CAM_REQUIRE(BodyContourProvider,BodyContour);
+  DOUBLE_CAM_PROVIDE(BodyContourProvider,BodyContour);
 
 };// end class BodyContourProvider
 

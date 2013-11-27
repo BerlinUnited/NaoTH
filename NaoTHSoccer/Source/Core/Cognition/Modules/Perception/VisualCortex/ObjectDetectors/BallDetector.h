@@ -40,7 +40,7 @@
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 
-
+#include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(Image)
@@ -84,7 +84,8 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-  };
+     execute(CameraInfo::Top);
+  }
  
 private:
   CameraInfo::CameraID cameraID;
@@ -101,125 +102,28 @@ private:
 
   double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
 
-  BlobFinder& getBlobFinder()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return theBlobFinderTop;
-    }
-    else
-    {
-      return theBlobFinder;
+
+  // double cam interface
+  inline BlobFinder& getBlobFinder() {
+    return (cameraID == CameraInfo::Top)?theBlobFinderTop:theBlobFinder;
+  }
+  inline const ColorClassificationModel& getColorTable64() const {
+    if(cameraID == CameraInfo::Top) {
+      return getColorClassificationModelTop();
+    } else { 
+      return getColorClassificationModel();
     }
   }
 
-  const ColorClassificationModel& getColorTable64() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getColorClassificationModelTop();
-    }
-    else
-    {
-      return BallDetectorBase::getColorClassificationModel();
-    }
-  };
-
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getImageTop();
-    }
-    else
-    {
-      return BallDetectorBase::getImage();
-    }
-  };
+  DOUBLE_CAM_REQUIRE(BallDetector,Image);
+  DOUBLE_CAM_REQUIRE(BallDetector,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(BallDetector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BallDetector,CameraInfo);
+  DOUBLE_CAM_REQUIRE(BallDetector,ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(BallDetector,FieldPercept);
+  DOUBLE_CAM_REQUIRE(BallDetector,BodyContour);
   
-  const ColoredGrid& getColoredGrid() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getColoredGridTop();
-    }
-    else
-    {
-      return BallDetectorBase::getColoredGrid();
-    }
-  };
-
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return BallDetectorBase::getCameraMatrix();
-    }
-  };
-
-  const CameraInfo& getCameraInfo() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getCameraInfoTop();
-    }
-    else
-    {
-      return BallDetectorBase::getCameraInfo();
-    }
-  };
-
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return BallDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return BallDetectorBase::getFieldPercept();
-    }
-  };
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getBodyContourTop();
-    }
-    else
-    {
-      return BallDetectorBase::getBodyContour();
-    }
-  };
-  
-  BallPercept& getBallPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return BallDetectorBase::getBallPerceptTop();
-    }
-    else
-    {
-      return BallDetectorBase::getBallPercept();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(BallDetector,BallPercept);
           
 };//end class BallDetector
 

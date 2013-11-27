@@ -41,6 +41,8 @@
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -80,7 +82,8 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-  };
+     execute(CameraInfo::Top);
+  }
  
 private:
   CameraInfo::CameraID cameraID;
@@ -112,123 +115,33 @@ private:
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
 
-  const Image& getImage() const
-  {
+
+  // double cam interface
+  inline const CameraSettings& getBlobFinder() const {
     if(cameraID == CameraInfo::Top) {
-      return LineDetectorBase::getImageTop();
-    } else {
-      return LineDetectorBase::getImage();
+      return getCurrentCameraSettingsTop();
+    } else { 
+      return getCurrentCameraSettings();
+    }
+  }
+  inline const ColorClassificationModel& getColorTable64() const {
+    if(cameraID == CameraInfo::Top) {
+      return getColorClassificationModelTop();
+    } else { 
+      return getColorClassificationModel();
     }
   }
 
-  const ColorClassificationModel& getColorTable64() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getColorClassificationModelTop();
-    }
-    else
-    {
-      return LineDetectorBase::getColorClassificationModel();
-    }
-  };
-
-  const CameraSettings& getCurrentCameraSettings() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getCurrentCameraSettingsTop();
-    }
-    else
-    {
-      return LineDetectorBase::getCurrentCameraSettings();
-    }
-  };
-
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return LineDetectorBase::getCameraMatrix();
-    }
-  };
-
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return LineDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return LineDetectorBase::getFieldPercept();
-    }
-  };
-
-  const ColoredGrid& getColoredGrid() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getColoredGridTop();
-    }
-    else
-    {
-      return LineDetectorBase::getColoredGrid();
-    }
-  };
-
-  const ScanLineEdgelPercept& getScanLineEdgelPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getScanLineEdgelPerceptTop();
-    }
-    else
-    {
-      return LineDetectorBase::getScanLineEdgelPercept();
-    }
-  };
-
-  LinePercept& getLinePercept() 
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getLinePerceptTop();
-    }
-    else
-    {
-      return LineDetectorBase::getLinePercept();
-    }
-  };
-
-  ObjectPercept& getObjectPercept() 
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return LineDetectorBase::getObjectPerceptTop();
-    }
-    else
-    {
-      return LineDetectorBase::getObjectPercept();
-    }
-  };
+  DOUBLE_CAM_REQUIRE(LineDetector,Image);
+  DOUBLE_CAM_REQUIRE(LineDetector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(LineDetector,ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(LineDetector,FieldPercept);
+  DOUBLE_CAM_REQUIRE(LineDetector,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(LineDetector,ScanLineEdgelPercept);
+  
+  DOUBLE_CAM_PROVIDE(LineDetector,LinePercept);
+  DOUBLE_CAM_PROVIDE(LineDetector,ObjectPercept);
 
 };//end class LineDetector
 
-#endif // __LineDetector_H_
+#endif // _LineDetector_H_

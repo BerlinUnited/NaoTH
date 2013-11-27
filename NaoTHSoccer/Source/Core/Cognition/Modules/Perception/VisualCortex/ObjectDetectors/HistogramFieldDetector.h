@@ -63,7 +63,8 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-  };
+     execute(CameraInfo::Top);
+  }
 
 private:
  CameraInfo::CameraID cameraID;

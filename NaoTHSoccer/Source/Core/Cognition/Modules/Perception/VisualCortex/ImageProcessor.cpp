@@ -67,20 +67,41 @@ ImageProcessor::ImageProcessor()
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
 
+
+  // TODO: NeoVision stuff
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:execute", " ", true);
+  theSimpleFieldColorClassifier = registerModule<SimpleFieldColorClassifier>("SimpleFieldColorClassifier");
+  theSimpleFieldColorClassifier->setEnabled(true);
+
+  DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", true);
+  theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
+  theScanLineEdgelDetectorDifferential->setEnabled(true);
+
+  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:execute", " ", true);
+  theMaximumRedBallDetector = registerModule<MaximumRedBallDetector>("MaximumRedBallDetector");
+  theMaximumRedBallDetector->setEnabled(true);
+  
+  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:execute", " ", true);
+  theGradientGoalDetector = registerModule<GradientGoalDetector>("GradientGoalDetector");
+  theGradientGoalDetector->setEnabled(true);
+
 }//end constructor
 
 
 void ImageProcessor::execute()
 {
-  //reset the Representations:
-  //todo: for consistency reasonst this should be done within the detectors
-  getPlayersPercept().reset();
+  // TODO: NeoVision stuff
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:execute",
+    GT_TRACE("executing SimpleFieldColorClassifier");
+    STOPWATCH_START("SimpleFieldColorClassifier");
+    theSimpleFieldColorClassifier->execute();
+    STOPWATCH_STOP("SimpleFieldColorClassifier");
+  );
 
   DEBUG_REQUEST("ImageProcessor:HistogramFieldDetector:execute",
     GT_TRACE("executing HistogramFieldDetector");
     STOPWATCH_START("HistogramFieldDetector");
     theHistogramFieldDetector->execute();
-    theHistogramFieldDetector->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("HistogramFieldDetector");
   );
 
@@ -88,7 +109,6 @@ void ImageProcessor::execute()
     GT_TRACE("executing BodyContourProvider");
     STOPWATCH_START("BodyContourProvider");
     theBodyContourProvider->execute();
-    theBodyContourProvider->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("BodyContourProvider");
   );
 
@@ -110,15 +130,21 @@ void ImageProcessor::execute()
     GT_TRACE("executing ScanLineEdgelDetector");
     STOPWATCH_START("ScanLineEdgelDetector");
     theScanLineEdgelDetector->execute();
-    theScanLineEdgelDetector->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("ScanLineEdgelDetector");
+  );
+
+  // TODO: NeoVision stuff
+  DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:execute",
+    GT_TRACE("executing ScanLineEdgelDetectorDifferential");
+    STOPWATCH_START("ScanLineEdgelDetectorDifferential");
+    theScanLineEdgelDetectorDifferential->execute();
+    STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
   );
 
   DEBUG_REQUEST("ImageProcessor:FieldDetector:execute",
     GT_TRACE("executing FieldDetector");
     STOPWATCH_START("FieldDetector");
     theFieldDetector->execute();
-    theFieldDetector->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("FieldDetector");
   );
 
@@ -126,7 +152,6 @@ void ImageProcessor::execute()
     GT_TRACE("executing BallDetector");
     STOPWATCH_START("BallDetector");
     theBallDetector->execute();
-    theBallDetector->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("BallDetector");
   );
 
@@ -134,11 +159,27 @@ void ImageProcessor::execute()
     GT_TRACE("executing LineDetector");
     STOPWATCH_START("LineDetector");
     theLineDetector->execute();
-    theLineDetector->getModuleT()->execute(CameraInfo::Top);
     STOPWATCH_STOP("LineDetector");
   );
 
+  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:execute",
+    GT_TRACE("executing MaximumRedBallDetector");
+    STOPWATCH_START("MaximumRedBallDetector");
+    theMaximumRedBallDetector->execute();
+    STOPWATCH_STOP("MaximumRedBallDetector");
+  );
+
+  DEBUG_REQUEST("NeoVision:GradientGoalDetector:execute",
+    GT_TRACE("executing GradientGoalDetector");
+    STOPWATCH_START("GradientGoalDetector");
+    theGradientGoalDetector->execute();
+    STOPWATCH_STOP("GradientGoalDetector");
+  );
+
   GT_TRACE("executing rest of ImageProcessor::execute()");
+
+
+
 
   //draw horizon to image
   DEBUG_REQUEST("ImageProcessor:CamTop:draw_horizon",

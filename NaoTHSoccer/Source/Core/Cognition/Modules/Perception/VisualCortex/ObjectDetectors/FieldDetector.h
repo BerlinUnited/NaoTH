@@ -15,6 +15,8 @@
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 BEGIN_DECLARE_MODULE(FieldDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -39,72 +41,23 @@ public:
   void execute()
   {
     execute(CameraInfo::Bottom);
-  };
+    execute(CameraInfo::Top);
+  }
 
   void execute(CameraInfo::CameraID id);
 
 private:
   CameraInfo::CameraID cameraID;
 
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return FieldDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return FieldDetectorBase::getCameraMatrix();
-    }
-  };
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return FieldDetectorBase::getImageTop();
-    }
-    else
-    {
-      return FieldDetectorBase::getImage();
-    }
-  };
+  // double cam interface
+  DOUBLE_CAM_REQUIRE(FieldDetector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(FieldDetector,Image);
+  DOUBLE_CAM_REQUIRE(FieldDetector,ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(FieldDetector,ScanLineEdgelPercept);
 
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return FieldDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return FieldDetectorBase::getArtificialHorizon();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(FieldDetector,FieldPercept);
 
-  const ScanLineEdgelPercept& getScanLineEdgelPercept() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return FieldDetectorBase::getScanLineEdgelPerceptTop();
-    }
-    else
-    {
-      return FieldDetectorBase::getScanLineEdgelPercept();
-    }
-  };
-
-  FieldPercept& getFieldPercept() 
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return FieldDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return FieldDetectorBase::getFieldPercept();
-    }
-  };
 };
 
 #endif  /* __FieldDetector_H_ */
