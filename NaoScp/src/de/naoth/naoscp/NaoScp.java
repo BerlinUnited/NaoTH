@@ -1306,17 +1306,15 @@ public class NaoScp extends NaoScpMainFrame
     files = schemePath.listFiles();
     Arrays.sort(files);
     jSchemeBox.removeAllItems();
+    jSchemeBox.addItem("n/a");
     for(int i = 0, n = files.length; i < n; i ++)
     {
       if(files[i].isDirectory())
       {
         jSchemeBox.addItem(files[i].getName());
-        if(files[i].getName().equalsIgnoreCase("nao"))
-        {
-          jSchemeBox.setSelectedIndex(jSchemeBox.getItemCount() - 1);
-        }
       }
     }
+    jSchemeBox.setSelectedIndex(0);
     return true;
   }//end setSchemes
     
