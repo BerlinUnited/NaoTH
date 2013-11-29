@@ -79,6 +79,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* InertialModel_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   InertialModel_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ExtendedSPLStandardMessage_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ExtendedSPLStandardMessage_reflection_ = NULL;
 
 }  // namespace
 
@@ -428,6 +431,21 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(InertialModel));
+  ExtendedSPLStandardMessage_descriptor_ = file->message_type(18);
+  static const int ExtendedSPLStandardMessage_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExtendedSPLStandardMessage, frameinfo_),
+  };
+  ExtendedSPLStandardMessage_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ExtendedSPLStandardMessage_descriptor_,
+      ExtendedSPLStandardMessage::default_instance_,
+      ExtendedSPLStandardMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExtendedSPLStandardMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExtendedSPLStandardMessage, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ExtendedSPLStandardMessage));
 }
 
 namespace {
@@ -476,6 +494,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     CalibrationData_descriptor_, &CalibrationData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     InertialModel_descriptor_, &InertialModel::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ExtendedSPLStandardMessage_descriptor_, &ExtendedSPLStandardMessage::default_instance());
 }
 
 }  // namespace
@@ -517,6 +537,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete CalibrationData_reflection_;
   delete InertialModel::default_instance_;
   delete InertialModel_reflection_;
+  delete ExtendedSPLStandardMessage::default_instance_;
+  delete ExtendedSPLStandardMessage_reflection_;
 }
 
 void protobuf_AddDesc_Representations_2eproto() {
@@ -620,8 +642,10 @@ void protobuf_AddDesc_Representations_2eproto() {
     ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132"
     "\034.naothmessages.DoubleVector3\022\022\n\ncalibra"
     "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
-    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2B\026\n"
-    "\024de.naoth.rc.messages", 3741);
+    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"I\n"
+    "\032ExtendedSPLStandardMessage\022+\n\tframeInfo"
+    "\030\001 \001(\0132\030.naothmessages.FrameInfoB\026\n\024de.n"
+    "aoth.rc.messages", 3816);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -642,6 +666,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   OdometryData::default_instance_ = new OdometryData();
   CalibrationData::default_instance_ = new CalibrationData();
   InertialModel::default_instance_ = new InertialModel();
+  ExtendedSPLStandardMessage::default_instance_ = new ExtendedSPLStandardMessage();
   CameraMatrix::default_instance_->InitAsDefaultInstance();
   BallPercept::default_instance_->InitAsDefaultInstance();
   GoalPercept::default_instance_->InitAsDefaultInstance();
@@ -660,6 +685,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   OdometryData::default_instance_->InitAsDefaultInstance();
   CalibrationData::default_instance_->InitAsDefaultInstance();
   InertialModel::default_instance_->InitAsDefaultInstance();
+  ExtendedSPLStandardMessage::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
 
@@ -7514,6 +7540,221 @@ void InertialModel::Swap(InertialModel* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = InertialModel_descriptor_;
   metadata.reflection = InertialModel_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ExtendedSPLStandardMessage::kFrameInfoFieldNumber;
+#endif  // !_MSC_VER
+
+ExtendedSPLStandardMessage::ExtendedSPLStandardMessage()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ExtendedSPLStandardMessage::InitAsDefaultInstance() {
+  frameinfo_ = const_cast< ::naothmessages::FrameInfo*>(&::naothmessages::FrameInfo::default_instance());
+}
+
+ExtendedSPLStandardMessage::ExtendedSPLStandardMessage(const ExtendedSPLStandardMessage& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ExtendedSPLStandardMessage::SharedCtor() {
+  _cached_size_ = 0;
+  frameinfo_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ExtendedSPLStandardMessage::~ExtendedSPLStandardMessage() {
+  SharedDtor();
+}
+
+void ExtendedSPLStandardMessage::SharedDtor() {
+  if (this != default_instance_) {
+    delete frameinfo_;
+  }
+}
+
+void ExtendedSPLStandardMessage::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ExtendedSPLStandardMessage::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ExtendedSPLStandardMessage_descriptor_;
+}
+
+const ExtendedSPLStandardMessage& ExtendedSPLStandardMessage::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+ExtendedSPLStandardMessage* ExtendedSPLStandardMessage::default_instance_ = NULL;
+
+ExtendedSPLStandardMessage* ExtendedSPLStandardMessage::New() const {
+  return new ExtendedSPLStandardMessage;
+}
+
+void ExtendedSPLStandardMessage::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_frameinfo()) {
+      if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ExtendedSPLStandardMessage::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .naothmessages.FrameInfo frameInfo = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_frameinfo()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ExtendedSPLStandardMessage::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional .naothmessages.FrameInfo frameInfo = 1;
+  if (has_frameinfo()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->frameinfo(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ExtendedSPLStandardMessage::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional .naothmessages.FrameInfo frameInfo = 1;
+  if (has_frameinfo()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->frameinfo(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ExtendedSPLStandardMessage::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional .naothmessages.FrameInfo frameInfo = 1;
+    if (has_frameinfo()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->frameinfo());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ExtendedSPLStandardMessage::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ExtendedSPLStandardMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ExtendedSPLStandardMessage*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ExtendedSPLStandardMessage::MergeFrom(const ExtendedSPLStandardMessage& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_frameinfo()) {
+      mutable_frameinfo()->::naothmessages::FrameInfo::MergeFrom(from.frameinfo());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ExtendedSPLStandardMessage::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ExtendedSPLStandardMessage::CopyFrom(const ExtendedSPLStandardMessage& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ExtendedSPLStandardMessage::IsInitialized() const {
+  
+  if (has_frameinfo()) {
+    if (!this->frameinfo().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void ExtendedSPLStandardMessage::Swap(ExtendedSPLStandardMessage* other) {
+  if (other != this) {
+    std::swap(frameinfo_, other->frameinfo_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ExtendedSPLStandardMessage::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ExtendedSPLStandardMessage_descriptor_;
+  metadata.reflection = ExtendedSPLStandardMessage_reflection_;
   return metadata;
 }
 

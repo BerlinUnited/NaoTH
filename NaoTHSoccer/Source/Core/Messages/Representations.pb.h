@@ -60,6 +60,7 @@ class MotionStatus;
 class OdometryData;
 class CalibrationData;
 class InertialModel;
+class ExtendedSPLStandardMessage;
 
 // ===================================================================
 
@@ -2279,6 +2280,89 @@ class InertialModel : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static InertialModel* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ExtendedSPLStandardMessage : public ::google::protobuf::Message {
+ public:
+  ExtendedSPLStandardMessage();
+  virtual ~ExtendedSPLStandardMessage();
+  
+  ExtendedSPLStandardMessage(const ExtendedSPLStandardMessage& from);
+  
+  inline ExtendedSPLStandardMessage& operator=(const ExtendedSPLStandardMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ExtendedSPLStandardMessage& default_instance();
+  
+  void Swap(ExtendedSPLStandardMessage* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ExtendedSPLStandardMessage* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ExtendedSPLStandardMessage& from);
+  void MergeFrom(const ExtendedSPLStandardMessage& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.FrameInfo frameInfo = 1;
+  inline bool has_frameinfo() const;
+  inline void clear_frameinfo();
+  static const int kFrameInfoFieldNumber = 1;
+  inline const ::naothmessages::FrameInfo& frameinfo() const;
+  inline ::naothmessages::FrameInfo* mutable_frameinfo();
+  inline ::naothmessages::FrameInfo* release_frameinfo();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.ExtendedSPLStandardMessage)
+ private:
+  inline void set_has_frameinfo();
+  inline void clear_has_frameinfo();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::FrameInfo* frameinfo_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ExtendedSPLStandardMessage* default_instance_;
 };
 // ===================================================================
 
@@ -4568,6 +4652,39 @@ inline ::naothmessages::DoubleVector2* InertialModel::release_orientation() {
   clear_has_orientation();
   ::naothmessages::DoubleVector2* temp = orientation_;
   orientation_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// ExtendedSPLStandardMessage
+
+// optional .naothmessages.FrameInfo frameInfo = 1;
+inline bool ExtendedSPLStandardMessage::has_frameinfo() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ExtendedSPLStandardMessage::set_has_frameinfo() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ExtendedSPLStandardMessage::clear_has_frameinfo() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ExtendedSPLStandardMessage::clear_frameinfo() {
+  if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+  clear_has_frameinfo();
+}
+inline const ::naothmessages::FrameInfo& ExtendedSPLStandardMessage::frameinfo() const {
+  return frameinfo_ != NULL ? *frameinfo_ : *default_instance_->frameinfo_;
+}
+inline ::naothmessages::FrameInfo* ExtendedSPLStandardMessage::mutable_frameinfo() {
+  set_has_frameinfo();
+  if (frameinfo_ == NULL) frameinfo_ = new ::naothmessages::FrameInfo;
+  return frameinfo_;
+}
+inline ::naothmessages::FrameInfo* ExtendedSPLStandardMessage::release_frameinfo() {
+  clear_has_frameinfo();
+  ::naothmessages::FrameInfo* temp = frameinfo_;
+  frameinfo_ = NULL;
   return temp;
 }
 

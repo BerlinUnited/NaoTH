@@ -14,7 +14,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
-#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/SPLStandardMessage.h"
 
 #include "Tools/Communication/RCTC/TeamMessage.h"
 
@@ -30,7 +30,7 @@ BEGIN_DECLARE_MODULE(RCTCHandler)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   
-  PROVIDE(TeamMessage)
+  PROVIDE(ExtendedSPLStandardMessage)
   REQUIRE(RCTCTeamMessageDataIn)
   PROVIDE(RCTCTeamMessageDataOut)
 END_DECLARE_MODULE(RCTCHandler)

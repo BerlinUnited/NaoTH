@@ -156,3 +156,8 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
+
+message ExtendedSPLStandardMessage {
+  optional FrameInfo frameInfo = 1;
+}
+

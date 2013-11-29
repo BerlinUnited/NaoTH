@@ -19,29 +19,22 @@ namespace naoth
 class RCTCTeamMessageDataOut: public Printable
 {
 public:
-  RCTCTeamMessageDataOut(): valid(false) {}
-  rctc::Message data;
-  bool valid;
+  std::string data;
 
   virtual void print(std::ostream& stream) const
   {
-    stream << data;
+    stream << "size = " << data.size() << std::endl;
   }
 };
 
 class RCTCTeamMessageDataIn: public Printable
 {
 public:
-  std::vector<rctc::Message> data;
+  std::vector<std::string> data;
 
   virtual void print(std::ostream& stream) const
   {
-    stream<<"size = "<<data.size()<<"\n";
-    for(unsigned int i=0; i < data.size(); i++)
-    {
-      stream << "=================" << std::endl;
-      stream << data[i] << std::endl;
-    }
+    stream << "size = " << data.size() << std::endl;
   }
 };
 
