@@ -1,12 +1,16 @@
 #include "SPLStandardMessage.h"
 #include <Messages/Representations.pb.h>
 
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+using namespace naoth;
+
 ExtendedSPLStandardMessage::ExtendedSPLStandardMessage()
 {
 
 }
 
-virtual ExtendedSPLStandardMessage::ExtendedSPLStandardMessage()
+ExtendedSPLStandardMessage::~ExtendedSPLStandardMessage()
 {
 
 }
@@ -16,6 +20,7 @@ void Serializer<ExtendedSPLStandardMessage>::serialize(
 {
   naothmessages::ExtendedSPLStandardMessage proto;
 
+  google::protobuf::io::OstreamOutputStream buf(&stream);
   proto.SerializePartialToZeroCopyStream(&buf);
 }
 

@@ -1,9 +1,10 @@
 #ifndef SPLSTANDARDMESSAGE_H
 #define SPLSTANDARDMESSAGE_H
 
-#include <cstdint>
+#include <stdint.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
+#include "Tools/DataStructures/Serializer.h"
 
 static const int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 1;
 static const int SPL_STANDARD_MESSAGE_DATA_SIZE = 800;
@@ -81,13 +82,15 @@ public:
 
 };
 
-template<>
-class Serializer<ExtendedSPLStandardMessage>
+namespace naoth
 {
-  public:
-    static void serialize(const ExtendedSPLStandardMessage& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, ExtendedSPLStandardMessage& representation);
-};
-
+  template<>
+  class Serializer<ExtendedSPLStandardMessage>
+  {
+    public:
+      static void serialize(const ExtendedSPLStandardMessage& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, ExtendedSPLStandardMessage& representation);
+  };
+}
 
 #endif // SPLSTANDARDMESSAGE_H
