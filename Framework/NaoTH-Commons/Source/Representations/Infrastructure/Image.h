@@ -20,7 +20,6 @@
 #include "Tools/ImageProcessing/ImagePrimitives.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/ShadingCorrection.h"
 
 #include "Tools/Debug/NaoTHAssert.h"
 
@@ -65,7 +64,6 @@ namespace naoth
     unsigned char* yuv422;
     
     CameraInfo cameraInfo;
-    ShadingCorrection shadingCorrection;
 
     /** The time relative to the start of the programm when the image was recorded in ms */
     unsigned int timestamp;
@@ -88,16 +86,6 @@ namespace naoth
       const unsigned char c
     ) {
       set(x,y, a, b, c);
-    }
-
-    /**
-     * Get the brightness of a pixel. This is faster than getting all color
-     * channels.
-     */
-    inline unsigned char getCorecctedY(const int x, const int y) const
-    {
-      int v = (getY(x,y) * shadingCorrection.get(0, x, y)) >> 10;
-      return (unsigned char) Math::clamp<int>(v, 0, 255);
     }
 
     /**
@@ -147,50 +135,6 @@ namespace naoth
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
       p.u = yuv422[yOffset+1-((x & 1)<<1)];
       p.v = yuv422[yOffset+3-((x & 1)<<1)];
-    }
-
-
-    /**
-     * Get a pixel (its color). This does a mapping to the YUV422 array
-     * so please make sure not to call it more often than you need it.
-     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
-     * seperatly.
-     */
-    inline Pixel getCorrected(const int x, const int y) const
-    {
-      ASSERT(isInside(x,y));
-      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
-
-      Pixel p;
-      p.y = (unsigned char) Math::clamp<int>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
-      
-      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      p.u = yuv422[yOffset+1-((x & 1)<<1)];
-      p.v = yuv422[yOffset+3-((x & 1)<<1)];
-      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
-      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
-      return p;
-    }
-
-
-   /**
-     * Get a pixel (its color). This does a mapping to the YUV422 array
-     * so please make sure not to call it more often than you need it.
-     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
-     * seperatly.
-     */
-    inline void getCorrected(const int x, const int y, Pixel& p) const
-    {
-      ASSERT(isInside(x,y));
-      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
-
-      p.y = (unsigned char) Math::clamp<int>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
-      
-      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      p.u = yuv422[yOffset+1-((x & 1)<<1)];
-      p.v = yuv422[yOffset+3-((x & 1)<<1)];
-      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
-      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
     }
 
     inline void set(const int x, const int y, const Pixel& p)
