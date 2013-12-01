@@ -7,12 +7,10 @@
 
 Sensor::Sensor()
 {
-  std::cout << "Create Sensor" << std::endl;
 }
 
 Sensor::~Sensor()
 {
-
 }
 
 
@@ -21,7 +19,6 @@ Sensor::~Sensor()
 
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  std::cout << "Init Sensor" << std::endl;
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
   robot.platform = platform.getName();

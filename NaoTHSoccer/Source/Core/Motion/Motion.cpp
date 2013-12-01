@@ -80,7 +80,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   getRobotInfo().bodyID = platform.getBodyID();
   getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
 
-  g_message("Motion register begin");
+  std::cout << "[Motion] register begin" << std::endl;
 #define REG_INPUT(R)                                                    \
   platformInterface.registerInput(get##R())
 
@@ -111,7 +111,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
 
-  g_message("Motion register end");
+  std::cout << "[Motion] register end" << std::endl;
 }//end init
 
 
