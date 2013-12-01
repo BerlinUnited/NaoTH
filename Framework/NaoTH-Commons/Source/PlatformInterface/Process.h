@@ -9,6 +9,12 @@
 #include "ActionList.h"
 #include "ChannelActionCreator.h"
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
 
 namespace naoth
 {
@@ -25,7 +31,7 @@ public:
 
   ~Prosess()
   {
-    std::cout << "destruct Prosess" << std::endl;
+    PRINT_DEBUG("destruct Prosess");
   }
 
   Callable* callback;
@@ -47,7 +53,7 @@ public:
 
   ~ProsessEnvironment()
   {
-    std::cout << "destruct ProsessEnvironment" << std::endl;
+    PRINT_DEBUG("destruct ProsessEnvironment");
   }
   
   // registered (available) actions

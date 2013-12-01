@@ -11,6 +11,13 @@
 
 #include <typeinfo>
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
+
 namespace naoth
 {
 
@@ -30,12 +37,13 @@ public:
   bool registerInput(T& data)
   {
     bool result = registerAction(data, environment.inputActions, process.preActions);
-    if(result)
-      std::cout << "register input: " << typeid(T).name() << std::endl;
-    else
-      std::cerr << "invalid input: " << typeid(T).name() << std::endl;
+    if(result) {
+      PRINT_DEBUG("[ProcessInterface] register input: " << typeid(T).name());
+    } else {
+      std::cerr << "[ProcessInterface] WARNING: platform doesn't provide input: " << typeid(T).name() << std::endl;
+    }
     return result;
-  }//end registerInput
+  }
 
 
   template<class T>
@@ -43,11 +51,11 @@ public:
   {
     bool result = registerAction(data, environment.outputActions, process.postActions);
     if(result)
-      std::cout << "register output: " << typeid(T).name() << std::endl;
+      PRINT_DEBUG("[ProcessInterface] register output: " << typeid(T).name());
     else
-      std::cerr << "invalid output: " << typeid(T).name() << std::endl;
+      std::cerr << "[ProcessInterface] WARNING: platform doesn't provide output: " << typeid(T).name() << std::endl;
     return result;
-  }//end registerOutput
+  }
 
 
   template<class T>
@@ -86,7 +94,7 @@ private:
     if(action) actionList.push_back(action);
 
     return action != NULL;
-  }//end registerCognitionInput
+  }
 
 
   Prosess& process;
