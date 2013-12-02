@@ -191,16 +191,18 @@ void XABSLBehaviorControl::draw()
       case motion::walk:
       {
         PEN("333333", 20);
-        Vector2<double> target(100,0);
-        target = getMotionRequest().walkRequest.target*target;
+        Pose2D robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
+        Pose2D walkRequest = getMotionRequest().walkRequest.target;
+        walkRequest = robotPosePlanned+walkRequest;
 
-        ARROW(getMotionRequest().walkRequest.target.translation.x, 
-              getMotionRequest().walkRequest.target.translation.y, 
-              target.x, 
-              target.y);
+        Vector2d target(100,0);
+        target = walkRequest*target;
+
+        ARROW(walkRequest.translation.x, walkRequest.translation.y, 
+              target.x, target.y);
         TEXT_DRAWING(
-             getMotionRequest().walkRequest.target.translation.x - 100,
-             getMotionRequest().walkRequest.target.translation.y - 100,
+             walkRequest.translation.x - 100,
+             walkRequest.translation.y - 100,
              "WALK");
       }
       break;
