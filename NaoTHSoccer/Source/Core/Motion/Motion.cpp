@@ -175,21 +175,8 @@ void Motion::processSensorData()
   theFootGroundContactDetector->execute();
 
 
-
+  //
   theKinematicChainProvider->execute();
-  //
-  /*
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    getAccelerometerData(),
-    //getInertialSensorData.data,
-    getInertialModel().orientation,
-    getKinematicChainSensor(),
-    getFSRPositions().pos, // provides theFSRPos
-    getRobotInfo().getBasicTimeStepInSecond());
-  */
-  //
-  //Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
-  //getKinematicChainMotor().updateCoM();
 
 
   //
@@ -201,12 +188,6 @@ void Motion::processSensorData()
 
   //
   theOdometryCalculator->execute();
-  /*
-  theOdometryCalculator.calculateOdometry(
-    getOdometryData,
-    getKinematicChain,
-    getFSRData);
-    */
 
 
   // store the MotorJointData

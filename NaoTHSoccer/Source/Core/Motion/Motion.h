@@ -25,9 +25,6 @@
 #include "SensorFilter/InertiaSensorFilter.h"
 
 
-// representations
-#include "Representations/Modeling/FSRPositions.h"
-
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
@@ -37,7 +34,6 @@ BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 
-  //PROVIDE(FSRPositions)// TODO:strange...
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
 

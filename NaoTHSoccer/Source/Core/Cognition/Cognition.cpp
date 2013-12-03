@@ -35,8 +35,8 @@
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
+#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -77,6 +77,7 @@
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
 #include "Modules/Modeling/Camera/CameraMatrixFinder.h"
+#include "Modules/Modeling/LocalModelProvider/LocalModelProvider.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -143,8 +144,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixFinder);
 
   // perception
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);

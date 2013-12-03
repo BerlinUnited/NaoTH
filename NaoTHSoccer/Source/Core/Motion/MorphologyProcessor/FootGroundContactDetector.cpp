@@ -35,21 +35,16 @@ void FootGroundContactDetector::execute()
   leftFSRBuffer.add(getFSRData().forceLeft());
   rightFSRBuffer.add(getFSRData().forceRight());
 
-  if(getFSRData().forceLeft() < footParams.left)
-  {
+  if(getFSRData().forceLeft() < footParams.left) {
     getGroundContactModel().leftGroundContact = false;
-  }
-  else
-  {
+  } else {
     getGroundContactModel().leftGroundContact = true;
   }
 
   if(getFSRData().forceRight() < footParams.right)
   {
     getGroundContactModel().rightGroundContact = false;
-  }
-  else
-  {
+  } else {
     getGroundContactModel().rightGroundContact = true;
   }
 
@@ -57,18 +52,13 @@ void FootGroundContactDetector::execute()
   if(leftFSRBuffer.getAverage() < footParams.left)
   {
     getGroundContactModel().leftGroundContactAverage = false;
-  }
-  else
-  {
+  } else {
     getGroundContactModel().leftGroundContactAverage = true;
   }
 
-  if(rightFSRBuffer.getAverage() < footParams.right)
-  {
+  if(rightFSRBuffer.getAverage() < footParams.right) {
     getGroundContactModel().rightGroundContactAverage = false;
-  }
-  else
-  {
+  } else {
     getGroundContactModel().rightGroundContactAverage = true;
   }
 
