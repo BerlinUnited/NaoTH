@@ -54,8 +54,7 @@ string KinematicChain::getLinkName(LinkID j)
     FROM_ID_TO_NAME(RAnkle);
     FROM_ID_TO_NAME(RFoot);
     FROM_ID_TO_NAME(Hip);
-    default:
-        return "Unknown Link";
+    default: return "Unknown Link";
   }
 }
 
@@ -202,7 +201,7 @@ void KinematicChain::initJointsAxes()
   theLinks[RFoot    ].setJoint(x,   JointData::RAnkleRoll);
 }//end initJointsAxes
 
-void KinematicChain::initJointsInfo(JointData& jointData)
+void KinematicChain::linkJointData(JointData& jointData)
 {
   for (int i = 0; i < numOfLinks; i++)
   {
@@ -219,7 +218,7 @@ void KinematicChain::initJointsInfo(JointData& jointData)
   }
 }//end initJointsInfo
 
-void KinematicChain::initLinksInfo()
+void KinematicChain::initLinkPositions()
 {  
   theLinks[Neck].setLink(0, 0, NaoInfo::NeckOffsetZ);
   theLinks[Head].setLink(0, 0, 0);
@@ -258,13 +257,54 @@ void KinematicChain::initLinksInfo()
 void KinematicChain::init(JointData& jointData)
 {
   initJointsAxes();
-  initJointsInfo(jointData);
-  initMassesInfo();
-  initLinksInfo();
   buildLinkChains();
+  linkJointData(jointData);
 
+  initLinkPositions();
+  initMassesInfo(); // read from config
+  
   initialized = true;
 }
+
+void KinematicChain::updateCoM()
+{
+  CoM = Vector3d::zero;
+  for(int i=0; i<numOfLinks; i++)
+  {
+    CoM += (theLinks[i].c * theLinks[i].mass);
+  }
+  CoM/=sumMass;
+}//end updateCoM
+
+Vector2d KinematicChain::calculateZMP() const
+{
+  // Px = S((z''+g)x-(z-Pz)x'') / S(z''+g)
+  const static double g = -9810;
+  const static double pz = 0;
+  Vector2d zmp;
+  double as = 0;
+  for(int i=0; i<numOfLinks; i++)
+  {
+    double zg = theLinks[i].dv.z + g;
+    double m = theLinks[i].mass;
+    as += (zg*m);
+    double zp = theLinks[i].c.z-pz;
+    zmp.x += (( zg*theLinks[i].c.x - zp*theLinks[i].dv.x )*m);
+    zmp.y += (( zg*theLinks[i].c.y - zp*theLinks[i].dv.y )*m);
+  }
+  zmp/=as;
+  return zmp;
+}//end calculateZMP
+
+void KinematicChain::print(ostream& stream) const
+{
+  for(int i=0;i<numOfLinks;i++)
+  {
+    stream << getLinkName((LinkID)i) << ": "<< theLinks[i].p <<"\n";
+  }
+  stream << "CoM: " << CoM << "\n";
+}//end print
+
 
 string KinematicChain::test(const Kinematics::Link& node) const
 {
@@ -321,45 +361,6 @@ string KinematicChain::test(const Kinematics::Link& node) const
   }
   return "ok";
 }//end test
-
-void KinematicChain::updateCoM()
-{
-  CoM = Vector3d::zero;
-  for(int i=0; i<numOfLinks; i++)
-  {
-    CoM += (theLinks[i].c * theLinks[i].mass);
-  }
-  CoM/=sumMass;
-}//end updateCoM
-
-Vector2d KinematicChain::calculateZMP() const
-{
-  // Px = S((z''+g)x-(z-Pz)x'') / S(z''+g)
-  const static double g = -9810;
-  const static double pz = 0;
-  Vector2d zmp;
-  double as = 0;
-  for(int i=0; i<numOfLinks; i++)
-  {
-    double zg = theLinks[i].dv.z + g;
-    double m = theLinks[i].mass;
-    as += (zg*m);
-    double zp = theLinks[i].c.z-pz;
-    zmp.x += (( zg*theLinks[i].c.x - zp*theLinks[i].dv.x )*m);
-    zmp.y += (( zg*theLinks[i].c.y - zp*theLinks[i].dv.y )*m);
-  }
-  zmp/=as;
-  return zmp;
-}//end calculateZMP
-
-void KinematicChain::print(ostream& stream) const
-{
-  for(int i=0;i<numOfLinks;i++)
-  {
-    stream << getLinkName((LinkID)i) << ": "<< theLinks[i].p <<"\n";
-  }
-  stream << "CoM: " << CoM << "\n";
-}//end print
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node)
 {

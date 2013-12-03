@@ -43,12 +43,9 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
 
   // TODO: put offset to extra config
   PROVIDE(CameraInfoParameter)
-  PROVIDE(SensorJointData)
-  PROVIDE(KinematicChain)
 
   PROVIDE(CameraInfo)
   PROVIDE(CameraInfoTop)
-
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -70,8 +67,6 @@ public:
   }
 
 private:
-  unsigned int udpateTime;
-  Vector3d theFSRPos[FSRData::numOfFSR];
   CameraInfo::CameraID cameraID;
 
   void calibrate();

@@ -3,6 +3,7 @@
 #include "ForwardKinematics.h"
 
 #include "KinematicChainProviderMotion.h"
+#include <Tools/NaoInfo.h>
 
 KinematicChainProviderMotion::KinematicChainProviderMotion()
 {
@@ -16,14 +17,12 @@ void KinematicChainProviderMotion::execute()
 {
   
   // calculate the KinematicChainSensor based on sensor data
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    //getAccelerometerData(),
-    //getInertialSensorData.data,
+  Kinematics::ForwardKinematics::updateKinematicChainAll(
     getInertialModel().orientation,
     getAccelerometerData().getAcceleration(),
+    getRobotInfo().getBasicTimeStepInSecond(),
     getKinematicChainSensor(),
-    getFSRPositions().pos, // provides theFSRPos
-    getRobotInfo().getBasicTimeStepInSecond());
+    getFSRPositions().pos);
 
   
   //

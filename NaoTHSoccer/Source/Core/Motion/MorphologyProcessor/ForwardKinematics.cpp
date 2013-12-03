@@ -6,7 +6,7 @@
 */
 #include "ForwardKinematics.h"
 
-#include <Representations/Infrastructure/FSRData.h>
+#include <Tools/NaoInfo.h>
 
 namespace Kinematics 
 {
@@ -15,21 +15,29 @@ using namespace naoth;
   
 void ForwardKinematics::forwardAllKinematics(Link* theLink)
 {
-  if(theLink==NULL)
-  {
+  if(theLink==NULL) {
     return;
   }
   theLink->updateAllFromMother();
   
   forwardAllKinematics(theLink->sister);
   forwardAllKinematics(theLink->child);
-}//end forwardAllKinematics
+}
+
+void ForwardKinematics::forwardAllKinematics(Link& theLink)
+{
+  forwardAllKinematics(&theLink);
+}
+
+void ForwardKinematics::forwardAllKinematics(KinematicChain& theKinematicChain, KinematicChain::LinkID start)
+{
+  forwardAllKinematics(theKinematicChain.getLink(start));
+}
 
 
 void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
 {
-  if(theLink==NULL)
-  {
+  if(theLink==NULL) {
     return;
   }
 
@@ -42,103 +50,82 @@ void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
   forwardAllKinematicsExcept(theLink->sister, ept);
 }//end forwardAllKinematicsExcept
 
-
-// TODO: move it to KinematicChainNao
-void ForwardKinematics::calcChestRotation(Link* theLinks, const Vector2d& rotation)
+void ForwardKinematics::setRotation(Link& link, const Vector2d& rotation)
 {
-  Link* chest = (theLinks + KinematicChain::Torso);
-  // Rotation from Inertial sensor data
-  chest->R = RotationMatrix::getRotationX(rotation.x);
-  chest->R.rotateY(rotation.y);
-}//end calcChestRotation
+  link.R = RotationMatrix::getRotationX(rotation.x).rotateY(rotation.y);
+}
 
 
-void ForwardKinematics::calcChestAll(
-        Link* theLinks,
-        //const AccelerometerData& theAccelerometerData,
-        //const InertialPercept& theInertialPercept,
-        const Vector2<double>& theBodyRotation,
-        const Vector3<double>& theBodyAcceleration,
+void ForwardKinematics::updateChest(
+        KinematicChain& kinematicChain,
+        const Vector2d& theBodyRotation,
+        const Vector3d& theBodyAcceleration,
         const double deltaTime)
 {
-  Link* chest = (theLinks + KinematicChain::Torso);
+  Link& chest = kinematicChain.getLink(KinematicChain::Torso);
 
   // position of the chest is the origin of the whole kinematic chain
-  Vector3d O(0, 0, 0);
-  chest->p = O;
+  const Vector3d O(0, 0, 0);
+  chest.p = O;
 
-  // rotation from Inertial sensor data
-  chest->R = RotationMatrix::getRotationX(theBodyRotation.x);
-  chest->R.rotateY(theBodyRotation.y);
+  // rotation from inertial sensor
+  chest.R = RotationMatrix::getRotationX(theBodyRotation.x);
+  chest.R.rotateY(theBodyRotation.y);
 
   // acceleration and velocity
-  chest->dv = chest->R * ( theBodyAcceleration * 1000 );
-  chest->v += chest->dv * deltaTime;
-  chest->w = O;
-  chest->dw = O;
-}//end calcChestAll
+  chest.dv = chest.R * ( theBodyAcceleration * 1000 );
+  chest.v += chest.dv * deltaTime;
+  chest.w = O;
+  chest.dw = O;
+}//end updateChest
 
 
-double ForwardKinematics::calcChestHeight(const Vector3<double>* fsrPos)
-{
-  // assume the lowest FSR's z = 0
-  double offsetZ = 0;
-  for( int i=0; i<FSRData::numOfFSR; i++ )
-  {
-    if ( offsetZ > fsrPos[i].z )
-      offsetZ = fsrPos[i].z;
-  }
-  return -offsetZ;
-}//end calcChestHeight
-
-
-void ForwardKinematics::calculateKinematicChainAll(
-    //const AccelerometerData& theAccelerometerData,
-    //const InertialPercept& theInertialPercept,
-    const Vector2<double>& theBodyRotation,
-    const Vector3<double>& theBodyAcceleration,
+void ForwardKinematics::updateKinematicChainAll(
+    const Vector2d& theBodyRotation,
+    const Vector3d& theBodyAcceleration,
+    const double deltaTime,
     KinematicChain& theKinematicChain,
-    Vector3<double>* theFSRPos,
-    const double deltaTime)
+    Vector3d* theFSRPos)
 {
-  Link* theLinks = theKinematicChain.theLinks;
-  
   // set the values for the chest link
-  calcChestAll(theLinks, theBodyRotation, theBodyAcceleration, deltaTime);
-
+  updateChest(
+    theKinematicChain, 
+    theBodyRotation, 
+    theBodyAcceleration, 
+    deltaTime);
+  
   // propagate though the entire kinematic chain beginning from the chest
-  forwardAllKinematics(theLinks + KinematicChain::Torso);
+  forwardAllKinematics(theKinematicChain, KinematicChain::Torso);
+
+  // transfor the FSR to the global coordinates of the kinematic chain
+  // i.e., to the chest coordinates
+  updateFSRPos(theKinematicChain, theFSRPos);
   
-  // TODO: move the estimation of the chest height to somwhere else
-  calcFSRPos(theLinks, theFSRPos);
-  double theChestHeight = calcChestHeight(theFSRPos);
+  // assume the foot is on the ground and use the z-distance to the
+  // lowest FSR as an estimation for the actual height of the robots chest
+  double chestHeight = theFSRPos[getLowestFSR(theFSRPos)].z;
 
-  adjustKinematicChain(theLinks, theFSRPos, theChestHeight);
-  calcCoMs(theLinks);
-  
-  theKinematicChain.updateCoM();
-}//end update
+  // the origin of the kinematic chain is the projection of the robots hip on the ground
+  const Vector3d& hipPosition = theKinematicChain.getLink(KinematicChain::Hip).p;
+  Vector3d origin(-hipPosition.x, -hipPosition.y, -chestHeight);
+
+  // translate the whole kinematic chain to the new origin
+  translate(theKinematicChain, origin);
+
+  //
+  updateCoM(theKinematicChain);
+
+  // recalculate the new positions for the FSR
+  updateFSRPos(theKinematicChain, theFSRPos);
+}//end updateKinematicChainAll
 
 
-void ForwardKinematics::adjustKinematicChain(Link* l, Vector3<double> *fsrPos, double chestHeight)
+void ForwardKinematics::translate(KinematicChain& theKinematicChain, const Vector3d& t)
 {
-  double hipX = l[KinematicChain::Hip].p.x;
-  double hipY = l[KinematicChain::Hip].p.y;
-
-  for(int i=0; i<KinematicChain::numOfLinks; i++ )
-  {
-    l[i].p.x -= hipX;
-    l[i].p.y -= hipY;
-    l[i].p.z += chestHeight;
+  for(int i=0; i<KinematicChain::numOfLinks; i++ ) {
+    theKinematicChain.getLink(i).p += t;
   }
-
-  for(int i=0; i<FSRData::numOfFSR; i++)
-  {
-    fsrPos[i].x -= hipX;
-    fsrPos[i].y -= hipY;
-    fsrPos[i].z += chestHeight;
-  }
-}//end adjustKinematicChain
+}
 
 
 void ForwardKinematics::calcLinkUp(Link* l)
@@ -150,39 +137,28 @@ void ForwardKinematics::calcLinkUp(Link* l)
 }//end calcLinkUp
 
 
-void ForwardKinematics::calcCoMs(Link* l)
+void ForwardKinematics::updateCoM(KinematicChain& theKinematicChain)
 {
-  for(int i=0; i<KinematicChain::numOfLinks; i++)
-  {
+  for(int i=0; i<KinematicChain::numOfLinks; i++) {
+    theKinematicChain.getLink(i).updateCoM();
+  }
+  theKinematicChain.updateCoM();
+}//end updateCoM
+
+void ForwardKinematics::updateCoM(Link* l)
+{
+  for(int i=0; i<KinematicChain::numOfLinks; i++) {
     l[i].updateCoM();
-  }//end for
-}//end calcCoMs
-
-
-void ForwardKinematics::calcFSRPos(const Link* theLink, Vector3<double>* theFSRPos)
-{
-  const Link* lFoot = &theLink[KinematicChain::LFoot];
-  const Link* rFoot = &theLink[KinematicChain::RFoot];
-
-  // left foot
-  for (int i = 0; i < FSRData::RFsrFL; i++)
-  {
-    theFSRPos[i] = lFoot->M * FSRData::offset[i];
-  }//end for
-
-  // right foot
-  for (int i = FSRData::RFsrFL; i < FSRData::numOfFSR; i++)
-  {
-    theFSRPos[i] = rFoot->M * FSRData::offset[i];
-  }//end for
-}//end calcFSRPos
+  }
+}//end updateCoM
 
 
 // TODO: does this referencing make sense (Link* &l)?
-Link* ForwardKinematics::updateToRoot(Link* &l)
+Link* ForwardKinematics::updateToRoot(Link* l)
 {
-  if ( l->mother == NULL )
+  if ( l->mother == NULL ) {
     return l;
+  }
 
   while(true)
   {
@@ -211,8 +187,13 @@ void ForwardKinematics::updateKinematicChainFrom(Link* l)
     forwardAllKinematicsExcept(root, l);
   }
 
-  calcCoMs(root);
+  updateCoM(root);
 }//end updateKinematicChainFrom
+
+void ForwardKinematics::updateKinematicChainFrom(KinematicChain& theKinematicChain, KinematicChain::LinkID start)
+{
+  updateKinematicChainFrom(&theKinematicChain.getLink(start));
+}
 
 
 RotationMatrix ForwardKinematics::calcChestFeetRotation(const KinematicChain& theKinematicChain)
@@ -250,5 +231,36 @@ RotationMatrix ForwardKinematics::calcChestFeetRotation(const KinematicChain& th
 
   return calculatedRotation.invert();
 }//end calcChestFeetRotation
+
+void ForwardKinematics::updateFSRPos(const KinematicChain& kinematicChain, Vector3d* theFSRPos)
+{
+  const Pose3D& lFootPose = kinematicChain.getLink(KinematicChain::LFoot).M;
+  const Pose3D& rFootPose = kinematicChain.getLink(KinematicChain::RFoot).M;
+
+  // left foot
+  for (int i = 0; i < FSRData::RFsrFL; i++) {
+    theFSRPos[i] = lFootPose * NaoInfo::FSRPositions[i];
+  }
+
+  // right foot
+  for (int i = FSRData::RFsrFL; i < FSRData::numOfFSR; i++) {
+    theFSRPos[i] = rFootPose * NaoInfo::FSRPositions[i];
+  }
+}
+
+
+int ForwardKinematics::getLowestFSR(const Vector3d* theFSRPos)
+{
+  int idx = 0;
+  double offsetZ = theFSRPos[0].z;
+  
+  for(int i=1; i<FSRData::numOfFSR; i++) {
+    if ( offsetZ > theFSRPos[i].z ) {
+      offsetZ = theFSRPos[i].z;
+      idx = i;
+    }
+  }
+  return idx;
+}
 
 } // namespace Kinematics

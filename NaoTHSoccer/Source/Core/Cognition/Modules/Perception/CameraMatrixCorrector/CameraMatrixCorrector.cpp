@@ -18,14 +18,6 @@
 
 CameraMatrixCorrector::CameraMatrixCorrector()
 {
-  udpateTime = getFrameInfo().getTime();
-
-  // this is a HACK!!!!!!!!!!
-  if(!getKinematicChain().is_initialized())
-  {
-    getKinematicChain().init(getSensorJointData());
-  }
-
   DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
     false);
@@ -45,10 +37,6 @@ CameraMatrixCorrector::~CameraMatrixCorrector()
 void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-
-  double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
-  udpateTime = getFrameInfo().getTime();
-  
 
   CameraInfo::CameraID camera_to_calibrate = CameraInfo::numOfCamera;
 
@@ -73,15 +61,6 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
       getCameraInfoParameter().saveToConfig(); 
   });
 
-  // calculate the kinematic chain
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    getInertialModel().orientation,
-    getAccelerometerData().getAcceleration(),
-    getKinematicChain(),
-    theFSRPos,
-    deltaTime);
-
-  //getKinematicChain().updateCoM();
 
   /* TODO: this doesn't work properly
   getCameraMatrix()
