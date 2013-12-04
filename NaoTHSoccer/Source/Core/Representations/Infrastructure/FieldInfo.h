@@ -118,7 +118,7 @@ public:
     Crossing() : id(numberLineCrossingsId) {}
     LineCrossingsId id;
     //Type type; // TODO: L, T, X
-    Vector2<double> position;
+    Vector2d position;
   };
 
   Crossing crossings[numberLineCrossingsId];
@@ -149,13 +149,13 @@ public:
   */
 
   // goal post positions
-  Vector2<double> opponentGoalPostLeft;
-  Vector2<double> opponentGoalPostRight;
-  Vector2<double> opponentGoalCenter;
+  Vector2d opponentGoalPostLeft;
+  Vector2d opponentGoalPostRight;
+  Vector2d opponentGoalCenter;
 
-  Vector2<double> ownGoalPostLeft;
-  Vector2<double> ownGoalPostRight;
-  Vector2<double> ownGoalCenter;
+  Vector2d ownGoalPostLeft;
+  Vector2d ownGoalPostRight;
+  Vector2d ownGoalCenter;
 
   /** */
   LinesTable fieldLinesTable;

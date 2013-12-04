@@ -72,37 +72,37 @@ void FieldInfo::calculateCrossings()
 
   
   // L crossings
-  crossings[opponentCornerLeft].position          = Vector2<double>(xPosOpponentGroundline, yPosLeftSideline);
-  crossings[opponentCornerRight].position         = Vector2<double>(xPosOpponentGroundline, yPosRightSideline);
-  crossings[ownCornerLeft].position               = Vector2<double>(xPosOwnGroundline, yPosLeftSideline);
-  crossings[ownCornerRight].position              = Vector2<double>(xPosOwnGroundline, yPosRightSideline);
+  crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);
+  crossings[opponentCornerRight].position         = Vector2d(xPosOpponentGroundline, yPosRightSideline);
+  crossings[ownCornerLeft].position               = Vector2d(xPosOwnGroundline, yPosLeftSideline);
+  crossings[ownCornerRight].position              = Vector2d(xPosOwnGroundline, yPosRightSideline);
 
-  crossings[opponentPenaltyCornerLeft].position   = Vector2<double>(xPosOpponentPenaltyArea, yPosLeftPenaltyArea);
-  crossings[opponentPenaltyCornerRight].position  = Vector2<double>(xPosOpponentPenaltyArea, yPosRightPenaltyArea);
-  crossings[ownPenaltyCornerLeft].position        = Vector2<double>(xPosOwnPenaltyArea, yPosLeftPenaltyArea);
-  crossings[ownPenaltyCornerRight].position       = Vector2<double>(xPosOwnPenaltyArea, yPosRightPenaltyArea);
+  crossings[opponentPenaltyCornerLeft].position   = Vector2d(xPosOpponentPenaltyArea, yPosLeftPenaltyArea);
+  crossings[opponentPenaltyCornerRight].position  = Vector2d(xPosOpponentPenaltyArea, yPosRightPenaltyArea);
+  crossings[ownPenaltyCornerLeft].position        = Vector2d(xPosOwnPenaltyArea, yPosLeftPenaltyArea);
+  crossings[ownPenaltyCornerRight].position       = Vector2d(xPosOwnPenaltyArea, yPosRightPenaltyArea);
 
   // T crossings
-  crossings[opponentGoalTCrossingLeft].position   = Vector2<double>(xPosOpponentGroundline, yPosLeftPenaltyArea);
-  crossings[opponentGoalTCrossingRight].position  = Vector2<double>(xPosOpponentGroundline, yPosRightPenaltyArea);
-  crossings[ownGoalTCrossingLeft].position        = Vector2<double>(xPosOwnGroundline, yPosLeftPenaltyArea);
-  crossings[ownGoalTCrossingRight].position       = Vector2<double>(xPosOwnGroundline, yPosRightPenaltyArea);
-  crossings[centerTCrossingLeft].position         = Vector2<double>(xPosHalfWayLine, yPosLeftSideline);
-  crossings[centerTCrossingRight].position        = Vector2<double>(xPosHalfWayLine, yPosRightSideline);
+  crossings[opponentGoalTCrossingLeft].position   = Vector2d(xPosOpponentGroundline, yPosLeftPenaltyArea);
+  crossings[opponentGoalTCrossingRight].position  = Vector2d(xPosOpponentGroundline, yPosRightPenaltyArea);
+  crossings[ownGoalTCrossingLeft].position        = Vector2d(xPosOwnGroundline, yPosLeftPenaltyArea);
+  crossings[ownGoalTCrossingRight].position       = Vector2d(xPosOwnGroundline, yPosRightPenaltyArea);
+  crossings[centerTCrossingLeft].position         = Vector2d(xPosHalfWayLine, yPosLeftSideline);
+  crossings[centerTCrossingRight].position        = Vector2d(xPosHalfWayLine, yPosRightSideline);
 
   // X Crossings
-  crossings[crossingCenterCircleLeft].position    = Vector2<double>(xPosHalfWayLine, -centerCircleRadius);
-  crossings[crossingCenterCircleRight].position   = Vector2<double>(xPosHalfWayLine, centerCircleRadius);
+  crossings[crossingCenterCircleLeft].position    = Vector2d(xPosHalfWayLine, -centerCircleRadius);
+  crossings[crossingCenterCircleRight].position   = Vector2d(xPosHalfWayLine, centerCircleRadius);
 
 
   // goal post positions
-  opponentGoalPostLeft  = Vector2<double>(xPosOpponentGoal, yPosLeftGoalpost);
-  opponentGoalPostRight = Vector2<double>(xPosOpponentGoal, yPosRightGoalpost);
-  opponentGoalCenter    = Vector2<double>(xPosOpponentGoal, 0.0);
+  opponentGoalPostLeft  = Vector2d(xPosOpponentGoal, yPosLeftGoalpost);
+  opponentGoalPostRight = Vector2d(xPosOpponentGoal, yPosRightGoalpost);
+  opponentGoalCenter    = Vector2d(xPosOpponentGoal, 0.0);
 
-  ownGoalPostLeft   = Vector2<double>(xPosOwnGoal, yPosLeftGoalpost);
-  ownGoalPostRight  = Vector2<double>(xPosOwnGoal, yPosRightGoalpost);
-  ownGoalCenter     = Vector2<double>(xPosOwnGoal, 0.0);
+  ownGoalPostLeft   = Vector2d(xPosOwnGoal, yPosLeftGoalpost);
+  ownGoalPostRight  = Vector2d(xPosOwnGoal, yPosRightGoalpost);
+  ownGoalCenter     = Vector2d(xPosOwnGoal, 0.0);
 }//end calculateCrossings
 
 
@@ -199,9 +199,9 @@ void FieldInfo::createLinesTable()
   double angleStep = Math::pi2 / numberOfSegments;
 
   // the radius is choosen in a way the centers of line segments are exactly on the circle
-  Vector2<double> x0(centerCircleRadius / cos(angleStep*0.5), 0.0);
+  Vector2d x0(centerCircleRadius / cos(angleStep*0.5), 0.0);
   x0.rotate(-angleStep * 0.5); // the middle line should be intersected by only one circle line
-  Vector2<double> x1(x0);
+  Vector2d x1(x0);
 
   for (int i = 0; i < numberOfSegments; i++)
   {
