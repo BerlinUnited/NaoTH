@@ -19,13 +19,13 @@ option decide_and_go_to_passive_position
   {
     decision{
       else if(game.player_number == 2)
-          goto goto_passive_position_striker;
+          goto goto_passive_position_supporter2;
       else if(game.player_number == 3)
-          goto goto_passive_position_supporter;
+          goto goto_passive_position_striker;
       else if(game.player_number == 4)
           goto goto_passive_position_defender;          
       else if(game.player_number == 5)
-          goto goto_passive_position_supporter2;
+          goto goto_passive_position_supporter;
       else
           stay;
     }
@@ -43,7 +43,10 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=1000, y=1500, rot=0);
+      go_to_and_keep_passive_position(
+        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2, 
+        y  = field.yPosLeftPenaltyArea, 
+        rot= 0);
     }
   }
 
@@ -55,7 +58,11 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=-2500, y=900, rot=-15);
+    //go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
+      go_to_and_keep_passive_position(
+        x = field.xPosOppPenaltyMark, 
+        y = field.yPosRightFlank, 
+        rot = 140);
     }
   }
 
@@ -67,7 +74,10 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
+      go_to_and_keep_passive_position(
+        x =(field.xPosOwnPenaltyMark+field.centerCircleRadius)/2, 
+        y =field.yPosRightPenaltyArea, 
+        rot=0);
     }
   }
 
@@ -79,7 +89,11 @@ option decide_and_go_to_passive_position
         stay;
     }
     action {
-      go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
+    //go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
+      go_to_and_keep_passive_position(
+        x = (field.xPosOwnPenaltyMark + field.xPosOwnPenaltyArea)/2,
+        y = field.yPosLeftGoal, 
+        rot=-15);
     }
   }
 

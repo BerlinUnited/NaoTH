@@ -33,7 +33,7 @@ option basic_goalie
            stay;
        }
        action {
-         go_to_point(rot=0, x=-4400, y=0);
+         go_to_point(x=field.xPosOwnGroundline, y=0,rot=0);
          head.control_mode = search_for_goal;
        }
   }
