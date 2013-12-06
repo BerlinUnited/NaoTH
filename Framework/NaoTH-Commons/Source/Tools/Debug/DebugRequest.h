@@ -78,6 +78,39 @@ std::string get_sub_core_path(std::string fullpath);
   #define DEBUG_REQUEST_OR_RELEASE(name, code) {code} ((void)0)
 #endif // DEBUG
 
+//submodule debug requests
+#if DEBUG
+/** 
+* Register a debug request for (de-)activating a submodule execution
+* P=parent class, M=module class, D=description string, A=default active flag(bool)
+*/
+ #define DEBUG_REQUEST_REGISTER_SUBMODULE(P, M, D, A)                                               \
+  {                                                                                                 \
+    DEBUG_REQUEST_REGISTER(std::string(#P) + ":" + std::string(#M) + ":execute", std::string(D), A);\
+    the##M = registerModule<M>(std::string(#M));                                                    \
+    the##M->setEnabled(true);                                                                       \
+  }                                                                                                 \
+  ((void)0)
+
+/** 
+* Execute a submodule, if activated by debug request including trace and stopwatch
+* P=parent class, M=module class
+*/
+#define DEBUG_EXECUTE_SUBMODULE(P, M)                                                               \
+  {                                                                                                 \
+    DEBUG_REQUEST(std::string(#P) + ":" + std::string(#M) + ":execute",                             \
+      {GT_TRACE("executing " + std::string(#M));                                                    \
+      STOPWATCH_START(std::string(#M));                                                             \
+      the##M->execute();                                                                            \
+      STOPWATCH_STOP(std::string(#M));}                                                             \
+    );                                                                                              \
+  }                                                                                                 \
+  ((void)0)                                                                                                                                
+#else
+  DEBUG_REQUEST_REGISTER_SUBMODULE(parentClass, name, description, isActiveByDefault) ((void)0)
+  DEBUG_EXECUTE_SUBMODULE(parentClass, name, description, isActiveByDefault) ((void)0)
+#endif // DEBUG
+
 
 #endif  /* _DEBUGREQUEST_H */
 
