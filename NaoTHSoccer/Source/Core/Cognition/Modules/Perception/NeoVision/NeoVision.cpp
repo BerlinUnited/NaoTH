@@ -11,96 +11,32 @@
 
 NeoVision::NeoVision()
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:execute", " ", false);
-  theFieldColorClassifierFull = registerModule<FieldColorClassifierFull>("FieldColorClassifierFull");
-  theFieldColorClassifierFull->setEnabled(true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, FieldColorClassifierFull, " ", false);
+  //DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, SimpleFieldColorClassifier, " ", true);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:execute", " ", true);
-  theSimpleFieldColorClassifier = registerModule<SimpleFieldColorClassifier>("SimpleFieldColorClassifier");
-  theSimpleFieldColorClassifier->setEnabled(true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, SimpleGoalColorClassifier, " ", false);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, SimpleBallColorClassifier, " ", false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:execute", " ", false);
-  theSimpleGoalColorClassifier = registerModule<SimpleGoalColorClassifier>("SimpleGoalColorClassifier");
-  theSimpleGoalColorClassifier->setEnabled(true);
+  //DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, ScanLineEdgelDetectorDifferential, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, NeoLineDetector, " ", false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:execute", " ", false);
-  theSimpleBallColorClassifier = registerModule<SimpleBallColorClassifier>("SimpleBallColorClassifier");
-  theSimpleBallColorClassifier->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", true);
-  theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
-  theScanLineEdgelDetectorDifferential->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:NeoLineDetector:execute", " ", false);
-  theNeoLineDetector = registerModule<NeoLineDetector>("NeoLineDetector");
-  theNeoLineDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:execute", " ", true);
-  theMaximumRedBallDetector = registerModule<MaximumRedBallDetector>("MaximumRedBallDetector");
-  theMaximumRedBallDetector->setEnabled(true);
-  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:execute", " ", true);
-  theGradientGoalDetector = registerModule<GradientGoalDetector>("GradientGoalDetector");
-  theGradientGoalDetector->setEnabled(true);
+  //DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, MaximumRedBallDetector, " ", true);
+  //DEBUG_REQUEST_REGISTER_SUBMODULE(NeoVision, GradientGoalDetector, " ", true);
 }//end constructor
 
 
 void NeoVision::execute()
 {
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:execute",
-    GT_TRACE("executing FieldColorClassifierFull");
-    STOPWATCH_START("FieldColorClassifierFull");
-    theFieldColorClassifierFull->execute();
-    STOPWATCH_STOP("FieldColorClassifierFull");
-  );
+  DEBUG_EXECUTE_SUBMODULE(NeoVision, FieldColorClassifierFull);
+  //DEBUG_EXECUTE_SUBMODULE(NeoVision, SimpleFieldColorClassifier);
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:execute",
-    GT_TRACE("executing SimpleFieldColorClassifier");
-    STOPWATCH_START("SimpleFieldColorClassifier");
-    theSimpleFieldColorClassifier->execute();
-    STOPWATCH_STOP("SimpleFieldColorClassifier");
-  );
+  DEBUG_EXECUTE_SUBMODULE(NeoVision, SimpleGoalColorClassifier);
+  DEBUG_EXECUTE_SUBMODULE(NeoVision, SimpleBallColorClassifier);
 
-  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:execute",
-    GT_TRACE("executing SimpleGoalColorClassifier");
-    STOPWATCH_START("SimpleGoalColorClassifier");
-    theSimpleGoalColorClassifier->execute();
-    STOPWATCH_STOP("SimpleGoalColorClassifier");
-  );
+  //DEBUG_EXECUTE_SUBMODULE(NeoVision, ScanLineEdgelDetectorDifferential);
+  DEBUG_EXECUTE_SUBMODULE(NeoVision, NeoLineDetector);
 
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:execute",
-    GT_TRACE("executing SimpleBallColorClassifier");
-    STOPWATCH_START("SimpleBallColorClassifier");
-    theSimpleBallColorClassifier->execute();
-    STOPWATCH_STOP("SimpleBallColorClassifier");
-  );
-
-  DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:execute",
-    GT_TRACE("executing ScanLineEdgelDetectorDifferential");
-    STOPWATCH_START("ScanLineEdgelDetectorDifferential");
-    theScanLineEdgelDetectorDifferential->execute();
-    STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
-  );
-
-  DEBUG_REQUEST("NeoVision:NeoLineDetector:execute",
-    GT_TRACE("executing NeoLineDetector");
-    STOPWATCH_START("NeoLineDetector");
-    theNeoLineDetector->execute();
-    STOPWATCH_STOP("NeoLineDetector");
-  );
-
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:execute",
-    GT_TRACE("executing MaximumRedBallDetector");
-    STOPWATCH_START("MaximumRedBallDetector");
-    theMaximumRedBallDetector->execute();
-    STOPWATCH_STOP("MaximumRedBallDetector");
-  );
-
-  DEBUG_REQUEST("NeoVision:GradientGoalDetector:execute",
-    GT_TRACE("executing GradientGoalDetector");
-    STOPWATCH_START("GradientGoalDetector");
-    theGradientGoalDetector->execute();
-    STOPWATCH_STOP("GradientGoalDetector");
-  );
+  //DEBUG_EXECUTE_SUBMODULE(NeoVision, MaximumRedBallDetector);
+  //DEBUG_EXECUTE_SUBMODULE(NeoVision, GradientGoalDetector);
 }//end execute
 

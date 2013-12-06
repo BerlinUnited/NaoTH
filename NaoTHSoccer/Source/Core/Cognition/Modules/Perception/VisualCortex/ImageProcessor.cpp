@@ -19,157 +19,54 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
-
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:execute", " ", true);
-  theHistogramFieldDetector = registerModule<HistogramFieldDetector>("HistogramFieldDetector");
-  theHistogramFieldDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BodyContourProvider:execute", " ", true);
-  theBodyContourProvider = registerModule<BodyContourProvider>("BodyContourProvider");
-  theBodyContourProvider->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:execute", " ", false);
-  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:execute", " ", true);
-  theFieldDetector = registerModule<FieldDetector>("FieldDetector");
-  theFieldDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:execute", " ", false);
-  theBallDetector = registerModule<BallDetector>("BallDetector");
-  theBallDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:execute", " ", false);
-  theRobotDetector = registerModule<RobotDetector>("RobotDetector");
-  theRobotDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:execute", " ", true);
-  theLineDetector = registerModule<LineDetector>("LineDetector");
-  theLineDetector->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineClusterProvider:execute", " ", false);
-  theLineClusterProvider = registerModule<LineClusterProvider>("LineClusterProvider");
-  theLineClusterProvider->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:GoalDetector:execute", " ", false);
-  theGoalDetector = registerModule<GoalDetector>("GoalDetector");
-  theGoalDetector->setEnabled(true);
-
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, HistogramFieldDetector, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, BodyContourProvider, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, ScanLineEdgelDetector, " ", false);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, FieldDetector, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, BallDetector, " ", false);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, RobotDetector, " ", false);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, LineDetector, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, LineClusterProvider, " ", false);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, GoalDetector, " ", false);
 
   // TODO: NeoVision stuff
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:execute", " ", true);
-  theSimpleFieldColorClassifier = registerModule<SimpleFieldColorClassifier>("SimpleFieldColorClassifier");
-  theSimpleFieldColorClassifier->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:ScanLineEdgelDetectorDifferential:execute", " ", true);
-  theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
-  theScanLineEdgelDetectorDifferential->setEnabled(true);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:execute", " ", true);
-  theMaximumRedBallDetector = registerModule<MaximumRedBallDetector>("MaximumRedBallDetector");
-  theMaximumRedBallDetector->setEnabled(true);
-  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:execute", " ", true);
-  theGradientGoalDetector = registerModule<GradientGoalDetector>("GradientGoalDetector");
-  theGradientGoalDetector->setEnabled(true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, SimpleFieldColorClassifier, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, ScanLineEdgelDetectorDifferential, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, GradientGoalDetector, " ", true);
+  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, MaximumRedBallDetector, " ", true);
 
 }//end constructor
 
 
 void ImageProcessor::execute()
 {
-  // TODO: NeoVision stuff
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:execute",
-    GT_TRACE("executing SimpleFieldColorClassifier");
-    STOPWATCH_START("SimpleFieldColorClassifier");
-    theSimpleFieldColorClassifier->execute();
-    STOPWATCH_STOP("SimpleFieldColorClassifier");
-  );
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, SimpleFieldColorClassifier);
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, HistogramFieldDetector);
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, FieldDetector);
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, BodyContourProvider);
 
-  DEBUG_REQUEST("ImageProcessor:HistogramFieldDetector:execute",
-    GT_TRACE("executing HistogramFieldDetector");
-    STOPWATCH_START("HistogramFieldDetector");
-    theHistogramFieldDetector->execute();
-    STOPWATCH_STOP("HistogramFieldDetector");
-  );
+  //robot detector using waist band color
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, RobotDetector);
 
-  DEBUG_REQUEST("ImageProcessor:BodyContourProvider:execute",
-    GT_TRACE("executing BodyContourProvider");
-    STOPWATCH_START("BodyContourProvider");
-    theBodyContourProvider->execute();
-    STOPWATCH_STOP("BodyContourProvider");
-  );
+  //color based goal detector
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, GoalDetector);
+  //Gradient based gola detector (default)
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, GradientGoalDetector);
 
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:execute",
-    GT_TRACE("executing RobotDetector");
-    STOPWATCH_START("RobotDetector");
-    theRobotDetector->execute();
-    STOPWATCH_STOP("RobotDetector");
-  );
+  //Edgel detector using threshold and color
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, ScanLineEdgelDetector);
+  //Edgel detector using differences
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, ScanLineEdgelDetectorDifferential);
 
-  DEBUG_REQUEST("ImageProcessor:GoalDetector:execute",
-    GT_TRACE("executing GoalDetector");
-    STOPWATCH_START("GoalDetector");
-    theGoalDetector->execute();
-    STOPWATCH_STOP("GoalDetector");
-  );
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, LineDetector);
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, LineClusterProvider);
 
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:execute",
-    GT_TRACE("executing ScanLineEdgelDetector");
-    STOPWATCH_START("ScanLineEdgelDetector");
-    theScanLineEdgelDetector->execute();
-    STOPWATCH_STOP("ScanLineEdgelDetector");
-  );
-
-  // TODO: NeoVision stuff
-  DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:execute",
-    GT_TRACE("executing ScanLineEdgelDetectorDifferential");
-    STOPWATCH_START("ScanLineEdgelDetectorDifferential");
-    theScanLineEdgelDetectorDifferential->execute();
-    STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
-  );
-
-  DEBUG_REQUEST("ImageProcessor:FieldDetector:execute",
-    GT_TRACE("executing FieldDetector");
-    STOPWATCH_START("FieldDetector");
-    theFieldDetector->execute();
-    STOPWATCH_STOP("FieldDetector");
-  );
-
-  DEBUG_REQUEST("ImageProcessor:BallDetector:execute",
-    GT_TRACE("executing BallDetector");
-    STOPWATCH_START("BallDetector");
-    theBallDetector->execute();
-    STOPWATCH_STOP("BallDetector");
-  );
-
-  DEBUG_REQUEST("ImageProcessor:LineDetector:execute",
-    GT_TRACE("executing LineDetector");
-    STOPWATCH_START("LineDetector");
-    theLineDetector->execute();
-    STOPWATCH_STOP("LineDetector");
-  );
-
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:execute",
-    GT_TRACE("executing MaximumRedBallDetector");
-    STOPWATCH_START("MaximumRedBallDetector");
-    theMaximumRedBallDetector->execute();
-    STOPWATCH_STOP("MaximumRedBallDetector");
-  );
-
-  DEBUG_REQUEST("NeoVision:GradientGoalDetector:execute",
-    GT_TRACE("executing GradientGoalDetector");
-    STOPWATCH_START("GradientGoalDetector");
-    theGradientGoalDetector->execute();
-    STOPWATCH_STOP("GradientGoalDetector");
-  );
+  //ball detector based on color
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, BallDetector);
+  //ball detector based on gradients and red color peaks search inside field region (needs known field)
+  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, MaximumRedBallDetector);
 
   GT_TRACE("executing rest of ImageProcessor::execute()");
-
-
-
 
   //draw horizon to image
   DEBUG_REQUEST("ImageProcessor:draw_horizon",
@@ -180,7 +77,6 @@ void ImageProcessor::execute()
   );
 
   DEBUG_REQUEST("ImageProcessor:draw_horizon",
-
     CANVAS_PX_BOTTOM;
     Vector2d a(getArtificialHorizon().begin());
     Vector2d b(getArtificialHorizon().end());
