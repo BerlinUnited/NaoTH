@@ -120,8 +120,6 @@ public:
   {
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
-
-    CANVAS_PX_BOTTOM;
   }
 
   class Parameters: public ParameterList

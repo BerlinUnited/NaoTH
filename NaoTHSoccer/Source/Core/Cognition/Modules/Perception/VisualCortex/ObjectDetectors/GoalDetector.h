@@ -31,6 +31,8 @@
 
 #include "Tools/DataStructures/OccupancyGrid.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GoalDetector)
@@ -40,12 +42,10 @@ BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-//  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
   REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
-//  REQUIRE(FieldPercept)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   
@@ -153,87 +153,16 @@ private:
 
   BlobFinder& getBlobFinder()
   {
-    if(cameraID == CameraInfo::Top)
-    {
-      return blobFinder;
-    }
-    else
-    {
-      return blobFinderBottom;
-    }
-  }
-
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getImageTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getImage();
-    }
+    return cameraID == CameraInfo::Top?blobFinder:blobFinderBottom;
   };
 
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getCameraMatrix();
-    }
-  };
+  DOUBLE_CAM_REQUIRE(GoalDetector, Image);
+  DOUBLE_CAM_REQUIRE(GoalDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(GoalDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(GoalDetector, ColorClassificationModel);
+  DOUBLE_CAM_REQUIRE(GoalDetector, ColoredGrid);
 
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getArtificialHorizon();
-    }
-  };
-
- const ColorClassificationModel& getColorTable64() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getColorClassificationModelTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getColorClassificationModel();
-    }
-  };
-
-   const ColoredGrid& getColoredGrid() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getColoredGridTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getColoredGrid();
-    }
-  };
-
-  GoalPercept& getGoalPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return GoalDetectorBase::getGoalPerceptTop();
-    }
-    else
-    {
-      return GoalDetectorBase::getGoalPercept();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(GoalDetector, GoalPercept);
 
 };//end class GoalDetector
 

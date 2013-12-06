@@ -92,6 +92,7 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
         maxRedPeak < pixel.v && 
         poly.isInside_inline(point) && 
         checkIfPixelIsOrange(pixel)
+        && !getBodyContour().isOccupied(point)
       )
       {
         maxRedPeak = pixel.v;
@@ -151,7 +152,7 @@ bool MaximumRedBallDetector::findBall ()
 
   // STEP 1: find the starting point for the search
 	Vector2<int> start;
-	if(!findMaximumRedPoint(start) || getBodyContour().isOccupied(start)) {
+	if(!findMaximumRedPoint(start)) {
     return false;
   }
 

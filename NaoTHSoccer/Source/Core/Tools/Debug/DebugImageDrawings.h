@@ -205,17 +205,5 @@ protected:
   DebugTopImageDrawings() : DebugDrawingCanvas(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT) {}
 };
 
-#ifdef DEBUG
-#define TOP_CIRCLE_PX(...) DebugTopImageDrawings::getInstance().drawCircleToImage(__VA_ARGS__)
-#define TOP_RECT_PX(...) DebugTopImageDrawings::getInstance().drawRectToImage(__VA_ARGS__)
-#define TOP_LINE_PX(...) DebugTopImageDrawings::getInstance().drawLineToImage(__VA_ARGS__)
-#define TOP_POINT_PX(...) DebugTopImageDrawings::getInstance().drawPointToImage(__VA_ARGS__)
-#else
-/* ((void)0) - that's a do-nothing statement */
-#define TOP_CIRCLE_PX(color,x,y,radius) ((void)0)
-#define TOP_RECT_PX(color,x0,y0,x1,y1) ((void)0)
-#define TOP_LINE_PX(color,x0,y0,x1,y1) ((void)0)
-#define TOP_POINT_PX(color,x,y) ((void)0)
-#endif //DEBUG
 
 #endif  /* _DebugImageDrawings_H */

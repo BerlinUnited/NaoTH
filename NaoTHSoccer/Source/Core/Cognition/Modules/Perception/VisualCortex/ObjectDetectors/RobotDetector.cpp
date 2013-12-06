@@ -12,8 +12,10 @@
 #include "Tools/CameraGeometry.h"
 
 RobotDetector::RobotDetector()
-  : BELOW_WHITE_RATIO(0.5),
-    theBlobFinder(getColoredGrid())
+: 
+  cameraID(CameraInfo::Top),
+  theBlobFinder(getColoredGrid()),
+  theBlobFinderTop(getColoredGridTop())
 {
   //initialize colors for blob finder
   //red:
@@ -22,16 +24,18 @@ RobotDetector::RobotDetector()
     redColors[n] = false;
   }
   redColors[ColorClasses::red] = true;
+  //redColors[ColorClasses::none] = true;
   //blue:
   for (int n = 0; n < ColorClasses::numOfColors; n++)
   {
     blueColors[n] = false;
   }
   blueColors[ColorClasses::blue] = true;
+  //blueColors[ColorClasses::none] = true;
   //red and blue:
   
-  blueMarkers.reserve(MAX_MARKER_NUMBER);
-  redMarkers.reserve(MAX_MARKER_NUMBER);
+  blueMarkers.reserve(params.maxMarkerNumber);
+  redMarkers.reserve(params.maxMarkerNumber);
   
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_blobs", "draw the blobs", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
@@ -40,9 +44,12 @@ RobotDetector::RobotDetector()
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_point_on_field", "draw the lowest robot's point", false);
 }
 
-void RobotDetector::execute()
+void RobotDetector::execute(const CameraInfo::CameraID id)
 {  
-  MODIFY("RobotDetector:BELOW_WHITE_RATIO", BELOW_WHITE_RATIO);
+  cameraID = id;
+  CANVAS_PX(cameraID);
+
+  //MODIFY("RobotDetector:BELOW_WHITE_RATIO", params.belowWhiteRatio);
 
   blueBlobs.reset();
   redBlobs.reset();
@@ -93,7 +100,7 @@ void RobotDetector::detectRobots(const std::vector<Marker>& markers)
       int stepSize(2);
       //now we want to estimate the robot's lowest point
       while ((unsigned int)lowestPoint.y < getImage().cameraInfo.resolutionHeight
-             && findGreenRatio(lowestPoint.y, xStart, xEnd, stepSize) < GREEN_GROUND_RATIO)
+             && findGreenRatio(lowestPoint.y, xStart, xEnd, stepSize) < params.greenGroundRatio)
       {
         lowestPoint.y += stepSize;
       }
@@ -126,7 +133,7 @@ inline void RobotDetector::detectRobotMarkers()
     Blob blob = blueBlobs.blobs[i];
     Vector2<double> cog = blob.moments.getCentroid();
     double mom = blob.moments.getRawMoment(0,0);
-    if (mom > BLOB_MIN_MOMENT)
+    if (mom > params.blobMinMoment)
     {
       findMarkerPoly(cog, ColorClasses::blue);
     }
@@ -137,7 +144,7 @@ inline void RobotDetector::detectRobotMarkers()
     Blob blob = redBlobs.blobs[i];
     Vector2<int> cog = blob.moments.getCentroid();
     double mom = blob.moments.getRawMoment(0,0);
-    if (mom > BLOB_MIN_MOMENT)
+    if (mom > params.blobMinMoment)
     {
       findMarkerPoly(cog, ColorClasses::red);
     }
@@ -160,9 +167,9 @@ inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
   Vector2<int> rightUp = right - marker.minorAxis*4;
   int whitePixelsAbove = 0;
   int totalPixelsAbove = 0;
-  totalPixelsAbove += scanline(getImage(), getColorTable64(), ColorClasses::white, left-marker.minorAxis, leftUp, whitePixelsAbove, drawScanLinesRobot); 
-  totalPixelsAbove += scanline(getImage(), getColorTable64(), ColorClasses::white, middle-marker.minorAxis, middleUp, whitePixelsAbove, drawScanLinesRobot); 
-  totalPixelsAbove += scanline(getImage(), getColorTable64(), ColorClasses::white, right-marker.minorAxis, rightUp, whitePixelsAbove, drawScanLinesRobot);
+  totalPixelsAbove += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, left-marker.minorAxis, leftUp, whitePixelsAbove, drawScanLinesRobot); 
+  totalPixelsAbove += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, middle-marker.minorAxis, middleUp, whitePixelsAbove, drawScanLinesRobot); 
+  totalPixelsAbove += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, right-marker.minorAxis, rightUp, whitePixelsAbove, drawScanLinesRobot);
   double aboveWhiteRatio = (double)whitePixelsAbove/(double)totalPixelsAbove;
 
   //check the marker's environment below the marker
@@ -170,10 +177,10 @@ inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
   Vector2<int> rightDown = right + marker.minorAxis*4;
   int whitePixelsBelow = 0;
   int totalPixelsBelow = 0;
-  totalPixelsBelow += scanline(getImage(), getColorTable64(), ColorClasses::white, left+marker.minorAxis, leftDown, whitePixelsBelow, drawScanLinesRobot);
-  totalPixelsBelow += scanline(getImage(), getColorTable64(), ColorClasses::white, right+marker.minorAxis, rightDown, whitePixelsBelow, drawScanLinesRobot);
+  totalPixelsBelow += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, left+marker.minorAxis, leftDown, whitePixelsBelow, drawScanLinesRobot);
+  totalPixelsBelow += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, right+marker.minorAxis, rightDown, whitePixelsBelow, drawScanLinesRobot);
   double belowWhiteRatio = (double)whitePixelsBelow/(double)totalPixelsBelow;  
-  result = (belowWhiteRatio > BELOW_WHITE_RATIO && aboveWhiteRatio > ABOVE_WHITE_RATIO) ? true : false;
+  result = (belowWhiteRatio > params.belowWhiteRatio && aboveWhiteRatio > params.aboveWhiteRatio) ? true : false;
   return result;
 }//end evaluateMarkerEnvironment
 
@@ -181,15 +188,26 @@ inline void RobotDetector::findBlobs()
 {  
   //start finding the blobs
   STOPWATCH_START("RobotDetector: find blobs");
-  // find red blobs
-  theBlobFinder.execute(redBlobs, redColors, searchArea);
+  if(cameraID == CameraInfo::Bottom)
+  {
+    // find red blobs
+    theBlobFinder.execute(redBlobs, redColors, searchArea);
+    // find blue blobs
+    theBlobFinder.execute(blueBlobs, blueColors, searchArea);
+  }
+  else
+  {
+    // find red blobs
+    theBlobFinderTop.execute(redBlobs, redColors, searchArea);
+    // find blue blobs
+    theBlobFinderTop.execute(blueBlobs, blueColors, searchArea);
+  }
 
-  // find blue blobs
-  theBlobFinder.execute(blueBlobs, blueColors, searchArea);
   STOPWATCH_STOP("RobotDetector: find blobs");
   
   // debug
   IMAGE_DRAWING_CONTEXT;
+  CANVAS_PX(cameraID);
   DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_blobs",
     for (int i = 0; i < redBlobs.blobNumber; i++)
     {
@@ -243,22 +261,22 @@ inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color 
   //scan in all directions
   //TODO: make functions
 
-  scanLine(cog, up, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upUpRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upRightRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, right, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downRightRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downDownRight, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, down, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downDownLeft, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downLeft, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, downLeftLeft, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, left, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upLeftLeft, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upLeft, 4, color, Point, drawScanLinesMarker, marker);
-  scanLine(cog, upUpLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, up, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upUpRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upRightRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, right, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downRightRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downDownRight, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, down, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downDownLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downLeftLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, left, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upLeftLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upUpLeft, params.maxScanPointsToSkip, color, Point, drawScanLinesMarker, marker);
   //add the color
   if (color == ColorClasses::blue)
   {
@@ -291,7 +309,7 @@ inline bool RobotDetector::checkMarkerPoly(Marker& marker)
   estimateArea(marker);
   // if the marker too small,
   // don't take it
-  if (marker.area < MARKER_MIN_SIZE)
+  if (marker.area < params.markerMinSize)
   {
     result = false;
   } 
@@ -444,7 +462,7 @@ inline double RobotDetector::findGreenRatio(int yCoord, int xStart, int xEnd, in
   for (int i = xStart; i <= xEnd; i+=stepSize)
   {
     Pixel pixel = getImage().get(i, yCoord);
-    ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::green)
     {
       greenColor++;
@@ -478,46 +496,46 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
       break;
     }//end if
 
-  ////////////////////////////////
-  // process the current point
-  ////////////////////////////////
+    ////////////////////////////////
+    // process the current point
+    ////////////////////////////////
 
-  Pixel pixel = getImage().get(currentPoint.x,currentPoint.y);
-  ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
-  //check whether the current point has the right color
-  bool hasColor = isSearchColor(currentPixelColor, searchColor);
-  if(hasColor)
-  {
-    lastSearchColorPoint = currentPoint;
-    borderPoint = currentPoint;
-    searchColorPointsSkipIndex = 0;
-    borderPointFound = true;
-    marker.moments.add(currentPoint);
-  }//end else
-  else
-  {
-    searchColorPointsSkipIndex++;
-  }//end else
-  
-  if(draw)
-  {
+    Pixel pixel = getImage().get(currentPoint.x,currentPoint.y);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
+    //check whether the current point has the right color
+    bool hasColor = isSearchColor(currentPixelColor, searchColor);
     if(hasColor)
     {
-      if(currentPixelColor == ColorClasses::none)
+      lastSearchColorPoint = currentPoint;
+      borderPoint = currentPoint;
+      searchColorPointsSkipIndex = 0;
+      borderPointFound = true;
+      marker.moments.add(currentPoint);
+    }//end else
+    else
+    {
+      searchColorPointsSkipIndex++;
+    }//end else
+  
+    if(draw)
+    {
+      if(hasColor)
       {
-        POINT_PX(ColorClasses::orange, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+        if(currentPixelColor == ColorClasses::none)
+        {
+          POINT_PX(ColorClasses::orange, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+        }
+        else
+        {
+          POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+        }
       }
       else
       {
-        POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+        POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
-    else
-    {
-      POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-    }
-  }
-  currentPoint += direction;
+    currentPoint += direction;
   }//end for
 
   if(borderPointFound) //if a point was found ...

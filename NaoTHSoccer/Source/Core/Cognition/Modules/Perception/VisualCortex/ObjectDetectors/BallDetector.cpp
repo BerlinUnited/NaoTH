@@ -21,28 +21,19 @@ BallDetector::BallDetector()
   theBlobFinder(getColoredGrid()),
   theBlobFinderTop(getColoredGridTop())
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:mark_ball", "mark the ball on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:mark_ball", "mark the ball on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:draw_scanlines", "draw all the scanlines", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:draw_scanlines", "draw all the scanlines", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:draw_scanlines_good_points", "draw all the godd points", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:draw_scanlines_good_points", "draw all the godd points", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:draw_scanlines_bad_points", "draw all the bad points", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:draw_scanlines_bad_points", "draw all the bad points", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:mark_ball", "mark the ball on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_scanlines", "draw all the scanlines", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_scanlines_good_points", "draw all the godd points", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_scanlines_bad_points", "draw all the bad points", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:random_scan", "draw the points touched by random scan", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:random_scan", "draw the points touched by random scan", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:random_scan", "draw the points touched by random scan", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:mark_ball_blob", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:mark_ball_blob", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:mark_ball_blob", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:draw_projected", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:draw_projected", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_projected", " ", false);
 
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:TopCam:draw_old_projected", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:BottomCam:draw_old_projected", " ", false);
+  //DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_old_projected", " ", false);
 
   // initialize the colors for the blob finder
   for(int n = 0; n < ColorClasses::numOfColors; n++)
@@ -57,6 +48,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallPercept().reset();
+  CANVAS_PX(cameraID);
 
   //if there is no field percept, then, there is also no goal ?!
   /*
@@ -83,36 +75,17 @@ void BallDetector::execute(CameraInfo::CameraID id)
   }
 
   // draw deteced blobs
-  DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:mark_ball_blob",
-    if(cameraID == CameraInfo::Top)
+  DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball_blob",
+    for(int i = 0; i < blobList.blobNumber; i++)
     {
-      for(int i = 0; i < blobList.blobNumber; i++)
-      {
-        const Blob& blob = blobList.blobs[i];
-        TOP_RECT_PX(ColorClasses::orange,
-                (unsigned int)(blob.upperLeft.x),
-                (unsigned int)(blob.upperLeft.y),
-                (unsigned int)(blob.lowerRight.x),
-                (unsigned int)(blob.lowerRight.y));
-        TOP_CIRCLE_PX(ColorClasses::orange, blob.centerOfMass.x, blob.centerOfMass.y, 4);
-      }//end for
-    }
-  );
-  // draw deteced blobs
-  DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:mark_ball_blob",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      for(int i = 0; i < blobList.blobNumber; i++)
-      {
-        const Blob& blob = blobList.blobs[i];
-        RECT_PX(ColorClasses::orange,
-                (unsigned int)(blob.upperLeft.x),
-                (unsigned int)(blob.upperLeft.y),
-                (unsigned int)(blob.lowerRight.x),
-                (unsigned int)(blob.lowerRight.y));
-        CIRCLE_PX(ColorClasses::orange, blob.centerOfMass.x, blob.centerOfMass.y, 4);
-      }//end for
-    }
+      const Blob& blob = blobList.blobs[i];
+      RECT_PX(ColorClasses::orange,
+              (unsigned int)(blob.upperLeft.x),
+              (unsigned int)(blob.upperLeft.y),
+              (unsigned int)(blob.lowerRight.x),
+              (unsigned int)(blob.lowerRight.y));
+      CIRCLE_PX(ColorClasses::orange, blob.centerOfMass.x, blob.centerOfMass.y, 4);
+    }//end for
   );
 
   //search for ball if orange blobs were found
@@ -165,17 +138,8 @@ void BallDetector::execute(CameraInfo::CameraID id)
       }
 
       //project the old percept in the image
-      DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:mark_previous_ball",
-        if(cameraID == CameraInfo::Top)
-        {
-          TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
-        }
-      );
-      DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:mark_previous_ball",
-        if(cameraID == CameraInfo::Bottom)
-        {
-          CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
-        }
+      DEBUG_REQUEST("ImageProcessor:BallDetector:mark_previous_ball",
+        CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
       );
     }//end if projectedBall is good
   } // end if-else
@@ -199,27 +163,12 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
   if(getBallPercept().ballWasSeen)
   {
-    if(cameraID == CameraInfo::Top)
-    {
-      PLOT("BallDetecor:TopCam:projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
-      PLOT("BallDetecor:TopCam:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
-    }
-    if(cameraID == CameraInfo::Bottom)
-    {
-      PLOT("BallDetecor:BottomCam:projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
-      PLOT("BallDetecor:BottomCam:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
-    }
-    DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:draw_projected",
-      if(cameraID == CameraInfo::Top)
-      {
-        TOP_CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
-      }
-    );
-    DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:draw_projected",
-      if(cameraID == CameraInfo::Bottom)
-      {
-        CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
-      }
+
+    PLOT("BallDetecor:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
+    PLOT("BallDetecor:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
+
+    DEBUG_REQUEST("ImageProcessor:BallDetector:draw_projected",
+      CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
     );
   }
 
@@ -271,13 +220,6 @@ void BallDetector::execute(CameraInfo::CameraID id)
   sbo.y = translationOfCamera.y + distanceFromCameraToBallCenterOnGround * sin(centerAsAngles.x);
    */
 
-
-
-
-
-
-
-
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)
   {
@@ -292,18 +234,17 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
     getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:CamBottom:draw_ball_in_image",
+    DEBUG_REQUEST("ImageProcessor:draw_ball_in_image",
       CIRCLE_PX(ColorClasses::red, (int)getBallPercept().centerInImage.x, (int)getBallPercept().centerInImage.y, (int)getBallPercept().radiusInImage);
     );
 
-    DEBUG_REQUEST("ImageProcessor:CamBottom:draw_ball_on_field",
+    DEBUG_REQUEST("ImageProcessor:draw_ball_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF9900", 20);
       CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
              getBallPercept().bearingBasedOffsetOnField.y,
              getFieldInfo().ballRadius);
     );
-
 
     // estimate the position of the relative to the camera based on the 
     // size of the ball
@@ -333,38 +274,9 @@ void BallDetector::execute(CameraInfo::CameraID id)
     if(q > -1) {
       getBallPercept().sizeBasedRelativePosition = ballCenter;
     }
-    DEBUG_REQUEST("ImageProcessor:CamBottom:ballpos_relative_3d",
+    DEBUG_REQUEST("ImageProcessor:ballpos_relative_3d",
       SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobal);
       LINE_3D(ColorClasses::red, getCameraMatrix().translation, ballCenterGlobal);
-    );
-
-
-    // ... the same for the top image
-    double yTop = getBallPerceptTop().centerInImage.y - getImageTop().cameraInfo.getOpticalCenterY();
-    double fTop = getImageTop().cameraInfo.getFocalLength();
-    double rTop = getBallPerceptTop().radiusInImage + ballRadiusOffset;
-    double alpha_yTop = atan2(yTop,fTop) - atan2(yTop-rTop,fTop);
-    double qTop = -1;
-
-    if(fabs(sin(alpha_yTop)) > 1e-3) {
-      qTop = getFieldInfo().ballRadius / sin(alpha_yTop);
-    }
-
-    Vector3d ballCenterTop;
-    ballCenterTop.x = getImageTop().cameraInfo.getFocalLength();
-    ballCenterTop.y = -getBallPerceptTop().centerInImage.x + getImageTop().cameraInfo.getOpticalCenterX();
-    ballCenterTop.z = -getBallPerceptTop().centerInImage.y + getImageTop().cameraInfo.getOpticalCenterY();
-    ballCenterTop.normalize(qTop);
-
-    Vector3d ballCenterGlobalTop = getCameraMatrixTop()*ballCenter;
-    ballCenterTop = ballCenterGlobalTop; // in roboter coordinates
-    if(qTop > -1) {
-      getBallPerceptTop().sizeBasedRelativePosition = ballCenterTop;
-    }
-
-    DEBUG_REQUEST("ImageProcessor:CamTop:ballpos_relative_3d",
-      SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballCenterGlobalTop);
-      LINE_3D(ColorClasses::red, getCameraMatrixTop().translation, ballCenterGlobalTop);
     );
 
   }//end if ballWasSeen
@@ -376,70 +288,54 @@ void BallDetector::execute(CameraInfo::CameraID id)
         Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
                         getFieldInfo().ballRadius));
-    Vector2<int> projectedBallTop = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getImageTop().cameraInfo,
-        Vector3<double>(getBallPerceptTop().bearingBasedOffsetOnField.x,
-                        getBallPerceptTop().bearingBasedOffsetOnField.y, 
-                        getFieldInfo().ballRadius));
 
     //project the old percept in the image
-    DEBUG_REQUEST("ImageProcessor:CamTop:mark_previous_ball",
-      TOP_CIRCLE_PX(ColorClasses::gray, (int)projectedBallTop.x, (int)projectedBallTop.y, (int)getBallPerceptTop().radiusInImage);
-    );
-    DEBUG_REQUEST("ImageProcessor:CamBottom:mark_previous_ball",
+    DEBUG_REQUEST("ImageProcessor:mark_previous_ball",
       CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
     );
   }
 
 
-  // estimate the relative position of the ball
-  if(getBallPerceptTop().ballWasSeen)
-  {
-    // estimate the projection of the ball on the ground
-    getBallPerceptTop().ballWasSeen = CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrixTop(), 
-      getImageTop().cameraInfo,
-      getBallPerceptTop().centerInImage.x, 
-      getBallPerceptTop().centerInImage.y, 
-      getFieldInfo().ballRadius,
-      getBallPerceptTop().bearingBasedOffsetOnField);
+  //// estimate the relative position of the ball
+  //if(getBallPerceptTop().ballWasSeen)
+  //{
+  //  // estimate the projection of the ball on the ground
+  //  getBallPerceptTop().ballWasSeen = CameraGeometry::imagePixelToFieldCoord(
+  //    getCameraMatrixTop(), 
+  //    getImageTop().cameraInfo,
+  //    getBallPerceptTop().centerInImage.x, 
+  //    getBallPerceptTop().centerInImage.y, 
+  //    getFieldInfo().ballRadius,
+  //    getBallPerceptTop().bearingBasedOffsetOnField);
 
-    getBallPerceptTop().frameInfoWhenBallWasSeen = getFrameInfo();
+  //  getBallPerceptTop().frameInfoWhenBallWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_in_image",
-      TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
-    );
+  //  DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_in_image",
+  //    TOP_CIRCLE_PX(ColorClasses::red, (int)getBallPerceptTop().centerInImage.x, (int)getBallPerceptTop().centerInImage.y, (int)getBallPerceptTop().radiusInImage);
+  //  );
 
-    DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_on_field",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF9900", 20);
-      CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 
-             getBallPerceptTop().bearingBasedOffsetOnField.y,
-             getFieldInfo().ballRadius);
-    );
-  }
+  //  DEBUG_REQUEST("ImageProcessor:CamTop:draw_ball_on_field",
+  //    FIELD_DRAWING_CONTEXT;
+  //    PEN("FF9900", 20);
+  //    CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, 
+  //           getBallPerceptTop().bearingBasedOffsetOnField.y,
+  //           getFieldInfo().ballRadius);
+  //  );
+  //}
 }//end execute
 
 
 void BallDetector::execute(const Vector2<int>& start)
 {
+  CANVAS_PX(cameraID);
   BallPointList goodPoints;
   BallPointList badPoints;
 
-  SpiderScan spiderSearch(getImage(), getColorTable64(), ColorClasses::orange, ColorClasses::green);
+  SpiderScan spiderSearch(getImage(), getColorClassificationModel(), ColorClasses::orange, ColorClasses::green);
   spiderSearch.setMaxBeamLength(300);
-
-  DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:draw_scanlines",
-    if(cameraID == CameraInfo::Top)
-    {
-      spiderSearch.setDrawScanLinesTop(true);
-    }
-  );
   
-  DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:draw_scanlines",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      spiderSearch.setDrawScanLines(true);
-    }
+  DEBUG_REQUEST("ImageProcessor:BallDetector:draw_scanlines",
+    spiderSearch.setDrawScanLines(true);
   );
   
   // explore the border of the ball
@@ -474,7 +370,6 @@ void BallDetector::execute(const Vector2<int>& start)
     radiusCOM = std::max(radiusCOM, (centerCOM - badPoints[i]).abs());
   }
 
-
   Vector2<double> center;
   double radius(0);
   bool ballCouldBeEstimated = calculateCircle(goodPoints, center, radius);
@@ -494,63 +389,26 @@ void BallDetector::execute(const Vector2<int>& start)
   getBallPercept().radiusInImage = radius;
   getBallPercept().ballWasSeen = true;
 
-  DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:mark_ball",
-    if(cameraID == CameraInfo::Top)
-    {
-      TOP_CIRCLE_PX(ColorClasses::red, (int)center.x, (int)center.y, (int)radius);
-      IMAGE_DRAWING_CONTEXT;
-      PEN("FF9900", 1);
-      CIRCLE(center.x, center.y, radius);
-      TOP_CIRCLE_PX(ColorClasses::black, (unsigned int)(start.x), (unsigned int)(start.y), 1);
-    }
-  );//end Debug
-  DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:mark_ball",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      CIRCLE_PX(ColorClasses::red, (int)center.x, (int)center.y, (int)radius);
-      IMAGE_DRAWING_CONTEXT;
-      PEN("FF9900", 1);
-      CIRCLE(center.x, center.y, radius);
-      CIRCLE_PX(ColorClasses::black, (unsigned int)(start.x), (unsigned int)(start.y), 1);
-    }
+  DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball",
+    CIRCLE_PX(ColorClasses::red, (int)center.x, (int)center.y, (int)radius);
+    IMAGE_DRAWING_CONTEXT;
+    PEN("FF9900", 1);
+    CIRCLE(center.x, center.y, radius);
+    CIRCLE_PX(ColorClasses::black, (unsigned int)(start.x), (unsigned int)(start.y), 1);
   );//end Debug
 
-  DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:draw_scanlines_good_points",
-    if(cameraID == CameraInfo::Top)
+  DEBUG_REQUEST("ImageProcessor:BallDetector:draw_scanlines_good_points",
+    for(int p=0; p<goodPoints.length; p++)
     {
-      for(int p=0; p<goodPoints.length; p++)
-      {
-        TOP_POINT_PX(ColorClasses::green, (unsigned int)(goodPoints.points[p].x),(unsigned int)(goodPoints.points[p].y));
-      }//for
-    }
-  );
-  DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:draw_scanlines_good_points",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      for(int p=0; p<goodPoints.length; p++)
-      {
-        POINT_PX(ColorClasses::green, (unsigned int)(goodPoints.points[p].x),(unsigned int)(goodPoints.points[p].y));
-      }//for
-    }
+      POINT_PX(ColorClasses::green, (unsigned int)(goodPoints.points[p].x),(unsigned int)(goodPoints.points[p].y));
+    }//for
   );
 
-  DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:draw_scanlines_bad_points",
-    if(cameraID == CameraInfo::Top)
+  DEBUG_REQUEST("ImageProcessor:BallDetector:draw_scanlines_bad_points",
+    for(int p=0; p<badPoints.length; p++)
     {
-      for(int p=0; p<badPoints.length; p++)
-      {
-         TOP_POINT_PX(ColorClasses::gray, (unsigned int)(badPoints.points[p].x),(unsigned int)(badPoints.points[p].y));
-      }//for
-    }
-  );//end DEBUG
-  DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:draw_scanlines_bad_points",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      for(int p=0; p<badPoints.length; p++)
-      {
-         POINT_PX(ColorClasses::gray, (unsigned int)(badPoints.points[p].x),(unsigned int)(badPoints.points[p].y));
-      }//for
-    }
+        POINT_PX(ColorClasses::gray, (unsigned int)(badPoints.points[p].x),(unsigned int)(badPoints.points[p].y));
+    }//for
   );//end DEBUG
 }//end execute
 
@@ -590,20 +448,12 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
     int y = 0;//Math::random(min.y, max.y);
 
     Pixel pixel = getImage().get(x,y);
-    ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
 
     
-    DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:random_scan",
-      if(cameraID == CameraInfo::Top)
-      {
-        TOP_POINT_PX(currentPixelColor, x, y);
-      }
-    );
-    DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:random_scan",
-      if(cameraID == CameraInfo::Bottom)
-      {
-        POINT_PX(currentPixelColor, x, y);
-      }
+    DEBUG_REQUEST("ImageProcessor:BallDetector:random_scan",
+      CANVAS_PX(cameraID);
+      POINT_PX(currentPixelColor, x, y);
     );
 
     if(color == currentPixelColor)
@@ -665,12 +515,12 @@ void BallDetector::regionGrowExpandArea(
      startingPoint.y >= 0 && startingPoint.y < gridHeight)
   {
     Pixel pixel = getImage().get(startingPoint.x, startingPoint.y);
-    if(getColorTable64().getColorClass(pixel) == color)
+    if(getColorClassificationModel().getColorClass(pixel) == color)
       open.push(startingPoint);
   }
 
   STOPWATCH_START("BallDetector ~ regionGrowExpandArea");
-
+  CANVAS_PX(cameraID);
   while(!open.empty())
   {
     // TODO: check if a reference can be used
@@ -686,24 +536,13 @@ void BallDetector::regionGrowExpandArea(
     //check if the pixel wasn't treated already and is of a relevant color
     if(visitedPixels(currentPoint.x, currentPoint.y)) continue; 
     
-    if(getColorTable64().getColorClass(pixel) != color)
+    if(getColorClassificationModel().getColorClass(pixel) != color)
     {
 //      currentPointIsBoundary = true;
-      DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:mark_ball_blob",
-        if(cameraID == CameraInfo::Top)
-        {
-          TOP_POINT_PX(ColorClasses::red,
-                (unsigned int)(currentPoint.x),
-                (unsigned int)(currentPoint.y));
-        }
-      );//end DEBUG
-      DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:mark_ball_blob",
-        if(cameraID == CameraInfo::Bottom)
-        {
-          POINT_PX(ColorClasses::red,
-                (unsigned int)(currentPoint.x),
-                (unsigned int)(currentPoint.y));
-        }
+      DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball_blob",
+        POINT_PX(ColorClasses::red,
+              (unsigned int)(currentPoint.x),
+              (unsigned int)(currentPoint.y));
       );//end DEBUG
       continue;
     }//end if
@@ -744,21 +583,10 @@ void BallDetector::regionGrowExpandArea(
     }//end for
 
     // boundary
-    DEBUG_REQUEST("ImageProcessor:BallDetector:TopCam:mark_ball_blob",
-      if(cameraID == CameraInfo::Top)
-      {
-        TOP_POINT_PX(color,
-              (unsigned int)(currentPoint.x),
-              (unsigned int)(currentPoint.y));
-      }
-    );//end DEBUG
-    DEBUG_REQUEST("ImageProcessor:BallDetector:BottomCam:mark_ball_blob",
-      if(cameraID == CameraInfo::Bottom)
-      {
-        POINT_PX(color,
-              (unsigned int)(currentPoint.x),
-              (unsigned int)(currentPoint.y));
-      }
+    DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball_blob",
+      POINT_PX(color,
+            (unsigned int)(currentPoint.x),
+            (unsigned int)(currentPoint.y));
     );//end DEBUG
   }//end while
  

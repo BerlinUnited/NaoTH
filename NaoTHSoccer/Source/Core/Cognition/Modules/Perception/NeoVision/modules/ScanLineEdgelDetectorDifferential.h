@@ -18,14 +18,12 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-//#include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
-//#include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
@@ -35,13 +33,13 @@
 
 #include <Tools/DataStructures/ParameterList.h>
 
+#include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
-  //REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
@@ -68,8 +66,6 @@ public:
   {
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
-
-    CANVAS_PX_BOTTOM;
   }
 
   class Parameters: public ParameterList
@@ -129,72 +125,14 @@ private:
   /** */
   double calculateMeanAngle(double angle1, double angle2) const;
 
-
-
-
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getImageTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getImage();
-    }
-  }
-
-  const ColorClassificationModel& getColorClassificationModel() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getColorClassificationModelTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getColorClassificationModel();
-    }
-  }
-
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getCameraMatrixTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getCameraMatrix();
-    }
-  }
-
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getArtificialHorizonTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getArtificialHorizon();
-    }
-  }
-
-  const FieldPercept& getFieldPercept() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getFieldPerceptTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getFieldPercept();
-    }
-  }
-
-  const BodyContour& getBodyContour() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getBodyContourTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getBodyContour();
-    }
-  }
-
-  ScanLineEdgelPercept& getScanLineEdgelPercept()
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ScanLineEdgelDetectorDifferentialBase::getScanLineEdgelPerceptTop();
-    } else {
-      return ScanLineEdgelDetectorDifferentialBase::getScanLineEdgelPercept();
-    }
-  }
-
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, Image);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ColorClassificationModel);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldPercept);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, BodyContour);
+  
+  DOUBLE_CAM_PROVIDE(ScanLineEdgelDetectorDifferential, ScanLineEdgelPercept);
 };
 
 #endif  /* _ScanLineEdgelDetectorDifferential_H_ */

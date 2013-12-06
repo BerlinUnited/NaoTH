@@ -520,6 +520,7 @@ void BaseColorClassifier::runDebugRequests()
   int imageHeight = getImageTop().cameraInfo.resolutionHeight;
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_ball_in_image",
+    CANVAS_PX(CameraInfo::Top);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -528,7 +529,7 @@ void BaseColorClassifier::runDebugRequests()
 
         if(getBaseColorRegionPerceptTop().orangeBall.inside(pixel))
         {
-          TOP_POINT_PX(ColorClasses::red, x, y);
+          POINT_PX(ColorClasses::red, x, y);
         }
 
       }
@@ -536,6 +537,7 @@ void BaseColorClassifier::runDebugRequests()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_goal_in_image",
+    CANVAS_PX(CameraInfo::Top);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -544,12 +546,12 @@ void BaseColorClassifier::runDebugRequests()
 
         if(getBaseColorRegionPerceptTop().yellowGoal.inside(pixel))
         {
-          TOP_POINT_PX(ColorClasses::yellow, x, y);
+          POINT_PX(ColorClasses::yellow, x, y);
         }
 
         if(getBaseColorRegionPerceptTop().blueGoal.inside(pixel))
         {
-          TOP_POINT_PX(ColorClasses::skyblue, x, y);
+          POINT_PX(ColorClasses::skyblue, x, y);
         }
 
       }
@@ -557,6 +559,7 @@ void BaseColorClassifier::runDebugRequests()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_red_team_in_image",
+    CANVAS_PX(CameraInfo::Top);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -565,13 +568,14 @@ void BaseColorClassifier::runDebugRequests()
 
         if(getBaseColorRegionPerceptTop().redTeam.inside(pixel))
         {
-          TOP_POINT_PX(ColorClasses::pink, x, y);
+          POINT_PX(ColorClasses::pink, x, y);
         }
       }
     }
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_blue_team_in_image",
+    CANVAS_PX(CameraInfo::Top);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -580,7 +584,7 @@ void BaseColorClassifier::runDebugRequests()
 
         if(getBaseColorRegionPerceptTop().blueTeam.inside(pixel))
         {
-          TOP_POINT_PX(ColorClasses::blue, x, y);
+          POINT_PX(ColorClasses::blue, x, y);
         }
       }
     }
@@ -590,6 +594,7 @@ void BaseColorClassifier::runDebugRequests()
   imageHeight = getImage().cameraInfo.resolutionHeight;
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_ball_in_image",
+    CANVAS_PX(CameraInfo::Bottom);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -606,6 +611,7 @@ void BaseColorClassifier::runDebugRequests()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_goal_in_image",
+    CANVAS_PX(CameraInfo::Bottom);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -627,6 +633,7 @@ void BaseColorClassifier::runDebugRequests()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_red_team_in_image",
+    CANVAS_PX(CameraInfo::Bottom);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -642,6 +649,7 @@ void BaseColorClassifier::runDebugRequests()
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_blue_team_in_image",
+    CANVAS_PX(CameraInfo::Bottom);
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -660,6 +668,7 @@ void BaseColorClassifier::runDebugRequests()
   MODIFY("ImageProcessor:BaseColorClassifier:fEnvY", fEnvY);
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamTop:set_lines_in_image",
+    CANVAS_PX(CameraInfo::Top);
     int imageWidth = getImageTop().cameraInfo.resolutionWidth;
     int imageHeight = getImageTop().cameraInfo.resolutionHeight;
     int diff = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
@@ -672,17 +681,18 @@ void BaseColorClassifier::runDebugRequests()
         //if(getBaseColorRegionPercept().whiteLine.inside(pixel))
         if(pixel.y > getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * fEnvY - diff)
         {
-          TOP_POINT_PX(ColorClasses::black, x, y);
+          POINT_PX(ColorClasses::black, x, y);
         }
         if(pixel.y < getBaseColorRegionPerceptTop().minEnv.y + diff)
         {
-          TOP_POINT_PX(ColorClasses::white, x, y);
+          POINT_PX(ColorClasses::white, x, y);
         }
 
       }
     }
   );
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:CamBottom:set_lines_in_image",
+    CANVAS_PX(CameraInfo::Bottom);
     int imageWidth = getImage().cameraInfo.resolutionWidth;
     int imageHeight = getImage().cameraInfo.resolutionHeight;
     int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;

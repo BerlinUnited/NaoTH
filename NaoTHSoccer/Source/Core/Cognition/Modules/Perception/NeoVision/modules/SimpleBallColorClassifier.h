@@ -27,15 +27,16 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugImageDrawings.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleBallColorClassifier)
-  //REQUIRE(ColoredGrid)
   REQUIRE(FrameInfo)
-  REQUIRE(Histograms)
-  REQUIRE(HistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
+  REQUIRE(Histograms)
+  REQUIRE(HistogramsTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(SimpleGoalColorPercept)
@@ -56,16 +57,13 @@ public:
   SimpleBallColorClassifier();
   virtual ~SimpleBallColorClassifier(){}
 
+  virtual void execute(CameraInfo::CameraID id);
+
   void execute()
   {
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
-
-    // reset the debug drawing canvas to bottom
-    CANVAS_PX_BOTTOM;
   }
-
-  void execute(const CameraInfo::CameraID id);
 
 private:
 
@@ -99,6 +97,13 @@ private:
 
   // id of the camera the module is curently running on
   CameraInfo::CameraID cameraID;
+
+  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, Image);
+  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, Histograms);
+  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, SimpleGoalColorPercept);
+ 
+  DOUBLE_CAM_PROVIDE(SimpleBallColorClassifier, SimpleBallColorPercept);
 };
 
 #endif  /* _SimpleBallColorClassifier_H_ */

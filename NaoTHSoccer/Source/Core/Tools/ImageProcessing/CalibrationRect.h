@@ -41,16 +41,11 @@ public:
     DebugParameterList::getInstance().remove(this);
   }
 
-  void draw()
+  void draw(CameraInfo::CameraID camID)
   {
+    CANVAS_PX(camID);
     RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
   }
-
-  void drawTop()
-  {
-    TOP_RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
-  }
-
 };
 
 

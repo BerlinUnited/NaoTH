@@ -25,6 +25,7 @@
 #include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/DataStructures/Histogram.h"
 
+#include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -52,7 +53,13 @@ public:
   SimpleGoalColorClassifier();
   virtual ~SimpleGoalColorClassifier(){}
 
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+  }
 
 private:
 
@@ -94,6 +101,8 @@ private:
 
 // experimental (Claas)
 private:
+   CameraInfo::CameraID cameraID;
+
   //double histV[COLOR_CHANNEL_VALUE_COUNT];
   //double histU[COLOR_CHANNEL_VALUE_COUNT];
 
@@ -104,6 +113,12 @@ private:
 
   void histogramExperiments();
 
+  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, Image);
+  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, Histograms);
+  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, BaseColorRegionPercept);
+ 
+  DOUBLE_CAM_PROVIDE(SimpleGoalColorClassifier, SimpleGoalColorPercept);
 };
 
 #endif  /* _SimpleGoalColorClassifier_H_ */

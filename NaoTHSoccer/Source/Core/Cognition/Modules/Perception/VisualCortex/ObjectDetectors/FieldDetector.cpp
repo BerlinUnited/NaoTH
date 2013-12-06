@@ -17,8 +17,7 @@ FieldDetector::FieldDetector()
 :
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:TopCam:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:BottomCam:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
 }
 
 
@@ -30,6 +29,8 @@ FieldDetector::~FieldDetector()
 void FieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  CANVAS_PX(id);
+
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
@@ -68,28 +69,13 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       getFieldPercept().setValid(false);
     }
 
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:TopCam:mark_field_polygon",
-      if(cameraID == CameraInfo::Top)
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
+      int idx = static_cast<int>(result.size())-1;
+      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+      for(int i = 0; i < (int)result.size(); i++)
       {
-        int idx = static_cast<int>(result.size())-1;
-        ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        for(int i = 0; i < (int)result.size(); i++)
-        {
-          TOP_LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
-          idx = i;
-        }
-      }
-    );
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:BottomCam:mark_field_polygon",
-      if(cameraID == CameraInfo::Bottom)
-      {
-        int idx = static_cast<int>(result.size())-1;
-        ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        for(int i = 0; i < (int)result.size(); i++)
-        {
-          LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
-          idx = i;
-        }
+        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
+        idx = i;
       }
     );    
   }

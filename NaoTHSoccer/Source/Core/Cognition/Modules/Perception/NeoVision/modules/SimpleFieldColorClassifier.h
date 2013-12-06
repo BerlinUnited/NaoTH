@@ -55,9 +55,6 @@ public:
   {
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
-
-    // reset the debug drawing canvas to bottom
-    CANVAS_PX_BOTTOM;
   }
 
   void execute(const CameraInfo::CameraID id);

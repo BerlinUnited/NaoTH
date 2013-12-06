@@ -21,7 +21,6 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Perception/CameraMatrix.h"
-//#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/Image.h"
 #include <vector>
@@ -37,6 +36,7 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(CameraMatrixTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
+
   PROVIDE(BodyContour)
   PROVIDE(BodyContourTop)
 END_DECLARE_MODULE(BodyContourProvider)
@@ -121,13 +121,12 @@ private:
 
   CameraInfo::CameraID cameraID;
 
-
   // double cam interface
-  DOUBLE_CAM_REQUIRE(BodyContourProvider,Image);
-  DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider, Image);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider, CameraMatrix);
 
-  DOUBLE_CAM_REQUIRE(BodyContourProvider,BodyContour);
-  DOUBLE_CAM_PROVIDE(BodyContourProvider,BodyContour);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider, BodyContour);
+  DOUBLE_CAM_PROVIDE(BodyContourProvider ,BodyContour);
 
 };// end class BodyContourProvider
 

@@ -29,8 +29,7 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:enable_plots", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:enable_plots", "", false);
+  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:enable_plots", "", false);
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
@@ -165,19 +164,10 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   //check how it works in other conditions
   int maxWeightedIndexY = (int)Math::clamp(meanFieldY,0.0, 255.0);
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:enable_plots",
-    if(cameraID == CameraInfo::Bottom) {
-      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCr", maxWeightedIndexCr);
-      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCb", maxWeightedIndexCb);
-      PLOT("SimpleFieldColorClassifier:BottomCam:meanFieldY", meanFieldY);
-    }
-  );
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:enable_plots",
-    if(cameraID == CameraInfo::Top) {
-      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCr", maxWeightedIndexCr);
-      PLOT("SimpleFieldColorClassifier:BottomCam:maxWeightedIndexCb", maxWeightedIndexCb);
-      PLOT("SimpleFieldColorClassifier:BottomCam:meanFieldY", meanFieldY);
-    }
+  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:enable_plots",
+    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCr", maxWeightedIndexCr);
+    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCb", maxWeightedIndexCb);
+    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":meanFieldY", meanFieldY);
   );
 
   double maxY = 255;

@@ -32,13 +32,14 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 #define LINE_THICKNESS 10//4
 
 
 BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-//  REQUIRE(ColorTable64)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
@@ -75,77 +76,14 @@ private:
   ColorClasses::Color fieldColor;
   ColorClasses::Color lineColor;
 
-  const Image& getImage() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getImageTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getImage();
-    }
-  };
-  
-  const ColoredGrid& getColoredGrid() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getColoredGridTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getColoredGrid();
-    }
-  };
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, Image);
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ColoredGrid);
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, Histograms);
 
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getCameraMatrixTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getCameraMatrix();
-    }
-  };
+  DOUBLE_CAM_PROVIDE(HistogramFieldDetector, FieldPercept);
 
-  const ArtificialHorizon& getArtificialHorizon() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getArtificialHorizonTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getArtificialHorizon();
-    }
-  };
-
-  const Histograms& getHistograms() const
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getHistogramsTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getHistograms();
-    }
-  };
-
-  FieldPercept& getFieldPercept()
-  {
-    if(cameraID == CameraInfo::Top)
-    {
-      return HistogramFieldDetectorBase::getFieldPerceptTop();
-    }
-    else
-    {
-      return HistogramFieldDetectorBase::getFieldPercept();
-    }
-  };
 };//end class HistogramFieldDetector
 
 

@@ -15,8 +15,7 @@ HistogramFieldDetector::HistogramFieldDetector()
   fieldColor = ColorClasses::green;
   lineColor = ColorClasses::white;
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:TopCam:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:BottomCam:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
 
   getFieldPercept().setDimension(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
   getFieldPerceptTop().setDimension(Vector2<int>(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
@@ -25,6 +24,7 @@ HistogramFieldDetector::HistogramFieldDetector()
 void HistogramFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  CANVAS_PX(id);
   getFieldPercept().reset();
   largestAreaRectangle.clear();
 
@@ -41,33 +41,16 @@ void HistogramFieldDetector::execute(CameraInfo::CameraID id)
   {
     getFieldPercept().setValid(true);
   }
-  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:TopCam:mark_rectangle",
-    if(cameraID == CameraInfo::Top)
-    {
-      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        TOP_RECT_PX
-        (
-            color,
-            getFieldPercept().getLargestValidRect().points[0].x,
-            getFieldPercept().getLargestValidRect().points[0].y,
-            getFieldPercept().getLargestValidRect().points[2].x,
-            getFieldPercept().getLargestValidRect().points[2].y
-        );
-    }
-  );
-  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:BottomCam:mark_rectangle",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-        RECT_PX
-        (
-            color,
-            getFieldPercept().getLargestValidRect().points[0].x,
-            getFieldPercept().getLargestValidRect().points[0].y,
-            getFieldPercept().getLargestValidRect().points[2].x,
-            getFieldPercept().getLargestValidRect().points[2].y
-        );
-    }
+  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
+    ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+      RECT_PX
+      (
+          color,
+          getFieldPercept().getLargestValidRect().points[0].x,
+          getFieldPercept().getLargestValidRect().points[0].y,
+          getFieldPercept().getLargestValidRect().points[2].x,
+          getFieldPercept().getLargestValidRect().points[2].y
+      );
   );
 }//end execute
 

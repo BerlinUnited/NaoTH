@@ -105,24 +105,16 @@ void SpiderScan::setMaxNumberOfScans(unsigned int maxScans)
 void SpiderScan::init()
 {
   drawScanLines = false;
-  drawScanLinesTop = false;
   max_length_of_beam = 30; //maximum length of the scan line
   currentColorSimThreshold = 8; //...
   maxColorPointsToSkip = 12; // maximum number of non search color ...
   maxNumberOfScans = 15; //maximum number of scanlines ...
-
 }
 
 void SpiderScan::setDrawScanLines(bool draw)
 {
   drawScanLines = draw;
 }
-
-void SpiderScan::setDrawScanLinesTop(bool draw)
-{
-  drawScanLinesTop = draw;
-}
-
 
 void SpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints)
 {
@@ -282,6 +274,7 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
 
     if(drawScanLines)
     {
+      CANVAS_PX(theImage.cameraInfo.cameraID);
       if(hasColor)
       {
         if(currentPixelColor == ColorClasses::none)
@@ -296,24 +289,6 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
       else
       {
         POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-      }
-    }
-    if(drawScanLinesTop)
-    {
-      if(hasColor)
-      {
-        if(currentPixelColor == ColorClasses::none)
-        {
-          TOP_POINT_PX(ColorClasses::orange, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-        }
-        else
-        {
-          TOP_POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-        }
-      }
-      else
-      {
-        TOP_POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
 

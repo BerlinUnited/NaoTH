@@ -46,7 +46,6 @@
 BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-//  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
   REQUIRE(CurrentCameraSettings)
@@ -124,19 +123,13 @@ private:
       return getCurrentCameraSettings();
     }
   }
-  inline const ColorClassificationModel& getColorTable64() const {
-    if(cameraID == CameraInfo::Top) {
-      return getColorClassificationModelTop();
-    } else { 
-      return getColorClassificationModel();
-    }
-  }
 
   DOUBLE_CAM_REQUIRE(LineDetector,Image);
+  DOUBLE_CAM_REQUIRE(LineDetector,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(LineDetector,ColorClassificationModel);
   DOUBLE_CAM_REQUIRE(LineDetector,CameraMatrix);
   DOUBLE_CAM_REQUIRE(LineDetector,ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(LineDetector,FieldPercept);
-  DOUBLE_CAM_REQUIRE(LineDetector,ColoredGrid);
   DOUBLE_CAM_REQUIRE(LineDetector,ScanLineEdgelPercept);
   
   DOUBLE_CAM_PROVIDE(LineDetector,LinePercept);

@@ -644,6 +644,7 @@ void FieldColorClassifierFull::runDebugRequests()
   );
 
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:TopCam:set_in_image",
+    CANVAS_PX_TOP;
     int imageWidth = getImageTop().cameraInfo.resolutionWidth;
     int imageHeight = getImageTop().cameraInfo.resolutionHeight;
     for(int x = 0; x < imageWidth; x++)
@@ -656,12 +657,13 @@ void FieldColorClassifierFull::runDebugRequests()
           getFieldColorPerceptTop().isFieldColor(pixel)
         )
         {
-          TOP_POINT_PX(ColorClasses::green, x, y);
+          POINT_PX(ColorClasses::green, x, y);
         }
       }
     }
   );
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:BottomCam:set_in_image",
+    CANVAS_PX_BOTTOM;
     int imageWidth = getImage().cameraInfo.resolutionWidth;
     int imageHeight = getImage().cameraInfo.resolutionHeight;
     for(int x = 0; x < imageWidth; x++)

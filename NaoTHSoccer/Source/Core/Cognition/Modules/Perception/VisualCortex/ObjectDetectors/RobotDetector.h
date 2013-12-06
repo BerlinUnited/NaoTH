@@ -24,6 +24,7 @@
 #include "Tools/Math/Polygon.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Moments2.h"
+#include "Tools/DoubleCamHelpers.h"
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
@@ -44,24 +45,20 @@
 
 BEGIN_DECLARE_MODULE(RobotDetector)
   REQUIRE(Image)
-//  REQUIRE(ColorTable64)
-  REQUIRE(ColorClassificationModel)
+  REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(FieldPercept) 
+  REQUIRE(FieldPerceptTop) 
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
+  REQUIRE(ColorClassificationModel)
+  REQUIRE(ColorClassificationModelTop)
   REQUIRE(FieldInfo)
 
   PROVIDE(PlayersPercept)
+  PROVIDE(PlayersPerceptTop)
 END_DECLARE_MODULE(RobotDetector)
-
-//Constraints definition section:
-//Please, don't change this parameters,
-//if you don't know what they mean
-#define MAX_MARKER_NUMBER 20
-#define MARKER_MIN_SIZE 30
-#define BLOB_MIN_MOMENT 3
-#define ABOVE_WHITE_RATIO 0.5f
-#define GREEN_GROUND_RATIO 0.8f
 
 class RobotDetector: public RobotDetectorBase
 {
@@ -70,12 +67,68 @@ public:
   RobotDetector();
   // default destructor
   virtual ~RobotDetector(){};
-  virtual void execute();
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+
+    //// reset the debug drawing canvas to bottom
+    //CANVAS_PX_BOTTOM;
+  }
+
+  void execute(const CameraInfo::CameraID id);
+
 protected:
 private:
-  double BELOW_WHITE_RATIO;
 
+  // id of the camera the module is curently running on
+  CameraInfo::CameraID cameraID;
 
+  DOUBLE_CAM_REQUIRE(RobotDetector,Image);
+  DOUBLE_CAM_REQUIRE(RobotDetector,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(RobotDetector,FieldPercept);
+  //DOUBLE_CAM_REQUIRE(RobotDetector,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(RobotDetector,ColorClassificationModel);
+
+  DOUBLE_CAM_PROVIDE(RobotDetector,PlayersPercept);
+
+  class Parameters: public ParameterList
+  {
+  public:
+
+    Parameters() : ParameterList("RobotDetectorParameters")
+    {
+      //Constraints definition section:
+      //Please, don't change this parameters,
+      //if you don't know what they mean
+      PARAMETER_REGISTER(maxScanPointsToSkip) = 4;
+      PARAMETER_REGISTER(maxMarkerNumber) = 20;
+      PARAMETER_REGISTER(markerMinSize) = 30;
+      PARAMETER_REGISTER(blobMinMoment) = 3;
+      PARAMETER_REGISTER(aboveWhiteRatio) = 0.5;
+      PARAMETER_REGISTER(belowWhiteRatio) = 0.5;
+      PARAMETER_REGISTER(greenGroundRatio) = 0.5;
+
+      syncWithConfig();
+
+      DebugParameterList::getInstance().add(this);
+    }
+
+    ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    int maxScanPointsToSkip;
+    int maxMarkerNumber;
+    int markerMinSize;
+    int blobMinMoment;
+    double aboveWhiteRatio;
+    double belowWhiteRatio;
+    double greenGroundRatio;
+  };
+
+  Parameters params;
   //variables
   bool redColors[ColorClasses::numOfColors];
   bool blueColors[ColorClasses::numOfColors];
@@ -83,7 +136,8 @@ private:
   BlobList blueBlobs;
   BlobList blobs;
   BlobFinder theBlobFinder;
-  ColoredGrid coloredGrid;
+  BlobFinder theBlobFinderTop;
+  //ColoredGrid coloredGrid;
   WholeArea searchArea;
   //define Marker class
   class Marker
@@ -142,6 +196,8 @@ private:
   {
     return getColorClassificationModel();
   }
+
+
 };
 
 #endif // RobotDetector_h_

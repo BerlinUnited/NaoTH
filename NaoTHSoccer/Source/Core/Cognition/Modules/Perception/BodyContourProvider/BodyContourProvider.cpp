@@ -98,16 +98,15 @@ BodyContourProvider::BodyContourProvider()
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_shoulders", "draws 3D body contour of the shoulders", false);
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_forearms", "draws 3D body contour of the forearms", false);
 
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_body_contour_lines", "draws body contour on the image based on lines", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_body_contour_lines", "draws body contour on the image based on lines", false);
-
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_activated_cells", "draws activated cells", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_activated_cells", "draws activated cells", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_body_contour_lines", "draws body contour on the image based on lines", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_activated_cells", "draws activated cells", false);
 }
 
 void BodyContourProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  CANVAS_PX(id);
+
   getBodyContour().lines.clear();
   eraseGrid();
   getBodyContour().grid.resize(getBodyContour().xDensity);
@@ -131,29 +130,14 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
   add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmLeft);
   add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmRight);
     
-  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_body_contour_lines",
-    if(cameraID == CameraInfo::Top)
+  DEBUG_REQUEST("BodyContourProvider:draw_body_contour_lines",
+    if (getBodyContour().lines.size() >= 2)
     {
-      if (getBodyContour().lines.size() >= 2)
+      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
       {
-        for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
-        {
-          TOP_LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
-        }// end for
-      }// end if
-    }
-  );
-  DEBUG_REQUEST("BodyContourProvider:BottomCam:draw_body_contour_lines",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      if (getBodyContour().lines.size() >= 2)
-      {
-        for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
-        {
-          LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
-        }// end for
-      }// end if
-    }
+        LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
+      }// end for
+    }// end if
   );
 
   DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_feet",
@@ -235,33 +219,15 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
       lla1 = lla2;
     }// end for
   );
-  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Top)
+  DEBUG_REQUEST("BodyContourProvider:draw_activated_cells",
+    for(int i = 0; i < getBodyContour().xDensity; i++)
     {
-      for(int i = 0; i < getBodyContour().xDensity; i++)
+      for (int j = 0; j < getBodyContour().yDensity; j++)
       {
-        for (int j = 0; j < getBodyContour().yDensity; j++)
+        if (getBodyContour().grid[i][j].occupied)
         {
-          if (getBodyContour().grid[i][j].occupied)
-          {
-              TOP_RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
-          }
-        }
-      }
-    }
-  );
-  DEBUG_REQUEST("BodyContourProvider:BottomCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      for(int i = 0; i < getBodyContour().xDensity; i++)
-      {
-        for (int j = 0; j < getBodyContour().yDensity; j++)
-        {
-          if (getBodyContour().grid[i][j].occupied)
-          {
-              IMAGE_DRAWING_CONTEXT;
-              RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
-          }
+            IMAGE_DRAWING_CONTEXT;
+            RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
         }
       }
     }

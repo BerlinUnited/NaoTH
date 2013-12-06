@@ -7,25 +7,15 @@
 
 #include "ImageProcessor.h"
 
-// Debug
-
-// Tools
-
 ImageProcessor::ImageProcessor()
 {
+  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_horizon", "draws the artificial horizon", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_horizon", "draws the artificial horizon", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_horizon", "draws the artificial horizon", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_on_field", "draw the projection of the ball on the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_in_image", "draw ball in the image if found", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_ball_on_field", "draw the projection of the ball on the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_ball_on_field", "draw the projection of the ball on the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:draw_ball_in_image", "draw ball in the image if found", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:draw_ball_in_image", "draw ball in the image if found", false);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamTop:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:CamBottom:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
@@ -182,13 +172,16 @@ void ImageProcessor::execute()
 
 
   //draw horizon to image
-  DEBUG_REQUEST("ImageProcessor:CamTop:draw_horizon",
+  DEBUG_REQUEST("ImageProcessor:draw_horizon",
+    CANVAS_PX_TOP;
     Vector2d a(getArtificialHorizonTop().begin());
     Vector2d b(getArtificialHorizonTop().end());
-    TOP_LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 
-  DEBUG_REQUEST("ImageProcessor:CamBottom:draw_horizon",
+  DEBUG_REQUEST("ImageProcessor:draw_horizon",
+
+    CANVAS_PX_BOTTOM;
     Vector2d a(getArtificialHorizon().begin());
     Vector2d b(getArtificialHorizon().end());
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
@@ -196,9 +189,10 @@ void ImageProcessor::execute()
 
   DEBUG_REQUEST("ImageProcessor:classify_ball_color",
     // color experiment
-    for(unsigned char x = 0; x < getImage().cameraInfo.resolutionWidth; x++)
+    CANVAS_PX_BOTTOM;
+    for(unsigned int x = 0; x < getImage().width(); x++)
     {
-      for(unsigned char y = 0; y < getImage().cameraInfo.resolutionHeight; y++)
+      for(unsigned int y = 0; y < getImage().height(); y++)
       {
         Pixel pixel = getImage().get(x,y);
 
@@ -213,7 +207,7 @@ void ImageProcessor::execute()
           POINT_PX(pixel.y,pixel.u,pixel.v,x,y);
         else*/
           //naoth::ImageDrawings::drawPointToImage(DebugBottomImageDrawings::getInstance(),x,y,t,0,0);
-          POINT_PX( (unsigned char) x, (unsigned char) y, t, 0, 0);
+          POINT_PX(x, y, t, 0, 0);
 
       }//end for
     }//end for

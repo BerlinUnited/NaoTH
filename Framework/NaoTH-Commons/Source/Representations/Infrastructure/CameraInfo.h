@@ -98,7 +98,7 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
 
-    std::string getCameraIDName(CameraID id)
+    std::string getCameraIDName(CameraID id) const
     {
       switch(id)
       {

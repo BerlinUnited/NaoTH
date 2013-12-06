@@ -104,6 +104,12 @@ public:
   }
 };
 
+class PlayersPerceptTop : public PlayersPercept
+{
+public:
+  virtual ~PlayersPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -112,6 +118,11 @@ namespace naoth
   public:
     static void serialize(const PlayersPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, PlayersPercept& representation);
+  };
+
+  template<>
+  class Serializer<PlayersPerceptTop> : public Serializer<PlayersPercept>
+  {
   };
 }
 

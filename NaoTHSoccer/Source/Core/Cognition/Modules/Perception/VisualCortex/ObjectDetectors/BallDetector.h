@@ -47,7 +47,6 @@ BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(ImageTop)
   REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
-//  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
   REQUIRE(CameraMatrix)
@@ -62,7 +61,6 @@ BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   REQUIRE(FrameInfo)
-//  REQUIRE(BlobPercept)
   REQUIRE(FieldInfo)
 
   PROVIDE(BallPercept)
@@ -107,16 +105,10 @@ private:
   inline BlobFinder& getBlobFinder() {
     return (cameraID == CameraInfo::Top)?theBlobFinderTop:theBlobFinder;
   }
-  inline const ColorClassificationModel& getColorTable64() const {
-    if(cameraID == CameraInfo::Top) {
-      return getColorClassificationModelTop();
-    } else { 
-      return getColorClassificationModel();
-    }
-  }
 
   DOUBLE_CAM_REQUIRE(BallDetector,Image);
   DOUBLE_CAM_REQUIRE(BallDetector,ColoredGrid);
+  DOUBLE_CAM_REQUIRE(BallDetector,ColorClassificationModel);
   DOUBLE_CAM_REQUIRE(BallDetector,CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallDetector,CameraInfo);
   DOUBLE_CAM_REQUIRE(BallDetector,ArtificialHorizon);

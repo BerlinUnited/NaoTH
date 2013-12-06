@@ -49,7 +49,6 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-
   // double cam interface
   DOUBLE_CAM_REQUIRE(FieldDetector,CameraMatrix);
   DOUBLE_CAM_REQUIRE(FieldDetector,Image);
@@ -57,7 +56,6 @@ private:
   DOUBLE_CAM_REQUIRE(FieldDetector,ScanLineEdgelPercept);
 
   DOUBLE_CAM_PROVIDE(FieldDetector,FieldPercept);
-
 };
 
 #endif  /* __FieldDetector_H_ */
