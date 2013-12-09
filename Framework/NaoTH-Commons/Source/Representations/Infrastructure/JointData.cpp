@@ -261,16 +261,13 @@ void Serializer<SensorJointData>::serialize(const SensorJointData& representatio
   
   for(int i=0; i < JointData::numOfJoint; i++)
   {
+    message.add_electriccurrent(representation.electricCurrent[i]);
+    message.add_temperature(representation.temperature[i]);
+
     message.mutable_jointdata()->add_position(representation.position[i]);
     message.mutable_jointdata()->add_stiffness(representation.stiffness[i]);
     message.mutable_jointdata()->add_dp(representation.dp[i]);
     message.mutable_jointdata()->add_ddp(representation.ddp[i]);
-  }
-  
-  for(int i=0; i < JointData::numOfJoint; i++)
-  {
-    message.add_electriccurrent(representation.electricCurrent[i]);
-    message.add_temperature(representation.temperature[i]);
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -283,30 +280,23 @@ void Serializer<SensorJointData>::deserialize(std::istream& stream, SensorJointD
   google::protobuf::io::IstreamInputStream buf(&stream);
   message.ParseFromZeroCopyStream(&buf);
 
-  for (int i = 0; i < JointData::numOfJoint && i < message.electriccurrent_size(); i++)
+  // assure the integrity of the message
+  ASSERT(message.electriccurrent().size() == JointData::numOfJoint);
+  ASSERT(message.temperature().size() == JointData::numOfJoint);
+
+  ASSERT(message.jointdata().position().size() == JointData::numOfJoint);
+  ASSERT(message.jointdata().stiffness().size() == JointData::numOfJoint);
+  ASSERT(message.jointdata().dp().size() == JointData::numOfJoint);
+  ASSERT(message.jointdata().ddp().size() == JointData::numOfJoint);
+
+  for (int i = 0; i < JointData::numOfJoint; i++)
   {
     representation.electricCurrent[i] = message.electriccurrent(i);
-  }
-
-  for (int i = 0; i < JointData::numOfJoint && i < message.temperature_size(); i++)
-  {
     representation.temperature[i] = message.temperature(i);
-  }
-
-  for(int i=0; i < message.jointdata().position().size() && i < JointData::numOfJoint; i++)
-  {
+    // joint data
     representation.position[i] = message.jointdata().position(i);
-  }
-  for(int i=0; i < message.jointdata().stiffness().size() && i < JointData::numOfJoint; i++)
-  {
     representation.stiffness[i] = message.jointdata().stiffness(i);
-  }
-  for(int i=0; i < message.jointdata().dp().size() && i < JointData::numOfJoint; i++)
-  {
     representation.dp[i] = message.jointdata().dp(i);
-  }
-  for(int i=0; i < message.jointdata().ddp().size() && i < JointData::numOfJoint; i++)
-  {
     representation.ddp[i] = message.jointdata().ddp(i);
   }
 }
@@ -334,20 +324,17 @@ void Serializer<MotorJointData>::deserialize(std::istream& stream, MotorJointDat
   google::protobuf::io::IstreamInputStream buf(&stream);
   message.ParseFromZeroCopyStream(&buf);
 
-  for(int i=0; i < message.position().size() && i < JointData::numOfJoint; i++)
+  // assure the integrity of the message
+  ASSERT(message.position().size() == JointData::numOfJoint);
+  ASSERT(message.stiffness().size() == JointData::numOfJoint);
+  ASSERT(message.dp().size() == JointData::numOfJoint);
+  ASSERT(message.ddp().size() == JointData::numOfJoint);
+
+  for(int i=0; i < JointData::numOfJoint; i++)
   {
     representation.position[i] = message.position(i);
-  }
-  for(int i=0; i < message.stiffness().size() && i < JointData::numOfJoint; i++)
-  {
     representation.stiffness[i] = message.stiffness(i);
-  }
-  for(int i=0; i < message.dp().size() && i < JointData::numOfJoint; i++)
-  {
     representation.dp[i] = message.dp(i);
-  }
-  for(int i=0; i < message.ddp().size() && i < JointData::numOfJoint; i++)
-  {
     representation.ddp[i] = message.ddp(i);
   }
 }

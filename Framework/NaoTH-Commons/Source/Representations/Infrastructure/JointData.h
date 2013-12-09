@@ -106,7 +106,6 @@ class JointData
     unsigned int timestamp;
 
     virtual void print(std::ostream& stream) const;
-
   };
 
   class MotorJointData : public JointData, public Printable
