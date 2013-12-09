@@ -22,7 +22,7 @@ namespace naoth
   {
   public:
 
-    Vector2<double> data;
+    Vector2d data;
 
     virtual void print(std::ostream& stream) const;
 

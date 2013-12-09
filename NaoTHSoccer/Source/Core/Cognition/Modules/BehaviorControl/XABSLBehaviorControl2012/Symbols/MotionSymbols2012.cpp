@@ -179,10 +179,10 @@ void MotionSymbols2012::execute()
   double curHeadYaw   = sensorJointData.position[JointData::HeadYaw];
   double curTime      = frameInfo.getTimeInSeconds();
 
-  if(headMotionBuffer.getNumberOfEntries() > 0)
+  if(headMotionBuffer.size() > 0)
   {
     //pick randomly one percept out of the buffer, the current information are not yet added to the buffer
-    int idx = Math::random(headMotionBuffer.getNumberOfEntries());
+    int idx = Math::random(headMotionBuffer.size());
 
     double timeDelta = curTime - headMotionBuffer.getEntry(idx).time;
     ASSERT(timeDelta > 0);

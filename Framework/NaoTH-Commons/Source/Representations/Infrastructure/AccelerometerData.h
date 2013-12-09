@@ -23,7 +23,7 @@ namespace naoth
     Vector3<double> data;
 
     // raw data read from sensors
-    Vector3<double> rawData;
+    Vector3d rawData;
 
 
     AccelerometerData();

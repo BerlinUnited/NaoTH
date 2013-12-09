@@ -150,6 +150,12 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   {
     super.paintComponent(g);
     Graphics2D g2d = (Graphics2D) g;
+    paintDrawings(g2d, offsetX, offsetY, rotation, scale);
+  }//end paintComponent
+  
+  
+  public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
+  {
     if (this.antializing)
     {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -159,30 +165,30 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     }
 
     // transform the coordinate system to the mathematical one ;)
-    g2d.translate(offsetX, offsetY);
+    g2d.translate(x, y);
     if(mirrorXAxis) {
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     }
-    g2d.rotate(rotation);
-    g2d.scale(scale, scale);
+    g2d.rotate(r);
+    g2d.scale(s, s);
 
     for (Drawable object : drawingList) {
       object.draw(g2d);
     }
     
     // transform the drawing-pane back (nessesary to draw the other components corect)
-    g2d.scale(1.0/scale, 1.0/scale);
-    g2d.rotate(-rotation);
+    g2d.scale(1.0/s, 1.0/s);
+    g2d.rotate(-r);
     if(mirrorXAxis) {
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     }
-    g2d.translate(-offsetX, -offsetY);
+    g2d.translate(-x, -y);
     
     
     if(this.showCoordinates) {
         drawCoordinateSystem(g2d, this.getSize().width-30, this.getSize().height-30);
     }
-  }//end paintComponent
+  }
   
   void drawCoordinateSystem(Graphics2D g2d, int x, int y)
   {

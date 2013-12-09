@@ -16,20 +16,16 @@ using namespace naoth;
 using namespace std;
 
 Image::Image()
-:
-yuv422(NULL),
-timestamp(0),
-currentBuffer(0),
-bufferCount(0),
-bufferFailedCount(0),
-wrongBufferSizeCount(0),
-meanBrightness(0.0),
-possibleImageStuck(false),
-selfCreatedImage(false)
+  :
+  yuv422(NULL),
+  timestamp(0),
+  currentBuffer(0),
+  bufferCount(0),
+  wrongBufferSizeCount(0),
+  selfCreatedImage(false)
 {
   yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 //copy constructor
@@ -45,7 +41,6 @@ cameraInfo(orig.cameraInfo)
   
   std::memcpy(yuv422, orig.yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 Image& Image::operator=(const Image& orig)
@@ -58,7 +53,6 @@ Image& Image::operator=(const Image& orig)
   yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
   std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.getSize());
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 
   return *this;
 }
@@ -84,7 +78,7 @@ void Image::setCameraInfo(const CameraInfo& ci)
   cameraInfo = ci;
 }
 
-void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
+void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int size)
 {
 //  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   ASSERT(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
@@ -97,7 +91,7 @@ void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
   selfCreatedImage = false;
 }
 
-void Image::copyImageDataYUV422(unsigned char* data, const unsigned int& size)
+void Image::copyImageDataYUV422(unsigned char* data, const unsigned int size)
 {
 //  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
   if(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL)
@@ -120,9 +114,7 @@ void Image::print(ostream& stream) const
 {
   stream  << "Timestamp: " << timestamp << endl
           << "Image Buffer: "<< currentBuffer << " / " << bufferCount << endl
-          << "Buffer Switching Fail Count: "<< bufferFailedCount << endl
           << "Wrong Buffer Size Count: "<< wrongBufferSizeCount << endl
-          << "Image stucked" << ((possibleImageStuck) ? "true"  : "false") << endl
           << "Camera Info:"<< endl
           << "============"<< endl
           << cameraInfo << endl
@@ -182,7 +174,6 @@ void Image::fromDataStream(istream& stream)
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
     setCameraInfo(newCameraInfo);
-    shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
     const char* data = img.data().c_str();
 
@@ -213,24 +204,11 @@ void Image::fromDataStream(istream& stream)
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
     setCameraInfo(newCameraInfo);
-    shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
     memcpy(yuv422, img.data().c_str(), img.data().size());
   }
   
 }//end fromDataStream
-
-void Image::drawPoint
-(
-  const unsigned int& x,
-  const unsigned int& y,
-  const unsigned char& a,
-  const unsigned char& b,
-  const unsigned char& c
-)
-{
-  set(x,y, a, b, c);
-}//end drawPoint
                        
 
 void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
@@ -301,8 +279,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   // "native" YUV422 data
   else if(img.format() == naothmessages::Image_Format_YUV422)
   {
-    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height)
-    {
+    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height) {
       return;
     }
 

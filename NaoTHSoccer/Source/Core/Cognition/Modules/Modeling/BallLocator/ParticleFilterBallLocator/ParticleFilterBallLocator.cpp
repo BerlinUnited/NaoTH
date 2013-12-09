@@ -141,10 +141,10 @@ ParticleFilterBallLocator::Sample ParticleFilterBallLocator::generateNewSample()
 {
   Sample newSample;
   
-  if(perceptBuffer.getNumberOfEntries() > 1)
+  if(perceptBuffer.size() > 1)
   {
-    int a = Math::random((int)(perceptBuffer.getNumberOfEntries()));
-    int b = Math::random((int)(perceptBuffer.getNumberOfEntries()));
+    int a = Math::random((int)(perceptBuffer.size()));
+    int b = Math::random((int)(perceptBuffer.size()));
     // a and b must be different, of course:
     if(a == b)
     {
@@ -193,7 +193,7 @@ void ParticleFilterBallLocator::motionUpdate(SampleSet& sampleSet, bool noise)
 
 
   // update the buffer by odometry
-  for (int i = 0; i < perceptBuffer.getNumberOfEntries(); i++) 
+  for (int i = 0; i < perceptBuffer.size(); i++) 
   {
     BallPercept& ball = perceptBuffer[i];
     ball.bearingBasedOffsetOnField = odometryDelta*ball.bearingBasedOffsetOnField;

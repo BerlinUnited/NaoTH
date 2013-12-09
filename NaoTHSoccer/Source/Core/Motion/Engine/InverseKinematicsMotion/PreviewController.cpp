@@ -57,7 +57,7 @@ void PreviewController::loadParameter()
   path += "platform/";
   path += naoth::Platform::getInstance().thePlatform;
   path += "/previewControl.prm";
-  cout << "PreviewController load " << path << endl;
+  std::cout << "[PreviewController] load " << path << endl;
     
   // open the stream
   ifstream ifs(path.c_str());

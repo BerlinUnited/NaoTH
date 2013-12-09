@@ -288,6 +288,7 @@ public class ThreeDimensionViewer extends AbstractDialog
       Plugin.imageManager.removeListener(imageListener);
       Plugin.imageTopManager.removeListener(imageListenerTop);
       image = null;
+      imageTop = null;
     }
   }//GEN-LAST:event_jCheckBoxImageActionPerformed
 
@@ -344,7 +345,6 @@ public class ThreeDimensionViewer extends AbstractDialog
       {
         jCheckBoxImage.setSelected(false);
         ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
-        ThreeDimensionViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
         image = null;
         Helper.handleException(cause, null);
       }
@@ -363,9 +363,8 @@ public class ThreeDimensionViewer extends AbstractDialog
       public void errorOccured(String cause)
       {
         jCheckBoxImage.setSelected(false);
-        ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
         ThreeDimensionViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
-        image = null;
+        imageTop = null;
         Helper.handleException(cause, null);
       }
     };

@@ -68,7 +68,7 @@ void DebugBufferedOutput::executeDebugCommand(
       plotMsg->set_name(iter->first);
 
       const RingBuffer<Vector2<double>, maxPlotStrokes>& plotBuffer = iter->second;
-      for(int i = plotBuffer.getNumberOfEntries()-1; i >= 0; i--)
+      for(int i = plotBuffer.size()-1; i >= 0; i--)
       {
         naothmessages::DoubleVector2* point = plotMsg->add_points();
         point->set_x(plotBuffer[i].x);

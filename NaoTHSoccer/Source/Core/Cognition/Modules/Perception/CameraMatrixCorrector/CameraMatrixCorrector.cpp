@@ -89,14 +89,6 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
        .rotateX(getCameraMatrixOffset().offset.x);
   */
 
-
-  DEBUG_REQUEST("3DViewer:Robot:Camera",
-    const CameraInfo& ci = getCameraInfoParameter();
-      DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
-      DebugDrawings3D::getInstance().addCamera(getCameraMatrixTop(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
-  );
-
-
 }//end execute
 
 

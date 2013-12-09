@@ -61,11 +61,11 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent")) {
     agentName = naoth::Platform::getInstance().theConfiguration.getString("agent", "agent");
   } else {
-    std::cerr << "could not load \"Config/behavior/agent.cfg\", defaulting to \"Soccer\" agent" << std::endl;
+    std::cerr << "[XABSLBehaviorControl] ERROR: could not load \"Config/behavior/agent.cfg\"" << std::endl;
   }
 
   const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
-  reloadBehaviorFromFile(behaviorPath, agentName);
+  loadBehaviorFromFile(behaviorPath, agentName);
 
 }//end constructor
 
@@ -75,7 +75,7 @@ XABSLBehaviorControl::~XABSLBehaviorControl()
 }//end XABSLBehaviorControl
 
 
-void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string agent)
+void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string agent)
 {
   // clear old status
   getBehaviorStatus().status.Clear();
@@ -103,8 +103,10 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
  
   // set the currently active agent
   agentName = agent;
-  std::cout << "loading agent \"" << agentName << "\" for behavior" << std::endl;
-  theEngine->setSelectedAgent(agentName.c_str());
+  if(!theEngine->setSelectedAgent(agentName.c_str())) {
+    std::cerr << "[XABSLBehaviorControl] ERROR: could not set the agent \"" << agentName << "\" for behavior " << std::endl;
+  }
+  std::cout << "[XABSLBehaviorControl] current agent is set to \"" << theEngine->getSelectedAgentName() << "\"" << std::endl;
 }//end reloadBehaviorFromFile
 
 
@@ -233,7 +235,7 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(StrategySymbols);
     XABSL_REGISTER_SYMBOLS(SoundSymbols);
     XABSL_REGISTER_SYMBOLS(LineSymbols);
-  }//end if
+  }
 }//end registerXABSLSymbols
 
 
@@ -248,7 +250,7 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theMotionSymbols->execute();
     theLineSymbols->execute();
     theStrategySymbols->execute();
-  }//end if
+  }
 }//end updateXABSLSymbols
 
 void XABSLBehaviorControl::updateOutputSymbols()
@@ -293,7 +295,7 @@ void XABSLBehaviorControl::executeDebugCommand(
   {
     // restart the behavior
     const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
-    reloadBehaviorFromFile(behaviorPath, agentName);
+    loadBehaviorFromFile(behaviorPath, agentName);
     
     if(theErrorHandler.errorsOccurred)
       outstream << error_stream.str();

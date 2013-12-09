@@ -582,7 +582,7 @@ void Simulator::parseFile()
 
     if(currentSize == 0 && currentName.size() == 0)
     {
-      cerr << endl << "Illegal end of file."<< endl << endl;
+      cerr << endl << "[LogSimulator] Illegal end of file."<< endl << endl;
       break;
     }//end if
 

@@ -10,6 +10,13 @@
 #include <map>
 #include <string>
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
+
 namespace naoth
 {
 
@@ -23,7 +30,7 @@ public:
 
   virtual ~MessageQueueHandler()
   {
-    std::cout << "destruct MessageQueueHandler" << std::endl;
+    PRINT_DEBUG("destruct MessageQueueHandler");
 
     for(MessageQueueMapT::iterator iter = theMessageQueueMap.begin(); iter!=theMessageQueueMap.end(); ++iter)
     {

@@ -43,7 +43,7 @@ LineSymbols2012* LineSymbols2012::theInstance = NULL;
 void LineSymbols2012::execute()
 {
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-  for(int i = 0; i < linePointsBuffer.getNumberOfEntries(); i++)
+  for(int i = 0; i < linePointsBuffer.size(); i++)
   {
     linePointsBuffer[i] = odometryDelta*linePointsBuffer[i];
   }
@@ -53,15 +53,19 @@ void LineSymbols2012::execute()
     linePointsBuffer.add(linePercept.estOrthPointOfClosestLine);
   }
 
-  if(linePointsBuffer.getNumberOfEntries() > 0)
+  if(linePointsBuffer.size() > 0)
   {
-    linePointsBufferMean = linePointsBuffer.getAverage();
+    linePointsBufferMean = Vector2d();
+    for(int i = 0; i < linePointsBuffer.size(); i++) {
+      linePointsBufferMean += linePointsBuffer[i];
+    }
+    linePointsBufferMean /= linePointsBuffer.size();
   }
 
   lastRobotOdometry = getOdometryData();
 
   DEBUG_REQUEST("LineSymbols2012:linePointsBuffer",
-    for(int i = 0; i < linePointsBuffer.getNumberOfEntries(); i++)
+    for(int i = 0; i < linePointsBuffer.size(); i++)
     {
       FIELD_DRAWING_CONTEXT;
       PEN("FF0000", 1);

@@ -90,7 +90,7 @@ public:
 
   virtual void execute();
 
-  void reloadBehaviorFromFile(std::string file, std::string agent);
+  void loadBehaviorFromFile(std::string file, std::string agent);
 
   virtual void executeDebugCommand(
     const std::string& command, 

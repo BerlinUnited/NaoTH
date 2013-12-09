@@ -76,7 +76,7 @@ public:
     numOfClusters = 0;
     largestCluster = -1;
 
-    for (unsigned int j = 0; j < sampleSet.size(); j++)
+    for (size_t j = 0; j < (size_t)sampleSet.size(); j++)
     {
       Sample2D& sample = sampleSet[j];
       sample.cluster = -1; // no cluster
@@ -141,7 +141,7 @@ public:
             largestCluster = (int)k;
           
           // TODO: make it more effivient
-          for (unsigned int i = 0; i < sampleSet.size(); i++)
+          for (size_t i = 0; i < (size_t)sampleSet.size(); i++)
           {
             if(sampleSet[i].cluster == (int)j) {
               sampleSet[i].cluster = (int)k;

@@ -97,7 +97,7 @@ public:
   {
     if(outFile.is_open())
     {
-      int length = dataBuffer.getNumberOfEntries();
+      int length = dataBuffer.size();
       for (int i = length - 1; i >= 0; i--)
       {
         LogfileEntry& e = dataBuffer.getEntry(i);

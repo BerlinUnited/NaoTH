@@ -25,9 +25,9 @@ namespace naoth
     // the GyrRef provided by the robot (what is it for?)
     double ref;
     // raw data as provided by the sensors
-    Vector2<double> rawData;
+    Vector2d rawData;
     // rawData scaled to radian/s
-    Vector2<double> data;
+    Vector2d data;
 
     virtual void print(std::ostream& stream) const;
   };

@@ -16,7 +16,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/OdometryData.h"
 
-#include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/DataStructures/RingBuffer.h"
 
 BEGIN_DECLARE_MODULE(LineSymbols2012)
   REQUIRE(LinePercept)
@@ -57,8 +57,8 @@ private:
 
 
   // small filter for the line points
-  RingBufferWithSum<Vector2<double>, 10> linePointsBuffer;
-  Vector2<double> linePointsBufferMean;
+  RingBuffer<Vector2d, 10> linePointsBuffer;
+  Vector2d linePointsBufferMean;
   Pose2D lastRobotOdometry;
 
 };//end class LineSymbols2012
