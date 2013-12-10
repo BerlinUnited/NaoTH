@@ -16,7 +16,7 @@
 #include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
-
+#include "Representations/Infrastructure/CameraInfoConstants.h"
 
 /**
 * @class BodyContour
@@ -191,6 +191,7 @@ public:
   /** Default constructor. */
   BodyContour()
   :   
+    cameraResolution(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT),
     stepSize(1),
     xDensity(1),
     yDensity(1)
