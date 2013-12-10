@@ -23,13 +23,12 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BodyContour.h"
-
+#include <Representations/Perception/FieldColorPercept.h>
 
 #include <Tools/DataStructures/ParameterList.h>
 
@@ -38,8 +37,8 @@
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(ColorClassificationModel)
-  REQUIRE(ColorClassificationModelTop)
+  REQUIRE(FieldColorPercept)
+  REQUIRE(FieldColorPerceptTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
@@ -126,7 +125,7 @@ private:
   double calculateMeanAngle(double angle1, double angle2) const;
 
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, Image);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ColorClassificationModel);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldPercept);

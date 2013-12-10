@@ -9,6 +9,7 @@
 #include "ScanLineEdgelDetectorDifferential.h"
 
 #include "Tools/CameraGeometry.h"
+#include "Tools/Debug/DebugModify.h"
 
 ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 :
@@ -58,7 +59,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     double rad_per_px = getImage().cameraInfo.getOpeningAngleWidth()/getImage().cameraInfo.resolutionWidth;
     double v = g / rad_per_px;
     
-    vertical_confidence[i] = max(0.0,v);
+    vertical_confidence[i] = std::max(0.0,v);
   }//end for
 
   DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:expected_line_width",
@@ -202,7 +203,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
   {
     // get the pixel color
     Pixel pixel = getImage().get(point.x, x_peak);
-    bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+    bool green = getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
     if(green) greenCount++;
     segmentLength++;
 
@@ -315,7 +316,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 
     DEBUG_REQUEST("NeoVision:ScanLineEdgelDetectorDifferential:scanlines",
       Pixel pixel = getImage().get(point.x, point.y);
-      ColorClasses::Color thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
+      ColorClasses::Color thisPixelColor = (getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
       POINT_PX(thisPixelColor, point.x, point.y);
     );
   }//end for
@@ -342,7 +343,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 
   int length = begin.y - end.y;
   int numberOfGreen = 0;
-  const int numberOfSamples = min(length, 20);
+  const int numberOfSamples = std::min(length, 20);
   Vector2<int> point(begin);
   Pixel pixel;
 
@@ -353,7 +354,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
     int k = Math::random(length+1); // number in [0,length]
     point.y = end.y + k;
     getImage().get(point.x, point.y, pixel);
-    numberOfGreen += getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+    numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
     meanY += pixel.y;
   }//end for
 
