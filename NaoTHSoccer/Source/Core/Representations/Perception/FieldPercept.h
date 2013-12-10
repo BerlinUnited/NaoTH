@@ -43,8 +43,9 @@ public:
   bool valid;
 
   FieldPercept()
-    : valid(false), 
-      dimension(2,2)
+  :
+    dimension(2,2),
+    valid(false)
   {
     //be sure the first initiated field is {0,0,0,0} and not {0,0,-1,-1}
     generateDefaultField();
