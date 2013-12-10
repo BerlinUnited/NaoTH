@@ -41,8 +41,8 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CurrentCameraSettingsTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  REQUIRE(FieldPercept)
-  REQUIRE(FieldPerceptTop)
+  REQUIRE(FieldPerceptRaw)
+  REQUIRE(FieldPerceptRawTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   REQUIRE(ArtificialHorizon)
@@ -96,7 +96,7 @@ private:
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,Image);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,ColorClassificationModel);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,CameraMatrix);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,FieldPercept);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,FieldPerceptRaw);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,BodyContour);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector,ArtificialHorizon);
   

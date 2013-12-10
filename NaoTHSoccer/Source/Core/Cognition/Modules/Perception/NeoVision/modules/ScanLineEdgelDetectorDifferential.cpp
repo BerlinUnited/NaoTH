@@ -33,7 +33,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   getScanLineEdgelPercept().reset();
 
   // needs a valid field polygon
-  if(!getFieldPercept().isValid()) {
+  if(!getFieldPerceptRaw().valid) {
     return;
   }
 
@@ -71,7 +71,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   );
 
   // scan only inside the estimated field region
-  Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getArtificialHorizon()).points[0];
+  Vector2<unsigned int> beginField = getFieldPerceptRaw().getValidField().points[0];
 
   // horizontal stepsize between the scanlines
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);

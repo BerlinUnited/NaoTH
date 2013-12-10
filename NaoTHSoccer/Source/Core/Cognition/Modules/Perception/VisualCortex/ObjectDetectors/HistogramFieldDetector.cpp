@@ -17,15 +17,15 @@ HistogramFieldDetector::HistogramFieldDetector()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
 
-  getFieldPercept().setDimension(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
-  getFieldPerceptTop().setDimension(Vector2<int>(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
+  getFieldPerceptRaw().setDimension(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+  getFieldPerceptRawTop().setDimension(Vector2i(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
 }
 
 void HistogramFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(id);
-  getFieldPercept().reset();
+  getFieldPerceptRaw().reset();
   largestAreaRectangle.clear();
 
   Vector2<int> min(0,0);
@@ -33,31 +33,31 @@ void HistogramFieldDetector::execute(CameraInfo::CameraID id)
 
   getFieldRectFromHistogram(min, max);
 
-  getFieldPercept().setRect(largestAreaRectangle, getArtificialHorizon());
+  getFieldPerceptRaw().setField(largestAreaRectangle, getArtificialHorizon());
 
   //if die enclosured area of the polygon/rectangle is lower than 11200 squarepixels the area is to small
   //TODO: this could be an topic of some kind of learning
   if(largestAreaRectangle.getArea() >= 5600)
   {
-    getFieldPercept().setValid(true);
+    getFieldPerceptRaw().valid = true;
   }
   DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
-    ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+    ColorClasses::Color color = getFieldPerceptRaw().valid ? ColorClasses::green : ColorClasses::red;
       RECT_PX
       (
           color,
-          getFieldPercept().getLargestValidRect().points[0].x,
-          getFieldPercept().getLargestValidRect().points[0].y,
-          getFieldPercept().getLargestValidRect().points[2].x,
-          getFieldPercept().getLargestValidRect().points[2].y
+          getFieldPerceptRaw().getValidField().points[0].x,
+          getFieldPerceptRaw().getValidField().points[0].y,
+          getFieldPerceptRaw().getValidField().points[2].x,
+          getFieldPerceptRaw().getValidField().points[2].y
       );
   );
 }//end execute
 
-void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector2<int>& max)
+void HistogramFieldDetector::getFieldRectFromHistogram(Vector2i& min, Vector2i& max)
 {
-  Vector2<int> actMin(-1,-1);
-  Vector2<int> actMax(-1,-1);
+  Vector2i actMin(-1,-1);
+  Vector2i actMax(-1,-1);
   const int minXHistLevel = (int) (getColoredGrid().uniformGrid.width * 0.10);
   const int minYHistLevel = (int) (getColoredGrid().uniformGrid.height * 0.10);
 

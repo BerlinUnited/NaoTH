@@ -66,11 +66,11 @@ void BallDetector::execute(CameraInfo::CameraID id)
   //WholeArea wholeImageArea;
 
   //search only if field is marked as valid
-  if(getFieldPercept().isValid())
+  if(getFieldPercept().valid)
   {
     //getBlobFinder().execute(blobList, connectedColors, wholeImageArea);
     STOPWATCH_START("BallDetector ~ BlobFinder");
-    getBlobFinder().execute(blobList, connectedColors, getFieldPercept().getLargestValidPoly());
+    getBlobFinder().execute(blobList, connectedColors, getFieldPercept().getValidField());
     STOPWATCH_STOP("BallDetector ~ BlobFinder");
   }
 

@@ -49,8 +49,8 @@ BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(Histograms)
   REQUIRE(HistogramsTop)
 
-  PROVIDE(FieldPercept)
-  PROVIDE(FieldPerceptTop)
+  PROVIDE(FieldPerceptRaw)
+  PROVIDE(FieldPerceptRawTop)
 END_DECLARE_MODULE(HistogramFieldDetector)
 
 class HistogramFieldDetector: private HistogramFieldDetectorBase
@@ -68,10 +68,10 @@ public:
   }
 
 private:
- CameraInfo::CameraID cameraID;
+  CameraInfo::CameraID cameraID;
 
- void getFieldRectFromHistogram(Vector2<int>& min, Vector2<int>& max);
-  FieldPercept::FieldRect largestAreaRectangle;
+  void getFieldRectFromHistogram(Vector2i& min, Vector2i& max);
+  FieldPercept::FieldPoly largestAreaRectangle;
 
   ColorClasses::Color fieldColor;
   ColorClasses::Color lineColor;
@@ -82,7 +82,7 @@ private:
   DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(HistogramFieldDetector, Histograms);
 
-  DOUBLE_CAM_PROVIDE(HistogramFieldDetector, FieldPercept);
+  DOUBLE_CAM_PROVIDE(HistogramFieldDetector, FieldPerceptRaw);
 
 };//end class HistogramFieldDetector
 

@@ -59,19 +59,19 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().setPoly(fieldPoly, getArtificialHorizon());
+    getFieldPercept().setField(fieldPoly, getArtificialHorizon());
     if(fieldPoly.getArea() >= 5600)
     {
-      getFieldPercept().setValid(true);
+      getFieldPercept().valid = true;
     }
     else
     {
-      getFieldPercept().setValid(false);
+      getFieldPercept().valid = false;
     }
 
     DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
       int idx = static_cast<int>(result.size())-1;
-      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
       for(int i = 0; i < (int)result.size(); i++)
       {
         LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);

@@ -57,11 +57,11 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 
 bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
 {
-  if(!getFieldPercept().isValid()) {
+  if(!getFieldPercept().valid) {
     return false;
   }
 
-  FieldPercept::FieldPoly poly = getFieldPercept().getLargestValidPoly(getArtificialHorizon());
+  FieldPercept::FieldPoly poly = getFieldPercept().getValidField();
 
   
   // find the top corner of the polygon
@@ -80,7 +80,7 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
 
   Pixel pixel;
   int maxRedPeak = -1;
-  poly = getFieldPercept().getLargestValidPoly(getArtificialHorizon());
+  poly = getFieldPercept().getValidField();
   Vector2<int> point;
 
   for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += params.stepSize) {
