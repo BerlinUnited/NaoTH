@@ -82,7 +82,7 @@ public:
   bool isOccupied(const Vector2<int>& point) const
   {
     Vector2<int> temp = returnCellCoord(point);
-    return grid[temp.x][temp.y].occupied;
+    return grid.size() > 0 && grid[temp.x][temp.y].occupied;
   }
 
   
