@@ -174,10 +174,8 @@ void Motion::processSensorData()
   //
   theFootGroundContactDetector->execute();
 
-
   //
   theKinematicChainProvider->execute();
-
 
   //
   theSupportPolygonGenerator->execute();
@@ -350,7 +348,7 @@ void Motion::updateCameraMatrix(
 }// end updateCameraMatrix
 
 
-
+//TODO: move that to the DCM platform
 void Motion::guard_cognition()
 {
   static unsigned int frameNumSinceLastMotionRequest(0);
@@ -358,12 +356,9 @@ void Motion::guard_cognition()
 
   // TODO: put this in the platform
   // check if cognition is still alive
-  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber)
-  {
+  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber) {
     frameNumSinceLastMotionRequest++;
-  }
-  else
-  {
+  } else {
     lastCognitionFrameNumber = getMotionRequest().cognitionFrameNumber;
     frameNumSinceLastMotionRequest = 0;
   }
@@ -377,7 +372,6 @@ void Motion::guard_cognition()
     Trace::getInstance().dump();
     StopwatchManager::getInstance().dump("cognition");
 
-    //TODO: Maybe better put it into Platform?
     #ifndef WIN32
     std::cerr << "syncing file system..." ;
     sync();
@@ -388,18 +382,4 @@ void Motion::guard_cognition()
   }//end if
 }//end guard_cognition
 
-
-/*
-// todo is it needed?
-bool Motion::exit()
-{
-  state = exiting;
-  if ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init
-      && theBlackBoard.currentlyExecutedMotion->isFinish() )
-  {
-    return true;
-  }
-  return false;
-}//end exit
-*/
 
