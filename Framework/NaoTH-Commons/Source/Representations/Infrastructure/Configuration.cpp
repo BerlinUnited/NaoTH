@@ -195,10 +195,13 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
   {
     if(dataLength > 0)
     {
-      std::ofstream outFile;
-      outFile.open(file.c_str(), std::ios::out);
-      outFile.write(data, dataLength);
-      outFile.close();
+      std::ofstream outFile(file.c_str(), std::ios::out);
+      if(outFile.is_open()) {
+        outFile.write(data, dataLength);
+        outFile.close();
+      } else {
+        g_error("could not open the file %s", file.c_str());
+      }
       g_free(data);
     }
   }
