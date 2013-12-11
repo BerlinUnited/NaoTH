@@ -85,7 +85,7 @@ public:
     return grid.size() > 0 && grid[temp.x][temp.y].occupied;
   }
 
-  
+  // TODO: make this fcuntion working in the grid space instead of pixel space
   Vector2<int> returnFirstFreeCell(const Vector2<int>& start) const
   {
     Vector2<int> point(start);
