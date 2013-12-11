@@ -1,13 +1,13 @@
 /**
 * @file PerceptionsVisualization.cpp
 *
-* @author Kirill Yasinovskiy <yasinovs@informatik.hu-berlin.de>
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 * Implementation of class PerceptionsVizualization
 */
 
 #include "PerceptionsVisualization.h"
 
-//include debugs
+//debug
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 

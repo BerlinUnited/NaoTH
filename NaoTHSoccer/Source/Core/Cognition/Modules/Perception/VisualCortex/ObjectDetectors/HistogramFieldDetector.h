@@ -34,6 +34,7 @@
 
 #include "Tools/DoubleCamHelpers.h"
 
+// TODO: make it parameter or constant
 #define LINE_THICKNESS 10//4
 
 

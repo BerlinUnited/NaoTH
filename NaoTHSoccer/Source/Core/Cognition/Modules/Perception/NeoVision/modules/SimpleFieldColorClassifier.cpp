@@ -19,17 +19,11 @@ using namespace std;
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   : cameraID(CameraInfo::Bottom)
 {
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCr", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistY", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:weightedHistCb", " ", false);
-
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
 
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
-
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:enable_plots", "", false);
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
@@ -38,8 +32,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   CANVAS_PX(cameraID);
 
   // check if a fresh histogram is avaliable
-  if(!getColorChanelHistograms().colorChannelIsUptodate)
-  {
+  if(!getColorChanelHistograms().colorChannelIsUptodate) {
     return;
   }
 
@@ -64,14 +57,13 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     double wCr = 1.0 - i*histogramDoubleStep;
     double weightedCr = wCr * wCr * (double) getColorChanelHistograms().histogramV.rawData[i];
 
-    // search for max Cr channel value with weight w
+    // search for maximum in the wighted Cr channel
     if(weightedCr > maxWeightedCr)
     {
       maxWeightedCr = weightedCr;
       maxWeightedIndexCr = i;
     }
-  }//end for
-  
+  }
 
   // no green candidates found
   if(maxWeightedIndexCr < 0) {
@@ -82,11 +74,9 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
     if(cameraID == CameraInfo::Bottom) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
-        for(unsigned int y = 0; y < getImage().height(); y++) 
-        {
+        for(unsigned int y = 0; y < getImage().height(); y++) {
           const Pixel& pixel = getImage().get(x, y);
-          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
-          {
+          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
             POINT_PX(ColorClasses::red, x, y);
           }
         }
@@ -96,11 +86,9 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification",
     if(cameraID == CameraInfo::Top) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
-        for(unsigned int y = 0; y < getImage().height(); y++) 
-        {
+        for(unsigned int y = 0; y < getImage().height(); y++) {
           const Pixel& pixel = getImage().get(x, y);
-          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
-          {
+          if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
             POINT_PX(ColorClasses::red, x, y);
           }
         }
@@ -122,12 +110,13 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
     
-    if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v )
+    if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v )
     {
       filteredHistogramY.add(pixel.y);
       filteredHistogramU.add(pixel.u);
     }
-  }//end for
+  }
+
   STOPWATCH_STOP("SimpleFieldColorClassifier:GridWalk");
 
 
@@ -154,99 +143,58 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 
     meanFieldY += filteredHistogramY.rawData[i]*i;
     numberOfFieldY += filteredHistogramY.rawData[i];
-  }//end for
+  }
 
   // estimate the mean Y of the green candidates
   if(numberOfFieldY > 0) {
     meanFieldY /= numberOfFieldY;
   }
   
-  //check how it works in other conditions
+  //TODO: check how it works in other conditions
   int maxWeightedIndexY = (int)Math::clamp(meanFieldY,0.0, 255.0);
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:enable_plots",
-    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCr", maxWeightedIndexCr);
-    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCb", maxWeightedIndexCb);
-    PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":meanFieldY", meanFieldY);
-  );
+  STOPWATCH_STOP("SimpleFieldColorClassifier:Y_filtering");
 
-  double maxY = 255;
-  MODIFY("SimpleFieldColorClassifier:maxY", maxY);
-  double minY = 0;
-  MODIFY("SimpleFieldColorClassifier:minY", minY);
+
+  PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCr", maxWeightedIndexCr);
+  PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCb", maxWeightedIndexCb);
+  PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":meanFieldY", meanFieldY);
+
+
+  getFieldColorPercept().range.set(
+    maxWeightedIndexY - (int)getParameters().fieldColorMin.y,
+    (int)maxWeightedIndexCb - (int)getParameters().fieldColorMax.u,
+    (int)maxWeightedIndexCr - (int)getParameters().fieldColorMax.v,
+
+    maxWeightedIndexY + (int)getParameters().fieldColorMax.y,
+    (int)maxWeightedIndexCb + (int)getParameters().fieldColorMax.u,
+    (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
+    );
+
+  getFieldColorPercept().lastUpdated = getFrameInfo();
+
+  
 
   DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green",
     if(cameraID == CameraInfo::Bottom) {
-      for(unsigned int x = 0; x < getImage().width(); x++)
-      {
-        for(unsigned int y = 0; y < getImage().height(); y++)
-        {
-          const Pixel& pixel = getImage().get(x, y);
-
-          if
-          (
-            min((int)(maxWeightedIndexY + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
-            &&
-            max((int)(maxWeightedIndexY - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
-            &&
-            abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
-            &&
-            abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
-          )
+      for(unsigned int x = 0; x < getImage().width(); x++) {
+        for(unsigned int y = 0; y < getImage().height(); y++) {
+          if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
             POINT_PX(ColorClasses::green, x, y);
+          }
         }
       } 
     }
   );
   DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green",
     if(cameraID == CameraInfo::Top) {
-      for(unsigned int x = 0; x < getImage().width(); x++)
-      {
-        for(unsigned int y = 0; y < getImage().height(); y++)
-        {
-          const Pixel& pixel = getImage().get(x, y);
-
-          if
-          (
-            min((int)(maxWeightedIndexY + fieldParams.fieldColorMax.y),(int)maxY) > (int)pixel.y
-            &&
-            max((int)(maxWeightedIndexY - fieldParams.fieldColorMin.y),(int)minY) < (int)pixel.y
-            &&
-            abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
-            &&
-            abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
-          )
+      for(unsigned int x = 0; x < getImage().width(); x++) {
+        for(unsigned int y = 0; y < getImage().height(); y++) {
+          if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
             POINT_PX(ColorClasses::green, x, y);
+          }
         }
       } 
     }
   );
-
-  /*
-  // 
-  getFieldColorPercept().distY = fieldParams.fieldColorMax.y;
-  getFieldColorPercept().distCb = fieldParams.fieldColorMax.u;
-  getFieldColorPercept().distCr = fieldParams.fieldColorMax.v;
-
-
-  //getFieldColorPercept().maxWeightedY = maxWeightedY;
-  getFieldColorPercept().maxWeightedIndexY = maxWeightedIndexY;
-  getFieldColorPercept().maxWeightedCb = maxWeightedCb;
-  getFieldColorPercept().maxWeightedIndexCb = maxWeightedIndexCb;
-  getFieldColorPercept().maxWeightedCr = maxWeightedCr;
-  getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
-  */
-
-  getFieldColorPercept().range.set(
-    maxWeightedIndexY - (int)fieldParams.fieldColorMin.y,
-    (int)maxWeightedIndexCb - (int)fieldParams.fieldColorMax.u,
-    (int)maxWeightedIndexCr - (int)fieldParams.fieldColorMax.v,
-
-    maxWeightedIndexY + (int)fieldParams.fieldColorMax.y,
-    (int)maxWeightedIndexCb + (int)fieldParams.fieldColorMax.u,
-    (int)maxWeightedIndexCr + (int)fieldParams.fieldColorMax.v
-    );
-
-  //getFieldColorPercept().set();
-  getFieldColorPercept().lastUpdated = getFrameInfo();
 }//end execute

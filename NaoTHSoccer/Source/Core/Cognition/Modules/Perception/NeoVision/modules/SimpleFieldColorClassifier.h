@@ -57,14 +57,13 @@ public:
     execute(CameraInfo::Top);
   }
 
+private:
   void execute(const CameraInfo::CameraID id);
 
-private:
 
   class Parameters: public ParameterList
   {
   public:
-
     Parameters() : ParameterList("SimpleFieldColorClassifierParameters")
     {
       PARAMETER_REGISTER(fieldColorMax.y) = 64;
@@ -73,7 +72,6 @@ private:
       PARAMETER_REGISTER(fieldColorMax.v) = 10;
 
       syncWithConfig();
-
       DebugParameterList::getInstance().add(this);
     }
 
@@ -84,9 +82,11 @@ private:
 
     DoublePixel fieldColorMax;
     DoublePixel fieldColorMin;
-  };
+  } parameters;
 
-  Parameters fieldParams;
+  inline Parameters& getParameters() {
+    return parameters;
+  }
 
 
   Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> filteredHistogramY;
