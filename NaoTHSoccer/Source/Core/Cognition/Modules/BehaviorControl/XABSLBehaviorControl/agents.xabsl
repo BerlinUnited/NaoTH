@@ -156,7 +156,8 @@ include "Options/Test/passive_behavior_test_agent.xabsl";
 include "Options/Test/test_benji_agent.xabsl";
 include "Options/Test/test_benji_lv1.xabsl";
 
-
+//Goal Experiments
+include "Options/Test/look_around_test_agent.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
@@ -205,3 +206,6 @@ agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior
 // Test agents search
 agent only_looking_for_ball("only_looking_for_ball",only_ball_looking);
 agent only_looking_for_goal("only_looking_for_goal",only_goal_looking);
+
+// Goal Experiments
+agent look_around("look_around_test_agent", look_around_test_agent);

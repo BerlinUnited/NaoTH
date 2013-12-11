@@ -22,7 +22,7 @@
 class DebugDrawingCanvas: public naoth::DrawingCanvas
 {
 public:
-  DebugDrawingCanvas(size_t w, size_t h)
+  DebugDrawingCanvas(int w, int h)
   : 
     size(w,h),
     numberOfPoints(0),

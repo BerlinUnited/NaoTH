@@ -460,9 +460,9 @@ void ActiveGoalLocator::debugDrawings()
 
 void ActiveGoalLocator::debugPlots() 
 {
-  for(size_t x = 0; x < postHypotheses.size(); x++) 
+  for(size_t x = 0; x < (size_t)postHypotheses.size(); x++)
   {
-    string id = convertIntToString(x);
+    string id = convertIntToString((int)x);
     double totalWeighting = postHypotheses[x].sampleSet.lastTotalWeighting;
     double averageWeighting = 0;
     if (postHypotheses[x].sampleSet.size() > 0) {
