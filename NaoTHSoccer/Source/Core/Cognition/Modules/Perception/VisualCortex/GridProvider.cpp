@@ -51,6 +51,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   STOPWATCH_START("Histogram+ColoredGrid");
   getColoredGrid().reset();
   getHistograms().init();
+  getColorChanelHistograms().init();
 
   unsigned int grey = 0;
   unsigned int red = 0;
@@ -78,7 +79,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
     getHistograms().increaseValue(gridPoint, currentPixelColor);
-    getHistograms().increaseChannelValue(pixel, currentPixelColor);
+    getColorChanelHistograms().increaseChannelValue(pixel);
 
   }//end for
 
@@ -89,9 +90,9 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getColoredGrid().meanRed = red / imgArea;
   getColoredGrid().meanBlue = blue / imgArea;
 
-  getHistograms().histogramY.calculate();
-  getHistograms().histogramU.calculate();
-  getHistograms().histogramV.calculate();
+  getColorChanelHistograms().histogramY.calculate();
+  getColorChanelHistograms().histogramU.calculate();
+  getColorChanelHistograms().histogramV.calculate();
 
   STOPWATCH_STOP("Histogram+ColoredGrid");
 

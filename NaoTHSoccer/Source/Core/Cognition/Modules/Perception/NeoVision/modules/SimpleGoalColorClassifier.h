@@ -31,8 +31,8 @@
 
 BEGIN_DECLARE_MODULE(SimpleGoalColorClassifier)
   REQUIRE(FrameInfo)
-  REQUIRE(Histograms)
-  REQUIRE(HistogramsTop)
+  REQUIRE(ColorChanelHistograms)
+  REQUIRE(ColorChanelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(FieldColorPercept)
@@ -106,15 +106,15 @@ private:
   //double histV[COLOR_CHANNEL_VALUE_COUNT];
   //double histU[COLOR_CHANNEL_VALUE_COUNT];
 
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histV;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopU;
-  Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histTopV;
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> histU;
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> histV;
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> histTopU;
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> histTopV;
 
   void histogramExperiments();
 
   DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, Image);
-  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, Histograms);
+  DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, ColorChanelHistograms);
   DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(SimpleGoalColorClassifier, BaseColorRegionPercept);
  

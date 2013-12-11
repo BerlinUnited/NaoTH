@@ -35,8 +35,8 @@
 BEGIN_DECLARE_MODULE(FieldColorClassifierFull)
   REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
-  REQUIRE(Histograms)
-  REQUIRE(HistogramsTop)
+  REQUIRE(ColorChanelHistograms)
+  REQUIRE(ColorChanelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
@@ -107,17 +107,17 @@ private:
 
   FieldColorParametersFull fieldParams;
 
-  double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedSmoothedHistY[ColorChanelHistograms::VALUE_COUNT];
+  double weightedSmoothedHistCb[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistY[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistCb[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistCr[ColorChanelHistograms::VALUE_COUNT];
 
-  double weightedSmoothedHistTopY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedSmoothedHistTopCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistTopY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistTopCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistTopCr[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedSmoothedHistTopY[ColorChanelHistograms::VALUE_COUNT];
+  double weightedSmoothedHistTopCb[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistTopY[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistTopCb[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistTopCr[ColorChanelHistograms::VALUE_COUNT];
 
   std::ofstream outfile;
 

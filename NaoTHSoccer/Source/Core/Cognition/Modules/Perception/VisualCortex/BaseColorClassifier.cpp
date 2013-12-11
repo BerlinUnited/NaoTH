@@ -231,47 +231,47 @@ void BaseColorClassifier::execute()
   }
   getBaseColorRegionPerceptTop().meanImg.v = getColoredGridTop().meanRed;
 
-  diff = fabs(getHistograms().histogramY.min - lastMinY);
+  diff = fabs(getColorChanelHistograms().histogramY.min - lastMinY);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    lastMinY = getHistograms().histogramY.min;
+    lastMinY = getColorChanelHistograms().histogramY.min;
     minY.add(lastMinY);
     getBaseColorRegionPercept().minEnv.y = minY.getAverage();
   }
-  diffTop = fabs(getHistogramsTop().histogramY.min - lastMinTopY);
+  diffTop = fabs(getColorChanelHistogramsTop().histogramY.min - lastMinTopY);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    lastMinTopY = getHistogramsTop().histogramY.min;
+    lastMinTopY = getColorChanelHistogramsTop().histogramY.min;
     minTopY.add(lastMinTopY);
     getBaseColorRegionPerceptTop().minEnv.y = minTopY.getAverage();
   }
 
-  diff = fabs(getHistograms().histogramY.max - lastMaxY);
+  diff = fabs(getColorChanelHistograms().histogramY.max - lastMaxY);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    lastMaxY = getHistograms().histogramY.max;
+    lastMaxY = getColorChanelHistograms().histogramY.max;
     maxY.add(lastMaxY);
     getBaseColorRegionPercept().maxEnv.y = maxY.getAverage();
   }
-  diffTop = fabs(getHistogramsTop().histogramY.max - lastMaxTopY);
+  diffTop = fabs(getColorChanelHistogramsTop().histogramY.max - lastMaxTopY);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    lastMaxTopY = getHistogramsTop().histogramY.max;
+    lastMaxTopY = getColorChanelHistogramsTop().histogramY.max;
     maxTopY.add(lastMaxTopY);
     getBaseColorRegionPerceptTop().maxEnv.y = maxTopY.getAverage();
   }
 
-  diff = fabs(getHistograms().histogramY.spanWidth - lastSpanWidthY);
+  diff = fabs(getColorChanelHistograms().histogramY.spanWidth - lastSpanWidthY);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    lastSpanWidthY = getHistograms().histogramY.spanWidth;
+    lastSpanWidthY = getColorChanelHistograms().histogramY.spanWidth;
     maxY.add(lastSpanWidthY);
     getBaseColorRegionPercept().spanWidthEnv.y = (int) spanWidthY.getAverage();
   }
-  diffTop = fabs(getHistogramsTop().histogramY.spanWidth - lastSpanWidthTopY);
+  diffTop = fabs(getColorChanelHistogramsTop().histogramY.spanWidth - lastSpanWidthTopY);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    lastSpanWidthTopY = getHistogramsTop().histogramY.spanWidth;
+    lastSpanWidthTopY = getColorChanelHistogramsTop().histogramY.spanWidth;
     maxY.add(lastSpanWidthTopY);
     getBaseColorRegionPerceptTop().spanWidthEnv.y = (int) spanWidthTopY.getAverage();
   }

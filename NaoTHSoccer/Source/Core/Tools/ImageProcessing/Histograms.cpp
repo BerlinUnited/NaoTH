@@ -31,19 +31,12 @@ Histograms::Histograms()
     descString << "draw Y axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
     DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
   }
-
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramCr", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram bottom image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram bottom image", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram bottom image", false);
  
   init();
 }
 
 void Histograms::init()
 {
-  colorChannelIsUptodate = false;
-
   for(int c = 0; c < ColorClasses::numOfColors; c++)
   {
     xHistogram[c].clear();
@@ -51,27 +44,12 @@ void Histograms::init()
   }
 }//end init
 
-void Histograms::execute()
-{
-  init();
-}
 
 void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
 {
   std::stringstream dbgString;
   bool drawXHist = false;
   bool drawYHist = false;
-  //bool drawChannelHist = false;
-
-  DEBUG_REQUEST("ImageProcessor:Histogram:plotY", 
-    histogramY.plot("Histograms:Y");
-  );
-  DEBUG_REQUEST("ImageProcessor:Histogram:plotU", 
-    histogramU.plot("Histograms:U");
-  );
-  DEBUG_REQUEST("ImageProcessor:Histogram:plotV", 
-    histogramV.plot("Histograms:V");
-  );
 
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
@@ -178,7 +156,7 @@ inline void Histograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
   {
     for (unsigned int pixelIndex = 0; pixelIndex < coloredGrid.numberOfColorPoints[color]; pixelIndex++)
     {
-      const Vector2<int>& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
+      const Vector2i& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
       increaseValue(gridPoint, (ColorClasses::Color) color);
     }
   }
@@ -188,4 +166,25 @@ void Histograms::print(ostream& stream) const
 {
   stream << "Histogram";
 }//end print
+
+
+ColorChanelHistograms::ColorChanelHistograms()
+{
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram bottom image", false);
+}
+
+void ColorChanelHistograms::showDebugInfos() const
+{
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotY", 
+    histogramY.plot("Histograms:Y");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotU", 
+    histogramU.plot("Histograms:U");
+  );
+  DEBUG_REQUEST("ImageProcessor:Histogram:plotV", 
+    histogramV.plot("Histograms:V");
+  );
+}
 

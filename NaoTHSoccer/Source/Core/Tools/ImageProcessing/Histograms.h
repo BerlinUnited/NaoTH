@@ -25,8 +25,6 @@
 #include "ColoredGrid.h"
 
 
-#define COLOR_CHANNEL_VALUE_COUNT 256
-
 class Histograms: public naoth::Printable
 {
  public:
@@ -34,27 +32,18 @@ class Histograms: public naoth::Printable
     ~Histograms(){}
 
     void init();
-    void execute();
 
-    inline void increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
+    inline void increaseValue(const int x, const int y, const ColorClasses::Color& color)
     {
       xHistogram[color].add(y);
       yHistogram[color].add(x);
-    }//end increaseValue
+    }
 
     inline void increaseValue(const Vector2<int> pixel, const ColorClasses::Color& color)
     {
       xHistogram[color].add(pixel.y);
       yHistogram[color].add(pixel.x);
-    }//end increaseValue
-
-    inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
-    {
-      histogramY.add(pixel.y);
-      histogramU.add(pixel.u);
-      histogramV.add(pixel.v);
-      colorChannelIsUptodate  = true;
-    }//end increaseChannelValue
+    }
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
     void createFromColoredGridTop(const ColoredGrid& coloredGrid);
@@ -65,22 +54,44 @@ class Histograms: public naoth::Printable
     //color class histograms bottom image
     Statistics::Histogram<naoth::IMAGE_HEIGHT> xHistogram[ColorClasses::numOfColors];
     Statistics::Histogram<naoth::IMAGE_WIDTH > yHistogram[ColorClasses::numOfColors];
-    
-    // color channel histograms bottomImage
-    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramY;
-    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramU;
-    Statistics::Histogram<COLOR_CHANNEL_VALUE_COUNT> histogramV;
-
-    unsigned int colorChannelIsUptodate;
-
 };
 
-class HistogramsTop : public Histograms
+
+class ColorChanelHistograms
 {
+public: 
+  static const int VALUE_COUNT = 256;
+
+  inline void increaseChannelValue(const Pixel& pixel)
+  {
+    histogramY.add(pixel.y);
+    histogramU.add(pixel.u);
+    histogramV.add(pixel.v);
+    colorChannelIsUptodate  = true;
+  }
+
+  void init()
+  {
+    colorChannelIsUptodate = false;
+    histogramY.clear();
+    histogramU.clear();
+    histogramV.clear();
+  }
+
+  ColorChanelHistograms();
+  void showDebugInfos() const;
+
 public:
-  virtual ~HistogramsTop() {}
+  // color channel histograms bottomImage
+  Statistics::Histogram<VALUE_COUNT> histogramY;
+  Statistics::Histogram<VALUE_COUNT> histogramU;
+  Statistics::Histogram<VALUE_COUNT> histogramV;
+
+  bool colorChannelIsUptodate;
 };
 
+class HistogramsTop : public Histograms{};
+class ColorChanelHistogramsTop: public ColorChanelHistograms{};
 
 #endif  /* _Histogram_H */
 

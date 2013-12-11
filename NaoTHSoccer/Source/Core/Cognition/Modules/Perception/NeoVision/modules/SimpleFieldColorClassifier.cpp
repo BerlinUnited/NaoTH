@@ -38,15 +38,15 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   CANVAS_PX(cameraID);
 
   // check if a fresh histogram is avaliable
-  if(!getHistograms().colorChannelIsUptodate)
+  if(!getColorChanelHistograms().colorChannelIsUptodate)
   {
     return;
   }
 
   // some usefull precalculations (to speedup the process)
   // the cente of the histogram
-  static const int halfChannelWidth = COLOR_CHANNEL_VALUE_COUNT / 2;
-  static const double histogramStep = 1.0/(double) COLOR_CHANNEL_VALUE_COUNT;
+  static const int halfChannelWidth = ColorChanelHistograms::VALUE_COUNT / 2;
+  static const double histogramStep = 1.0/(double) ColorChanelHistograms::VALUE_COUNT;
   static const double histogramDoubleStep = 2.0*histogramStep;
   
   STOPWATCH_START("SimpleFieldColorClassifier:Cr_filtering");
@@ -62,7 +62,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   {
     // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
     double wCr = 1.0 - i*histogramDoubleStep;
-    double weightedCr = wCr * wCr * (double) getHistograms().histogramV.rawData[i];
+    double weightedCr = wCr * wCr * (double) getColorChanelHistograms().histogramV.rawData[i];
 
     // search for max Cr channel value with weight w
     if(weightedCr > maxWeightedCr)
@@ -139,7 +139,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   double meanFieldY = 0;
   double numberOfFieldY = 0;
 
-  for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
   {
     // weight based on the mean value  (255 - i)/255
     double wCb = 1.0 - i*histogramStep;

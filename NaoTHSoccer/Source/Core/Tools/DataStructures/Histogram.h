@@ -17,6 +17,8 @@ namespace Statistics
   template <int SIZE> class Histogram
   {
     public:
+      static const int size = SIZE;
+
       int rawData[SIZE];
       double normalizedData[SIZE];
       double cumulativeData[SIZE];
@@ -35,10 +37,10 @@ namespace Statistics
       Histogram()
       {
         clear();
-      };
+      }
       
       ~Histogram()
-      {};
+      {}
 
       void clear()
       {
@@ -54,19 +56,19 @@ namespace Statistics
         kurtosis = 0.0;
         calculated = false;
         memset(&rawData, 0, sizeof(rawData));
-        memset(&normalizedData, 0, sizeof(normalizedData));
-        memset(&cumulativeData, 0, sizeof(cumulativeData));
-      };
+        memset(&normalizedData, 0, sizeof(normalizedData)); // here we assume: 0.0 ~ 0x00000000
+        memset(&cumulativeData, 0, sizeof(cumulativeData)); // here we assume: 0.0 ~ 0x00000000
+      }
 
       void add(int value)
       {
         rawData[value]++;
-      };
+      }
 
       void set(int idx, int value)
       {
         rawData[idx] = value;
-      };
+      }
 
       void calculate()
       {
@@ -123,7 +125,7 @@ namespace Statistics
         skewness /= (sigma * s2);
         kurtosis /= (s2 * s2);
         calculated = true;
-      };
+      }
 
       void plot(std::string id) const
       {
@@ -136,7 +138,7 @@ namespace Statistics
             PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
           }
         }
-      };
+      }
 
       void plotRaw(std::string id) const
       {
@@ -144,7 +146,7 @@ namespace Statistics
         {
           PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
         }
-      };
+      }
 
       void plotNormalized(std::string id) const
       {
@@ -152,7 +154,7 @@ namespace Statistics
         {
           PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
         }
-      };
+      }
 
       void plotCumulated(std::string id) const
       {
@@ -160,7 +162,7 @@ namespace Statistics
         {
           PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
         }
-      };
+      }
 
   private:
     bool calculated;
