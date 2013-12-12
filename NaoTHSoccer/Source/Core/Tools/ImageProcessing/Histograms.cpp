@@ -168,14 +168,14 @@ void Histograms::print(ostream& stream) const
 }//end print
 
 
-ColorChanelHistograms::ColorChanelHistograms()
+ColorChannelHistograms::ColorChannelHistograms()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotY", "plot Y channel histogram bottom image", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotU", "plot U channel histogram bottom image", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:plotV", "plot V channel histogram bottom image", false);
 }
 
-void ColorChanelHistograms::showDebugInfos() const
+void ColorChannelHistograms::showDebugInfos() const
 {
   DEBUG_REQUEST("ImageProcessor:Histogram:plotY", 
     histogramY.plot("Histograms:Y");

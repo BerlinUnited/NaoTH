@@ -67,7 +67,7 @@ void FieldColorClassifier::classify()
   }
 
 
-  if(!getColorChanelHistograms().colorChannelIsUptodate)
+  if(!getColorChannelHistograms().colorChannelIsUptodate)
   {
     return;
   }
@@ -82,14 +82,14 @@ void FieldColorClassifier::classify()
   //double p = 1.0 / getColoredGrid().uniformGrid.numberOfGridPoints;
 
   STOPWATCH_START("FieldColorClassifier:Cr_filtering");
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     double mCr = max<int>(0,  160 - i);
     double wCr = mCr / 160.0;
     
-    weightedHistV[i] = getColorChanelHistograms().histogramV.rawData[i];
+    weightedHistV[i] = getColorChannelHistograms().histogramV.rawData[i];
     //histogram for blue => needed for later yellow and blue estimation
-    histU[i] = getColorChanelHistograms().histogramU.rawData[i] * wCr;
+    histU[i] = getColorChannelHistograms().histogramU.rawData[i] * wCr;
     sumU += histU[i];
 
     weightedHistV[i] *= wCr;
@@ -106,7 +106,7 @@ void FieldColorClassifier::classify()
   if(sumU == 0.0)
     return;
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     histNormU[i] = histU[i] / sumU;
     meanU += i * histNormU[i];
@@ -114,7 +114,7 @@ void FieldColorClassifier::classify()
 
   double z2U = 0.0;
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     double t = (meanU - histU[i]) * histNormU[i];
     z2U += t * t;

@@ -38,8 +38,8 @@ BEGIN_DECLARE_MODULE(GridProvider)
   PROVIDE(Histograms)
   PROVIDE(HistogramsTop)
 
-  PROVIDE(ColorChanelHistograms)
-  PROVIDE(ColorChanelHistogramsTop)
+  PROVIDE(ColorChannelHistograms)
+  PROVIDE(ColorChannelHistogramsTop)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -73,7 +73,7 @@ private:
 
   DOUBLE_CAM_PROVIDE(GridProvider, ColoredGrid);
   DOUBLE_CAM_PROVIDE(GridProvider, Histograms);
-  DOUBLE_CAM_PROVIDE(GridProvider, ColorChanelHistograms);
+  DOUBLE_CAM_PROVIDE(GridProvider, ColorChannelHistograms);
 };
 
 #endif // _GridProvider_h_

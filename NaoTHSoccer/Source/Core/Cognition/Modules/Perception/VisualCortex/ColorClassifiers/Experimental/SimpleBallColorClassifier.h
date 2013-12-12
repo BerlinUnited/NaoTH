@@ -35,8 +35,8 @@ BEGIN_DECLARE_MODULE(SimpleBallColorClassifier)
   REQUIRE(FrameInfo)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(ColorChanelHistograms)
-  REQUIRE(ColorChanelHistogramsTop)
+  REQUIRE(ColorChannelHistograms)
+  REQUIRE(ColorChannelHistogramsTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(SimpleGoalColorPercept)
@@ -52,7 +52,7 @@ END_DECLARE_MODULE(SimpleBallColorClassifier)
 class SimpleBallColorClassifier : public  SimpleBallColorClassifierBase
 {
 public:
-  double histV[ColorChanelHistograms::VALUE_COUNT];
+  double histV[ColorChannelHistograms::VALUE_COUNT];
 
   SimpleBallColorClassifier();
   virtual ~SimpleBallColorClassifier(){}
@@ -99,7 +99,7 @@ private:
   CameraInfo::CameraID cameraID;
 
   DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, Image);
-  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, ColorChanelHistograms);
+  DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, ColorChannelHistograms);
   DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(SimpleBallColorClassifier, SimpleGoalColorPercept);
  

@@ -30,8 +30,8 @@
 BEGIN_DECLARE_MODULE(BaseColorClassifier)
   REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
-  REQUIRE(ColorChanelHistograms)
-  REQUIRE(ColorChanelHistogramsTop)
+  REQUIRE(ColorChannelHistograms)
+  REQUIRE(ColorChannelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
@@ -133,9 +133,9 @@ private:
 
   BaseColorRegionParameters regionParams;
 
-  unsigned int fieldHist[3][ColorChanelHistograms::VALUE_COUNT];
-  double fieldCalibHist[2][ColorChanelHistograms::VALUE_COUNT];
-  double fieldWeightedHist[3][ColorChanelHistograms::VALUE_COUNT];
+  unsigned int fieldHist[3][ColorChannelHistograms::VALUE_COUNT];
+  double fieldCalibHist[2][ColorChannelHistograms::VALUE_COUNT];
+  double fieldWeightedHist[3][ColorChannelHistograms::VALUE_COUNT];
   double fieldCalibMeanY;
   double fieldCalibMeanCountY;
 

@@ -57,7 +57,7 @@ class Histograms: public naoth::Printable
 };
 
 
-class ColorChanelHistograms
+class ColorChannelHistograms
 {
 public: 
   static const int VALUE_COUNT = 256;
@@ -78,7 +78,7 @@ public:
     histogramV.clear();
   }
 
-  ColorChanelHistograms();
+  ColorChannelHistograms();
   void showDebugInfos() const;
 
 public:
@@ -91,7 +91,7 @@ public:
 };
 
 class HistogramsTop : public Histograms{};
-class ColorChanelHistogramsTop: public ColorChanelHistograms{};
+class ColorChannelHistogramsTop: public ColorChannelHistograms{};
 
 #endif  /* _Histogram_H */
 

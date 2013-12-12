@@ -28,7 +28,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
-  REQUIRE(ColorChanelHistograms)
+  REQUIRE(ColorChannelHistograms)
   REQUIRE(ColoredGrid)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
@@ -58,11 +58,11 @@ private:
   double maxWeightedV;
   int indexV;
   
-  double weightedHistV[ColorChanelHistograms::VALUE_COUNT];
-  int colorChannelHistogram[ColorChanelHistograms::VALUE_COUNT];
+  double weightedHistV[ColorChannelHistograms::VALUE_COUNT];
+  int colorChannelHistogram[ColorChannelHistograms::VALUE_COUNT];
 
-  double histU[ColorChanelHistograms::VALUE_COUNT];
-  double histNormU[ColorChanelHistograms::VALUE_COUNT];
+  double histU[ColorChannelHistograms::VALUE_COUNT];
+  double histNormU[ColorChannelHistograms::VALUE_COUNT];
 
   int sampleCount;
   int maxSampleCount;

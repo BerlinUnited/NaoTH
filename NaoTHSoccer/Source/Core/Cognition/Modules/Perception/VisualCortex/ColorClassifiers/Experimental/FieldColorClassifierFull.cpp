@@ -26,7 +26,7 @@ FieldColorClassifierFull::FieldColorClassifierFull()
   DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:write_log", " ", false);  
   DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:fast_adapt", " ", false);  
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     memset(&weightedSmoothedHistY, 0, sizeof(weightedSmoothedHistY));
     memset(&weightedSmoothedHistCb, 0, sizeof(weightedSmoothedHistCb));
@@ -50,7 +50,7 @@ FieldColorClassifierFull::FieldColorClassifierFull()
 void FieldColorClassifierFull::execute()
 {
   STOPWATCH_START("FieldColorClassifierFull:Cb_Cr_filtering");
-  int halfChannelWidth = ColorChanelHistograms::VALUE_COUNT / 2;
+  int halfChannelWidth = ColorChannelHistograms::VALUE_COUNT / 2;
 
   double distY = getFieldColorPercept().distY;
   double distCb = getFieldColorPercept().distU;
@@ -93,7 +93,7 @@ void FieldColorClassifierFull::execute()
   double maxWeightedTopCr = 0.85 * getFieldColorPerceptTop().maxRateV;
   unsigned int maxWeightedIndexTopCr = getFieldColorPerceptTop().indexV;
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     weightedHistY[i] = 0.0;
     weightedHistCb[i] = 0.0;
@@ -102,8 +102,8 @@ void FieldColorClassifierFull::execute()
 
     double mCr = max(0.0, (double) halfChannelWidth - (double) i);
     double wCr = mCr / (double) halfChannelWidth;
-    weightedHistCr[i] = wCr * (double) getColorChanelHistograms().histogramV.rawData[i];
-    weightedHistTopCr[i] = wCr * (double) getColorChanelHistogramsTop().histogramV.rawData[i];
+    weightedHistCr[i] = wCr * (double) getColorChannelHistograms().histogramV.rawData[i];
+    weightedHistTopCr[i] = wCr * (double) getColorChannelHistogramsTop().histogramV.rawData[i];
     //search for max Cr channel value with weight w
     if(weightedHistCr[i] > maxWeightedCr)
     {
@@ -142,7 +142,7 @@ void FieldColorClassifierFull::execute()
   }
 
   idx = maxWeightedIndexCr;
-  while (idx < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexCr == 0)
+  while (idx < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexCr == 0)
   {
     if(weightedHistCr[idx] <= log(maxWeightedCr) / log(2.0) || idx - maxWeightedIndexCr > maxDistCr)
     {
@@ -151,7 +151,7 @@ void FieldColorClassifierFull::execute()
     idx++;
   }
   idxTop = maxWeightedIndexTopCr;
-  while (idxTop < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexTopCr == 0)
+  while (idxTop < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexTopCr == 0)
   {
     if(weightedHistTopCr[idxTop] <= log(maxWeightedTopCr) / log(2.0) || idxTop - maxWeightedIndexTopCr > maxDistCr)
     {
@@ -218,10 +218,10 @@ void FieldColorClassifierFull::execute()
   meanFieldTopY /= meanFieldCountTopY;
   double factorDistTopY =  ((double) halfChannelWidth - fabs((double) halfChannelWidth - meanFieldTopY) ) / (double) halfChannelWidth;
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
-    double mCb = ColorChanelHistograms::VALUE_COUNT - i;
-    double wCb = mCb / (double) ColorChanelHistograms::VALUE_COUNT;
+    double mCb = ColorChannelHistograms::VALUE_COUNT - i;
+    double wCb = mCb / (double) ColorChannelHistograms::VALUE_COUNT;
     weightedHistCb[i] *= wCb;//= wCb * (double) getHistograms().histogramU.rawData[i];
     weightedHistTopCb[i] *= wCb;//= wCb * (double) getHistograms().histogramU.rawData[i];
     double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
@@ -294,7 +294,7 @@ void FieldColorClassifierFull::execute()
   }
 
   idx = maxWeightedIndexY;
-  while (idx < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexY == 0)
+  while (idx < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexY == 0)
   {
     if(weightedSmoothedHistY[idx] <= log(maxWeightedY) / log(2.0) || idx - maxWeightedIndexY > factorDistY * maxDistY)
     {
@@ -303,7 +303,7 @@ void FieldColorClassifierFull::execute()
     idx++;
   }
   idxTop = maxWeightedIndexTopY;
-  while (idx < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexTopY == 0)
+  while (idx < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexTopY == 0)
   {
     if(weightedSmoothedHistTopY[idxTop] <= log(maxWeightedTopY) / log(2.0) || idxTop - maxWeightedIndexTopY > factorDistTopY * maxDistY)
     {
@@ -337,7 +337,7 @@ void FieldColorClassifierFull::execute()
   }
 
   idx = maxWeightedIndexCb;
-  while (idx < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexCb == 0)
+  while (idx < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexCb == 0)
   {
     if(weightedHistCb[idx] <= log(maxWeightedCb) / log(2.0) || idx - maxWeightedIndexCb > maxDistCb)
     {
@@ -346,7 +346,7 @@ void FieldColorClassifierFull::execute()
     idx++;
   }
   idxTop = maxWeightedIndexTopCb;
-  while (idxTop < ColorChanelHistograms::VALUE_COUNT && meanRegionEndIndexTopCb == 0)
+  while (idxTop < (int) ColorChannelHistograms::VALUE_COUNT && meanRegionEndIndexTopCb == 0)
   {
     if(weightedHistTopCb[idx] <= log(maxWeightedTopCb) / log(2.0) || idxTop - maxWeightedIndexTopCb > maxDistCb)
     {
@@ -382,7 +382,7 @@ void FieldColorClassifierFull::execute()
 
   STOPWATCH_STOP("FieldColorClassifierFull:Y_filtering");
 
-  for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     weightedHistY[i] = weightedSmoothedHistY[i];
     weightedHistCb[i] = weightedSmoothedHistCb[i];
@@ -627,7 +627,7 @@ double FieldColorClassifierFull::smoothRungeKutta4(const unsigned int& idx, doub
 void FieldColorClassifierFull::runDebugRequests()
 {
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:TopCam:enable_plots",
-    for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i ++)
+    for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i ++)
     {
       PLOT_GENERIC("FieldColorClassifierFull:TopCam:weighted_Y_histogram", i, weightedHistTopY[i]);
       PLOT_GENERIC("FieldColorClassifierFull:TopCam:weighted_Cb_histogram", i, weightedHistTopCb[i]);
@@ -635,7 +635,7 @@ void FieldColorClassifierFull::runDebugRequests()
     }
   );
   DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:BottomCam:enable_plots",
-    for(unsigned int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i ++)
+    for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i ++)
     {
       PLOT_GENERIC("FieldColorClassifierFull:BottomCam:weighted_Y_histogram", i, weightedHistY[i]);
       PLOT_GENERIC("FieldColorClassifierFull:BottomCam:weighted_Cb_histogram", i, weightedHistCb[i]);

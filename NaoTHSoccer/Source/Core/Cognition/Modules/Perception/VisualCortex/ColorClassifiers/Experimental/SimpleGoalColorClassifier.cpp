@@ -62,16 +62,16 @@ void SimpleGoalColorClassifier::histogramExperiments()
   PixelT<int> fieldMin = getFieldColorPercept().range.getMin();
 
 
-  for(int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+  for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
     if(i < fieldMin.u) {
-      histU.set(i, getColorChanelHistograms().histogramU.rawData[i]);
+      histU.set(i, getColorChannelHistograms().histogramU.rawData[i]);
     } else {
       histU.set(i, 0);
     }
 
     if(i > fieldMax.v ) {
-      histV.set(i, getColorChanelHistograms().histogramV.rawData[i]);
+      histV.set(i, getColorChannelHistograms().histogramV.rawData[i]);
     } else {
       histV.set(i, 0);
     }
@@ -91,10 +91,10 @@ void SimpleGoalColorClassifier::histogramExperiments()
 
 
   DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:enable_plots",
-    for(int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+    for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
     {
-      getColorChanelHistogramsTop().histogramU.plotRaw("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histUorg");
-      getColorChanelHistogramsTop().histogramV.plotRaw("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histVorg");
+      getColorChannelHistogramsTop().histogramU.plotRaw("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histUorg");
+      getColorChannelHistogramsTop().histogramV.plotRaw("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histVorg");
       PLOT_GENERIC("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histU", i, histTopU.rawData[i]);
       PLOT_GENERIC("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histV", i, histTopV.rawData[i]);
     }

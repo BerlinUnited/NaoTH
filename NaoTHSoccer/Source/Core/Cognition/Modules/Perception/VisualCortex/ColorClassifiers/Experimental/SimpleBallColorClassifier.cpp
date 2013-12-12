@@ -39,17 +39,17 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
   getSimpleBallColorPercept().lastUpdated = getFrameInfo();;
 
   DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:enable_plots",
-    for(int i = 0; i < ColorChanelHistograms::VALUE_COUNT; i++)
+    for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
     {
       if(i > ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV )
       {
-        histV[i] = getColorChanelHistograms().histogramV.rawData[i];
+        histV[i] = getColorChannelHistograms().histogramV.rawData[i];
       }
       else
       {
         histV[i] = 0.0;
       }
-      getColorChanelHistograms().histogramV.plotRaw("SimpleBallColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histVorg");
+      getColorChannelHistograms().histogramV.plotRaw("SimpleBallColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histVorg");
       PLOT_GENERIC("SimpleBallColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histV", i, histV[i]);
     }
   );
