@@ -37,22 +37,38 @@
 // Perception
 #include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
-#include "Modules/Perception/VisualCortex/ImageCorrector.h"
-#include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
-#include "Modules/Perception/VisualCortex/ColorProvider.h"
-#include "Modules/Perception/VisualCortex/GridProvider.h"
-#include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptProjector/PerceptProjector.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
 #include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
-
-// neo vision
-#include "Modules/Perception/NeoVision/NeoVision.h"
-
+#include "Modules/Perception/BodyContourProvider/BodyContourProvider.h"
+//Perception - Vision
+#include "Modules/Perception/VisualCortex/ImageCorrector.h"
+#include "Modules/Perception/VisualCortex/ColorProvider.h"
+#include "Modules/Perception/VisualCortex/GridProvider.h"
+#include "Modules/Perception/VisualCortex/ImageProcessor.h"
+//Perception - Vision -- Classifiers
+#include "Modules/Perception/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/BaseColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/FieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/FieldColorClassifierFull.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/SimpleGoalColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/SimpleBallColorClassifier.h"
+//Perception - Vision -- ColorClass based Detectors
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/HistogramFieldDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/FieldDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/GoalDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/BallDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
+//Perception - Vision -- Detectors
+#include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetectorDifferential.h"
+#include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
+#include "Modules/Perception/VisualCortex/Detectors/Experimental/NeoLineDetector.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -147,17 +163,36 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
-  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(BaseColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifierFull);
+  REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(SimpleGoalColorClassifier);
+  REGISTER_MODULE(SimpleBallColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
+  REGISTER_MODULE(BodyContourProvider);
+
+  REGISTER_MODULE(HistogramFieldDetector);
+  REGISTER_MODULE(FieldDetector);
+
+  REGISTER_MODULE(ScanLineEdgelDetectorDifferential);
+  REGISTER_MODULE(LineDetector);
+  REGISTER_MODULE(NeoLineDetector);
+  REGISTER_MODULE(LineClusterProvider);
+
+  REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GradientGoalDetector);
+
+  REGISTER_MODULE(BallDetector);
+  REGISTER_MODULE(MaximumRedBallDetector);
+
+  REGISTER_MODULE(RobotDetector);
+
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(OpenCVDebug);
-  // neo vision
-  REGISTER_MODULE(NeoVision);
-
 
   // scene analysers 
   // (analyze the visual information seen in the image)

@@ -6,6 +6,8 @@
 */
 
 #include "ImageProcessor.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 
 ImageProcessor::ImageProcessor()
 {
@@ -18,54 +20,11 @@ ImageProcessor::ImageProcessor()
   DEBUG_REQUEST_REGISTER("ImageProcessor:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
-
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, HistogramFieldDetector, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, BodyContourProvider, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, ScanLineEdgelDetector, " ", false);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, FieldDetector, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, BallDetector, " ", false);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, RobotDetector, " ", false);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, LineDetector, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, LineClusterProvider, " ", false);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, GoalDetector, " ", false);
-
-  // TODO: NeoVision stuff
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, SimpleFieldColorClassifier, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, ScanLineEdgelDetectorDifferential, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, GradientGoalDetector, " ", true);
-  DEBUG_REQUEST_REGISTER_SUBMODULE(ImageProcessor, MaximumRedBallDetector, " ", true);
-
 }//end constructor
 
 
 void ImageProcessor::execute()
 {
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, SimpleFieldColorClassifier);
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, HistogramFieldDetector);
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, FieldDetector);
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, BodyContourProvider);
-
-  //robot detector using waist band color
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, RobotDetector);
-
-  //color based goal detector
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, GoalDetector);
-  //Gradient based gola detector (default)
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, GradientGoalDetector);
-
-  //Edgel detector using threshold and color
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, ScanLineEdgelDetector);
-  //Edgel detector using differences
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, ScanLineEdgelDetectorDifferential);
-
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, LineDetector);
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, LineClusterProvider);
-
-  //ball detector based on color
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, BallDetector);
-  //ball detector based on gradients and red color peaks search inside field region (needs known field)
-  DEBUG_EXECUTE_SUBMODULE(ImageProcessor, MaximumRedBallDetector);
-
   GT_TRACE("executing rest of ImageProcessor::execute()");
 
   //draw horizon to image
