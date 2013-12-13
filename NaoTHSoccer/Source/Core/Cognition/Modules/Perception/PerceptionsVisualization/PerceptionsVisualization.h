@@ -11,7 +11,9 @@
 //include section
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
+
 //perceptions
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/FieldPercept.h"
@@ -32,6 +34,8 @@
 
 //module declaration section
 BEGIN_DECLARE_MODULE(PerceptionsVisualization)
+  REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
   REQUIRE(FieldPercept)
@@ -43,11 +47,11 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualization)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   
-  PROVIDE(CameraMatrixOffset)
+  REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  PROVIDE(Image)
-  PROVIDE(ImageTop)
+  REQUIRE(Image)
+  REQUIRE(ImageTop)
 
   REQUIRE(ObjectPercept)
   REQUIRE(PlayersPercept)

@@ -16,6 +16,8 @@ using namespace std;
 PerceptionsVisualization::PerceptionsVisualization()
   : cameraID(CameraInfo::numOfCamera)
 {
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:draw_horizon", "draw the hizon line in the image", false);
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamTop", "execute for the top cam", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamBottom", "execute for the bottom cam", false);
 
@@ -52,6 +54,13 @@ void PerceptionsVisualization::execute()
 void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  CANVAS_PX(cameraID);
+
+  DEBUG_REQUEST("PerceptionsVisualization:image:draw_horizon",
+    Vector2d a(getArtificialHorizon().begin());
+    Vector2d b(getArtificialHorizon().end());
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+  );
 
   //draw ball percept
   DEBUG_REQUEST("PerceptionsVisualization:field:ball_percept",
