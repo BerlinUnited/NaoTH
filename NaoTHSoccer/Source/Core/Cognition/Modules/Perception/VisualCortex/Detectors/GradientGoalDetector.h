@@ -45,18 +45,13 @@ BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  REQUIRE(CameraInfo)
-  REQUIRE(CameraInfoTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  REQUIRE(KinematicChain)
-  REQUIRE(FieldPercept)
-  REQUIRE(FieldPerceptTop)
+
+  //REQUIRE(FieldPercept)
+  //REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-  REQUIRE(BodyContour)
-  REQUIRE(BodyContourTop)
-  REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
 
   PROVIDE(GoalPercept)
@@ -154,11 +149,8 @@ private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, Image);
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(GradientGoalDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldPercept);
-  DOUBLE_CAM_REQUIRE(GradientGoalDetector, BodyContour);
 
   DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPercept);
           

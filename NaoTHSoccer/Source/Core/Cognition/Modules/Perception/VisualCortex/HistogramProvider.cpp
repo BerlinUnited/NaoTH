@@ -22,17 +22,6 @@ void HistogramProvider::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(id);
 
-  // fill the grid
-  STOPWATCH_START("getColorChannelHistograms");
-  calculateHistograms();
-  STOPWATCH_STOP("getColorChannelHistograms");
-
-}//end execute
-
-// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter gleich,
-// daher wird es nicht im GridCreator gemacht)
-void HistogramProvider::calculateHistograms()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
-{
   getColorChannelHistograms().init();
 
   Pixel pixel;
@@ -51,5 +40,5 @@ void HistogramProvider::calculateHistograms()//const Grid& grid)//, ColoredGrid&
   getColorChannelHistograms().histogramU.calculate();
   getColorChannelHistograms().histogramV.calculate();
 
-}//end calculateColoredGrid
+}//end execute
 

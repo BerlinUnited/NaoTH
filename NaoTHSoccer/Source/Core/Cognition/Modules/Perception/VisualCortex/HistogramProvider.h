@@ -24,8 +24,6 @@
 BEGIN_DECLARE_MODULE(HistogramProvider)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(ColorClassificationModel)
-  REQUIRE(ColorClassificationModelTop)
 
   PROVIDE(ColorChannelHistograms)
   PROVIDE(ColorChannelHistogramsTop)
@@ -54,11 +52,7 @@ private:
   UniformGrid uniformGrid; // subsampling of the image
   CameraInfo::CameraID cameraID;
 
-  void calculateHistograms();
-
   DOUBLE_CAM_REQUIRE(HistogramProvider, Image);
-  DOUBLE_CAM_REQUIRE(HistogramProvider, ColorClassificationModel);
-  
   DOUBLE_CAM_PROVIDE(HistogramProvider, ColorChannelHistograms);
 };
 

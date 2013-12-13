@@ -46,11 +46,8 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  REQUIRE(CameraInfo)
-  REQUIRE(CameraInfoTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  REQUIRE(KinematicChain)
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
@@ -61,6 +58,7 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(FrameInfo)
   REQUIRE(BaseColorRegionPercept)
   REQUIRE(BaseColorRegionPerceptTop)
+
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
 END_DECLARE_MODULE(MaximumRedBallDetector)
@@ -154,7 +152,6 @@ private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, Image);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldPercept);
