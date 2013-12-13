@@ -4,10 +4,12 @@
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Perception/Histograms.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
@@ -16,8 +18,6 @@
 #include "Tools/DataStructures/Histogram.h"
 
 //Perception
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/ColorRegion.h"
 #include "Tools/ImageProcessing/CalibrationRect.h"
 

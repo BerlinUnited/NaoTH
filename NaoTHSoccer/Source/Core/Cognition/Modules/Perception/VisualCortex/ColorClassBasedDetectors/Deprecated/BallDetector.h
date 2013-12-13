@@ -22,21 +22,19 @@
 
 #include <Representations/Infrastructure/Image.h>
 
-#include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-//#include "Representations/Perception/BlobPercept.h"
+#include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldPercept.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
-
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 // tools
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 

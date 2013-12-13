@@ -23,20 +23,18 @@
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
-
-#include "Representations/Perception/BodyContour.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Perception/FieldPercept.h"
 #include <Representations/Infrastructure/FrameInfo.h>
-
+#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 // tools
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/GradientSpiderScan.h"
 #include "Tools/DoubleCamHelpers.h"
 

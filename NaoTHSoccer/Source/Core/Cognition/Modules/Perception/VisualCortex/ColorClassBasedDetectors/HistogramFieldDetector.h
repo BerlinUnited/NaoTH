@@ -18,13 +18,13 @@
 
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/ArtificialHorizon.h"
+#include "Representations/Perception/Histograms.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 #include "Tools/Debug/DebugRequest.h"

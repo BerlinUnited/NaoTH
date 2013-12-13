@@ -22,7 +22,7 @@
 
 //Representations
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "ColoredGrid.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 
 
 class ColorClassesHistograms: public naoth::Printable

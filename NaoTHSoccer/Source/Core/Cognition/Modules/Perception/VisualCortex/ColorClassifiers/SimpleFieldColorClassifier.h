@@ -12,16 +12,16 @@
 #include <ModuleFramework/Module.h>
 
 // Representations
-#include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/ImageProcessing/Histograms.h"
 #include "Representations/Infrastructure/Image.h" // just for debug
+#include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Perception/Histograms.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/ImageProcessing/Grid/uniformGrid.h>
+#include <Tools/DataStructures/Grid/uniformGrid.h>
 
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DoubleCamHelpers.h"

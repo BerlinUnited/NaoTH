@@ -18,7 +18,9 @@
 
 // local tools
 #include "Blob.h"
-#include "ColoredGrid.h"
+
+//representations
+#include "Representations/Infrastructure/ColoredGrid.h"
 
 
 class BlobFinder

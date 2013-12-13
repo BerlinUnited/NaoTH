@@ -12,16 +12,16 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Perception/Histograms.h"
+#include "Representations/Perception/FieldColorPercept.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 
 //Perception
-#include "Tools/ImageProcessing/Histograms.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/FieldColorParameters.h"
 #include "Tools/ImageProcessing/ColorCalibrator.h"
 

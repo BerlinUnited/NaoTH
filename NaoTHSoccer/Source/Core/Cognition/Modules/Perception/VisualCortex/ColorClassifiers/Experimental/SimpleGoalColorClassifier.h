@@ -10,19 +10,17 @@
 #include <ModuleFramework/Module.h>
 
 // Representations
+#include "Representations/Infrastructure/Image.h" // just for debug
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Perception/Histograms.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/SimpleGoalColorPercept.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-
-#include "Representations/Infrastructure/Image.h" // just for debug
-
 
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
-#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/DataStructures/Histogram.h"
 
 #include "Tools/DoubleCamHelpers.h"

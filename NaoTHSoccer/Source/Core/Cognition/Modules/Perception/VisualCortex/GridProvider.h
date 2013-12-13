@@ -10,12 +10,10 @@
 
 #include <ModuleFramework/Module.h>
 
-//Tools
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
-
 // Representations
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
+#include "Representations/Perception/Histograms.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/DoubleCamHelpers.h"

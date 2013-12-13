@@ -27,7 +27,6 @@
 #include "Tools/DoubleCamHelpers.h"
 
 //Perception
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/BlobList.h"
 
@@ -35,6 +34,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/CameraMatrix.h"

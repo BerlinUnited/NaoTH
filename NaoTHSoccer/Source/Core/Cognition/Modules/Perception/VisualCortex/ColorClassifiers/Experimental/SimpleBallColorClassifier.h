@@ -12,14 +12,12 @@
 #include <ModuleFramework/Module.h>
 
 // Representations
+#include "Representations/Infrastructure/Image.h" // just for debug
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/SimpleGoalColorPercept.h"
 #include "Representations/Perception/SimpleBallColorPercept.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/ImageProcessing/Histograms.h"
-//#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Representations/Infrastructure/Image.h" // just for debug
-
+#include "Representations/Perception/Histograms.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"

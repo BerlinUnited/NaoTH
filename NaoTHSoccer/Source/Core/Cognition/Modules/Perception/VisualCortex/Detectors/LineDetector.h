@@ -27,8 +27,8 @@
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/ImageProcessing/ClusteredLine.h"
 #include "Tools/ImageProcessing/Edgel.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
 
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"

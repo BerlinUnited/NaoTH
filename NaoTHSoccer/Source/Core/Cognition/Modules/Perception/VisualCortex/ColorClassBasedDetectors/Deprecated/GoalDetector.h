@@ -14,6 +14,7 @@
 // representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/GoalPercept.h"
@@ -26,7 +27,6 @@
 #include "Tools/Math/Moments2.h"
 
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/BlobFinder.h"
 
 #include "Tools/DataStructures/OccupancyGrid.h"
