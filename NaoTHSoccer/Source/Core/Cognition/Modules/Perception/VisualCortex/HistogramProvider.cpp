@@ -23,9 +23,9 @@ void HistogramProvider::execute(CameraInfo::CameraID id)
   CANVAS_PX(id);
 
   // fill the grid
-  STOPWATCH_START("Histograms");
+  STOPWATCH_START("getColorChannelHistograms");
   calculateHistograms();
-  STOPWATCH_STOP("Histograms");
+  STOPWATCH_STOP("getColorChannelHistograms");
 
 }//end execute
 

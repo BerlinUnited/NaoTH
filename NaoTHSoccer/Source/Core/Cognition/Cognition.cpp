@@ -163,6 +163,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
+  REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifierFull);
@@ -171,7 +172,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(SimpleBallColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
-  REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(BodyContourProvider);
 
   REGISTER_MODULE(HistogramFieldDetector);
