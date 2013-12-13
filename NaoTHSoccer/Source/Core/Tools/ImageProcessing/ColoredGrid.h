@@ -75,9 +75,6 @@ public:
   bool valid;
   double percentOfUnknownColors;
   double percentOfKnownColors;
-  double meanBrightness;
-  double meanBlue;
-  double meanRed;
 
   // the grid morphology
   UniformGrid uniformGrid;
@@ -218,9 +215,6 @@ public:
     // statistics
     percentOfUnknownColors = 0;
     percentOfKnownColors = 0;
-    meanBrightness = 127.0;
-    meanBlue = 127.0;
-    meanRed = 127.0;
 
     valid =  false;
 
@@ -239,9 +233,6 @@ public:
     stream << "Width = " << uniformGrid.width << std::endl
             << "Height = " << uniformGrid.height << std::endl
             << "Valid = " << (valid ? "true" : "false") << std::endl
-            << "Mean Brightness = " << meanBrightness << std::endl
-            << "Mean Blue = " << meanBlue << std::endl
-            << "Mean Red = " << meanRed << std::endl
             << "Percent of known colors = " << percentOfKnownColors << std::endl
             << "Percent of unknown colors = " << percentOfUnknownColors << std::endl
             << "Rate of colors : " << std::endl;

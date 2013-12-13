@@ -52,9 +52,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 {
   getColoredGrid().reset();
 
-  unsigned int grey = 0;
-  unsigned int red = 0;
-  unsigned int blue = 0;
   Pixel pixel;
   
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
@@ -62,12 +59,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
 
     getImage().get(point.x, point.y, pixel);
-
-    // TODO: check if it is needed
-    // mean color
-    grey += pixel.y; // used by BaseColorClassifier
-    red  += pixel.u; // used by BaseColorClassifier
-    blue += pixel.v; // used by BaseColorClassifier
 
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
@@ -77,10 +68,5 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   }//end for
 
   getColoredGrid().validate();
-  
-  unsigned int imgArea = getColoredGrid().uniformGrid.maxNumberOfPoints;
-  getColoredGrid().meanBrightness = grey / imgArea;
-  getColoredGrid().meanRed = red / imgArea;
-  getColoredGrid().meanBlue = blue / imgArea;
 }//end calculateColoredGrid
 

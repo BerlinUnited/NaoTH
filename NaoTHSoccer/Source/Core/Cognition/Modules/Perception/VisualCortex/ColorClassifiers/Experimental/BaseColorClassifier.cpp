@@ -87,12 +87,12 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:BaseColorClassifier:CamTop:calibrate_colors:reset_data", " ", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:BaseColorClassifier:CamBottom:calibrate_colors:reset_data", " ", false);
   
-  lastMeanY = getColoredGrid().meanBrightness;
-  lastMeanU = getColoredGrid().meanBlue;
-  lastMeanV = getColoredGrid().meanRed;
-  lastMeanTopY = getColoredGridTop().meanBrightness;
-  lastMeanTopU = getColoredGridTop().meanBlue;
-  lastMeanTopV = getColoredGridTop().meanRed;
+  lastMeanY = getColorChannelHistograms().histogramY.mean;
+  lastMeanU = getColorChannelHistograms().histogramU.mean;
+  lastMeanV = getColorChannelHistograms().histogramV.mean;
+  lastMeanTopY = getColorChannelHistogramsTop().histogramY.mean;
+  lastMeanTopU = getColorChannelHistogramsTop().histogramU.mean;
+  lastMeanTopV = getColorChannelHistogramsTop().histogramV.mean;
 
   lastMinY = 0;
   lastMinTopY = 0;
@@ -174,62 +174,62 @@ void BaseColorClassifier::initPercepts()
 void BaseColorClassifier::execute()
 {
   double timeDiff = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-  double diff = fabs(getColoredGrid().meanBrightness - lastMeanY);
+  double diff = fabs(getColorChannelHistograms().histogramY.mean - lastMeanY);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    meanY.add(getColoredGrid().meanBrightness);
+    meanY.add(getColorChannelHistograms().histogramY.mean);
     getBaseColorRegionPercept().meanEnv.y = meanY.getAverage();
     getBaseColorRegionPercept().diff.y = diff;
-    lastMeanY = getColoredGrid().meanBrightness;
+    lastMeanY = getColorChannelHistograms().histogramY.mean;
   }
-  getBaseColorRegionPercept().meanImg.y = getColoredGrid().meanBrightness;
-  double diffTop = fabs(getColoredGridTop().meanBrightness - lastMeanTopY);
+  getBaseColorRegionPercept().meanImg.y = getColorChannelHistograms().histogramY.mean;
+  double diffTop = fabs(getColorChannelHistogramsTop().histogramY.mean - lastMeanTopY);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    meanTopY.add(getColoredGridTop().meanBrightness);
+    meanTopY.add(getColorChannelHistogramsTop().histogramY.mean);
     getBaseColorRegionPerceptTop().meanEnv.y = meanTopY.getAverage();
     getBaseColorRegionPerceptTop().diff.y = diffTop;
-    lastMeanTopY = getColoredGridTop().meanBrightness;
+    lastMeanTopY = getColorChannelHistogramsTop().histogramY.mean;
   }
-  getBaseColorRegionPerceptTop().meanImg.y = getColoredGridTop().meanBrightness;
+  getBaseColorRegionPerceptTop().meanImg.y = getColorChannelHistogramsTop().histogramY.mean;
 
-  diff = fabs(getColoredGrid().meanBlue - lastMeanU);
+  diff = fabs(getColorChannelHistograms().histogramU.mean - lastMeanU);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    meanU.add(getColoredGrid().meanBlue);
+    meanU.add(getColorChannelHistograms().histogramU.mean);
     getBaseColorRegionPercept().meanEnv.u = meanU.getAverage();
     getBaseColorRegionPercept().diff.u = diff;
-    lastMeanU = getColoredGrid().meanBlue;
+    lastMeanU = getColorChannelHistograms().histogramU.mean;
   }
-  getBaseColorRegionPercept().meanImg.u = getColoredGrid().meanBlue;
-  diffTop = fabs(getColoredGridTop().meanBlue - lastMeanTopU);
+  getBaseColorRegionPercept().meanImg.u = getColorChannelHistograms().histogramU.mean;
+  diffTop = fabs(getColorChannelHistogramsTop().histogramU.mean - lastMeanTopU);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    meanTopU.add(getColoredGridTop().meanBlue);
+    meanTopU.add(getColorChannelHistogramsTop().histogramU.mean);
     getBaseColorRegionPerceptTop().meanEnv.u = meanTopU.getAverage();
     getBaseColorRegionPerceptTop().diff.u = diffTop;
-    lastMeanTopU = getColoredGridTop().meanBlue;
+    lastMeanTopU = getColorChannelHistogramsTop().histogramU.mean;
   }
-  getBaseColorRegionPerceptTop().meanImg.u = getColoredGridTop().meanBlue;
+  getBaseColorRegionPerceptTop().meanImg.u = getColorChannelHistogramsTop().histogramU.mean;
 
-  diff = fabs(getColoredGrid().meanRed - lastMeanV);
+  diff = fabs(getColorChannelHistograms().histogramV.mean - lastMeanV);
   if(diff > 5.0 || timeDiff > 5.0)
   {
-    meanV.add(getColoredGrid().meanRed);
+    meanV.add(getColorChannelHistograms().histogramV.mean);
     getBaseColorRegionPercept().meanEnv.v = meanV.getAverage();
     getBaseColorRegionPercept().diff.v = diff;
-    lastMeanV = getColoredGrid().meanRed;
+    lastMeanV = getColorChannelHistograms().histogramV.mean;
   }
-  getBaseColorRegionPercept().meanImg.v = getColoredGrid().meanRed;
-  diffTop = fabs(getColoredGridTop().meanRed - lastMeanTopV);
+  getBaseColorRegionPercept().meanImg.v = getColorChannelHistograms().histogramV.mean;
+  diffTop = fabs(getColorChannelHistogramsTop().histogramV.mean - lastMeanTopV);
   if(diffTop > 5.0 || timeDiff > 5.0)
   {
-    meanTopV.add(getColoredGridTop().meanRed);
+    meanTopV.add(getColorChannelHistogramsTop().histogramV.mean);
     getBaseColorRegionPerceptTop().meanEnv.v = meanTopV.getAverage();
     getBaseColorRegionPerceptTop().diff.v = diffTop;
-    lastMeanTopV = getColoredGridTop().meanRed;
+    lastMeanTopV = getColorChannelHistogramsTop().histogramV.mean;
   }
-  getBaseColorRegionPerceptTop().meanImg.v = getColoredGridTop().meanRed;
+  getBaseColorRegionPerceptTop().meanImg.v = getColorChannelHistogramsTop().histogramV.mean;
 
   diff = fabs(getColorChannelHistograms().histogramY.min - lastMinY);
   if(diff > 5.0 || timeDiff > 5.0)
