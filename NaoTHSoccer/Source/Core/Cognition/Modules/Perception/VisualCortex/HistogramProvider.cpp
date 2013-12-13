@@ -15,9 +15,7 @@ HistogramProvider::HistogramProvider()
 :
   uniformGrid(getImage().width(), getImage().height(), 60, 40),
   cameraID(CameraInfo::Bottom)
-{
-  DEBUG_REQUEST_REGISTER("Vision:Histograms:enable_debug", "Enables the debug output for the histogram", false);
-}
+{}
 
 void HistogramProvider::execute(CameraInfo::CameraID id)
 {
@@ -29,16 +27,12 @@ void HistogramProvider::execute(CameraInfo::CameraID id)
   calculateHistograms();
   STOPWATCH_STOP("Histograms");
 
-  DEBUG_REQUEST("Vision:Histograms:enable_debug",
-    getHistograms().showDebugInfos(uniformGrid, getImage().cameraInfo);
-  );
 }//end execute
 
 // hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter gleich,
 // daher wird es nicht im GridCreator gemacht)
 void HistogramProvider::calculateHistograms()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
-  getHistograms().init();
   getColorChannelHistograms().init();
 
   Pixel pixel;
@@ -50,12 +44,6 @@ void HistogramProvider::calculateHistograms()//const Grid& grid)//, ColoredGrid&
     //getImage().getCorrected(point.x, point.y, pixel);
     getImage().get(point.x, point.y, pixel);
 
-    // classify the color
-    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
-
-    const Vector2i& gridPoint = uniformGrid.getGridCoordinates(i);
-    getHistograms().increaseValue(gridPoint, currentPixelColor);
-    
     getColorChannelHistograms().increaseChannelValue(pixel);
   }//end for
   

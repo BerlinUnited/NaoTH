@@ -12,6 +12,7 @@
 
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
+#include "Tools/ImageProcessing/Histograms.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
@@ -27,6 +28,8 @@ BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
 
+  PROVIDE(ColorClassesHistograms)
+  PROVIDE(ColorClassesHistogramsTop)
   PROVIDE(ColoredGrid)
   PROVIDE(ColoredGridTop)
 END_DECLARE_MODULE(GridProvider)
@@ -58,6 +61,7 @@ private:
   DOUBLE_CAM_REQUIRE(GridProvider, Image);
   DOUBLE_CAM_REQUIRE(GridProvider, ColorClassificationModel);
 
+  DOUBLE_CAM_PROVIDE(GridProvider, ColorClassesHistograms);
   DOUBLE_CAM_PROVIDE(GridProvider, ColoredGrid);
 };
 

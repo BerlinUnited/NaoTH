@@ -49,7 +49,6 @@
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/HistogramProvider.h"
-#include "Modules/Perception/VisualCortex/ImageProcessor.h"
 //Perception - Vision -- Classifiers
 #include "Modules/Perception/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/BaseColorClassifier.h"
@@ -191,7 +190,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(RobotDetector);
 
-  REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(OpenCVDebug);

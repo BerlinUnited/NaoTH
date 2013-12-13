@@ -14,19 +14,19 @@
 using namespace naoth;
 using namespace std;
 
-Histograms::Histograms()
+ColorClassesHistograms::ColorClassesHistograms()
 {
   std::stringstream dbgString;
   std::stringstream descString;
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
     dbgString.str("");
-    dbgString << "Vision:Histograms:x:" << ColorClasses::getColorName((ColorClasses::Color) color);
+    dbgString << "Vision:ColorClassesHistograms:x:" << ColorClasses::getColorName((ColorClasses::Color) color);
     descString.str("");
     descString << "draw X axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
     DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
     dbgString.str("");
-    dbgString << "Vision:Histograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
+    dbgString << "Vision:ColorClassesHistograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
     descString.str("");
     descString << "draw Y axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
     DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
@@ -35,7 +35,7 @@ Histograms::Histograms()
   init();
 }
 
-void Histograms::init()
+void ColorClassesHistograms::init()
 {
   for(int c = 0; c < ColorClasses::numOfColors; c++)
   {
@@ -45,7 +45,7 @@ void Histograms::init()
 }//end init
 
 
-void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
+void ColorClassesHistograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
 {
   std::stringstream dbgString;
   bool drawXHist = false;
@@ -54,7 +54,7 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
     dbgString.str("");
-    dbgString << "Vision:Histograms:x:" << ColorClasses::getColorName( (ColorClasses::Color) color);
+    dbgString << "Vision:ColorClassesHistograms:x:" << ColorClasses::getColorName( (ColorClasses::Color) color);
     DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawXHist = true;
     Vector2<int> last(cameraInfo.resolutionWidth - (xHistogram[color].rawData[0] * 1), 0);
@@ -74,7 +74,7 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
     );
 
     dbgString.str("");
-    dbgString << "Vision:Histograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
+    dbgString << "Vision:ColorClassesHistograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
     DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawYHist = true;
     Vector2<int> last(0, cameraInfo.resolutionHeight - (yHistogram[color].rawData[0] * 1) );
@@ -150,7 +150,7 @@ void Histograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& camer
 }//end showDebugInfos
 
 
-inline void Histograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
+inline void ColorClassesHistograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
 {
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
@@ -162,28 +162,28 @@ inline void Histograms::createFromColoredGrid(const ColoredGrid& coloredGrid)
   }
 }//end createFromColoredGrid
 
-void Histograms::print(ostream& stream) const
+void ColorClassesHistograms::print(ostream& stream) const
 {
-  stream << "Histogram";
+  stream << "ColorClassesHistograms";
 }//end print
 
 
 ColorChannelHistograms::ColorChannelHistograms()
 {
-  DEBUG_REQUEST_REGISTER("Vision:Histograms:plotY", "plot Y channel histogram bottom image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Histograms:plotU", "plot U channel histogram bottom image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Histograms:plotV", "plot V channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorChannelHistograms:plotY", "plot Y channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorChannelHistograms:plotU", "plot U channel histogram bottom image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorChannelHistograms:plotV", "plot V channel histogram bottom image", false);
 }
 
 void ColorChannelHistograms::showDebugInfos() const
 {
-  DEBUG_REQUEST("Vision:Histograms:plotY", 
+  DEBUG_REQUEST("Vision:ColorChannelHistograms:plotY", 
     histogramY.plot("Histograms:Y");
   );
-  DEBUG_REQUEST("Vision:Histograms:plotU", 
+  DEBUG_REQUEST("Vision:ColorChannelHistograms:plotU", 
     histogramU.plot("Histograms:U");
   );
-  DEBUG_REQUEST("Vision:Histograms:plotV", 
+  DEBUG_REQUEST("Vision:ColorChannelHistograms:plotV", 
     histogramV.plot("Histograms:V");
   );
 }

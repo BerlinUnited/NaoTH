@@ -27,8 +27,6 @@ BEGIN_DECLARE_MODULE(HistogramProvider)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
 
-  PROVIDE(Histograms)
-  PROVIDE(HistogramsTop)
   PROVIDE(ColorChannelHistograms)
   PROVIDE(ColorChannelHistogramsTop)
 END_DECLARE_MODULE(HistogramProvider)
@@ -61,7 +59,6 @@ private:
   DOUBLE_CAM_REQUIRE(HistogramProvider, Image);
   DOUBLE_CAM_REQUIRE(HistogramProvider, ColorClassificationModel);
   
-  DOUBLE_CAM_PROVIDE(HistogramProvider, Histograms);
   DOUBLE_CAM_PROVIDE(HistogramProvider, ColorChannelHistograms);
 };
 

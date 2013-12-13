@@ -19,7 +19,6 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
@@ -41,14 +40,12 @@
 BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
   REQUIRE(ColoredGrid)
   REQUIRE(ColoredGridTop)
-  REQUIRE(Histograms)
-  REQUIRE(HistogramsTop)
+  REQUIRE(ColorClassesHistograms)
+  REQUIRE(ColorClassesHistogramsTop)
 
   PROVIDE(FieldPerceptRaw)
   PROVIDE(FieldPerceptRawTop)
@@ -79,9 +76,8 @@ private:
 
   DOUBLE_CAM_REQUIRE(HistogramFieldDetector, Image);
   DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ColoredGrid);
-  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ArtificialHorizon);
-  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, Histograms);
+  DOUBLE_CAM_REQUIRE(HistogramFieldDetector, ColorClassesHistograms);
 
   DOUBLE_CAM_PROVIDE(HistogramFieldDetector, FieldPerceptRaw);
 

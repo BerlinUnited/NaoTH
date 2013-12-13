@@ -25,11 +25,11 @@
 #include "ColoredGrid.h"
 
 
-class Histograms: public naoth::Printable
+class ColorClassesHistograms: public naoth::Printable
 {
  public:
-    Histograms();
-    ~Histograms(){}
+    ColorClassesHistograms();
+    ~ColorClassesHistograms(){}
 
     void init();
 
@@ -90,7 +90,7 @@ public:
   bool colorChannelIsUptodate;
 };
 
-class HistogramsTop : public Histograms{};
+class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 class ColorChannelHistogramsTop: public ColorChannelHistograms{};
 
 #endif  /* _Histogram_H */

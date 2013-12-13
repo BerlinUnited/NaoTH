@@ -70,14 +70,14 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2i& min, Vector2i& 
     if
     (
       (
-      getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel
-      || 0.9 * getHistograms().xHistogram[fieldColor].rawData[y] + 0.1 * getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel
+      getColorClassesHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel
+      || 0.9 * getColorClassesHistograms().xHistogram[fieldColor].rawData[y] + 0.1 * getColorClassesHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel
       )
       && whiteCount <= LINE_THICKNESS
     )
     {
       otherCount = 0;
-      if(getHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel)
+      if(getColorClassesHistograms().xHistogram[fieldColor].rawData[y] >= minXHistLevel)
       {
         if(whiteCount > 0)
         {
@@ -94,7 +94,7 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2i& min, Vector2i& 
         actMax.y = y;
       }
     }
-    else if(getHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
+    else if(getColorClassesHistograms().xHistogram[lineColor].rawData[y] >= minXHistLevel && (actMax.y - actMin.y) > 1)
     {
       whiteCount++;
       otherCount = 0;
@@ -127,8 +127,8 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2i& min, Vector2i& 
     if
     (
       (
-      getHistograms().yHistogram[fieldColor].rawData[x] >= minYHistLevel
-      || 0.9 * getHistograms().yHistogram[fieldColor].rawData[x] + 0.1 * getHistograms().yHistogram[lineColor].rawData[x] >= minYHistLevel
+      getColorClassesHistograms().yHistogram[fieldColor].rawData[x] >= minYHistLevel
+      || 0.9 * getColorClassesHistograms().yHistogram[fieldColor].rawData[x] + 0.1 * getColorClassesHistograms().yHistogram[lineColor].rawData[x] >= minYHistLevel
       )
     )
     {

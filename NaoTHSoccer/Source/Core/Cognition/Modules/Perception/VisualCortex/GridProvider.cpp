@@ -17,6 +17,7 @@ GridProvider::GridProvider()
 {
   DEBUG_REQUEST_REGISTER("Vision:show_grid", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("Vision:show_classified_image", "draw the image represented by uniformGrid", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassesHistograms:enable_debug", "Enables the debug output for the histogram", false);
 }
 
 void GridProvider::execute(CameraInfo::CameraID id)
@@ -37,6 +38,10 @@ void GridProvider::execute(CameraInfo::CameraID id)
     }
   );
 
+  DEBUG_REQUEST("Vision:ColorClassesHistograms:enable_debug",
+    getColorClassesHistograms().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
+  );
+
   DEBUG_REQUEST("Vision:show_classified_image",
     for(int x=0; x<(int)getColoredGrid().uniformGrid.width; x++) {
       for(int y=0; y<(int)getColoredGrid().uniformGrid.height; y++) {
@@ -51,6 +56,7 @@ void GridProvider::execute(CameraInfo::CameraID id)
 void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
   getColoredGrid().reset();
+  getColorClassesHistograms().init();
 
   Pixel pixel;
   
@@ -63,6 +69,9 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
 
+    const Vector2i& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
+    getColorClassesHistograms().increaseValue(gridPoint, currentPixelColor);
+    
     // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
   }//end for
