@@ -58,11 +58,11 @@
 #include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/SimpleBallColorClassifier.h"
 //Perception - Vision -- ColorClass based Detectors
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/HistogramFieldDetector.h"
-#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/GoalDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/BallDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
 //Perception - Vision -- Detectors
+#include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetectorDifferential.h"
 #include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
