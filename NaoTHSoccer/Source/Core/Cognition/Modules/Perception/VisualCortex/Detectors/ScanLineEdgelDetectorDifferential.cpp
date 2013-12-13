@@ -33,13 +33,19 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   getScanLineEdgelPercept().reset();
 
   // needs a valid field polygon
-  if(!getFieldPerceptRaw().valid) {
-    return;
-  }
+  //if(!getFieldPerceptRaw().valid) {
+  //  return;
+  //}
 
   double h = 500.0;
   double d_2 = 50/2;
-  double horizon_height = std::min(getArtificialHorizon().begin().y, getArtificialHorizon().end().y);
+ 
+  int horizon_height = (int)(std::min(getArtificialHorizon().begin().y, getArtificialHorizon().end().y)+0.5);
+  // clamp it to the image
+  horizon_height = Math::clamp(horizon_height,0,(int)getImage().height());
+
+  // scan only inside the estimated field region
+  //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
   for(int i = 0; i < (int) naoth::IMAGE_HEIGHT; i++)
   {
@@ -70,9 +76,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     }
   );
 
-  // scan only inside the estimated field region
-  Vector2<unsigned int> beginField = getFieldPerceptRaw().getValidField().points[0];
-
+  
   // horizontal stepsize between the scanlines
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);
   //int remaining_pixels = (getImage().cameraInfo.resolutionWidth - 1) % theParameters.scanline_count;
@@ -82,7 +86,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   
   // start and endpoints for the scanlines
   Vector2<int> start(step / 2, borderY);
-  Vector2<int> end(step / 2, beginField.y );
+  Vector2<int> end(step / 2, horizon_height );
   
 
   for (int i = 0; i < theParameters.scanline_count - 1; i++)
