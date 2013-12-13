@@ -17,7 +17,6 @@ GridProvider::GridProvider()
 {
   DEBUG_REQUEST_REGISTER("Vision:show_grid", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("Vision:show_classified_image", "draw the image represented by uniformGrid", false);
-  DEBUG_REQUEST_REGISTER("Vision:Histograms:enable_debug", "Enables the debug output for the histogram", false);
 }
 
 void GridProvider::execute(CameraInfo::CameraID id)
@@ -26,9 +25,9 @@ void GridProvider::execute(CameraInfo::CameraID id)
   CANVAS_PX(id);
 
   // fill the grid
-  STOPWATCH_START("Histogram+ColoredGrid");
+  STOPWATCH_START("ColoredGrid");
   calculateColoredGrid();
-  STOPWATCH_STOP("Histogram+ColoredGrid");
+  STOPWATCH_STOP("ColoredGrid");
 
   // make some debug
   DEBUG_REQUEST("Vision:show_grid",
@@ -36,10 +35,6 @@ void GridProvider::execute(CameraInfo::CameraID id)
       const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
       POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
     }
-  );
-
-  DEBUG_REQUEST("Vision:Histograms:enable_debug",
-    getHistograms().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
   );
 
   DEBUG_REQUEST("Vision:show_classified_image",
@@ -56,8 +51,6 @@ void GridProvider::execute(CameraInfo::CameraID id)
 void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
   getColoredGrid().reset();
-  getHistograms().init();
-  getColorChannelHistograms().init();
 
   unsigned int grey = 0;
   unsigned int red = 0;
@@ -68,7 +61,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   {
     const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
 
-    //getImage().getCorrected(point.x, point.y, pixel);
     getImage().get(point.x, point.y, pixel);
 
     // TODO: check if it is needed
@@ -82,11 +74,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
     // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
-
-    const Vector2i& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
-    getHistograms().increaseValue(gridPoint, currentPixelColor);
-    
-    getColorChannelHistograms().increaseChannelValue(pixel);
   }//end for
 
   getColoredGrid().validate();
@@ -95,10 +82,5 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getColoredGrid().meanBrightness = grey / imgArea;
   getColoredGrid().meanRed = red / imgArea;
   getColoredGrid().meanBlue = blue / imgArea;
-
-  getColorChannelHistograms().histogramY.calculate();
-  getColorChannelHistograms().histogramU.calculate();
-  getColorChannelHistograms().histogramV.calculate();
-
 }//end calculateColoredGrid
 

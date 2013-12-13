@@ -12,12 +12,10 @@
 
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
-#include "Representations/Perception/CameraMatrix.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -28,18 +26,9 @@ BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
-  REQUIRE(FieldColorPercept)
-  REQUIRE(FieldColorPerceptTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
 
   PROVIDE(ColoredGrid)
   PROVIDE(ColoredGridTop)
-  PROVIDE(Histograms)
-  PROVIDE(HistogramsTop)
-
-  PROVIDE(ColorChannelHistograms)
-  PROVIDE(ColorChannelHistogramsTop)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -68,12 +57,8 @@ private:
 
   DOUBLE_CAM_REQUIRE(GridProvider, Image);
   DOUBLE_CAM_REQUIRE(GridProvider, ColorClassificationModel);
-  DOUBLE_CAM_REQUIRE(GridProvider, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(GridProvider, CameraMatrix);
 
   DOUBLE_CAM_PROVIDE(GridProvider, ColoredGrid);
-  DOUBLE_CAM_PROVIDE(GridProvider, Histograms);
-  DOUBLE_CAM_PROVIDE(GridProvider, ColorChannelHistograms);
 };
 
 #endif // _GridProvider_h_
