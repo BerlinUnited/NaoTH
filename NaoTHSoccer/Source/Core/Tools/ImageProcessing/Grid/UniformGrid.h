@@ -5,7 +5,6 @@
 #include <Tools/Math/Vector2.h>
 
 #include "Grid.h"
-//#include <Representations/Infrastructure/CameraInfo.h>
 
 class UniformGrid: public Grid
 {

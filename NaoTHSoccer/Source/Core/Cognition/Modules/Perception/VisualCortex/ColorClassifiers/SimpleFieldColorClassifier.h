@@ -15,14 +15,13 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Tools/ImageProcessing/Histograms.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Representations/Infrastructure/Image.h" // just for debug
-
 
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/ImageProcessing/Grid/uniformGrid.h>
 
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DoubleCamHelpers.h"
@@ -30,11 +29,9 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
-  REQUIRE(ColoredGrid)
-  REQUIRE(ColoredGridTop)
   REQUIRE(FrameInfo)
-  REQUIRE(ColorChannelHistograms)
-  REQUIRE(ColorChannelHistogramsTop)
+  REQUIRE(ColorChanelHistograms)
+  REQUIRE(ColorChanelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
@@ -88,16 +85,15 @@ private:
     return parameters;
   }
 
-
-  Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramY;
-  Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramU;
+  UniformGrid uniformGrid; // subsampling of the image
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> filteredHistogramY;
+  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> filteredHistogramU;
 
   // id of the camera the module is curently running on
   CameraInfo::CameraID cameraID;
 
-  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColoredGrid);
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
-  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChannelHistograms);
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChanelHistograms);
   DOUBLE_CAM_PROVIDE(SimpleFieldColorClassifier,FieldColorPercept);
 };
 

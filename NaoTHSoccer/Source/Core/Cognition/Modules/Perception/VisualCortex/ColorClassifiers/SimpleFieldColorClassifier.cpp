@@ -17,7 +17,9 @@
 using namespace std;
 
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
-  : cameraID(CameraInfo::Bottom)
+  : 
+  cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
@@ -105,9 +107,9 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   STOPWATCH_START("SimpleFieldColorClassifier:GridWalk");
 
   Pixel pixel;
-  for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
+  for(unsigned int i = 0; i < uniformGrid.numberOfGridPoints; i++)
   {
-    const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
+    const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
     
     if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v )
