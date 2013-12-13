@@ -17,15 +17,15 @@
 using namespace std;
 
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
-  : 
-  cameraID(CameraInfo::Bottom),
-  uniformGrid(getImage().width(), getImage().height(), 60, 40)
+: 
+  uniformGrid(getImage().width(), getImage().height(), 60, 40),
+  cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
@@ -73,7 +73,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   }
 
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markCrClassification",
     if(cameraID == CameraInfo::Bottom) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
         for(unsigned int y = 0; y < getImage().height(); y++) {
@@ -85,7 +85,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
       }
     }
   );
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:markCrClassification",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markCrClassification",
     if(cameraID == CameraInfo::Top) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
         for(unsigned int y = 0; y < getImage().height(); y++) {
@@ -177,7 +177,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 
   
 
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:BottomCam:mark_green",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green",
     if(cameraID == CameraInfo::Bottom) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
         for(unsigned int y = 0; y < getImage().height(); y++) {
@@ -188,7 +188,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
       } 
     }
   );
-  DEBUG_REQUEST("NeoVision:SimpleFieldColorClassifier:TopCam:mark_green",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green",
     if(cameraID == CameraInfo::Top) {
       for(unsigned int x = 0; x < getImage().width(); x++) {
         for(unsigned int y = 0; y < getImage().height(); y++) {

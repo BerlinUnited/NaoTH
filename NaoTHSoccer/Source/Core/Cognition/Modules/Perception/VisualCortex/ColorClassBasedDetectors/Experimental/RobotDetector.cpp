@@ -37,11 +37,11 @@ RobotDetector::RobotDetector()
   blueMarkers.reserve(params.maxMarkerNumber);
   redMarkers.reserve(params.maxMarkerNumber);
   
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_blobs", "draw the blobs", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_marker", "draw marker scanlines", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_robot", "draw robot scanlines", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_point_on_field", "draw the lowest robot's point", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:RobotDetector:draw_blobs", "draw the blobs", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_marker", "draw marker scanlines", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_robot", "draw robot scanlines", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:RobotDetector:draw_point_on_field", "draw the lowest robot's point", false);
 }
 
 void RobotDetector::execute(const CameraInfo::CameraID id)
@@ -74,7 +74,7 @@ void RobotDetector::execute(const CameraInfo::CameraID id)
   searchArea.add(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
   searchArea.add(Vector2<int>(0, getImage().cameraInfo.resolutionHeight));
 
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_search_region",
+  DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_search_region",
     IMAGE_DRAWING_CONTEXT;
   RECT_PX(ColorClasses::yellow, searchArea.points[0].x, searchArea.points[0].y, searchArea.points[2].x, searchArea.points[2].y);
   );
@@ -116,7 +116,7 @@ void RobotDetector::detectRobots(const std::vector<Marker>& markers)
       getPlayersPercept().addPlayer(player);
       
       //debug
-      DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_point_on_field",
+      DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_point_on_field",
         RECT_PX(ColorClasses::green, lowestPoint.x-2,lowestPoint.y-2,lowestPoint.x+2,lowestPoint.y+2);
         POINT_PX(ColorClasses::yellow, lowestPoint.x, lowestPoint.y);
         );
@@ -155,7 +155,7 @@ inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
 {
   bool result = true;
   drawScanLinesRobot = false;
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_scanlines_robot",
+  DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_robot",
     drawScanLinesRobot = true;
   );
   Vector2<int> left = marker.cog - marker.majorAxis;
@@ -208,7 +208,7 @@ inline void RobotDetector::findBlobs()
   // debug
   IMAGE_DRAWING_CONTEXT;
   CANVAS_PX(cameraID);
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_blobs",
+  DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_blobs",
     for (int i = 0; i < redBlobs.blobNumber; i++)
     {
 //      Vector2<int> c = redBlobs.blobs[i].centerOfMass;
@@ -230,7 +230,7 @@ inline void RobotDetector::findBlobs()
 inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
 {
   drawScanLinesMarker = false;
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_scanlines_marker",
+  DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_marker",
               drawScanLinesMarker = true;
   );
   
@@ -332,7 +332,7 @@ inline bool RobotDetector::checkMarkerPoly(Marker& marker)
   }
   STOPWATCH_STOP("RobotDetector: check poly params");
   // debug
-  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_poly_params",
+  DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_poly_params",
     POINT_PX(ColorClasses::yellow, (int)marker.cog.x, (int)marker.cog.y);
   LINE_PX(ColorClasses::gray,(int)(marker.cog.x - marker.majorAxis.x), (int)(marker.cog.y - marker.majorAxis.y), (int)(marker.cog.x + marker.majorAxis.x), (int)(marker.cog.y + marker.majorAxis.y));
   LINE_PX(ColorClasses::black,(int)(marker.cog.x - marker.minorAxis.x), (int)(marker.cog.y - marker.minorAxis.y), (int)(marker.cog.x + marker.minorAxis.x), (int)(marker.cog.y + marker.minorAxis.y));

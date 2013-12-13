@@ -12,12 +12,12 @@ ImageCorrector::ImageCorrector()
   correctionCycle(0),
   correctorIsRunning(false)
 {
-  DEBUG_REQUEST_REGISTER("Image:Corrector:correctBrighnessInImage", " ", false);
-  DEBUG_REQUEST_REGISTER("Image:Corrector:simpleBrighnessCorrection", " ", false);
-  DEBUG_REQUEST_REGISTER("Image:Corrector:GaussianBlur", " ", false);
-  DEBUG_REQUEST_REGISTER("Image:Corrector:reset", " ", false);
-  DEBUG_REQUEST_REGISTER("Image:Corrector:saveToFile", " ", false);
-  DEBUG_REQUEST_REGISTER("Image:Corrector:loadFromFile", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:correctBrighnessInImage", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:simpleBrighnessCorrection", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:GaussianBlur", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:reset", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:saveToFile", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ImageCorrector:loadFromFile", " ", false);
 }
 
 ImageCorrector::~ImageCorrector()
@@ -27,7 +27,7 @@ ImageCorrector::~ImageCorrector()
 void ImageCorrector::execute()
 {
   simpleBrighnessCorrectionRequestActive = false;
-  DEBUG_REQUEST("Image:Corrector:simpleBrighnessCorrection",
+  DEBUG_REQUEST("Vision:ImageCorrector:simpleBrighnessCorrection",
     if(!correctorIsRunning)  
     {
       correctionCycle = 255;
@@ -46,11 +46,11 @@ void ImageCorrector::execute()
     correctorIsRunning = false;
   }
 
-  DEBUG_REQUEST("Image:Corrector:reset",
+  DEBUG_REQUEST("Vision:ImageCorrector:reset",
   getImage().shadingCorrection.reset();
   );
 
-  DEBUG_REQUEST("Image:Corrector:correctBrighnessInImage",
+  DEBUG_REQUEST("Vision:ImageCorrector:correctBrighnessInImage",
     Pixel pixel;
     for(unsigned int y = 0; y < getImage().height(); y++)
     {
@@ -71,7 +71,7 @@ void ImageCorrector::execute()
     }
   );
 
-  DEBUG_REQUEST("Image:Corrector:saveToFile",
+  DEBUG_REQUEST("Vision:ImageCorrector:saveToFile",
     getImage().shadingCorrection.saveCorrectionToFiles
     (
       Platform::getInstance().theConfigDirectory,
@@ -79,7 +79,7 @@ void ImageCorrector::execute()
     );
   );
 
-  DEBUG_REQUEST("Image:Corrector:loadFromFile",
+  DEBUG_REQUEST("Vision:ImageCorrector:loadFromFile",
     getImage().shadingCorrection.loadCorrectionFromFiles
     (
       Platform::getInstance().theConfigDirectory,
@@ -181,7 +181,7 @@ void ImageCorrector::correctBrightnessSimple()
       }
     }
   }
-  DEBUG_REQUEST("Image:Corrector:GaussianBlur",
+  DEBUG_REQUEST("Vision:ImageCorrector:GaussianBlur",
     if(correctionCycle == 1)
     {
       cv::Size size(5, 5);

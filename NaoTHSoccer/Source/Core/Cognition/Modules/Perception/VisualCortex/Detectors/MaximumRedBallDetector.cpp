@@ -24,21 +24,21 @@ MaximumRedBallDetector::MaximumRedBallDetector()
   dynamicThresholdY(255.0),
   possibleModells(570)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:markPeak", "mark found maximum red peak in image", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:markPeakScan", "mark the scanned points in image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:markPeak", "mark found maximum red peak in image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:markPeakScan", "mark the scanned points in image", false);
   
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_scanlines","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:second_scan_execute", "..", true);
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:mark_best_points","",false);
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:mark_best_matching_points","",false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_scanlines","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", true);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_points","",false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points","",false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball_candidates","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball_outtakes","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_ball","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:use_brute_force","..", true);  
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:use_VU_difference","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_ball_outtakes","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_ball","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:use_brute_force","..", true);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:use_VU_difference","..", false);  
 
-  DEBUG_REQUEST_REGISTER("NeoVision:MaximumRedBallDetector:draw_size_ball_field", "draw the size based position of the ball on field", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_size_ball_field", "draw the size based position of the ball on field", false);
 }
 
 
@@ -99,13 +99,13 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
         peakPos = point;
       }
 
-      DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:markPeakScan",
+      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeakScan",
         POINT_PX(ColorClasses::red, point.x, point.y);
       );
     }
   }
 
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:markPeak",
+  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
     LINE_PX(ColorClasses::skyblue, peakPos.x-3, peakPos.y, peakPos.x+3, peakPos.y);
     LINE_PX(ColorClasses::skyblue, peakPos.x, peakPos.y-3, peakPos.x, peakPos.y+3);
   );
@@ -134,7 +134,7 @@ Vector2d MaximumRedBallDetector::estimatePositionBySize()
     Vector2d ballOffset = getBallPercept().bearingBasedOffsetOnField;
     ballOffset.normalize(d);
 
-    DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_size_ball_field",
+    DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_size_ball_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF00FF", 10);
       CIRCLE(ballOffset.x, ballOffset.y, 32.5);
@@ -165,11 +165,11 @@ bool MaximumRedBallDetector::findBall ()
 	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
 
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:use_VU_difference",
+  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
   );
 
-	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_scanlines",
+	DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_scanlines",
 		spiderSearch.setDrawScanLines(true);
 	);
   
@@ -189,7 +189,7 @@ bool MaximumRedBallDetector::findBall ()
 	}
 
   // execute a second scan from the center of mass from the first scan
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:second_scan_execute",
+  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:second_scan_execute",
     Vector2<int> center = getCenterOfMass(goodPoints);
     Pixel centerPixel;
     getImage().get(center.x, center.y, centerPixel);
@@ -210,7 +210,7 @@ bool MaximumRedBallDetector::findBall ()
   clearDublicatePoints(bestPoints);
 
   // display the final points
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:mark_best_points",
+  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:mark_best_points",
     for(int i = 0; i < bestPoints.length; i++) {
       LINE_PX(ColorClasses::red, bestPoints[i].x-2, bestPoints[i].y, bestPoints[i].x-2, bestPoints[i].y);
       LINE_PX(ColorClasses::red, bestPoints[i].x, bestPoints[i].y-2, bestPoints[i].x, bestPoints[i].y+2);
@@ -235,7 +235,7 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
   bool bestModelFound = false;
   bool useBruteForce = false;
 
-  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:use_brute_force",
+  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_brute_force",
     useBruteForce = true;
   );
   
@@ -261,10 +261,10 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
 		getBallPercept().ballWasSeen = projectionOK;
 		getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 		
-    DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball",
+    DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
 			CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);
 		);
-		DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_size_ball_field",
+		DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_size_ball_field",
 			estimatePositionBySize();
 		);
 
@@ -329,7 +329,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 
     if(Geometry::calculateCircle(possibleModells[i], center, radius))
 	  {
-		  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
+		  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates",
 			  CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
 		  );
 
@@ -374,7 +374,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 	}
 
 
-	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:mark_best_matching_points",
+	DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points",
     if(idxBest >= 0)
     {
 		  drawUsedPoints(bestMatchedBallpoints);
@@ -434,7 +434,7 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 
     if(Geometry::calculateCircle(possibleModells[i], center, radius))
 	  {
-		  DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:draw_ball_candidates",
+		  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates",
 			  CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
 		  );
 
@@ -478,7 +478,7 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 	  }
   }
 
-	DEBUG_REQUEST("NeoVision:MaximumRedBallDetector:mark_best_matching_points",
+	DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points",
     if(idxBest >= 0)
     {
 		  drawUsedPoints(bestMatchedBallpoints);

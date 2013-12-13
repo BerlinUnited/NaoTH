@@ -22,13 +22,13 @@ FieldColorClassifier::FieldColorClassifier()
 {
   fieldColorCalibrator.addCalibrationRect(fieldCalibRect);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:calibrate", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifier:calibrate", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:set_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifier:set_in_image", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:reset", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifier:reset", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:enable_plot", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifier:enable_plot", " ", false);
 
   GT_TRACE("before FieldColorClassifier constructor memset");
   memset(&weightedHistV, 0, sizeof(weightedHistV));
@@ -37,7 +37,7 @@ FieldColorClassifier::FieldColorClassifier()
 
 void FieldColorClassifier::execute()
 {
-  DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:calibrate",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifier:calibrate",
     calibrate();
   );
 
@@ -49,7 +49,7 @@ void FieldColorClassifier::classify()
   getFieldColorPercept().maxY = fieldParams.MaxBrightnessChannelValue;
   getFieldColorPercept().distV = fieldParams.CromaRedChannelDistance;
 
-  DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:reset",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifier:reset",
     fieldColorCalibrator.reset();
     justStarted = true;
     sampleCount = 0;
@@ -152,7 +152,7 @@ void FieldColorClassifier::calibrate()
 
 void FieldColorClassifier::runDebugRequests()
 {
-  DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:set_in_image",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifier:set_in_image",
     for(unsigned int x = 0; x < getImage().width(); x++)
     {
       for(unsigned int y = 0; y < getImage().height(); y++)

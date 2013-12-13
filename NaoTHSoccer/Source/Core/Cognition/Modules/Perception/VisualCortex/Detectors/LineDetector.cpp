@@ -15,24 +15,24 @@ LineDetector::LineDetector()
 :
  cameraID(CameraInfo::Top)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_line_segments", "mark the line candidates on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:mark_line_segments", "mark the line candidates on the image", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_expanded_segments", "mark the expanded line candidates on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:mark_expanded_segments", "mark the expanded line candidates on the image", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_corners", "...", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:mark_corners", "...", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_lines", "mark the final lines in the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:mark_lines", "mark the final lines in the image", false);
   
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:line_clusters", "mark the clustered edgels", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:line_clusters", "mark the clustered edgels", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:estimate_corners", "...", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:estimate_corners", "...", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:draw_closest_line", "Red: estimated orthogonal point; Blue: closest point of line", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:draw_closest_line", "Red: estimated orthogonal point; Blue: closest point of line", false);
   
   // not finished ...
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_circle", "mark the middle circle in the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineDetector:mark_circle", "mark the middle circle in the image", false);
 }
 
 
@@ -85,7 +85,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   STOPWATCH_STOP("LineDetector ~ cluster edgels");
 
 
-  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_line_segments",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_line_segments",
     for (unsigned int i = 0; i < lineSegments.size(); i++)
     {
       const LinePercept::LineSegmentImage& line = lineSegments[i];
@@ -104,7 +104,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   STOPWATCH_STOP("LineDetector ~ expand lines");
 
 
-  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_expanded_segments",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_expanded_segments",
     for (unsigned int i = 0; i < lineSegments.size(); i++)
     {
       const LinePercept::LineSegmentImage& line = lineSegments[i];
@@ -135,7 +135,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
 
 
   // mark the lines surface in image
-  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_lines",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_lines",
     for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
@@ -157,7 +157,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   );
 
   
-  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_corners",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_corners",
     for (unsigned int i = 0; i < getLinePercept().intersections.size(); i++)
     {
       const LinePercept::Intersection& intersection = getLinePercept().intersections[i];
@@ -229,7 +229,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   {
 //    getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
 
-    DEBUG_REQUEST("ImageProcessor:LineDetector:draw_closest_line",
+    DEBUG_REQUEST("Vision:Detectors:LineDetector:draw_closest_line",
       FIELD_DRAWING_CONTEXT;
       PEN("0000FF", 20);
 
@@ -375,7 +375,7 @@ void LineDetector::expandLines()
 {
   bool expandLines = false;
 
-  DEBUG_REQUEST("ImageProcessor:LineDetector:expand_lines",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:expand_lines",
     expandLines = true;
   );
 
@@ -525,7 +525,7 @@ void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& sca
 void LineDetector::estimateCorners()
 {
   bool estimate_corners = false;
-  DEBUG_REQUEST("ImageProcessor:LineDetector:estimate_corners",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:estimate_corners",
     estimate_corners = true;
   );
 
@@ -651,7 +651,7 @@ void LineDetector::classifyIntersections()
   circleMiddlePoints.reserve(getLinePercept().intersections.size());
 
   // the drawing context is needed for further drawings
-  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_circle",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
     FIELD_DRAWING_CONTEXT;
   );
 
@@ -737,7 +737,7 @@ void LineDetector::classifyIntersections()
       if(p != std::numeric_limits<double>::infinity())
       {
         Vector2<double> intersectPoint = lineNormalOne.point(p);
-        DEBUG_REQUEST("ImageProcessor:LineDetector:mark_circle",
+        DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
           PEN("FFFFFF", 5); 
           LINE(middlePointOne.x, middlePointOne.y, intersectPoint.x, intersectPoint.y);
           LINE(middlePointTwo.x, middlePointTwo.y, intersectPoint.x, intersectPoint.y);
@@ -760,7 +760,7 @@ void LineDetector::classifyIntersections()
     }//end if
 
 
-    DEBUG_REQUEST("ImageProcessor:LineDetector:estimate_corners",
+    DEBUG_REQUEST("Vision:Detectors:LineDetector:estimate_corners",
       //mark intersection in the image
       const Vector2<int>& point = getLinePercept().intersections[i].getPos();
       CIRCLE_PX((ColorClasses::Color) getLinePercept().intersections[i].getType(), point.x, point.y, 5);
@@ -806,7 +806,7 @@ void LineDetector::classifyIntersections()
       getLinePercept().middleCircleCenter = (middle + middle1) / 2;
     }//end if
 
-    DEBUG_REQUEST("ImageProcessor:LineDetector:mark_circle",
+    DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
       PEN("FF000099", 10);
       CIRCLE(middle.x, middle.y, 50);
       PEN("0000FF99", 10);
@@ -835,7 +835,7 @@ void LineDetector::classifyIntersections()
     }//end for
 
 
-    DEBUG_REQUEST("ImageProcessor:LineDetector:mark_circle",
+    DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
       const Vector2<double>& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
@@ -873,7 +873,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
 
   lineClusters.push_back(ClusteredLine(edgelList[0],0));
 
-  DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
+  DEBUG_REQUEST("Vision:Detectors:LineDetector:line_clusters",
     CIRCLE_PX((ColorClasses::Color) (0) , edgelList[0].center.x, edgelList[0].center.y, 5);
   );
 
@@ -891,7 +891,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
         if(lineClusters[clusterIndex].add(edgel))
         {
           matchingClusterFound = true;
-          DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
+          DEBUG_REQUEST("Vision:Detectors:LineDetector:line_clusters",
             int idx = ((lineClusters[clusterIndex].id() ) % (unsigned int)ColorClasses::numOfColors);
             CIRCLE_PX(
               (ColorClasses::Color) (idx) , 
@@ -906,7 +906,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
       if(!matchingClusterFound)
       {
         ClusteredLine newCluster(edgel, static_cast<int> (lineClusters.size()));
-        DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
+        DEBUG_REQUEST("Vision:Detectors:LineDetector:line_clusters",
           int idx = ((newCluster.id() ) % (unsigned int)ColorClasses::numOfColors);
           CIRCLE_PX(
             (ColorClasses::Color) (idx) , 

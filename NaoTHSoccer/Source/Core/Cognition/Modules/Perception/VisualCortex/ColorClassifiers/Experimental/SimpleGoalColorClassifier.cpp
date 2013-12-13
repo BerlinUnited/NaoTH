@@ -19,10 +19,10 @@ SimpleGoalColorClassifier::SimpleGoalColorClassifier()
 :
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:mark_yellow", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleGoalColorClassifier:mark_yellow", "", false);
 
   // experimental (Claas)
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleGoalColorClassifier:enable_plots", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleGoalColorClassifier:enable_plots", "", false);
 }
 
 void SimpleGoalColorClassifier::execute(CameraInfo::CameraID id)
@@ -41,7 +41,7 @@ void SimpleGoalColorClassifier::execute(CameraInfo::CameraID id)
     
   getSimpleGoalColorPercept().lastUpdated = getFrameInfo();
 
-  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:mark_yellow",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleGoalColorClassifier:mark_yellow",
     for(unsigned int x = 0; x < getImage().width(); x++) {
       for(unsigned int y = 0; y < getImage().height(); y++)
       {
@@ -90,7 +90,7 @@ void SimpleGoalColorClassifier::histogramExperiments()
   //getSimpleGoalColorPercept().maxDistV = (int) (histV.sigma * 2 * goalParams.strength);
 
 
-  DEBUG_REQUEST("NeoVision:SimpleGoalColorClassifier:enable_plots",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleGoalColorClassifier:enable_plots",
     for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
     {
       getColorChannelHistogramsTop().histogramU.plotRaw("SimpleGoalColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":histUorg");

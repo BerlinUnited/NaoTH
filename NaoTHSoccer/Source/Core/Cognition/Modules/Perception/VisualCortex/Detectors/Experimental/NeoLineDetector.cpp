@@ -15,8 +15,8 @@ NeoLineDetector::NeoLineDetector()
 :
   cameraID(CameraInfo::Top)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:NeoLineDetector:edgel_pairs", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:NeoLineDetector:edgel_cluster", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:NeoLineDetector:edgel_pairs", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:NeoLineDetector:edgel_cluster", "mark the edgels on the image", false);
 }
 
 
@@ -66,7 +66,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
 
     if(j_max > -1) {
       
-      DEBUG_REQUEST("NeoVision:NeoLineDetector:edgel_pairs",
+      DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:edgel_pairs",
         const Edgel& edgelTwo = getScanLineEdgelPercept().edgels[j_max];
         LINE_PX(ColorClasses::red, edgelOne.point.x, edgelOne.point.y, edgelTwo.point.x, edgelTwo.point.y);
       );
@@ -148,7 +148,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       }
       */
       double maxT = 1.0;
-      MODIFY("NeoVision:NeoLineDetector:maxT", maxT);
+      MODIFY("Vision:Detectors:NeoLineDetector:maxT", maxT);
       if(0.5*(fabs(e1)+fabs(e2))/sqrt(dAB) < maxT ) {
         cluster[j] = cluster[i];
         lines[cluster[i]].add(edgelTwoX);
@@ -157,7 +157,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     }
   }
 
-  DEBUG_REQUEST("NeoVision:NeoLineDetector:edgel_cluster",
+  DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:edgel_cluster",
     for(size_t i = 0; i < lines.size(); i++) 
     {
       if(lines[i].size() > 2 && sqrt(lines[i].length()) / static_cast<double>(lines[i].size()) < 20) {

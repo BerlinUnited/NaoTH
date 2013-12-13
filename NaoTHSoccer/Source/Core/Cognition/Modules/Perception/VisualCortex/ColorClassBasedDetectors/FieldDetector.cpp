@@ -17,7 +17,7 @@ FieldDetector::FieldDetector()
 :
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
 }
 
 
@@ -69,7 +69,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       getFieldPercept().valid = false;
     }
 
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
+    DEBUG_REQUEST( "Vision:Detectors:FieldDetector:mark_field_polygon",
       int idx = static_cast<int>(result.size())-1;
       ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
       for(int i = 0; i < (int)result.size(); i++)

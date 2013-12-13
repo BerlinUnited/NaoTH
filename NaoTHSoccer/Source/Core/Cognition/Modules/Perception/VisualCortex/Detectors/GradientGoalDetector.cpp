@@ -28,15 +28,15 @@ GradientGoalDetector::GradientGoalDetector()
 : 
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markPeaks", "mark found maximum u-v peaks in image", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:draw_scanlines","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:draw_response","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:draw_difference","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScans","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScanResponse","..", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:markFootScanGoodPoints","..", false);   
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markPeaks", "mark found maximum u-v peaks in image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_scanlines","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_response","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_difference","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScans","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);   
 
-  DEBUG_REQUEST_REGISTER("NeoVision:GradientGoalDetector:use_horizon","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
 }
 
 
@@ -143,7 +143,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
           //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
           responseY = valueBufferY[2];
           response /= 10;
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:draw_scanlines",
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_scanlines",
             if(aktIdx == 2)
             {
               POINT_PX(ColorClasses::yellow, pos.x, pos.y );
@@ -153,14 +153,14 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
               POINT_PX(ColorClasses::gray, pos.x, pos.y );
             }
           );
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:draw_difference",
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_difference",
             if(aktIdx == 2)
             {
               LINE_PX(ColorClasses::green, (int) pointBuffer[3].x, (int) pointBuffer[3].y - lastDiffVU, (int) pointBuffer[4].x, (int) pointBuffer[4].y - diffVU);
               lastDiffVU = diffVU;
             }
           );
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:draw_response",
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_response",
             if(aktIdx == 2)
             {
               LINE_PX(ColorClasses::red, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) /*fabs*/(lastResponse), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int)/* fabs*/(response) );
@@ -187,13 +187,13 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
             if(isObstacle)
             {
               candidate.possibleObstacle = isObstacle;
-              DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
                 POINT_PX(ColorClasses::orange, pos.x - 2, pos.y);
               );
             }
             else
             {
-              DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
                 POINT_PX(ColorClasses::blue, pos.x - 2, pos.y);
               );
             }
@@ -247,7 +247,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       {
         if(footPointScanner.getNextWithCheck(pos))
         {
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
             POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
           );
           pointBuffer.add(pos);
@@ -275,7 +275,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
         int dist = (pos - features[y][j].center).abs();
         if(dist < params.dist)
         {
-          DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScanGoodPoints", 
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
             POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
           );
           lastTestFeatureIdx[y] = j;
@@ -313,7 +313,7 @@ GT_TRACE("GradientGoalDetector:4");
         responseY = valueBufferY[2];
         response /= 10;
 
-        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
           if(getFieldColorPercept().isFieldColor(pixel))
           {
              POINT_PX(ColorClasses::green, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
@@ -323,7 +323,7 @@ GT_TRACE("GradientGoalDetector:4");
             POINT_PX(ColorClasses::gray, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
           }
         );
-        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScanResponse", 
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanResponse", 
           LINE_PX(ColorClasses::white, (int) pointBuffer[1].x + lastResponse, (int) pointBuffer[1].y, (int) pointBuffer[2].x + (int) response, (int) pointBuffer[2].y);
           LINE_PX(ColorClasses::orange, (int) pointBuffer[1].x + lastDiffVU, (int) pointBuffer[1].y, (int) pointBuffer[2].x + diffVU, (int) pointBuffer[2].y);
         );
@@ -355,7 +355,7 @@ GT_TRACE("GradientGoalDetector:4");
               {
                 count++;
               }
-              DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
                 if(getFieldColorPercept().isFieldColor(pixel))
                 {
                    POINT_PX(ColorClasses::green, pos.x, pos.y);
@@ -393,13 +393,13 @@ GT_TRACE("GradientGoalDetector:4");
         getGoalPercept().add(post);
         getGoalPercept().horizonScan = horizon;
 
-        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
           CIRCLE_PX(ColorClasses::yellowOrange, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
         );
       }
       else
       {
-        DEBUG_REQUEST("NeoVision:GradientGoalDetector:markFootScans", 
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
           CIRCLE_PX(ColorClasses::red, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
         );
       }
@@ -410,13 +410,13 @@ GT_TRACE("GradientGoalDetector:4");
 
     if(candidate.possibleObstacle)
     {
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+      DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
         POINT_PX(ColorClasses::pink, candidate.center.x, candidate.center.y);
       );
     }
     else
     {
-      DEBUG_REQUEST("NeoVision:GradientGoalDetector:markPeaks", 
+      DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
         POINT_PX(ColorClasses::red, candidate.center.x, candidate.center.y);
       );
     }

@@ -30,8 +30,8 @@
 
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
   REQUIRE(FrameInfo)
-  REQUIRE(ColorChanelHistograms)
-  REQUIRE(ColorChanelHistogramsTop)
+  REQUIRE(ColorChannelHistograms)
+  REQUIRE(ColorChannelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
@@ -86,14 +86,14 @@ private:
   }
 
   UniformGrid uniformGrid; // subsampling of the image
-  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> filteredHistogramY;
-  Statistics::Histogram<ColorChanelHistograms::VALUE_COUNT> filteredHistogramU;
+  Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramY;
+  Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramU;
 
   // id of the camera the module is curently running on
   CameraInfo::CameraID cameraID;
 
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
-  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChanelHistograms);
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChannelHistograms);
   DOUBLE_CAM_PROVIDE(SimpleFieldColorClassifier,FieldColorPercept);
 };
 

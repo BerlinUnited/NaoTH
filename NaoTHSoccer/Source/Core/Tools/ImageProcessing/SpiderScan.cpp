@@ -227,8 +227,8 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
 
 
         double useY = 0.0;
-  //      MODIFY("ImageProcessor:Detector:currentColorSimThreshold", currentColorSimThreshold);
-  //      MODIFY("ImageProcessor:Detector:useY", useY);
+  //      MODIFY("Vision:SpiderScan:currentColorSimThreshold", currentColorSimThreshold);
+  //      MODIFY("Vision:SpiderScan:useY", useY);
 
   //      hasColor =
   //        ((currentPixelColor == ColorClasses::none)  || (searchColor == ColorClasses::numOfColors && currentPixelColor != borderColor)) &&

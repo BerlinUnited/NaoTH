@@ -13,7 +13,7 @@
 
 LineClusterProvider::LineClusterProvider()
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineClusterProvider:line_clusters", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:LineClusterProvider:line_clusters", "", false);
 }
 
 
@@ -70,7 +70,7 @@ void LineClusterProvider::execute()
     {
       const DoubleEdgel& f = getScanLineEdgelPercept().scanLineEdgels[k];
 
-      DEBUG_REQUEST("ImageProcessor:LineClusterProvider:line_clusters",
+      DEBUG_REQUEST("Vision:Detectors:LineClusterProvider:line_clusters",
         LINE_PX(ColorClasses::red,
           e.center.x, e.center.y,
           f.center.x, f.center.y);

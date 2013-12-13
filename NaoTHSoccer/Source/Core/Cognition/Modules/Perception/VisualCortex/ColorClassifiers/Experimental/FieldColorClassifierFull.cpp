@@ -18,13 +18,13 @@ FieldColorClassifierFull::FieldColorClassifierFull()
 :
   justStarted(true)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:TopCam:enable_plots", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:BottomCam:enable_plots", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:TopCam:set_in_image", " ", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:BottomCam:set_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:TopCam:enable_plots", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:BottomCam:enable_plots", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:TopCam:set_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:BottomCam:set_in_image", " ", false);
 
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:write_log", " ", false);  
-  DEBUG_REQUEST_REGISTER("NeoVision:FieldColorClassifierFull:fast_adapt", " ", false);  
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:write_log", " ", false);  
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt", " ", false);  
 
   for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
   {
@@ -402,7 +402,7 @@ void FieldColorClassifierFull::execute()
   }
 
   unsigned int minCrRate = fieldParams.minCrRate;
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt",
     minCrRate = 0;
   );
 
@@ -445,7 +445,7 @@ void FieldColorClassifierFull::execute()
           || abs(IndexCbBuffer.getAverage() - (int) maxWeightedIndexCb) < getBaseColorRegionPercept().meanEnv.y / 10
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
-    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+    DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt",
       cbChanged = true;
     );
 
@@ -467,7 +467,7 @@ void FieldColorClassifierFull::execute()
           || abs(IndexCrBuffer.getAverage() - (int) maxWeightedIndexCr) < getBaseColorRegionPercept().meanEnv.y / 20
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
-    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+    DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt",
       crChanged = true;
     );
 
@@ -527,7 +527,7 @@ void FieldColorClassifierFull::execute()
           || abs(IndexCbBufferTop.getAverage() - (int) maxWeightedIndexTopCb) < getBaseColorRegionPerceptTop().meanEnv.y / 10
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
-    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+    DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt",
       cbChanged = true;
     );
 
@@ -549,7 +549,7 @@ void FieldColorClassifierFull::execute()
           || abs(IndexCrBufferTop.getAverage() - (int) maxWeightedIndexTopCr) < getBaseColorRegionPerceptTop().meanEnv.y / 20
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
-    DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:fast_adapt",
+    DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:fast_adapt",
       crChanged = true;
     );
 
@@ -591,7 +591,7 @@ void FieldColorClassifierFull::execute()
   getFieldColorPercept().lastUpdated = getFrameInfo();
   getFieldColorPerceptTop().lastUpdated = getFrameInfo();
 
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:write_log",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:write_log",
     outfile << getFrameInfo().getFrameNumber() << " " << getBaseColorRegionPercept().meanImg.y << " " << getBaseColorRegionPercept().meanImg.u << " " << getBaseColorRegionPercept().meanImg.v;
     outfile << " " << getBaseColorRegionPercept().meanEnv.y << " " << getBaseColorRegionPercept().meanEnv.u << " " << getBaseColorRegionPercept().meanEnv.v;
     outfile << " " << getFieldColorPercept().indexY << " " <<  getFieldColorPercept().indexU << " " <<  getFieldColorPercept().indexV;
@@ -626,7 +626,7 @@ double FieldColorClassifierFull::smoothRungeKutta4(const unsigned int& idx, doub
 
 void FieldColorClassifierFull::runDebugRequests()
 {
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:TopCam:enable_plots",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:TopCam:enable_plots",
     for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i ++)
     {
       PLOT_GENERIC("FieldColorClassifierFull:TopCam:weighted_Y_histogram", i, weightedHistTopY[i]);
@@ -634,7 +634,7 @@ void FieldColorClassifierFull::runDebugRequests()
       PLOT_GENERIC("FieldColorClassifierFull:TopCam:weighted_Cr_histogram", i, weightedHistTopCr[i]);
     }
   );
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:BottomCam:enable_plots",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:BottomCam:enable_plots",
     for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i ++)
     {
       PLOT_GENERIC("FieldColorClassifierFull:BottomCam:weighted_Y_histogram", i, weightedHistY[i]);
@@ -643,7 +643,7 @@ void FieldColorClassifierFull::runDebugRequests()
     }
   );
 
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:TopCam:set_in_image",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:TopCam:set_in_image",
     CANVAS_PX_TOP;
     int imageWidth = getImageTop().cameraInfo.resolutionWidth;
     int imageHeight = getImageTop().cameraInfo.resolutionHeight;
@@ -662,7 +662,7 @@ void FieldColorClassifierFull::runDebugRequests()
       }
     }
   );
-  DEBUG_REQUEST("NeoVision:FieldColorClassifierFull:BottomCam:set_in_image",
+  DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:BottomCam:set_in_image",
     CANVAS_PX_BOTTOM;
     int imageWidth = getImage().cameraInfo.resolutionWidth;
     int imageHeight = getImage().cameraInfo.resolutionHeight;

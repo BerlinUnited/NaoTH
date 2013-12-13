@@ -15,7 +15,7 @@ HistogramFieldDetector::HistogramFieldDetector()
   fieldColor = ColorClasses::green;
   lineColor = ColorClasses::white;
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
 
   getFieldPerceptRaw().setDimension(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
   getFieldPerceptRawTop().setDimension(Vector2i(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
@@ -41,7 +41,7 @@ void HistogramFieldDetector::execute(CameraInfo::CameraID id)
   {
     getFieldPerceptRaw().valid = true;
   }
-  DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
+  DEBUG_REQUEST( "Vision:ColorClassBasedDetectors:HistogramFieldDetector:mark_rectangle",
     ColorClasses::Color color = getFieldPerceptRaw().valid ? ColorClasses::green : ColorClasses::red;
       RECT_PX
       (

@@ -20,9 +20,9 @@ SimpleBallColorClassifier::SimpleBallColorClassifier()
 :
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_orange", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:enable_plots", "", false);
-  DEBUG_REQUEST_REGISTER("NeoVision:SimpleBallColorClassifier:mark_max_ball_color", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleBallColorClassifier:mark_orange", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleBallColorClassifier:enable_plots", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleBallColorClassifier:mark_max_ball_color", "", false);
 }
 
 void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
@@ -38,7 +38,7 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
 
   getSimpleBallColorPercept().lastUpdated = getFrameInfo();;
 
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:enable_plots",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleBallColorClassifier:enable_plots",
     for(int i = 0; i < ColorChannelHistograms::VALUE_COUNT; i++)
     {
       if(i > ballParams.dist2yellow.v + getSimpleGoalColorPercept().minV + getSimpleGoalColorPercept().maxDistV )
@@ -54,7 +54,7 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
     }
   );
 
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_orange",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleBallColorClassifier:mark_orange",
     for(unsigned int x = 0; x < getImage().width(); x++)
     {
       for(unsigned int y = 0; y < getImage().height(); y++)
@@ -70,7 +70,7 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
   );
 
   // Heinrich test
-  DEBUG_REQUEST("NeoVision:SimpleBallColorClassifier:mark_max_ball_color",
+  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleBallColorClassifier:mark_max_ball_color",
     Vector2<int> maxPos;
     int maxCr = 0;
     for(unsigned int x = 10; x < getImageTop().width()-10; x++) {
