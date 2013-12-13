@@ -6,7 +6,7 @@
 */
 
 #include "Edgel.h"
-#include "LineDetectorConstParameters.h"
+#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
 
 #ifndef _ClusteredLine_H_
 #define _ClusteredLine_H_

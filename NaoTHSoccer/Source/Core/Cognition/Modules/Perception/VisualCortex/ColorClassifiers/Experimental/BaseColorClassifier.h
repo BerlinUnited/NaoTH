@@ -3,6 +3,9 @@
 
 #include <ModuleFramework/Module.h>
 
+//Parameters
+#include "BaseColorRegionParameters.h"
+
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
@@ -21,7 +24,6 @@
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histograms.h"
-#include "Tools/ImageProcessing/BaseColorRegionParameters.h"
 #include "Tools/ImageProcessing/ColorCalibrator.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
 

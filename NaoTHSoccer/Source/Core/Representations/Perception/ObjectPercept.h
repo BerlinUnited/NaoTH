@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
+
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/Math/Polygon.h"
@@ -17,7 +19,6 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
-#include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
 

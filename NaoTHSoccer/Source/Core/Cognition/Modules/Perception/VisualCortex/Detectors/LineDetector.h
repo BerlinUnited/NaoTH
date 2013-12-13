@@ -14,6 +14,8 @@
 
 #include <vector>
 
+#include "LineDetectorConstParameters.h"
+
 #include "Tools/Math/Line.h"
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"
@@ -23,7 +25,6 @@
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-#include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/ClusteredLine.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
