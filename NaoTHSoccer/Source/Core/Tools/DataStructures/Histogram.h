@@ -109,11 +109,11 @@ namespace Statistics
           {
             median = i;
           }
-          if(min == 255 &&  cumulativeData[i] > 0.0)
+          if(i < min && rawData[i] > 0)
           {
             min = i;
           }
-          if(max == 0 &&  cumulativeData[i] >= 1.0)
+          if(i > max && rawData[i] > 0)
           {
             max = i;
           }

@@ -33,6 +33,8 @@ BEGIN_DECLARE_MODULE(BaseColorClassifier)
   REQUIRE(ColoredGridTop)
   REQUIRE(ColorChannelHistograms)
   REQUIRE(ColorChannelHistogramsTop)
+  REQUIRE(OverTimeHistogram)
+  REQUIRE(OverTimeHistogramTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
@@ -83,40 +85,12 @@ public:
 private:
   double adaptationRate;
 
-  RingBufferWithSum<double, 100> meanY;
-  RingBufferWithSum<double, 100> meanU;
-  RingBufferWithSum<double, 100> meanV;
-  RingBufferWithSum<double, 100> meanTopY;
-  RingBufferWithSum<double, 100> meanTopU;
-  RingBufferWithSum<double, 100> meanTopV;
-
-  RingBufferWithSum<double, 100> minY;
-  RingBufferWithSum<double, 100> maxY;
-  RingBufferWithSum<double, 100> minTopY;
-  RingBufferWithSum<double, 100> maxTopY;
-  RingBufferWithSum<double, 100> spanWidthY;
-  RingBufferWithSum<double, 100> spanWidthTopY;
 
   RingBufferWithSum<double, 100> goalMeanY;
   RingBufferWithSum<double, 100> goalMeanU;
   RingBufferWithSum<double, 100> goalMeanV;
 
   bool goalIsCalibrating;
-
-  double lastMeanY;
-  double lastMeanU;
-  double lastMeanV;
-  double lastMeanTopY;
-  double lastMeanTopU;
-  double lastMeanTopV;
-
-  double lastMinY;
-  double lastMaxY;
-  double lastMinTopY;
-  double lastMaxTopY;
-
-  double lastSpanWidthY;
-  double lastSpanWidthTopY;
 
   FrameInfo lastFrameInfo;
 

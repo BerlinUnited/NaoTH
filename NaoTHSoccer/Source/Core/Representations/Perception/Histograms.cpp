@@ -1,6 +1,6 @@
 /*
- * File:   histograms.cpp
- * Author: claas
+ * File:   Histograms.cpp
+ * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
  *
  * Created on 9. Juli 2009, 13:40
  */
@@ -187,4 +187,16 @@ void ColorChannelHistograms::showDebugInfos() const
     histogramV.plot("Histograms:V");
   );
 }
+
+void OverTimeHistogram::print(ostream& stream) const
+{
+  stream << "OverTimeHistogram" << std::endl;
+  stream << "----------------------" << std::endl << std::endl;
+  stream << "meanEnv = (" << meanEnv.y << ", " << meanEnv.u << ", " << meanEnv.v << ")" << std::endl;
+  stream << "meanImg = (" << meanImg.y << ", " << meanImg.u << ", " << meanImg.v << ")" << std::endl;
+  stream << "minEnv = (" << minEnv.y << ", " << minEnv.u << ", " << maxEnv.v << ")" << std::endl;
+  stream << "maxEnv = (" << maxEnv.y << ", " << maxEnv.u << ", " << maxEnv.v << ")" << std::endl;
+  stream << "spanWidthEnv = (" << spanWidthEnv.y << ", " << spanWidthEnv.u << ", " << spanWidthEnv.v << ")" << std::endl;
+}//end print
+
 

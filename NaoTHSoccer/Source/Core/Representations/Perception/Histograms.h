@@ -1,6 +1,6 @@
 /*
- * File:   histograms.h
- * Author: claas
+ * File:   Histograms.h
+ * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
  *
  * Created on 9. Juli 2009, 13:40
  */
@@ -17,12 +17,13 @@
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/ImageProcessing/ImagePrimitives.h"
 #include "Tools/DataStructures/Printable.h"
-
+#include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools/DataStructures/Histogram.h"
 
 //Representations
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ColoredGrid.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 
 class ColorClassesHistograms: public naoth::Printable
@@ -55,6 +56,8 @@ class ColorClassesHistograms: public naoth::Printable
     Statistics::Histogram<naoth::IMAGE_HEIGHT> xHistogram[ColorClasses::numOfColors];
     Statistics::Histogram<naoth::IMAGE_WIDTH > yHistogram[ColorClasses::numOfColors];
 };
+
+class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 
 
 class ColorChannelHistograms
@@ -90,8 +93,43 @@ public:
   bool colorChannelIsUptodate;
 };
 
-class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 class ColorChannelHistogramsTop: public ColorChannelHistograms{};
 
+
+class OverTimeHistogram : public naoth::Printable
+{
+public: 
+  PixelT<double> meanEnv;
+  PixelT<double> meanImg;
+
+  PixelT<double> minEnv;
+  PixelT<double> maxEnv;
+
+  PixelT<int> spanWidthEnv;
+
+  PixelT<double> diff;
+
+  OverTimeHistogram()
+  {
+    minEnv.y = 0.0;
+    minEnv.u = 0.0;
+    minEnv.v = 0.0;
+    maxEnv.y = 255.0;
+    maxEnv.u = 255.0;
+    maxEnv.v = 255.0;
+
+    spanWidthEnv.y = 255;
+    spanWidthEnv.u = 255;
+    spanWidthEnv.v = 255;
+
+    diff.y = 0.0;
+    diff.u = 0.0;
+    diff.v = 0.0;
+  }
+
+  virtual void print(std::ostream& stream) const;
+};
+
+class OverTimeHistogramTop : public OverTimeHistogram{};
 #endif  /* _Histogram_H */
 

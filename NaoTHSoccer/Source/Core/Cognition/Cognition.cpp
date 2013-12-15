@@ -49,6 +49,7 @@
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/HistogramProvider.h"
+#include "Modules/Perception/VisualCortex/HistogramOverTimeProvider.h"
 //Perception - Vision -- Classifiers
 #include "Modules/Perception/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/BaseColorClassifier.h"
@@ -164,6 +165,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(HistogramOverTimeProvider);
   REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifierFull);

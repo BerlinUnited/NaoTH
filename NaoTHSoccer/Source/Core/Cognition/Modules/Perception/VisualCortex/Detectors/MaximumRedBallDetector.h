@@ -35,6 +35,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Perception/Histograms.h"
 
 // tools
 #include "Tools/ImageProcessing/GradientSpiderScan.h"
@@ -55,8 +56,8 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(BodyContourTop)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  REQUIRE(BaseColorRegionPercept)
-  REQUIRE(BaseColorRegionPerceptTop)
+  REQUIRE(OverTimeHistogram)
+  REQUIRE(OverTimeHistogramTop)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
@@ -155,7 +156,7 @@ private:
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldPercept);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BaseColorRegionPercept);
+  DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, OverTimeHistogram);
 
   DOUBLE_CAM_PROVIDE(MaximumRedBallDetector, BallPercept);
           

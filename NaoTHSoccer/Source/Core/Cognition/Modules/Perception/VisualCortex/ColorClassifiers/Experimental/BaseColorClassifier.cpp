@@ -87,18 +87,6 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:BaseColorClassifier:CamTop:calibrate_colors:reset_data", " ", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:BaseColorClassifier:CamBottom:calibrate_colors:reset_data", " ", false);
   
-  lastMeanY = getColorChannelHistograms().histogramY.mean;
-  lastMeanU = getColorChannelHistograms().histogramU.mean;
-  lastMeanV = getColorChannelHistograms().histogramV.mean;
-  lastMeanTopY = getColorChannelHistogramsTop().histogramY.mean;
-  lastMeanTopU = getColorChannelHistogramsTop().histogramU.mean;
-  lastMeanTopV = getColorChannelHistogramsTop().histogramV.mean;
-
-  lastMinY = 0;
-  lastMinTopY = 0;
-  lastMaxY = 255;
-  lastMaxTopY = 255;
-
   adaptationRate = 0.9;
   initPercepts();
   getBaseColorRegionPercept().setPerceptRegions();
@@ -173,108 +161,6 @@ void BaseColorClassifier::initPercepts()
 
 void BaseColorClassifier::execute()
 {
-  double timeDiff = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-  double diff = fabs(getColorChannelHistograms().histogramY.mean - lastMeanY);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    meanY.add(getColorChannelHistograms().histogramY.mean);
-    getBaseColorRegionPercept().meanEnv.y = meanY.getAverage();
-    getBaseColorRegionPercept().diff.y = diff;
-    lastMeanY = getColorChannelHistograms().histogramY.mean;
-  }
-  getBaseColorRegionPercept().meanImg.y = getColorChannelHistograms().histogramY.mean;
-  double diffTop = fabs(getColorChannelHistogramsTop().histogramY.mean - lastMeanTopY);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    meanTopY.add(getColorChannelHistogramsTop().histogramY.mean);
-    getBaseColorRegionPerceptTop().meanEnv.y = meanTopY.getAverage();
-    getBaseColorRegionPerceptTop().diff.y = diffTop;
-    lastMeanTopY = getColorChannelHistogramsTop().histogramY.mean;
-  }
-  getBaseColorRegionPerceptTop().meanImg.y = getColorChannelHistogramsTop().histogramY.mean;
-
-  diff = fabs(getColorChannelHistograms().histogramU.mean - lastMeanU);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    meanU.add(getColorChannelHistograms().histogramU.mean);
-    getBaseColorRegionPercept().meanEnv.u = meanU.getAverage();
-    getBaseColorRegionPercept().diff.u = diff;
-    lastMeanU = getColorChannelHistograms().histogramU.mean;
-  }
-  getBaseColorRegionPercept().meanImg.u = getColorChannelHistograms().histogramU.mean;
-  diffTop = fabs(getColorChannelHistogramsTop().histogramU.mean - lastMeanTopU);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    meanTopU.add(getColorChannelHistogramsTop().histogramU.mean);
-    getBaseColorRegionPerceptTop().meanEnv.u = meanTopU.getAverage();
-    getBaseColorRegionPerceptTop().diff.u = diffTop;
-    lastMeanTopU = getColorChannelHistogramsTop().histogramU.mean;
-  }
-  getBaseColorRegionPerceptTop().meanImg.u = getColorChannelHistogramsTop().histogramU.mean;
-
-  diff = fabs(getColorChannelHistograms().histogramV.mean - lastMeanV);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    meanV.add(getColorChannelHistograms().histogramV.mean);
-    getBaseColorRegionPercept().meanEnv.v = meanV.getAverage();
-    getBaseColorRegionPercept().diff.v = diff;
-    lastMeanV = getColorChannelHistograms().histogramV.mean;
-  }
-  getBaseColorRegionPercept().meanImg.v = getColorChannelHistograms().histogramV.mean;
-  diffTop = fabs(getColorChannelHistogramsTop().histogramV.mean - lastMeanTopV);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    meanTopV.add(getColorChannelHistogramsTop().histogramV.mean);
-    getBaseColorRegionPerceptTop().meanEnv.v = meanTopV.getAverage();
-    getBaseColorRegionPerceptTop().diff.v = diffTop;
-    lastMeanTopV = getColorChannelHistogramsTop().histogramV.mean;
-  }
-  getBaseColorRegionPerceptTop().meanImg.v = getColorChannelHistogramsTop().histogramV.mean;
-
-  diff = fabs(getColorChannelHistograms().histogramY.min - lastMinY);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    lastMinY = getColorChannelHistograms().histogramY.min;
-    minY.add(lastMinY);
-    getBaseColorRegionPercept().minEnv.y = minY.getAverage();
-  }
-  diffTop = fabs(getColorChannelHistogramsTop().histogramY.min - lastMinTopY);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    lastMinTopY = getColorChannelHistogramsTop().histogramY.min;
-    minTopY.add(lastMinTopY);
-    getBaseColorRegionPerceptTop().minEnv.y = minTopY.getAverage();
-  }
-
-  diff = fabs(getColorChannelHistograms().histogramY.max - lastMaxY);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    lastMaxY = getColorChannelHistograms().histogramY.max;
-    maxY.add(lastMaxY);
-    getBaseColorRegionPercept().maxEnv.y = maxY.getAverage();
-  }
-  diffTop = fabs(getColorChannelHistogramsTop().histogramY.max - lastMaxTopY);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    lastMaxTopY = getColorChannelHistogramsTop().histogramY.max;
-    maxTopY.add(lastMaxTopY);
-    getBaseColorRegionPerceptTop().maxEnv.y = maxTopY.getAverage();
-  }
-
-  diff = fabs(getColorChannelHistograms().histogramY.spanWidth - lastSpanWidthY);
-  if(diff > 5.0 || timeDiff > 5.0)
-  {
-    lastSpanWidthY = getColorChannelHistograms().histogramY.spanWidth;
-    maxY.add(lastSpanWidthY);
-    getBaseColorRegionPercept().spanWidthEnv.y = (int) spanWidthY.getAverage();
-  }
-  diffTop = fabs(getColorChannelHistogramsTop().histogramY.spanWidth - lastSpanWidthTopY);
-  if(diffTop > 5.0 || timeDiff > 5.0)
-  {
-    lastSpanWidthTopY = getColorChannelHistogramsTop().histogramY.spanWidth;
-    maxY.add(lastSpanWidthTopY);
-    getBaseColorRegionPerceptTop().spanWidthEnv.y = (int) spanWidthTopY.getAverage();
-  }
 
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamTop:calibrate_colors:reset_data",
     orangeBallColorCalibratorTop.reset();
@@ -664,14 +550,17 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  double fEnvY = 0.5;
-  MODIFY("Vision:ColorClassifiers:BaseColorClassifier:fEnvY", fEnvY);
+  double factorBright = 0.35;
+  MODIFY("Vision:ColorClassifiers:BaseColorClassifier:factorBright", factorBright);
+  double factorDark = 0.015;
+  MODIFY("Vision:ColorClassifiers:BaseColorClassifier:factorDark", factorDark);
 
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamTop:set_lines_in_image",
     CANVAS_PX(CameraInfo::Top);
     int imageWidth = getImageTop().cameraInfo.resolutionWidth;
     int imageHeight = getImageTop().cameraInfo.resolutionHeight;
-    int diff = getBaseColorRegionPerceptTop().spanWidthEnv.y * 1 / 100;
+    double diffBright = getOverTimeHistogramTop().spanWidthEnv.y * factorBright + 0.5;
+    double diffDark = getOverTimeHistogramTop().spanWidthEnv.y * factorDark + 0.5;
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -679,13 +568,13 @@ void BaseColorClassifier::runDebugRequests()
         const Pixel& pixel = getImageTop().get(x, y);
 
         //if(getBaseColorRegionPercept().whiteLine.inside(pixel))
-        if(pixel.y > getBaseColorRegionPerceptTop().maxEnv.y + (255 - getBaseColorRegionPerceptTop().maxEnv.y) * fEnvY - diff)
+        if(pixel.y > getOverTimeHistogramTop().maxEnv.y - diffBright)
         {
           POINT_PX(ColorClasses::black, x, y);
         }
-        if(pixel.y < getBaseColorRegionPerceptTop().minEnv.y + diff)
+        if(pixel.y < getOverTimeHistogramTop().minEnv.y + diffDark)
         {
-          POINT_PX(ColorClasses::white, x, y);
+          POINT_PX(ColorClasses::white, x, y);   
         }
 
       }
@@ -695,7 +584,8 @@ void BaseColorClassifier::runDebugRequests()
     CANVAS_PX(CameraInfo::Bottom);
     int imageWidth = getImage().cameraInfo.resolutionWidth;
     int imageHeight = getImage().cameraInfo.resolutionHeight;
-    int diff = getBaseColorRegionPercept().spanWidthEnv.y * 1 / 100;
+    double diffBright = getOverTimeHistogram().spanWidthEnv.y * factorBright + 0.5;
+    double diffDark = getOverTimeHistogram().spanWidthEnv.y * factorDark + 0.5;
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -706,13 +596,13 @@ void BaseColorClassifier::runDebugRequests()
         //{
         //  POINT_PX(ColorClasses::white, x, y);
         //}
-        if(pixel.y > getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * fEnvY - diff)
+        if(pixel.y > getOverTimeHistogram().maxEnv.y - diffBright)
         {
           POINT_PX(ColorClasses::black, x, y);
         }
-        if(pixel.y < getBaseColorRegionPercept().minEnv.y + diff)
+        if(pixel.y < getOverTimeHistogram().minEnv.y + diffDark)
         {
-          POINT_PX(ColorClasses::white, x, y);
+          POINT_PX(ColorClasses::white, x, y);   
         }
 
       }

@@ -49,8 +49,8 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 
   getBallPercept().reset();
 
-  double diff = getBaseColorRegionPercept().spanWidthEnv.y / 100;
-	dynamicThresholdY = getBaseColorRegionPercept().maxEnv.y + (255 - getBaseColorRegionPercept().maxEnv.y) * 0.5 - diff;
+  double diff = getOverTimeHistogram().spanWidthEnv.y * 0.35 + 0.5;
+	dynamicThresholdY = getOverTimeHistogram().maxEnv.y - diff;
 
   findBall();
 }//end execute
