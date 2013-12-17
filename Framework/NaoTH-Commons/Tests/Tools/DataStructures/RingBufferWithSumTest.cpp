@@ -32,12 +32,12 @@ class RingBufferWithSumTest : public testing::Test
 };
 
 TEST_F(RingBufferWithSumTest,Size) {
-  ASSERT_EQ(buffer.size(),test_vector.size());
+  ASSERT_EQ(buffer.size(),(int)test_vector.size());
   ASSERT_EQ(buffer.size(),buffer.getMaxEntries());
 }
 
 TEST_F(RingBufferWithSumTest,ArrayAccess) {
-  ASSERT_EQ(buffer.size(),test_vector.size());
+  ASSERT_EQ(buffer.size(),(int)test_vector.size());
 
   for(size_t i = 0; i < test_vector.size(); i++) {
     ASSERT_DOUBLE_EQ(test_vector[test_vector.size()-i-1],buffer[i]);

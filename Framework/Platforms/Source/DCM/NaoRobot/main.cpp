@@ -110,7 +110,8 @@ void* motionThreadCallback(void* ref)
   return NULL;
 }//end motionThreadCallback
 
-#define TO_STRING(x) #x
+#define TO_STRING_INT(x) #x
+#define TO_STRING(x) TO_STRING_INT(x)
 
 int main(int argc, char *argv[])
 {

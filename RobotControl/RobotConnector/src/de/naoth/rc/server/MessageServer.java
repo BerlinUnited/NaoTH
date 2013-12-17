@@ -288,6 +288,21 @@ public class MessageServer
     SINGLE_EXE_LOCK.unlock();
   }//end executeSingleCommand
 
+  /**
+   * Schedule a single command for execution. It is not guaranteed when it
+   * will be executed but the {@link CommandSender} will be notified using the
+   * right command as argument.
+   * 
+   * @param commandSender The command sender responsible for this command.
+   * 
+   * @throws NotYetConnectedException is thrown if the server is not connected
+   */
+  public void executeSingleCommand(CommandSender commandSender)
+          throws NotYetConnectedException
+  {
+    executeSingleCommand(commandSender, commandSender.getCurrentCommand());
+  }
+  
   
   // send-receive-loop //
   public void sendReceiveLoop() throws Exception, InterruptedException

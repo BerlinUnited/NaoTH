@@ -1,0 +1,32 @@
+/** Symbols for accessing all team relevant information */
+namespace field("Field Symbols") {
+
+  /** */
+  float input field.xPosOwnGroundline;
+  float input field.xPosOpponentGroundline;
+  float input field.yPosLeftGoal;
+  float input field.yPosRightGoal;
+  float input field.xPosOwnPenaltyArea;
+  float input field.xPosOppPenaltyArea;
+  float input field.yPosLeftPenaltyArea;
+  float input field.yPosRightPenaltyArea;
+  float input field.centerCircleRadius;
+  
+  float input field.yPosLeftSideline;
+  float input field.yPosRightSideline;
+   //Experimental
+ //Used to generate certain imaginary lines or points
+
+ float input field.xPosFirstDefenseline;
+ float input field.xPosSecondDefenseline;
+ float input field.yPosLeftFlank;
+ float input field.yPosRightFlank;
+ float input field.xPosFirstAttackline;
+ float input field.xPosSecondAttackline;
+ 
+ float input field.xPosOwnPenaltyMark;
+ float input field.xPosOppPenaltyMark;
+
+  
+}
+  

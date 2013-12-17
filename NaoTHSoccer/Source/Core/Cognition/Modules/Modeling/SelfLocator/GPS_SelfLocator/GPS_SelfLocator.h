@@ -5,8 +5,8 @@
 * Declaration of class GPS_SelfLocator
 */
 
-#ifndef __GPS_SelfLocator_h_
-#define __GPS_SelfLocator_h_
+#ifndef _GPS_SelfLocator_h_
+#define _GPS_SelfLocator_h_
 
 #include <ModuleFramework/Module.h>
 

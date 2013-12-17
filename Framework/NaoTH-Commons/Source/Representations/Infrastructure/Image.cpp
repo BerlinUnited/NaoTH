@@ -242,6 +242,10 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   unsigned int width = img.width();
   unsigned int height = img.height();
 
+  if(width != naoth::IMAGE_WIDTH || height != naoth::IMAGE_HEIGHT) {
+	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+  }
+
   // YUV full
   if(img.format() == naothmessages::Image_Format_YUV)
   {

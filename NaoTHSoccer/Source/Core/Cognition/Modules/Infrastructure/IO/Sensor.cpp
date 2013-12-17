@@ -35,6 +35,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(CurrentCameraSettingsTop);
   REG_INPUT(VirtualVision);
+  REG_INPUT(VirtualVisionTop);
   REG_INPUT(FrameInfo);
 
   REG_INPUT(AccelerometerData);
@@ -47,6 +48,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(ButtonData);
   REG_INPUT(IRReceiveData);
   
+  REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(RCTCTeamMessageDataIn);
   REG_INPUT(GameData);

@@ -76,9 +76,9 @@ public:
     numOfClusters = 0;
     largestCluster = -1;
 
-    for (size_t j = 0; j < (size_t)sampleSet.size(); j++)
+    for (int j = 0; j < (int)sampleSet.size(); j++)
     {
-      Sample2D& sample = sampleSet[j];
+      Sample2D& sample = sampleSet[j]; //vlt besser size_t in sample-set
       sample.cluster = -1; // no cluster
 
       // look for a cluster with the smallest distance
@@ -141,7 +141,7 @@ public:
             largestCluster = (int)k;
           
           // TODO: make it more effivient
-          for (size_t i = 0; i < (size_t)sampleSet.size(); i++)
+          for (int i = 0; i < (int)sampleSet.size(); i++)
           {
             if(sampleSet[i].cluster == (int)j) {
               sampleSet[i].cluster = (int)k;
