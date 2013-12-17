@@ -23,16 +23,12 @@ void DebugDrawings::executeDebugCommand(
     std::ostream &outstream)
 {
   if ("debug_drawings" == command) {
-    std::stringstream* tmpBuffer = &bufferOne;
-    if (debugDrawingsOut == &bufferOne) {
-      tmpBuffer = &bufferTwo;
-    }
+    std::stringstream* tmpBuffer = debugDrawingsOut;
+    update();
 
     const std::string& buf = (*tmpBuffer).str();
     if (buf != "") {
       outstream << buf;
-      //(*tmpBuffer).str("");
-      //(*tmpBuffer).clear();
     }
   }
 }//end executeDebugCommand

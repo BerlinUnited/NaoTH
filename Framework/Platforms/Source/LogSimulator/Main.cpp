@@ -21,13 +21,34 @@ using namespace naoth;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
-//extern int main(int argc, char** argv);
+
+#define TO_STRING_INT(x) #x
+#define TO_STRING(x) TO_STRING_INT(x)
+
+void print_info() 
+{
+  std::cout << "=========================================="  << std::endl;
+  std::cout << "LogSimulator compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+
+  #ifdef REVISION
+  std::cout << "Revision number: " << TO_STRING(REVISION) << std::endl;
+  #endif
+  #ifdef USER_NAME
+  std::cout << "Owner: " << TO_STRING(USER_NAME) << std::endl;
+  #endif
+  #ifdef BRANCH_PATH
+  std::cout << "Branch path: " << TO_STRING(BRANCH_PATH) << std::endl;
+  #endif
+  std::cout << "==========================================\n"  << std::endl;
+}
 
 /*
  * 
  */
 int main(int argc, char** argv)
 {
+  print_info();
+
   g_type_init();
   
   bool compatibleMode = false;

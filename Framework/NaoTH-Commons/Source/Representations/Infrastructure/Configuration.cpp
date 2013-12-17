@@ -52,7 +52,11 @@ Configuration::~Configuration()
   }
 }
 
-void Configuration::loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& bodyID, const std::string& headID)
+void Configuration::loadFromDir(std::string dirlocation,
+                                const std::string& platform,
+                                const std::string& scheme,
+                                const std::string& bodyID,
+                                const std::string& headID)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
@@ -62,7 +66,11 @@ void Configuration::loadFromDir(std::string dirlocation, const std::string& sche
   if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
   {
     loadFromSingleDir(publicKeyFile, dirlocation + "general/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+    if(scheme.size() > 0)
+    {
+      loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
+    }
     loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + bodyID + "/");
     loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/");
     privateDir = dirlocation + "private/";
@@ -195,10 +203,13 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
   {
     if(dataLength > 0)
     {
-      std::ofstream outFile;
-      outFile.open(file.c_str(), std::ios::out);
-      outFile.write(data, dataLength);
-      outFile.close();
+      std::ofstream outFile(file.c_str(), std::ios::out);
+      if(outFile.is_open()) {
+        outFile.write(data, dataLength);
+        outFile.close();
+      } else {
+        g_error("could not open the file %s", file.c_str());
+      }
       g_free(data);
     }
   }

@@ -27,17 +27,25 @@
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
-  REQUIRE(PlayerInfo)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(VirtualVision)
+  REQUIRE(VirtualVisionTop)
+  REQUIRE(PlayerInfo)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
 
   PROVIDE(BallPercept)
+  PROVIDE(BallPerceptTop)
   PROVIDE(GoalPercept)
+  PROVIDE(GoalPerceptTop)
   PROVIDE(LinePercept)
+  PROVIDE(LinePerceptTop)
   PROVIDE(PlayersPercept)
   //PROVIDE(GPSData)
 END_DECLARE_MODULE(VirtualVisionProcessor)
@@ -50,12 +58,19 @@ public:
   VirtualVisionProcessor();
   virtual ~VirtualVisionProcessor();
 
-  virtual void execute();
+  virtual void execute()
+  {
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
+  }
 
 private:
+
+  void execute(const CameraInfo::CameraID id);
+  
   /* calculate the object's position in chest coordinates from  virtual vision information (polar)
    */
-  Vector3<double> calculatePosition(const Vector3<double>& pol);
+  Vector3d calculatePosition(const Vector3d& pol);
 
   void updateBall();
   void updateGoal();
@@ -67,7 +82,7 @@ private:
   std::set<std::string> goalPostNames;
   std::map<std::string, GoalPercept::GoalPost::PostType> goalPostTypes;
   std::map<std::string, ColorClasses::Color> goalPostColors;
-  std::map<std::string, Vector2<double> > flagPosOnField[2];
+  std::map<std::string, Vector2d > flagPosOnField[2];
 
   class LineName
   {
@@ -95,14 +110,16 @@ private:
 
     PlayerPoints()
     {
-      for(int i = 0; i < numberOfPlayerPointType; i++)
+      for(int i = 0; i < numberOfPlayerPointType; i++) {
         seen[i] = false;
     }
+    }
 
-    bool set(const std::string& typeName, const Vector3<double>& pos)
+    bool set(const std::string& typeName, const Vector3d& pos)
     {
       PlayerPointType type = numberOfPlayerPointType;
-      if(typeName == "head")
+      
+    if(typeName == "head")
         type = head;
       else if(typeName == "lfoot")
         type = lfoot;
@@ -119,7 +136,7 @@ private:
       return true;
     }//end set
 
-    Vector3<double> points[numberOfPlayerPointType];
+    Vector3d points[numberOfPlayerPointType];
     bool seen[numberOfPlayerPointType];
     GameData::TeamColor color;
   };
@@ -129,13 +146,25 @@ private:
 
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ");
 
-  void addLine(const Vector3<double>& pol0, const Vector3<double>& pol1);
+  void addLine(const Vector3d& pol0, const Vector3d& pol1);
 
   /** estimate the intersections from the seen lines */
   void findIntersections();
 
   /** copied from the LineDetector */
   void classifyIntersections(std::vector<LinePercept::FieldLineSegment>& lineSegments);
+
+
+  // id of the camera the module is curently running on
+  CameraInfo::CameraID cameraID;
+
+  DOUBLE_CAM_REQUIRE(VirtualVisionProcessor,CameraInfo);
+  DOUBLE_CAM_REQUIRE(VirtualVisionProcessor,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(VirtualVisionProcessor,VirtualVision);
+
+  DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,BallPercept);
+  DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,GoalPercept);
+  DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,LinePercept);
 };
 
 #endif // _VIRTUAL_VISION_PROCESSOR_H

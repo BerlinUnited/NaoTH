@@ -73,3 +73,9 @@ Utils/Video2Log/video2log
 *~
 *.creator.*
 stopwatch.dump
+*.pb.h
+*.pb.cc
+RobotControl/RobotConnector/src/de/naoth/rc/messages
+trace.dump.*
+cognition.stopwatch.dump
+projectconfig.user.lua

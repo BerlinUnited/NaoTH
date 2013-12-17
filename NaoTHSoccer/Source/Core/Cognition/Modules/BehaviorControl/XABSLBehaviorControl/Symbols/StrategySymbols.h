@@ -96,6 +96,10 @@ private:
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
 
+  static double GoalieBlubReadyPositionX();
+  static double GoalieBlubReadyPositionY();
+  static double GoalieBlubReadyPositionR();
+
   //defender position SPL
   Pose2D calculateSimpleDefensePose();
   static double simpleDefensePoseX();

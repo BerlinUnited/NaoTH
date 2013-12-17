@@ -14,6 +14,7 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/ShadingCorrection.h"
 #include "PlatformInterface/Platform.h"
 
 // Tools
@@ -64,6 +65,8 @@ private:
   unsigned int correctionCycle;
   bool correctorIsRunning;
   bool simpleBrighnessCorrectionRequestActive;
+
+  ShadingCorrection shadingCorrection;
 };
 
 #endif	/* IMAGECORRECTOR_H */

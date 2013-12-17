@@ -7,12 +7,10 @@
 
 Sensor::Sensor()
 {
-  std::cout << "Create Sensor" << std::endl;
 }
 
 Sensor::~Sensor()
 {
-
 }
 
 
@@ -21,7 +19,6 @@ Sensor::~Sensor()
 
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  std::cout << "Init Sensor" << std::endl;
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
   robot.platform = platform.getName();
@@ -38,6 +35,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(CurrentCameraSettingsTop);
   REG_INPUT(VirtualVision);
+  REG_INPUT(VirtualVisionTop);
   REG_INPUT(FrameInfo);
 
   REG_INPUT(AccelerometerData);
@@ -50,6 +48,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(ButtonData);
   REG_INPUT(IRReceiveData);
   
+  REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(RCTCTeamMessageDataIn);
   REG_INPUT(GameData);

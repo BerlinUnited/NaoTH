@@ -26,7 +26,6 @@ Image::Image()
 {
   yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 //copy constructor
@@ -42,7 +41,6 @@ cameraInfo(orig.cameraInfo)
   
   std::memcpy(yuv422, orig.yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 Image& Image::operator=(const Image& orig)
@@ -55,7 +53,6 @@ Image& Image::operator=(const Image& orig)
   yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
   std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.getSize());
   selfCreatedImage = true;
-  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 
   return *this;
 }
@@ -177,7 +174,6 @@ void Image::fromDataStream(istream& stream)
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
     setCameraInfo(newCameraInfo);
-    shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
     const char* data = img.data().c_str();
 
@@ -208,7 +204,6 @@ void Image::fromDataStream(istream& stream)
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
     setCameraInfo(newCameraInfo);
-    shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
     memcpy(yuv422, img.data().c_str(), img.data().size());
   }
@@ -246,6 +241,10 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
 
   unsigned int width = img.width();
   unsigned int height = img.height();
+
+  if(width != naoth::IMAGE_WIDTH || height != naoth::IMAGE_HEIGHT) {
+	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+  }
 
   // YUV full
   if(img.format() == naothmessages::Image_Format_YUV)

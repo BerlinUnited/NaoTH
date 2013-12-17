@@ -45,7 +45,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   IMessageServerParent, RobotControl
 {
 
-  private final String configlocation = System.getProperty("user.home")
+  private static final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
   private File layoutFile = new File(configlocation + "layout.dat");
   private DockFrontend frontend;
@@ -434,7 +434,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         final JSPFProperties props = new JSPFProperties();
         props.setProperty(PluginManager.class, "cache.enabled", "true");
         props.setProperty(PluginManager.class, "cache.mode", "stong"); //optional
-        props.setProperty(PluginManager.class, "cache.file", "robot-control.jspf.cache");
+        props.setProperty(PluginManager.class, "cache.file", configlocation+"robot-control.jspf.cache");
 
         PluginManager pluginManager = PluginManagerFactory.createPluginManager(props);
 
@@ -517,12 +517,15 @@ public class RobotControlImpl extends javax.swing.JFrame
       {
         config.load(new FileReader(fConfig));
       }
-      catch(Exception ex)
+      catch(IOException ex)
       {
-        ex.printStackTrace(System.err);
+        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+                "Could not find the config file. It will be created after the first execution.", ex);
+        /*
         JOptionPane.showMessageDialog(this,
           "Config could not be loaded from " + fConfig, "WARNING",
           JOptionPane.WARNING_MESSAGE);
+        */
       }
     }//end if
 

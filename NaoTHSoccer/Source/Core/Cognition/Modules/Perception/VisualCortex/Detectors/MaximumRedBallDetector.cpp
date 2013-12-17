@@ -363,7 +363,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 			  radiusBest = radius;
 			  bestCount = count;
         bestErr = meanError;
-        idxBest = i;
+        idxBest = (int) i;
         bestMatchedBallpoints.clear();
 	      for(int j = 0; j < list.length; j++)
 	      {
