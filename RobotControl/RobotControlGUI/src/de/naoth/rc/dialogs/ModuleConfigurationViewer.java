@@ -15,26 +15,24 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import static de.naoth.rc.dialogs.RepresentationInspector.Plugin.genericManagerFactory;
+import de.naoth.rc.dialogs.Tools.S20BinaryLookup;
+import de.naoth.rc.dialogs.panels.SimpleModulePanel;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.swing.JButton;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -61,20 +59,18 @@ public class ModuleConfigurationViewer extends AbstractDialog
   private final String commandStringStoreModules = "modules:store";
   private final String commandStringSetModules = "modules:set";
   
+  ModuleConfiguration moduleGraph = null;
   
-  SimpleModuleView simpleModuleView = new SimpleModuleView();
-  ArrayList<String> activeModulesList = new ArrayList<String>(); 
-  Set<String> representationsSet = new TreeSet<String>(); 
-  ArrayList<JButton> activeButtonList = new ArrayList<JButton>();
+  private S20BinaryLookup cbModulesSearch;
+  private S20BinaryLookup cbRepresentationsSearch;
   
-  
-  /** Creates new form ModuleConfigurationViewer */
   public ModuleConfigurationViewer()
   {
     initComponents();
     
-    this.simpleModuleView.setLayout(null);
-    this.jScrollPaneModulePane.setViewportView(simpleModuleView);
+    // search within the comboboxes
+    this.cbModulesSearch = new S20BinaryLookup(this.cbModules);
+    this.cbRepresentationsSearch = new S20BinaryLookup(this.cbRepresentations);
   }
   
   @Init
@@ -100,11 +96,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSave = new javax.swing.JButton();
         btSend = new javax.swing.JButton();
         cbProcess = new javax.swing.JComboBox();
+        cbModules = new javax.swing.JComboBox();
+        cbRepresentations = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
-        moduleTree = new javax.swing.JPanel();
-        jScrollPaneModulePane = new javax.swing.JScrollPane();
         jScrollPane = new javax.swing.JScrollPane();
         moduleConfigTree = new de.naoth.rc.checkboxtree.CheckboxTree();
+        modulePanel = new de.naoth.rc.dialogs.panels.SimpleModulePanel();
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -164,35 +161,46 @@ public class ModuleConfigurationViewer extends AbstractDialog
         });
         jToolBar1.add(cbProcess);
 
+        cbModules.setEditable(true);
+        cbModules.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
+        cbModules.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbModulesActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbModules);
+
+        cbRepresentations.setEditable(true);
+        cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
+        cbRepresentations.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbRepresentationsActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbRepresentations);
+
         jSplitPane1.setResizeWeight(1.0);
-
-        moduleTree.setOpaque(false);
-        moduleTree.setLayout(new java.awt.BorderLayout());
-
-        jScrollPaneModulePane.setBorder(null);
-        moduleTree.add(jScrollPaneModulePane, java.awt.BorderLayout.CENTER);
-
-        jSplitPane1.setLeftComponent(moduleTree);
 
         jScrollPane.setBorder(null);
         jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
         jScrollPane.setViewportView(moduleConfigTree);
 
         jSplitPane1.setRightComponent(jScrollPane);
+        jSplitPane1.setLeftComponent(modulePanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -257,9 +265,37 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private void cbProcessActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbProcessActionPerformed
     {//GEN-HEADEREND:event_cbProcessActionPerformed
         Plugin.moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
-        moduleConfigTree.clear();
+        this.moduleConfigTree.clear();
+        this.modulePanel.setNode(null);
     }//GEN-LAST:event_cbProcessActionPerformed
 
+    private void cbModulesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbModulesActionPerformed
+        Node node = (Node)this.cbModules.getSelectedItem();
+        if(this.moduleGraph == null || node == null) return;
+        for(ModuleConfiguration.Node n: this.moduleGraph.getNodeList()) {
+            if(node.equals(n)) {
+                this.modulePanel.setNode(n);
+                break;
+            }
+        }
+    }//GEN-LAST:event_cbModulesActionPerformed
+
+    private void cbRepresentationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRepresentationsActionPerformed
+        Node node = (Node)this.cbRepresentations.getSelectedItem();
+        if(this.moduleGraph == null || node == null) return;
+        for(ModuleConfiguration.Node n: this.moduleGraph.getNodeList()) {
+            if(node.equals(n)) {
+                this.modulePanel.setNode(n);
+                break;
+            }
+        }
+    }//GEN-LAST:event_cbRepresentationsActionPerformed
+
+  @Override
+  public JPanel getPanel()
+  {
+    return this;
+  }//end getPanel
 
   @Override
   public void errorOccured(String cause)
@@ -270,214 +306,71 @@ public class ModuleConfigurationViewer extends AbstractDialog
   @Override
   public void newObjectReceived(final ModuleConfiguration graph)
   {
+    this.moduleGraph = graph;
+    
+    this.cbModules.removeAllItems();
+    this.cbRepresentations.removeAllItems();
+    
+    ArrayList<Node> modules = new ArrayList<Node>();
+    ArrayList<Node> representations = new ArrayList<Node>();
+    
     Plugin.moduleConfigurationManager.removeListener(this);
     this.jToggleButtonRefresh.setSelected(false);
     String processName = (String)cbProcess.getSelectedItem();
 
-    activeModulesList.clear();
-    this.simpleModuleView.removeAll();
-    representationsSet.clear();
-    
-    int height = 30;
-    int offset_y = 10;
-    
-    int pos = 50;
-    int posRep = 50;
-    
     // update list and remove unused modules from graph
     ArrayList<Node> nodes = graph.getNodeList();
     for(ModuleConfiguration.Node n : nodes)
     {
       if(n.getType() == ModuleConfiguration.NodeType.Module)
       {
-        String name = n.getName();
+        String path = n.getPath();
         
         // treatement for the modules which are located outside of the process
-        int k = name.toLowerCase().indexOf(processName.toLowerCase());
+        int k = path.toLowerCase().indexOf(processName.toLowerCase());
         if(k == -1) {
-            int i = name.lastIndexOf(':');
-            name = processName.toLowerCase() + name.substring(i);
+            int i = path.lastIndexOf(':');
+            path = processName.toLowerCase() + path.substring(i);
         } else {
-            name = processName + name.substring(k + processName.length());
+            path = processName + path.substring(k + processName.length());
         }
         
-        SelectableTreeNode node = moduleConfigTree.insertPath(name, ':');
+        SelectableTreeNode node = moduleConfigTree.insertPath(path, ':');
         node.setSelected(n.isEnabled());
         node.setTooltip(n.getName());
         node.getComponent().addActionListener(
                 new ModuleCheckBoxListener(node.getComponent(), 
                     processName + ":" + commandStringSetModules));
         
-        if(n.isEnabled())
-        {
-            activeModulesList.add(n.getName());
-            JButton b = new JButton(n.getName());
-            b.setSize(150, height);
-            b.setLocation(40, pos);
-            activeButtonList.add(b);
-            this.simpleModuleView.add(b);
-            pos += height+offset_y;
-            
-        }
-        /*
-        if(!isActive)
-        {
-          graph.removeVertex(n);
-        }*/
-
+        modules.add(n);
       }
-      else
+      else if(n.getType() == ModuleConfiguration.NodeType.Represenation)
       {
-            JButton b = new JButton(n.getName());
-            b.setSize(150, height);
-            b.setLocation(300, posRep);
-            activeButtonList.add(b);
-            this.simpleModuleView.add(b);
-            posRep += height+offset_y;
+        representations.add(n);
       }
     }//end for
 
+    // update the combo boxes
+    Collections.sort(modules, new CormpareIgnoreCase());
+    Collections.sort(representations, new CormpareIgnoreCase());
+    this.cbModules.setModel(new javax.swing.DefaultComboBoxModel(modules.toArray()));
+    this.cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(representations.toArray()));
+    this.cbModulesSearch.revalidateModel();
+    this.cbRepresentationsSearch.revalidateModel();
+    
+    
     moduleConfigTree.expandPath(processName, ':');
     moduleConfigTree.repaint();
-    
-    simpleModuleView.setPreferredSize(new Dimension(600, 1000));
-    simpleModuleView.repaint();
-    /*
-    // update and configure graph
-    if(vv != null)
-    {
-      moduleTree.remove(vv);
-    }
-
-    // use minimum spanning forest for layout
-    MinimumSpanningForest2<Node, Edge> mstCreator
-      = new MinimumSpanningForest2<Node, Edge>(graph, new DelegateForest<Node, Edge>(),
-      DelegateTree.<Node,Edge>getFactory(),
-      new Transformer<Edge, Double>()
-    {
-
-      public Double transform(Edge e)
-      {
-        Node p = graph.getSource(e);
-        return new Double(graph.getVertexCount() - graph.getSuccessorCount(p));
-      }
-    });
-    Forest<Node,Edge> mst = mstCreator.getForest();
-    
-    TreeLayout<Node,Edge> baseLayout = new TreeLayout<Node, Edge>(mst);
-    //TreeLayout<Node,Edge> baseLayout = new BalloonLayout<Node, Edge>(mst);
-    //TreeLayout<Node,Edge> baseLayout = new RadialTreeLayout<Node, Edge>(mst);
-    
-    StaticLayout<Node,Edge> layout = new StaticLayout<Node, Edge>(graph, baseLayout);
-        
-    vv = new VisualizationViewer<Node, Edge>(layout);
-
-    // zooming and selecting
-    DefaultModalGraphMouse<Node, Edge> mouse =
-      new DefaultModalGraphMouse<Node, Edge>();
-    vv.setGraphMouse(mouse);
-    vv.addKeyListener(mouse.getModeKeyListener());
-
-    // enable selecting the nodes
-    mouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
-
-    // paint modules gray and representations blue
-    vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Node, Paint>()
-    {
-
-      public Paint transform(Node n)
-      {
-        if(n.getType() == ModuleConfiguration.NodeType.Module)
-        {
-          return Color.lightGray;
-        }
-        else
-        {
-          return new Color(128, 128, 255);
-        }
-      }
-    });
-    // also paint edges depending if required or providing
-    final ModuleConfiguration finalGraph = graph;
-    Transformer<Edge, Paint> tEdge = new Transformer<Edge, Paint>()
-    {
-
-      public Paint transform(Edge e)
-      {
-        if(finalGraph.getSource(e).getType() == ModuleConfiguration.NodeType.Module)
-        {
-          // provided
-          return Color.black;
-        }
-        else
-        {
-          // required
-          return Color.BLUE;
-        }
-      }
-    };
-    vv.getRenderContext().setEdgeDrawPaintTransformer(tEdge);
-    vv.getRenderContext().setArrowDrawPaintTransformer(tEdge);
-
-    // use name as label
-    vv.getRenderContext().setVertexLabelTransformer(new Transformer<Node, String>()
-    {
-
-      public String transform(Node n)
-      {
-        return n.getName();
-      }
-    });
-
-    // shape should be a rectangle around the label
-    vv.getRenderContext().setVertexShapeTransformer(
-      new VertexLabelAsShapeRenderer<Node, Edge>(vv.getRenderContext()));
-    vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
-
-    moduleTree.add(vv, BorderLayout.CENTER);
-    moduleTree.validate();
-*/
   }//end newObjectReceived
 
+  public class CormpareIgnoreCase implements Comparator<Object> {
+    public int compare(Object o1, Object o2) {
+        String s1 = o1.toString().toLowerCase();
+        String s2 = o2.toString().toLowerCase();
+        return s1.compareTo(s2);
+    }
+ }
   
-  class SimpleModuleView extends JPanel
-  {
-      
-      @Override
-      public synchronized void paintComponent(Graphics g)
-      {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        
-        int y = 50;
-        for(String module: activeModulesList)
-        {
-            g2d.drawLine(100, y, 350, y);
-            y += 40;
-        }//end for
-        
-        /*
-        int moduleHeight = 40;
-        int moduleWidth = 100;
-        int i = 0;
-        int offsetX = 30;
-        int offsetY = 30;
-        
-        for(String module: activeModulesList)
-        {
-            g2d.translate(offsetX, offsetY+(i*moduleHeight+10));
-            g2d.drawRect(0, 0, moduleWidth, moduleHeight);
-            g2d.drawString(module, 20, 30);
-            g2d.translate(-offsetX, -(offsetY+(i*moduleHeight+10)));
-            i++;
-        }//end for
-        
-        */
-      }//end paintComponent
-      
-  }//end class SimpleModuleView
-  
-
   private void sendCommand(Command command)
   {
     if( !Plugin.parent.checkConnected() )
@@ -552,20 +445,20 @@ public class ModuleConfigurationViewer extends AbstractDialog
     public void actionPerformed(java.awt.event.ActionEvent evt)
     {
       if(currentCommand != null) {
-        genericManagerFactory.getManager(currentCommand).removeListener(this);
+        Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
 
       currentCommand = new Command(commandString);
       currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
 
-      genericManagerFactory.getManager(currentCommand).addListener(this);
+      Plugin.genericManagerFactory.getManager(currentCommand).addListener(this);
     }//end actionPerformed
 
     @Override
     public void errorOccured(String cause)
     {
       if(currentCommand != null) {
-        genericManagerFactory.getManager(currentCommand).removeListener(this);
+        Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
       currentCommand = null;
       System.err.println(cause);
@@ -587,7 +480,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
       }
       
       if(currentCommand != null) {
-        genericManagerFactory.getManager(currentCommand).removeListener(this);
+        Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
       currentCommand = null;
     }//end newObjectReceived
@@ -604,14 +497,15 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private javax.swing.JButton btExport;
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;
+    private javax.swing.JComboBox cbModules;
     private javax.swing.JComboBox cbProcess;
+    private javax.swing.JComboBox cbRepresentations;
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
     private javax.swing.JScrollPane jScrollPane;
-    private javax.swing.JScrollPane jScrollPaneModulePane;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
     private de.naoth.rc.checkboxtree.CheckboxTree moduleConfigTree;
-    private javax.swing.JPanel moduleTree;
+    private de.naoth.rc.dialogs.panels.SimpleModulePanel modulePanel;
     // End of variables declaration//GEN-END:variables
 }//end class ModuleConfigurationViewer
