@@ -10,20 +10,22 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
+import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
+import static de.naoth.rc.dialogs.RepresentationInspector.Plugin.genericManagerFactory;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -39,17 +41,20 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author Heinrich Mellmann
  */
-@PluginImplementation
 public class ModuleConfigurationViewer extends AbstractDialog
   implements ObjectListener<ModuleConfiguration>
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public ModuleConfigurationManager moduleConfigurationManager;
-  @InjectPlugin
-  public GenericManagerFactory genericManagerFactory;
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<ModuleConfigurationViewer>
+  {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static ModuleConfigurationManager moduleConfigurationManager;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
+  }//end Plugin
   
   //private VisualizationViewer<Node, Edge> vv;
 
@@ -76,7 +81,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
   @Override
   public void init()
   {
-      moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
+      Plugin.moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
   }
 
   /** This method is called from within the constructor to
@@ -192,11 +197,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
-      if(parent.checkConnected()) {
+      if(Plugin.parent.checkConnected()) {
         if(jToggleButtonRefresh.isSelected()) {
-          moduleConfigurationManager.addListener(this);
+          Plugin.moduleConfigurationManager.addListener(this);
         } else {
-          moduleConfigurationManager.removeListener(this);
+          Plugin.moduleConfigurationManager.removeListener(this);
         }
       } else {
         jToggleButtonRefresh.setSelected(false);
@@ -209,6 +214,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//GEN-LAST:event_btExportActionPerformed
 
     private void btSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSaveActionPerformed
+        JOptionPane.showMessageDialog(this,
+            "This doesn't work now.", "INFO", JOptionPane.INFORMATION_MESSAGE);
+        /*
       fileChooser.showSaveDialog(this);
       File selectedFile = fileChooser.getSelectedFile();
 
@@ -216,7 +224,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         return;
       }
       
-      /*
+      
       try
       {
         FileWriter fileWriter = new FileWriter(selectedFile, false);
@@ -248,26 +256,21 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
     private void cbProcessActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbProcessActionPerformed
     {//GEN-HEADEREND:event_cbProcessActionPerformed
-        moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
+        Plugin.moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
         moduleConfigTree.clear();
     }//GEN-LAST:event_cbProcessActionPerformed
 
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
-  }//end getPanel
 
   @Override
   public void errorOccured(String cause)
   {
-    moduleConfigurationManager.removeListener(this);
-  }//end errorOccured
+    Plugin.moduleConfigurationManager.removeListener(this);
+  }
 
   @Override
   public void newObjectReceived(final ModuleConfiguration graph)
   {
-    moduleConfigurationManager.removeListener(this);
+    Plugin.moduleConfigurationManager.removeListener(this);
     this.jToggleButtonRefresh.setSelected(false);
     String processName = (String)cbProcess.getSelectedItem();
 
@@ -474,50 +477,63 @@ public class ModuleConfigurationViewer extends AbstractDialog
       
   }//end class SimpleModuleView
   
-  
 
   private void sendCommand(Command command)
   {
-    final Command commandToExecute = command;
-    final JPanel thisFinal = this;
+    if( !Plugin.parent.checkConnected() )
+      return;
     
-    this.parent.getMessageServer().executeSingleCommand(new CommandSender()
-    {
-
-      @Override
-      public void handleResponse(byte[] result, Command originalCommand)
-      {
-        if(originalCommand.getName().equals(commandStringStoreModules))
-        {
-          String response = new String(result);
-          if(response.startsWith("ERROR"))
-          {
-            JOptionPane.showMessageDialog(thisFinal,
-              response.substring(6), "ERROR", JOptionPane.ERROR_MESSAGE);
-          }else
-          {
-            JOptionPane.showMessageDialog(thisFinal,
-              response, "Info", JOptionPane.INFORMATION_MESSAGE);
-          }
+    Plugin.parent.getMessageServer().executeSingleCommand(new DialogCommandSender(this, command) {
+        @Override
+        public void handleResponse(byte[] result, Command originalCommand) {
+            handleResponseSaveModules(result, originalCommand);
         }
-      }//end handleResponse
-
-      @Override
-      public void handleError(int code)
-      {
-        JOptionPane.showMessageDialog(thisFinal,
-              "Error occure while comunication, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
-
-      @Override
-      public Command getCurrentCommand()
-      {
-        return commandToExecute;
-      }
-    }, command);
+    });
   }//end sendCommand
 
+  
+  abstract class DialogCommandSender implements CommandSender
+  {
+    private final Command command;
+    private final Component parent;
+    
+    DialogCommandSender(Component parent, Command command)
+    {
+        this.command = command;
+        this.parent = parent;
+    }
 
+    @Override
+    public void handleError(int code)
+    {
+      JOptionPane.showMessageDialog(parent,
+            "Error occure while comunication, code " + code, 
+            "ERROR", JOptionPane.ERROR_MESSAGE);
+    }
+
+    @Override
+    public Command getCurrentCommand()
+    {
+      return command;
+    }
+  }//end DialogCommandSender
+  
+  
+    public void handleResponseSaveModules(byte[] result, Command originalCommand)
+    {
+      String response = new String(result);
+
+        if(response.startsWith("ERROR"))
+        {
+          JOptionPane.showMessageDialog(this,
+            response.substring(6), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }else
+        {
+          JOptionPane.showMessageDialog(this,
+            response, "INFO", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+  
   
   class ModuleCheckBoxListener implements ActionListener, ObjectListener<byte[]>
   {

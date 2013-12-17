@@ -1127,47 +1127,11 @@ public class BehaviorViewer extends AbstractDialog
 
     Plugin.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
-
       @Override
       public void handleResponse(byte[] result, Command originalCommand)
       {
-        if(originalCommand.getName().equals(fileWriteCommandName))
-        {
-          sendCommand(reloadBehaviorCommand);
-          JOptionPane.showMessageDialog(thisFinal,
-            new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if(originalCommand.getName().equals(reloadBehaviorCommand.getName()))
-        {
-          // HACK: the positive ansver "behavior reloaded" is defined in XABSLBehaviorControl.cpp
-          if(!("behavior reloaded".equals(new String(result))))
-          {
-              JOptionPane.showMessageDialog(thisFinal,
-                new String(result), "Sending Behavior", JOptionPane.ERROR_MESSAGE);
-          }
-        }
-        else if(originalCommand.getName().startsWith(getAgentCommand.getName()))
-        {
-          //txtAgent.setText(new String(result));
-          setAgent(new String(result));
-        }
-        else if(originalCommand.getName().startsWith(setAgentCommand))
-        {
-          String answer = new String(result);
-          if(!answer.startsWith("resetted agent to"))
-          {
-            JOptionPane.showMessageDialog(thisFinal,
-              answer, "ERROR", JOptionPane.ERROR_MESSAGE);
-          }
-          sendCommand(getAgentCommand);
-        }
-        else if(originalCommand.getName().equals(getListOfAgents.getName()))
-        {
-          String answer = new String(result);
-          setAgentList(answer.split("\n"));
-        }
-        //end if
-      }//end handleResponse
+        handleCommandResponse(result, originalCommand);
+      }
 
       @Override
       public void handleError(int code)
@@ -1184,6 +1148,47 @@ public class BehaviorViewer extends AbstractDialog
     }, command);
   }//end sendCommand
 
+  
+  private void handleCommandResponse(byte[] result, Command originalCommand)
+  {
+    if(originalCommand.getName().equals(fileWriteCommandName))
+    {
+      sendCommand(reloadBehaviorCommand);
+      JOptionPane.showMessageDialog(this,
+        new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
+    }
+    else if(originalCommand.getName().equals(reloadBehaviorCommand.getName()))
+    {
+      // HACK: the positive ansver "behavior reloaded" is defined in XABSLBehaviorControl.cpp
+      if(!("behavior reloaded".equals(new String(result))))
+      {
+          JOptionPane.showMessageDialog(this,
+            new String(result), "Sending Behavior", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+    else if(originalCommand.getName().startsWith(getAgentCommand.getName()))
+    {
+      //txtAgent.setText(new String(result));
+      setAgent(new String(result));
+    }
+    else if(originalCommand.getName().startsWith(setAgentCommand))
+    {
+      String answer = new String(result);
+      if(!answer.startsWith("resetted agent to"))
+      {
+        JOptionPane.showMessageDialog(this,
+          answer, "ERROR", JOptionPane.ERROR_MESSAGE);
+      }
+      sendCommand(getAgentCommand);
+    }
+    else if(originalCommand.getName().equals(getListOfAgents.getName()))
+    {
+      String answer = new String(result);
+      setAgentList(answer.split("\n"));
+    }
+  }//end handleCommandResponse
+  
+  
   @Override
   public void treeExpanded(TreeExpansionEvent event)
   {

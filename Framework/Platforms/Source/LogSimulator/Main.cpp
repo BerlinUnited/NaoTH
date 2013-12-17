@@ -21,9 +21,9 @@ using namespace naoth;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
-//extern int main(int argc, char** argv);
 
-#define TO_STRING(x) #x
+#define TO_STRING_INT(x) #x
+#define TO_STRING(x) TO_STRING_INT(x)
 
 void print_info() 
 {
