@@ -50,13 +50,13 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 
-  // parameter list
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
-
   // HACK: initialize the both canvases
   DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
   DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).init(getImage().width(), getImage().height());
+}
+
+Debug::~Debug()
+{
 }
 
 void Debug::execute()
@@ -233,12 +233,6 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 
     }
   }
-}
-
-Debug::~Debug()
-{
-  // parameter list
-  DebugParameterList::getInstance().remove(&(getCameraSettingsRequest()));
 }
 
 void Debug::draw3D()
