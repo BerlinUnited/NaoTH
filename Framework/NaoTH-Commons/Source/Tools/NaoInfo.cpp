@@ -31,3 +31,5 @@ const Vector3d NaoInfo::FSRPositions[naoth::FSRData::numOfFSR] =
   Vector3d(-29.8, 19,-46),
   Vector3d(-30.4,-30,-46)
 };
+
+const NaoInfo::RobotDimensions NaoInfo::robotDimensions;

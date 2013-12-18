@@ -21,12 +21,14 @@
 */
 class CameraMatrix : public Pose3D, public naoth::Printable
 {
+private:
+  naoth::CameraInfo::CameraID cameraID;
 public:
   CameraMatrix(): cameraID(naoth::CameraInfo::Bottom), valid(false), timestamp(0) {}
   CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraID(naoth::CameraInfo::Bottom), valid(false) {}
 
   // TODO: does anybody need it?!
-  naoth::CameraInfo::CameraID cameraID;
+  
   bool valid;
   unsigned int timestamp;
 

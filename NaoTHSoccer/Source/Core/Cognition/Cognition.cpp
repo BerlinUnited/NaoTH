@@ -77,7 +77,6 @@
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
 #include "Modules/Modeling/Camera/CameraMatrixFinder.h"
-#include "Modules/Modeling/LocalModelProvider/LocalModelProvider.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -91,7 +90,6 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-//#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/Debug/Trace.h"
@@ -201,7 +199,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // experiment
   REGISTER_MODULE(Evolution);
-  //REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);
@@ -260,23 +257,20 @@ void Cognition::call()
 
 
   STOPWATCH_START("CognitionExecute");
-  //GT_TRACE("beginning to iterate over all modules");
 
   // execute all modules
   list<AbstractModuleCreator*>::const_iterator iter;
   for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
-    // get entry
-    AbstractModuleCreator* module = *iter;//getModule(*iter);
+    AbstractModuleCreator* module = *iter;
     if (module != NULL && module->isEnabled())
     {
       std::string name(module->getModule()->getName());
       GT_TRACE("executing " << name);
       module->execute();
-    }//end if
-  }//end for all modules
+    }
+  }
   
-  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 

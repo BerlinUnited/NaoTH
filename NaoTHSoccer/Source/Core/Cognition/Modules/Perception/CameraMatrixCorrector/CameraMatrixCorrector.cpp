@@ -49,7 +49,7 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
   });
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", 
     if(cameraID == camera_to_calibrate) {
-      getCameraInfoParameter().saveToConfig(); 
+      getCameraMatrixOffset().saveToConfig(); 
   });
 
   DEBUG_REQUEST("CameraMatrix:reset_calibration", 
@@ -58,7 +58,7 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
   });
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", 
     if(cameraID == camera_to_calibrate) {
-      getCameraInfoParameter().saveToConfig(); 
+      getCameraMatrixOffset().saveToConfig(); 
   });
 
 
@@ -73,7 +73,7 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 
 void CameraMatrixCorrector::reset_calibration()
 {
-  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
+  CameraMatrixOffset& cameraInfo = getCameraMatrixOffset();
   cameraInfo.correctionOffset[cameraID] = Vector2d();
   //cameraInfo.cameraRollOffset = 0.0;
   //cameraInfo.cameraTiltOffset = 0.0;
@@ -120,7 +120,7 @@ void CameraMatrixCorrector::calibrate()
 
 
   // apply changes
-  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
+  CameraMatrixOffset& cameraInfo = getCameraMatrixOffset();
 
   double lambda = 0.01;
   if (offset.abs() > lambda) {
@@ -135,9 +135,6 @@ void CameraMatrixCorrector::calibrate()
   //cameraInfo.cameraRollOffset += offset.x;
   //cameraInfo.cameraTiltOffset += offset.y;
   cameraInfo.correctionOffset[cameraID] += offset;
-
-  // until now we only changed the parameters, change the pure CameraInfo as well
-  getCameraInfo() = cameraInfo;
 }//end calibrate
 
 
@@ -149,7 +146,7 @@ double CameraMatrixCorrector::projectionError(double offsetX, double offsetY)
        .rotateX(offsetX);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = getCameraInfoParameter();
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   Vector2<double> leftPosition;
   CameraGeometry::imagePixelToFieldCoord(

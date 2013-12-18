@@ -181,8 +181,7 @@ void Motion::processSensorData()
   theSupportPolygonGenerator->execute();
 
   //
-  updateCameraMatrix("CameraMatrix", getCameraMatrix(), getCameraInfo());
-  updateCameraMatrix("CameraMatrixTop", getCameraMatrixTop(), getCameraInfoTop());
+  updateCameraMatrix();
 
   //
   theOdometryCalculator->execute();
@@ -317,34 +316,27 @@ void Motion::debugPlots()
 }//end debugPlots
 
 
-void Motion::updateCameraMatrix(
-                                std::string name,
-                                CameraMatrix& cameraMatrix,
-                                const CameraInfo& cameraInfo)
+void Motion::updateCameraMatrix()
 {
   CameraMatrixCalculator::calculateCameraMatrix(
-    cameraMatrix,
-    cameraInfo,
-    getKinematicChainSensor());
-  cameraMatrix.timestamp = getSensorJointData().timestamp;
-  cameraMatrix.valid = true;
+    getCameraMatrix(),
+    getKinematicChainSensor(),
+    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom],
+    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
+  );
 
-  MODIFY(name + ":translation:x", cameraMatrix.translation.x);
-  MODIFY(name + ":translation:y", cameraMatrix.translation.y);
-  MODIFY(name + ":translation:z", cameraMatrix.translation.z);
+  CameraMatrixCalculator::calculateCameraMatrix(
+    getCameraMatrixTop(),
+    getKinematicChainSensor(),
+    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Top],
+    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]
+  );
 
-  double correctionAngleX = 0.0;
-  double correctionAngleY = 0.0;
-  double correctionAngleZ = 0.0;
-  MODIFY(name + ":correctionAngle:x", correctionAngleX);
-  MODIFY(name + ":correctionAngle:y", correctionAngleY);
-  MODIFY(name + ":correctionAngle:z", correctionAngleZ);
+  getCameraMatrix().timestamp = getSensorJointData().timestamp;
+  getCameraMatrix().valid = true;
 
-  cameraMatrix.rotation.rotateX(correctionAngleX);
-  cameraMatrix.rotation.rotateY(correctionAngleY);
-  cameraMatrix.rotation.rotateZ(correctionAngleZ);
-
-
+  getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
+  getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
 
 

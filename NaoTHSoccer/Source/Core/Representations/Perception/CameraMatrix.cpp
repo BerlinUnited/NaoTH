@@ -18,7 +18,7 @@ void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std
   naothmessages::CameraMatrix msg;
   // ACHTUNG: representation.cameraNumber has to be some value in naothmessages::CameraID
   // in particular, it cannot be -1 (!)
-  msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
+  //msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
   msg.set_valid(representation.valid);
   msg.set_timestamp(representation.timestamp);
   msg.mutable_pose()->mutable_translation()->set_x( representation.translation.x );
@@ -39,7 +39,7 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
+  //representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
   representation.valid = msg.valid();
   representation.timestamp = msg.timestamp();
   representation.translation.x = msg.pose().translation().x();

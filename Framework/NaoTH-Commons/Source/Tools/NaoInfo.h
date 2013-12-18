@@ -12,9 +12,52 @@
 
 // TODO: this should not be here
 #include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Tools/DataStructures/ParameterList.h>
 
 class NaoInfo
 {
+public:
+  struct CameraTransformation
+  {
+    Vector3d offset;
+    double rotationY;
+  };
+
+  class RobotDimensions : public ParameterList
+  {
+  public:
+    RobotDimensions() : ParameterList("RobotDimensions")
+    {
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.x) = 58.71;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.y) = 0;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].offset.z) = 63.64;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Top].rotationY) = 1.2;
+
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.x) = 50.71;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.y) = 0;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].offset.z) = 17.74;
+      PARAMETER_REGISTER(cameraTrans[naoth::CameraInfo::Bottom].rotationY) = 39.7;
+
+      syncWithConfig();
+      setCameraTransformation();
+    }
+    
+    // offset to the neck joint
+    Pose3D cameraTransformation[naoth::CameraInfo::numOfCamera];
+
+  private:
+    CameraTransformation cameraTrans[naoth::CameraInfo::numOfCamera];
+
+    void setCameraTransformation()
+    {
+      for(int i = 0; i < naoth::CameraInfo::numOfCamera; i++) {
+        cameraTransformation[i].translation = cameraTrans[i].offset;
+        cameraTransformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
+      }
+    }
+  };
+
 public:
   //length of the links (arm, leg, etc.) - from the doc in sdk
   static const double NeckOffsetZ;
@@ -37,6 +80,8 @@ public:
 
   static const Vector3d FSRPositions[naoth::FSRData::numOfFSR];
   
+  static const RobotDimensions robotDimensions;
+
 }; //end namespace NaoInfo
 
 #endif //_NaoInfo_h_

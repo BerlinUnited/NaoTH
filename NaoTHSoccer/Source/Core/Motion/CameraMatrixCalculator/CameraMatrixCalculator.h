@@ -8,22 +8,22 @@
 #ifndef _CameraMatrixCalculator_h_
 #define _CameraMatrixCalculator_h_
 
-#include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>
-
-#include "Representations/Modeling/KinematicChain.h"
+#include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Modeling/CameraMatrixOffset.h>
+#include <Representations/Modeling/KinematicChain.h>
 
 class CameraMatrixCalculator
 {
 private:
-
   CameraMatrixCalculator(){}; // don't create an instance
 
 public:
-  /** executes the module */
-  static void calculateCameraMatrix(CameraMatrix& theCameraMatrix,
-    const naoth::CameraInfo &theCameraInfo,
-    const KinematicChain& theKinematicChain
+  static void calculateCameraMatrix(
+    CameraMatrix& theCameraMatrix,
+    const KinematicChain& theKinematicChain,
+    const Pose3D& theCameraOffset,
+    const Vector2d& theCameraCorrectionOffset
   );
 };
 

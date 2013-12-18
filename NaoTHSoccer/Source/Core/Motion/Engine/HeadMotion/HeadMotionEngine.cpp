@@ -16,6 +16,7 @@
 // Tools
 #include <Tools/CameraGeometry.h>
 #include <Tools/Math/Matrix2x2.h>
+#include <Tools/NaoInfo.h>
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
@@ -265,8 +266,11 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
   CameraMatrix cameraMatrix;
   CameraMatrixCalculator::calculateCameraMatrix(
     cameraMatrix,
-    (getHeadMotionRequest().cameraID == CameraInfo::Top)?getCameraInfoTop():getCameraInfo(),
-    theKinematicChain);
+    theKinematicChain,
+    NaoInfo::robotDimensions.cameraTransformation[getHeadMotionRequest().cameraID],
+    getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
+  );
+
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 
   // the point in the image which should point to the pointInWorld
@@ -533,7 +537,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d >& points)
 
 void HeadMotionEngine::lookStraightAhead()
 {
-  const Pose3D& cameraTrans = getCameraInfo().transformation[getHeadMotionRequest().cameraID];
+  const Pose3D& cameraTrans = NaoInfo::robotDimensions.cameraTransformation[getHeadMotionRequest().cameraID];
   Vector2d target(0.0, -cameraTrans.rotation.getYAngle());
   gotoAngle(target);
 }
