@@ -10,8 +10,22 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #include <Tools/CameraGeometry.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
+
+void CameraMatrix::print(std::ostream& stream) const
+{
+  stream << "camera = " << cameraID << std::endl;
+  stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << std::endl;
+  stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << std::endl;
+  stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << std::endl;
+  stream << "x-translation [mm] = " << translation.x << std::endl;
+  stream << "y-translation [mm] = " << translation.y << std::endl;
+  stream << "z-translation [mm] = " << translation.z << std::endl;
+  stream << "valid = " << valid << std::endl;
+  stream << "timestamp = " << timestamp << std::endl;
+}//end print
 
 void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std::ostream& stream)
 {
@@ -19,16 +33,11 @@ void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std
   // ACHTUNG: representation.cameraNumber has to be some value in naothmessages::CameraID
   // in particular, it cannot be -1 (!)
   //msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
+
   msg.set_valid(representation.valid);
   msg.set_timestamp(representation.timestamp);
-  msg.mutable_pose()->mutable_translation()->set_x( representation.translation.x );
-  msg.mutable_pose()->mutable_translation()->set_y( representation.translation.y );
-  msg.mutable_pose()->mutable_translation()->set_z( representation.translation.z );
-  for(int i=0; i<3; i++){
-    msg.mutable_pose()->add_rotation()->set_x( representation.rotation[i].x );
-    msg.mutable_pose()->mutable_rotation(i)->set_y( representation.rotation[i].y );
-    msg.mutable_pose()->mutable_rotation(i)->set_z( representation.rotation[i].z );
-  }
+  naoth::DataConversion::toMessage(representation, *(msg.mutable_pose()));
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
 }//end serialize
@@ -40,25 +49,11 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   msg.ParseFromZeroCopyStream(&buf);
 
   //representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
-  representation.valid = msg.valid();
-  representation.timestamp = msg.timestamp();
-  representation.translation.x = msg.pose().translation().x();
-  representation.translation.y = msg.pose().translation().y();
-  representation.translation.z = msg.pose().translation().z();
-
-  for(int i=0; i<3; i++) {
-    representation.rotation[i].x = msg.pose().rotation(i).x();
-    representation.rotation[i].y = msg.pose().rotation(i).y();
-    representation.rotation[i].z = msg.pose().rotation(i).z();
+  if(msg.has_timestamp()) {
+    representation.timestamp = msg.timestamp();
   }
-}//end deserialize
-
-void Serializer<CameraMatrixTop>::serialize(const CameraMatrixTop& representation, std::ostream& stream)
-{
-  Serializer<CameraMatrix>::serialize(representation, stream);
-}//end serialize
-
-void Serializer<CameraMatrixTop>::deserialize(std::istream& stream, CameraMatrixTop& representation)
-{
-  Serializer<CameraMatrix>::deserialize(stream, representation);
+  if(msg.has_valid()) {
+    representation.valid = msg.valid();
+  }
+  naoth::DataConversion::fromMessage(msg.pose(), representation);
 }//end deserialize
