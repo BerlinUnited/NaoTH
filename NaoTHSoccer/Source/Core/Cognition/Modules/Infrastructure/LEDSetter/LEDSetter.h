@@ -7,7 +7,7 @@
 
 
 #ifndef _LEDSETTER_H
-#define  _LEDSETTER_H
+#define _LEDSETTER_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
