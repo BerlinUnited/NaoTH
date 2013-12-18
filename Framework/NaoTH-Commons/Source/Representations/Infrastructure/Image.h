@@ -13,7 +13,6 @@
 
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector3.h"
-#include "Tools/ImageProcessing/ImageDrawings.h"
 
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/DataStructures/Printable.h"
@@ -30,26 +29,18 @@ namespace naoth
   /**
    * Platform independend definition of an image class
    */
-  class Image: public DrawingCanvas, public Printable
+  class Image: public Printable
   {
 
   public:
-
-
-    /**
-    * Default constructor.
-    */
     Image();
 
-    /**
-     * Copy constructor
-     */
     Image(const Image& orig);
 
     Image& operator=(const Image& orig);
 
-    /** destructs an image */
     virtual ~Image();
+
 
     /** copy the camera information, and recreate the image data if necessary */
     void setCameraInfo(const CameraInfo& ci);
@@ -76,17 +67,6 @@ namespace naoth
     virtual void print(std::ostream& stream) const;
     virtual void toDataStream(std::ostream& stream) const;
     virtual void fromDataStream(std::istream& stream);
-    
-    virtual void drawPoint
-    (
-      const int x,
-      const int y,
-      const unsigned char a,
-      const unsigned char b,
-      const unsigned char c
-    ) {
-      set(x,y, a, b, c);
-    }
 
     /**
      * Get the brightness of a pixel without any correction. This is faster than getting all color

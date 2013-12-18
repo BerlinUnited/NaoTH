@@ -23,20 +23,31 @@ class DebugDrawingCanvas: public naoth::DrawingCanvas
 {
 public:
   DebugDrawingCanvas(int w, int h)
-  : 
-    size(w,h),
-    numberOfPoints(0),
-    coordinates(w*h)
+    : numberOfPoints(0)
   {
+    init(w,h);
+  }
+
+  DebugDrawingCanvas()
+    : numberOfPoints(0)
+  {
+  }
+
+  ~DebugDrawingCanvas(){}
+
+public:
+
+  void init(int w, int h) 
+  {
+    size = Vector2i(w,h);
+    coordinates.resize(w*h);
+
     // reserve the vector for pixel values and initialize is to (0,0,0)
     Pixel zeroPixel;
     zeroPixel.a = zeroPixel.b = zeroPixel.c = 0;
     pixels.resize(w*h, zeroPixel);
   }
 
-  ~DebugDrawingCanvas(){}
-
-public:
   virtual void drawPoint(
     const int x, 
     const int y,
@@ -129,22 +140,20 @@ public:
   }
 
 private:
-  Vector2i size; // the size of the canvas (x ~ width, y ~ height)
   size_t numberOfPoints; // the number of points currently stored in the 'coordinates'
+  Vector2i size; // the size of the canvas (x ~ width, y ~ height)
   std::vector<Pixel> pixels;
   std::vector<Vector2i> coordinates;
 };
 
 
-class DebugBottomImageDrawings : public naoth::Singleton<DebugBottomImageDrawings>
+class DebugImageDrawings : public naoth::Singleton<DebugImageDrawings>
 {
 protected:
-  friend class naoth::Singleton<DebugBottomImageDrawings>;
+  friend class naoth::Singleton<DebugImageDrawings>;
   
-  DebugBottomImageDrawings()
-    : canvasTop(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT),
-      canvasBottom(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT),
-      currentCanvas(&canvasBottom)
+  DebugImageDrawings()
+    : currentCanvas(&canvasBottom)
   {
   }
 
@@ -183,13 +192,13 @@ private:
 };
 
 #ifdef DEBUG
-#define CANVAS_PX(id) DebugBottomImageDrawings::getInstance().setCanvas(id)
-#define CANVAS_PX_TOP DebugBottomImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Top)
-#define CANVAS_PX_BOTTOM DebugBottomImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Bottom)
-#define CIRCLE_PX(...) DebugBottomImageDrawings::getInstance().canvas().drawCircleToImage(__VA_ARGS__)
-#define RECT_PX(...) DebugBottomImageDrawings::getInstance().canvas().drawRectToImage(__VA_ARGS__)
-#define LINE_PX(...) DebugBottomImageDrawings::getInstance().canvas().drawLineToImage(__VA_ARGS__)
-#define POINT_PX(...) DebugBottomImageDrawings::getInstance().canvas().drawPointToImage(__VA_ARGS__)
+#define CANVAS_PX(id) DebugImageDrawings::getInstance().setCanvas(id)
+#define CANVAS_PX_TOP DebugImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Top)
+#define CANVAS_PX_BOTTOM DebugImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Bottom)
+#define CIRCLE_PX(...) DebugImageDrawings::getInstance().canvas().drawCircleToImage(__VA_ARGS__)
+#define RECT_PX(...) DebugImageDrawings::getInstance().canvas().drawRectToImage(__VA_ARGS__)
+#define LINE_PX(...) DebugImageDrawings::getInstance().canvas().drawLineToImage(__VA_ARGS__)
+#define POINT_PX(...) DebugImageDrawings::getInstance().canvas().drawPointToImage(__VA_ARGS__)
 #else
 /* ((void)0) - that's a do-nothing statement */
 #define CIRCLE_PX(color,x,y,radius) ((void)0)
@@ -197,13 +206,5 @@ private:
 #define LINE_PX(color,x0,y0,x1,y1) ((void)0)
 #define POINT_PX(color,x,y) ((void)0)
 #endif //DEBUG
-
-class DebugTopImageDrawings : public naoth::Singleton<DebugTopImageDrawings>, public DebugDrawingCanvas
-{
-protected:
-  friend class naoth::Singleton<DebugTopImageDrawings>;
-  DebugTopImageDrawings() : DebugDrawingCanvas(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT) {}
-};
-
 
 #endif  /* _DebugImageDrawings_H */

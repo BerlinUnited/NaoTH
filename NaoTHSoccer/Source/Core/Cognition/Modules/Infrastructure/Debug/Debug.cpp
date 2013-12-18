@@ -53,6 +53,10 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   // parameter list
   DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
   DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
+
+  // HACK: initialize the both canvases
+  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
+  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).init(getImage().width(), getImage().height());
 }
 
 void Debug::execute()
@@ -79,8 +83,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     
     if(arguments.find("top") != arguments.end())
     {
-      DebugTopImageDrawings::getInstance().drawToImage(getImageTop());
-      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(getImageTop());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(ImageDrawingCanvas(getImageTop()));
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImageTop");
       Serializer<Image>::serialize(getImageTop(), outstream);
@@ -89,7 +92,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     }
     else
     {
-      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(getImage());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(ImageDrawingCanvas(getImage()));
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImage");
       Serializer<Image>::serialize(getImage(), outstream);

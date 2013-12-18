@@ -29,9 +29,8 @@ Image::Image()
 }
 
 //copy constructor
-Image::Image(const Image& orig) :
-DrawingCanvas(),
-cameraInfo(orig.cameraInfo)
+Image::Image(const Image& orig)
+  : cameraInfo(orig.cameraInfo)
 {
   if(selfCreatedImage)
   {

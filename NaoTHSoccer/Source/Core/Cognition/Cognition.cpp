@@ -320,9 +320,7 @@ void Cognition::call()
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
   DebugDrawings::getInstance().update();
+  DebugImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
-
-  DebugBottomImageDrawings::getInstance().reset();
-  DebugTopImageDrawings::getInstance().reset();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call
