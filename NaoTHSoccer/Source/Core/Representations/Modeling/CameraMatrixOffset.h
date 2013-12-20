@@ -53,8 +53,10 @@ public:
 };
 
 
+namespace naoth
+{
 template<>
-class naoth::Serializer<CameraMatrixOffset>
+class Serializer<CameraMatrixOffset>
 {
   public:
   static void serialize(const CameraMatrixOffset& representation, std::ostream& stream)
@@ -74,5 +76,6 @@ class naoth::Serializer<CameraMatrixOffset>
     msg.ParseFromZeroCopyStream(&buf);
   }
 };
+}
 
 #endif // _CameraMatrixOffset_h_

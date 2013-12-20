@@ -137,16 +137,18 @@ void BodyContourProvider::add(
   // estimate the position of contour-point based on current position of the limb
   Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
   // project this point into the image
-  Vector2i q1 = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p1);
+  Vector2i q1;
+  bool q1_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p1, q1);
 
   // start building the contour lines
   for(size_t i = 1; i < c.size(); i++)
   {
     Vector3d p2 = origin * Vector3d(c[i].x, c[i].y * sign, c[i].z);
-    Vector2i q2 = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p2);
+    Vector2i q2;
+    bool q2_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p2, q2);
 
     // if the prjection was successful
-    if (q1.x != -1 && q2.x != -1)
+    if (q1_ok && q2_ok)
     {
       Vector2i a(q1);
       Vector2i b(q2);
@@ -186,6 +188,7 @@ void BodyContourProvider::add(
 
     p1 = p2;
     q1 = q2;
+    q1_ok = q2_ok;
   }// end for
 }// end add
 
