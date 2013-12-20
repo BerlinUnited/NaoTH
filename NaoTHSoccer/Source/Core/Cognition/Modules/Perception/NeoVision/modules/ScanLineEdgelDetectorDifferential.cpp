@@ -112,7 +112,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   {
     ASSERT(getImage().isInside(start.x, start.y));
     // don't scan the own body
-    start = getBodyContour().returnFirstFreeCell(start);
+    start = getBodyContour().getFirstFreeCell(start);
 
     current_scanlineID = i;
 

@@ -94,7 +94,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
   for (;start.x < (int) getImage().cameraInfo.resolutionWidth;)
   {
-    start = getBodyContour().returnFirstFreeCell(start);
+    start = getBodyContour().getFirstFreeCell(start);
     ASSERT(getImage().isInside(start.x, start.y));
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
