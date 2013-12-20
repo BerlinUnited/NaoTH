@@ -18,6 +18,10 @@ GridProvider::GridProvider()
   DEBUG_REQUEST_REGISTER("Vision:show_grid", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("Vision:show_classified_image", "draw the image represented by uniformGrid", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassesHistograms:enable_debug", "Enables the debug output for the histogram", false);
+
+  Vector2i histSizes(getColoredGrid().uniformGrid.width, getColoredGrid().uniformGrid.height);
+  getColorClassesHistograms().resizeHistograms(histSizes);
+  getColorClassesHistogramsTop().resizeHistograms(histSizes);
 }
 
 void GridProvider::execute(CameraInfo::CameraID id)

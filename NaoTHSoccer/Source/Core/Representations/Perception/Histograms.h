@@ -34,6 +34,18 @@ class ColorClassesHistograms: public naoth::Printable
 
     void init();
 
+    void resizeHistograms(Vector2i& size)
+    {
+      histSizes = size;
+      for(int color = 0; color < ColorClasses::numOfColors; color++)
+      {
+        //histogram along x-axis needs height as size
+        xHistogram[color].resize(histSizes.y);
+        //histogram along y-axis needs width as size
+        yHistogram[color].resize(histSizes.x);
+      }
+    }
+
     inline void increaseValue(const int x, const int y, const ColorClasses::Color& color)
     {
       xHistogram[color].add(y);
@@ -47,14 +59,17 @@ class ColorClassesHistograms: public naoth::Printable
     }
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
-    void createFromColoredGridTop(const ColoredGrid& coloredGrid);
+
     void showDebugInfos(const UniformGrid& grid, const naoth::CameraInfo& cameraInfo) const;
     virtual void print(std::ostream& stream) const;
 
   public:
     //color class histograms bottom image
-    Statistics::Histogram<naoth::IMAGE_HEIGHT> xHistogram[ColorClasses::numOfColors];
-    Statistics::Histogram<naoth::IMAGE_WIDTH > yHistogram[ColorClasses::numOfColors];
+    Statistics::HistogramX xHistogram[ColorClasses::numOfColors];
+    Statistics::HistogramX yHistogram[ColorClasses::numOfColors];
+
+  private:
+    Vector2i histSizes;  
 };
 
 class ColorClassesHistogramsTop : public ColorClassesHistograms{};
