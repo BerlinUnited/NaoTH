@@ -295,15 +295,15 @@ void GoalDetector::execute(CameraInfo::CameraID id)
         PLOT("GoalDetector:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":differenceInImage", differenceInImage);
 
         // back projection test
-        Vector2<int> projectedPost = 
-          CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-            Vector3<double>(lastGoalPost.position.x,
-                            lastGoalPost.position.y, 
-                            0.0)
-          );
-
-        double backPojDifferenceInImage = (projectedPost - getGoalPercept().getPost(0).basePoint).abs();
-        PLOT("GoalDetector:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":backPojDifferenceInImage", backPojDifferenceInImage);
+        Vector3<double> localPostPosition3d(lastGoalPost.position.x, lastGoalPost.position.y, 0.0);
+        Vector2<int> projectedPost;
+          
+        if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+                                                localPostPosition3d, projectedPost))
+        {
+          double backPojDifferenceInImage = (projectedPost - getGoalPercept().getPost(0).basePoint).abs();
+          PLOT("GoalDetector:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":backPojDifferenceInImage", backPojDifferenceInImage);
+        }
       }//end if
 
       lastGoalPost = getGoalPercept().getPost(0);

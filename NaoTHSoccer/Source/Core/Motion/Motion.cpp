@@ -174,39 +174,17 @@ void Motion::processSensorData()
   //
   theFootGroundContactDetector->execute();
 
-
-
+  //
   theKinematicChainProvider->execute();
-  //
-  /*
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    getAccelerometerData(),
-    //getInertialSensorData.data,
-    getInertialModel().orientation,
-    getKinematicChainSensor(),
-    getFSRPositions().pos, // provides theFSRPos
-    getRobotInfo().getBasicTimeStepInSecond());
-  */
-  //
-  //Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
-  //getKinematicChainMotor().updateCoM();
-
 
   //
   theSupportPolygonGenerator->execute();
 
   //
-  updateCameraMatrix("CameraMatrix", getCameraMatrix(), getCameraInfo());
-  updateCameraMatrix("CameraMatrixTop", getCameraMatrixTop(), getCameraInfoTop());
+  updateCameraMatrix();
 
   //
   theOdometryCalculator->execute();
-  /*
-  theOdometryCalculator.calculateOdometry(
-    getOdometryData,
-    getKinematicChain,
-    getFSRData);
-    */
 
 
   // store the MotorJointData
@@ -338,38 +316,31 @@ void Motion::debugPlots()
 }//end debugPlots
 
 
-void Motion::updateCameraMatrix(
-                                std::string name,
-                                CameraMatrix& cameraMatrix,
-                                const CameraInfo& cameraInfo)
+void Motion::updateCameraMatrix()
 {
   CameraMatrixCalculator::calculateCameraMatrix(
-    cameraMatrix,
-    cameraInfo,
-    getKinematicChainSensor());
-  cameraMatrix.timestamp = getSensorJointData().timestamp;
-  cameraMatrix.valid = true;
+    getCameraMatrix(),
+    getKinematicChainSensor(),
+    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom],
+    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
+  );
 
-  MODIFY(name + ":translation:x", cameraMatrix.translation.x);
-  MODIFY(name + ":translation:y", cameraMatrix.translation.y);
-  MODIFY(name + ":translation:z", cameraMatrix.translation.z);
+  CameraMatrixCalculator::calculateCameraMatrix(
+    getCameraMatrixTop(),
+    getKinematicChainSensor(),
+    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Top],
+    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]
+  );
 
-  double correctionAngleX = 0.0;
-  double correctionAngleY = 0.0;
-  double correctionAngleZ = 0.0;
-  MODIFY(name + ":correctionAngle:x", correctionAngleX);
-  MODIFY(name + ":correctionAngle:y", correctionAngleY);
-  MODIFY(name + ":correctionAngle:z", correctionAngleZ);
+  getCameraMatrix().timestamp = getSensorJointData().timestamp;
+  getCameraMatrix().valid = true;
 
-  cameraMatrix.rotation.rotateX(correctionAngleX);
-  cameraMatrix.rotation.rotateY(correctionAngleY);
-  cameraMatrix.rotation.rotateZ(correctionAngleZ);
-
-
+  getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
+  getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
 
 
-
+//TODO: move that to the DCM platform
 void Motion::guard_cognition()
 {
   static unsigned int frameNumSinceLastMotionRequest(0);
@@ -377,12 +348,9 @@ void Motion::guard_cognition()
 
   // TODO: put this in the platform
   // check if cognition is still alive
-  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber)
-  {
+  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber) {
     frameNumSinceLastMotionRequest++;
-  }
-  else
-  {
+  } else {
     lastCognitionFrameNumber = getMotionRequest().cognitionFrameNumber;
     frameNumSinceLastMotionRequest = 0;
   }
@@ -396,7 +364,6 @@ void Motion::guard_cognition()
     Trace::getInstance().dump();
     StopwatchManager::getInstance().dump("cognition");
 
-    //TODO: Maybe better put it into Platform?
     #ifndef WIN32
     std::cerr << "syncing file system..." ;
     sync();
@@ -407,18 +374,4 @@ void Motion::guard_cognition()
   }//end if
 }//end guard_cognition
 
-
-/*
-// todo is it needed?
-bool Motion::exit()
-{
-  state = exiting;
-  if ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init
-      && theBlackBoard.currentlyExecutedMotion->isFinish() )
-  {
-    return true;
-  }
-  return false;
-}//end exit
-*/
 

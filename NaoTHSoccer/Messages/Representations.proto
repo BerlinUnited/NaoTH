@@ -118,7 +118,6 @@ message ScanLineEdgelPercept {
   repeated ScanLineEndPoint endPoints = 2;
 }
 
-// TODO: this representation should not be in naoth-comm */
 message StepControlStatus
 {
   required uint32 stepID = 1;
@@ -154,5 +153,10 @@ message CalibrationData
 message InertialModel
 {
   optional DoubleVector2 orientation = 1;
+}
+
+message CameraMatrixCalibration
+{
+  repeated DoubleVector2 correctionOffset = 1;
 }
 

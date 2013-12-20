@@ -34,21 +34,16 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(FieldInfo)
   REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
-//  REQUIRE(CameraMatrixOffset)
 
-  REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
+  REQUIRE(GoalPercept) // needed for calibration of the camera matrix
   REQUIRE(GoalPerceptTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
-  // TODO: put offset to extra config
-  PROVIDE(CameraInfoParameter)
-  PROVIDE(SensorJointData)
-  PROVIDE(KinematicChain)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
-  PROVIDE(CameraInfo)
-  PROVIDE(CameraInfoTop)
-
+  PROVIDE(CameraMatrixOffset)
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -70,8 +65,6 @@ public:
   }
 
 private:
-  unsigned int udpateTime;
-  Vector3d theFSRPos[FSRData::numOfFSR];
   CameraInfo::CameraID cameraID;
 
   void calibrate();
@@ -80,7 +73,7 @@ private:
 
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,CameraMatrix);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,GoalPercept);  
-  DOUBLE_CAM_PROVIDE(CameraMatrixCorrector,CameraInfo); 
+  DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,CameraInfo); 
 };
 
 #endif //_CameraMatrixCorrector_h_

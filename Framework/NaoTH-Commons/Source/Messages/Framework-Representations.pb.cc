@@ -258,7 +258,7 @@ void protobuf_AddDesc_Framework_2dRepresentations_2eproto() {
     "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na"
     "othmessages.Image.Format:\003YUV\022\021\n\ttimesta"
     "mp\030\006 \001(\r\"\035\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\""
-    "\306\004\n\nCameraInfo\022\027\n\017resolutionWidth\030\001 \002(\005\022"
+    "\322\004\n\nCameraInfo\022\027\n\017resolutionWidth\030\001 \002(\005\022"
     "\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 "
     "\001(\0162\027.naothmessages.CameraID:\006bottom\022\027\n\013"
     "focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openingAngleWid"
@@ -267,23 +267,23 @@ void protobuf_AddDesc_Framework_2dRepresentations_2eproto() {
     "calCenterY\030\t \001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026"
     "\n\nmemorysize\030\013 \001(\003B\002\030\001\022\034\n\020cameraRollOffs"
     "et\030\014 \001(\001B\002\030\001\022\034\n\020cameraTiltOffset\030\r \001(\001B\002"
-    "\030\001\0226\n\020correctionOffset\030\022 \003(\0132\034.naothmess"
-    "ages.DoubleVector2\0225\n\017headJointOffset\030\023 "
-    "\003(\0132\034.naothmessages.DoubleVector2\022-\n\016tra"
-    "nsformation\030\016 \003(\0132\025.naothmessages.Pose3D"
-    "\022\034\n\024openingAngleDiagonal\030\017 \001(\001\022\021\n\tpixelS"
-    "ize\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n"
-    "\010position\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp"
-    "\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+"
-    "\n\tjointData\030\001 \002(\0132\030.naothmessages.JointD"
-    "ata\022\023\n\013temperature\030\002 \003(\001\022\027\n\017electricCurr"
-    "ent\030\003 \003(\001\"i\n\025UltraSoundReceiveData\022\032\n\022ul"
-    "traSoundTimeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022"
-    "\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\".\n\t"
-    "FrameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002"
-    " \002(\r\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002"
-    " \003(\001\022\r\n\005valid\030\003 \003(\010B\026\n\024de.naoth.rc.messa"
-    "ges", 1283);
+    "\030\001\022:\n\020correctionOffset\030\022 \003(\0132\034.naothmess"
+    "ages.DoubleVector2B\002\030\001\0229\n\017headJointOffse"
+    "t\030\023 \003(\0132\034.naothmessages.DoubleVector2B\002\030"
+    "\001\0221\n\016transformation\030\016 \003(\0132\025.naothmessage"
+    "s.Pose3DB\002\030\001\022\034\n\024openingAngleDiagonal\030\017 \001"
+    "(\001\022\021\n\tpixelSize\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\t"
+    "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness"
+    "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso"
+    "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
+    "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
+    "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei"
+    "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra"
+    "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig"
+    "ht\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frameNumber\030\001 \002"
+    "(\r\022\014\n\004time\030\002 \002(\r\"5\n\007FSRData\022\r\n\005force\030\001 \003"
+    "(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010B\026\n\024de.na"
+    "oth.rc.messages", 1295);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Framework-Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -1079,7 +1079,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.Pose3D transformation = 14;
+      // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
       case 14: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1142,7 +1142,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+      // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
       case 18: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1157,7 +1157,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+      // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
       case 19: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1251,7 +1251,7 @@ void CameraInfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(13, this->cameratiltoffset(), output);
   }
   
-  // repeated .naothmessages.Pose3D transformation = 14;
+  // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
   for (int i = 0; i < this->transformation_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       14, this->transformation(i), output);
@@ -1272,13 +1272,13 @@ void CameraInfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(17, this->focus(), output);
   }
   
-  // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
   for (int i = 0; i < this->correctionoffset_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       18, this->correctionoffset(i), output);
   }
   
-  // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+  // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
   for (int i = 0; i < this->headjointoffset_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       19, this->headjointoffset(i), output);
@@ -1353,7 +1353,7 @@ void CameraInfo::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(13, this->cameratiltoffset(), target);
   }
   
-  // repeated .naothmessages.Pose3D transformation = 14;
+  // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
   for (int i = 0; i < this->transformation_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1375,14 +1375,14 @@ void CameraInfo::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(17, this->focus(), target);
   }
   
-  // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
   for (int i = 0; i < this->correctionoffset_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         18, this->correctionoffset(i), target);
   }
   
-  // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+  // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
   for (int i = 0; i < this->headjointoffset_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1489,7 +1489,7 @@ int CameraInfo::ByteSize() const {
     }
     
   }
-  // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
   total_size += 2 * this->correctionoffset_size();
   for (int i = 0; i < this->correctionoffset_size(); i++) {
     total_size +=
@@ -1497,7 +1497,7 @@ int CameraInfo::ByteSize() const {
         this->correctionoffset(i));
   }
   
-  // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+  // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
   total_size += 2 * this->headjointoffset_size();
   for (int i = 0; i < this->headjointoffset_size(); i++) {
     total_size +=
@@ -1505,7 +1505,7 @@ int CameraInfo::ByteSize() const {
         this->headjointoffset(i));
   }
   
-  // repeated .naothmessages.Pose3D transformation = 14;
+  // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
   total_size += 1 * this->transformation_size();
   for (int i = 0; i < this->transformation_size(); i++) {
     total_size +=

@@ -57,8 +57,7 @@ void CameraDebug::execute()
     afterQueryCameraSettings = false;
     
     // sync to the current settings
-    for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
-    {
+    for(int i=0; i < CameraSettings::numOfCameraSetting; i++) {
       getCameraSettingsRequest().data[i] = getCurrentCameraSettings().data[i];
     }
 
@@ -66,7 +65,6 @@ void CameraDebug::execute()
     //disabled auto exposure time setting
     getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 0;
-
 
     naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
     getCameraSettingsRequest().saveToConfig();
@@ -109,5 +107,4 @@ void CameraDebug::executeDebugCommand(
     timeWhenCameraCalibrationStopped = getFrameInfo();
     afterAutoCalibratingCamera = true;
   }
-  //end if command
 }//end executeDebugCommand

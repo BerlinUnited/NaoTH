@@ -15,14 +15,19 @@
 #include <vector>
 
 //Tools
-#include "Tools/DataStructures/Printable.h"
+#include <Tools/NaoInfo.h>
+#include "Tools/DoubleCamHelpers.h"
+#include "Tools/Math/Geometry.h"
+#include "Tools/ColorClasses.h"
 
 //Representations
 #include "Representations/Perception/BodyContour.h"
-#include "Representations/Infrastructure/JointData.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/CameraInfo.h"
+
+#include <Representations/Modeling/CameraMatrixOffset.h>
+
 #include <vector>
 
 #include "Tools/DoubleCamHelpers.h"
@@ -30,12 +35,13 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(BodyContourProvider)
-  REQUIRE(SensorJointData)
   REQUIRE(KinematicChain)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
-  REQUIRE(Image)
-  REQUIRE(ImageTop)
+  //REQUIRE(CameraMatrix)
+  //REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+
+  REQUIRE(CameraMatrixOffset)
 
   PROVIDE(BodyContour)
   PROVIDE(BodyContourTop)
@@ -51,9 +57,8 @@ END_DECLARE_MODULE(BodyContourProvider)
 class BodyContourProvider : public BodyContourProviderBase
 {
 public:
-  // default constructor
+
   BodyContourProvider();
-  
   virtual ~BodyContourProvider(){};
 
   virtual void execute(CameraInfo::CameraID id);
@@ -61,72 +66,62 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
-     execute(CameraInfo::Top);
   }
 
-protected:
+private:
 
-  class BodyParts : public Printable
+  class BodyParts
   {
   public:
-    std::vector< Vector3<double> > torso, // the contour of the torso
-                              upperArm, // the contour of the upper arm
-                              lowerArm, // the contour of the lower arm
-                              upperLeg, // the contour of the upper leg
-                              lowerLeg, // the contour of the lower leg
-                              foot; // the contour of the foot
+    std::vector< Vector3d > torso, // the contour of the torso
+                            upperArm, // the contour of the upper arm
+                            lowerArm, // the contour of the lower arm
+                            upperLeg, // the contour of the upper leg
+                            lowerLeg, // the contour of the lower leg
+                            foot; // the contour of the foot
+  } bodyparts;
 
-                              
-  protected:
-    void print(std::ostream& stream) const
-    {
-      stream << "nothing" << '\n';
-    }
-  };// end class BodyParts
-  
-private:
   
   // add a line to BodyContour:
   // take the Position of a robot's limb (Pose3d) and multiply it
   // with the contour of this limb, finally, project the contour into the image
   inline void add(
     const Pose3D& origin, 
-    const std::vector< Vector3<double> >& c, 
-    float sign, 
-    const CameraInfo& cameraInfo,  
-    const CameraMatrix& cameraMatrix, 
-    BodyContour& bodyContour, 
-    BodyContour::bodyPartID id);
+    const std::vector<Vector3d>& c, 
+    double sign,
+    BodyContour::BodyPartID id);
 
   //
-  inline void pushLine(const BodyContour::Line& line, BodyContour& bodyContour);
+  void updateBodyContur(const Vector2i& p1, const Vector2i& p2, BodyContour::BodyPartID id);
 
-  // check whether a point is within the image 
-  inline bool withinImage(const Vector2<double>& point) const;
-  //
-  inline void cellPos(const BodyContour::Line& line, Vector2<int>& firstCell, Vector2<int>& secondCell) const;
-  //
-  inline void cellPos(const Vector2<int>& point, Vector2<int>& cell) const;
-  //
-  inline void setCells(const BodyContour::Line& line, BodyContour& bodyContour) const;
-  //
-  inline void initializeGrid();
-  //
-  inline void eraseGrid();
 
-  
-  CameraInfo ci;
-  BodyParts bodyparts;
-  int lineNumber;
+  void debug();
+  void drawContur3D(
+    const Pose3D& origin, 
+    const std::vector<Vector3d>& c, 
+    double sign,
+    ColorClasses::Color color);
+  int k;
+
+
+  inline bool isInsideImage(const Vector2i& p) const {
+    return p.x >= 0 && p.x < (int)getCameraInfo().resolutionWidth && 
+           p.y >= 0 && p.y < (int)getCameraInfo().resolutionHeight;
+  }
+
+  bool clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b);
 
   CameraInfo::CameraID cameraID;
 
-  // double cam interface
-  DOUBLE_CAM_REQUIRE(BodyContourProvider, Image);
-  DOUBLE_CAM_REQUIRE(BodyContourProvider, CameraMatrix);
+  // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
+  Pose3D kinematicCameraMatrix;
+  const Pose3D& getCameraMatrix() const
+  {
+    return kinematicCameraMatrix;
+  }
 
-  DOUBLE_CAM_REQUIRE(BodyContourProvider, BodyContour);
-  DOUBLE_CAM_PROVIDE(BodyContourProvider ,BodyContour);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraInfo);
+  DOUBLE_CAM_PROVIDE(BodyContourProvider,BodyContour);
 
 };// end class BodyContourProvider
 

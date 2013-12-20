@@ -15,6 +15,7 @@ BEGIN_DECLARE_MODULE(KinematicChainProvider)
   REQUIRE(AccelerometerData)
   REQUIRE(InertialSensorData)
   REQUIRE(InertialModel)
+  PROVIDE(SensorJointData) // HACK
 
   PROVIDE(KinematicChain)
 END_DECLARE_MODULE(KinematicChainProvider)
@@ -28,7 +29,7 @@ public:
 
 private:
   unsigned int udpateTime;
-  Vector3<double> theFSRPos[FSRData::numOfFSR];
+  Vector3d theFSRPos[FSRData::numOfFSR];
 };
 
 #endif // KINEMATICCHAINPROVIDER_H

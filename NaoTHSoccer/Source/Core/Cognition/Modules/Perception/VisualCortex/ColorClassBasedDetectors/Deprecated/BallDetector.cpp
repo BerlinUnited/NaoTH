@@ -114,14 +114,17 @@ void BallDetector::execute(CameraInfo::CameraID id)
   }
   else // no orange blobs found in the image but previous percept is good
   {
-    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(
-      getCameraMatrix(), 
-      getImage().cameraInfo,
-      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+    Vector3<double> ballPosition3d(getBallPercept().bearingBasedOffsetOnField.x,
                       getBallPercept().bearingBasedOffsetOnField.y, 
-                      getFieldInfo().ballRadius));
+                      getFieldInfo().ballRadius);
+    
+    Vector2<int> projectedBall;
+    bool projection_ok = CameraGeometry::relativePointToImage(
+      getCameraMatrix(), 
+      getImage().cameraInfo, 
+      ballPosition3d, projectedBall);
 
-    if(projectedBall.x > 0 && projectedBall.y > 0)
+    if(projection_ok)
     {
       int scanRange = (int)(2.0*getBallPercept().radiusInImage + 0.5);
       Vector2<int> candidate;
@@ -156,12 +159,18 @@ void BallDetector::execute(CameraInfo::CameraID id)
   if(getBallPercept().centerInImage.y < min(p1.y, p2.y))
     getBallPercept().ballWasSeen = false;
 
-  Vector2<int> currentProjected = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+  Vector3<double> ballPosition3d(getBallPercept().bearingBasedOffsetOnField.x,
                       getBallPercept().bearingBasedOffsetOnField.y,
-                      getFieldInfo().ballRadius));
+                      getFieldInfo().ballRadius);
 
-  if(getBallPercept().ballWasSeen)
+  Vector2<int> currentProjected;
+  bool projection_ok = CameraGeometry::relativePointToImage(
+    getCameraMatrix(), 
+    getImage().cameraInfo,
+    ballPosition3d,
+    currentProjected);
+
+  if(getBallPercept().ballWasSeen && projection_ok)
   {
 
     PLOT("BallDetecor:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
@@ -284,14 +293,18 @@ void BallDetector::execute(CameraInfo::CameraID id)
   {
     // no ball in the image found
 
-    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-        Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+    Vector3<double> ballPosition3d(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
-                        getFieldInfo().ballRadius));
+                        getFieldInfo().ballRadius);
 
     //project the old percept in the image
     DEBUG_REQUEST("Vision:ColorClassBasedDetectors:BallDetector:mark_previous_ball",
-      CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
+      Vector2<int> projectedBall;
+      if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+          ballPosition3d, projectedBall))
+      {
+        CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
+      }
     );
   }
 

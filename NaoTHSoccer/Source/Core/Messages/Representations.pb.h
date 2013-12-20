@@ -60,6 +60,7 @@ class MotionStatus;
 class OdometryData;
 class CalibrationData;
 class InertialModel;
+class CameraMatrixCalibration;
 
 // ===================================================================
 
@@ -2279,6 +2280,91 @@ class InertialModel : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static InertialModel* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class CameraMatrixCalibration : public ::google::protobuf::Message {
+ public:
+  CameraMatrixCalibration();
+  virtual ~CameraMatrixCalibration();
+  
+  CameraMatrixCalibration(const CameraMatrixCalibration& from);
+  
+  inline CameraMatrixCalibration& operator=(const CameraMatrixCalibration& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const CameraMatrixCalibration& default_instance();
+  
+  void Swap(CameraMatrixCalibration* other);
+  
+  // implements Message ----------------------------------------------
+  
+  CameraMatrixCalibration* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const CameraMatrixCalibration& from);
+  void MergeFrom(const CameraMatrixCalibration& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+  inline int correctionoffset_size() const;
+  inline void clear_correctionoffset();
+  static const int kCorrectionOffsetFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& correctionoffset(int index) const;
+  inline ::naothmessages::DoubleVector2* mutable_correctionoffset(int index);
+  inline ::naothmessages::DoubleVector2* add_correctionoffset();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
+      correctionoffset() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
+      mutable_correctionoffset();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.CameraMatrixCalibration)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 > correctionoffset_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static CameraMatrixCalibration* default_instance_;
 };
 // ===================================================================
 
@@ -4569,6 +4655,35 @@ inline ::naothmessages::DoubleVector2* InertialModel::release_orientation() {
   ::naothmessages::DoubleVector2* temp = orientation_;
   orientation_ = NULL;
   return temp;
+}
+
+// -------------------------------------------------------------------
+
+// CameraMatrixCalibration
+
+// repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+inline int CameraMatrixCalibration::correctionoffset_size() const {
+  return correctionoffset_.size();
+}
+inline void CameraMatrixCalibration::clear_correctionoffset() {
+  correctionoffset_.Clear();
+}
+inline const ::naothmessages::DoubleVector2& CameraMatrixCalibration::correctionoffset(int index) const {
+  return correctionoffset_.Get(index);
+}
+inline ::naothmessages::DoubleVector2* CameraMatrixCalibration::mutable_correctionoffset(int index) {
+  return correctionoffset_.Mutable(index);
+}
+inline ::naothmessages::DoubleVector2* CameraMatrixCalibration::add_correctionoffset() {
+  return correctionoffset_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
+CameraMatrixCalibration::correctionoffset() const {
+  return correctionoffset_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
+CameraMatrixCalibration::mutable_correctionoffset() {
+  return &correctionoffset_;
 }
 
 
