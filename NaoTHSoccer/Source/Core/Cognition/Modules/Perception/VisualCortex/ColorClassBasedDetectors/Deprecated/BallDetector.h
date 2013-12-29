@@ -72,7 +72,7 @@ public:
   BallDetector();
   ~BallDetector(){};
 
-  void execute(const Vector2<int>& start);
+  void execute(const Vector2i& start);
 
   // override the Module execute method
   virtual void execute(CameraInfo::CameraID id);
@@ -91,12 +91,12 @@ private:
   BlobFinder theBlobFinder;
   BlobFinder theBlobFinderTop;
 
-  bool calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius );
-  bool randomScan(ColorClasses::Color color, Vector2<int>& result, const Vector2<int>& orgMin, const Vector2<int>& orgMax) const;
+  bool calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius );
+  bool randomScan(ColorClasses::Color color, Vector2i& result, const Vector2i& orgMin, const Vector2i& orgMax) const;
 
-  void regionGrowExpandArea( const Vector2<int>& startingPoint, Vector2<double>& result, double& radius);
+  void regionGrowExpandArea( const Vector2i& startingPoint, Vector2d& result, double& radius);
 
-  double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
+  double calculateBase(Vector2i& x, Vector2i& y, Vector2i& z);
 
 
   // double cam interface

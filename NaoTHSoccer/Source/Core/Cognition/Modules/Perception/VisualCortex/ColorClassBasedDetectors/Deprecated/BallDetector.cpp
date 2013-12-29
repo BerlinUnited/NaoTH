@@ -92,7 +92,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
   if(blobList.blobNumber > 0)
   {
     int largest = blobList.getLargestBlob();
-    const Vector2<int>& candidate = blobList.blobs[largest].centerOfMass;
+    const Vector2i& candidate = blobList.blobs[largest].centerOfMass;
     // check, whether the point is occupied by bodyContour
     if (!getBodyContour().isOccupied(candidate))
     {
@@ -118,7 +118,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
                       getBallPercept().bearingBasedOffsetOnField.y, 
                       getFieldInfo().ballRadius);
     
-    Vector2<int> projectedBall;
+    Vector2i projectedBall;
     bool projection_ok = CameraGeometry::relativePointToImage(
       getCameraMatrix(), 
       getImage().cameraInfo, 
@@ -127,10 +127,10 @@ void BallDetector::execute(CameraInfo::CameraID id)
     if(projection_ok)
     {
       int scanRange = (int)(2.0*getBallPercept().radiusInImage + 0.5);
-      Vector2<int> candidate;
+      Vector2i candidate;
 
-      Vector2<int> min(projectedBall.x - scanRange, projectedBall.y - scanRange);
-      Vector2<int> max(projectedBall.x + scanRange, projectedBall.y + scanRange);
+      Vector2i min(projectedBall.x - scanRange, projectedBall.y - scanRange);
+      Vector2i max(projectedBall.x + scanRange, projectedBall.y + scanRange);
 
       if(randomScan( ColorClasses::orange, candidate, min, max))
       {
@@ -152,8 +152,8 @@ void BallDetector::execute(CameraInfo::CameraID id)
   // now make a plausibility check
   //
   // get the horizon
-  Vector2<double> p1(getArtificialHorizon().begin());
-  Vector2<double> p2(getArtificialHorizon().end());
+  Vector2d p1(getArtificialHorizon().begin());
+  Vector2d p2(getArtificialHorizon().end());
   
   // ball is over horizon
   if(getBallPercept().centerInImage.y < min(p1.y, p2.y))
@@ -163,7 +163,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
                       getBallPercept().bearingBasedOffsetOnField.y,
                       getFieldInfo().ballRadius);
 
-  Vector2<int> currentProjected;
+  Vector2i currentProjected;
   bool projection_ok = CameraGeometry::relativePointToImage(
     getCameraMatrix(), 
     getImage().cameraInfo,
@@ -188,7 +188,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 //    getCameraInfo(),
 //    getKinematicChain());
 
-//  Vector2<int> oldCamProjected = CameraGeometry::relativePointToImage(oldCamMatrix, getImage().cameraInfo,
+//  Vector2i oldCamProjected = CameraGeometry::relativePointToImage(oldCamMatrix, getImage().cameraInfo,
 //      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
 //                      getBallPercept().bearingBasedOffsetOnField.y,
 //                      getFieldInfo().ballRadius));
@@ -204,7 +204,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
 
   /* this is highly experimental test
-  Vector2<double> topBorderPoint = Geometry::imagePixelToFieldCoord(
+  Vector2d topBorderPoint = Geometry::imagePixelToFieldCoord(
     getCameraMatrix(),
     getBallPercept().centerInImage.x,
     getBallPercept().centerInImage.y - getBallPercept().radiusInImage,
@@ -217,7 +217,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
 
   /*
-  Vector2<double> sbo; // size based
+  Vector2d sbo; // size based
   double distanceFromCameraToBallCenter = 
     Geometry::getBallDistanceByAngleSize(int(2 * Global::getFieldDimensions().ballRadius), 2 * radiusAsAngle);
   double distanceFromCameraToBallCenterOnGround;
@@ -299,7 +299,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
     //project the old percept in the image
     DEBUG_REQUEST("Vision:ColorClassBasedDetectors:BallDetector:mark_previous_ball",
-      Vector2<int> projectedBall;
+      Vector2i projectedBall;
       if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
           ballPosition3d, projectedBall))
       {
@@ -338,7 +338,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 }//end execute
 
 
-void BallDetector::execute(const Vector2<int>& start)
+void BallDetector::execute(const Vector2i& start)
 {
   CANVAS_PX(cameraID);
   BallPointList goodPoints;
@@ -359,7 +359,7 @@ void BallDetector::execute(const Vector2<int>& start)
     goodPoints.merge(badPoints);
 
 
-  Vector2<double> centerCOM;
+  Vector2d centerCOM;
   double radiusCOM(0);
 
   // estimate the ball center as center of mas
@@ -383,7 +383,7 @@ void BallDetector::execute(const Vector2<int>& start)
     radiusCOM = std::max(radiusCOM, (centerCOM - badPoints[i]).abs());
   }
 
-  Vector2<double> center;
+  Vector2d center;
   double radius(0);
   bool ballCouldBeEstimated = calculateCircle(goodPoints, center, radius);
 
@@ -427,10 +427,10 @@ void BallDetector::execute(const Vector2<int>& start)
 
 
 //calculate the base of three points
-double BallDetector::calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z)
+double BallDetector::calculateBase(Vector2i& x, Vector2i& y, Vector2i& z)
 {
-  Vector2<double> v = x-z;
-  Vector2<double> w = y-z;
+  Vector2d v = x-z;
+  Vector2d w = y-z;
 
   v.normalize();
   w.normalize();
@@ -438,7 +438,7 @@ double BallDetector::calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int
   return  fabs(v*w);
 }//end calculateBase
 
-bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, const Vector2<int>& orgMin, const Vector2<int>& orgMax) const
+bool BallDetector::randomScan(ColorClasses::Color color, Vector2i& result, const Vector2i& orgMin, const Vector2i& orgMax) const
 {
   int maxNumberOfScanPoints = 30;
   
@@ -449,8 +449,8 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
 //  max.y = std::min(max.y, (int)getImage_().cameraInfo.resolutionHeight-1);
   // senity check
 
-//  Vector2<int> min = getFieldPercept_().getLargestValidPoly(getCameraMatrix_().horizon).getClosestPoint(orgMin);
-//  Vector2<int> max = getFieldPercept_().getLargestValidPoly(getCameraMatrix_().horizon).getClosestPoint(orgMax);
+//  Vector2i min = getFieldPercept_().getLargestValidPoly(getCameraMatrix_().horizon).getClosestPoint(orgMin);
+//  Vector2i max = getFieldPercept_().getLargestValidPoly(getCameraMatrix_().horizon).getClosestPoint(orgMax);
 //  if(min.x >= max.x || min.y >= max.y) return false;
 
 
@@ -484,28 +484,28 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
 
 
 void BallDetector::regionGrowExpandArea(
-    const Vector2<int>& startingPoint,
-    Vector2<double>& result,
+    const Vector2i& startingPoint,
+    Vector2d& result,
     double& radius)
 {
 
 //  const int numberOfDirections = 8;
-  Vector2<int> mask[] = 
+  Vector2i mask[] = 
   {
-    Vector2<int>(-1,  0),
-    Vector2<int>(-1, -1),
-    Vector2<int>( 0, -1),
-    Vector2<int>( 1, -1),
-    Vector2<int>( 1,  0),
-    Vector2<int>( 1,  1),
-    Vector2<int>( 0,  1),
-    Vector2<int>(-1,  1)
+    Vector2i(-1,  0),
+    Vector2i(-1, -1),
+    Vector2i( 0, -1),
+    Vector2i( 1, -1),
+    Vector2i( 1,  0),
+    Vector2i( 1,  1),
+    Vector2i( 0,  1),
+    Vector2i(-1,  1)
   };
 
-  Vector2<double> center;
+  Vector2d center;
   double number = 0;
-  Vector2<int> highest(startingPoint);
-  Vector2<int> lowest(startingPoint);
+  Vector2i highest(startingPoint);
+  Vector2i lowest(startingPoint);
 
   // TODO: check, its not a grid anymore
   //get width and height of the scaled image (uniformgrid)
@@ -522,7 +522,7 @@ void BallDetector::regionGrowExpandArea(
   //init a new blob creator
   //BlobCreator blobCreator;
 
-  ArrayQueue<Vector2<int> > open;
+  ArrayQueue<Vector2i > open;
   
   if(startingPoint.x >= 0 && startingPoint.x < gridWidth && 
      startingPoint.y >= 0 && startingPoint.y < gridHeight)
@@ -537,7 +537,7 @@ void BallDetector::regionGrowExpandArea(
   while(!open.empty())
   {
     // TODO: check if a reference can be used
-    Vector2<int> currentPoint = open.front();
+    Vector2i currentPoint = open.front();
     open.pop();
 
     //bool currentPointIsBoundary = false;
@@ -580,7 +580,7 @@ void BallDetector::regionGrowExpandArea(
     //check the neighboring pixels
     for(int i = 0; i < 8; i++)
     {
-      Vector2<int> neighborPixel = currentPoint + mask[i];
+      Vector2i neighborPixel = currentPoint + mask[i];
       // check if the pixel is inside the grid
       // we have to check it here, because in the case the pixel is 
       // outside the grid its index in scaledImageIndex is not defined
@@ -655,7 +655,7 @@ void BallDetector::regionGrowExpandArea(
 **********************************************************************************/
 
 
-bool BallDetector::calculateCircle( const BallPointList& ballPoints, Vector2<double>& center, double& radius )
+bool BallDetector::calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius )
 {
   if (ballPoints.length < 3)
     return false;
