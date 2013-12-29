@@ -182,9 +182,9 @@ void FieldColorClassifierFull::execute()
 
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
-    const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
+    const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
     const Pixel& pixel = getImage().get(point.x,point.y);
-    const Vector2<int>& pointTop = getColoredGridTop().uniformGrid.getPoint(i);
+    const Vector2i& pointTop = getColoredGridTop().uniformGrid.getPoint(i);
     const Pixel& pixelTop = getImageTop().get(pointTop.x,pointTop.y);
 
     if
