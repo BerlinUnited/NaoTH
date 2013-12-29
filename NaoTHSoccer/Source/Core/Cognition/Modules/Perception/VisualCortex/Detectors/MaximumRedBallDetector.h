@@ -93,17 +93,17 @@ private:
   /************************************/
   std::vector<BallPointList> possibleModells;
   /***********************************/
-  bool findMaximumRedPoint(Vector2<int>& peakPos);
+  bool findMaximumRedPoint(Vector2i& peakPos);
 
-  Vector2<int> getCenterOfMass (BallPointList& goodPoints);
+  Vector2i getCenterOfMass (BallPointList& goodPoints);
   Vector2d estimatePositionBySize();
   bool calculateCircle( const BallPointList& ballPoints, Vector2d& center, double& radius );
   bool findBall();
-  bool getBestModel(const BallPointList& pointList, const Vector2<int>& start);
+  bool getBestModel(const BallPointList& pointList, const Vector2i& start);
   bool checkIfPixelIsOrange (const Pixel& pixel);
   void clearDublicatePoints (BallPointList& ballPoints);
-  bool getBestBallBruteForce(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
-  bool getBestBallRansac(const BallPointList& pointList, const Vector2<int>& start, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallBruteForce(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest);
+  bool getBestBallRansac(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest);
   void drawUsedPoints(const BallPointList& pointList);
   
   class Parameters: public ParameterList

@@ -55,7 +55,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
   findBall();
 }//end execute
 
-bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
+bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
 {
   if(!getFieldPercept().valid) {
     return false;
@@ -81,7 +81,7 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2<int>& peakPos)
   Pixel pixel;
   int maxRedPeak = -1;
   poly = getFieldPercept().getValidField();
-  Vector2<int> point;
+  Vector2i point;
 
   for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += params.stepSize) {
     for(point.x = 0; point.x < (int) getImage().width(); point.x += params.stepSize)
@@ -151,7 +151,7 @@ bool MaximumRedBallDetector::findBall ()
 {
 
   // STEP 1: find the starting point for the search
-	Vector2<int> start;
+	Vector2i start;
 	if(!findMaximumRedPoint(start)) {
     return false;
   }
@@ -190,7 +190,7 @@ bool MaximumRedBallDetector::findBall ()
 
   // execute a second scan from the center of mass from the first scan
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:second_scan_execute",
-    Vector2<int> center = getCenterOfMass(goodPoints);
+    Vector2i center = getCenterOfMass(goodPoints);
     Pixel centerPixel;
     getImage().get(center.x, center.y, centerPixel);
 
@@ -222,7 +222,7 @@ bool MaximumRedBallDetector::findBall ()
 	return getBestModel(bestPoints, start);
 }
 
-bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const Vector2<int>& start)
+bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const Vector2i& start)
 {
   GT_TRACE("MaximumRedBallDetector:2");
   if(pointList.length < 3) {
@@ -274,15 +274,15 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
   return false;
 }
 
-bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2<int>& start, Vector2<double>& centerBest, double& radiusBest)
+bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest)
 {
 	int idxBest = -1;
 	int bestCount = 0;
 	Vector2d center;
 	double radius = 0;
 	double bestErr = 10000.0;
-  Vector2<int> boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
-  Vector2<int> boundingBoxMax;
+  Vector2i boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
+  Vector2i boundingBoxMax;
   	GT_TRACE("MaximumRedBallDetector:1");
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
@@ -384,7 +384,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
   return idxBest >= 0;
 }
 
-bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, const Vector2<int>& start, Vector2<double>& centerBest, double& radiusBest)
+bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest)
 {
 	int maxTries = min(pointList.length, params.maxRansacTries);
 	int idxBest = -1;
@@ -393,8 +393,8 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 	double radius = 0;
 	double bestErr = 10000.0;
   BallPointList list;
-  Vector2<int> boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
-  Vector2<int> boundingBoxMax;
+  Vector2i boundingBoxMin(getImage().width() - 1, getImage().height() - 1);
+  Vector2i boundingBoxMax;
 
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
@@ -497,7 +497,7 @@ void MaximumRedBallDetector::drawUsedPoints(const BallPointList& pointList)
 	}
 }
 
-Vector2<int> MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList) 
+Vector2i MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList) 
 {
  	Vector2d mean;
   ASSERT(pointList.length > 0);
@@ -520,7 +520,7 @@ bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel)
 
 void MaximumRedBallDetector::clearDublicatePoints (BallPointList& ballPoints) 
 {
-	vector<Vector2<int> > dublicatePointList;
+	vector<Vector2i > dublicatePointList;
 	
 	for (int i=0;i<ballPoints.length; i++) 
   {
