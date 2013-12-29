@@ -28,8 +28,8 @@ void HistogramFieldDetector::execute(CameraInfo::CameraID id)
   getFieldPerceptRaw().reset();
   largestAreaRectangle.clear();
 
-  Vector2<int> min(0,0);
-  Vector2<int> max(0,0);
+  Vector2i min(0,0);
+  Vector2i max(0,0);
 
   getFieldRectFromHistogram(min, max);
 
@@ -162,10 +162,10 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2i& min, Vector2i& 
   if(min.x > -1 && min.x > -1 && max.x > -1 && max.y > -1)
   {
     largestAreaRectangle.add(getColoredGrid().getImagePoint(min));
-    Vector2<int> v1(min.x,max.y);
+    Vector2i v1(min.x,max.y);
     largestAreaRectangle.add(getColoredGrid().getImagePoint(v1));
     largestAreaRectangle.add(getColoredGrid().getImagePoint(max));
-    Vector2<int> v2(max.x,min.y);
+    Vector2i v2(max.x,min.y);
     largestAreaRectangle.add(getColoredGrid().getImagePoint(v2));
   }
 
