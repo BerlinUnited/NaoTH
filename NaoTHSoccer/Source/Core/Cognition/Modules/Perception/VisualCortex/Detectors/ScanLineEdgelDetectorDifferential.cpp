@@ -85,8 +85,8 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   int borderY = getImage().cameraInfo.resolutionHeight - theParameters.pixel_border_y - 1;
   
   // start and endpoints for the scanlines
-  Vector2<int> start(step / 2, borderY);
-  Vector2<int> end(step / 2, horizon_height );
+  Vector2i start(step / 2, borderY);
+  Vector2i end(step / 2, horizon_height );
   
 
   for (int i = 0; i < theParameters.scanline_count - 1; i++)
@@ -168,12 +168,12 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
 
 // scanForEdgels ala HTWK
 // TODO: reference to the master thesis von Thomas Reinhard
-ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end)
+ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end)
 {
-  Vector2<int> point(start);
+  Vector2i point(start);
   point.y -= 2; // make one step
 
-  Vector2<int> lastGreenPoint(start); // needed for the endpoint
+  Vector2i lastGreenPoint(start); // needed for the endpoint
 
   //results
   DoubleEdgel double_edgel;
@@ -181,7 +181,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 
   //Pixel pixel = getImage().get(point.x, point.y);
 
-  Vector2<int> peak_point(start);
+  Vector2i peak_point(start);
 
   // initialize
   int t_edge = theParameters.brightness_threshold * 2;
@@ -341,14 +341,14 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 }//end scanForEdgels
 
 
-ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(const Vector2<int>& begin, const Vector2<int>& end) const
+ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {
   ASSERT(begin.x == end.x && end.y <= begin.y);
 
   int length = begin.y - end.y;
   int numberOfGreen = 0;
   const int numberOfSamples = std::min(length, 20);
-  Vector2<int> point(begin);
+  Vector2i point(begin);
   Pixel pixel;
 
   int meanY = 0;
@@ -368,7 +368,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 }//end estimateColorOfSegment
 
 
-double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2<int>& point) const
+double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2i& point) const
 {
   // no angle at the border (shouldn't happen)
   if(  point.x < 1 || point.x > (int)getImage().cameraInfo.resolutionWidth-2

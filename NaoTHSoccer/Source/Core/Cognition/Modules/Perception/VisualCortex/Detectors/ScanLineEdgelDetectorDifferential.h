@@ -113,13 +113,13 @@ private:
   }
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
-  ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end) ;
+  ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end) ;
 
   /** */
-  ColorClasses::Color estimateColorOfSegment(const Vector2<int>& begin, const Vector2<int>& end) const;
+  ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
 
   /** Estimates the angle of the gray-gradient at the point by a Sobel Operator. */
-  double getPointsAngle(const Vector2<int>& point) const;
+  double getPointsAngle(const Vector2i& point) const;
 
   /** */
   double calculateMeanAngle(double angle1, double angle2) const;
