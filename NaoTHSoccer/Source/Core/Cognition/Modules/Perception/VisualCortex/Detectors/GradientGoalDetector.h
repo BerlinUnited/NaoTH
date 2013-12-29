@@ -79,7 +79,7 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  RingBuffer<Vector2<double>, 5> pointBuffer;
+  RingBuffer<Vector2d, 5> pointBuffer;
   RingBufferWithSum<double, 5> valueBuffer;
   RingBufferWithSum<double, 5> valueBufferY;
 
@@ -118,12 +118,12 @@ private:
   class Feature
   {
   public:
-    Vector2<int> begin;
-    Vector2<int> center;
-    Vector2<int> end;
+    Vector2i begin;
+    Vector2i center;
+    Vector2i end;
 
-    Vector2<double> responseAtBegin;
-    Vector2<double> responseAtEnd;
+    Vector2d responseAtBegin;
+    Vector2d responseAtEnd;
 
     bool possibleObstacle;
 

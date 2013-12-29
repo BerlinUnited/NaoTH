@@ -127,7 +127,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       valueBufferY.init();
       pointBuffer.init();
       isCandidate = false;
-      Vector2<int> pos((int) p1.x + 2, y);
+      Vector2i pos((int) p1.x + 2, y);
       BresenhamLineScan scanner(pos, direction, getImage().cameraInfo);
       do
       {
@@ -217,7 +217,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       aktIdx++;
     }//end for
   }//end if
-  Vector2<double> dir(-direction.y, direction.x);
+  Vector2d dir(-direction.y, direction.x);
 
   GT_TRACE("GradientGoalDetector:3");
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
@@ -233,7 +233,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
     int goodPointsCount = 1;
 
-    Vector2<int> pos = candidate.center;
+    Vector2i pos = candidate.center;
     valueBuffer.init();
     valueBufferY.init();
     pointBuffer.init();
@@ -381,7 +381,7 @@ GT_TRACE("GradientGoalDetector:4");
         //goalPostFound = true;
         GoalPercept::GoalPost post;
 
-        post.basePoint = Vector2<int>(pointBuffer[2]);
+        post.basePoint = Vector2i(pointBuffer[2]);
         CameraGeometry::imagePixelToFieldCoord(
           getCameraMatrix(),
           getImage().cameraInfo,
