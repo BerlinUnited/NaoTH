@@ -47,8 +47,8 @@ void GoalDetector::execute(CameraInfo::CameraID id)
   */
 
   // estimate the horizon
-  Vector2<double> p1(getArtificialHorizon().begin());
-  Vector2<double> p2(getArtificialHorizon().end());
+  Vector2d p1(getArtificialHorizon().begin());
+  Vector2d p2(getArtificialHorizon().end());
   int heightOfHorizon = (int)((p1.y + p2.y) * 0.5 + 0.5);
 
   // image over the horizon
@@ -66,16 +66,16 @@ void GoalDetector::execute(CameraInfo::CameraID id)
   // fallback: try to scan along the center of the image
   if(numberOfCandidates == 0)
   {
-    Vector2<double> c1(0,getImage().cameraInfo.getOpticalCenterY());
-    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.getOpticalCenterY());
+    Vector2d c1(0,getImage().cameraInfo.getOpticalCenterY());
+    Vector2d c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.getOpticalCenterY());
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
   // try once again...
   if(numberOfCandidates == 0)
   {
-    Vector2<double> c1(0,getImage().cameraInfo.resolutionHeight/3);
-    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.resolutionHeight/3);
+    Vector2d c1(0,getImage().cameraInfo.resolutionHeight/3);
+    Vector2d c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.resolutionHeight/3);
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
@@ -105,7 +105,7 @@ void GoalDetector::execute(CameraInfo::CameraID id)
 
   int distToBottomImage = getImage().cameraInfo.resolutionHeight - max(postOne.basePoint.y, postTwo.basePoint.y) - 1;
   // look max 5 pixel down
-  Vector2<int> extraBase(0, min(distToBottomImage,5));
+  Vector2i extraBase(0, min(distToBottomImage,5));
 
   // if the longest post is to short
   if(postvector.begin()->seenHeight < minimalHeightOfAGoalPost)
@@ -223,21 +223,21 @@ void GoalDetector::execute(CameraInfo::CameraID id)
   // TODO: clean it up (calculation of the centroid)
   if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
-    //Vector2<double> centroid;
+    //Vector2d centroid;
     //double mainAxisAngle = -getMajorAxis( goalColor, centroid);
 
-    Vector2<double> centroid = getGoalPercept().getPost(0).basePoint -
-      Vector2<double>(0.0, getGoalPercept().getPost(0).seenHeight*0.5); 
+    Vector2d centroid = getGoalPercept().getPost(0).basePoint -
+      Vector2d(0.0, getGoalPercept().getPost(0).seenHeight*0.5); 
 
     if(getGoalPercept().getNumberOfSeenPosts() > 1)
     {
       centroid += getGoalPercept().getPost(1).basePoint -
-            Vector2<double>(0.0, getGoalPercept().getPost(1).seenHeight*0.5);
+            Vector2d(0.0, getGoalPercept().getPost(1).seenHeight*0.5);
 
       centroid /= 2.0;
     }//end if
 
-    Vector2<double> angles = CameraGeometry::angleToPointInImage(
+    Vector2d angles = CameraGeometry::angleToPointInImage(
             getCameraMatrix(), 
             getImage().cameraInfo,
             (int)centroid.x, 
@@ -296,7 +296,7 @@ void GoalDetector::execute(CameraInfo::CameraID id)
 
         // back projection test
         Vector3<double> localPostPosition3d(lastGoalPost.position.x, lastGoalPost.position.y, 0.0);
-        Vector2<int> projectedPost;
+        Vector2i projectedPost;
           
         if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
                                                 localPostPosition3d, projectedPost))
@@ -314,16 +314,16 @@ void GoalDetector::execute(CameraInfo::CameraID id)
 }//end horizonScan
 
 
-Vector2<int> GoalDetector::extendCandidate(ColorClasses::Color color, const Vector2<int>& start)
+Vector2i GoalDetector::extendCandidate(ColorClasses::Color color, const Vector2i& start)
 {
-  Vector2<double> p1, p2;
+  Vector2d p1, p2;
   p1 = getArtificialHorizon().begin();
   p2 = getArtificialHorizon().end();
   
-  Vector2<int> direction(p2 - p1);
+  Vector2i direction(p2 - p1);
   
-  Vector2<int> pointOne = scanColorLine(color, start, direction);
-  Vector2<int> pointTwo = scanColorLine(color, start, -direction);
+  Vector2i pointOne = scanColorLine(color, start, direction);
+  Vector2i pointTwo = scanColorLine(color, start, -direction);
 
   return (pointOne + pointTwo)/2;
 }//end extendCandidate
@@ -340,22 +340,22 @@ void GoalDetector::estimatePostsByScanlines(
   {
     // orthogonal to horizon (down)
     // TODO: check rounding
-    Vector2<int> directionDown((getArtificialHorizon().end() - getArtificialHorizon().begin()).rotateLeft());
-    Vector2<int> directionUp(-directionDown);
-    Vector2<int> basePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
-    Vector2<int> topPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);
+    Vector2i directionDown((getArtificialHorizon().end() - getArtificialHorizon().begin()).rotateLeft());
+    Vector2i directionUp(-directionDown);
+    Vector2i basePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
+    Vector2i topPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);
 
     if((basePoint - candidates[i].point).abs() > 0)
     {
-      Vector2<int> centeredBasePoint = extendCandidate(candidates[i].color, basePoint);
+      Vector2i centeredBasePoint = extendCandidate(candidates[i].color, basePoint);
 
       if((centeredBasePoint - candidates[i].point).abs() > 0)
       {
         directionDown = centeredBasePoint - candidates[i].point;
         directionUp = -directionDown;
         // rescan
-        Vector2<int> correctedBasePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
-        Vector2<int> correctedTopPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);
+        Vector2i correctedBasePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
+        Vector2i correctedTopPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);
 
         if(correctedBasePoint.y >= basePoint.y)
           basePoint = correctedBasePoint;
@@ -380,18 +380,18 @@ void GoalDetector::estimatePostsByScanlines(
   }//end for
 }//end estimatePostsByScanlines
 
-Vector2<int> GoalDetector::scanColorLine(
+Vector2i GoalDetector::scanColorLine(
   ColorClasses::Color color, 
-  const Vector2<int>& start, 
-  const Vector2<int>& direction)
+  const Vector2i& start, 
+  const Vector2i& direction)
 {
   // TODO: make parameter
   int maxNumberOfSkippedPixel = 10;
 
   BresenhamLineScan scanLine(start, direction, getImage().cameraInfo);
   int nonColorCount = 0;
-  Vector2<int> point(start);
-  Vector2<int> end(start);
+  Vector2i point(start);
+  Vector2i end(start);
 
   for(int k = 0; k < scanLine.numberOfPixels; k++)
   {
@@ -426,7 +426,7 @@ void GoalDetector::estimatePostsByBlobs(
   for(int i = 0; i < numberOfCandidates; i++)
   {
 
-    Vector2<int> candidate(candidates[i].point);
+    Vector2i candidate(candidates[i].point);
     
     Blob blob = spiderExpandArea(
       candidate, 
@@ -443,15 +443,15 @@ void GoalDetector::estimatePostsByBlobs(
         LINE_PX(ColorClasses::green,
           blob.vertices[i].x, blob.vertices[i].y, blob.vertices[i+1].x, blob.vertices[i+1].y);
       }
-      Vector2<int> meanPoint = blob.vertices.getMean();
+      Vector2i meanPoint = blob.vertices.getMean();
       CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
     );
 
-    Vector2<int> leftBottom = blob.getClosestPoint(Vector2<int>(0, getImage().cameraInfo.resolutionHeight));
-    Vector2<int> rightBottom = blob.getClosestPoint(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+    Vector2i leftBottom = blob.getClosestPoint(Vector2i(0, getImage().cameraInfo.resolutionHeight));
+    Vector2i rightBottom = blob.getClosestPoint(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
 
-    Vector2<int> leftTop = blob.getClosestPoint(Vector2<int>(0, 0));
-    Vector2<int> rightTop = blob.getClosestPoint(Vector2<int>(getImage().cameraInfo.resolutionWidth, 0));
+    Vector2i leftTop = blob.getClosestPoint(Vector2i(0, 0));
+    Vector2i rightTop = blob.getClosestPoint(Vector2i(getImage().cameraInfo.resolutionWidth, 0));
   
     DEBUG_REQUEST("Vision:ColorClassBasedDetectors:GoalDetector:mark_goal",
       RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
@@ -472,21 +472,21 @@ void GoalDetector::estimatePostsByBlobs(
 
 
 int GoalDetector::scanForCandidates(
-  const Vector2<int>& startPoint, 
-  const Vector2<int>& endPoint, 
+  const Vector2i& startPoint, 
+  const Vector2i& endPoint, 
   GoalDetector::Candidate (&candidates)[maxNumberOfCandidates])
 {
 
   int maxNumberOfSkippedPixel = 10;
-  Vector2<double> runSum;
+  Vector2d runSum;
   double numOfPoints = 0;
   int nonColorCount = 0;
   // used for rounding
-  Vector2<double> half(0.5,0.5);
+  Vector2d half(0.5,0.5);
   int idx = 0;
 
   BresenhamLineScan scanLine(startPoint, endPoint);
-  Vector2<int> point(startPoint);
+  Vector2i point(startPoint);
 
   for(int i = 0; i < scanLine.numberOfPixels; i++)
   {
@@ -567,7 +567,7 @@ int GoalDetector::scanForCandidates(
 
 
 
-bool GoalDetector::checkIfPostReliable(Vector2<int>& post)
+bool GoalDetector::checkIfPostReliable(Vector2i& post)
 {
   int searchLength = 15;
 
@@ -593,7 +593,7 @@ bool GoalDetector::checkIfPostReliable(Vector2<int>& post)
 }//end checkIfPostReliable
 
 
-double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2<double>& centroid)
+double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2d& centroid)
 {
 
   int numberOfPoints=getColoredGrid().numberOfColorPoints[goalColor];
@@ -606,8 +606,8 @@ double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2<d
     moments.add(getColoredGrid().getImagePoint(goalColor, p));
   }
 
-  Vector2<double> major;
-  Vector2<double> minor;
+  Vector2d major;
+  Vector2d minor;
 
   centroid = moments.getCentroid();
   moments.getAxes(major, minor);
@@ -624,22 +624,22 @@ double GoalDetector::getMajorAxis(const ColorClasses::Color goalColor, Vector2<d
 
 
 GoalDetector::Blob GoalDetector::spiderExpandArea(
-                          const Vector2<int>& startingPoint, 
+                          const Vector2i& startingPoint, 
                           ColorClasses::Color color, 
                           int maxPointsToSkip, 
                           int maxLengthOfBeams)
 {
   const int NumberOfScanDirections = 8;
-  Vector2<int> searchMask[] = 
+  Vector2i searchMask[] = 
   {
-    Vector2<int>(-1,  0),
-    Vector2<int>(-1, -1),
-    Vector2<int>( 0, -1),
-    Vector2<int>( 1, -1),
-    Vector2<int>( 1,  0),
-    Vector2<int>( 1,  1),
-    Vector2<int>( 0,  1),
-    Vector2<int>(-1,  1)
+    Vector2i(-1,  0),
+    Vector2i(-1, -1),
+    Vector2i( 0, -1),
+    Vector2i( 1, -1),
+    Vector2i( 1,  0),
+    Vector2i( 1,  1),
+    Vector2i( 0,  1),
+    Vector2i(-1,  1)
   };
 
   Blob blob;
@@ -649,9 +649,9 @@ GoalDetector::Blob GoalDetector::spiderExpandArea(
   for(int i = 0; i < NumberOfScanDirections; i++)             //scan in 4 diagonal directions
   {
 
-    Vector2<int>& direction = searchMask[i];  // currently search direction 
-    Vector2<int> currentPoint(startingPoint); // currently prcessed point
-    Vector2<int> borderPoint(startingPoint);  //vector for found borderpoint;
+    Vector2i& direction = searchMask[i];  // currently search direction 
+    Vector2i currentPoint(startingPoint); // currently prcessed point
+    Vector2i borderPoint(startingPoint);  //vector for found borderpoint;
     bool borderPointFound = false;            //no point found up to now
     int skipped = 0;                          //count for skipped (wrong colored) Points
 
@@ -734,7 +734,7 @@ double GoalDetector::calculateMeanAngle(const double& angle1, const double& angl
 }//end calculateMeanAngle
 
 
-double GoalDetector::getPointsAngle(const Vector2<int>& point)
+double GoalDetector::getPointsAngle(const Vector2i& point)
 {
   int pixelEnvironment[3][3]; 
   int x, y;

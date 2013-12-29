@@ -80,7 +80,7 @@ private:
   public:
     double angle;
     double width;
-    Vector2<int> point;
+    Vector2i point;
     ColorClasses::Color color;
   };
 
@@ -91,8 +91,8 @@ private:
 
   /** */
   int scanForCandidates(
-    const Vector2<int>& startPoint, 
-    const Vector2<int>& endPoint, 
+    const Vector2i& startPoint, 
+    const Vector2i& endPoint, 
     Candidate (&candidates)[maxNumberOfCandidates]);
   
   /** */
@@ -101,7 +101,7 @@ private:
     int numberOfCandidates,
     vector<GoalPercept::GoalPost>& postvector);
 
-  Vector2<int> extendCandidate(ColorClasses::Color color, const Vector2<int>& start);
+  Vector2i extendCandidate(ColorClasses::Color color, const Vector2i& start);
 
   /** */
   void estimatePostsByBlobs(
@@ -110,29 +110,29 @@ private:
     vector<GoalPercept::GoalPost>& postvector);
 
   /** */
-  Vector2<int> scanColorLine(
+  Vector2i scanColorLine(
     ColorClasses::Color color, 
-    const Vector2<int>& start, 
-    const Vector2<int>& direction);
+    const Vector2i& start, 
+    const Vector2i& direction);
 
   /** */
-  bool checkIfPostReliable(Vector2<int>& post);
+  bool checkIfPostReliable(Vector2i& post);
 
   /** */
-  double getMajorAxis(const ColorClasses::Color goalColor, Vector2<double>& centroid);
+  double getMajorAxis(const ColorClasses::Color goalColor, Vector2d& centroid);
 
   /** check wether a given pixel (x,y) has a given color */
   bool hasColor (ColorClasses::Color& color, int x, int y);
 
   /** */
   Blob spiderExpandArea(
-    const Vector2<int>& startingPoint, 
+    const Vector2i& startingPoint, 
     ColorClasses::Color color, 
     int maxPointsToSkip, 
     int maxLengthOfBeams);
 
   /** */
-  double getPointsAngle(const Vector2<int>& point);
+  double getPointsAngle(const Vector2i& point);
   double calculateMeanAngle(const double& angle1, const double& angle2);
 
   class Blob
@@ -145,9 +145,9 @@ private:
     Math::Polygon<8> vertices;
     bool greenPointFound;
 
-    void add(Vector2<int>& point) { vertices.add(point); }
+    void add(Vector2i& point) { vertices.add(point); }
     double getArea() { return vertices.getArea(); }
-    const Vector2<int>& getClosestPoint(const Vector2<int>& reference) { return vertices.getClosestPoint(reference); }
+    const Vector2i& getClosestPoint(const Vector2i& reference) { return vertices.getClosestPoint(reference); }
 
   };//end class Blob
 
