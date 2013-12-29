@@ -33,7 +33,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
-    vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
+    vector<Vector2i > points(getScanLineEdgelPercept().endPoints.size());
 
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
@@ -45,11 +45,11 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     points.back().x = getImage().cameraInfo.resolutionWidth-1;
 
     // lower image points
-    points.push_back(Vector2<int>(0,getImage().cameraInfo.resolutionHeight-1));
-    points.push_back(Vector2<int>(getImage().cameraInfo.resolutionWidth-1, getImage().cameraInfo.resolutionHeight-1));
+    points.push_back(Vector2i(0,getImage().cameraInfo.resolutionHeight-1));
+    points.push_back(Vector2i(getImage().cameraInfo.resolutionWidth-1, getImage().cameraInfo.resolutionHeight-1));
 
     // calculate the convex hull
-    vector<Vector2<int> > result = ConvexHull::convexHull(points);
+    vector<Vector2i > result = ConvexHull::convexHull(points);
 
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
