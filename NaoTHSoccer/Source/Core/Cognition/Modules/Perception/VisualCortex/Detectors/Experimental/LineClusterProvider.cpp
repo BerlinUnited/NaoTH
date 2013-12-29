@@ -25,8 +25,8 @@ LineClusterProvider::~LineClusterProvider()
 void LineClusterProvider::execute()
 {
 
-  Vector2<double> edgelOnField_e;
-  Vector2<double> edgelOnField_f;
+  Vector2d edgelOnField_e;
+  Vector2d edgelOnField_f;
 
   for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
   {
