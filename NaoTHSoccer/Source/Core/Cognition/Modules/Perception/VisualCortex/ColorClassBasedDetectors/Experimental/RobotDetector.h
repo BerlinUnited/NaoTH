@@ -155,9 +155,9 @@ private:
     double area;
     double eccentricity;
     double angle;
-    Vector2<double> majorAxis;
-    Vector2<double> minorAxis;
-    Vector2<double> cog;
+    Vector2d majorAxis;
+    Vector2d minorAxis;
+    Vector2d cog;
     Moments2<2> moments;
     GameData::TeamColor color;
   }; // end class Marker
@@ -174,7 +174,7 @@ private:
 
   //detections functions
   inline void detectRobotMarkers();
-  inline void findMarkerPoly(Vector2<int> cog, ColorClasses::Color color);
+  inline void findMarkerPoly(Vector2i cog, ColorClasses::Color color);
   inline void findBlobs();
   inline bool checkMarkerPoly(Marker& marker);
   inline bool evaluateMarkerEnvironment(Marker& marker);
@@ -186,10 +186,10 @@ private:
   inline double findGreenRatio(int yCoord, int xStart, int xEnd, int stepSize);
 
   //scan functions
-  inline void scanLine(Vector2<int> start, Vector2<int>& direction, int maxColorPointsToSkip, 
-                        ColorClasses::Color searchColor, Vector2<int>& point, bool draw, Marker& marker);
+  inline void scanLine(Vector2i start, Vector2i& direction, int maxColorPointsToSkip, 
+                        ColorClasses::Color searchColor, Vector2i& point, bool draw, Marker& marker);
   inline bool isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor);
-  inline bool pixelInSearchArea(const Vector2<int>& pixel) const;
+  inline bool pixelInSearchArea(const Vector2i& pixel) const;
 
 
   const ColorClassificationModel& getColorTable64() const

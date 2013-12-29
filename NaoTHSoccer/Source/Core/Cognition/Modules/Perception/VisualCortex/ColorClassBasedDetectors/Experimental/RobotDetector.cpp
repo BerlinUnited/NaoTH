@@ -59,8 +59,8 @@ void RobotDetector::execute(const CameraInfo::CameraID id)
   //estimate the search region
   //we don't use it in current project
   /*
-  Vector2<int> p1(getCameraMatrix().horizon.begin());
-  Vector2<int> p2(getCameraMatrix().horizon.end());
+  Vector2i p1(getCameraMatrix().horizon.begin());
+  Vector2i p2(getCameraMatrix().horizon.end());
   if (p1.x < 0)
   {
     p1.x = 0;
@@ -71,8 +71,8 @@ void RobotDetector::execute(const CameraInfo::CameraID id)
   }
   searchArea.add(p1);
   searchArea.add(p2);
-  searchArea.add(Vector2<int>(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
-  searchArea.add(Vector2<int>(0, getImage().cameraInfo.resolutionHeight));
+  searchArea.add(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
+  searchArea.add(Vector2i(0, getImage().cameraInfo.resolutionHeight));
 
   DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_search_region",
     IMAGE_DRAWING_CONTEXT;
@@ -94,7 +94,7 @@ void RobotDetector::detectRobots(const std::vector<Marker>& markers)
     if(evaluateMarkerEnvironment(marker))
     {
       PlayersPercept::Player player;
-      Vector2<int> lowestPoint((int)marker.cog.x, (int)marker.cog.y);
+      Vector2i lowestPoint((int)marker.cog.x, (int)marker.cog.y);
       int xStart((int)marker.cog.x - (int)marker.majorAxis.x);
       int xEnd((int)marker.cog.x + (int)marker.majorAxis.x);
       int stepSize(2);
@@ -105,7 +105,7 @@ void RobotDetector::detectRobots(const std::vector<Marker>& markers)
         lowestPoint.y += stepSize;
       }
       //estimate the position of the robot based on lowest point
-      Vector2<double> positon;
+      Vector2d positon;
       CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getImage().cameraInfo, lowestPoint.x, lowestPoint.y, 0.0, positon);
       player.pose.translation = positon;
       player.angleTo = CameraGeometry::angleToPointInImage(getCameraMatrix(), getImage().cameraInfo, marker.cog.x, marker.cog.y);
@@ -131,7 +131,7 @@ inline void RobotDetector::detectRobotMarkers()
   {
     //create temp blob
     Blob blob = blueBlobs.blobs[i];
-    Vector2<double> cog = blob.moments.getCentroid();
+    Vector2d cog = blob.moments.getCentroid();
     double mom = blob.moments.getRawMoment(0,0);
     if (mom > params.blobMinMoment)
     {
@@ -142,7 +142,7 @@ inline void RobotDetector::detectRobotMarkers()
   {
     //create temp blob
     Blob blob = redBlobs.blobs[i];
-    Vector2<int> cog = blob.moments.getCentroid();
+    Vector2i cog = blob.moments.getCentroid();
     double mom = blob.moments.getRawMoment(0,0);
     if (mom > params.blobMinMoment)
     {
@@ -158,13 +158,13 @@ inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
   DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_robot",
     drawScanLinesRobot = true;
   );
-  Vector2<int> left = marker.cog - marker.majorAxis;
-  Vector2<int> right = marker.cog + marker.majorAxis;
-  Vector2<int> middle = marker.cog;
+  Vector2i left = marker.cog - marker.majorAxis;
+  Vector2i right = marker.cog + marker.majorAxis;
+  Vector2i middle = marker.cog;
   //check the marker's environment above the marker
-  Vector2<int> leftUp = left - marker.minorAxis*4;
-  Vector2<int> middleUp = marker.cog - marker.minorAxis*4;
-  Vector2<int> rightUp = right - marker.minorAxis*4;
+  Vector2i leftUp = left - marker.minorAxis*4;
+  Vector2i middleUp = marker.cog - marker.minorAxis*4;
+  Vector2i rightUp = right - marker.minorAxis*4;
   int whitePixelsAbove = 0;
   int totalPixelsAbove = 0;
   totalPixelsAbove += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, left-marker.minorAxis, leftUp, whitePixelsAbove, drawScanLinesRobot); 
@@ -173,8 +173,8 @@ inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
   double aboveWhiteRatio = (double)whitePixelsAbove/(double)totalPixelsAbove;
 
   //check the marker's environment below the marker
-  Vector2<int> leftDown = left + marker.minorAxis*4;
-  Vector2<int> rightDown = right + marker.minorAxis*4;
+  Vector2i leftDown = left + marker.minorAxis*4;
+  Vector2i rightDown = right + marker.minorAxis*4;
   int whitePixelsBelow = 0;
   int totalPixelsBelow = 0;
   totalPixelsBelow += scanline(getImage(), getColorClassificationModel(), ColorClasses::white, left+marker.minorAxis, leftDown, whitePixelsBelow, drawScanLinesRobot);
@@ -211,23 +211,23 @@ inline void RobotDetector::findBlobs()
   DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_blobs",
     for (int i = 0; i < redBlobs.blobNumber; i++)
     {
-//      Vector2<int> c = redBlobs.blobs[i].centerOfMass;
-      Vector2<int>& p1 = redBlobs.blobs[i].upperLeft;
-      Vector2<int>& p2 = redBlobs.blobs[i].lowerRight;
+//      Vector2i c = redBlobs.blobs[i].centerOfMass;
+      Vector2i& p1 = redBlobs.blobs[i].upperLeft;
+      Vector2i& p2 = redBlobs.blobs[i].lowerRight;
       RECT_PX(ColorClasses::red, p1.x, p1.y, p2.x, p2.y);
     }//end for
 
     for (int i = 0; i < blueBlobs.blobNumber; i++)
     {
-//      Vector2<int> c = blueBlobs.blobs[i].centerOfMass;
-      Vector2<int>& p1 = blueBlobs.blobs[i].upperLeft;
-      Vector2<int>& p2 = blueBlobs.blobs[i].lowerRight;
+//      Vector2i c = blueBlobs.blobs[i].centerOfMass;
+      Vector2i& p1 = blueBlobs.blobs[i].upperLeft;
+      Vector2i& p2 = blueBlobs.blobs[i].lowerRight;
       RECT_PX(ColorClasses::blue, p1.x, p1.y, p2.x, p2.y);
     }//end for
     );//end debug
 }// end findBlobs
 
-inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
+inline void RobotDetector::findMarkerPoly(Vector2i cog, ColorClasses::Color color)
 {
   drawScanLinesMarker = false;
   DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_scanlines_marker",
@@ -238,25 +238,25 @@ inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color 
 
   Marker marker;
   // scan directions
-  Vector2<int> up(0, -1);
-  Vector2<int> upUpRight(1, -2);
-  Vector2<int> upRight(1, -1);
-  Vector2<int> upRightRight(2, -1);
-  Vector2<int> right(1, 0);
-  Vector2<int> downRightRight(2, 1);
-  Vector2<int> downRight(1, 1);
-  Vector2<int> downDownRight(1, 2);
-  Vector2<int> down(0, 1);
-  Vector2<int> downDownLeft(-1, 2);
-  Vector2<int> downLeft(-1, 1);
-  Vector2<int> downLeftLeft(-2, 1);
-  Vector2<int> left(-1, 0);
-  Vector2<int> upLeftLeft(-2, -1);
-  Vector2<int> upLeft(-1, -1);
-  Vector2<int> upUpLeft(-1, -2);
+  Vector2i up(0, -1);
+  Vector2i upUpRight(1, -2);
+  Vector2i upRight(1, -1);
+  Vector2i upRightRight(2, -1);
+  Vector2i right(1, 0);
+  Vector2i downRightRight(2, 1);
+  Vector2i downRight(1, 1);
+  Vector2i downDownRight(1, 2);
+  Vector2i down(0, 1);
+  Vector2i downDownLeft(-1, 2);
+  Vector2i downLeft(-1, 1);
+  Vector2i downLeftLeft(-2, 1);
+  Vector2i left(-1, 0);
+  Vector2i upLeftLeft(-2, -1);
+  Vector2i upLeft(-1, -1);
+  Vector2i upUpLeft(-1, -2);
   // temp point to store results
-  Vector2<int> Point;
-  Vector2<int> firstPoint;
+  Vector2i Point;
+  Vector2i firstPoint;
 
   //scan in all directions
   //TODO: make functions
@@ -473,15 +473,15 @@ inline double RobotDetector::findGreenRatio(int yCoord, int xStart, int xEnd, in
 
 // scan section
 
-inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction, 
+inline void RobotDetector::scanLine(Vector2i start, Vector2i& direction, 
                              int maxColorPointsToSkip, ColorClasses::Color searchColor, 
-                             Vector2<int>& point, bool draw, Marker& marker)
+                             Vector2i& point, bool draw, Marker& marker)
 {
-  Vector2<int> currentPoint(start);  //set the starting point
+  Vector2i currentPoint(start);  //set the starting point
   int searchColorPointsSkipIndex(0);  //reset number of skipped pixels
-  Vector2<int> borderPoint;      // to remember the border point ...
+  Vector2i borderPoint;      // to remember the border point ...
   bool borderPointFound = false; //if one was found
-  Vector2<int> lastSearchColorPoint(start);
+  Vector2i lastSearchColorPoint(start);
   unsigned int max_length_of_beam(100);
 
   //expand in the selected direction
@@ -547,7 +547,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
 
 
 //check whether a point is in the image
-inline bool RobotDetector::pixelInSearchArea(const Vector2<int>& pixel) const
+inline bool RobotDetector::pixelInSearchArea(const Vector2i& pixel) const
 {
 //   return searchArea.isInside(pixel);
   return ((pixel.x >= 0 && pixel.x < (int)getImage().cameraInfo.resolutionWidth) &&

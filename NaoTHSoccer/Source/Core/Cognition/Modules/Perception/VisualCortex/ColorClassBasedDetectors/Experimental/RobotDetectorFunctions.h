@@ -20,8 +20,8 @@ inline int scanline(
              const Image& theImage,
              const ColorClassificationModel& theColorClassifier,
              const ColorClasses::Color& searchColor,
-             const Vector2<int>& start,
-             Vector2<int>& end,
+             const Vector2i& start,
+             Vector2i& end,
              int& pixelsTharHaveSearchColor,
              bool draw)
 {
@@ -69,7 +69,7 @@ inline int scanline(
   return scan.numberOfPixels;
 }
 
-inline bool exactLocalisation(const Image& theImage, const Vector2<int>& p)
+inline bool exactLocalisation(const Image& theImage, const Vector2i& p)
 {
   return (unsigned int)p.y < theImage.cameraInfo.resolutionHeight;
 }
