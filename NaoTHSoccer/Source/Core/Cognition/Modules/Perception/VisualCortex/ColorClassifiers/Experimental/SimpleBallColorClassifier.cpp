@@ -71,7 +71,7 @@ void SimpleBallColorClassifier::execute(const CameraInfo::CameraID id)
 
   // Heinrich test
   DEBUG_REQUEST("Vision:ColorClassifiers:SimpleBallColorClassifier:mark_max_ball_color",
-    Vector2<int> maxPos;
+    Vector2i maxPos;
     int maxCr = 0;
     for(unsigned int x = 10; x < getImageTop().width()-10; x++) {
       for(unsigned int y = 10; y < getImageTop().height()-10; y++) {
