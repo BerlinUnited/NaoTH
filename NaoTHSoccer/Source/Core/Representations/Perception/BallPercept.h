@@ -30,7 +30,7 @@ public:
   bool ballWasSeen;
 
   /* center of ball in image coordinates */
-  Vector2<double> centerInImage;
+  Vector2d centerInImage;
 
   /* radius of ball in image */
   double radiusInImage;
@@ -38,7 +38,7 @@ public:
   ColorClasses::Color ballColor;
 
   /* relative ball position to the robot based on the camera matrix */
-  Vector2<double> bearingBasedOffsetOnField; 
+  Vector2d bearingBasedOffsetOnField; 
 
   /* relative ball position to the robot based on the seen size of the ball */
   Vector3<double> sizeBasedRelativePosition; 

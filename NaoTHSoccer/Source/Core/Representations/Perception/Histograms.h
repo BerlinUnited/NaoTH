@@ -52,7 +52,7 @@ class ColorClassesHistograms: public naoth::Printable
       yHistogram[color].add(x);
     }
 
-    inline void increaseValue(const Vector2<int> pixel, const ColorClasses::Color& color)
+    inline void increaseValue(const Vector2i pixel, const ColorClasses::Color& color)
     {
       xHistogram[color].add(pixel.y);
       yHistogram[color].add(pixel.x);

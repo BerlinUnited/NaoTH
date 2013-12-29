@@ -84,10 +84,10 @@ public:
 
    struct FieldLine
    {
-    Vector2<int> begin;
-    Vector2<int> end;
-    Vector2<double> beginOnTheField;
-    Vector2<double> endOnTheField;
+    Vector2i begin;
+    Vector2i end;
+    Vector2d beginOnTheField;
+    Vector2d endOnTheField;
     Math::Polygon<40> shape;
     int thickness;
     double slope;
@@ -98,13 +98,13 @@ public:
   struct Ball
   {
     /* center of ball in image coordinates */
-    Vector2<double> centerInImage;
+    Vector2d centerInImage;
     /* radius of ball in image */
     double radiusInImage;
     double radius;
     ColorClasses::Color color;
     /* relative ball position to the robot based on the camera matrix*/
-    Vector2<double> bearingBasedOffsetOnField;
+    Vector2d bearingBasedOffsetOnField;
     int mass;
     double distance;
     double gamma;
@@ -115,12 +115,12 @@ public:
   struct Obstacle
   {
     /* center of obstacle in image coordinates */
-    Vector2<double> centerInImage;
+    Vector2d centerInImage;
     /* radius of ball in image */
     double radiusInImage;
     ColorClasses::Color color;
     /* relative obstacleposition to the robot based on the camera matrix*/
-    Vector2<double> bearingBasedOffsetOnField;
+    Vector2d bearingBasedOffsetOnField;
 
     int mass;
   };

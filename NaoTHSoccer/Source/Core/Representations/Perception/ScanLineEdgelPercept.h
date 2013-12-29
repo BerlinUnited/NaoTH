@@ -31,8 +31,8 @@ public:
   {
   public:
     EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
-    Vector2<int> posInImage;
-    Vector2<double> posOnField;
+    Vector2i posInImage;
+    Vector2d posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
     bool valid;

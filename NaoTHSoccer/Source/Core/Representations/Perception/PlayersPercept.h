@@ -48,10 +48,10 @@ public:
     unsigned int number;
     bool numberIsValid;
     bool isStanding;
-    Vector2<double> angleTo;
+    Vector2d angleTo;
 
     /** relative position of the seen foots on the field */
-    std::vector<Vector2<double> > footPosition;
+    std::vector<Vector2d > footPosition;
 
   }; //end class player
 

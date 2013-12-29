@@ -121,11 +121,11 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
     // lineInImage
     if(segment.has_lineinimage())
     {
-      Vector2<double> base;
+      Vector2d base;
       base.x = segment.lineinimage().base().x();
       base.y = segment.lineinimage().base().y();
 
-      Vector2<double> direction;
+      Vector2d direction;
       direction.x = segment.lineinimage().direction().x();
       direction.y = segment.lineinimage().direction().y();
 
@@ -137,11 +137,11 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
     // lineOnField
     if(segment.has_lineonfield())
     {
-      Vector2<double> base;
+      Vector2d base;
       base.x = segment.lineonfield().base().x();
       base.y = segment.lineonfield().base().y();
 
-      Vector2<double> direction;
+      Vector2d direction;
       direction.x = segment.lineonfield().direction().x();
       direction.y = segment.lineonfield().direction().y();
 
@@ -165,7 +165,7 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
 
     if(msg.has_posinimage())
     {
-      Vector2<double> pos;
+      Vector2d pos;
       pos.x = msg.posinimage().x();
       pos.y = msg.posinimage().y();
       percept.setPosInImage(pos);
@@ -173,7 +173,7 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
 
     if(msg.has_posonfield())
     {
-      Vector2<double> pos;
+      Vector2d pos;
       pos.x = msg.posonfield().x();
       pos.y = msg.posonfield().y();
       percept.setPosOnField(pos);

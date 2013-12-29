@@ -23,7 +23,7 @@ class ArtificialHorizon : public Math::LineSegment
 {
 public:
   ArtificialHorizon();
-  ArtificialHorizon(const Vector2<double>& begin, const Vector2<double>& end);
+  ArtificialHorizon(const Vector2d& begin, const Vector2d& end);
   virtual ~ArtificialHorizon();
 };
 

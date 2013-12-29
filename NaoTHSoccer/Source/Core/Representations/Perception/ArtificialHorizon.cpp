@@ -22,7 +22,7 @@ ArtificialHorizon::ArtificialHorizon()
 }
 
 
-ArtificialHorizon::ArtificialHorizon(const Vector2<double> &begin, const Vector2<double> &end)
+ArtificialHorizon::ArtificialHorizon(const Vector2d &begin, const Vector2d &end)
   : Math::LineSegment(begin, end)
 {
 }
