@@ -95,8 +95,8 @@ public:
   std::vector<Edgel> edgels;
 
   double angle;
-  Vector2<int> start;
-  Vector2<int> end;
+  Vector2i start;
+  Vector2i end;
 };
 
 

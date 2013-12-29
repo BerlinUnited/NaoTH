@@ -28,7 +28,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  std::vector<Vector2<int> > edgelPairs;
+  std::vector<Vector2i > edgelPairs;
 
   for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) 
   {
@@ -70,7 +70,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         const Edgel& edgelTwo = getScanLineEdgelPercept().edgels[j_max];
         LINE_PX(ColorClasses::red, edgelOne.point.x, edgelOne.point.y, edgelTwo.point.x, edgelTwo.point.y);
       );
-      edgelPairs.push_back(Vector2<int>(static_cast<int>(i),j_max));
+      edgelPairs.push_back(Vector2i(static_cast<int>(i),j_max));
     }
   }//end for i
   
@@ -80,7 +80,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   int k = 0;
   for(size_t i = 0; i < edgelPairs.size(); i++) 
   {
-    const Vector2<int>& pairOne = edgelPairs[i];
+    const Vector2i& pairOne = edgelPairs[i];
     const Edgel& edgelOneX = getScanLineEdgelPercept().edgels[pairOne.x];
     const Edgel& edgelOneY = getScanLineEdgelPercept().edgels[pairOne.y];
 
@@ -97,7 +97,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         continue;
       }
 
-      const Vector2<int>& pairTwo = edgelPairs[j];
+      const Vector2i& pairTwo = edgelPairs[j];
       const Edgel& edgelTwoX = getScanLineEdgelPercept().edgels[pairTwo.x];
       const Edgel& edgelTwoY = getScanLineEdgelPercept().edgels[pairTwo.y];
 
@@ -118,7 +118,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       double dYY = (edgelOneY.point - edgelTwoY.point).abs2();
       double dYX = (edgelOneY.point - edgelTwoX.point).abs2();
 
-      Vector2<int> A,B,C,D;
+      Vector2i A,B,C,D;
 
       if(dXX >= dXY && dXX >= dYY && dXX >= dYX) {
         A = edgelOneX.point; B = edgelTwoX.point;
@@ -169,7 +169,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   /*
   for(size_t i = 0; i < edgelPairs.size(); i++) 
   {
-    const Vector2<int>& pairOne = edgelPairs[i];
+    const Vector2i& pairOne = edgelPairs[i];
     const Edgel& edgelOneX = getScanLineEdgelPercept().edgels[pairOne.x];
     const Edgel& edgelOneY = getScanLineEdgelPercept().edgels[pairOne.y];
 
