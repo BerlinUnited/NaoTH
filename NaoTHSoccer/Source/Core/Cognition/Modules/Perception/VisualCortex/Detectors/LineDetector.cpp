@@ -140,13 +140,13 @@ void LineDetector::execute(CameraInfo::CameraID id)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+      Vector2d d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
       //d.rotate(Math::pi_2 - line.angle);
 
-      Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
-      Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
-      Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
-      Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
+      Vector2i lowerLeft(linePercept.lineInImage.segment.begin() - d);
+      Vector2i upperLeft(linePercept.lineInImage.segment.begin() + d);
+      Vector2i lowerRight(linePercept.lineInImage.segment.end() - d);
+      Vector2i upperRight(linePercept.lineInImage.segment.end() + d);
       LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
       LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
       LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
@@ -171,7 +171,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   //////////////////////////////////////////////////////////
 
   //Math::LineSegment closestHorLine, closestVerLine;
-  Vector2<double> projOfClosestLine, projOfClosestLineOnSegment;
+  Vector2d projOfClosestLine, projOfClosestLineOnSegment;
   Math::LineSegment closestLine;
   double closestLineLength = 0;
   
@@ -189,10 +189,10 @@ void LineDetector::execute(CameraInfo::CameraID id)
     //not part of circle and big enough
     if (getLinePercept().lines[i].type != LinePercept::C && minObserveLineLength < line.getLength()) {
 
-      Vector2<double> zeroPoint;
+      Vector2d zeroPoint;
       zeroPoint.x = 0;
       zeroPoint.y = 0;
-      Vector2<double> projection, projectionOnSegment;
+      Vector2d projection, projectionOnSegment;
 
       //TODO make a special line projection
       double t = line.project(zeroPoint);
@@ -233,8 +233,8 @@ void LineDetector::execute(CameraInfo::CameraID id)
       FIELD_DRAWING_CONTEXT;
       PEN("0000FF", 20);
 
-      Vector2<double> begin = closestLine.begin();
-      Vector2<double> end   = closestLine.end();
+      Vector2d begin = closestLine.begin();
+      Vector2d end   = closestLine.end();
 
       LINE(begin.x, begin.y, end.x, end.y);
 
@@ -277,7 +277,7 @@ void LineDetector::setLinePercepts()
 
 
       //TODO: handle the case if the projection is not possible
-      Vector2<double> beginLineOnField;
+      Vector2d beginLineOnField;
       CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), getImage().cameraInfo, 
         line.segment.begin(), 
@@ -285,7 +285,7 @@ void LineDetector::setLinePercepts()
         beginLineOnField);
 
       //TODO: handle the case if the projection is not possible
-      Vector2<double> endLineOnField;
+      Vector2d endLineOnField;
       CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), getImage().cameraInfo, 
         line.segment.end(), 
@@ -320,8 +320,8 @@ void LineDetector::analyzeEndPoints()
 {
   ScanLineEdgelPercept::EndPoint closestPoint;
 
-  Vector2<int> startImage;
-  Vector2<int> endImage;
+  Vector2i startImage;
+  Vector2i endImage;
 
   bool firstFounding = true;
 
@@ -397,7 +397,7 @@ void LineDetector::expandLines()
         continue;
       }
 
-      Vector2<double> lineNormal = segmentOne.segment.getDirection().rotateLeft();
+      Vector2d lineNormal = segmentOne.segment.getDirection().rotateLeft();
       double distanceDifference = fabs(lineNormal * segmentTwo.segment.getBase() - lineNormal * segmentOne.segment.getBase());
       if(distanceDifference <= segmentOne.thickness && fabs(segmentOne.angle - segmentTwo.angle) < MAX_LINE_ANGLE_DIFF)
       {
@@ -426,31 +426,31 @@ void LineDetector::expandLines()
     }
     Math::LineSegment line = segmentOne.segment;
 
-    Vector2<int> lineOnePointUpper
+    Vector2i lineOnePointUpper
     (
       (int) line.end().x, 
       (int) (line.end().y + floor(segmentOne.thickness / 3))
     );
-    Vector2<int> lineOnePointMiddle(line.end());
-    Vector2<int> lineOnePointLower
+    Vector2i lineOnePointMiddle(line.end());
+    Vector2i lineOnePointLower
     (
       (int) line.end().x, 
       (int) (line.end().y - floor(segmentOne.thickness / 3))
     );
     
-    Vector2<int> lineTwoPointUpper
+    Vector2i lineTwoPointUpper
     (
       (int) line.begin().x, 
       (int) (line.begin().y + floor(segmentOne.thickness / 3))
     );
-    Vector2<int> lineTwoPointMiddle(line.begin());
-    Vector2<int> lineTwoPointLower
+    Vector2i lineTwoPointMiddle(line.begin());
+    Vector2i lineTwoPointLower
     (
       (int) line.begin().x, 
       (int) (line.begin().y - floor(segmentOne.thickness / 3))
     );
     
-    Vector2<int> direction = line.end() - line.begin();
+    Vector2i direction = line.end() - line.begin();
     ColorClasses::Color color = expandLines?ColorClasses::pink:ColorClasses::numOfColors;
 
     // TODO: do we need the double line scan?
@@ -481,14 +481,14 @@ void LineDetector::expandLines()
 }//end expandLines
 
 
-inline void LineDetector::scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor)
+inline void LineDetector::scanAlongLine(Vector2i& linePoint, const Vector2i& direction, ColorClasses::Color markColor)
 {
   BresenhamLineScan scanLine(linePoint, direction, getImage().cameraInfo);
   scanAlongLine(linePoint, scanLine, markColor);
 }//end scanAlongLine
 
 
-void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor)
+void LineDetector::scanAlongLine(Vector2i& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor)
 {
   for(int i = 0; i < scanLine.numberOfPixels; i++)
   {
@@ -556,15 +556,15 @@ void LineDetector::estimateCorners()
       double tTwoL = lineTwo.segment.Line::intersection(lineOne.segment);
 
       // intersection between the theoretical lines
-      Vector2<double> point = lineOne.segment.Line::point(tOneL);
-      Vector2<int> intersectionPoint((int)(point.x+0.5), (int)(point.y+0.5));
+      Vector2d point = lineOne.segment.Line::point(tOneL);
+      Vector2i intersectionPoint((int)(point.x+0.5), (int)(point.y+0.5));
       
       // "projection" of the intersection to the segments
-      Vector2<int> lineOnePoint(lineOne.segment.point(tOneL));
-      Vector2<int> lineTwoPoint(lineTwo.segment.point(tTwoL));
+      Vector2i lineOnePoint(lineOne.segment.point(tOneL));
+      Vector2i lineTwoPoint(lineTwo.segment.point(tTwoL));
 
       // projection of the intersection point
-      Vector2<double> pointProjection;
+      Vector2d pointProjection;
       CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
         getImage().cameraInfo, point.x, point.y, 0.0, pointProjection);
@@ -607,11 +607,11 @@ void LineDetector::estimateCorners()
         {    
           if(tOne < 1.5 * lineTwo.thickness)
           {
-            lineOne.segment = Math::LineSegment((Vector2<double>)lineOnePoint,  lineOne.segment.end());
+            lineOne.segment = Math::LineSegment((Vector2d)lineOnePoint,  lineOne.segment.end());
           }
           else if(tOne > lineOne.segment.getLength() - 1.5 * lineTwo.thickness)
           {
-            lineOne.segment = Math::LineSegment(lineOne.segment.begin(), (Vector2<double>)lineOnePoint);
+            lineOne.segment = Math::LineSegment(lineOne.segment.begin(), (Vector2d)lineOnePoint);
           }
         }//end if
         if
@@ -624,11 +624,11 @@ void LineDetector::estimateCorners()
         {
           if(tTwo < 1.5 * lineOne.thickness)
           {
-            lineTwo.segment = Math::LineSegment((Vector2<double>)lineTwoPoint,  lineTwo.segment.end());
+            lineTwo.segment = Math::LineSegment((Vector2d)lineTwoPoint,  lineTwo.segment.end());
           }
           else if(tTwo > lineTwo.segment.getLength() - 1.5 * lineOne.thickness)
           {
-            lineTwo.segment = Math::LineSegment(lineTwo.segment.begin(), (Vector2<double>)lineTwoPoint);
+            lineTwo.segment = Math::LineSegment(lineTwo.segment.begin(), (Vector2d)lineTwoPoint);
           }
         }//end if
 
@@ -644,10 +644,10 @@ void LineDetector::estimateCorners()
 void LineDetector::classifyIntersections()
 {
 
-  vector<Vector2<double> > circlePoints;
+  vector<Vector2d > circlePoints;
   circlePoints.reserve(getLinePercept().intersections.size());
 
-  vector<Vector2<double> > circleMiddlePoints;
+  vector<Vector2d > circleMiddlePoints;
   circleMiddlePoints.reserve(getLinePercept().intersections.size());
 
   // the drawing context is needed for further drawings
@@ -685,7 +685,7 @@ void LineDetector::classifyIntersections()
         type != Math::Intersection::X 
       )
       {
-        Vector2<double> segmentDistancesToIntersection = getLinePercept().intersections[i].getSegmentsDistancesToIntersection();
+        Vector2d segmentDistancesToIntersection = getLinePercept().intersections[i].getSegmentsDistancesToIntersection();
         bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.lineInImage.thickness && segmentDistancesToIntersection[0] < segOne.lineInImage.segment.getLength() - segTwo.lineInImage.thickness;
         bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.lineInImage.thickness && segmentDistancesToIntersection[1] < segTwo.lineInImage.segment.getLength() - segOne.lineInImage.thickness;
 //        cout << segmentDistancesToIntersection;
@@ -727,8 +727,8 @@ void LineDetector::classifyIntersections()
 
     if( getLinePercept().intersections[i].getType() == Math::Intersection::C)
     {
-      Vector2<double> middlePointOne = (segOne.lineOnField.begin() + segOne.lineOnField.end()) / 2;
-      Vector2<double> middlePointTwo = (segTwo.lineOnField.begin() + segTwo.lineOnField.end()) / 2;
+      Vector2d middlePointOne = (segOne.lineOnField.begin() + segOne.lineOnField.end()) / 2;
+      Vector2d middlePointTwo = (segTwo.lineOnField.begin() + segTwo.lineOnField.end()) / 2;
 
       Math::Line lineNormalOne(middlePointOne, segOne.lineOnField.getDirection().rotateLeft());
       Math::Line lineNormalTwo(middlePointTwo, segTwo.lineOnField.getDirection().rotateLeft());
@@ -736,7 +736,7 @@ void LineDetector::classifyIntersections()
       double p = lineNormalOne.intersection(lineNormalTwo);
       if(p != std::numeric_limits<double>::infinity())
       {
-        Vector2<double> intersectPoint = lineNormalOne.point(p);
+        Vector2d intersectPoint = lineNormalOne.point(p);
         DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
           PEN("FFFFFF", 5); 
           LINE(middlePointOne.x, middlePointOne.y, intersectPoint.x, intersectPoint.y);
@@ -762,7 +762,7 @@ void LineDetector::classifyIntersections()
 
     DEBUG_REQUEST("Vision:Detectors:LineDetector:estimate_corners",
       //mark intersection in the image
-      const Vector2<int>& point = getLinePercept().intersections[i].getPos();
+      const Vector2i& point = getLinePercept().intersections[i].getPos();
       CIRCLE_PX((ColorClasses::Color) getLinePercept().intersections[i].getType(), point.x, point.y, 5);
     );
   }//end for
@@ -771,7 +771,7 @@ void LineDetector::classifyIntersections()
   STOPWATCH_START("LineDetector ~ detect circle");
   if(circlePoints.size() > 3)
   {
-    Vector2<double> middle;
+    Vector2d middle;
     for(unsigned int i = 0; i < circleMiddlePoints.size(); i++)
     {
       middle += circleMiddlePoints[i];
@@ -797,8 +797,8 @@ void LineDetector::classifyIntersections()
     Math::Matrix_mxn<double> AT(A.transpose());
     Math::Matrix_mxn<double> result(((AT * A).invert() * AT) * l);
 
-    //Vector2<double> middle1(-result(1, 0) / result(0, 0), -result(2, 0) / result(0, 0));
-    Vector2<double> middle1(-result(0, 0)*0.5, -result(1, 0)*0.5);
+    //Vector2d middle1(-result(1, 0) / result(0, 0), -result(2, 0) / result(0, 0));
+    Vector2d middle1(-result(0, 0)*0.5, -result(1, 0)*0.5);
   
     if( (middle - middle1).abs() < 150) // 15cm
     {
@@ -836,7 +836,7 @@ void LineDetector::classifyIntersections()
 
 
     DEBUG_REQUEST("Vision:Detectors:LineDetector:mark_circle",
-      const Vector2<double>& center = getLinePercept().middleCircleCenter;
+      const Vector2d& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);
@@ -844,7 +844,7 @@ void LineDetector::classifyIntersections()
 
       if(getLinePercept().middleCircleOrientationWasSeen)
       {
-        const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
+        const Vector2d direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
         LINE(
           center.x + direction.x,
           center.y + direction.y,
@@ -933,7 +933,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
     // TODO: check this stuff
     // calculate the weght of the segment
     // length of the line segment
-    Vector2<double> lineVector(cluster.end - cluster.start);
+    Vector2d lineVector(cluster.end - cluster.start);
     double length = lineVector.abs();
     // 0 < weight <= 1
     // weight == 1, only if the segment has an edgel on every scannline

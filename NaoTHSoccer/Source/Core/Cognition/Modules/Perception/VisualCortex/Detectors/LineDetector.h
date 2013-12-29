@@ -109,8 +109,8 @@ private:
   void analyzeEndPoints();
 
   /** scan helpers */
-  void scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor);
-  void scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
+  void scanAlongLine(Vector2i& linePoint, const Vector2i& direction, ColorClasses::Color markColor);
+  void scanAlongLine(Vector2i& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
 
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
