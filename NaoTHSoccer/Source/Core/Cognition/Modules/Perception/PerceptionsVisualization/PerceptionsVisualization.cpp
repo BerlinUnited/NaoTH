@@ -149,7 +149,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       Vector2<double> edgelOnFieldBegin;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.begin.x,
         e.begin.y,
         0.0,
@@ -157,7 +157,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         /*
       edgelOnField = CameraGeometry::angleToPointInImage(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.begin.x,
         e.begin.y) * 100;*/
       {
@@ -167,7 +167,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
-          getImage().cameraInfo,
+          getCameraInfo(),
           direction.x,
           direction.y,
           0.0,
@@ -184,7 +184,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       Vector2<double> edgelOnFieldEnd;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.end.x,
         e.end.y,
         0.0,
@@ -192,7 +192,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       /*
       edgelOnField = CameraGeometry::angleToPointInImage(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.end.x,
         e.end.y) * 100;*/
       {
@@ -202,7 +202,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
-          getImage().cameraInfo,
+          getCameraInfo(),
           direction.x,
           direction.y,
           0.0,
@@ -224,7 +224,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         direction.x,
         direction.y,
         0.0,

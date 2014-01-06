@@ -27,6 +27,7 @@
 
 //common representations
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 
@@ -50,6 +51,8 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualization)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
@@ -79,6 +82,7 @@ private:
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,ScanLineEdgelPercept);
 
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,Image);
+  DOUBLE_CAM_REQUIRE(PerceptionsVisualization,CameraInfo);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,CameraMatrix);
 };
 #endif // end _PerceptionsVisualization_h_

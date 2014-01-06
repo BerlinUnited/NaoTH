@@ -16,7 +16,7 @@
 
 // Representations
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/OdometryData.h"
 
@@ -29,7 +29,7 @@
 
 BEGIN_DECLARE_MODULE(AttentionAnalyzer)
   REQUIRE(CameraMatrix)
-  REQUIRE(Image)
+  REQUIRE(CameraInfo)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
 //  REQUIRE(BallPercept)
