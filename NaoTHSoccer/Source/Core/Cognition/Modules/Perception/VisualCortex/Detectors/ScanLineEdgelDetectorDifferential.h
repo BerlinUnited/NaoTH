@@ -10,29 +10,21 @@
 #include <ModuleFramework/Module.h>
 
 // Tools
-#include "Tools/ColorClasses.h"
-#include "Tools/Math/Vector2.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/ImageProcessing/ImageDrawings.h"
-#include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/ImageProcessing/Edgel.h"
-
+#include "Tools/ColorClasses.h"
+#include <Tools/Math/Vector2.h>
 
 // Representations
-#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Infrastructure/CameraInfo.h"
+#include <Representations/Perception/FieldColorPercept.h>
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BodyContour.h"
-#include <Representations/Perception/FieldColorPercept.h>
+//#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/ScanLineEdgelPercept.h"
 
 #include <Tools/DataStructures/ParameterList.h>
-
 #include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)

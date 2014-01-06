@@ -8,8 +8,16 @@
 
 #include "ScanLineEdgelDetectorDifferential.h"
 
-#include "Tools/CameraGeometry.h"
+// debug
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/Stopwatch.h"
+
+// tools
+#include "Tools/ImageProcessing/BresenhamLineScan.h"
+#include "Tools/CameraGeometry.h"
 
 ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 :

@@ -10,33 +10,20 @@
 #define _GradientGoalDetector_H_
 
 #include <ModuleFramework/Module.h>
-#include <ModuleFramework/Representation.h>
-
-// common tools
-#include <Tools/ColorClasses.h>
-#include <Tools/Math/Vector2.h>
-#include <Tools/Math/Matrix_nxn.h>
-#include <Tools/Math/PointList.h>
-#include <Tools/DataStructures/OccupancyGrid.h>
-#include <Tools/DataStructures/Area.h>
-#include <Tools/DataStructures/ParameterList.h>
-#include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
-#include "Representations/Infrastructure/ColoredGrid.h"
-#include "Representations/Infrastructure/FieldInfo.h"
-#include <Representations/Infrastructure/FrameInfo.h>
-#include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
-#include "Representations/Modeling/KinematicChain.h"
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Perception/GoalPercept.h"
 
 // tools
-#include "Tools/ImageProcessing/GradientSpiderScan.h"
 #include "Tools/DoubleCamHelpers.h"
+#include <Tools/DataStructures/RingBuffer.h>
+#include <Tools/DataStructures/RingBufferWithSum.h>
+
+#include <vector>
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(Image)
@@ -140,9 +127,9 @@ private:
 
   };
 
-  vector<Feature> features[5];
+  std::vector<Feature> features[5];
   int lastTestFeatureIdx[5];
-  vector<GoalPercept::GoalPost> goalPosts;
+  std::vector<GoalPercept::GoalPost> goalPosts;
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, Image);

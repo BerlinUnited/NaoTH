@@ -8,14 +8,12 @@
 
 #include "GradientGoalDetector.h"
 
-#include "Tools/DataStructures/ArrayQueue.h"
-#include "Tools/CameraGeometry.h"
-
 #include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 
+#include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-
-#include <Representations/Infrastructure/CameraInfoConstants.h>
 
 
 #define IMG_GET(x,y,p) \

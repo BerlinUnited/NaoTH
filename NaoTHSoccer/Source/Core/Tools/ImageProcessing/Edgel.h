@@ -8,6 +8,8 @@
 #ifndef _Edgel_H_
 #define _Edgel_H_
 
+#include <Tools/Math/Vector2.h>
+
 class Edgel
 {
 public:
