@@ -98,7 +98,7 @@ public:
   inline Pixel getCorrectedPixel(const naoth::Image& image, const int x, const int y) const
   {
     ASSERT(image.isInside(x,y));
-    //register unsigned int yOffset = 2 * (y * image.cameraInfo.resolutionWidth + x);
+    //register unsigned int yOffset = 2 * (y * image.width() + x);
 
     Pixel p = image.get(x,y);
     p.y = (unsigned char) Math::clamp<int>((p.y * get(0, x, y)) >> 10, 0, 255);
@@ -110,7 +110,7 @@ public:
   inline void getCorrectedPixel(const naoth::Image& image, const int x, const int y, Pixel& p) const
   {
     ASSERT(image.isInside(x,y));
-    //register unsigned int yOffset = 2 * (y * image.cameraInfo.resolutionWidth + x);
+    //register unsigned int yOffset = 2 * (y * image.width() + x);
 
     p = image.get(x,y);
     p.y = (unsigned char) Math::clamp<int>((p.y * get(0, x, y)) >> 10, 0, 255);

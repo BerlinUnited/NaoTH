@@ -32,7 +32,7 @@ void LineClusterProvider::execute()
   {
     const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
     int k = -1;
-    double distance = Math::fromDegrees(5);//getImage().cameraInfo.resolutionHeight*getImage().cameraInfo.resolutionWidth;
+    double distance = Math::fromDegrees(5);//getImage().height()*getImage().width();
     //distance *= distance;
 
     if(!CameraGeometry::imagePixelToFieldCoord(

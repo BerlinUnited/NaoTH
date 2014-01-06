@@ -402,8 +402,8 @@ void BaseColorClassifier::runDebugRequests()
     blueTeamColorCalibrator.drawCalibrationAreaRects(CameraInfo::Bottom);
   );
 
-  int imageWidth = getImageTop().cameraInfo.resolutionWidth;
-  int imageHeight = getImageTop().cameraInfo.resolutionHeight;
+  int imageWidth = getImageTop().width();
+  int imageHeight = getImageTop().height();
 
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamTop:set_ball_in_image",
     CANVAS_PX(CameraInfo::Top);
@@ -476,8 +476,8 @@ void BaseColorClassifier::runDebugRequests()
     }
   );
 
-  imageWidth = getImage().cameraInfo.resolutionWidth;
-  imageHeight = getImage().cameraInfo.resolutionHeight;
+  imageWidth = getImage().width();
+  imageHeight = getImage().height();
 
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamBottom:set_ball_in_image",
     CANVAS_PX(CameraInfo::Bottom);
@@ -557,8 +557,8 @@ void BaseColorClassifier::runDebugRequests()
 
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamTop:set_lines_in_image",
     CANVAS_PX(CameraInfo::Top);
-    int imageWidth = getImageTop().cameraInfo.resolutionWidth;
-    int imageHeight = getImageTop().cameraInfo.resolutionHeight;
+    int imageWidth = getImageTop().width();
+    int imageHeight = getImageTop().height();
     double diffBright = getOverTimeHistogramTop().spanWidthEnv.y * factorBright + 0.5;
     double diffDark = getOverTimeHistogramTop().spanWidthEnv.y * factorDark + 0.5;
     for(int x = 0; x < imageWidth; x++)
@@ -582,8 +582,8 @@ void BaseColorClassifier::runDebugRequests()
   );
   DEBUG_REQUEST("Vision:ColorClassifiers:BaseColorClassifier:CamBottom:set_lines_in_image",
     CANVAS_PX(CameraInfo::Bottom);
-    int imageWidth = getImage().cameraInfo.resolutionWidth;
-    int imageHeight = getImage().cameraInfo.resolutionHeight;
+    int imageWidth = getImage().width();
+    int imageHeight = getImage().height();
     double diffBright = getOverTimeHistogram().spanWidthEnv.y * factorBright + 0.5;
     double diffDark = getOverTimeHistogram().spanWidthEnv.y * factorDark + 0.5;
     for(int x = 0; x < imageWidth; x++)

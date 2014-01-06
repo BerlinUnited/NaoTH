@@ -42,11 +42,11 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
     // move the outer points
     points.front().x = 0;
-    points.back().x = getImage().cameraInfo.resolutionWidth-1;
+    points.back().x = getImage().width()-1;
 
     // lower image points
-    points.push_back(Vector2i(0,getImage().cameraInfo.resolutionHeight-1));
-    points.push_back(Vector2i(getImage().cameraInfo.resolutionWidth-1, getImage().cameraInfo.resolutionHeight-1));
+    points.push_back(Vector2i(0,getImage().height()-1));
+    points.push_back(Vector2i(getImage().width()-1, getImage().height()-1));
 
     // calculate the convex hull
     vector<Vector2i > result = ConvexHull::convexHull(points);

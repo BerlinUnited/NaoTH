@@ -70,7 +70,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   int imageBorderOffset = 25;
   int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
-  if(heightOfHorizon > (int) getImage().cameraInfo.resolutionHeight - 10) 
+  if(heightOfHorizon > (int) getImage().height() - 10) 
   { 
     return;
   }
@@ -81,8 +81,8 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   //if(cameraID == CameraInfo::Bottom) 
   {
     // clamp the scanline
-    p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().cameraInfo.resolutionHeight - imageBorderOffset - 5);
-    p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().cameraInfo.resolutionHeight - imageBorderOffset - 5);
+    p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().height() - imageBorderOffset - 5);
+    p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
   }
   
   //double horizont = min(p1.y, p2.y);

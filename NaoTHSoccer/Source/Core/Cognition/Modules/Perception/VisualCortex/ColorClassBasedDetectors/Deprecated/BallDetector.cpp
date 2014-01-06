@@ -445,8 +445,8 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2i& result, const
 //  senity check
 //  min.x = std::max(min.x, 0);
 //  min.y = std::max(min.y, 0);
-//  max.x = std::min(max.x, (int)getImage_().cameraInfo.resolutionWidth-1);
-//  max.y = std::min(max.y, (int)getImage_().cameraInfo.resolutionHeight-1);
+//  max.x = std::min(max.x, (int)getImage_()width()-1);
+//  max.y = std::min(max.y, (int)getImage_().height()-1);
   // senity check
 
 //  Vector2i min = getFieldPercept_().getLargestValidPoly(getCameraMatrix_().horizon).getClosestPoint(orgMin);
@@ -509,8 +509,8 @@ void BallDetector::regionGrowExpandArea(
 
   // TODO: check, its not a grid anymore
   //get width and height of the scaled image (uniformgrid)
-  const int gridWidth =getImage().cameraInfo.resolutionWidth;
-  const int gridHeight=getImage().cameraInfo.resolutionHeight;
+  const int gridWidth =getImage().width();
+  const int gridHeight=getImage().height();
 
   ColorClasses::Color color = ColorClasses::orange;
 

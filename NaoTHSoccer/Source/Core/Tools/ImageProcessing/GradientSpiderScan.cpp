@@ -117,14 +117,14 @@ void GradientSpiderScan::scan(ScanPointList& goodPoints, ScanPointList& badPoint
         //if the pixel lies at the image border and was not the result of a scan along that border
         if(pixelAtImageBorder(badPoint, 2) && !isBorderScan(scans.start[0], scans.direction[0], 2))
         {
-          if(badPoint.x <= 1 || (unsigned int)badPoint.x >= theImage.cameraInfo.resolutionWidth-2)
+          if(badPoint.x <= 1 || (unsigned int)badPoint.x >= theImage.width()-2)
           {
             //... its not reliable and we should scan along the imageborder to find the real border point
             scans.add(badPoint, Vector2<int>(0,  1));
             scans.add(badPoint, Vector2<int>(0, -1));
           }
           //same for the vertical borders
-          else if(badPoint.y <= 1 || (unsigned int)badPoint.y >= theImage.cameraInfo.resolutionHeight-2)
+          else if(badPoint.y <= 1 || (unsigned int)badPoint.y >= theImage.height()-2)
           {
             scans.add(badPoint, Vector2<int>( 1, 0));
             scans.add(badPoint, Vector2<int>(-1, 0));
@@ -291,22 +291,22 @@ bool GradientSpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>&
 //check wether a scan line goes along an image border
 bool GradientSpiderScan::isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const
 {
-  return ((point.x<borderWidth || (unsigned int)point.x>=theImage.cameraInfo.resolutionWidth-borderWidth) && direction.x==0) ||
-         ((point.y<borderWidth || (unsigned int)point.y>=theImage.cameraInfo.resolutionHeight-borderWidth) && direction.y==0);
+  return ((point.x<borderWidth || (unsigned int)point.x>=theImage.width()-borderWidth) && direction.x==0) ||
+         ((point.y<borderWidth || (unsigned int)point.y>=theImage.height()-borderWidth) && direction.y==0);
 }//end isBorderScan
 
 //check wether a point is in the image
 bool GradientSpiderScan::pixelInImage(const Vector2<int>& pixel) const
 {
   return (pixel.x >= 0 && pixel.y >= 0 &&
-          (unsigned int)pixel.x<theImage.cameraInfo.resolutionWidth &&
-          (unsigned int)pixel.y<theImage.cameraInfo.resolutionHeight);
+          (unsigned int)pixel.x<theImage.width() &&
+          (unsigned int)pixel.y<theImage.height());
 }//end pixelInImage
 
 //check wether a point lies at the images border
 bool GradientSpiderScan::pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const
 {
   return (pixel.x < borderWidth || pixel.y < borderWidth ||
-          (unsigned int)pixel.x>=theImage.cameraInfo.resolutionWidth-borderWidth ||
-          (unsigned int)pixel.y>=theImage.cameraInfo.resolutionHeight-borderWidth);
+          (unsigned int)pixel.x>=theImage.width()-borderWidth ||
+          (unsigned int)pixel.y>=theImage.height()-borderWidth);
 }//end pixelAtImageBorder

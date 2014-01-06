@@ -62,7 +62,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     
     double dist = h*tan(Math::pi_2 - w);
     double g = atan2(dist + d_2, h) - atan2(dist - d_2, h);
-    double rad_per_px = getImage().cameraInfo.getOpeningAngleWidth()/getImage().cameraInfo.resolutionWidth;
+    double rad_per_px = getImage().cameraInfo.getOpeningAngleWidth()/getImage().width();
     double v = g / rad_per_px;
     
     vertical_confidence[i] = std::max(0.0,v);
@@ -78,11 +78,11 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
 
   
   // horizontal stepsize between the scanlines
-  int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);
-  //int remaining_pixels = (getImage().cameraInfo.resolutionWidth - 1) % theParameters.scanline_count;
+  int step = (getImage().width() - 1) / (theParameters.scanline_count - 1);
+  //int remaining_pixels = (getImage().width() - 1) % theParameters.scanline_count;
 
   // don't scan the lower lines in the image
-  int borderY = getImage().cameraInfo.resolutionHeight - theParameters.pixel_border_y - 1;
+  int borderY = getImage().height() - theParameters.pixel_border_y - 1;
   
   // start and endpoints for the scanlines
   Vector2i start(step / 2, borderY);
@@ -371,8 +371,8 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2i& point) const
 {
   // no angle at the border (shouldn't happen)
-  if(  point.x < 1 || point.x > (int)getImage().cameraInfo.resolutionWidth-2
-    || point.y < 1 || point.y > (int)getImage().cameraInfo.resolutionHeight-2)
+  if(  point.x < 1 || point.x > (int)getImage().width()-2
+    || point.y < 1 || point.y > (int)getImage().height()-2)
     return 0;
 
   //apply Sobel Operator on (pointX, pointY)

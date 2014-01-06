@@ -601,8 +601,8 @@ void LineDetector::estimateCorners()
         ( // TODO: is this necessary here?
           lineOnePoint.x >= 0 &&
           lineOnePoint.y >= 0 &&
-          lineOnePoint.x < (int) getImage().cameraInfo.resolutionWidth &&
-          lineOnePoint.y < (int) getImage().cameraInfo.resolutionHeight 
+          lineOnePoint.x < (int) getImage().width() &&
+          lineOnePoint.y < (int) getImage().height() 
         )
         {    
           if(tOne < 1.5 * lineTwo.thickness)
@@ -618,8 +618,8 @@ void LineDetector::estimateCorners()
         ( // TODO: is this necessary here?
           lineTwoPoint.x >= 0 &&
           lineTwoPoint.y >= 0 &&
-          lineTwoPoint.x < (int) getImage().cameraInfo.resolutionWidth &&
-          lineTwoPoint.y < (int) getImage().cameraInfo.resolutionHeight 
+          lineTwoPoint.x < (int) getImage().width() &&
+          lineTwoPoint.y < (int) getImage().height() 
         )
         {
           if(tTwo < 1.5 * lineOne.thickness)
@@ -924,7 +924,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
   //lineSegments.reserve(lineClusters.size());
 
   // distance between scanlines
-  double delta_x = (double)(getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
+  double delta_x = (double)(getImage().width() - 1) / (SCANLINE_COUNT);
 
   for(unsigned int i = 0; i < lineClusters.size(); i++ )
   {

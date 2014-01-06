@@ -1234,8 +1234,8 @@ void SimSparkController::get(Image& data)
     //ACHTUNG: this is set by the module CameraInfoSetter
     //data.setCameraInfo(Platform::getInstance().theCameraInfo);
 
-    unsigned int width = data.cameraInfo.resolutionWidth;
-    unsigned int height = data.cameraInfo.resolutionHeight;
+    unsigned int width = data.width();
+    unsigned int height = data.height();
     unsigned int resolution = width*height;
 
     ASSERT(resolution * 3 == theImageSize);

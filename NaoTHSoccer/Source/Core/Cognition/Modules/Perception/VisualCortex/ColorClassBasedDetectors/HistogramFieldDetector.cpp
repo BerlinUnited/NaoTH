@@ -17,8 +17,8 @@ HistogramFieldDetector::HistogramFieldDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:ColorClassBasedDetectors:HistogramFieldDetector:mark_rectangle", "mark boundary rectangle of the detected field on the image", false);
 
-  getFieldPerceptRaw().setDimension(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
-  getFieldPerceptRawTop().setDimension(Vector2i(getImageTop().cameraInfo.resolutionWidth, getImageTop().cameraInfo.resolutionHeight));
+  getFieldPerceptRaw().setDimension(Vector2i(getImage().width(), getImage().height()));
+  getFieldPerceptRawTop().setDimension(Vector2i(getImageTop().width(), getImageTop().height()));
 }
 
 void HistogramFieldDetector::execute(CameraInfo::CameraID id)

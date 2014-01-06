@@ -71,8 +71,8 @@ void RobotDetector::execute(const CameraInfo::CameraID id)
   }
   searchArea.add(p1);
   searchArea.add(p2);
-  searchArea.add(Vector2i(getImage().cameraInfo.resolutionWidth, getImage().cameraInfo.resolutionHeight));
-  searchArea.add(Vector2i(0, getImage().cameraInfo.resolutionHeight));
+  searchArea.add(Vector2i(getImage().width(), getImage().height()));
+  searchArea.add(Vector2i(0, getImage().height()));
 
   DEBUG_REQUEST("Vision:ColorClassBasedDetectors:RobotDetector:draw_search_region",
     IMAGE_DRAWING_CONTEXT;
@@ -99,7 +99,7 @@ void RobotDetector::detectRobots(const std::vector<Marker>& markers)
       int xEnd((int)marker.cog.x + (int)marker.majorAxis.x);
       int stepSize(2);
       //now we want to estimate the robot's lowest point
-      while ((unsigned int)lowestPoint.y < getImage().cameraInfo.resolutionHeight
+      while ((unsigned int)lowestPoint.y < getImage().height()
              && findGreenRatio(lowestPoint.y, xStart, xEnd, stepSize) < params.greenGroundRatio)
       {
         lowestPoint.y += stepSize;
@@ -550,8 +550,8 @@ inline void RobotDetector::scanLine(Vector2i start, Vector2i& direction,
 inline bool RobotDetector::pixelInSearchArea(const Vector2i& pixel) const
 {
 //   return searchArea.isInside(pixel);
-  return ((pixel.x >= 0 && pixel.x < (int)getImage().cameraInfo.resolutionWidth) &&
-          (pixel.y >= 0 && pixel.y < (int)getImage().cameraInfo.resolutionHeight));
+  return ((pixel.x >= 0 && pixel.x < (int)getImage().width()) &&
+          (pixel.y >= 0 && pixel.y < (int)getImage().height()));
 }//end pixelInImage
 
 

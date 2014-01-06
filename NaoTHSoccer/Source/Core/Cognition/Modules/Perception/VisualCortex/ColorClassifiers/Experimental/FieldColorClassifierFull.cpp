@@ -645,8 +645,8 @@ void FieldColorClassifierFull::runDebugRequests()
 
   DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:TopCam:set_in_image",
     CANVAS_PX_TOP;
-    int imageWidth = getImageTop().cameraInfo.resolutionWidth;
-    int imageHeight = getImageTop().cameraInfo.resolutionHeight;
+    int imageWidth = getImageTop().width();
+    int imageHeight = getImageTop().height();
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)
@@ -664,8 +664,8 @@ void FieldColorClassifierFull::runDebugRequests()
   );
   DEBUG_REQUEST("Vision:ColorClassifiers:FieldColorClassifierFull:BottomCam:set_in_image",
     CANVAS_PX_BOTTOM;
-    int imageWidth = getImage().cameraInfo.resolutionWidth;
-    int imageHeight = getImage().cameraInfo.resolutionHeight;
+    int imageWidth = getImage().width();
+    int imageHeight = getImage().height();
     for(int x = 0; x < imageWidth; x++)
     {
       for(int y = 0; y < imageHeight; y++)

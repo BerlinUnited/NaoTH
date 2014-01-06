@@ -279,7 +279,7 @@ void AttentionAnalyzer::drawImageProjection()
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
         getImage().cameraInfo,
-        (double)getImage().cameraInfo.resolutionWidth, 
+        (double)getImage().width(), 
         0.0, 
         0.0,
         ru);
@@ -288,8 +288,8 @@ void AttentionAnalyzer::drawImageProjection()
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
         getImage().cameraInfo,
-        (double)getImage().cameraInfo.resolutionWidth, 
-        (double)getImage().cameraInfo.resolutionHeight, 
+        (double)getImage().width(), 
+        (double)getImage().height(), 
         0.0,
         rb);
 
@@ -298,7 +298,7 @@ void AttentionAnalyzer::drawImageProjection()
         getCameraMatrix(), 
         getImage().cameraInfo,
         0.0, 
-        (double)getImage().cameraInfo.resolutionHeight, 
+        (double)getImage().height(), 
         0.0,
         lb);
 
