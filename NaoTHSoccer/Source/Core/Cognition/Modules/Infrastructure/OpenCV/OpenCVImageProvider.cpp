@@ -7,9 +7,9 @@ OpenCVImageProvider::OpenCVImageProvider()
 void OpenCVImageProvider::execute()
 {
   const Image& image = getImage();
-  if(image.cameraInfo.resolutionWidth == 320 && image.cameraInfo.resolutionHeight == 240)
+  if(image.width() == 320 && image.height() == 240)
   {
-    OpenCVGrayScale::createSmallGrayScaleFromRaw(image.yuv422, getOpenCVGrayScale().image);
+    OpenCVGrayScale::createSmallGrayScaleFromRaw(image.data(), getOpenCVGrayScale().image);
   }
 }
 

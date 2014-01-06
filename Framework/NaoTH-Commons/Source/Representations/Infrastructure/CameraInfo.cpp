@@ -105,15 +105,6 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_openinganglediagonal(representation.openingAngleDiagonal);
   msg.set_focus(representation.focus);
   msg.set_pixelsize(representation.pixelSize);
-  
-  // set transformations
-  /*
-  for(int camID=0; camID < CameraInfo::numOfCamera; camID++)
-  {
-    naoth::DataConversion::toMessage(representation.correctionOffset[camID], *msg.add_correctionoffset());
-    naoth::DataConversion::toMessage(representation.headJointOffset[camID], *msg.add_headjointoffset());
-  }
-  */
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
@@ -132,14 +123,4 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.openingAngleDiagonal = msg.openinganglediagonal();
   r.pixelSize = msg.pixelsize();
   
-  /*
-  if(msg.transformation_size() == CameraInfo::numOfCamera)
-  {
-    for(int camID = 0; camID < CameraInfo::numOfCamera; camID++)
-    {
-      naoth::DataConversion::fromMessage(msg.correctionoffset(camID), r.correctionOffset[camID]);
-      naoth::DataConversion::fromMessage(msg.headjointoffset(camID), r.headJointOffset[camID]);
-    }
-  }
-  */
 }
