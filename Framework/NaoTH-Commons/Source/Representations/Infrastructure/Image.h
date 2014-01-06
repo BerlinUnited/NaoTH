@@ -31,10 +31,12 @@ namespace naoth
 class Image: public Printable
 {
 
+private:
   Image(const Image& orig);
-
   Image& operator=(const Image& orig);
 
+  // indicates whether this instance is responsible for the distruction of the data pointer yuv422
+  bool selfCreatedImage;
 
 private:
   unsigned int _width;
@@ -45,7 +47,6 @@ private:
   
 public:
   Image();
-
   virtual ~Image();
 
   /** copy the camera information, and recreate the image data if necessary */
@@ -55,12 +56,13 @@ public:
   void wrapImageDataYUV422(unsigned char* data, const unsigned int size);
 
   /** Copy a raw image. */
-  void copyImageDataYUV422(unsigned char* data, const unsigned int size);
+  void copyImageDataYUV422(const unsigned char* data, const unsigned int size);
     
-
   static const unsigned int PIXEL_SIZE_YUV422 = 2;
   static const unsigned int PIXEL_SIZE_YUV444 = 3;
 
+public: // data members
+  // TODO: remove it
   CameraInfo cameraInfo;
 
   /** The time relative to the start of the programm when the image was recorded in ms */
@@ -70,9 +72,12 @@ public:
   unsigned int currentBuffer;
   unsigned int bufferCount;
   unsigned int wrongBufferSizeCount;
-                    
-  virtual void print(std::ostream& stream) const;
 
+public: // function members
+  inline unsigned int width() const { return cameraInfo.resolutionWidth; }
+  inline unsigned int height() const { return cameraInfo.resolutionHeight; }
+  inline unsigned char* data() const { return yuv422; }
+  inline size_t data_size() const { return width()*height()*PIXEL_SIZE_YUV422; }
 
   inline unsigned char getY(const int x, const int y) const {
     ASSERT(isInside(x,y));
@@ -165,25 +170,7 @@ public:
            y >= 0 && y < (int)cameraInfo.resolutionHeight;
   }
 
-  inline unsigned int width() const { return cameraInfo.resolutionWidth; }
-  inline unsigned int height() const { return cameraInfo.resolutionHeight; }
-  inline unsigned char* data() const { return yuv422; }
-  inline size_t data_size() const { return width()*height()*PIXEL_SIZE_YUV422; }
-
-  inline unsigned int getIndexSize() const {
-    return static_cast<unsigned int> (cameraInfo.getSize());
-  }
-
-  inline unsigned int getXOffsetFromIndex(const unsigned int i) const {
-    return i % cameraInfo.resolutionWidth;
-  }
-
-  inline unsigned int getYOffsetFromIndex(const unsigned int i) const {
-    return i / cameraInfo.resolutionWidth;
-  }
-
-private:
-  bool selfCreatedImage;
+  virtual void print(std::ostream& stream) const;
 };
 
 

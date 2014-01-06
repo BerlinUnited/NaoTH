@@ -22,10 +22,9 @@ Image::Image()
   currentBuffer(0),
   bufferCount(0),
   wrongBufferSizeCount(0),
-  selfCreatedImage(false)
+  selfCreatedImage(true)
 {
   yuv422 = new unsigned char[data_size()];
-  selfCreatedImage = true;
 }
 
 Image::Image(const Image& orig)
@@ -84,20 +83,18 @@ void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int size)
   selfCreatedImage = false;
 }
 
-void Image::copyImageDataYUV422(unsigned char* data, const unsigned int size)
+void Image::copyImageDataYUV422(const unsigned char* data, const unsigned int size)
 {
-  if(size == data_size())
-  {
-     // throw the old pointer away, create a new buffer
-    if(!selfCreatedImage) {
-      yuv422 = new unsigned char[data_size()];
-    }
-
-    // just overwrite the old image data
-    memcpy(yuv422, data, size);
-
+  ASSERT(size == data_size());
+  
+  // create own buffer if necessary
+  if(!selfCreatedImage) {
+    yuv422 = new unsigned char[data_size()];
     selfCreatedImage = true;
   }
+
+  // just overwrite the old image data
+  memcpy(yuv422, data, size);
 }
 
 void Image::print(ostream& stream) const
@@ -139,24 +136,25 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
 	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
   }
 
-  // YUV444 full
-  // hack: 
+  // YUV444
   if(img.format() == naothmessages::Image_Format_YUV)
   {
+    // check the integrity
     ASSERT(img.data().size() != Image::PIXEL_SIZE_YUV444 * img.width() * img.height());
 
     CameraInfo newCameraInfo;
-
     newCameraInfo.resolutionHeight = img.height();
     newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
 
     const char* data = img.data().c_str();
 
-    for(unsigned int i=0; i < representation.getIndexSize(); i++)
+    // HACK: copy the image pixel by pixel because the internal structure only 
+    //       representa the image in the YUV422 format
+    for(int i=0; i < img.width()*img.height(); i++)
     {
-      unsigned int x = representation.getXOffsetFromIndex(i);
-      unsigned int y = representation.getYOffsetFromIndex(i);
+      unsigned int x = i % newCameraInfo.resolutionWidth;
+      unsigned int y = i / newCameraInfo.resolutionWidth;
 
       Pixel p;
       p.y = data[i * 3];
@@ -176,7 +174,8 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
     newCameraInfo.resolutionHeight = img.height();
     newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
-
-    memcpy(representation.data(), img.data().c_str(), img.data().size());
+    representation.copyImageDataYUV422(reinterpret_cast<const unsigned char*>(img.data().c_str()), img.data().size());
+  } else {
+    THROW("Unknown image format.");
   }
 }
