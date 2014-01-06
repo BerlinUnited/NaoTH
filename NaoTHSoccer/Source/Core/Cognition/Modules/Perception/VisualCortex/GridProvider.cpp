@@ -36,7 +36,7 @@ void GridProvider::execute(CameraInfo::CameraID id)
 
   // make some debug
   DEBUG_REQUEST("Vision:show_grid",
-    for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++) {
+    for(unsigned int i = 0; i < getColoredGrid().uniformGrid.size(); i++) {
       const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
       POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
     }
@@ -55,16 +55,14 @@ void GridProvider::execute(CameraInfo::CameraID id)
   );
 }//end execute
 
-// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter gleich,
-// daher wird es nicht im GridCreator gemacht)
-void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
+void GridProvider::calculateColoredGrid()
 {
   getColoredGrid().reset();
   getColorClassesHistograms().init();
 
   Pixel pixel;
   
-  for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
+  for(unsigned int i = 0; i < getColoredGrid().uniformGrid.size(); i++)
   {
     const Vector2i& point = getColoredGrid().uniformGrid.getPoint(i);
 

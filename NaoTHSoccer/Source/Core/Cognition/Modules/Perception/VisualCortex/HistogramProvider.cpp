@@ -26,7 +26,7 @@ void HistogramProvider::execute(CameraInfo::CameraID id)
 
   Pixel pixel;
   
-  for(unsigned int i = 0; i <uniformGrid.numberOfGridPoints; i++)
+  for(unsigned int i = 0; i <uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
 

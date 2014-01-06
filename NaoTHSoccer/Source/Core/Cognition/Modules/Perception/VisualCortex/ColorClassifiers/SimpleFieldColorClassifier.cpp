@@ -107,7 +107,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   STOPWATCH_START("SimpleFieldColorClassifier:GridWalk");
 
   Pixel pixel;
-  for(unsigned int i = 0; i < uniformGrid.numberOfGridPoints; i++)
+  for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);

@@ -1,27 +1,20 @@
-#ifndef __UniformGrid_H_
-#define __UniformGrid_H_
+#ifndef _UniformGrid_H_
+#define _UniformGrid_H_
 
 #include <vector>
 #include <Tools/Math/Vector2.h>
 
-#include "Grid.h"
-
-class UniformGrid: public Grid
+class UniformGrid
 {
 public:
   UniformGrid(unsigned int imageWidth, unsigned int imageHeight, unsigned int gridWidth, unsigned int gridHeight)
-    : 
-    Grid(gridWidth*gridHeight),
+    :
     width(gridWidth),
     height(gridHeight),
-    scaledImageIndex(gridWidth * gridHeight),
-    gridCoordinates(gridWidth * gridHeight)
+    gridCoordinates(gridWidth * gridHeight),
+    pointsCoordinates(gridWidth * gridHeight)
   {
-    //scaledImageIndex = new int[gridWidth * gridHeight];
-    //gridCoordinates = new Vector2<int>[gridWidth * gridHeight];
-
-    //CameraInfo& cameraInfo = Platform::getInstance().theCameraInfo;
-    createUniformGrid(imageWidth, imageHeight, width, height);
+    setDimensions(imageWidth, imageHeight, width, height);
   }
 
   virtual ~UniformGrid(){}
@@ -30,67 +23,66 @@ public:
   const unsigned int width;
   const unsigned int height;
 
+  inline unsigned int size() const {
+    return width * height;
+  }
 
-  inline void addPoint(const Vector2<int>& point, unsigned int gridX, unsigned int gridY)
-  {
-    int idx = Grid::addPoint(point); // ensures 0 <= idx < width*height
-
-    //getScaledImageIndex(gridX,gridY) = idx;
-
-    // TODO: find a better solution for it
-    ASSERT(gridX < width && gridY < height);
-    scaledImageIndex[gridY * width + gridX] = idx;
-
-    gridCoordinates[idx].x = gridX;
-    gridCoordinates[idx].y = gridY;
-  }//end addPoint
-
-
-  int getScaledImageIndex(unsigned int x, unsigned int y) const
-  {
+  inline int getScaledImageIndex(unsigned int x, unsigned int y) const {
     ASSERT(x < width && y < height);
-    return scaledImageIndex[y * width + x];
+    return y * width + x;
   }
 
-  inline const Vector2<int>& getGridCoordinates(unsigned int idx) const
-  {
-    ASSERT(idx < Grid::maxNumberOfPoints);
-    return gridCoordinates[idx];
+  inline const Vector2<int>& getGridCoordinates(unsigned int i) const {
+    ASSERT(i < gridCoordinates.size());
+    return gridCoordinates[i];
   }
 
-  void createUniformGrid(const int imageWidth, const int imageHeight, const int gridWidth, const int gridHeight)
-  {
-    int deltaX = imageWidth / gridWidth;
-    int deltaY = imageHeight / gridHeight;
-
-    int offsetX = deltaX / 2;
-    int offsetY = deltaY / 2;
-
-    int restX = imageWidth % gridWidth;
-    int restY = imageHeight % gridHeight;
-
-    
-    int gy = offsetY;
-
-    for(int y = 0; y < gridHeight; y++)
-    {
-      int gx = offsetX;
-
-      for(int x = 0; x < gridWidth; x++)
-      {
-        addPoint(Vector2<int>(gx, gy), x, y);
-        gx += deltaX + ((restX > x) ? 1 : 0);
-      }//end for
-      gy += deltaY + ((restY > y) ? 1 : 0);
-    }//end for
-  }//end createUniformGrid
+  inline const Vector2<int>& getPoint(unsigned int i) const {
+    ASSERT(i < pointsCoordinates.size());
+    return pointsCoordinates[i];
+  }
 
 private:
-  
-  std::vector<int> scaledImageIndex;
+  void setDimensions(const int imageWidth, const int imageHeight, const int gridWidth, const int gridHeight)
+  {
+    const int deltaX = imageWidth / gridWidth;
+    const int deltaY = imageHeight / gridHeight;
+
+    const int offsetX = deltaX / 2;
+    const int offsetY = deltaY / 2;
+
+    const int restX = imageWidth % gridWidth;
+    const int restY = imageHeight % gridHeight;
+
+    Vector2i ip; // image point
+    Vector2i gp; // grid point
+
+    ip.y = offsetY;
+    for(gp.y = 0; gp.y < gridHeight; gp.y++)
+    {
+      ip.x = offsetX;
+
+      for(gp.x = 0; gp.x < gridWidth; gp.x++) {
+        addPoint(ip, gp);
+        ip.x += deltaX + ((restX > gp.x) ? 1 : 0);
+      }
+      ip.y += deltaY + ((restY > gp.y) ? 1 : 0);
+    }
+  }//end createUniformGrid
+
+  inline void addPoint(const Vector2i& imagePoint, const Vector2i& gridPoint)
+  {
+    int idx = getScaledImageIndex(gridPoint.x, gridPoint.y);// ensures 0 <= idx < width*height
+
+    pointsCoordinates[idx] = imagePoint;
+    gridCoordinates[idx] = gridPoint;
+  }
+
+private:
   std::vector<Vector2<int> > gridCoordinates;
+  std::vector<Vector2<int> > pointsCoordinates;
 
 };//end class UniformGrid
 
-#endif // __UniformGrid_H__
+#endif // _UniformGrid_H__
 

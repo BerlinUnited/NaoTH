@@ -47,23 +47,21 @@ class ColoredGrid: public naoth::Printable
 public:
 
   ColoredGrid(unsigned int imageWidth=naoth::IMAGE_WIDTH, unsigned int imageHeight=naoth::IMAGE_HEIGHT, unsigned int width=60, unsigned int height=40)
-    : uniformGrid(imageWidth, imageHeight, width, height)
+    : 
+    uniformGrid(imageWidth, imageHeight, width, height),
+    pointsColors(width*height)
   {
-    pointsColors.resize(uniformGrid.maxNumberOfPoints);
-
-    for(int i=0; i < ColorClasses::numOfColors; i++)
-    {
+    for(int i=0; i < ColorClasses::numOfColors; i++) {
       colorPointsIndex[i] = new unsigned int[width * height];
     }
     singlePointRate = 1.0 / (double) (uniformGrid.width * uniformGrid.height);
 
     reset();
-  }//end constructor Grid
+  }
 
   virtual ~ColoredGrid()
   {
-    for(int i=0; i < ColorClasses::numOfColors; i++)
-    {
+    for(int i=0; i < ColorClasses::numOfColors; i++) {
       delete[] colorPointsIndex[i];
     }
   }
@@ -84,9 +82,6 @@ public:
 
   double singlePointRate;
   
-  //ColorClasses::Color classifiedImage[NX][NY];
-  //ColorClasses classifiedImageIndex[NX][NY];
-
 //private:
   // index structure for faster access to points of special color in the grid
   unsigned int* colorPointsIndex[ColorClasses::numOfColors];
@@ -94,28 +89,20 @@ public:
   double colorPointsRate[ColorClasses::numOfColors];
 
 public:
-  inline const Vector2<int>& getColorPoint(const int& pointIndex) const
-  {
+  inline const Vector2<int>& getColorPoint(const int& pointIndex) const {
     return uniformGrid.getGridCoordinates(pointIndex);
-    //return uniformGrid.gridCoordinates[pointIndex];
   }
 
-  inline const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const
-  {
+  inline const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const {
     return uniformGrid.getGridCoordinates(colorPointsIndex[color][index]);
-    //return uniformGrid.gridCoordinates[colorPointsIndex[color][index]];
   }
 
-  inline const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const
-  {
+  inline const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const {
     return uniformGrid.getPoint(colorPointsIndex[color][index]);
-    //return uniformGrid.pointsCoordinates[colorPointsIndex[color][index]];
   }
 
-  inline const Vector2<int>& getImagePoint(const int& pointIndex) const
-  {
+  inline const Vector2<int>& getImagePoint(const int& pointIndex) const {
     return uniformGrid.getPoint(pointIndex);
-    //return uniformGrid.pointsCoordinates[pointIndex];
   }
 
   inline int getScaledImageIndex(const Vector2<int>& point) const
@@ -142,7 +129,6 @@ public:
            colorPoint.y >= 0 &&
            colorPoint.x < (int) uniformGrid.width &&
            colorPoint.y < (int) uniformGrid.height);
-    //return uniformGrid.pointsCoordinates[getScaledImageIndex(colorPoint)]; 
     return uniformGrid.getPoint(getScaledImageIndex(colorPoint));
   }
 
@@ -169,9 +155,9 @@ public:
   }//end addPoint
 */
 
-  inline void setColor(const unsigned int& i, const ColorClasses::Color& color)
+  inline void setColor(const unsigned int i, const ColorClasses::Color& color)
   {
-    ASSERT(i < uniformGrid.numberOfGridPoints && numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints);
+    ASSERT(i < uniformGrid.width*uniformGrid.height && numberOfColorPoints[color] < uniformGrid.width*uniformGrid.height);
 
     pointsColors[i] = color;
     colorPointsRate[color] += singlePointRate;
@@ -183,21 +169,17 @@ public:
   // check whether the grid looks valid...
   void validate()
   {
-    for(int color = ColorClasses::orange; color < ColorClasses::numOfColors; color++)
-    {
+    for(int color = ColorClasses::orange; color < ColorClasses::numOfColors; color++) {
       percentOfKnownColors += colorPointsRate[color];
     }
         
     percentOfUnknownColors = colorPointsRate[ColorClasses::none];
      
-
     // check if enough known colors were detected
-    if(percentOfUnknownColors < 85 && percentOfKnownColors > 20) // the criteria is a kind of strange..
-    {
+    //TODO: the criteria is a kind of strange..
+    if(percentOfUnknownColors < 85 && percentOfKnownColors > 20) {
       valid = true;
-    }
-    else
-    {
+    } else {
       valid = false;
     }
   }//end validate
@@ -205,26 +187,16 @@ public:
 
   void reset()
   {
-    //numberOfGridPoints = 0;
-    for(int i = 0; i < ColorClasses::numOfColors; i++)
-    {
+    for(int i = 0; i < ColorClasses::numOfColors; i++) {
       numberOfColorPoints[i] = 0;
       colorPointsRate[i] = 0.0;
-    }//end for
+    }
 
     // statistics
     percentOfUnknownColors = 0;
     percentOfKnownColors = 0;
 
-    valid =  false;
-
-    /*
-    for(int i = 0; i < NX*NY; i++)
-    {
-      *(&(classifiedImageIndex[0][0])+i) = 0;
-      *(&(classifiedImage[0][0])+i) = ColorClasses::none;
-    }
-    */
+    valid = false;
   }//end reset
 
 
@@ -237,13 +209,9 @@ public:
             << "Percent of unknown colors = " << percentOfUnknownColors << std::endl
             << "Rate of colors : " << std::endl;
 
-    for(int i = 0; i < (int) ColorClasses::numOfColors; i++)
-    {
+    for(int i = 0; i < (int) ColorClasses::numOfColors; i++) {
       stream << "  " << ColorClasses::getColorName((ColorClasses::Color) i) << " = " << colorPointsRate[i] << std::endl;
     }
-
-
-    // print something
   }//end print
 
 };//end class ColoredGrid
