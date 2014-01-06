@@ -1,11 +1,11 @@
 /* 
- * File:   ScanLineEdgelDetectorDifferentialDifferential.h
+ * File:   ScanLineEdgelDetector.h
  * Author: Heinrich Mellmann
  *
  */
 
-#ifndef _ScanLineEdgelDetectorDifferentialDifferential_H_
-#define _ScanLineEdgelDetectorDifferentialDifferential_H_
+#ifndef _ScanLineEdgelDetector_H_
+#define _ScanLineEdgelDetector_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -27,7 +27,7 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/DoubleCamHelpers.h"
 
-BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
+BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraInfo)
@@ -45,14 +45,14 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
 
   PROVIDE(ScanLineEdgelPercept)
   PROVIDE(ScanLineEdgelPerceptTop)
-END_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
+END_DECLARE_MODULE(ScanLineEdgelDetector)
 
 
-class ScanLineEdgelDetectorDifferential : private ScanLineEdgelDetectorDifferentialBase
+class ScanLineEdgelDetector : private ScanLineEdgelDetectorBase
 {
 public:
-  ScanLineEdgelDetectorDifferential();
-  virtual ~ScanLineEdgelDetectorDifferential();
+  ScanLineEdgelDetector();
+  virtual ~ScanLineEdgelDetector();
 
   virtual void execute(CameraInfo::CameraID id);
 
@@ -119,15 +119,15 @@ private:
   /** */
   double calculateMeanAngle(double angle1, double angle2) const;
 
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, Image);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraInfo);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ArtificialHorizon);
-  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, BodyContour);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, Image);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, BodyContour);
   
-  DOUBLE_CAM_PROVIDE(ScanLineEdgelDetectorDifferential, ScanLineEdgelPercept);
+  DOUBLE_CAM_PROVIDE(ScanLineEdgelDetector, ScanLineEdgelPercept);
 };
 
-#endif  /* _ScanLineEdgelDetectorDifferential_H_ */
+#endif  /* _ScanLineEdgelDetector_H_ */
 

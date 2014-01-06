@@ -1,5 +1,5 @@
 /* 
- * File:   ScanLineEdgelDetectorDifferential.cpp
+ * File:   ScanLineEdgelDetector.cpp
  * Author: claas
  * Author: Heinrich Mellmann
  * 
@@ -19,24 +19,24 @@
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/CameraGeometry.h"
 
-ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
+ScanLineEdgelDetector::ScanLineEdgelDetector()
 :
   cameraID(CameraInfo::Top),
   current_scanlineID(-1)
 {
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_double_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_endpoints", "mark the endpints on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:scanlines", "mark the scan lines", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:expected_line_width", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_edgels", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_endpoints", "mark the endpints on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:scanlines", "mark the scan lines", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:expected_line_width", "", false);
 
   vertical_confidence.resize(getImage().height());
 }
 
-ScanLineEdgelDetectorDifferential::~ScanLineEdgelDetectorDifferential()
+ScanLineEdgelDetector::~ScanLineEdgelDetector()
 {}
 
-void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
+void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
@@ -78,7 +78,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     vertical_confidence[i] = std::max(0.0,v);
   }//end for
 
-  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:expected_line_width",
+  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:expected_line_width",
     for(int i = 0; i < (int) getImage().height(); i++) {
       unsigned char c = (unsigned char)(vertical_confidence[i]);
       POINT_PX(c, 0, 0, c, i);
@@ -135,7 +135,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     end.x = start.x;
   }//end for
 
-  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_edgels",
+  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_edgels",
     for(unsigned int i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
       Vector2d g1(10.0,0);
@@ -146,7 +146,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   );
 
   // mark finished valid edgels
-  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_double_edgels",
+  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
     for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
     {
       const DoubleEdgel& double_edgel = getScanLineEdgelPercept().scanLineEdgels[i];
@@ -156,7 +156,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     }
   );
   
-  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_endpoints",
+  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_endpoints",
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
@@ -177,7 +177,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
 
 // scanForEdgels ala HTWK
 // TODO: reference to the master thesis von Thomas Reinhard
-ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end)
+ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end)
 {
   Vector2i point(start);
   point.y -= 2; // make one step
@@ -228,7 +228,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     if(g > g_max)
     {
       /*
-      DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_edgels",
+      DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_edgels",
         POINT_PX(ColorClasses::pink, start.x, x_peak);
       );
       */
@@ -250,7 +250,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 
         if(begin_found) // secure edgel
         {
-          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_double_edgels",
+          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
             POINT_PX(ColorClasses::red, start.x, x_peak);
           );
           begin_found = false;
@@ -284,7 +284,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
         }
         else
         {
-          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_double_edgels",
+          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
             POINT_PX(ColorClasses::yellow, start.x, x_peak);
           );
         }
@@ -300,7 +300,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     {
       if(g_max > t_edge)// begin found
       {
-        DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_double_edgels",
+        DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
           POINT_PX(ColorClasses::blue, start.x, (int)x_peak);
         );
 
@@ -327,7 +327,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     f_last = f_x;
 
 
-    DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:scanlines",
+    DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:scanlines",
       Pixel pixel = getImage().get(point.x, point.y);
       ColorClasses::Color thisPixelColor = (getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
       POINT_PX(thisPixelColor, point.x, point.y);
@@ -350,7 +350,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
 }//end scanForEdgels
 
 
-ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
+ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {
   ASSERT(begin.x == end.x && end.y <= begin.y);
 
@@ -377,7 +377,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 }//end estimateColorOfSegment
 
 
-double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2i& point) const
+double ScanLineEdgelDetector::getPointsAngle(const Vector2i& point) const
 {
   // no angle at the border (shouldn't happen)
   if(  point.x < 1 || point.x > (int)getImage().width()-2
@@ -409,7 +409,7 @@ double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2i& point) 
   return gradient.angle();
 }//end getPointsAngle
 
-double ScanLineEdgelDetectorDifferential::calculateMeanAngle(double angle1,double angle2) const
+double ScanLineEdgelDetector::calculateMeanAngle(double angle1,double angle2) const
 {
   /*
   Vector2d a (1,0);
