@@ -22,6 +22,7 @@
 
 
 // Representations
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -37,6 +38,8 @@
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
   REQUIRE(Image)
   REQUIRE(ImageTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(CameraMatrix)
@@ -102,7 +105,7 @@ public:
 private:
   CameraInfo::CameraID cameraID;
   int current_scanlineID;
-  double vertical_confidence[naoth::IMAGE_HEIGHT];
+  std::vector<double> vertical_confidence;
 
   void add_edgel(int x, int y) {
     Edgel edgel;
@@ -125,10 +128,10 @@ private:
   double calculateMeanAngle(double angle1, double angle2) const;
 
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, Image);
+  DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraInfo);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, ArtificialHorizon);
-  //DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, FieldPerceptRaw);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetectorDifferential, BodyContour);
   
   DOUBLE_CAM_PROVIDE(ScanLineEdgelDetectorDifferential, ScanLineEdgelPercept);

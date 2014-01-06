@@ -21,6 +21,8 @@ ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:mark_endpoints", "mark the endpints on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:scanlines", "mark the scan lines", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetectorDifferential:expected_line_width", "", false);
+
+  vertical_confidence.resize(getImage().height());
 }
 
 ScanLineEdgelDetectorDifferential::~ScanLineEdgelDetectorDifferential()
@@ -47,7 +49,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
   // scan only inside the estimated field region
   //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
-  for(int i = 0; i < (int) naoth::IMAGE_HEIGHT; i++)
+  for(int i = 0; i < (int) getImage().height(); i++)
   {
     // reset
     vertical_confidence[i] = 0.0;
@@ -55,22 +57,21 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     // no clculation above horizon
     if (i < horizon_height) continue;
 
-    double x = getImage().cameraInfo.getFocalLength();
-    double z = -i + getImage().cameraInfo.getOpticalCenterY();
+    double x = getCameraInfo().getFocalLength();
+    double z = -i + getCameraInfo().getOpticalCenterY();
     double alpha = atan2(z, x);
     double w = Math::normalize(-alpha + getCameraMatrix().rotation.getYAngle());
     
     double dist = h*tan(Math::pi_2 - w);
     double g = atan2(dist + d_2, h) - atan2(dist - d_2, h);
-    double rad_per_px = getImage().cameraInfo.getOpeningAngleWidth()/getImage().width();
+    double rad_per_px = getCameraInfo().getOpeningAngleWidth()/getImage().width();
     double v = g / rad_per_px;
     
     vertical_confidence[i] = std::max(0.0,v);
   }//end for
 
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetectorDifferential:expected_line_width",
-    for(int i = 0; i < (int) naoth::IMAGE_HEIGHT; i++)
-    {
+    for(int i = 0; i < (int) getImage().height(); i++) {
       unsigned char c = (unsigned char)(vertical_confidence[i]);
       POINT_PX(c, 0, 0, c, i);
     }
@@ -111,7 +112,7 @@ void ScanLineEdgelDetectorDifferential::execute(CameraInfo::CameraID id)
     // try to project it on the ground
     endPoint.valid = CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(),
-      getImage().cameraInfo,
+      getCameraInfo(),
       endPoint.posInImage.x,
       endPoint.posInImage.y,
       0.0,
