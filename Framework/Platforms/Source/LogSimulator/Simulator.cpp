@@ -1,9 +1,8 @@
 
 #ifdef  WIN32
-#include <conio.h>
-#include <windows.h>
-#include <winbase.h>
-
+  #include <conio.h>
+  #include <windows.h>
+  #include <winbase.h>
 #else
   #include <unistd.h>
   #include <fcntl.h>
@@ -11,10 +10,10 @@
 #endif //WIN32
 
 #include <sstream>
-#include <limits.h>
+
 #include "Simulator.h"
-#include "LegacyConverter.h"
 #include "Tools/NaoTime.h"
+
 #include <Messages/Framework-Representations.pb.h>
 
 #include "Tools/Math/Common.h"
@@ -23,10 +22,13 @@
 using namespace std;
 using namespace naoth;
 
-Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode)
+Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime)
 : PlatformInterface("LogSimulator", CYCLE_TIME),
-  compatibleMode(compatibleMode),
-  backendMode(backendMode)
+  backendMode(backendMode),
+  realTime(realTime),
+  logFileScanner(filePath),
+  lastFrameTime(0),
+  simulatedTime(0)
 {
   // TODO: we need a better solution for it, but now it's the 
   // fastest way to provide stuff for motion
@@ -47,37 +49,27 @@ Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode
   registerInput<FrameInfo>(*this);
   registerInput<DebugMessageIn>(*this);
   registerOutput<DebugMessageOut>(*this);
-  
-  logFile.open(filePath, ios::in | ios::binary);
-
-  if(logFile.fail())
-  {
-    cerr << endl << "Could not load file \"" << filePath << "\"!" << endl << endl;
-    exit(-1);
-  }
-
-  parseFile();
 }
 
 void Simulator::init()
 {  
-  
-  // print all representations included in the logfile
+  lastFrameTime = 0;
+  simulatedTime = 0;
+  theDebugServer.start(5401, true);
+}
+
+void Simulator::printRepresentations()
+{
+  // list all representations included in the logfile
   std::cout << "-----------------------------------------" << std::endl;
   std::cout << "Representations contained in the logfile:" << std::endl;
-  for(std::set<std::string>::iterator itIncluded = includedRepresentations.begin();
-    itIncluded != includedRepresentations.end(); itIncluded++)
+  for(std::set<std::string>::iterator itIncluded = logFileScanner.getIncludedRepresentations().begin();
+    itIncluded != logFileScanner.getIncludedRepresentations().end(); itIncluded++)
   {
     std::cout << *itIncluded << std::endl;
-  }//end for
+  }
   std::cout << "-----------------------------------------" << std::endl;
-
-  //noFrameInfo = includedRepresentations.find("FrameInfo") == includedRepresentations.end();
-  lastFrameTime = 0;
-  startFrameTime = CYCLE_TIME;
-
-  theDebugServer.start(5401, true);
-}//end init
+}
 
 void Simulator::printHelp()
 {
@@ -100,6 +92,24 @@ void Simulator::printHelp()
   cout << "After a frame was executed you will always get a line showing you the current frame and the minimal and maximal frame number" << endl;
 }//end printHelp
 
+void Simulator::printCurrentLineInfo()
+{
+  if(logFileScanner.begin() == logFileScanner.end()) {
+    cout << "The logfile seem to be empty.\t\r";
+    return;
+  }
+  
+  LogFileScanner::FrameIterator begin = logFileScanner.begin();
+  LogFileScanner::FrameIterator end = logFileScanner.last();
+
+  // output some informations about the current frame
+  if(!backendMode) {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
+  } else {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << endl;
+  }
+}//end printCurrentLineInfo
+
 char Simulator::getInput()
 {
   if (backendMode) {
@@ -113,6 +123,7 @@ void Simulator::main()
 {
   init();
 
+  printRepresentations();
   printHelp();
 
   jumpToBegin();
@@ -135,9 +146,9 @@ void Simulator::main()
       cin >> jpos;
       jumpTo(jpos);
     } else if(c == 'p') {
-      play();
+      play(false);
     } else if(c == 'l') {
-      loop();
+      play(true);
     } else if(c == 'r') {
       executeCurrentFrame();
     } else if(c == 'h') {
@@ -149,62 +160,7 @@ void Simulator::main()
   cout << endl << "bye bye!" << endl;
 }//end main
 
-void Simulator::play()
-{
-  #ifdef WIN32
-  //cerr << "Play-Support now yet enabled under Windows" << endl;
-  #else
-  // set terminal to non-blocking...
-  const int fd = fileno(stdin);
-  const int fcflags = fcntl(fd,F_GETFL);
-  if (fcntl(fd,F_SETFL,fcflags | O_NONBLOCK) <0)
-  {
-    cerr << "Could not set terminal to non-blocking mode" << endl;
-    cerr << "\"Play\" capatibility not available on this terminal" << endl;
-    return;
-  }
-  #endif //WIN32
-
-  int c = -1;
-  bool endReached = false;
-  while(!endReached && c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
-  {
-    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
-    stepForward();
-    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
-
-    #ifdef WIN32
-    Sleep(waitTime);
-    if(_kbhit())
-    #else
-    // wait some time
-    usleep(waitTime * 1000);
-    #endif
-    c = getInput();
-
-    if(*currentFrame >= maxFrame)
-    {
-      endReached = true;
-    }
-
-  }//while
-
-  #ifdef WIN32
-  //cerr << "Play-Support now yet enabled under Windows" << endl;
-  #else
-  // set back to blocking
-  if (fcntl(fd,F_SETFL,fcflags) <0)
-  {
-    cerr << "Could not set terminal to blocking mode" << endl;
-    cerr << "terminating since this is a serious error" << endl;
-    exit(EXIT_FAILURE);
-  }
-  #endif //WIN32
-
-
-}//end play
-
-void Simulator::loop()
+void Simulator::play(bool loop)
 {
   #ifdef WIN32
   //cerr << "Play-Support now yet enabled under Windows" << endl;
@@ -223,9 +179,16 @@ void Simulator::loop()
   int c = -1;
   while(c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
   {
+    // execute the frame and calculate the time to wait
+    unsigned int simulatedTimeBefore = simulatedTime;
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
+    unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
+    unsigned int maxTimeToWait = realTime?simulatedTime - simulatedTimeBefore:33;
+
+    // wait at leas 5ms but max 1s
+    unsigned int waitTime = Math::clamp((int)maxTimeToWait - (int)calculationTime, 5, 1000);
+
 
     #ifdef WIN32
     Sleep(waitTime);
@@ -235,6 +198,10 @@ void Simulator::loop()
     usleep(waitTime * 1000);
     #endif
     c = getInput();
+
+    if(!loop && currentFrame == logFileScanner.last()) {
+      break;
+    }
   }//while
 
   #ifdef WIN32
@@ -248,48 +215,48 @@ void Simulator::loop()
     exit(EXIT_FAILURE);
   }
   #endif //WIN32
-}//end loop
+}//end play
 
 void Simulator::stepForward()
 {
   currentFrame++;
-  if(currentFrame == frames.end())
+  if(currentFrame == logFileScanner.end()) {
     jumpToBegin();
-  else
+  } else {
     executeCurrentFrame();
-}//end stepForward
+  }
+}
 
 void Simulator::stepBack()
 {
-  if(currentFrame == frames.begin())
+  if(currentFrame == logFileScanner.begin()) {
     jumpToEnd();
-  else
-  {
+  } else {
     currentFrame--;
     executeCurrentFrame();
   }
-}//end stepBack
+}
 
 void Simulator::jumpToBegin()
 {
-  currentFrame = frames.begin();
+  currentFrame = logFileScanner.begin();
   executeCurrentFrame();
-}//end jumpToBegin
+}
 
 void Simulator::jumpToEnd()
 {
-  currentFrame = frames.end();
+  currentFrame = logFileScanner.end();
   currentFrame--;
   executeCurrentFrame();
-}//end jumpToEnd
+}
 
 void Simulator::jumpTo(unsigned int position)
 {
   // do it the stupid way...
   bool wasFound = false;
-  list<unsigned int>::iterator oldPos = currentFrame;
-  currentFrame = frames.begin();
-  while(!wasFound && currentFrame != frames.end())
+  LogFileScanner::FrameIterator oldPos = currentFrame;
+  currentFrame = logFileScanner.begin();
+  while(!wasFound && currentFrame != logFileScanner.end())
   {
     if(*currentFrame == position) {
       wasFound = true;
@@ -299,99 +266,20 @@ void Simulator::jumpTo(unsigned int position)
     }
   }//end while
 
-  if(wasFound)
-  {
+  if(wasFound) {
     executeCurrentFrame();
-  }
-  else
-  {
+  } else {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
     if(!backendMode) printCurrentLineInfo();
   }
 }//end jumpTo
 
+
+
 void Simulator::executeCurrentFrame()
-{  
-  //std::cout << "begin executeCurrentFrame" << std::endl;
-  //unsigned int i = (*currentFrame);
-  std::streampos start = frameNumber2PosStart[(*currentFrame)];
-  std::streampos end = frameNumber2PosEnd[*currentFrame];
-
-  logFile.clear();
-  logFile.seekg(start);
-  
-  representations.clear();
-
-  while(!logFile.fail() && logFile.tellg() < end)
-  {
-    unsigned int tmpFrameNumber = 0;
-    logFile.read((char*) &tmpFrameNumber, 4);
-
-    string name = "";
-    char c = '\0';
-    logFile.read(&c, 1);
-    while(c != '\0')
-    {
-      name += c;
-      logFile.read(&c, 1);
-    }
-
-    size_t dataSize = 0;
-    logFile.read((char*) &dataSize, 4);
-
-    unsigned int posBeforeRead = (unsigned int)logFile.tellg();
-
-    bool found = false;
-
-    if(compatibleMode)
-    {
-      found = compatibleExecute(name, dataSize);
-    }
-    else
-    {
-      // read to buffer
-      stringstream s;
-      char* c = new char[dataSize];
-      logFile.read(c, dataSize);
-      s.write(c,dataSize);
-      
-      representations[name] = s.str();      
-      found = true; // we always read in/buffer the string data of all logged representations
-      
-      delete[] c;
-    }//end if
-
-    // check if something was read
-    if(found)
-    {
-      // check how much data was read
-      unsigned int posAfterRead = (unsigned int)logFile.tellg();
-      unsigned int diffAfterBefore = posAfterRead - posBeforeRead;
-      if(diffAfterBefore < dataSize)
-      {
-        std::cerr << "ERROR: the handler for \"" << name <<
-          "\" did not read enough characters, I will fix that for now but please review the code"
-            << std::endl << "offset: " << (dataSize-diffAfterBefore) << std::endl;
-        logFile.seekg(dataSize - diffAfterBefore, ios_base::cur);
-      }
-      else if(diffAfterBefore > dataSize)
-      {
-        std::cerr << "ERROR: the handler for \"" << name <<
-          "\" read TOO MUCH BYTES: please review the code!!!"
-          << std::endl << "offset: " << (diffAfterBefore - dataSize) << std::endl;
-
-        logFile.seekg(dataSize - diffAfterBefore, ios_base::cur);
-
-      }
-    }
-    else
-    {
-      std::cerr << "ERROR: no handler found for \"" << name <<
-          "\"!" << std::endl;
-        logFile.seekg(dataSize, ios_base::cur);
-    }
-  }
+{
+  logFileScanner.readFrame(*currentFrame, representations);
   
   //
   adjust_frame_time();
@@ -409,21 +297,14 @@ void Simulator::executeCurrentFrame()
 
 void Simulator::adjust_frame_time()
 {
-  // HACK: adjust the timestamp: 
-  // the time should contineously increase even if the logfile is played backwards (!)
-  static unsigned int current_time = 0;
-
-  // as well as the frame number
-  static unsigned int current_frame_number = 0;
-
   naothmessages::FrameInfo f;
 
   // default time since the last frame
-  unsigned int time_delta = CYCLE_TIME;
+  int time_delta = 33; // default time step simulating 30fps
   
   // if no FrameInfo was logged set it manually
-  if(representations.find("FrameInfo") == representations.end() ||
-     representations["FrameInfo"].empty())
+  LogFileScanner::RepresentationData& frameData = representations["FrameInfo"];
+  if(!frameData.valid)
   {
     f.set_framenumber(*currentFrame);
     lastFrameTime = 0;
@@ -431,202 +312,32 @@ void Simulator::adjust_frame_time()
   else
   {
     // read the actual frame info
-    f.ParseFromString(representations["FrameInfo"]);
+    f.ParseFromArray(frameData.data.data(), frameData.data.size());
     unsigned int frameTime = f.time();
 
     // logged time since the last frame
-    if(lastFrameTime != 0)
-    {
-      time_delta = abs((int)frameTime - (int)lastFrameTime);
-    }//end if
+    if(lastFrameTime != 0) {
+      time_delta = (int)frameTime - (int)lastFrameTime;
+    }
 
     // remember the current time for next cycle
     lastFrameTime = frameTime;
   }
 
-  if(time_delta == 0)
-  {
-    time_delta = CYCLE_TIME;
+  if(time_delta <= 0) {
+    time_delta = 33; // default time step simulating 30fps
   }
-  current_time += time_delta;
-  
-  //
-  f.set_time(current_time);
 
-  /*
-  if(!f.has_framenumber())
-  {
-    f.set_framenumber(*currentFrame);
-  }*/
-  f.set_framenumber(current_frame_number++);
-  
+  simulatedTime += time_delta;
+  f.set_time(simulatedTime);
 
+  f.set_framenumber(simulatedFrameNumber++);
+  
   // write the result back
   string result = f.SerializeAsString();
-  representations["FrameInfo"] = result;
+  frameData.data.resize(result.size());
+  std::copy ( result.begin(), result.end(), frameData.data.begin() );
 }//end adjust_frame_time
-
-
-bool Simulator::compatibleExecute(const string& name, size_t dataSize)
-{
-  // TODO
-  
-//  // patch name in order to be able to use older logfiles, too
-//  if (name == "image" || name == "Image")
-//  {
-//    theCognition.theImage->cameraInfo = Platform::getInstance().theCameraInfo;
-//    LegacyConverter::oldRawImage(theCognition.theImage, logFile);
-//
-//    return true;
-//  }
-//  else if (name == "sensorJointData" || name == "SensorJointData")
-//  {
-//    naothmessages::SensorJointData data =
-//      LegacyConverter::sensorJointDatafromStream(logFile, dataSize);
-//
-//    for (int i = 0; i < JointData::numOfJoint && i < data.jointdata().position_size(); i++)
-//    {
-//      theCognition.theSensorJointData->position[i] = data.jointdata().position(i);
-//      theMotion.theSensorJointData->position[i] = data.jointdata().position(i);
-//    }
-//
-//    for (int i = 0; i < JointData::numOfJoint && i < data.jointdata().hardness_size(); i++)
-//    {
-//      theCognition.theSensorJointData->hardness[i] = data.jointdata().hardness(i);
-//      theMotion.theSensorJointData->hardness[i] = data.jointdata().hardness(i);
-//    }
-//    return true;
-//  }
-//  else if (name == "cameraMatrix" || name == "CameraMatrix")
-//  {
-//    naothmessages::CameraMatrix data =
-//      LegacyConverter::cameraMatrixfromStream(logFile, "cameraMatrix" == name);
-//
-//    for
-//    (
-//      std::map<std::string, Streamable*>::iterator iter = logableCognitionRepresentations.begin();
-//      iter != logableCognitionRepresentations.end();
-//      ++iter
-//    )
-//    {
-//      CameraMatrix* theCameraMatrix = dynamic_cast<CameraMatrix*> (iter->second);
-//      if (theCameraMatrix != NULL)
-//      {
-//        theCameraMatrix->translation.x = data.pose().translation().x();
-//        theCameraMatrix->translation.y = data.pose().translation().y();
-//        theCameraMatrix->translation.z = data.pose().translation().z();
-//
-//        for (int i = 0; i < 3 && i < data.pose().rotation_size(); i++) {
-//          theCameraMatrix->rotation.c[i].x = data.pose().rotation(i).x();
-//          theCameraMatrix->rotation.c[i].y = data.pose().rotation(i).y();
-//          theCameraMatrix->rotation.c[i].z = data.pose().rotation(i).z();
-//        }
-//      }
-//    }
-//    return true;
-//  }
-  return false;
-}
-
-void Simulator::printCurrentLineInfo()
-{
-  // output some informations about the current frame
-  if(!backendMode) {
-    cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]\t\r";
-  } else {
-    cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]" << endl;
-  }
-}//end printCurrentLineInfo
-
-void Simulator::parseFile()
-{
-  //noFrameInfo = false;
-
-  frames.clear();
-  includedRepresentations.clear();
-
-  frameNumber2PosStart.clear();
-  frameNumber2PosEnd.clear();
-
-  minFrame = UINT_MAX;
-  maxFrame = 0;
-
-  // reset file cursor
-  logFile.seekg(0, ios_base::beg);
-
-  unsigned int lastFrameNumber = 0;
-  bool firstFrame = true;
-
-  std::set<std::string> perFrameIncluded;
-
-  while(!logFile.fail() && !logFile.eof())
-  {
-    streampos currentPos = logFile.tellg();
-    unsigned int currentFrameNumber = 0;
-    logFile.read((char*) &currentFrameNumber, 4);
-
-    string currentName = "";
-    char c = '\0';
-    logFile.read(&c, 1);
-    while(c != '\0')
-    {
-      currentName += c;
-      logFile.read(&c, 1);
-    }
-
-    includedRepresentations.insert(currentName);
-    perFrameIncluded.insert(currentName);
-
-    size_t currentSize = 0;
-    logFile.read((char*) &currentSize, 4);
-
-    if(currentSize == 0 && currentName.size() == 0)
-    {
-      cerr << endl << "[LogSimulator] Illegal end of file."<< endl << endl;
-      break;
-    }//end if
-
-    // skip data
-    logFile.seekg(currentSize, ios_base::cur);
-
-
-    if(firstFrame || lastFrameNumber < currentFrameNumber)
-    {
-      if(firstFrame)
-      {
-        firstFrame = false;
-      }
-      else
-      {
-        // set end of last frame
-        frameNumber2PosEnd[lastFrameNumber] = currentPos;
-      }
-
-      minFrame = min(minFrame, currentFrameNumber);
-      maxFrame = max(maxFrame, currentFrameNumber);
-
-      // add new frame
-      frames.push_back(currentFrameNumber);
-      frameNumber2PosStart[currentFrameNumber] = currentPos;
-
-      // needed to generate the the frame info if not available in one single frame
-      /*
-      if(perFrameIncluded.find("FrameInfo") == perFrameIncluded.end())
-      {
-        if(!noFrameInfo)
-        {
-          std::cout << "automated FrameInfo generation" << std::endl;
-        }
-        noFrameInfo = true;
-      }
-      */
-
-      perFrameIncluded.clear();
-
-      lastFrameNumber = currentFrameNumber;
-    }//end if
-  }//end while
-}//end parseFile
 
 
 ///// Getter/Setter /////
@@ -634,22 +345,16 @@ void Simulator::parseFile()
 template<class T>
 void Simulator::generalGet(T& data, std::string name) const
 {
-  std::map<std::string, std::string>::const_iterator iter = representations.find(name); 
-  if(iter != representations.end())
+  LogFileScanner::Frame::const_iterator iter = representations.find(name); 
+  if(iter != representations.end() && iter->second.valid)
   {
-  //std::cout << "getting " << name << std::endl;
-    std::stringstream stream(iter->second);
+    std::istrstream stream(iter->second.data.data(), iter->second.data.size());
     Serializer<T>::deserialize(stream, data);
-  }//end if
+  }
 }//end generalGet
 
 
 ///// end Getter/Setter /////
-
-Simulator::~Simulator()
-{
-}
-
 
 MessageQueue* Simulator::createMessageQueue(const std::string& name)
 {
