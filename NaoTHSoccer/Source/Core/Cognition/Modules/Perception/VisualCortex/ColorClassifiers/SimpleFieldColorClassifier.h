@@ -21,7 +21,7 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/DataStructures/Grid/uniformGrid.h>
+#include <Tools/DataStructures/uniformGrid.h>
 
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DoubleCamHelpers.h"

@@ -6,7 +6,7 @@
 #include <Tools/DataStructures/Printable.h>
 
 #include <Representations/Infrastructure/CameraInfo.h>
-#include <Tools/DataStructures/Grid/UniformGrid.h>
+#include <Tools/DataStructures/UniformGrid.h>
 
 
 /**
