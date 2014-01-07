@@ -234,7 +234,7 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="naoByte4" min="-2" pref="35" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="copyButton" pref="172" max="32767" attributes="1"/>
+                                          <Component id="copyButton" pref="173" max="32767" attributes="1"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -261,7 +261,7 @@
                                       <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jBackupBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace pref="38" max="32767" attributes="0"/>
+                                  <EmptySpace pref="90" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -373,36 +373,14 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="btWriteToStick" max="32767" attributes="0"/>
-                                      <Group type="102" attributes="0">
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Group type="102" alignment="0" attributes="0">
-                                                  <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="txtNaonamePlayer1" min="-2" pref="85" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="txtNaonamePlayer2" min="-2" pref="85" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="jLabel31" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="txtNaonamePlayer3" min="-2" pref="86" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="jLabel32" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="txtNaonamePlayer4" min="-2" pref="85" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="jLabel33" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="txtNaonamePlayer5" min="-2" pref="85" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                          <EmptySpace min="0" pref="53" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
+                                      <Component id="btWriteToStick" alignment="0" pref="556" max="32767" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -415,21 +393,10 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtNaonamePlayer1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtNaonamePlayer2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtNaonamePlayer3" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel32" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtNaonamePlayer4" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel33" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="txtNaonamePlayer5" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="playerNumbersPanel" min="-2" pref="23" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btWriteToStick" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="15" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -437,43 +404,8 @@
                       <SubComponents>
                         <Component class="javax.swing.JLabel" name="jLabel10">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="Names:"/>
+                            <Property name="text" type="java.lang.String" value="Player Numbers:"/>
                           </Properties>
-                        </Component>
-                        <Component class="javax.swing.JLabel" name="jLabel11">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="1:"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="txtNaonamePlayer1">
-                        </Component>
-                        <Component class="javax.swing.JLabel" name="jLabel18">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="2:"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="txtNaonamePlayer2">
-                        </Component>
-                        <Component class="javax.swing.JLabel" name="jLabel31">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="3:"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="txtNaonamePlayer3">
-                        </Component>
-                        <Component class="javax.swing.JLabel" name="jLabel32">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="4:"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="txtNaonamePlayer4">
-                        </Component>
-                        <Component class="javax.swing.JLabel" name="jLabel33">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="5:"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="txtNaonamePlayer5">
                         </Component>
                         <Component class="javax.swing.JButton" name="btWriteToStick">
                           <Properties>
@@ -483,6 +415,17 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btWriteToStickActionPerformed"/>
                           </Events>
                         </Component>
+                        <Container class="javax.swing.JPanel" name="playerNumbersPanel">
+                          <Properties>
+                            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[0, 23]"/>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
+                            <Property name="axis" type="int" value="0"/>
+                          </Layout>
+                        </Container>
                       </SubComponents>
                     </Container>
                   </SubComponents>
