@@ -6,7 +6,7 @@
  * Created on 14. march 2011, 14:22
  */
 
-#include "ScanLineEdgelDetectorDifferential.h"
+#include "ScanLineEdgelDetector.h"
 
 // debug
 #include "Tools/Debug/DebugModify.h"

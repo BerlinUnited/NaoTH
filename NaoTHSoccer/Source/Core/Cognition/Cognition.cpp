@@ -64,7 +64,7 @@
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
 //Perception - Vision -- Detectors
 #include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
-#include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetectorDifferential.h"
+#include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
@@ -178,7 +178,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(HistogramFieldDetector);
   REGISTER_MODULE(FieldDetector);
 
-  REGISTER_MODULE(ScanLineEdgelDetectorDifferential);
+  REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(LineDetector);
   REGISTER_MODULE(NeoLineDetector);
   REGISTER_MODULE(LineClusterProvider);
