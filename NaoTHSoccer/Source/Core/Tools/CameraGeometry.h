@@ -13,6 +13,7 @@
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include <Representations/Modeling/KinematicChain.h>
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
@@ -114,6 +115,14 @@ public:
    * the egocentric coordination system of the robot
    */
   static Vector2<double> lookAtPoint(const Vector3<double>& point, double cameraHeight);
+
+
+  /**
+  */
+  static Pose3D calculateCameraMatrix(
+    const KinematicChain& theKinematicChain,
+    const Pose3D& theCameraOffset,
+    const Vector2d& theCameraCorrectionOffset);
 
   };
 

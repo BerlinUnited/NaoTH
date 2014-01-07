@@ -68,8 +68,6 @@ void GoalModelCorrector::correct_the_goal_percept_in_image(
   Vector2<double>& offset)
 {
   // calibrate the camera matrix
-  // currently it is in test-mode, the correction parameter
-  // are stored as static members of CameraMatrixCalculator
 
   double epsylon = 1e-8;
 
