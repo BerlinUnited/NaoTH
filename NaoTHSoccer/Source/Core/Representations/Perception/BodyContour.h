@@ -13,10 +13,9 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
-#include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
-
+#include <vector>
 
 /**
 * @class BodyContour
@@ -53,7 +52,8 @@ public:
   :
     stepSize(0),
     xDensity(0),
-    yDensity(0)
+    yDensity(0),
+    timestamp(0)
   {
   }
 
@@ -65,6 +65,8 @@ private:
   Vector2i cameraResolution;
 
 public:
+  unsigned int timestamp;
+
   void setGridSize(int step, int imageWidth, int imageHeight) 
   {
     stepSize = step;
@@ -128,11 +130,11 @@ public:
 
   Vector2i getFirstFreeCell(const Vector2i& start) const
   {
+    ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
     Vector2i point(start);
     while (isOccupied(point) && (point.y - stepSize) >= 0) {
       point.y -= stepSize;
     }
-    ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
     return point;
   }
 

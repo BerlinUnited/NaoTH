@@ -93,6 +93,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
   CANVAS_PX(cameraID);
 
   getBodyContour().reset();
+  getBodyContour().timestamp = getFrameInfo().getTime();
 
 
   // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix

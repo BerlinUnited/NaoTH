@@ -46,6 +46,10 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   //if(!getFieldPerceptRaw().valid) {
   //  return;
   //}
+  // TODO: implement a general validation for timestamps
+  if(getBodyContour().timestamp != getFrameInfo().getTime()) {
+    return;
+  }
 
   double h = 500.0;
   double d_2 = 50/2;

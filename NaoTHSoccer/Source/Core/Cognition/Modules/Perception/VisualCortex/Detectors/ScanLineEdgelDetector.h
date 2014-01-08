@@ -15,6 +15,7 @@
 #include <Tools/Math/Vector2.h>
 
 // Representations
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include <Representations/Perception/FieldColorPercept.h>
@@ -29,6 +30,7 @@
 #include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
+  REQUIRE(FrameInfo)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraInfo)

@@ -176,9 +176,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyContourProvider);
 
   REGISTER_MODULE(HistogramFieldDetector);
-  REGISTER_MODULE(FieldDetector);
 
   REGISTER_MODULE(ScanLineEdgelDetector);
+  REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineDetector);
   REGISTER_MODULE(NeoLineDetector);
   REGISTER_MODULE(LineClusterProvider);
