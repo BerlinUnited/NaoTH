@@ -84,7 +84,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     
     if(arguments.find("top") != arguments.end())
     {
-      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(ImageDrawingCanvas(getImageTop()));
+      ImageDrawingCanvas canvas(getImageTop());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImageTop");
       Serializer<Image>::serialize(getImageTop(), outstream);
@@ -93,7 +94,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     }
     else
     {
-      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(ImageDrawingCanvas(getImage()));
+      ImageDrawingCanvas canvas(getImage());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImage");
       Serializer<Image>::serialize(getImage(), outstream);

@@ -17,12 +17,13 @@ using namespace std;
 
 Image::Image()
   :
+  selfCreatedImage(true),
   yuv422(NULL),
   timestamp(0),
   currentBuffer(0),
   bufferCount(0),
-  wrongBufferSizeCount(0),
-  selfCreatedImage(true)
+  wrongBufferSizeCount(0)
+  
 {
   yuv422 = new unsigned char[data_size()];
 }
@@ -132,7 +133,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   img.ParseFromZeroCopyStream(&buf);
 
   //TODO: deprecated
-  if(img.width() != naoth::IMAGE_WIDTH || img.height() != naoth::IMAGE_HEIGHT) {
+  if(img.width() != (int)naoth::IMAGE_WIDTH || img.height() != (int)naoth::IMAGE_HEIGHT) {
 	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
   }
 

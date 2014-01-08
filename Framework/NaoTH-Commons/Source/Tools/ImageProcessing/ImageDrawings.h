@@ -10,8 +10,8 @@
 #ifndef _ImageDrawings_H_
 #define _ImageDrawings_H_
 
-#include <stdlib.h>
 #include <Representations/Infrastructure/Image.h>
+#include <stdlib.h>
 
 namespace naoth
 {
