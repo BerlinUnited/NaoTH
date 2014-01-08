@@ -25,6 +25,7 @@
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
 #include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 #include "Tools/DoubleCamHelpers.h"
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
@@ -73,12 +74,10 @@ public:
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
       syncWithConfig();
-
       DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters()
-    {
+    ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
 

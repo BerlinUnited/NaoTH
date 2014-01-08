@@ -33,8 +33,8 @@
 class ColorCalibrator
 {
 public:
-  ColorCalibrator(string name, ColorClasses::Color color);
-  ColorCalibrator(double strength, string name, ColorClasses::Color color);
+  ColorCalibrator(std::string name, ColorClasses::Color color);
+  ColorCalibrator(double strength, std::string name, ColorClasses::Color color);
   virtual ~ColorCalibrator(){};
 
   /** executes the module */
@@ -55,10 +55,10 @@ public:
 
 private:
   double strength;
-  string name;
+  std::string name;
   ColorClasses::Color color;
 
-  vector<CalibrationRect*> calibrationRectangles;
+  std::vector<CalibrationRect*> calibrationRectangles;
   
   greenColorRegion greenParams;
   whiteColorRegion whiteParams;

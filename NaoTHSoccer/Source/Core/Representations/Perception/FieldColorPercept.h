@@ -9,13 +9,7 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
-
-#include <Tools/ImageProcessing/FieldColorParameters.h>
-
-#include <Tools/ColorClasses.h>
-
 #include <Tools/Math/Common.h>
-
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;

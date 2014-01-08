@@ -23,6 +23,9 @@
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
+
 #include <vector>
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
@@ -83,12 +86,10 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
       syncWithConfig();
-
       DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters()
-    {
+    ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
 

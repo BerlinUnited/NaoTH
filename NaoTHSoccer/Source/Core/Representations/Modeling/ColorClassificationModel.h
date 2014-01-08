@@ -148,10 +148,10 @@ public:
     return fieldColorPercept;
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "fieldColorPerceptValid: " << fieldColorPerceptValid << endl;
-    stream << "baseColorRegionPerceptValid: " << baseColorRegionPerceptValid << endl;
+    stream << "fieldColorPerceptValid: " << fieldColorPerceptValid << std::endl;
+    stream << "baseColorRegionPerceptValid: " << baseColorRegionPerceptValid << std::endl;
   }
 
 private:

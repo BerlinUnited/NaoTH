@@ -11,6 +11,8 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/DebugParameterList.h>
 
+using namespace std;
+
 CameraDebug::CameraDebug(): CameraDebugBase(),
   isAutoCalibratingCamera(false),
   afterAutoCalibratingCamera(false),

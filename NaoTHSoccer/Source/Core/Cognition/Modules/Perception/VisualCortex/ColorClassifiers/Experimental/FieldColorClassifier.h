@@ -21,9 +21,9 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 
-//Perception
-#include "Tools/ImageProcessing/FieldColorParameters.h"
 #include "Tools/ImageProcessing/ColorCalibrator.h"
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -37,6 +37,29 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
+
+class FieldColorParameters : public ParameterList
+{
+public:
+
+  double CromaRedChannelDistance;
+  int MaxCromaBlueChannelValue;
+  int MaxBrightnessChannelValue;
+
+  FieldColorParameters() : ParameterList("FieldColorParameters")
+  {
+    PARAMETER_REGISTER(MaxBrightnessChannelValue) = 120;
+    PARAMETER_REGISTER(MaxCromaBlueChannelValue) = 120;
+    PARAMETER_REGISTER(CromaRedChannelDistance) = 10;
+
+    syncWithConfig();
+    DebugParameterList::getInstance().add(this);
+  }
+
+  ~FieldColorParameters() {
+    DebugParameterList::getInstance().remove(this);
+  }
+};
 
 
 class FieldColorClassifier : public  FieldColorClassifierBase

@@ -66,10 +66,6 @@ public:
     }
   }
 
-  // constants
-  //static const unsigned int NX = UniformGrid::MAXWIDTH;
-  //static const unsigned int NY = UniformGrid::MAXHEIGHT;
-  //static const unsigned int MAX_NUMBER_OF_POINTS = NX * NY;
   bool valid;
   double percentOfUnknownColors;
   double percentOfKnownColors;
@@ -131,29 +127,6 @@ public:
            colorPoint.y < (int) uniformGrid.height);
     return uniformGrid.getPoint(getScaledImageIndex(colorPoint));
   }
-
-/*
-  void addPoint(Vector2<int> point, ColorClasses::Color color)
-  {
-    if(grid.numberOfGridPoints < MAX_NUMBER_OF_POINTS)
-    {
-      // punkt in die liste eintragen (nach farben sortiert)
-      pointsCoordinates[numberOfGridPoints] = point;
-      pointsColors[numberOfGridPoints] = color;
-
-      colorPointsIndex[color][numberOfColorPoints[color]] = numberOfGridPoints;
-      numberOfColorPoints[color]++;
-       
-      // punkt in die das reduzierte bild eintragen (nach koordinaten sortiert)
-      int dx = point.x/(RobotInfo::getInstance().theCameraInfo.resolutionWidth/NX);
-      int dy = point.y/(RobotInfo::getInstance().theCameraInfo.resolutionHeight/NY);
-      classifiedImage[dx][dy] = color;
-      classifiedImageIndex[dx][dy] = numberOfGridPoints;
-
-      numberOfGridPoints++;
-    }//end if
-  }//end addPoint
-*/
 
   inline void setColor(const unsigned int i, const ColorClasses::Color& color)
   {

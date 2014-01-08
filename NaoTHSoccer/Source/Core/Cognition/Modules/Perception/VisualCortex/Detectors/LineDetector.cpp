@@ -10,6 +10,7 @@
 
 #include "Tools/Debug/Stopwatch.h"
 
+using namespace std;
 
 LineDetector::LineDetector()
 :

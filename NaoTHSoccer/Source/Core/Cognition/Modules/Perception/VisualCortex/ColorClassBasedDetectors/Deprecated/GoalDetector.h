@@ -33,6 +33,8 @@
 
 #include "Tools/DoubleCamHelpers.h"
 
+using namespace std;
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GoalDetector)

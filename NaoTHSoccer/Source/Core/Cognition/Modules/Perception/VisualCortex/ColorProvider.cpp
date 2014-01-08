@@ -10,6 +10,8 @@
 // needed to load the colortable
 #include <PlatformInterface/Platform.h>
 
+using namespace std;
+
 ColorProvider::ColorProvider()
 {
   const string colorTablePath = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";

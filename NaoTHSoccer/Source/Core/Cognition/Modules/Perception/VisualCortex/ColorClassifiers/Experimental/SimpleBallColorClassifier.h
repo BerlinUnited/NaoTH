@@ -25,6 +25,9 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugImageDrawings.h"
 
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
+
 #include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////

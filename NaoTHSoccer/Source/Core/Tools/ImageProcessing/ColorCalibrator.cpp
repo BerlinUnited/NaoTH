@@ -1,5 +1,7 @@
 #include "ColorCalibrator.h"
 
+using namespace std;
+
 ColorCalibrator::ColorCalibrator(string name, ColorClasses::Color color)
 :
   strength(1.3),

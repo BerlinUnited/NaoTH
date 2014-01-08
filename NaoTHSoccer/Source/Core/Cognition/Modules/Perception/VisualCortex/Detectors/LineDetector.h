@@ -87,10 +87,10 @@ public:
  
 private:
   CameraInfo::CameraID cameraID;
-  vector<LinePercept::LineSegmentImage> lineSegments;
+  std::vector<LinePercept::LineSegmentImage> lineSegments;
 
   /** estimate the line segments from edgels */
-  void clusterEdgels(const vector<DoubleEdgel>& edgelList);
+  void clusterEdgels(const std::vector<DoubleEdgel>& edgelList);
 
   /** */
   void expandLines();

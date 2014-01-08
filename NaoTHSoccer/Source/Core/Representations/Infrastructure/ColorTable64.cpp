@@ -14,11 +14,11 @@ bool ColorTable64::loadFromFile(const std::string& fileName)
 {
   ifstream inputFileStream ( fileName.c_str() , ifstream::in );
   
+  // could not open color table
   if(inputFileStream.fail())
   {
-    // could not open color table
     return false;
-  }//end if
+  }
 
   inputFileStream.read((char*)&(colorClasses), colorTableLength);
   inputFileStream.close();

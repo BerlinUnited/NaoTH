@@ -8,7 +8,7 @@
 #include "FieldColorClassifier.h"
 
 
-
+using namespace std;
 // Debug
 
 
