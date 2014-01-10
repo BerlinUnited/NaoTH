@@ -51,8 +51,8 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  double h = 500.0;
-  double d_2 = 50/2;
+  //double h = 500.0;
+  //double d_2 = 50/2;
  
   int horizon_height = (int)(std::min(getArtificialHorizon().begin().y, getArtificialHorizon().end().y)+0.5);
   // clamp it to the image
@@ -61,6 +61,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   // scan only inside the estimated field region
   //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
+  /*
   for(int i = 0; i < (int) getImage().height(); i++)
   {
     // reset
@@ -81,6 +82,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
     
     vertical_confidence[i] = std::max(0.0,v);
   }//end for
+  */
 
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:expected_line_width",
     for(int i = 0; i < (int) getImage().height(); i++) {
@@ -275,9 +277,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
           double_edgel.ScanLineID = current_scanlineID;
 
-          double edgel_c = vertical_confidence[double_edgel.center.y];
-          if(double_edgel.valid && 
-            (double_edgel.end - double_edgel.begin).abs2() > edgel_c*edgel_c*line_thicknes_param*line_thicknes_param //&&
+          //double edgel_c = vertical_confidence[double_edgel.center.y];
+          if(double_edgel.valid //&& 
+            //(double_edgel.end - double_edgel.begin).abs2() > edgel_c*edgel_c*line_thicknes_param*line_thicknes_param //&&
             //(edgel.end - edgel.begin).abs2() < 4*edgel_c*edgel_c*line_thicknes_param*line_thicknes_param
             )
           {
