@@ -70,7 +70,6 @@ private:
   static const int imageBorderOffset = 25;
   CameraInfo::CameraID cameraID;
   
-  int heightOfHorizon;
   RingBuffer<Vector2d, 5> pointBuffer;
   RingBufferWithSum<double, 5> valueBuffer;
   RingBufferWithSum<double, 5> valueBufferY;

@@ -24,8 +24,7 @@
 
 GradientGoalDetector::GradientGoalDetector()
 : 
-  cameraID(CameraInfo::Bottom),
-  heightOfHorizon(0)
+  cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markPeaks", "mark found maximum u-v peaks in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_scanlines","..", false);  
@@ -66,7 +65,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     return;
   }
   
-  heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
+  int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
   if(heightOfHorizon > (int) getImage().height() - 10) 
   { 
