@@ -5,7 +5,7 @@
 
 using namespace naoth;
 
-void Serializer<TeamMessage>::serialize(const TeamMessage& representation, std::ostream& stream)
+void Serializer<TeamMessage::Data>::serialize(const TeamMessage::Data& representation, std::ostream& stream)
 {
   naothmessages::TeamMessage msg;
 
@@ -15,7 +15,7 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& representation, std::
   msg.SerializeToZeroCopyStream(&buf);
 }
 
-void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& representation)
+void Serializer<TeamMessage::Data>::deserialize(std::istream& stream, TeamMessage::Data& representation)
 {
   naothmessages::TeamMessage msg;
 

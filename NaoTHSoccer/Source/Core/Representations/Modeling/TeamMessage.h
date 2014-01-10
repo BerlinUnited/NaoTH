@@ -126,11 +126,11 @@ public:
 
 namespace naoth {
   template<>
-  class Serializer<TeamMessage>
+  class Serializer<TeamMessage::Data>
   {
   public:
-    static void serialize(const TeamMessage& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, TeamMessage& representation);
+    static void serialize(const TeamMessage::Data& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, TeamMessage::Data& representation);
   };
 }
 

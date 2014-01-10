@@ -2,6 +2,7 @@
 #include "TeamCommSender.h"
 
 #include <Tools/Debug/DebugRequest.h>
+#include <Messages/Representations.pb.h>
 
 using namespace std;
 
@@ -63,25 +64,26 @@ void TeamCommReceiver::handleMessage(const string& data, bool allowOwn)
 {
   // TODO: implement handleMessage
 
-//  naothmessages::TeamCommMessage msg;
-//  msg.ParseFromString(data);
+  naothmessages::TeamMessage msg;
+  msg.ParseFromString(data);
 
-//  unsigned int num = msg.playernumber();
-//  unsigned int teamnum = msg.teamnumber();
+  unsigned int num = msg.playernum();
+  unsigned int teamnum = msg.team();
 
-//  if ( teamnum == getPlayerInfo().gameData.teamNumber
-//       // ignore our own messages, we are adding it artficially later
-//       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
-//     )
-//  {
-//    TeamMessage::Data& content = getTeamMessage().data[num];
-//    content.frameInfo.setTime( getFrameInfo().getTime() );
-//    content.message = msg;
+  if ( teamnum == getPlayerInfo().gameData.teamNumber
+       // ignore our own messages, we are adding it artficially later
+       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
+     )
+  {
+    TeamMessage::Data& content = getTeamMessage().data[num];
+    content.frameInfo.setTime( getFrameInfo().getTime() );
+
+//    Serializer<TeamMessage::Data>::serialize(content, )
 
 //    if ( msg.has_opponent() && msg.opponent().number() )
 //    {
 //      // mark this opponent is updated
 //      getTeamMessage().lastFrameNumberHearOpp[msg.opponent().number()] = getFrameInfo().getFrameNumber();
 //    }
-//  }
+  }
 }
