@@ -818,6 +818,8 @@ public class NaoScp extends NaoScpMainFrame
     jButtonInitRobotSystem.setEnabled(enable);
     jButtonSetRobotNetwork.setEnabled(enable);
     jButtonRemoteKernelVideoReload.setEnabled(enable);
+    
+    btWriteToStick.setEnabled(enable);
   }
 
 /**
@@ -3252,33 +3254,41 @@ public class NaoScp extends NaoScpMainFrame
 
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
 
-        if(checkDirPath(true))
-        {
-            if(fileChooserStick.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+    if(checkDirPath(true) &&
+       fileChooserStick.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+    {
+        setFormEnabled(false);
+        clearLog();
+        new Thread(new Runnable() { public void run() 
+        { 
+            String usbStickPath = String.valueOf(fileChooserStick.getSelectedFile());
+
+            NaoScpConfig cfg = createDeployConfig();
+            actionInfo("Starting to copy files");
+            if(DeployUtils.assembleDeployDir(NaoScp.this, cfg, usbStickPath + "/deploy"))
             {
-                String usbStickPath = String.valueOf(fileChooserStick.getSelectedFile());
+              if(cfg.copyConfig) 
+              {
+                actionInfo("Configuring files on stick");
+                DeployUtils.configureUSBDeployDir(NaoScp.this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+              }
 
-                NaoScpConfig cfg = createDeployConfig();
-                actionInfo("Starting to copy files");
-                if(DeployUtils.assembleDeployDir(this, cfg, usbStickPath + "/deploy"))
-                {
-                    actionInfo("Configuring files on stick");
-                    DeployUtils.configureUSBDeployDir(this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
+              File scriptFile = new File(cfg.localSetupStickPath() + "/startBrainwashing.sh");
+              if(scriptFile.isFile())
+              {          
+                actionInfo("Copying brain wash script");
+                DeployUtils.copyFiles(NaoScp.this, scriptFile, new File(usbStickPath + "/startBrainwashing.sh"));
+              }
+              else
+              {
+                actionError("No brainwashing script found (should be " + scriptFile.getAbsolutePath() + ")");
+              }
 
-                    File scriptFile = new File(cfg.localSetupStickPath() + "/startBrainwashing.sh");
-                    if(scriptFile.isFile())
-                    {
-                        actionInfo("Copying brain wash script");
-                        DeployUtils.copyFiles(this, scriptFile, new File(usbStickPath + "/startBrainwashing.sh"));
-                    }
-                    else
-                    {
-                        actionError("No brainwashing script found (should be " + scriptFile.getAbsolutePath() + ")");
-                    }
-
-                    actionFinish("Finished");
-                }
-            }
+              actionFinish("Finished");
+              setFormEnabled(true);
+            }//end if
+        }//end run
+      }).start();
         }
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
