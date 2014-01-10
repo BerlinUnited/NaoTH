@@ -123,6 +123,9 @@ function add_gcc_ignore_pragmas(files)
 	
 	for i,v in ipairs(files) do
 		local f = io.open(v, "r")
+		if (f == nil) then
+			print ("ERROR: could not open file \"" .. v)
+		end
 		local content = f:read("*all")
 		f:close()
 		

@@ -22,32 +22,29 @@
 class DebugDrawingCanvas: public naoth::DrawingCanvas
 {
 public:
-  DebugDrawingCanvas()
+  DebugDrawingCanvas(int w, int h)
   : 
-    pixels(width()*height()),
-    coordinates(width()*height()),
-    numberOfPoints(0)
+    size(w,h),
+    numberOfPoints(0),
+    coordinates(w*h)
   {
-
-    for(unsigned int i = 0; i < pixels.size(); i++)
-    {
-        pixels[i].a = 0;
-        pixels[i].b = 0;
-        pixels[i].c = 0;
-    }
-  };
+    // reserve the vector for pixel values and initialize is to (0,0,0)
+    Pixel zeroPixel;
+    zeroPixel.a = zeroPixel.b = zeroPixel.c = 0;
+    pixels.resize(w*h, zeroPixel);
+  }
 
   ~DebugDrawingCanvas(){}
 
 public:
   virtual void drawPoint(
-    const unsigned int& x, 
-    const unsigned int& y,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c)
+    const int x, 
+    const int y,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c)
   {
-    if((unsigned int)numberOfPoints < width()*height())
+    if(numberOfPoints < coordinates.size())
     {
       coordinates[numberOfPoints].x = x;
       coordinates[numberOfPoints].y = y;
@@ -55,24 +52,16 @@ public:
       pixels[numberOfPoints].b = b;
       pixels[numberOfPoints].c = c;
       numberOfPoints++;
-    }//end if
+    }
   }
 
-  unsigned int width() const {
-    return naoth::IMAGE_WIDTH;
-  }
-
-  unsigned int height() const {
-    return naoth::IMAGE_HEIGHT;
-  }
-
-  void reset() {
-    numberOfPoints = 0;
-  }
+  unsigned int width() const { return size.x; }
+  unsigned int height() const { return size.y; }
+  void reset() { numberOfPoints = 0; }
 
   void drawToImage(DrawingCanvas& image)
   {
-    for(int i = 0; i < numberOfPoints; i++)
+    for(size_t i = 0; i < numberOfPoints; i++)
     {
       image.drawPoint(
         coordinates[i].x,
@@ -80,15 +69,15 @@ public:
         pixels[i].a,
         pixels[i].b,
         pixels[i].c);
-    }//end for
+    }
   }
 
   // drawing methods for the color classes
   inline void drawCircleToImage(
     ColorClasses::Color color, 
-    const unsigned int startX,
-    const unsigned int startY,
-    const unsigned int radius)
+    const int startX,
+    const int startY,
+    const int radius)
   {
     unsigned char yy, cb, cr;
     ColorClasses::colorClassToYCbCr(color, yy, cb, cr);
@@ -97,10 +86,10 @@ public:
 
   inline void drawRectToImage(
     ColorClasses::Color color, 
-    const unsigned int startX,
-    const unsigned int startY,
-    const unsigned int endX,
-    const unsigned int endY)
+    const int startX,
+    const int startY,
+    const int endX,
+    const int endY)
   {
     unsigned char yy, cb, cr;
     ColorClasses::colorClassToYCbCr(color, yy, cb, cr);
@@ -109,10 +98,10 @@ public:
 
   inline void drawLineToImage(
     ColorClasses::Color color, 
-    const unsigned int startX,
-    const unsigned int startY,
-    const unsigned int endX,
-    const unsigned int endY)
+    const int startX,
+    const int startY,
+    const int endX,
+    const int endY)
   {
     unsigned char yy, cb, cr;
     ColorClasses::colorClassToYCbCr(color, yy, cb, cr);
@@ -121,8 +110,8 @@ public:
 
   inline void drawPointToImage(
     ColorClasses::Color color, 
-    const unsigned int x,
-    const unsigned int y)
+    const int x,
+    const int y)
   {
     unsigned char yy, cb, cr;
     ColorClasses::colorClassToYCbCr(color, yy, cb, cr);
@@ -133,16 +122,17 @@ public:
     const unsigned char yy,
     const unsigned char cb,
     const unsigned char cr, 
-    const unsigned int x,
-    const unsigned int y)
+    const int x,
+    const int y)
   {
     naoth::ImageDrawings::drawPointToImage(*this, x, y, yy, cb, cr);
   }
 
 private:
+  Vector2i size; // the size of the canvas (x ~ width, y ~ height)
+  size_t numberOfPoints; // the number of points currently stored in the 'coordinates'
   std::vector<Pixel> pixels;
-  std::vector<Vector2<unsigned int> > coordinates;
-  int numberOfPoints;
+  std::vector<Vector2i> coordinates;
 };
 
 
@@ -150,8 +140,11 @@ class DebugBottomImageDrawings : public naoth::Singleton<DebugBottomImageDrawing
 {
 protected:
   friend class naoth::Singleton<DebugBottomImageDrawings>;
+  
   DebugBottomImageDrawings()
-    : currentCanvas(&canvasBottom)
+    : canvasTop(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT),
+      canvasBottom(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT),
+      currentCanvas(&canvasBottom)
   {
   }
 
@@ -209,6 +202,7 @@ class DebugTopImageDrawings : public naoth::Singleton<DebugTopImageDrawings>, pu
 {
 protected:
   friend class naoth::Singleton<DebugTopImageDrawings>;
+  DebugTopImageDrawings() : DebugDrawingCanvas(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT) {}
 };
 
 #ifdef DEBUG

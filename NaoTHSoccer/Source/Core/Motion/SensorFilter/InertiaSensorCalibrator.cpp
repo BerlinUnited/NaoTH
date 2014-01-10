@@ -126,7 +126,7 @@ void InertiaSensorCalibrator::execute()
   {
     // add collection within the time frame to the collection buffer
     if(stableStartTime && getFrameInfo().getTimeSince(stableStartTime) > (int)timeFrame &&
-       inertialValues.getNumberOfEntries())
+       inertialValues.size())
     {
       //ASSERT(collections.getNumberOfEntries() < collections.getMaxEntries());
       collections.add(Collection(inertialValues.getAverage(),
@@ -143,7 +143,7 @@ void InertiaSensorCalibrator::execute()
     collectionStartTime = 0;
 
     // look if there are any useful buffered collections
-    for(int i = collections.getNumberOfEntries() - 1; i >= 0; --i)
+    for(int i = collections.size() - 1; i >= 0; --i)
     {
       const Collection& collection(collections.getEntry(i));
       if(getFrameInfo().getTimeSince(collection.timeStamp) < (int)timeFrame) {

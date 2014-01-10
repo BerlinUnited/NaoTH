@@ -108,13 +108,13 @@ Cognition::~Cognition()
 
 
 #define REGISTER_MODULE(module) \
-  g_message("Register "#module);\
+  std::cout << "[Cognition] Register " << #module << std::endl;\
   registerModule<module>(std::string(#module))
 
 
 void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  g_message("Cognition register start");
+  std::cout << "[Cognition] Cognition register start" << std::endl;
   // register of the modules
 
   // input module
@@ -234,16 +234,16 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
     if(config.hasKey("modules", *name)) {    
       active = config.getBool("modules", *name);      
     }
-    setModuleEnabled(*name, active);
     if(active) {
-      g_message("activating module %s", (*name).c_str());
+      std::cout << "[Cognition] activating module " << *name << std::endl;
     }
+    setModuleEnabled(*name, active);
   }//end for
 
   // auto-generate the execution list
   //calculateExecutionList();
 
-  g_message("Cognition register end");
+  std::cout << "[Cognition] register end" << std::endl;
 
   stopwatch.start();
 }//end init
@@ -283,8 +283,9 @@ void Cognition::call()
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
   DebugDrawings::getInstance().update();
+  DebugDrawings3D::getInstance().update();
+
   DebugBottomImageDrawings::getInstance().reset();
   DebugTopImageDrawings::getInstance().reset();
-  DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call

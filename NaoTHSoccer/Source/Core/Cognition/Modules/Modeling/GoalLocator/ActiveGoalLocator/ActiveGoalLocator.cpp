@@ -448,7 +448,7 @@ void ActiveGoalLocator::debugDrawings()
     //std::cout << "size" << theSampleBuffer.size() << std::endl;
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 50);
-    for (unsigned int i = 0; i < theSampleBuffer.size(); i++) 
+    for (int i = 0; i < theSampleBuffer.size(); i++) 
     {
       const AGLBSample& sample = theSampleBuffer[i];
       CIRCLE(sample.translation.x, sample.translation.y, 20);
@@ -460,9 +460,9 @@ void ActiveGoalLocator::debugDrawings()
 
 void ActiveGoalLocator::debugPlots() 
 {
-  for(unsigned int x = 0; x < postHypotheses.size(); x++) 
+  for(size_t x = 0; x < (size_t)postHypotheses.size(); x++)
   {
-    string id = convertIntToString(x);
+    string id = convertIntToString((int)x);
     double totalWeighting = postHypotheses[x].sampleSet.lastTotalWeighting;
     double averageWeighting = 0;
     if (postHypotheses[x].sampleSet.size() > 0) {
@@ -480,7 +480,7 @@ void ActiveGoalLocator::debugPlots()
 
 void ActiveGoalLocator::debugStdOut() 
 {
-  for(unsigned int i = 0; i < postHypotheses.size(); i++) {
+  for(size_t i = 0; i < postHypotheses.size(); i++) {
     if (postHypotheses[i].sampleSet.getIsValid()) {
       DOUT( "Filter '" << i << "' is Valid      " << std::endl );
     }
@@ -489,7 +489,7 @@ void ActiveGoalLocator::debugStdOut()
 
 void ActiveGoalLocator::updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const
 {
-  for (unsigned int i = 0; i < sampleSet.size(); i++) 
+  for (int i = 0; i < sampleSet.size(); i++) 
   {
     // move each particle with odometry
     sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
@@ -522,7 +522,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
   if(largestClusterID < 0) return;
 
   AGLSampleBuffer tmpSampleSetBuffer; //copy
-  for (int i = 0; i < sampleSetBuffer.getNumberOfEntries(); i++) {
+  for (int i = 0; i < sampleSetBuffer.size(); i++) {
     tmpSampleSetBuffer.add(sampleSetBuffer[i]);
   }
 
@@ -531,11 +531,11 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
   //already known that sampleSet is empty!
   int n = 0;
   Vector2<double> sum;
-  for (int i = 0; i < tmpSampleSetBuffer.getNumberOfEntries(); i++) 
+  for (int i = 0; i < tmpSampleSetBuffer.size(); i++) 
   {
     //search all particles with ID of largest cluster and add them
     //TODO make n to param
-    if (n < tmpSampleSetBuffer.getNumberOfEntries() && n < (int)sampleSet.size() &&
+    if (n < tmpSampleSetBuffer.size() && n < (int)sampleSet.size() &&
         tmpSampleSetBuffer[i].cluster == largestClusterID) 
     {
       AGLSample tmpSample;
@@ -563,7 +563,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
 
 void ActiveGoalLocator::removeSamplesByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int maxFrames) const
 {
-  if( sampleSet.getNumberOfEntries() > 0 &&
+  if( sampleSet.size() > 0 &&
       getFrameInfo().getFrameNumber() - sampleSet.first().frameNumber > maxFrames)
   {
     sampleSet.removeFirst();

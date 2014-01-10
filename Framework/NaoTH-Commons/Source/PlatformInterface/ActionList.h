@@ -12,6 +12,13 @@
 #include <cassert>
 #include <typeinfo>
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
+
 namespace naoth
 {
 
@@ -42,7 +49,7 @@ public:
 
   virtual ~ActionList()
   {
-    std::cout << "destruct ActionList" << std::endl;
+    PRINT_DEBUG("destruct ActionList");
     // delete all actions
     for(ActionListT::iterator iter = actions.begin(); iter != actions.end(); ++iter)
     {
@@ -125,7 +132,7 @@ public:
   */
   virtual ~TypedActionCreatorMap()
   {
-    std::cout << "destruct TypedActionCreatorMap " << std::endl;
+    PRINT_DEBUG("destruct TypedActionCreatorMap ");
 
     for(TypedActionCreatorMapT::iterator iter = registeredActions.begin(); iter != registeredActions.end(); ++iter)
     {

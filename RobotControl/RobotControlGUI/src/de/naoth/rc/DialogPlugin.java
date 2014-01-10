@@ -31,7 +31,11 @@ public class DialogPlugin<T extends AbstractDialog>
             try {
                 instance = (T)(getInstanceClass().newInstance());
                 instance.init();
-            }catch(Exception ex){}
+            }catch(Exception ex)
+            {
+                System.err.println("Could not load the dialog " + getInstanceClass().getSimpleName());
+                ex.printStackTrace(System.err);
+            }
         }
         return instance;
     }

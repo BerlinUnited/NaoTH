@@ -486,7 +486,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
     if(thisPixelColor == ColorClasses::green || thisPixelColor == ColorClasses::orange) // ignore the ball
     {
-      double greenDensity = movingWindow.getSum()/movingWindow.getNumberOfEntries();
+      double greenDensity = movingWindow.getSum()/movingWindow.size();
       if(thisPixelColor == ColorClasses::green && greenDensity > 0.3)
       {
         greenValue += thisPixelBrightness;

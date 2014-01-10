@@ -16,7 +16,7 @@ public interface CommandSender
   public void handleResponse(byte[] result, Command originalCommand);
   
   /**
-   * Handle an error that occured when communicating to the robot.
+   * Handle an error that occurred when communicating to the robot.
    * @param code The error code that was sent by the robot.
    */
   public void handleError(int code);

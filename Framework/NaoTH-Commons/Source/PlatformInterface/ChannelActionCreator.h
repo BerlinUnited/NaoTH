@@ -13,6 +13,13 @@
 
 #include <sstream>
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
+
 namespace naoth
 {
 
@@ -36,7 +43,7 @@ public:
 
   ~OutputChanelAction()
   {
-    std::cout << "destruct OutputChanelAction " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct OutputChanelAction " << typeid(T).name());
   }
       
   void execute()
@@ -68,7 +75,7 @@ public:
 
   ~InputChanelAction()
   {
-    std::cout << "destruct OutputChanelAction " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct OutputChanelAction " << typeid(T).name());
   }
       
   void execute()
@@ -107,7 +114,7 @@ public:
 
   ~BufferedInputChanelAction()
   {
-    std::cout << "destruct OutputChanelAction " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct OutputChanelAction " << typeid(T).name());
   }
 
   void execute()

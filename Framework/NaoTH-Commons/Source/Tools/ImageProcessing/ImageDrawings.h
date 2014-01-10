@@ -20,11 +20,11 @@ class DrawingCanvas
 public:
   virtual void drawPoint
   (
-    const unsigned int& x,
-    const unsigned int& y,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c
+    const int x,
+    const int y,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c
   ) = 0;
 
   virtual ~DrawingCanvas(){}
@@ -48,12 +48,12 @@ public:
   void static drawCircleToImage
   (
     DrawingCanvas& image,
-    const unsigned int& startX,
-    const unsigned int& startY,
-    const unsigned int& radius,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c
+    const int startX,
+    const int startY,
+    const int radius,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c
   )
   {
     int xC = 0; 
@@ -98,16 +98,16 @@ public:
   void static drawRectToImage
   (
     DrawingCanvas& image,
-    const unsigned int& startX,
-    const unsigned int& startY,
-    const unsigned int& endX,
-    const unsigned int& endY,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c
+    const int startX,
+    const int startY,
+    const int endX,
+    const int endY,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c
   )
   {
-    unsigned int xstart, ystart, xend, yend;
+    int xstart, ystart, xend, yend;
 
     if (startX <= endX)
     {
@@ -134,11 +134,11 @@ public:
 
     //if (x < image.resolutionWidth && y < image.resolutionHeight)
     
-    if (ystart < image.height())
+    if (ystart < (int)image.height())
     {
-      for (unsigned int i = xstart; i <= xend; i++)
+      for (int i = xstart; i <= xend; i++)
       {
-        if (i < image.width())
+        if (i < (int)image.width())
         {
           drawPointToImage(image, i, ystart, a, b, c);
           drawPointToImage(image, i, yend, a, b, c);
@@ -146,11 +146,11 @@ public:
       }
     }//end if
 
-    if (xstart < image.width())
+    if (xstart < (int)image.width())
     {
-      for (unsigned int i = ystart; i <= yend; i++)
+      for (int i = ystart; i <= yend; i++)
       {
-        if (i < image.height())
+        if (i < (int)image.height())
         {
           drawPointToImage(image, xstart, i, a, b, c);
           drawPointToImage(image, xend, i, a, b, c);
@@ -166,30 +166,30 @@ public:
   void static drawLineToImage
   (
     DrawingCanvas& image,
-    const unsigned int& startX,
-    const unsigned int& startY,
-    const unsigned int& endX,
-    const unsigned int& endY,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c
+    const int startX,
+    const int startY,
+    const int endX,
+    const int endY,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c
   )
   {
     int xstart, ystart, xend, yend;
 
     if (startX <= endX)
     {
-      xstart = (int)startX;
-      ystart = (int)startY;
-      xend   = (int)endX;
-      yend   = (int)endY;
+      xstart = startX;
+      ystart = startY;
+      xend   = endX;
+      yend   = endY;
     }
     else
     {
-      xstart = (int)endX;
-      ystart = (int)endY;
-      xend   = (int)startX;
-      yend   = (int)startY;
+      xstart = endX;
+      ystart = endY;
+      xend   = startX;
+      yend   = startY;
     }
 
     int dx = xend-xstart;
@@ -213,7 +213,7 @@ public:
             y = y + 1;
             fehler = fehler + dx;
            }
-           drawPointToImage(image, (unsigned int)x, (unsigned int)y, a, b, c);
+           drawPointToImage(image, x, y, a, b, c);
         }
       }
       else
@@ -227,7 +227,7 @@ public:
             y = y - 1;
             fehler = fehler + dx;
            }
-           drawPointToImage(image, (unsigned int)x, (unsigned int)y, a, b, c);
+           drawPointToImage(image, x, y, a, b, c);
         }
       }
     }
@@ -247,7 +247,7 @@ public:
             x = x + 1;
             fehler = fehler + dy;
            }
-           drawPointToImage(image, (unsigned int)x, (unsigned int)y, a, b, c);
+           drawPointToImage(image, x, y, a, b, c);
         }
       }
       else
@@ -261,7 +261,7 @@ public:
             x = x + 1;
             fehler = fehler - dy;
            }
-           drawPointToImage(image, (unsigned int)x, (unsigned int)y, a, b, c);
+           drawPointToImage(image, x, y, a, b, c);
         }
       }
     }//end else
@@ -273,13 +273,13 @@ public:
    */
   inline static void drawPointToImage(
     DrawingCanvas& image, 
-    const unsigned int& x, 
-    const unsigned int& y,
-    const unsigned char& a,
-    const unsigned char& b,
-    const unsigned char& c)
+    const int x, 
+    const int y,
+    const unsigned char a,
+    const unsigned char b,
+    const unsigned char c)
   { 
-    if (x < image.width() && y < image.height())
+    if (x >= 0 && y >=0 && x < (int)image.width() && y < (int)image.height())
     {
       image.drawPoint(x,y,a,b,c);
     }//end if
@@ -290,21 +290,17 @@ public:
   //visualises the Coordinate System on the current image
   void static drawCoordinateSystemToImage(DrawingCanvas& image)
   {
-    //int height = CameraInfo::resolutionWidth / 2;
-
-    for( unsigned int i = 0; i < image.width() / 2; ++i)
-    {
+    for( int i = 0; i < (int)image.width() / 2; ++i) {
       image.drawPoint(i,5,0xFF,0x0,0x0);
-    }//end for
+    }
 
-    for( unsigned int i = 0; i < image.height() / 2; ++i)
-    {
+    for( int i = 0; i < (int)image.height() / 2; ++i) {
       image.drawPoint(5,i,0xFF,0x0,0x0);
-    }//end for
-  }//end drawCoordinateSystemToImage
+    }
+  }
 
 };//end class ImageDrawings
 }//end namespace naoth
 
-#endif // __ImageDrawings_H_
+#endif // _ImageDrawings_H_
 

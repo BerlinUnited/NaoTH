@@ -66,7 +66,7 @@ void PerceptProjector::execute()
 
   // the buffer is full
   
-  if(offsetBuffer.getNumberOfEntries() == offsetBuffer.getMaxEntries())
+  if(offsetBuffer.size() == offsetBuffer.getMaxEntries())
   {
     offset = averageOffset;
     getCameraMatrixOffset().offset = offset;

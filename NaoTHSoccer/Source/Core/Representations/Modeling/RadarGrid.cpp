@@ -112,7 +112,7 @@ void RadarGrid::addNonObstaclePoint(const Vector2d& value)
       if (useBuffer)
       {
         // we have at least 2 values in buffer
-        if(it->second.buffer.getNumberOfEntries() > 1)
+        if(it->second.buffer.size() > 1)
         {
           it->second.buffer.removeFirst();
           it->second.timeStamp = currentTime;
@@ -210,7 +210,7 @@ void RadarGrid::ageGrid()
     if (useBuffer && (currentTime - it->second.timeStamp >= timeToForgetWithBuffer))
     {
       // we have at least 2 values in buffer
-      if(it->second.buffer.getNumberOfEntries() > 1)
+      if(it->second.buffer.size() > 1)
       {
         it->second.buffer.removeFirst();
         it->second.timeStamp = currentTime;
@@ -253,7 +253,7 @@ void RadarGrid::updateGridByOdometry(Pose2D& odometryDelta)
       {
         // update buffer with odometry
         newCell.buffer = it->second.buffer;
-        for(int i = 0; i < newCell.buffer.getNumberOfEntries(); i++)
+        for(int i = 0; i < newCell.buffer.size(); i++)
         {
           newCell.buffer[i] = applyOdometry(it->second.buffer[i], odometryDelta);
         }
@@ -294,11 +294,11 @@ Vector2d RadarGrid::applyOdometry(Vector2d& value, Pose2D& odometryDelta)
 void RadarGrid::getSumAndAverage( RingBuffer<Vector2d, bufferCapacity>& buffer, Vector2d& sum, Vector2d& average ) const
 {
   sum = Vector2d(0.0, 0.0);
-  for (int i = 0; i < buffer.getNumberOfEntries(); i++)
+  for (int i = 0; i < buffer.size(); i++)
   {
     sum += buffer.getEntry(i);
   }
-  average = sum / buffer.getNumberOfEntries();
+  average = sum / buffer.size();
 }// end getSumAndAverage
 
 
@@ -353,7 +353,7 @@ void RadarGrid::drawFieldContext()
     if (useBuffer)
     {
       PEN("434343", 3);
-      for (int i = 0; i < CIT->second.buffer.getNumberOfEntries(); i++)
+      for (int i = 0; i < CIT->second.buffer.size(); i++)
       {
         CIRCLE(CIT->second.buffer[i].x, CIT->second.buffer[i].y, 10);
       }

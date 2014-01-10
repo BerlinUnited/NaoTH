@@ -62,8 +62,8 @@ public:
   void addText3D(ColorClasses::Color color, const std::string& text, const Vector3<double>& p);
   void addText3D(const char* color, const std::string& text, const Vector3<double>& p);
 
-  void addCamera(const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
-  void addCamera(const Pose3D& rp, const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
+  void addCamera(const std::string& id, const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
+  void addCamera(const std::string& id, const Pose3D& rp, const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
 private:
   std::stringstream outStream;
 

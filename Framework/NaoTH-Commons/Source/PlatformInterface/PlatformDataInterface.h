@@ -11,6 +11,12 @@
 
 #include <typeinfo>
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
 
 namespace naoth
 {
@@ -40,7 +46,7 @@ public:
 
   ~DataAction()
   {
-    std::cout << "destruct DataAction<" << A << "> " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct DataAction<" << A << "> " << typeid(T).name());
   }
 
   void execute(){ std::cerr << "no action " << A << " for " << typeid(data).name() << std::endl; }
@@ -66,7 +72,7 @@ public:
 
   ~DataAction()
   {
-    std::cout << "destruct DataAction<DATA_INPUT_ACTION> " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct DataAction<DATA_INPUT_ACTION> " << typeid(T).name());
   }
 
   virtual void execute(){ platform.get(data); }
@@ -92,7 +98,7 @@ public:
 
   ~DataAction()
   {
-    std::cout << "destruct DataAction<DATA_OUTPUT_ACTION> " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct DataAction<DATA_OUTPUT_ACTION> " << typeid(T).name());
   }
 
   virtual void execute(){ platform.set(data); }
@@ -119,7 +125,7 @@ public:
 
   ~DataActionCreator()
   {
-    std::cout << "destruct DataActionCreator " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("destruct DataActionCreator " << typeid(T).name());
   }
 
   virtual AbstractAction* createAction(T& data)
@@ -147,30 +153,24 @@ protected:
 
   ~PlatformDataInterface()
   {
-    std::cout << "destruct PlatformDataInterface" << std::endl;
+    PRINT_DEBUG("destruct PlatformDataInterface");
   }
 
-  /**
-    *
-    */
   template<class T, class PT>
   void registerInput(PT& platform)
   {
-    std::cout << "platform register input: " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("platform register input: " << typeid(T).name());
     TypedActionCreator<T>* creator = new DataActionCreator<DATA_INPUT_ACTION,T,PT>(platform);
     environment.inputActions.add(creator);
-  }//end registerInput
+  }
 
-  /**
-    *
-    */
   template<class T, class PT>
   void registerOutput(PT& platform)
   {
-    std::cout << "platform register output: " << typeid(T).name() << std::endl;
+    PRINT_DEBUG("platform register output: " << typeid(T).name());
     TypedActionCreator<T>* creator = new DataActionCreator<DATA_OUTPUT_ACTION,T,PT>(platform);
     environment.outputActions.add(creator);
-  }//end registerOutput
+  }
 
 };//end class PlatformDataInterface
 

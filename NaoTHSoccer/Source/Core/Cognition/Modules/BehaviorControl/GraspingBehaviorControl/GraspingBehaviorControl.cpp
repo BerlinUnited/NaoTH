@@ -368,7 +368,7 @@ void GraspingBehaviorControl::track_and_take_object()
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
       getHeadMotionRequest().targetPointInTheWorld = getBallPercept().sizeBasedRelativePosition;//theGraspingBallModel.position;
         
-      if (ballBuffer.getNumberOfEntries() >= 40) 
+      if (ballBuffer.size() >= 40) 
       {
 
         getMotionRequest().graspRequest.graspingPoint = getBallPercept().sizeBasedRelativePosition;//theGraspingBallModel.position;
@@ -380,13 +380,13 @@ void GraspingBehaviorControl::track_and_take_object()
         //debug
         //check the longest error between mean and ballBuffer entries
         double biggestError = 0;
-        for (int i = 1; i < ballBuffer.getNumberOfEntries(); i++)
+        for (int i = 1; i < ballBuffer.size(); i++)
         {
           //biggestError += (ballBuffer.getMean() - ballBuffer.buffer[i]).abs();
           biggestError += (ballBuffer[i-1] - ballBuffer[i]).abs();
         }
 
-        biggestError /= ((double)ballBuffer.getNumberOfEntries());
+        biggestError /= ((double)ballBuffer.size());
 
         PLOT("GraspBehaviorControl:track_the_object:ball_motion_radius", biggestError);
 

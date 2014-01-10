@@ -29,6 +29,9 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/BallModel.h"
 
+#include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/RobotPose.h"
+
 #include "Tools/Debug/Logger.h"
 
 using namespace naoth;
@@ -46,6 +49,10 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(RobotPose)
   REQUIRE(KinematicChain)
   REQUIRE(BallModel)
+
+  PROVIDE(CameraInfoParameter)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   
   PROVIDE(ColorTable64)
   PROVIDE(ColorClassificationModel)

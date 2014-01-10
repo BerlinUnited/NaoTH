@@ -91,13 +91,13 @@ void UltraSoundObstacleLocator::drawObstacleModel()
     FIELD_DRAWING_CONTEXT;
     
     PEN("FF0000", 25);
-    for(int i = 0; i < bufferLeft.getNumberOfEntries(); i++) {
+    for(int i = 0; i < bufferLeft.size(); i++) {
       double dist = bufferLeft[i];
       CIRCLE( dist, dist, 10);
     }
 
     PEN("0000FF", 25);
-    for(int i = 0; i < bufferRight.getNumberOfEntries(); i++) {
+    for(int i = 0; i < bufferRight.size(); i++) {
       double dist = bufferRight[i];
       CIRCLE( dist, -dist, 10);
     }
@@ -176,13 +176,13 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   
   ObstacleModel& model = getObstacleModel();
 
-  if(bufferLeft.getNumberOfEntries() == 0) {
+  if(bufferLeft.size() == 0) {
     model.leftDistance = invalidDistanceValue;
   } else {
     model.leftDistance = bufferLeft.getMedian();
   }
 
-  if(bufferRight.getNumberOfEntries() == 0) {
+  if(bufferRight.size() == 0) {
     model.rightDistance = invalidDistanceValue;
   } else {
     model.rightDistance = bufferRight.getMedian();

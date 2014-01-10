@@ -60,10 +60,6 @@ namespace sensor("Sensor Symbols") {
   /** The current frame number (Cognition) */
   float input platform.frameNumber;
 
-  /** the count indicates failed buffer of camera */
-  float input sensor.camera.buffer_failed_count;
-  bool output sensor.camera.reset;
-
   bool input button.bumper.pressed.left;
 
   /** path planner */

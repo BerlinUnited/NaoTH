@@ -6,7 +6,6 @@
  */
 
 #include "SensorSymbols.h"
-//#include "Representations/Infrastructure/CameraSettings.h"
 
 void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 {
@@ -57,24 +56,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   // target to control the path
   engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
-
-  /*engine.registerDecimalInputSymbol("obstacle.radial.direction_free", &getObstacleRadialDirection_free);
-  engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.direction_free", "obstacle.radial.direction_free.deg", &directionParameter);
-  engine.registerDecimalInputSymbol("obstacle.radial.passageway_free", &getObstacleRadialPassageway_free);
-  engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.passageway_free", "obstacle.radial.passageway_free.deg1", &passagewayParameter1);
-  engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.passageway_free", "obstacle.radial.passageway_free.deg2", &passagewayParameter2);
-  engine.registerDecimalInputSymbol("obstacle.radial.obstacle_left", &getObstacleRadialObstacle_left);
-  engine.registerDecimalInputSymbol("obstacle.radial.obstacle_left", &getObstacleRadialObstacle_right);
-  engine.registerDecimalInputSymbol("obstacle.radial.obstacle_left", &getObstacleRadialObstacle_front);*/
   
-  engine.registerDecimalInputSymbol("sensor.camera.buffer_failed_count", &getCameraBufferFailedCount);
-  engine.registerBooleanOutputSymbol("sensor.camera.reset", &resetingCamera);
-
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
-  
-
-  isCameraReseting = false;
-  resetingCamera = false;
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -85,19 +68,8 @@ SensorSymbols::~SensorSymbols()
 
 void SensorSymbols::execute()
 {
-  /*
-  if(forceGetCameraSettings)
-  {
-    cameraSettingsRequest.queryCameraSettings = true;
-    forceGetCameraSettingsOldValue = true;
-  }
-  else if(forceGetCameraSettingsOldValue == true)
-  {
-    cameraSettingsRequest.queryCameraSettings = false;
-    forceGetCameraSettingsOldValue = false;
-  }
-  */
-}//end update
+
+}//end execute
 
 
 bool SensorSymbols::getBumberLeftPressed()
@@ -109,7 +81,7 @@ bool SensorSymbols::getBumberLeftPressed()
 double SensorSymbols::getIRButtonNumber()
 {
     return (double)(theInstance->irreceiveData.data[IRReceiveData::RightRCByte2]);
-}//end getIRButtonNumber
+}
 
 double SensorSymbols::getFrameNumber()
 {
@@ -120,7 +92,7 @@ double SensorSymbols::getFrameNumber()
 int SensorSymbols::getFallDownState()
 {
   return (int)(theInstance->bodyState.fall_down_state);
-}//end getFallDownState
+}
 
 // returns whether some data is received or not
 double SensorSymbols::simplePassLeftSensor()
@@ -155,26 +127,21 @@ double SensorSymbols::simplePassRightSensor()
 double SensorSymbols::getObstacleDistance()
 {
   return theInstance->obstacleModel.frontDistance;
-}//end getObstacleDistance
+}
 
 double SensorSymbols::getObstacleDistanceLeft()
 {
   return theInstance->obstacleModel.leftDistance;
-}//end getObstacleDistanceLeft
+}
 
 double SensorSymbols::getObstacleDistanceRight()
 {
   return theInstance->obstacleModel.rightDistance;
-}//end getObstacleDistanceRight
+}
 
 double SensorSymbols::getBlockedTime()
 {
   return theInstance->obstacleModel.blockedTime;
-}//end getBlockedTime
-
-double SensorSymbols::getCameraBufferFailedCount()
-{
-  return (theInstance->image.possibleImageStuck)?1:0;
 }
 
 double SensorSymbols::getInertialSensorX()
@@ -200,7 +167,7 @@ double SensorSymbols::getTargetPointY()
 double SensorSymbols::getTimeNoNodeExpandable()
 {
   return theInstance->path.getTimeNoNodeExpandable();
-}//end getBallTimeSeen
+}
 
 void SensorSymbols::setTargetpointX(double targetX)
 {

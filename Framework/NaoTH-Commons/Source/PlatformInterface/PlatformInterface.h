@@ -16,6 +16,12 @@
 #include "MessageQueueHandler.h"
 #include "ChannelActionCreator.h"
 
+#undef PRINT_DEBUG
+#ifdef DEBUG_PLATFORM
+#  define PRINT_DEBUG(m) std::err << m << std::endl
+#else
+#  define PRINT_DEBUG(m) ((void)0)
+#endif
 
 // EXPERIMENTAL
 class Cognition;
@@ -60,14 +66,14 @@ public:
     PlatformBase(name, basicTimeStep),
     PlatformDataInterface(environment)
   {
-    std::cout << "NaoTH " << getName() << " starting..." << std::endl;
+    PRINT_DEBUG("[PlatformInterface] NaoTH " << getName() << " starting...");
       
     //
     environment.channelActionCreator.setMessageQueueHandler(this);
   }
 
   virtual ~PlatformInterface() {
-    std::cout << "destruct PlatformInterface" << std::endl;
+    PRINT_DEBUG("[PlatformInterface] destruct PlatformInterface");
   }
 
   /**
@@ -80,10 +86,10 @@ public:
     cognitionProsess.callback = cognition;
 
     if(cognition != NULL) {
-      std::cout << "register COGNITION callback" << std::endl;
+      PRINT_DEBUG("[PlatformInterface] register COGNITION callback");
       cognition->init(processInterface, *this);
     } else {
-      std::cerr << "COGNITION callback is NULL" << std::endl;
+      std::cerr << "[PlatformInterface] COGNITION callback is NULL" << std::endl;
     }
   }//end registerCognition
 
@@ -98,10 +104,10 @@ public:
     motionProsess.callback = motion;
 
     if(motion != NULL) {
-      std::cerr << "register MOTION callback" << std::endl;
+      PRINT_DEBUG("[PlatformInterface] register MOTION callback");
       motion->init(processInterface, *this);
     } else {
-      std::cerr << "MOTION callback is NULL" << std::endl;
+      std::cerr << "[PlatformInterface] MOTION callback is NULL" << std::endl;
     }
   }//end registerMotion
 

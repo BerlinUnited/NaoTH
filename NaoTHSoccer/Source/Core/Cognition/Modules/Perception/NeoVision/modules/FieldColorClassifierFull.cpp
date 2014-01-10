@@ -441,7 +441,7 @@ void FieldColorClassifierFull::execute()
       getFieldColorPercept().indexY = maxWeightedIndexY;
     }
 
-    bool cbChanged = IndexCbBuffer.getNumberOfEntries() < IndexCbBuffer.getMaxEntries() 
+    bool cbChanged = IndexCbBuffer.size() < IndexCbBuffer.getMaxEntries() 
           || abs(IndexCbBuffer.getAverage() - (int) maxWeightedIndexCb) < getBaseColorRegionPercept().meanEnv.y / 10
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
@@ -463,7 +463,7 @@ void FieldColorClassifierFull::execute()
       getFieldColorPercept().maxRateU = maxWeightedCb;
     }
 
-    bool crChanged = IndexCrBuffer.getNumberOfEntries() < IndexCrBuffer.getMaxEntries() 
+    bool crChanged = IndexCrBuffer.size() < IndexCrBuffer.getMaxEntries() 
           || abs(IndexCrBuffer.getAverage() - (int) maxWeightedIndexCr) < getBaseColorRegionPercept().meanEnv.y / 20
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
@@ -523,7 +523,7 @@ void FieldColorClassifierFull::execute()
       getFieldColorPerceptTop().indexY = maxWeightedIndexTopY;
     }
 
-    bool cbChanged = IndexCbBufferTop.getNumberOfEntries() < IndexCbBufferTop.getMaxEntries() 
+    bool cbChanged = IndexCbBufferTop.size() < IndexCbBufferTop.getMaxEntries() 
           || abs(IndexCbBufferTop.getAverage() - (int) maxWeightedIndexTopCb) < getBaseColorRegionPerceptTop().meanEnv.y / 10
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 
@@ -545,7 +545,7 @@ void FieldColorClassifierFull::execute()
       getFieldColorPerceptTop().maxRateU = maxWeightedTopCb;
     }
 
-    bool crChanged = IndexCrBufferTop.getNumberOfEntries() < IndexCrBufferTop.getMaxEntries() 
+    bool crChanged = IndexCrBufferTop.size() < IndexCrBufferTop.getMaxEntries() 
           || abs(IndexCrBufferTop.getAverage() - (int) maxWeightedIndexTopCr) < getBaseColorRegionPerceptTop().meanEnv.y / 20
           || lastFrame.getFrameNumber() + 30 <= getFrameInfo().getFrameNumber();
 

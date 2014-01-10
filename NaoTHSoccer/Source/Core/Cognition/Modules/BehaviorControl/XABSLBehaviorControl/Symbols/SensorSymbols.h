@@ -11,7 +11,6 @@
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
-#include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/GyrometerData.h"
@@ -46,7 +45,6 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(Image)
   REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
-
   REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols)
 
@@ -67,11 +65,7 @@ public:
     collisionModel(getCollisionModel()),
     radarGrid(getRadarGrid()),
     path(getPath()),
-    image(getImage()),
-    forceGetCameraSettings(false),
-    forceGetCameraSettingsOldValue(false),
-    resetingCamera(false),
-    isCameraReseting(false)
+    image(getImage())
   {
     theInstance = this;
   }
@@ -98,9 +92,6 @@ private:
   Path& path;
   Image const& image;
 
-  bool forceGetCameraSettings;
-  bool forceGetCameraSettingsOldValue;
-
   static SensorSymbols* theInstance;
 
   //get-method
@@ -124,9 +115,6 @@ private:
   static void setTargetpointX(double targetX);
   static void setTargetpointY(double targetY);
 
-  static double getCameraBufferFailedCount();
-  bool resetingCamera;
-  bool isCameraReseting;
   static double getInertialSensorX();
   static double getInertialSensorY();
 
