@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/Communication/RCTC/TeamMessage.h"
 
 namespace naoth
 {

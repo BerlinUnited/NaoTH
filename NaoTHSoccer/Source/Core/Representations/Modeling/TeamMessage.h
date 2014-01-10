@@ -13,9 +13,11 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
+#include "Tools/DataStructures/Serializer.h"
 
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+
 
 #include "Messages/Messages.pb.h"
 
@@ -121,6 +123,16 @@ public:
 
   }//end print
 };
+
+namespace naoth {
+  template<>
+  class Serializer<TeamMessage>
+  {
+  public:
+    static void serialize(const TeamMessage& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, TeamMessage& representation);
+  };
+}
 
 #endif  /* _TEAMMESSAGE_H */
 
