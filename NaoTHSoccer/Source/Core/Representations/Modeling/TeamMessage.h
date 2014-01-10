@@ -8,8 +8,11 @@
 #ifndef _TEAMMESSAGE_H
 #define _TEAMMESSAGE_H
 
+#include <vector>
+
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
+#include "Tools/Math/Pose2D.h"
 
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -23,12 +26,55 @@ public:
 
   TeamMessage()
   {
+  }
+
+  struct Opponent
+  {
+    int playerNum;
+    Pose2D poseOnField;
   };
 
   struct Data
   {
     naoth::FrameInfo frameInfo;
-    naothmessages::TeamCommMessage message;
+
+    unsigned int playerNum;
+    unsigned int team;
+
+    /**
+     * @brief Own robot pose
+     */
+    Pose2D pose;
+    /**
+     * @brief milliseconds since this robot last saw the ball.
+     * -1 if we haven't seen it
+     */
+    int ballAge;
+    /**
+     * @brief position of ball relative to the robot
+     * coordinates in millimeters
+     * 0,0 is in centre of the robot
+     */
+    Vector2d ballPosition;
+    /**
+     * @brief velocity of the ball
+     */
+    Vector2d ballVelocity;
+    /**
+     * @brief milliseconds since the robot has been fallen.
+     * -1 if not fallen
+     */
+    int fallen;
+
+    // BEGIN BERLIN UNITED SPECIFIC
+
+    std::string bodyID;
+    int timeToBall;
+    bool wasStriker;
+    bool isPenalized;
+    std::vector<Opponent> opponents;
+    // END BERLIN UNITED SPECIFIC
+
   };
 
   std::map<unsigned int, Data> data;
@@ -43,27 +89,28 @@ public:
     for(std::map<unsigned int, Data>::const_iterator i=data.begin();
         i != data.end(); ++i)
     {
-      const naothmessages::TeamCommMessage& message = i->second.message;
-      stream << "From " << i->first << " ["<< message.bodyid() <<"]"<< std::endl;
+      const Data& d = i->second;
+      stream << "From " << i->first << " ["<< d.bodyID <<"]"<< std::endl;
       i->second.frameInfo.print(stream);
       stream << "Message: " << std::endl;
       stream << "\tPos (x; y; rotation) = "
-             << message.positiononfield().translation().x() << "; "
-             << message.positiononfield().translation().y() << "; "
-             << message.positiononfield().rotation() << std::endl;
+             << d.pose.translation.x << "; "
+             << d.pose.translation.y << "; "
+             << d.pose.rotation << std::endl;
       stream << "\tBall (x; y) = "
-             << message.ballposition().x() << "; "
-             << message.ballposition().y() << std::endl;
-      stream << "TimeSinceBallwasSeen: " << message.timesinceballwasseen() << std::endl;
-      stream << "TimeToBall: "<< message.timetoball() << std::endl;
-      stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << std::endl;
-      stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << std::endl;
-      stream << "isFallenDown: " << (message.isfallendown() ? "yes" : "no") << std::endl;
-      if ( message.has_opponent() ) {
-        stream << "opponent " << message.opponent().number() << " : "
-               << message.opponent().poseonfield().translation().x() << "; "
-               << message.opponent().poseonfield().translation().y() << "; "
-               << message.opponent().poseonfield().rotation()
+             << d.ballPosition.x << "; "
+             << d.ballPosition.y << std::endl;
+      stream << "TimeSinceBallwasSeen: " << d.ballAge << std::endl;
+      stream << "TimeToBall: "<< d.timeToBall << std::endl;
+      stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
+      stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
+      stream << "fallenDown: " << d.fallen << std::endl;
+      for(unsigned int i=0; i < d.opponents.size(); i++)
+      {
+        stream << "opponent " << d.opponents[i].playerNum << " : "
+               << d.opponents[i].poseOnField.translation.x << "; "
+               << d.opponents[i].poseOnField.translation.y << "; "
+               << d.opponents[i].poseOnField.rotation
                << std::endl;
       }
       stream << "------------------------" << std::endl;

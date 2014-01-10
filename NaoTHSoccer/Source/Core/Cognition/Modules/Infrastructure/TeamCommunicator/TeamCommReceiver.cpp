@@ -61,25 +61,27 @@ void TeamCommReceiver::execute()
 
 void TeamCommReceiver::handleMessage(const string& data, bool allowOwn)
 {
-  naothmessages::TeamCommMessage msg;
-  msg.ParseFromString(data);
+  // TODO: implement handleMessage
 
-  unsigned int num = msg.playernumber();
-  unsigned int teamnum = msg.teamnumber();
+//  naothmessages::TeamCommMessage msg;
+//  msg.ParseFromString(data);
 
-  if ( teamnum == getPlayerInfo().gameData.teamNumber
-       // ignore our own messages, we are adding it artficially later
-       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
-     )
-  {
-    TeamMessage::Data& content = getTeamMessage().data[num];
-    content.frameInfo.setTime( getFrameInfo().getTime() );
-    content.message = msg;
+//  unsigned int num = msg.playernumber();
+//  unsigned int teamnum = msg.teamnumber();
 
-    if ( msg.has_opponent() && msg.opponent().number() )
-    {
-      // mark this opponent is updated
-      getTeamMessage().lastFrameNumberHearOpp[msg.opponent().number()] = getFrameInfo().getFrameNumber();
-    }
-  }
+//  if ( teamnum == getPlayerInfo().gameData.teamNumber
+//       // ignore our own messages, we are adding it artficially later
+//       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
+//     )
+//  {
+//    TeamMessage::Data& content = getTeamMessage().data[num];
+//    content.frameInfo.setTime( getFrameInfo().getTime() );
+//    content.message = msg;
+
+//    if ( msg.has_opponent() && msg.opponent().number() )
+//    {
+//      // mark this opponent is updated
+//      getTeamMessage().lastFrameNumberHearOpp[msg.opponent().number()] = getFrameInfo().getFrameNumber();
+//    }
+//  }
 }

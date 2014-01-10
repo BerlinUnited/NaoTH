@@ -69,7 +69,7 @@ bool TeamSymbols::calculateIfStriker()
 
     if((theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime) && // the message is fresh...
         number != theInstance->playerInfo.gameData.playerNumber && // its not me...
-        messageData.message.wasstriker() // the guy wants to be striker...
+        messageData.wasStriker // the guy wants to be striker...
         )
     {
       return false; // let him go :)
@@ -86,20 +86,19 @@ bool TeamSymbols::calculateIfStriker()
 
     if(number == 1) continue; // goalie is not considered
   
-    double time_bonus = messageData.message.wasstriker()?4000.0:0.0;
+    double time_bonus = messageData.wasStriker?4000.0:0.0;
 
     if(
         theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh
-        && !messageData.message.isfallendown()
-        && (messageData.message.timesinceballwasseen() < 1000+time_bonus )// the guy sees the ball
+        && messageData.fallen == -1
+        && (messageData.ballAge >= 0 && messageData.ballAge < 1000+time_bonus )// the guy sees the ball
       )
     {
-      Vector2<double> ballPos;
-      DataConversion::fromMessage(messageData.message.ballposition(), ballPos);
+      Vector2d ballPos = messageData.ballPosition;
       double ballDistance = ballPos.abs();
 
       // striker bonus
-      if (messageData.message.wasstriker())
+      if (messageData.wasStriker)
         ballDistance -= 100;
 
       // remember the closest guy
@@ -125,15 +124,16 @@ bool TeamSymbols::calculateIfStrikerByTimeToBall()
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
       i != tm.data.end(); ++i)
   {
-    const naothmessages::TeamCommMessage& msg = i->second.message;
+    const TeamMessage::Data& msg = i->second;
     if (
       i->first != theInstance->playerInfo.gameData.playerNumber
-      && msg.wasstriker()
-      && msg.timesinceballwasseen() + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime())
+      && msg.wasStriker
+      && msg.ballAge >= 0
+      && msg.ballAge + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime())
         < theInstance->maximumFreshTime
       )
       {
-        if(msg.timetoball() < shortestTime)
+        if(msg.timeToBall < shortestTime)
         {
           return false;
         }
@@ -171,16 +171,14 @@ bool TeamSymbols::calculateIfTheLast()
 
     if ((theInstance->frameInfo.getTimeSince(messageData.frameInfo.getTime())
          < theInstance->maximumFreshTime) && // alive?
-        !messageData.message.ispenalized() && // not penalized?
-        !messageData.message.wasstriker() &&
+        !messageData.isPenalized && // not penalized?
+        !messageData.wasStriker &&
         number != 1 && // no goalie
         // we are already considered by the initial values
-        messageData.message.playernumber() != (int) theInstance->playerInfo.gameData.playerNumber
+        messageData.playerNum != (int) theInstance->playerInfo.gameData.playerNumber
         )
     {
-      Vector2<double> robotpos;
-      robotpos.x = messageData.message.positiononfield().translation().x();
-      robotpos.y = messageData.message.positiononfield().translation().y();
+      Vector2d robotpos = messageData.pose.translation;
       double d = (robotpos-theInstance->fieldInfo.ownGoalCenter).abs();
       if ( d < shortestDistance )
       {

@@ -170,6 +170,16 @@ message TeamMessage
 
 message BUUserTeamMessage
 {
-
+  optional string bodyID = 1;
+  optional int32 timeToBall = 2;
+  optional bool wasStriker = 3;
+  optional bool isPenalized = 4;
+  repeated Opponent opponents = 5;
 }
+
+message Opponent {
+  required int32 playerNum = 1;
+  optional Pose2D poseOnField = 2;
+}
+
 
