@@ -274,10 +274,6 @@ protected:
   BroadCastListener* theBroadCastListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
-
-  // RCTC
-  BroadCaster* theRCTCBroadCaster;
-  BroadCastListener* theRCTCBroadCastListener;
 };
 
 } // end namespace naoth

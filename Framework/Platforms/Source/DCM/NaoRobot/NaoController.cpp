@@ -20,9 +20,7 @@ NaoController::NaoController()
     theSoundHandler(NULL),
     theBroadCaster(NULL),
     theBroadCastListener(NULL),
-    theDebugServer(NULL),
-    theRCTCBroadCaster(NULL),
-    theRCTCBroadCastListener(NULL)
+    theDebugServer(NULL)
 {
   // init shared memory
   // sensor data
@@ -136,14 +134,6 @@ NaoController::NaoController()
   theBroadCaster = new BroadCaster(interfaceName, teamcomm_port);
   theBroadCastListener = new BroadCastListener(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
-
-  // create RCTC connections
-  int rctc_port = 22022; // default port
-  config.get("teamcomm", "rctc_port", rctc_port);
-  theRCTCBroadCaster = new BroadCaster(interfaceName, rctc_port);
-  theRCTCBroadCastListener = new BroadCastListener(rctc_port, rctc::PACKET_SIZE);
-
-
   // start the debug server at the default debug port
   std::cout << "Init DebugServer" << endl;
   int debug_port = 5401; // default port
@@ -168,8 +158,6 @@ NaoController::~NaoController()
   delete theBroadCastListener;
   delete theGameController;
   delete theDebugServer;
-  delete theRCTCBroadCaster;
-  delete theRCTCBroadCastListener;
 }
 
 void NaoController::setCameraSettingsInternal(const CameraSettingsRequest &data,
