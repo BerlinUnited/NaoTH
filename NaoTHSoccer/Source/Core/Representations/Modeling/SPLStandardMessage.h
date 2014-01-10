@@ -71,26 +71,4 @@ struct SPLStandardMessage
   }
 };
 
-class ExtendedSPLStandardMessage
-{
-public:
-  naoth::FrameInfo frameInfo;
-  SPLStandardMessage msg;
-
-  ExtendedSPLStandardMessage();
-  virtual ~ExtendedSPLStandardMessage();
-
-};
-
-namespace naoth
-{
-  template<>
-  class Serializer<ExtendedSPLStandardMessage>
-  {
-    public:
-      static void serialize(const ExtendedSPLStandardMessage& representation, std::ostream& stream);
-      static void deserialize(std::istream& stream, ExtendedSPLStandardMessage& representation);
-  };
-}
-
 #endif // SPLSTANDARDMESSAGE_H

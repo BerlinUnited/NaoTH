@@ -16,28 +16,6 @@
 namespace naoth
 {
 
-class RCTCTeamMessageDataOut: public Printable
-{
-public:
-  std::string data;
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "size = " << data.size() << std::endl;
-  }
-};
-
-class RCTCTeamMessageDataIn: public Printable
-{
-public:
-  std::vector<std::string> data;
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "size = " << data.size() << std::endl;
-  }
-};
-
 // message to other robots
 class TeamMessageDataOut: public Printable
 {

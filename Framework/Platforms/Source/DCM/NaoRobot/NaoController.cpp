@@ -90,10 +90,6 @@ NaoController::NaoController()
   registerInput<TeamMessageDataIn>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
 
-  // rctc teamcomm
-  registerInput<RCTCTeamMessageDataIn>(*this);
-  registerOutput<const RCTCTeamMessageDataOut>(*this);
-
   // debug comm
   registerInput<DebugMessageIn>(*this);
   registerOutput<const DebugMessageOut>(*this);
@@ -226,31 +222,3 @@ void NaoController::set(const CameraSettingsRequestTop &data)
   setCameraSettingsInternal(data, CameraInfo::Top);
 }
 
-void NaoController::get(RCTCTeamMessageDataIn& data) 
-{ 
-  data.data.clear();
-  std::vector<std::string> msg_vector;
-  theRCTCBroadCastListener->receive(msg_vector);
-  for(unsigned int i = 0; i < msg_vector.size(); i++)
-  {
-    const char* bin_msg = msg_vector[i].c_str();
-    rctc::Message msg;
-    if(rctc::binaryToMessage((const uint8_t*)bin_msg, msg))
-    {
-      data.data.push_back(msg);
-    }
-  }
-}//end get RCTCTeamMessageDataIn
-
-
-void NaoController::set(const RCTCTeamMessageDataOut& data)
-{
-  if(data.valid)
-  {
-    uint8_t bin_msg[rctc::PACKET_SIZE];
-    rctc::messageToBinary(data.data, bin_msg);
-    std::string msg((char*)bin_msg, rctc::PACKET_SIZE);
-//      std::cout << "sending RCTC " <<theRCTCBroadCaster->broadcastAddress << " (bcast adress) " << std::endl;
-    theRCTCBroadCaster->send(msg);
-  }
-}//end set RCTCTeamMessageDataOut

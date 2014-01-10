@@ -165,12 +165,6 @@ public:
       cerr << "NaoController: TeamMessageDataOut is too big " << data.data.size() << endl;
   }//end set TeamMessageDataOut
 
-
-  // rctc teamcomm stuff
-  void get(RCTCTeamMessageDataIn& data);
-  void set(const RCTCTeamMessageDataOut& data);
-
-
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
   void set(const GameReturnData& data) { theGameController->setReturnData(data); }

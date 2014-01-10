@@ -28,7 +28,6 @@
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
-#include "Modules/Infrastructure/TeamCommunicator/RCTCHandler.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
@@ -132,7 +131,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // -- BEGIN MODULES --
 
   // infrastructure
-  REGISTER_MODULE(RCTCHandler);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
