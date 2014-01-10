@@ -41,11 +41,11 @@ public:
   public:
     Scans() : number(0) {};
     enum{ MAXNUMBEROFSCANS=40};
-    Vector2<int> start[MAXNUMBEROFSCANS];
-    Vector2<int> direction[MAXNUMBEROFSCANS];
+    Vector2i start[MAXNUMBEROFSCANS];
+    Vector2i direction[MAXNUMBEROFSCANS];
     unsigned int number;
 
-    void add(const Vector2<int>& point, const Vector2<int>& dir)
+    void add(const Vector2i& point, const Vector2i& dir)
     {
       if(number < MAXNUMBEROFSCANS)
       {
@@ -55,7 +55,7 @@ public:
       }
     }//end add
 
-    void setStart(const Vector2<int>& startPoint)
+    void setStart(const Vector2i& startPoint)
     {
       for(unsigned int i  = 0; i < number; i++)
       {
@@ -74,7 +74,7 @@ public:
     }//end remove
   };//end class Scans
 
-  void scan(const Vector2<int>& start, ScanPointList& goodPoints, ScanPointList& badPoints);
+  void scan(const Vector2i& start, ScanPointList& goodPoints, ScanPointList& badPoints);
   void scan(ScanPointList& goodPoints, ScanPointList& badPoints, Scans scans);
   void setDrawScanLines(bool draw);
   void setMaxBeamLength(unsigned int length);
@@ -87,11 +87,11 @@ public:
 
 private:
   Pixel startPixel;
-  bool scanLine(const Vector2<int>& start, const Vector2<int>& direction, ScanPointList& goodPoints, ScanPointList& badPoints);
-  inline bool isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const;
+  bool scanLine(const Vector2i& start, const Vector2i& direction, ScanPointList& goodPoints, ScanPointList& badPoints);
+  inline bool isBorderScan(const Vector2i& point, const Vector2i& direction, int borderWidth) const;
 
-  inline bool pixelInImage(const Vector2<int>& pixel) const;
-  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;  
+  inline bool pixelInImage(const Vector2i& pixel) const;
+  inline bool pixelAtImageBorder(const Vector2i& pixel, int borderWidth) const;  
 
   const Image& theImage;
   RingBufferWithSum<int, 24> scanPixelBuffer;

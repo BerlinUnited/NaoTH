@@ -52,7 +52,7 @@ public:
   {
   public:
     NamedPoint() : id(-1) {}
-    Vector2<double> position;
+    Vector2d position;
     int id;
   };
 
@@ -116,7 +116,7 @@ public:
   {
   }
 
-  void addLine(const Vector2<double>& begin, const Vector2<double>& end)
+  void addLine(const Vector2d& begin, const Vector2d& end)
   {
     lines.push_back(Math::LineSegment(begin, end));
   }//end addLine
@@ -136,7 +136,7 @@ public:
   /**
    type - list of constraints of the request
    */
-  int getNearestLine(const Vector2<double>& point, int type = all_lines) const
+  int getNearestLine(const Vector2d& point, int type = all_lines) const
   {
     ASSERT(lines.size() > 0);
 
@@ -145,7 +145,7 @@ public:
 
     for (unsigned int i = 0; i < lines.size(); i++)
     {
-      Vector2<double> direction = lines[i].getDirection();
+      Vector2d direction = lines[i].getDirection();
       direction.normalize();
 
       // determine the type of line
@@ -169,7 +169,7 @@ public:
     return minIdx;
   }//end getNearestLine
 
-  int getNearestIntersection(const Vector2<double>& point) const
+  int getNearestIntersection(const Vector2d& point) const
   {
     ASSERT(intersections.size() > 0);
 
@@ -191,7 +191,7 @@ public:
     return minIdx;
   }//end getNearestIntersection
 
-  int getNearestTCrossing(const Vector2<double>& point) const
+  int getNearestTCrossing(const Vector2d& point) const
   {
     ASSERT(intersections.size() > 0);
 
@@ -280,7 +280,7 @@ public:
     {
       for (int y = 0; y < ySize; y++)
       {
-        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
 
         for(int i = 0; i < numberOfLinesTableType; i++)
         {
@@ -305,7 +305,7 @@ public:
     {
       for (int y = 0; y < ySize; y++)
       {
-        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
 
         const int idx_corner = getNearestIntersection(point);
         closestCornerPoints[x][y].position = intersections[idx_corner].pos;
@@ -319,7 +319,7 @@ public:
   }//end create_closestCornerPoinsTable
 
 
-  const NamedPoint& get_closest_corner_point(const Vector2<double>& p) const
+  const NamedPoint& get_closest_corner_point(const Vector2d& p) const
   {
     // allready prepared for rounding, i.e. +0.5
     int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
@@ -330,7 +330,7 @@ public:
   }//end get_closest_point
 
 
-  const NamedPoint& get_closest_tcrossing_point(const Vector2<double>& p) const
+  const NamedPoint& get_closest_tcrossing_point(const Vector2d& p) const
   {
     int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
     int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
@@ -340,7 +340,7 @@ public:
   }//end get_closest_tcrossing_point
 
 
-  const NamedPoint& get_closest_point_direct(const Vector2<double>& p, LinesTableIndex idx) const
+  const NamedPoint& get_closest_point_direct(const Vector2d& p, LinesTableIndex idx) const
   {
     ASSERT(idx >= 0 && idx < numberOfLinesTableIndex);
 
@@ -352,7 +352,7 @@ public:
   }//end get_closest_point_direct
 
 
-  const NamedPoint& get_closest_line_point_fast(const Vector2<double>& p, int length, int direction) const
+  const NamedPoint& get_closest_line_point_fast(const Vector2d& p, int length, int direction) const
   {
     ASSERT((length&short_lines)|(length&long_lines));
     ASSERT((across_lines&direction)|(along_lines&direction));
@@ -373,7 +373,7 @@ public:
   }//end get_closest_point_fast
 
 
-  NamedPoint get_closest_point(const Vector2<double>& p, int type = all_lines) const
+  NamedPoint get_closest_point(const Vector2d& p, int type = all_lines) const
   {
     // allready prepared for rounding, i.e., +0.5
     int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
@@ -411,7 +411,7 @@ public:
     {
       for (int y = 0; y < ySize; y++)
       {
-        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
         NamedPoint np = get_closest_point(point, type);
         
         if(np.id != -1)
@@ -442,7 +442,7 @@ public:
     {
       for (int y = 0; y < ySize; y++)
       {
-        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
         double d = (point - get_closest_corner_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
         DebugDrawings::Color color = white*t + black*(1-t);
@@ -463,7 +463,7 @@ public:
     {
       for (int y = 0; y < ySize; y++)
       {
-        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
         double d = (point - get_closest_tcrossing_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
         DebugDrawings::Color color = white*t + black*(1-t);

@@ -35,7 +35,7 @@
     for(int i = 0; i < numberOfColorPoints[green]; i++)
     {
       int p = colorPointsIndex[green][i];
-      Vector2<int> x = pointsCoordinates[p];
+      Vector2i x = pointsCoordinates[p];
 
       // .. do something with the point x ..
     }
@@ -85,23 +85,23 @@ public:
   double colorPointsRate[ColorClasses::numOfColors];
 
 public:
-  inline const Vector2<int>& getColorPoint(const int& pointIndex) const {
+  inline const Vector2i& getColorPoint(const int& pointIndex) const {
     return uniformGrid.getGridCoordinates(pointIndex);
   }
 
-  inline const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const {
+  inline const Vector2i& getColorPoint(const ColorClasses::Color& color, const int& index) const {
     return uniformGrid.getGridCoordinates(colorPointsIndex[color][index]);
   }
 
-  inline const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const {
+  inline const Vector2i& getImagePoint(const ColorClasses::Color& color, const int& index) const {
     return uniformGrid.getPoint(colorPointsIndex[color][index]);
   }
 
-  inline const Vector2<int>& getImagePoint(const int& pointIndex) const {
+  inline const Vector2i& getImagePoint(const int& pointIndex) const {
     return uniformGrid.getPoint(pointIndex);
   }
 
-  inline int getScaledImageIndex(const Vector2<int>& point) const
+  inline int getScaledImageIndex(const Vector2i& point) const
   {
     ASSERT(point.x >= 0 &&
            point.y >= 0 &&
@@ -119,7 +119,7 @@ public:
     return uniformGrid.getScaledImageIndex(x, y);
   }
 
-  inline const Vector2<int>& getImagePoint(const Vector2<int>& colorPoint) const
+  inline const Vector2i& getImagePoint(const Vector2i& colorPoint) const
   {
     ASSERT(colorPoint.x >= 0 &&
            colorPoint.y >= 0 &&

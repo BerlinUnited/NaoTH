@@ -35,7 +35,7 @@ public:
     const Area<int>& searchArea);
 
   Blob regionGrowExpandArea(
-    const Vector2<int>& startingPoint, 
+    const Vector2i& startingPoint, 
     ColorClasses::Color color);
 
 
@@ -53,11 +53,11 @@ private:
     {
     }
 
-    Vector2<int> minValues; /** left, upper corner: x = minX, y = minY */
-    Vector2<int> maxValues; /** right, lower corner: x = maxX, y = maxY */
+    Vector2i minValues; /** left, upper corner: x = minX, y = minY */
+    Vector2i maxValues; /** right, lower corner: x = maxX, y = maxY */
     Moments2<1> moments;
 
-    void addPoint(const Vector2<int>& point)
+    void addPoint(const Vector2i& point)
     {
       if(minValues.x > point.x) minValues.x = point.x;
       if(minValues.y > point.y) minValues.y = point.y;
@@ -98,7 +98,7 @@ public:
 
   WholeArea() {}
 
-  virtual bool isInside(const Vector2<int>& point) const
+  virtual bool isInside(const Vector2i& point) const
   {
     return true;
   }

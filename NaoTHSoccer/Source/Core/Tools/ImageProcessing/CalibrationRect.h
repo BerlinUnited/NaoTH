@@ -11,8 +11,8 @@ using namespace naoth;
 class CalibrationRect : public ParameterList
 {
 public:
-  Vector2<int> lowerLeft;
-  Vector2<int> upperRight;
+  Vector2i lowerLeft;
+  Vector2i upperRight;
   ColorClasses::Color color;
 
   CalibrationRect(std::string rectName, ColorClasses::Color rectColor, int x0, int y0, int x1, int y1)

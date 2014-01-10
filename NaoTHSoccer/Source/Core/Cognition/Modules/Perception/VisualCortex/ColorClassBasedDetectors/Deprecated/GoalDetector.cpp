@@ -447,11 +447,11 @@ void GoalDetector::estimatePostsByBlobs(
       CIRCLE_PX(ColorClasses::green, meanPoint.x, meanPoint.y, 2);
     );
 
-    Vector2i leftBottom = blob.getClosestPoint(Vector2<int>(0, getImage().height()));
-    Vector2i rightBottom = blob.getClosestPoint(Vector2<int>(getImage().width(), getImage().height()));
+    Vector2i leftBottom = blob.getClosestPoint(Vector2i(0, getImage().height()));
+    Vector2i rightBottom = blob.getClosestPoint(Vector2i(getImage().width(), getImage().height()));
 
-    Vector2i leftTop = blob.getClosestPoint(Vector2<int>(0, 0));
-    Vector2i rightTop = blob.getClosestPoint(Vector2<int>(getImage().width(), 0));
+    Vector2i leftTop = blob.getClosestPoint(Vector2i(0, 0));
+    Vector2i rightTop = blob.getClosestPoint(Vector2i(getImage().width(), 0));
   
     DEBUG_REQUEST("Vision:ColorClassBasedDetectors:GoalDetector:mark_goal",
       RECT_PX(ColorClasses::green, leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
