@@ -156,3 +156,20 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
+message TeamMessage
+{
+  optional uint32 playerNum = 1;
+  optional uint32 team = 2;
+  optional Pose2D pose = 3;
+  optional int32 ballAge = 4;
+  optional DoubleVector2 ballPosition = 5;
+  optional DoubleVector2 ballVelocity = 6;
+  optional int32 fallen = 7;
+  optional BUUserTeamMessage user = 8;
+}
+
+message BUUserTeamMessage
+{
+
+}
+

@@ -15251,6 +15251,1399 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.InertialModel)
   }
   
+  public interface TeamMessageOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional uint32 playerNum = 1;
+    boolean hasPlayerNum();
+    int getPlayerNum();
+    
+    // optional uint32 team = 2;
+    boolean hasTeam();
+    int getTeam();
+    
+    // optional .naothmessages.Pose2D pose = 3;
+    boolean hasPose();
+    de.naoth.rc.messages.CommonTypes.Pose2D getPose();
+    de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
+    
+    // optional int32 ballAge = 4;
+    boolean hasBallAge();
+    int getBallAge();
+    
+    // optional .naothmessages.DoubleVector2 ballPosition = 5;
+    boolean hasBallPosition();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallPosition();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder();
+    
+    // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+    boolean hasBallVelocity();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
+    
+    // optional int32 fallen = 7;
+    boolean hasFallen();
+    int getFallen();
+    
+    // optional .naothmessages.BUUserTeamMessage user = 8;
+    boolean hasUser();
+    de.naoth.rc.messages.Representations.BUUserTeamMessage getUser();
+    de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder getUserOrBuilder();
+  }
+  public static final class TeamMessage extends
+      com.google.protobuf.GeneratedMessage
+      implements TeamMessageOrBuilder {
+    // Use TeamMessage.newBuilder() to construct.
+    private TeamMessage(Builder builder) {
+      super(builder);
+    }
+    private TeamMessage(boolean noInit) {}
+    
+    private static final TeamMessage defaultInstance;
+    public static TeamMessage getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public TeamMessage getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_TeamMessage_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_TeamMessage_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // optional uint32 playerNum = 1;
+    public static final int PLAYERNUM_FIELD_NUMBER = 1;
+    private int playerNum_;
+    public boolean hasPlayerNum() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getPlayerNum() {
+      return playerNum_;
+    }
+    
+    // optional uint32 team = 2;
+    public static final int TEAM_FIELD_NUMBER = 2;
+    private int team_;
+    public boolean hasTeam() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getTeam() {
+      return team_;
+    }
+    
+    // optional .naothmessages.Pose2D pose = 3;
+    public static final int POSE_FIELD_NUMBER = 3;
+    private de.naoth.rc.messages.CommonTypes.Pose2D pose_;
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose2D getPose() {
+      return pose_;
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+      return pose_;
+    }
+    
+    // optional int32 ballAge = 4;
+    public static final int BALLAGE_FIELD_NUMBER = 4;
+    private int ballAge_;
+    public boolean hasBallAge() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getBallAge() {
+      return ballAge_;
+    }
+    
+    // optional .naothmessages.DoubleVector2 ballPosition = 5;
+    public static final int BALLPOSITION_FIELD_NUMBER = 5;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 ballPosition_;
+    public boolean hasBallPosition() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallPosition() {
+      return ballPosition_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+      return ballPosition_;
+    }
+    
+    // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+    public static final int BALLVELOCITY_FIELD_NUMBER = 6;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 ballVelocity_;
+    public boolean hasBallVelocity() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity() {
+      return ballVelocity_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder() {
+      return ballVelocity_;
+    }
+    
+    // optional int32 fallen = 7;
+    public static final int FALLEN_FIELD_NUMBER = 7;
+    private int fallen_;
+    public boolean hasFallen() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public int getFallen() {
+      return fallen_;
+    }
+    
+    // optional .naothmessages.BUUserTeamMessage user = 8;
+    public static final int USER_FIELD_NUMBER = 8;
+    private de.naoth.rc.messages.Representations.BUUserTeamMessage user_;
+    public boolean hasUser() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public de.naoth.rc.messages.Representations.BUUserTeamMessage getUser() {
+      return user_;
+    }
+    public de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder getUserOrBuilder() {
+      return user_;
+    }
+    
+    private void initFields() {
+      playerNum_ = 0;
+      team_ = 0;
+      pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
+      ballAge_ = 0;
+      ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      fallen_ = 0;
+      user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (hasPose()) {
+        if (!getPose().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasBallPosition()) {
+        if (!getBallPosition().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasBallVelocity()) {
+        if (!getBallVelocity().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, playerNum_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, team_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, pose_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt32(4, ballAge_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, ballPosition_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, ballVelocity_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeInt32(7, fallen_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeMessage(8, user_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, playerNum_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, team_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, pose_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, ballAge_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, ballPosition_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, ballVelocity_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, fallen_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, user_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.TeamMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.TeamMessage prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.TeamMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_TeamMessage_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_TeamMessage_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.TeamMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPoseFieldBuilder();
+          getBallPositionFieldBuilder();
+          getBallVelocityFieldBuilder();
+          getUserFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        playerNum_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        team_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (poseBuilder_ == null) {
+          pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ballAge_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          ballPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          ballVelocityBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        fallen_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        if (userBuilder_ == null) {
+          user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.TeamMessage.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.TeamMessage getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.TeamMessage.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.TeamMessage build() {
+        de.naoth.rc.messages.Representations.TeamMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.TeamMessage buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.TeamMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.TeamMessage buildPartial() {
+        de.naoth.rc.messages.Representations.TeamMessage result = new de.naoth.rc.messages.Representations.TeamMessage(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.playerNum_ = playerNum_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.team_ = team_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.ballAge_ = ballAge_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (ballPositionBuilder_ == null) {
+          result.ballPosition_ = ballPosition_;
+        } else {
+          result.ballPosition_ = ballPositionBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        if (ballVelocityBuilder_ == null) {
+          result.ballVelocity_ = ballVelocity_;
+        } else {
+          result.ballVelocity_ = ballVelocityBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.fallen_ = fallen_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        if (userBuilder_ == null) {
+          result.user_ = user_;
+        } else {
+          result.user_ = userBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.TeamMessage) {
+          return mergeFrom((de.naoth.rc.messages.Representations.TeamMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.TeamMessage other) {
+        if (other == de.naoth.rc.messages.Representations.TeamMessage.getDefaultInstance()) return this;
+        if (other.hasPlayerNum()) {
+          setPlayerNum(other.getPlayerNum());
+        }
+        if (other.hasTeam()) {
+          setTeam(other.getTeam());
+        }
+        if (other.hasPose()) {
+          mergePose(other.getPose());
+        }
+        if (other.hasBallAge()) {
+          setBallAge(other.getBallAge());
+        }
+        if (other.hasBallPosition()) {
+          mergeBallPosition(other.getBallPosition());
+        }
+        if (other.hasBallVelocity()) {
+          mergeBallVelocity(other.getBallVelocity());
+        }
+        if (other.hasFallen()) {
+          setFallen(other.getFallen());
+        }
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (hasPose()) {
+          if (!getPose().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasBallPosition()) {
+          if (!getBallPosition().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasBallVelocity()) {
+          if (!getBallVelocity().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              playerNum_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              team_ = input.readUInt32();
+              break;
+            }
+            case 26: {
+              de.naoth.rc.messages.CommonTypes.Pose2D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder();
+              if (hasPose()) {
+                subBuilder.mergeFrom(getPose());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setPose(subBuilder.buildPartial());
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              ballAge_ = input.readInt32();
+              break;
+            }
+            case 42: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasBallPosition()) {
+                subBuilder.mergeFrom(getBallPosition());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setBallPosition(subBuilder.buildPartial());
+              break;
+            }
+            case 50: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasBallVelocity()) {
+                subBuilder.mergeFrom(getBallVelocity());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setBallVelocity(subBuilder.buildPartial());
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              fallen_ = input.readInt32();
+              break;
+            }
+            case 66: {
+              de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder subBuilder = de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder();
+              if (hasUser()) {
+                subBuilder.mergeFrom(getUser());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setUser(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional uint32 playerNum = 1;
+      private int playerNum_ ;
+      public boolean hasPlayerNum() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getPlayerNum() {
+        return playerNum_;
+      }
+      public Builder setPlayerNum(int value) {
+        bitField0_ |= 0x00000001;
+        playerNum_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearPlayerNum() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        playerNum_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 team = 2;
+      private int team_ ;
+      public boolean hasTeam() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getTeam() {
+        return team_;
+      }
+      public Builder setTeam(int value) {
+        bitField0_ |= 0x00000002;
+        team_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTeam() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        team_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .naothmessages.Pose2D pose = 3;
+      private de.naoth.rc.messages.CommonTypes.Pose2D pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose2D, de.naoth.rc.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder> poseBuilder_;
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose2D getPose() {
+        if (poseBuilder_ == null) {
+          return pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
+      }
+      public Builder setPose(de.naoth.rc.messages.CommonTypes.Pose2D value) {
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder setPose(
+          de.naoth.rc.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder mergePose(de.naoth.rc.messages.CommonTypes.Pose2D value) {
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              pose_ != de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            pose_ =
+              de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
+        } else {
+          poseBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder clearPose() {
+        if (poseBuilder_ == null) {
+          pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose2D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose2D, de.naoth.rc.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.Pose2D, de.naoth.rc.messages.CommonTypes.Pose2D.Builder, de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder>(
+                  pose_,
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
+      }
+      
+      // optional int32 ballAge = 4;
+      private int ballAge_ ;
+      public boolean hasBallAge() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getBallAge() {
+        return ballAge_;
+      }
+      public Builder setBallAge(int value) {
+        bitField0_ |= 0x00000008;
+        ballAge_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBallAge() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        ballAge_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .naothmessages.DoubleVector2 ballPosition = 5;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> ballPositionBuilder_;
+      public boolean hasBallPosition() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallPosition() {
+        if (ballPositionBuilder_ == null) {
+          return ballPosition_;
+        } else {
+          return ballPositionBuilder_.getMessage();
+        }
+      }
+      public Builder setBallPosition(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (ballPositionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ballPosition_ = value;
+          onChanged();
+        } else {
+          ballPositionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder setBallPosition(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = builderForValue.build();
+          onChanged();
+        } else {
+          ballPositionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder mergeBallPosition(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (ballPositionBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              ballPosition_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            ballPosition_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(ballPosition_).mergeFrom(value).buildPartial();
+          } else {
+            ballPosition_ = value;
+          }
+          onChanged();
+        } else {
+          ballPositionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder clearBallPosition() {
+        if (ballPositionBuilder_ == null) {
+          ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          ballPositionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getBallPositionBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getBallPositionFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallPositionOrBuilder() {
+        if (ballPositionBuilder_ != null) {
+          return ballPositionBuilder_.getMessageOrBuilder();
+        } else {
+          return ballPosition_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getBallPositionFieldBuilder() {
+        if (ballPositionBuilder_ == null) {
+          ballPositionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  ballPosition_,
+                  getParentForChildren(),
+                  isClean());
+          ballPosition_ = null;
+        }
+        return ballPositionBuilder_;
+      }
+      
+      // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> ballVelocityBuilder_;
+      public boolean hasBallVelocity() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity() {
+        if (ballVelocityBuilder_ == null) {
+          return ballVelocity_;
+        } else {
+          return ballVelocityBuilder_.getMessage();
+        }
+      }
+      public Builder setBallVelocity(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (ballVelocityBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ballVelocity_ = value;
+          onChanged();
+        } else {
+          ballVelocityBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder setBallVelocity(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = builderForValue.build();
+          onChanged();
+        } else {
+          ballVelocityBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder mergeBallVelocity(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (ballVelocityBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              ballVelocity_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            ballVelocity_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(ballVelocity_).mergeFrom(value).buildPartial();
+          } else {
+            ballVelocity_ = value;
+          }
+          onChanged();
+        } else {
+          ballVelocityBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder clearBallVelocity() {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          ballVelocityBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getBallVelocityBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getBallVelocityFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder() {
+        if (ballVelocityBuilder_ != null) {
+          return ballVelocityBuilder_.getMessageOrBuilder();
+        } else {
+          return ballVelocity_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getBallVelocityFieldBuilder() {
+        if (ballVelocityBuilder_ == null) {
+          ballVelocityBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  ballVelocity_,
+                  getParentForChildren(),
+                  isClean());
+          ballVelocity_ = null;
+        }
+        return ballVelocityBuilder_;
+      }
+      
+      // optional int32 fallen = 7;
+      private int fallen_ ;
+      public boolean hasFallen() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public int getFallen() {
+        return fallen_;
+      }
+      public Builder setFallen(int value) {
+        bitField0_ |= 0x00000040;
+        fallen_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFallen() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        fallen_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .naothmessages.BUUserTeamMessage user = 8;
+      private de.naoth.rc.messages.Representations.BUUserTeamMessage user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Representations.BUUserTeamMessage, de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder, de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder> userBuilder_;
+      public boolean hasUser() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public de.naoth.rc.messages.Representations.BUUserTeamMessage getUser() {
+        if (userBuilder_ == null) {
+          return user_;
+        } else {
+          return userBuilder_.getMessage();
+        }
+      }
+      public Builder setUser(de.naoth.rc.messages.Representations.BUUserTeamMessage value) {
+        if (userBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          user_ = value;
+          onChanged();
+        } else {
+          userBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder setUser(
+          de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder builderForValue) {
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
+          onChanged();
+        } else {
+          userBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder mergeUser(de.naoth.rc.messages.Representations.BUUserTeamMessage value) {
+        if (userBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080) &&
+              user_ != de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance()) {
+            user_ =
+              de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder(user_).mergeFrom(value).buildPartial();
+          } else {
+            user_ = value;
+          }
+          onChanged();
+        } else {
+          userBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+          onChanged();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+      public de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder getUserBuilder() {
+        bitField0_ |= 0x00000080;
+        onChanged();
+        return getUserFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
+        } else {
+          return user_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Representations.BUUserTeamMessage, de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder, de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder> 
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Representations.BUUserTeamMessage, de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder, de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder>(
+                  user_,
+                  getParentForChildren(),
+                  isClean());
+          user_ = null;
+        }
+        return userBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.TeamMessage)
+    }
+    
+    static {
+      defaultInstance = new TeamMessage(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.TeamMessage)
+  }
+  
+  public interface BUUserTeamMessageOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+  }
+  public static final class BUUserTeamMessage extends
+      com.google.protobuf.GeneratedMessage
+      implements BUUserTeamMessageOrBuilder {
+    // Use BUUserTeamMessage.newBuilder() to construct.
+    private BUUserTeamMessage(Builder builder) {
+      super(builder);
+    }
+    private BUUserTeamMessage(boolean noInit) {}
+    
+    private static final BUUserTeamMessage defaultInstance;
+    public static BUUserTeamMessage getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public BUUserTeamMessage getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_BUUserTeamMessage_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable;
+    }
+    
+    private void initFields() {
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.BUUserTeamMessage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.BUUserTeamMessage prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_BUUserTeamMessage_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.BUUserTeamMessage.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.BUUserTeamMessage getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.BUUserTeamMessage build() {
+        de.naoth.rc.messages.Representations.BUUserTeamMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.BUUserTeamMessage buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.BUUserTeamMessage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.BUUserTeamMessage buildPartial() {
+        de.naoth.rc.messages.Representations.BUUserTeamMessage result = new de.naoth.rc.messages.Representations.BUUserTeamMessage(this);
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.BUUserTeamMessage) {
+          return mergeFrom((de.naoth.rc.messages.Representations.BUUserTeamMessage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.BUUserTeamMessage other) {
+        if (other == de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.BUUserTeamMessage)
+    }
+    
+    static {
+      defaultInstance = new BUUserTeamMessage(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_CameraMatrix_descriptor;
   private static
@@ -15341,6 +16734,16 @@ public final class Representations {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_InertialModel_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_TeamMessage_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_TeamMessage_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BUUserTeamMessage_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -15442,8 +16845,15 @@ public final class Representations {
       ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132",
       "\034.naothmessages.DoubleVector3\022\022\n\ncalibra" +
       "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
-      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2B\026\n" +
-      "\024de.naoth.rc.messages"
+      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\214\002" +
+      "\n\013TeamMessage\022\021\n\tplayerNum\030\001 \001(\r\022\014\n\004team" +
+      "\030\002 \001(\r\022#\n\004pose\030\003 \001(\0132\025.naothmessages.Pos" +
+      "e2D\022\017\n\007ballAge\030\004 \001(\005\0222\n\014ballPosition\030\005 \001" +
+      "(\0132\034.naothmessages.DoubleVector2\0222\n\014ball" +
+      "Velocity\030\006 \001(\0132\034.naothmessages.DoubleVec" +
+      "tor2\022\016\n\006fallen\030\007 \001(\005\022.\n\004user\030\010 \001(\0132 .nao" +
+      "thmessages.BUUserTeamMessage\"\023\n\021BUUserTe",
+      "amMessageB\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15594,6 +17004,22 @@ public final class Representations {
               new java.lang.String[] { "Orientation", },
               de.naoth.rc.messages.Representations.InertialModel.class,
               de.naoth.rc.messages.Representations.InertialModel.Builder.class);
+          internal_static_naothmessages_TeamMessage_descriptor =
+            getDescriptor().getMessageTypes().get(18);
+          internal_static_naothmessages_TeamMessage_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_TeamMessage_descriptor,
+              new java.lang.String[] { "PlayerNum", "Team", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", },
+              de.naoth.rc.messages.Representations.TeamMessage.class,
+              de.naoth.rc.messages.Representations.TeamMessage.Builder.class);
+          internal_static_naothmessages_BUUserTeamMessage_descriptor =
+            getDescriptor().getMessageTypes().get(19);
+          internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BUUserTeamMessage_descriptor,
+              new java.lang.String[] { },
+              de.naoth.rc.messages.Representations.BUUserTeamMessage.class,
+              de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder.class);
           return null;
         }
       };

@@ -3,15 +3,11 @@
 
 #include <stdint.h>
 
-#include <Representations/Infrastructure/FrameInfo.h>
-#include "Tools/DataStructures/Serializer.h"
-
 static const int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 1;
 static const int SPL_STANDARD_MESSAGE_DATA_SIZE = 800;
 
 
-// DO NOT MODIFY THE STRUCT
-struct SPLStandardMessage 
+struct SPLStandardMessage
 {
   char header[4];        // "SPL "
   uint8_t version;       // has to be set to SPL_STANDARD_MESSAGE_STRUCT_VERSION
@@ -40,7 +36,7 @@ struct SPLStandardMessage
   float ballVel[2];
 
   // milliseconds since the robot has been fallen.  -1 if not fallen
-  uint32_t fallen;
+  int32_t fallen;
 
   // number of bytes that is actually used by the data array
   uint16_t numOfDataBytes;
