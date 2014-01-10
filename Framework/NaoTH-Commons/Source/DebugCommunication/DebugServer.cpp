@@ -60,49 +60,37 @@ void DebugServer::mainConnection()
   {
     // check if the stop is requested
     g_mutex_lock(m_abort);
-    if(abort)
-    {
+    if(abort) {
       g_mutex_unlock(m_abort);
       break; // end loop;
     }
     g_mutex_unlock(m_abort);
 
-    
-    if(comm.isConnected())
-    {
-      // 1. send out already answered messages
-      try
-      {
+    // 1. send out already answered messages
+    if(comm.isConnected()) {
+      try {
         sendAll();
-      }
-      catch(...)
-      {
+      } catch(...) {
         disconnect();
       }
     }
 
-    if(comm.isConnected())
-    {
-      // 2. get new commands (maximal 50)
-      try
-      {
+    // 2. get new commands (maximal 50)
+    if(comm.isConnected()) {
+      try {
         receiveAll();
-      }
-      catch(...)
-      {
+      } catch(...) {
         disconnect();
       }
     }
 
-
-    if(!comm.isConnected())
-    {
-      // connect again, wait max 1 second until connection is etablished
+    // connect again, wait max 1 second until connection is etablished
+    if(!comm.isConnected()) {
       comm.connect(1);
-    } // end if connected
+    }
 
     // always give other thread the possibility to gain control before entering
-    // the loop again
+    // the loop again (wait for 1 ms)
     g_usleep(1000);
     g_thread_yield();
   } // end while true
@@ -116,11 +104,9 @@ void DebugServer::receiveAll()
 {
   GString* msg = NULL;
   unsigned int counter = 0;
-  do
-  {
+  do {
     msg = comm.readMessage();
-    if(msg != NULL)
-    {
+    if(msg != NULL){
       g_async_queue_push(commands, msg);
     }
     counter++;
@@ -129,7 +115,10 @@ void DebugServer::receiveAll()
 
 void DebugServer::sendAll()
 {
-  while(g_async_queue_length(answers) > 0)
+  // NOTE: the size of the queue may change during this loop,
+  //       so save it befor the execution
+  int size = g_async_queue_length(answers);
+  for(int i = 0; i < size && g_async_queue_length(answers) > 0; i++)
   {
     GString* answer = (GString*) g_async_queue_pop(answers);
 
@@ -140,10 +129,9 @@ void DebugServer::sendAll()
         g_warning("could not send message");
         disconnect();
       }
-
       g_string_free(answer, true);
-    } // end if answer != NULL
-  }//end whille
+    }
+  }//end while
 }//end sendAll
 
 void DebugServer::disconnect()
@@ -169,17 +157,14 @@ void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
   if(connectionThread == NULL)
   {
     // try to connect
-    if(!comm.isConnected())
+    if(!comm.isConnected()) {
       comm.connect(-1);
+    }
   
-    if(comm.isConnected())
-    {
-      try
-      {
+    if(comm.isConnected()) {
+      try {
         receiveAll();
-      }
-      catch(...)
-      {
+      } catch(...) {
         disconnect();
       }
     }
@@ -210,24 +195,21 @@ void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
     GString* answer = g_string_new("");
     g_string_append_len(answer, iter->c_str(), iter->size());
     g_async_queue_push(answers, answer);
-  }//end while
+  }
 
   // if running in the single threaded mode
   // try to send messages
   if(connectionThread == NULL)
   {
     // try to connect
-    if(!comm.isConnected())
+    if(!comm.isConnected()) {
       comm.connect(-1);
+    }
 
-    if(comm.isConnected())
-    {
-      try
-      {
+    if(comm.isConnected()) {
+      try {
         sendAll();
-      }
-      catch(...)
-      {
+      } catch(...) {
         disconnect();
       }
     }
@@ -252,12 +234,9 @@ void DebugServer::parseCommand(
     for(int i=0; i < cmd.args().size(); i++)
     {
       const naothmessages::CMDArg& arg = cmd.args().Get(i);
-      if(arg.has_bytes())
-      {
+      if(arg.has_bytes()) {
         arguments[arg.name()] = arg.bytes();
-      }
-      else
-      {
+      } else {
         arguments[arg.name()] = arg.name();
       }
     }
