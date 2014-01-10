@@ -24,7 +24,8 @@
 
 GradientGoalDetector::GradientGoalDetector()
 : 
-  cameraID(CameraInfo::Bottom)
+  cameraID(CameraInfo::Bottom),
+  heightOfHorizon(0)
 {
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markPeaks", "mark found maximum u-v peaks in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_scanlines","..", false);  
@@ -65,44 +66,28 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     return;
   }
   
-  int imageBorderOffset = 25;
-  int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
+  heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
   if(heightOfHorizon > (int) getImage().height() - 10) 
   { 
     return;
   }
 
-  GT_TRACE("GradientGoalDetector:1");
+  GT_TRACE("GradientGoalDetector:initializeScan");
   
-  // adjust the scan height in case of the bottom camera
-  //if(cameraID == CameraInfo::Bottom) 
-  {
-    // clamp the scanline
-    p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().height() - imageBorderOffset - 5);
-    p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
-  }
+  // clamp the scanline
+  p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().height() - imageBorderOffset - 5);
+  p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
   
-  //double horizont = min(p1.y, p2.y);
-
   double threshold = params.gradientThreshold;
   double thresholdY = params.minY;
-
-  double response = 0.0;
-  double responseY = 0.0;
-  double lastResponse = 0.0;
-  double lastResponseY = 0.0;
-
-  Pixel pixel;
-
-  int aktIdx = 0;
 
   for(int i = 0; i < 5; i++)
   {
      features[i].clear();
   }
 
-  GT_TRACE("GradientGoalDetector:2");
+  GT_TRACE("GradientGoalDetector:scanForFeatures");
   if
   (
     p1.y > imageBorderOffset && 
@@ -111,113 +96,14 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     p2.y < (int) getImage().height() - imageBorderOffset
   )
   {
-    bool isCandidate = false;
-    bool isObstacle = false;
-    
-    Feature candidate;
-
-    int diffVU = 0;
-    int lastDiffVU = 0;
-
-    for(int y = (int) p1.y - 12; y <= (int) p1.y + 12; y += 6)
-    {
-      valueBuffer.init();
-      valueBufferY.init();
-      pointBuffer.init();
-      isCandidate = false;
-      Vector2i pos((int) p1.x + 2, y);
-      BresenhamLineScan scanner(pos, direction, getImage().cameraInfo);
-      do
-      {
-        pointBuffer.add(pos);
-        IMG_GET(pos.x, pos.y, pixel);
-        diffVU = (int) pixel.v - (int) pixel.u;
-        valueBuffer.add(diffVU);
-        valueBufferY.add(pixel.y);
-
-        if(pointBuffer.isFull())
-        {
-          response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-          //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
-          responseY = valueBufferY[2];
-          response /= 10;
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_scanlines",
-            if(aktIdx == 2)
-            {
-              POINT_PX(ColorClasses::yellow, pos.x, pos.y );
-            }
-            else
-            {
-              POINT_PX(ColorClasses::gray, pos.x, pos.y );
-            }
-          );
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_difference",
-            if(aktIdx == 2)
-            {
-              LINE_PX(ColorClasses::green, (int) pointBuffer[3].x, (int) pointBuffer[3].y - lastDiffVU, (int) pointBuffer[4].x, (int) pointBuffer[4].y - diffVU);
-              lastDiffVU = diffVU;
-            }
-          );
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_response",
-            if(aktIdx == 2)
-            {
-              LINE_PX(ColorClasses::red, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) /*fabs*/(lastResponse), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int)/* fabs*/(response) );
-              LINE_PX(ColorClasses::white, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) fabs(lastResponseY / 3), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int) fabs(responseY / 3) );
-              lastResponse = response;
-              lastResponseY = responseY;
-            }
-          );
-          if(/*fabs*/(response) >= threshold && fabs(responseY) >= thresholdY)
-          {
-            if(!isCandidate)
-            {
-              candidate.begin = pointBuffer[2];
-              candidate.center = pointBuffer[2];
-              candidate.end = pointBuffer[2];
-              candidate.responseAtBegin.x = response;
-              candidate.responseAtBegin.y = diffVU;
-              if(diffVU < 0)
-              {
-                isObstacle = true;
-              }
-            }
-            isCandidate = true;
-            if(isObstacle)
-            {
-              candidate.possibleObstacle = isObstacle;
-              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
-                POINT_PX(ColorClasses::orange, pos.x - 2, pos.y);
-              );
-            }
-            else
-            {
-              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
-                POINT_PX(ColorClasses::blue, pos.x - 2, pos.y);
-              );
-            }
-          }
-          else
-          {
-            if(isCandidate)
-            {
-              candidate.end = pointBuffer[2];
-              candidate.center = (candidate.end + candidate.begin) / 2;
-              candidate.responseAtEnd.x = response;
-              candidate.responseAtEnd.y = diffVU;
-              features[aktIdx].push_back(candidate);
-            }
-            isCandidate = false;
-            isObstacle = false;
-          }//end if
-        }
-      }
-      while(scanner.getNextWithCheck(pos));
-      aktIdx++;
-    }//end for
+    //find feature that are candidates for goal posts along scanlines 
+    findFeatureCandidates(direction, p1, threshold, thresholdY);
   }//end if
+
+
   Vector2d dir(-direction.y, direction.x);
 
-  GT_TRACE("GradientGoalDetector:3");
+  GT_TRACE("GradientGoalDetector:beginValidationOfFeatures");
   memset(&lastTestFeatureIdx, 0, sizeof(lastTestFeatureIdx));
   //bool goalPostFound = false;
   goalPosts.clear();
@@ -227,185 +113,17 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   {
     const Feature& candidate = features[0][i];
 
-    BresenhamLineScan footPointScanner(candidate.center, dir, getImage().cameraInfo);
+    //check found features for goodness
+    std::vector<Feature>& GoodFeatures = checkForGoodFeatures(dir, candidate, threshold, thresholdY);
 
-    int goodPointsCount = 1;
-
-    Vector2i pos = candidate.center;
-    valueBuffer.init();
-    valueBufferY.init();
-    pointBuffer.init();
-    
-    Vector2d last(pos);
-
-    for(int y = 1; y < 5; y++)
+    GT_TRACE("GradientGoalDetector:getGoodFeatures");
+    if(GoodFeatures.size() >= (size_t) params.minGoodPoints)
     {
-      bool stop = false;
-      for(int yy = 0; yy < 5; yy++)
-      {
-        if(footPointScanner.getNextWithCheck(pos))
-        {
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-            POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-          );
-          pointBuffer.add(pos);
-          IMG_GET(pos.x, pos.y, pixel);
-          int diffVU = (int) pixel.v - (int) pixel.u;
-          valueBuffer.add(diffVU);
-          valueBufferY.add(pixel.y);
-
-          if(yy > 0)
-          {
-            response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-            //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
-            responseY = valueBufferY[2];
-            response /= 10;
-            if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
-            {
-              stop = true;
-            }
-          }
-        }
-      }
-      unsigned j = lastTestFeatureIdx[y];
-      while (!stop && j < features[y].size())
-      {
-        int dist = (pos - features[y][j].center).abs();
-        if(dist < params.dist)
-        {
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
-            POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
-          );
-          lastTestFeatureIdx[y] = j;
-          goodPointsCount++;
-          stop = true;
-           //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
-        }
-        j++;
-      }
-    }//end for
-
-GT_TRACE("GradientGoalDetector:4");
-    if(goodPointsCount >= params.minGoodPoints)
-    {
-      
-      bool footPointFound = false;
-      bool stop = false;
-      Pixel pixel1;
-      Pixel pixel2;
-      Pixel pixel3;
-
-      int lastDiffVU = 0;
-      int lastResponse = 0;
-
-      while(!stop && footPointScanner.getNextWithCheck(pos))
-      {
-        pointBuffer.add(pos);
-        IMG_GET(pos.x, pos.y, pixel);
-        int diffVU = (int) pixel.v - (int) pixel.u;
-        valueBuffer.add(diffVU);
-        valueBufferY.add(pixel.y);
-
-        response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-        //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
-        responseY = valueBufferY[2];
-        response /= 10;
-
-        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-          if(getFieldColorPercept().isFieldColor(pixel))
-          {
-             POINT_PX(ColorClasses::green, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
-          }
-          else
-          {
-            POINT_PX(ColorClasses::gray, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
-          }
-        );
-        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanResponse", 
-          LINE_PX(ColorClasses::white, (int) pointBuffer[1].x + lastResponse, (int) pointBuffer[1].y, (int) pointBuffer[2].x + (int) response, (int) pointBuffer[2].y);
-          LINE_PX(ColorClasses::orange, (int) pointBuffer[1].x + lastDiffVU, (int) pointBuffer[1].y, (int) pointBuffer[2].x + diffVU, (int) pointBuffer[2].y);
-        );
-        lastDiffVU = diffVU;
-        lastResponse = (int) response;
- 
-        IMG_GET((int) pointBuffer[4].x, (int) pointBuffer[4].y, pixel1);
-        IMG_GET((int) pointBuffer[3].x, (int) pointBuffer[3].y, pixel2);
-        IMG_GET((int) pointBuffer[2].x, (int) pointBuffer[2].y, pixel3);
-        if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
-        {
-          stop = true;
-          if
-          (
-            //c > params.minScanPointsAfterGoodPoints && 
-            (getFieldColorPercept().isFieldColor(pixel1) || getFieldColorPercept().isFieldColor(pixel2) || getFieldColorPercept().isFieldColor(pixel3))
-          )
-          {
-            footPointFound = true;
-          }
-          else
-          {
-            int t = 0;
-            int count = 0;
-            while( t < 10 && footPointScanner.getNextWithCheck(pos))
-            {
-              IMG_GET(pos.x, pos.y, pixel);
-              if(getFieldColorPercept().isFieldColor(pixel))
-              {
-                count++;
-              }
-              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-                if(getFieldColorPercept().isFieldColor(pixel))
-                {
-                   POINT_PX(ColorClasses::green, pos.x, pos.y);
-                }
-                else
-                {
-                  POINT_PX(ColorClasses::black, pos.x, pos.y);
-                }
-              );
-              t++;
-            }
-            if(count > 4)
-            {
-              footPointFound = true;
-            }
-          }
-        }
-      }//end while
-
-	  GT_TRACE("GradientGoalDetector:5");
-      if(footPointFound)
-      {
-        //goalPostFound = true;
-        GoalPercept::GoalPost post;
-
-        post.basePoint = Vector2i(pointBuffer[2]);
-        CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(),
-          getImage().cameraInfo,
-          post.basePoint.x, post.basePoint.y, 0.0,
-          post.position);
-
-        post.positionReliable = true;
-        goalPosts.push_back(post);
-        getGoalPercept().add(post);
-        getGoalPercept().horizonScan = horizon;
-
-        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-          CIRCLE_PX(ColorClasses::yellowOrange, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
-        );
-      }
-      else
-      {
-        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-          CIRCLE_PX(ColorClasses::red, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
-        );
-      }
-
-
+      //scan along post to find the foot point of it to be sure its a goal post of the field
+      scanForFootPoints(dir, GoodFeatures[GoodFeatures.size() - 1].center, threshold, thresholdY, horizon);
     }//end if
 
-
+    //mark if candites is post or other possible obstacle
     if(candidate.possibleObstacle)
     {
       DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
@@ -420,7 +138,7 @@ GT_TRACE("GradientGoalDetector:4");
     }
 
   }//end for features[0].size()
-GT_TRACE("GradientGoalDetector:6");
+  GT_TRACE("GradientGoalDetector:setGoalPostPercept");
   
   // exactly two posts are seen => assign site labels
   if(getGoalPercept().getNumberOfSeenPosts() == 2) {
@@ -438,4 +156,318 @@ GT_TRACE("GradientGoalDetector:6");
     }
   }
 }//end execute
+
+void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
+{
+  double response = 0.0;
+  double responseY = 0.0;
+  double lastResponse = 0.0;
+  double lastResponseY = 0.0;
+
+  Pixel pixel;
+
+  int aktIdx = 0;
+
+  bool isCandidate = false;
+  bool isObstacle = false;
+    
+  Feature candidate;
+
+  int diffVU = 0;
+  int lastDiffVU = 0;
+
+  for(int y = (int) p1.y - 12; y <= (int) p1.y + 12; y += 6)
+  {
+    valueBuffer.init();
+    valueBufferY.init();
+    pointBuffer.init();
+    isCandidate = false;
+    Vector2i pos((int) p1.x + 2, y);
+    BresenhamLineScan scanner(pos, scanDir, getImage().cameraInfo);
+    do
+    {
+      pointBuffer.add(pos);
+      IMG_GET(pos.x, pos.y, pixel);
+      diffVU = (int) pixel.v - (int) pixel.u;
+      valueBuffer.add(diffVU);
+      valueBufferY.add(pixel.y);
+
+      if(pointBuffer.isFull())
+      {
+        response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
+        //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
+        responseY = valueBufferY[2];
+        response /= 10;
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_scanlines",
+          if(aktIdx == 2)
+          {
+            POINT_PX(ColorClasses::yellow, pos.x, pos.y );
+          }
+          else
+          {
+            POINT_PX(ColorClasses::gray, pos.x, pos.y );
+          }
+        );
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_difference",
+          if(aktIdx == 2)
+          {
+            LINE_PX(ColorClasses::green, (int) pointBuffer[3].x, (int) pointBuffer[3].y - lastDiffVU, (int) pointBuffer[4].x, (int) pointBuffer[4].y - diffVU);
+            lastDiffVU = diffVU;
+          }
+        );
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_response",
+          if(aktIdx == 2)
+          {
+            LINE_PX(ColorClasses::red, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) /*fabs*/(lastResponse), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int)/* fabs*/(response) );
+            LINE_PX(ColorClasses::white, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) fabs(lastResponseY / 3), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int) fabs(responseY / 3) );
+            lastResponse = response;
+            lastResponseY = responseY;
+          }
+        );
+        if(/*fabs*/(response) >= threshold && fabs(responseY) >= thresholdY)
+        {
+          if(!isCandidate)
+          {
+            candidate.begin = pointBuffer[2];
+            candidate.center = pointBuffer[2];
+            candidate.end = pointBuffer[2];
+            candidate.responseAtBegin.x = response;
+            candidate.responseAtBegin.y = diffVU;
+            if(diffVU < 0)
+            {
+              isObstacle = true;
+            }
+          }
+          isCandidate = true;
+          if(isObstacle)
+          {
+            candidate.possibleObstacle = isObstacle;
+            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
+              POINT_PX(ColorClasses::orange, pos.x - 2, pos.y);
+            );
+          }
+          else
+          {
+            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
+              POINT_PX(ColorClasses::blue, pos.x - 2, pos.y);
+            );
+          }
+        }
+        else
+        {
+          if(isCandidate)
+          {
+            candidate.end = pointBuffer[2];
+            candidate.center = (candidate.end + candidate.begin) / 2;
+            candidate.responseAtEnd.x = response;
+            candidate.responseAtEnd.y = diffVU;
+            features[aktIdx].push_back(candidate);
+          }
+          isCandidate = false;
+          isObstacle = false;
+        }//end if
+      }
+    }
+    while(scanner.getNextWithCheck(pos));
+    aktIdx++;
+  }//end for
+
+
+
+
+}//end getFeatureResponses
+
+std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY)
+{
+  double response = 0.0;
+  double responseY = 0.0;
+  double lastResponse = 0.0;
+  double lastResponseY = 0.0;
+
+  std::vector<Feature> goodFeatures;
+
+  Pixel pixel;
+
+  BresenhamLineScan goodFeatureScanner(candidate.center, scanDir, getImage().cameraInfo);
+
+  Vector2i pos = candidate.center;
+  valueBuffer.init();
+  valueBufferY.init();
+  pointBuffer.init();
+    
+  Vector2d last(pos);
+  //scan 5 times (because 5 scanlines) 5 steps (because 5 pixel between 2 scanlines) along a normal 
+  //of the horizon, to be able to validate features near that normal as good ones
+  for(int y = 1; y < 5; y++)
+  {
+    bool stop = false;
+    for(int yy = 0; yy < 5; yy++)
+    {
+      if(goodFeatureScanner.getNextWithCheck(pos))
+      {
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+          POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+        );
+        pointBuffer.add(pos);
+        IMG_GET(pos.x, pos.y, pixel);
+        int diffVU = (int) pixel.v - (int) pixel.u;
+        valueBuffer.add(diffVU);
+        valueBufferY.add(pixel.y);
+
+        if(yy > 0)
+        {
+          response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
+          //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
+          responseY = valueBufferY[2];
+          response /= 10;
+          if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
+          {
+            stop = true;
+          }
+        }
+      }
+    }
+    unsigned j = lastTestFeatureIdx[y];
+    while (!stop && j < features[y].size())
+    {
+      int dist = (pos - features[y][j].center).abs();
+      if(dist < params.dist)
+      {
+        DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
+          POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
+        );
+        lastTestFeatureIdx[y] = j;
+        goodFeatures.push_back(features[y][j]);
+        stop = true;
+          //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
+      }
+      j++;
+    }
+  }//end for
+  return goodFeatures;
+}
+
+void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon)
+{      
+  double response = 0.0;
+  double responseY = 0.0;
+  double lastResponse = 0.0;
+  double lastResponseY = 0.0;
+
+  Pixel pixel;
+
+  bool footPointFound = false;
+  bool stop = false;
+  Pixel pixel1;
+  Pixel pixel2;
+  Pixel pixel3;
+
+  int lastDiffVU = 0;
+
+  BresenhamLineScan footPointScanner(pos, scanDir, getImage().cameraInfo);
+
+  while(!stop && footPointScanner.getNextWithCheck(pos))
+  {
+    pointBuffer.add(pos);
+    IMG_GET(pos.x, pos.y, pixel);
+    int diffVU = (int) pixel.v - (int) pixel.u;
+    valueBuffer.add(diffVU);
+    valueBufferY.add(pixel.y);
+
+    response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
+    //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
+    responseY = valueBufferY[2];
+    response /= 10;
+
+    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+      if(getFieldColorPercept().isFieldColor(pixel))
+      {
+          POINT_PX(ColorClasses::green, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
+      }
+      else
+      {
+        POINT_PX(ColorClasses::gray, (int) pointBuffer[2].x, (int) pointBuffer[2].y);
+      }
+    );
+    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanResponse", 
+      LINE_PX(ColorClasses::white, (int) pointBuffer[1].x + (int) lastResponse, (int) pointBuffer[1].y, (int) pointBuffer[2].x + (int) response, (int) pointBuffer[2].y);
+      LINE_PX(ColorClasses::orange, (int) pointBuffer[1].x + lastDiffVU, (int) pointBuffer[1].y, (int) pointBuffer[2].x + diffVU, (int) pointBuffer[2].y);
+    );
+    lastDiffVU = diffVU;
+    lastResponse = (int) response;
+ 
+    IMG_GET((int) pointBuffer[4].x, (int) pointBuffer[4].y, pixel1);
+    IMG_GET((int) pointBuffer[3].x, (int) pointBuffer[3].y, pixel2);
+    IMG_GET((int) pointBuffer[2].x, (int) pointBuffer[2].y, pixel3);
+    if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
+    {
+      stop = true;
+      if
+      (
+        //c > params.minScanPointsAfterGoodPoints && 
+        (getFieldColorPercept().isFieldColor(pixel1) || getFieldColorPercept().isFieldColor(pixel2) || getFieldColorPercept().isFieldColor(pixel3))
+      )
+      {
+        footPointFound = true;
+      }
+      else
+      {
+        int t = 0;
+        int count = 0;
+        while( t < 10 && footPointScanner.getNextWithCheck(pos))
+        {
+          IMG_GET(pos.x, pos.y, pixel);
+          if(getFieldColorPercept().isFieldColor(pixel))
+          {
+            count++;
+          }
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+            if(getFieldColorPercept().isFieldColor(pixel))
+            {
+                POINT_PX(ColorClasses::green, pos.x, pos.y);
+            }
+            else
+            {
+              POINT_PX(ColorClasses::black, pos.x, pos.y);
+            }
+          );
+          t++;
+        }
+        if(count > 4)
+        {
+          footPointFound = true;
+        }
+      }
+    }
+  }//end while
+
+  GT_TRACE("GradientGoalDetector:5");
+  if(footPointFound)
+  {
+    //goalPostFound = true;
+    GoalPercept::GoalPost post;
+
+    post.basePoint = Vector2i(pointBuffer[2]);
+    CameraGeometry::imagePixelToFieldCoord(
+      getCameraMatrix(),
+      getImage().cameraInfo,
+      post.basePoint.x, post.basePoint.y, 0.0,
+      post.position);
+
+    post.positionReliable = true;
+    goalPosts.push_back(post);
+    getGoalPercept().add(post);
+    getGoalPercept().horizonScan = horizon;
+
+    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+      CIRCLE_PX(ColorClasses::yellowOrange, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
+    );
+  }
+  else
+  {
+    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+      CIRCLE_PX(ColorClasses::red, (int) pointBuffer[2].x, (int) pointBuffer[2].y, 10);
+    );
+  }
+}
 

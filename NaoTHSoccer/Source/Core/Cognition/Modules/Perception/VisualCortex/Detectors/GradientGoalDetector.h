@@ -67,8 +67,10 @@ public:
   }
  
 private:
+  static const int imageBorderOffset = 25;
   CameraInfo::CameraID cameraID;
-
+  
+  int heightOfHorizon;
   RingBuffer<Vector2d, 5> pointBuffer;
   RingBufferWithSum<double, 5> valueBuffer;
   RingBufferWithSum<double, 5> valueBufferY;
@@ -131,6 +133,10 @@ private:
   std::vector<Feature> features[5];
   int lastTestFeatureIdx[5];
   std::vector<GoalPercept::GoalPost> goalPosts;
+
+  void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
+  std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
+  void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, Image);
