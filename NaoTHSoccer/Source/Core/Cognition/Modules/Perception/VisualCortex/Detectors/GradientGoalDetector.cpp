@@ -113,7 +113,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     const Feature& candidate = features[0][i];
 
     //check found features for goodness
-    std::vector<Feature>& GoodFeatures = checkForGoodFeatures(dir, candidate, threshold, thresholdY);
+    const std::vector<Feature>& GoodFeatures = checkForGoodFeatures(dir, candidate, threshold, thresholdY);
 
     GT_TRACE("GradientGoalDetector:getGoodFeatures");
     if(GoodFeatures.size() >= (size_t) params.minGoodPoints)
@@ -280,8 +280,6 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
 {
   double response = 0.0;
   double responseY = 0.0;
-  double lastResponse = 0.0;
-  double lastResponseY = 0.0;
 
   std::vector<Feature> goodFeatures;
 
@@ -351,7 +349,6 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   double response = 0.0;
   double responseY = 0.0;
   double lastResponse = 0.0;
-  double lastResponseY = 0.0;
 
   Pixel pixel;
 
