@@ -73,10 +73,7 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 
 void CameraMatrixCorrector::reset_calibration()
 {
-  CameraMatrixOffset& cameraInfo = getCameraMatrixOffset();
-  cameraInfo.correctionOffset[cameraID] = Vector2d();
-  //cameraInfo.cameraRollOffset = 0.0;
-  //cameraInfo.cameraTiltOffset = 0.0;
+  getCameraMatrixOffset().correctionOffset[cameraID] = Vector2d();
 }
 
 void CameraMatrixCorrector::calibrate()
@@ -119,22 +116,17 @@ void CameraMatrixCorrector::calibrate()
   }//end for
 
 
-  // apply changes
-  CameraMatrixOffset& cameraInfo = getCameraMatrixOffset();
-
   double lambda = 0.01;
   if (offset.abs() > lambda) {
     offset.normalize(lambda);
   }
 
-
+  // apply changes
   double maxValue = Math::fromDegrees(10.0); // maximal correction offset
   offset.x = Math::clamp(offset.x, -maxValue, maxValue);
   offset.y = Math::clamp(offset.y, -maxValue, maxValue);
 
-  //cameraInfo.cameraRollOffset += offset.x;
-  //cameraInfo.cameraTiltOffset += offset.y;
-  cameraInfo.correctionOffset[cameraID] += offset;
+  getCameraMatrixOffset().correctionOffset[cameraID] += offset;
 }//end calibrate
 
 
