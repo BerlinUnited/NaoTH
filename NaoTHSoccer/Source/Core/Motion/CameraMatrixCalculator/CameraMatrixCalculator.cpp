@@ -6,26 +6,28 @@
 */
 
 #include "CameraMatrixCalculator.h"
+#include <Tools/NaoInfo.h>
 
 void CameraMatrixCalculator::calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,
-    const naoth::CameraInfo& theCameraInfo,
-    const KinematicChain& theKinematicChain
+    const KinematicChain& theKinematicChain,
+    const Pose3D& theCameraOffset,
+    const Vector2d& theCameraCorrectionOffset
   )
 {
   // get the pose of the head
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
 
   // transformation from the head to the camera
-  pose.conc(theCameraInfo.transformation[theCameraInfo.cameraID]);
+  pose.conc(theCameraOffset);
   
   // apply the correction
-  pose.rotateY(theCameraInfo.correctionOffset[theCameraInfo.cameraID].y) // tilt
-      .rotateX(theCameraInfo.correctionOffset[theCameraInfo.cameraID].x); // roll
+  pose.rotateY(theCameraCorrectionOffset.y) // tilt
+      .rotateX(theCameraCorrectionOffset.x); // roll
 
   // copy the result
   theCameraMatrix = pose;
 
-  theCameraMatrix.cameraID = theCameraInfo.cameraID;
+  //theCameraMatrix.cameraID = id;
 }//end execute
 

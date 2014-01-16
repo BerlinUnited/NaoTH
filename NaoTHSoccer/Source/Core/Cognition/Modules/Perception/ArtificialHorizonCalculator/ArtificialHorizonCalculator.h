@@ -23,11 +23,14 @@
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Perception/ArtificialHorizon.h"
 
+#include "Tools/DoubleCamHelpers.h"
+
 BEGIN_DECLARE_MODULE(ArtificialHorizonCalculator)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+
   PROVIDE(ArtificialHorizon)
   PROVIDE(ArtificialHorizonTop)
 END_DECLARE_MODULE(ArtificialHorizonCalculator)
@@ -50,32 +53,9 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  const CameraMatrix& getCameraMatrix() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ArtificialHorizonCalculatorBase::getCameraMatrixTop();
-    } else {
-      return ArtificialHorizonCalculatorBase::getCameraMatrix();
-    }
-  }
-
-  const CameraInfo& getCameraInfo() const
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ArtificialHorizonCalculatorBase::getCameraInfoTop();
-    } else {
-      return ArtificialHorizonCalculatorBase::getCameraInfo();
-    }
-  }
-
-  ArtificialHorizon& getArtificialHorizon()
-  {
-    if(cameraID == CameraInfo::Top) {
-      return ArtificialHorizonCalculatorBase::getArtificialHorizonTop();
-    } else {
-      return ArtificialHorizonCalculatorBase::getArtificialHorizon();
-    }
-  }
+  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator,CameraInfo);
+  DOUBLE_CAM_PROVIDE(ArtificialHorizonCalculator,ArtificialHorizon);
 
 };
 

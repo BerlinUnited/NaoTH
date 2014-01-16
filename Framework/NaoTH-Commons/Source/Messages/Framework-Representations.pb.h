@@ -369,41 +369,41 @@ class CameraInfo : public ::google::protobuf::Message {
   inline double cameratiltoffset() const PROTOBUF_DEPRECATED;
   inline void set_cameratiltoffset(double value) PROTOBUF_DEPRECATED;
   
-  // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
-  inline int correctionoffset_size() const;
-  inline void clear_correctionoffset();
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
+  inline int correctionoffset_size() const PROTOBUF_DEPRECATED;
+  inline void clear_correctionoffset() PROTOBUF_DEPRECATED;
   static const int kCorrectionOffsetFieldNumber = 18;
-  inline const ::naothmessages::DoubleVector2& correctionoffset(int index) const;
-  inline ::naothmessages::DoubleVector2* mutable_correctionoffset(int index);
-  inline ::naothmessages::DoubleVector2* add_correctionoffset();
+  inline const ::naothmessages::DoubleVector2& correctionoffset(int index) const PROTOBUF_DEPRECATED;
+  inline ::naothmessages::DoubleVector2* mutable_correctionoffset(int index) PROTOBUF_DEPRECATED;
+  inline ::naothmessages::DoubleVector2* add_correctionoffset() PROTOBUF_DEPRECATED;
   inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
-      correctionoffset() const;
+      correctionoffset() const PROTOBUF_DEPRECATED;
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
-      mutable_correctionoffset();
+      mutable_correctionoffset() PROTOBUF_DEPRECATED;
   
-  // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
-  inline int headjointoffset_size() const;
-  inline void clear_headjointoffset();
+  // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
+  inline int headjointoffset_size() const PROTOBUF_DEPRECATED;
+  inline void clear_headjointoffset() PROTOBUF_DEPRECATED;
   static const int kHeadJointOffsetFieldNumber = 19;
-  inline const ::naothmessages::DoubleVector2& headjointoffset(int index) const;
-  inline ::naothmessages::DoubleVector2* mutable_headjointoffset(int index);
-  inline ::naothmessages::DoubleVector2* add_headjointoffset();
+  inline const ::naothmessages::DoubleVector2& headjointoffset(int index) const PROTOBUF_DEPRECATED;
+  inline ::naothmessages::DoubleVector2* mutable_headjointoffset(int index) PROTOBUF_DEPRECATED;
+  inline ::naothmessages::DoubleVector2* add_headjointoffset() PROTOBUF_DEPRECATED;
   inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
-      headjointoffset() const;
+      headjointoffset() const PROTOBUF_DEPRECATED;
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
-      mutable_headjointoffset();
+      mutable_headjointoffset() PROTOBUF_DEPRECATED;
   
-  // repeated .naothmessages.Pose3D transformation = 14;
-  inline int transformation_size() const;
-  inline void clear_transformation();
+  // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
+  inline int transformation_size() const PROTOBUF_DEPRECATED;
+  inline void clear_transformation() PROTOBUF_DEPRECATED;
   static const int kTransformationFieldNumber = 14;
-  inline const ::naothmessages::Pose3D& transformation(int index) const;
-  inline ::naothmessages::Pose3D* mutable_transformation(int index);
-  inline ::naothmessages::Pose3D* add_transformation();
+  inline const ::naothmessages::Pose3D& transformation(int index) const PROTOBUF_DEPRECATED;
+  inline ::naothmessages::Pose3D* mutable_transformation(int index) PROTOBUF_DEPRECATED;
+  inline ::naothmessages::Pose3D* add_transformation() PROTOBUF_DEPRECATED;
   inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >&
-      transformation() const;
+      transformation() const PROTOBUF_DEPRECATED;
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >*
-      mutable_transformation();
+      mutable_transformation() PROTOBUF_DEPRECATED;
   
   // optional double openingAngleDiagonal = 15;
   inline bool has_openinganglediagonal() const;
@@ -1496,7 +1496,7 @@ inline void CameraInfo::set_cameratiltoffset(double value) {
   cameratiltoffset_ = value;
 }
 
-// repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+// repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
 inline int CameraInfo::correctionoffset_size() const {
   return correctionoffset_.size();
 }
@@ -1521,7 +1521,7 @@ CameraInfo::mutable_correctionoffset() {
   return &correctionoffset_;
 }
 
-// repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+// repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
 inline int CameraInfo::headjointoffset_size() const {
   return headjointoffset_.size();
 }
@@ -1546,7 +1546,7 @@ CameraInfo::mutable_headjointoffset() {
   return &headjointoffset_;
 }
 
-// repeated .naothmessages.Pose3D transformation = 14;
+// repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
 inline int CameraInfo::transformation_size() const {
   return transformation_.size();
 }

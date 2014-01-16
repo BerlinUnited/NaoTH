@@ -46,27 +46,49 @@ public:
   };
 
 private:
-  void initMassesInfo();
-
-  //
-  void initJointsInfo(naoth::JointData& jointData);
-
-  //
-  void initJointsAxes();
-
-  void initLinksInfo();
 
   void buildLinkChains();
+
+  /**
+  * Set the positions of the links relatively to the parent link.
+  */
+  void initLinkPositions();
+
+  /**
+  * Define the axes for the movable links (joints)
+  */
+  void initJointsAxes();
+
+  /**
+  * Create a link between the movable links of the kinematic chain 
+  * and the corresponding values in the JointData (position, velocity, acceleration).
+  */
+  void linkJointData(naoth::JointData& jointData);
+
+  /**
+  * read from config
+  */
+  void initMassesInfo();
 
 public:
 
   Kinematics::Link theLinks[numOfLinks];
   Vector3d CoM; // center of mass
 
-  inline Kinematics::Link& getLink(LinkID id)
-  {
+
+  inline Kinematics::Link& getLink(LinkID id) {
     return theLinks[id];
   }
+
+  inline const Kinematics::Link& getLink(LinkID id) const {
+    return theLinks[id];
+  }
+
+  inline Kinematics::Link& getLink(int i) {
+    assert(i > -1 && i < numOfLinks);
+    return theLinks[i];
+  }
+
 
   KinematicChain();
   virtual ~KinematicChain();
@@ -91,7 +113,8 @@ private:
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);
 
-// TODO: two different representations in motion. is there a better place for them?
+// declare two different representations: 
+// based on the measured and requested joint positions
 class KinematicChainSensor: public KinematicChain {};
 class KinematicChainMotor: public KinematicChain {};
 

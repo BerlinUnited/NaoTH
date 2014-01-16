@@ -156,14 +156,15 @@ double AttentionAnalyzer::distanceToImageCenter(const Vector2<double>& point)
                     getImage().cameraInfo.getOpticalCenterY()+1).abs();
 
 
-  // Note: projectionInImage = (-1,-1) if no projection is possible.
+  // Note: projectionInImage = (0,0) if no projection is possible.
   // We don't need to treat it extra, cince in this case the resulting distance is maximal.
-  Vector2<int> projectionInImage = 
-    CameraGeometry::relativePointToImage(
-      getCameraMatrix(),
-      getImage().cameraInfo,
-      Vector3<double>(point.x, point.y, 0.0)
-    );
+  Vector2<int> projectionInImage;
+  CameraGeometry::relativePointToImage(
+    getCameraMatrix(),
+    getImage().cameraInfo,
+    Vector3<double>(point.x, point.y, 0.0),
+    projectionInImage
+  );
 
   Vector2<double> pointToCenter(
     projectionInImage.x-getImage().cameraInfo.getOpticalCenterX(),

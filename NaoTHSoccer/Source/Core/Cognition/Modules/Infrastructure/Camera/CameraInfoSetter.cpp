@@ -18,7 +18,6 @@
 
 CameraInfoSetter::CameraInfoSetter()
 {
-  getCameraInfoParameter().init();
 }
 
 void CameraInfoSetter::execute()

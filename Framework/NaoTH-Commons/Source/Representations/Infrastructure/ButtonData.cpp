@@ -41,10 +41,15 @@ string ButtonData::getButtonName(ButtonID id)
 
 void ButtonData::print(ostream& stream) const
 {
+  stream << "Button: Pressed, #Pressed, #Events" << std::endl;
   for(int i = 0; i < numOfButtons; i++)
   {
-    stream << getButtonName((ButtonID)i) << " = " << isPressed[i] <<endl;
-  }//end for
+    stream  << getButtonName((ButtonID)i) << ": " 
+            << isPressed[i] << ", "
+            << numOfFramesPressed[i] << ", "
+            << eventCounter[i]
+            << std::endl;
+  }
 }//end print
 
 

@@ -8,12 +8,8 @@
 #ifndef _SIMULATOR_H
 #define _SIMULATOR_H
 
-#include <stdlib.h>
 #include <iostream>
-#include <fstream>
-#include <list>
-#include <map>
-#include <set>
+#include <strstream>
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/JointData.h>
@@ -40,7 +36,8 @@
 //in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
-#define CYCLE_TIME 20
+#include "LogFileScanner.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 class LogProvider;
 
@@ -55,45 +52,44 @@ public:
 class LogProvider: public Module, virtual private BlackBoardInterface
 {
 private:
-  std::map<std::string, std::string>* representations;
-  std::map<std::string, std::string> exludeMap;
+  const LogFileScanner::Frame* representations;
+  std::set<std::string> exludeMap;
+  LogFileScanner* scanner;
 
 public:
   LogProvider() : representations(NULL) 
   {
-    //HACK: do not provide basic percepts (they are provided by get(...)
-    exludeMap["AccelerometerData"] = "";
-    exludeMap["SensorJointData"] = "";
-    exludeMap["Image"] = "";
-    exludeMap["ImageTop"] = "";
-    exludeMap["FSRData"] = "";
-    exludeMap["GyrometerData"] = "";
-    exludeMap["InertialSensorData"] = "";
-    exludeMap["IRReceiveData"] = "";
-    exludeMap["CurrentCameraSettings"] = "";
-    exludeMap["ButtonData"] = "";
-    exludeMap["BatteryData"] = "";
-    exludeMap["UltraSoundReceiveData"] = "";
-    exludeMap["FrameInfo"] = "";
+    //HACK: do not provide basic percepts (they are provided by get(...))
+    exludeMap.insert("AccelerometerData");
+    exludeMap.insert("SensorJointData");
+    exludeMap.insert("Image");
+    exludeMap.insert("ImageTop");
+    exludeMap.insert("FSRData");
+    exludeMap.insert("GyrometerData");
+    exludeMap.insert("InertialSensorData");
+    exludeMap.insert("IRReceiveData");
+    exludeMap.insert("CurrentCameraSettings");
+    exludeMap.insert("ButtonData");
+    exludeMap.insert("BatteryData");
+    exludeMap.insert("UltraSoundReceiveData");
+    exludeMap.insert("FrameInfo");
   }
 
   virtual std::string getName() const { return "LogProvider"; }
   virtual std::string getModulePath() const { return IF<LogProvider>::getModulePath(); } \
   virtual std::string getDescription() const { return IF<LogProvider>::description; }
 
-  void init(std::map<std::string, std::string>& rep, std::set<std::string>& includedRepresentations)
+  void init(LogFileScanner& logScanner, const LogFileScanner::Frame& rep, const std::set<std::string>& includedRepresentations)
   {
+    scanner = &logScanner;
     representations = &rep;
     std::set<std::string>::iterator iter;
 
-    for(iter = includedRepresentations.begin(); iter != includedRepresentations.end(); ++iter)
-    {
-      if(*iter != "")
-      {
+    for(iter = includedRepresentations.begin(); iter != includedRepresentations.end(); ++iter) {
+      if(*iter != "") {
         DEBUG_REQUEST_REGISTER("LogProvider:"+(*iter), "", true);
       }
-    }//end for
-
+    }
     //DEBUG_REQUEST_REGISTER("FrameInfo", "", false);
   }//end init
 
@@ -101,41 +97,40 @@ public:
   void execute()
   {
     BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
-    BlackBoard::Registry::iterator iter;
-
-    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    
+    for(BlackBoard::Registry::iterator bbData = blackBoard.getRegistry().begin(); bbData != blackBoard.getRegistry().end(); ++bbData)
     {
-      Representation& theRepresentation = iter->second->getRepresentation();
-      const std::string& name = iter->first;
-      
-      // look if there is a logged data for this representation
-      std::map<std::string, std::string>::const_iterator iter = representations->find(name); 
-      if(iter != representations->end() && exludeMap.find(iter->first) == exludeMap.end() && iter->first != "")
+      // look if there is a logged data for this representation 
+      LogFileScanner::Frame::const_iterator frameData = representations->find(bbData->first); 
+      if( frameData != representations->end() && 
+          frameData->second.valid && 
+          frameData->first != "" &&
+          exludeMap.find(frameData->first) == exludeMap.end()
+        )
       {
-        DEBUG_REQUEST_GENERIC("LogProvider:"+(iter->first),
-          std::stringstream stream(iter->second);
-          theRepresentation.deserialize(stream);
-          );
-      }//end if
+        DEBUG_REQUEST_GENERIC("LogProvider:"+(frameData->first),
+          std::istrstream stream(frameData->second.data.data(), frameData->second.data.size());
+          bbData->second->getRepresentation().deserialize(stream);
+        );
+      }
     }//end for
   }//end execute
 };
 
-
+#define CYCLE_TIME 20
 
 class Simulator : public PlatformInterface
 {
 public:
-  Simulator(const char* filePath, bool compatibleMode, bool backendMode);
-  virtual ~Simulator();
+  Simulator(const std::string& filePath, bool backendMode, bool realTime);
+  virtual ~Simulator(){}
 
   virtual std::string getBodyID() const { return "naoth-logsimulator"; }
-
   virtual std::string getBodyNickName() const {return "naoth"; }
-
   virtual std::string getHeadNickName() const {return "naoth"; }
 
   void main();
+  void printRepresentations();
   void printHelp();
   void printCurrentLineInfo();
 
@@ -144,8 +139,7 @@ public:
   void jumpToBegin();
   void jumpToEnd();
   void jumpTo(unsigned int position);
-  void play();
-  void loop();
+  void play(bool loop = false);
 
   template<class T> void generalGet(T& data, std::string name) const;
 
@@ -188,42 +182,33 @@ public:
   /////////////////////// init ///////////////////////
   virtual void init();
   
-  std::map<std::string, std::string>& getRepresentations()
-  {
+  const LogFileScanner::Frame& getRepresentations() {
     return representations;
   }
 
-  std::set<std::string>& getIncludedRepresentations()
-  {
-    return includedRepresentations;
+  const std::set<std::string>& getIncludedRepresentations() {
+    return logFileScanner.getIncludedRepresentations();
   }
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
 
-private:
 
-  bool noFrameInfo;
-  unsigned int startFrameTime;
+public:
+  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  bool backendMode;
+  // play the logfie according to the time of the frames
+  bool realTime;
 
-  std::ifstream logFile;
+  LogFileScanner logFileScanner;
+  LogFileScanner::FrameIterator currentFrame;
+  LogFileScanner::Frame representations;
 
-  std::list<unsigned int> frames;
-
-  // list of representation names included in the logfile
-  std::set<std::string> includedRepresentations;
-  unsigned int maxFrame;
-  unsigned int minFrame;
-  
-  //
-  std::map<std::string, std::string> representations;
-
-  std::list<unsigned int>::iterator currentFrame;
   unsigned int lastFrameTime;
+  // the simulated time and the framenumber contineously increases even if the logfile is played backwards (!)
+  unsigned int simulatedTime;
+  unsigned int simulatedFrameNumber;
 
-  std::map<unsigned int, std::streampos> frameNumber2PosStart;
-  std::map<unsigned int, std::streampos> frameNumber2PosEnd;
-  
   char getInput();
 
   /**
@@ -238,30 +223,18 @@ private:
    */
   void adjust_frame_time();
 
-  bool compatibleExecute(const std::string& name, size_t dataSize);
-
-  /** Initially parses the file */
-  void parseFile();
-
-  /** If true, do some corrections to the logfiles to be more compatible to old ones */
-  bool compatibleMode;
-
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
-  bool backendMode;
-
-
 private:
   DebugServer theDebugServer;
+
 public:
-  void get(DebugMessageIn& data)
-  {
+  void get(DebugMessageIn& data) {
     theDebugServer.getDebugMessageIn(data);
   }
 
-  void set(const DebugMessageOut& data)
-  {
-    if(data.answers.size() > 0)
+  void set(const DebugMessageOut& data) {
+    if(data.answers.size() > 0) {
       theDebugServer.setDebugMessageOut(data);
+    }
   }
 };
 

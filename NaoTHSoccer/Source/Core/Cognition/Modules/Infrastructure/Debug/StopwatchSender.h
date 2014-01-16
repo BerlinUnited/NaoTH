@@ -5,7 +5,7 @@
  */
 
 #ifndef STOPWATCHSENDER_H
-#define  STOPWATCHSENDER_H
+#define STOPWATCHSENDER_H
 
 #include <map>
 
@@ -15,7 +15,6 @@
 #include <Tools/DataStructures/ParameterList.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
-//#include "Representations/Infrastructure/FieldInfo.h"
 
 using namespace naoth;
 
@@ -34,9 +33,6 @@ public:
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream);
-
-private:
-  std::map<std::string, ParameterList*> paramlists;
 };
 
 #endif  /* STOPWATCHSENDER_H */

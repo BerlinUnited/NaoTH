@@ -1,30 +1,31 @@
 #!/bin/bash
 aplay /usr/share/naoqi/wav/chimes_short.wav
 
+# stop naoqi and/or naoth if they are to replace
+if [ -f "./deploy/home/nao/bin/naoth" ]; then
+  /etc/init.d/naoth stop
+fi
+if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
+  /etc/init.d/naoqi stop
+fi
+
+# backup the stuff from the robot
 rm -rf ./backup
 mkdir ./backup
 cp -r /home/nao/naoqi/Config ./backup
 cp -R /home/nao/bin ./backup
 
-# stop naoqi and/or naoth
-if [ -f "./deploy/home/nao/bin/naoth" ]; then
-  /etc/init.d/naoth stop
-fi
-
-if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
-  /etc/init.d/naoqi stop
-fi
-
 # remove files that will be copied
 if [ -d "./deploy/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/Config/general
-  rm -f /home/nao/Config/reachability_grid.dat
-  rm -rf /home/nao/Config/robot_heads
+  rm -rf /home/nao/Config/platform
   rm -rf /home/nao/Config/robots
+  rm -rf /home/nao/Config/robot_heads
   rm -rf /home/nao/Config/scheme
-  rm -rf /home/nao/Config/scheme.cfg
-  rm -rf /home/nao/Config/behavior-ic.dat
   rm -rf /home/nao/Config/private
+  rm -f /home/nao/Config/scheme.cfg
+  rm -f /home/nao/Config/behavior-ic.dat
+  rm -f /home/nao/Config/reachability_grid.dat
 fi
 if [ -f "./deploy/home/nao/bin/naoth" ]; then
   rm -f /home/nao/bin/naoth

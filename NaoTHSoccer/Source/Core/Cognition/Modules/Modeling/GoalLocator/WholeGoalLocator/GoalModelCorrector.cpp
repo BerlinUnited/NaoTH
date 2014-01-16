@@ -13,13 +13,22 @@ void GoalModelCorrector::correct_the_goal_percept_on_field(
   Vector2<double>& offset)
 {
   // project the goal postst to image with the given camera matrix
-  Vector2<double> postInImage1 = CameraGeometry::relativePointToImageDouble(
+  // NOTE: return if no projection possible
+  Vector2<double> postInImage1;
+  if(!CameraGeometry::relativePointToImage(
     cameraMatrix,cameraInfo,
-    Vector3d(postOnField1.x,postOnField1.y,0.0));
+    Vector3d(postOnField1.x,postOnField1.y,0.0), postInImage1))
+  {
+    return;
+  }
 
-  Vector2<double> postInImage2 = CameraGeometry::relativePointToImageDouble(
+  Vector2<double> postInImage2;
+  if(!CameraGeometry::relativePointToImage(
     cameraMatrix,cameraInfo,
-    Vector3d(postOnField2.x,postOnField2.y,0.0));
+    Vector3d(postOnField2.x,postOnField2.y,0.0), postInImage2))
+  {
+    return;
+  }
 
   //
   correct_the_goal_percept_in_image(

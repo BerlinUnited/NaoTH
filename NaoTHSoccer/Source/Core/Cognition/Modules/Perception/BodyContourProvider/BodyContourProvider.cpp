@@ -14,644 +14,302 @@
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/DebugDrawings.h>
 
+#include "Tools/ImageProcessing/BresenhamLineScan.h"
+
 using namespace std;
 
 BodyContourProvider::BodyContourProvider()
 :
   cameraID(CameraInfo::Bottom)
 {
-  BodyContourProviderBase::getBodyContour().stepSize = 20;
-  BodyContourProviderBase::getBodyContour().yDensity = BodyContourProviderBase::getImage().cameraInfo.resolutionHeight/BodyContourProviderBase::getBodyContour().stepSize;
-  BodyContourProviderBase::getBodyContour().xDensity = BodyContourProviderBase::getImage().cameraInfo.resolutionWidth/BodyContourProviderBase::getBodyContour().stepSize;
-  BodyContourProviderBase::getBodyContour().cameraResolution.x = BodyContourProviderBase::getImage().cameraInfo.resolutionWidth;
-  BodyContourProviderBase::getBodyContour().cameraResolution.y = BodyContourProviderBase::getImage().cameraInfo.resolutionHeight;
-  BodyContourProviderBase::getBodyContourTop().stepSize = 20;
-  BodyContourProviderBase::getBodyContourTop().yDensity = BodyContourProviderBase::getImageTop().cameraInfo.resolutionHeight/BodyContourProviderBase::getBodyContourTop().stepSize;
-  BodyContourProviderBase::getBodyContourTop().xDensity = BodyContourProviderBase::getImageTop().cameraInfo.resolutionWidth/BodyContourProviderBase::getBodyContourTop().stepSize;
-  BodyContourProviderBase::getBodyContourTop().cameraResolution.x = BodyContourProviderBase::getImageTop().cameraInfo.resolutionWidth;
-  BodyContourProviderBase::getBodyContourTop().cameraResolution.y = BodyContourProviderBase::getImageTop().cameraInfo.resolutionHeight;
- 
-  BodyContourProviderBase::getBodyContour().grid.resize(BodyContourProviderBase::getBodyContour().xDensity);
-  BodyContourProviderBase::getBodyContourTop().grid.resize(BodyContourProviderBase::getBodyContourTop().xDensity);
-  for (int i = 0; i <  BodyContourProviderBase::getBodyContour().xDensity; i++)
-  {
-    BodyContourProviderBase::getBodyContour().grid[i].resize(BodyContourProviderBase::getBodyContour().yDensity);
-  }
-  for (int i = 0; i <  BodyContourProviderBase::getBodyContourTop().xDensity; i++)
-  {
-    BodyContourProviderBase::getBodyContourTop().grid[i].resize(BodyContourProviderBase::getBodyContourTop().yDensity);
-  }
+  // init the grid
+  getBodyContour().setGridSize(20, getCameraInfo().resolutionWidth, getCameraInfo().resolutionHeight);
+  getBodyContourTop().setGridSize(20, getCameraInfo().resolutionWidth, getCameraInfo().resolutionHeight);
+
   // load contour parameters
   // torso
-  bodyparts.torso.push_back(Vector3<double>(-60, 17, 80));
-  bodyparts.torso.push_back(Vector3<double>(-53, 45, 80));
-  bodyparts.torso.push_back(Vector3<double>( -35, 58, 100));
-  bodyparts.torso.push_back(Vector3<double>( -32, 75, 115));
-  bodyparts.torso.push_back(Vector3<double>(32, 75, 115));
-  bodyparts.torso.push_back(Vector3<double>(35, 58, 100));
-  bodyparts.torso.push_back(Vector3<double>(51, 45, 80));
-  bodyparts.torso.push_back(Vector3<double>(59, 17, 80));
-  bodyparts.torso.push_back(Vector3<double>(59, -17, 80));
-  bodyparts.torso.push_back(Vector3<double>(51, -45, 80));
-  bodyparts.torso.push_back(Vector3<double>(35, -58, 100));
-  bodyparts.torso.push_back(Vector3<double>(32, -75, 115));
-  bodyparts.torso.push_back(Vector3<double>(-32, -75, 115));
-  bodyparts.torso.push_back(Vector3<double>(-35, -58, 100));
-  bodyparts.torso.push_back(Vector3<double>(-53, -45, 80));
-  bodyparts.torso.push_back(Vector3<double>(-60, -17, 80));   
+  bodyparts.torso.push_back(Vector3d(-60, 17, 80));
+  bodyparts.torso.push_back(Vector3d(-53, 45, 80));
+  bodyparts.torso.push_back(Vector3d( -35, 58, 100));
+  bodyparts.torso.push_back(Vector3d( -32, 75, 115));
+  bodyparts.torso.push_back(Vector3d(32, 75, 115));
+  bodyparts.torso.push_back(Vector3d(35, 58, 100));
+  bodyparts.torso.push_back(Vector3d(51, 45, 80));
+  bodyparts.torso.push_back(Vector3d(59, 17, 80));
+  bodyparts.torso.push_back(Vector3d(59, -17, 80));
+  bodyparts.torso.push_back(Vector3d(51, -45, 80));
+  bodyparts.torso.push_back(Vector3d(35, -58, 100));
+  bodyparts.torso.push_back(Vector3d(32, -75, 115));
+  bodyparts.torso.push_back(Vector3d(-32, -75, 115));
+  bodyparts.torso.push_back(Vector3d(-35, -58, 100));
+  bodyparts.torso.push_back(Vector3d(-53, -45, 80));
+  bodyparts.torso.push_back(Vector3d(-60, -17, 80));   
   // upper arm
-  bodyparts.upperArm.push_back(Vector3<double>(15, -5, -60));
-  bodyparts.upperArm.push_back(Vector3<double>(10, 5, -60));
-  bodyparts.upperArm.push_back(Vector3<double>(-25, 5, -40));
-  bodyparts.upperArm.push_back(Vector3<double>(-30, 25, -30));
-  bodyparts.upperArm.push_back(Vector3<double>(-40, 25, -10));
-  bodyparts.upperArm.push_back(Vector3<double>(-45, 20, 5));
-  bodyparts.upperArm.push_back(Vector3<double>(-35, 10, 30));
-  bodyparts.upperArm.push_back(Vector3<double>(-10, -5, 42));
-  bodyparts.upperArm.push_back(Vector3<double>(0, -22, 47));
-  bodyparts.upperArm.push_back(Vector3<double>(120, -22, 47));
+  bodyparts.upperArm.push_back(Vector3d(  15,  -5, -60));
+  bodyparts.upperArm.push_back(Vector3d(  10,   5, -60));
+  bodyparts.upperArm.push_back(Vector3d( -25,   5, -40));
+  bodyparts.upperArm.push_back(Vector3d( -30,  25, -30));
+  bodyparts.upperArm.push_back(Vector3d( -40,  25, -10));
+  bodyparts.upperArm.push_back(Vector3d( -45,  20,   5));
+  bodyparts.upperArm.push_back(Vector3d( -35,  10,  30));
+  bodyparts.upperArm.push_back(Vector3d( -20, -10,  42));
+  bodyparts.upperArm.push_back(Vector3d(   0, -22,  47));
+  bodyparts.upperArm.push_back(Vector3d( 120, -22,  47));
   // lower arm
-  bodyparts.lowerArm.push_back(Vector3<double>(-20, 30, 25));
-  bodyparts.lowerArm.push_back(Vector3<double>(120, 30, 45));
-  bodyparts.lowerArm.push_back(Vector3<double>(120, -40, 40));
+  bodyparts.lowerArm.push_back(Vector3d(-20, 30, 25));
+  bodyparts.lowerArm.push_back(Vector3d(120, 30, 45));
+  bodyparts.lowerArm.push_back(Vector3d(120, -40, 40));
   // upper leg
-  bodyparts.upperLeg.push_back(Vector3<double>(50, 30, 0));
-  bodyparts.upperLeg.push_back(Vector3<double>(50, 50, -115));
-  bodyparts.upperLeg.push_back(Vector3<double>(-60, 45, -160));
-  bodyparts.upperLeg.push_back(Vector3<double>(-60, -38, -160));
-  bodyparts.upperLeg.push_back(Vector3<double>(50, -42, -115));
-  bodyparts.upperLeg.push_back(Vector3<double>(50, -30, 0));
+  bodyparts.upperLeg.push_back(Vector3d(50, 30, 0));
+  bodyparts.upperLeg.push_back(Vector3d(50, 50, -115));
+  bodyparts.upperLeg.push_back(Vector3d(-60, 45, -160));
+  bodyparts.upperLeg.push_back(Vector3d(-60, -38, -160));
+  bodyparts.upperLeg.push_back(Vector3d(50, -42, -115));
+  bodyparts.upperLeg.push_back(Vector3d(50, -30, 0));
   // lower leg
-  bodyparts.lowerLeg.push_back(Vector3<double>(50, 50, -115));
-  bodyparts.lowerLeg.push_back(Vector3<double>(50, -42, -115));
+  bodyparts.lowerLeg.push_back(Vector3d(50, 50, -115));
+  bodyparts.lowerLeg.push_back(Vector3d(50, -42, -115));
   // foot
-  bodyparts.foot.push_back(Vector3<double>(-20, 50, -35));
-  bodyparts.foot.push_back(Vector3<double>(65, 50, -35));
-  bodyparts.foot.push_back(Vector3<double>(105, 20, -35));
-  bodyparts.foot.push_back(Vector3<double>(105, -20, -35));
-  bodyparts.foot.push_back(Vector3<double>(80, -40, -35));
-  bodyparts.foot.push_back(Vector3<double>(-20, -40, -35));
+  bodyparts.foot.push_back(Vector3d(-20, 50, -35));
+  bodyparts.foot.push_back(Vector3d(65, 50, -35));
+  bodyparts.foot.push_back(Vector3d(105, 20, -35));
+  bodyparts.foot.push_back(Vector3d(105, -20, -35));
+  bodyparts.foot.push_back(Vector3d(80, -40, -35));
+  bodyparts.foot.push_back(Vector3d(-20, -40, -35));
   
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_feet", "draws 3D body contour of the feet", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_legs", "draws 3D body contour of the legs", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_torso", "draws 3D body contour of the torso", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_shoulders", "draws 3D body contour of the shoulders", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d_body_contour_forearms", "draws 3D body contour of the forearms", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:feet", "draw 3D body contour of the feet", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:legs", "draw 3D body contour of the legs", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:torso", "draw 3D body contour of the torso", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:shoulders", "draw 3D body contour of the shoulders", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:forearms", "draw 3D body contour of the forearms", false);
 
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_body_contour_lines", "draws body contour on the image based on lines", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_body_contour_lines", "draws body contour on the image based on lines", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_projected_contour_lines", "draw body contour on the image based on lines", false);
 
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_activated_cells", "draws activated cells", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_activated_cells", "draws activated cells", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_activated_cells", "draw activated cells", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_activated_cells", "draw activated cells", false);
 }
 
 void BodyContourProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-  getBodyContour().lines.clear();
-  eraseGrid();
-  getBodyContour().grid.resize(getBodyContour().xDensity);
-  for (int i = 0; i < getBodyContour().xDensity; i++)
-  {
-    getBodyContour().grid[i].resize(getBodyContour().yDensity);
-  }
-  
-  lineNumber = 0; 
-  
-  // add body contours
-  add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::Torso);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::FootLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::FootRight);
-  add(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::UpperArmLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::UpperArmRight);
-  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmRight);
-    
-  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_body_contour_lines",
-    if(cameraID == CameraInfo::Top)
-    {
-      if (getBodyContour().lines.size() >= 2)
-      {
-        for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
-        {
-          TOP_LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
-        }// end for
-      }// end if
-    }
-  );
-  DEBUG_REQUEST("BodyContourProvider:BottomCam:draw_body_contour_lines",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      if (getBodyContour().lines.size() >= 2)
-      {
-        for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
-        {
-          LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
-        }// end for
-      }// end if
-    }
-  );
+  CANVAS_PX(cameraID);
 
-  DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_feet",
-    Vector3<double> lf1 = getKinematicChain().theLinks[KinematicChain::LFoot].M * bodyparts.foot[0];
-    for (unsigned int i = 1; i < bodyparts.foot.size(); i++)
+  getBodyContour().reset();
+
+
+  // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
+  kinematicCameraMatrix = getKinematicChain().theLinks[KinematicChain::Head].M;
+  kinematicCameraMatrix.conc(NaoInfo::robotDimensions.cameraTransformation[cameraID]);
+ 
+  // apply the correction
+  kinematicCameraMatrix.rotateY(getCameraMatrixOffset().correctionOffset[cameraID].y) // tilt
+                       .rotateX(getCameraMatrixOffset().correctionOffset[cameraID].x); // roll
+  // HACK: end
+
+  // calculate body contours
+  add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, BodyContour::Torso);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg, 1, BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg, 1, BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot, 1, BodyContour::FootLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, BodyContour::FootRight);
+  add(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm, 1, BodyContour::UpperArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, BodyContour::UpperArmRight);
+  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, BodyContour::LowerArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, BodyContour::LowerArmRight);
+
+  // draw some debug stuff
+  debug();
+}// end execute
+
+
+void BodyContourProvider::add(
+  const Pose3D& origin, 
+  const std::vector<Vector3d>& c, 
+  double sign, 
+  BodyContour::BodyPartID id)
+{
+  // constants
+  const Vector2i frameUpperLeft(0,0);
+  const Vector2i frameLowerRight(getCameraInfo().resolutionWidth-1, getCameraInfo().resolutionHeight-1);
+  
+  // estimate the position of contour-point based on current position of the limb
+  Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
+  // project this point into the image
+  Vector2i q1;
+  bool q1_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p1, q1);
+
+  // start building the contour lines
+  for(size_t i = 1; i < c.size(); i++)
+  {
+    Vector3d p2 = origin * Vector3d(c[i].x, c[i].y * sign, c[i].z);
+    Vector2i q2;
+    bool q2_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p2, q2);
+
+    // if the prjection was successful
+    if (q1_ok && q2_ok)
     {
-      Vector3<double> lf2 = getKinematicChain().theLinks[KinematicChain::LFoot].M * bodyparts.foot[i];
-      LINE_3D(ColorClasses::red, lf1, lf2);
-      lf1 = lf2;
-    }// end for
-    Vector3<double> rf1 = getKinematicChain().theLinks[KinematicChain::RFoot].M * Vector3<double>(bodyparts.foot[0].x, bodyparts.foot[0].y * (-1), bodyparts.foot[0].z);
-    for (unsigned int i = 1; i < bodyparts.foot.size(); i++)
-    {
-      Vector3<double> rf2 = getKinematicChain().theLinks[KinematicChain::RFoot].M * Vector3<double>(bodyparts.foot[i].x, bodyparts.foot[i].y * (-1), bodyparts.foot[i].z);
-      LINE_3D(ColorClasses::red, rf1, rf2);
-      rf1 = rf2;
-    }// end for
-  );
-  DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_legs",
-    Vector3<double> rl1 = getKinematicChain().theLinks[KinematicChain::RThigh].M * Vector3<double>(bodyparts.upperLeg[0].x, bodyparts.upperLeg[0].y * (-1), bodyparts.upperLeg[0].z);
-    for (unsigned int i = 1; i < bodyparts.upperLeg.size(); i++)
-    {
-      Vector3<double> rl2 = getKinematicChain().theLinks[KinematicChain::RThigh].M * Vector3<double>(bodyparts.upperLeg[i].x, bodyparts.upperLeg[i].y * (-1), bodyparts.upperLeg[i].z);
-      LINE_3D(ColorClasses::blue, rl1, rl2);
-      rl1 = rl2;
-    }// end for
-    Vector3<double> ll1 = getKinematicChain().theLinks[KinematicChain::LThigh].M * bodyparts.upperLeg[0];
-    for (unsigned int i = 1; i < bodyparts.upperLeg.size(); i++)
-    {
-      Vector3<double> ll2 = getKinematicChain().theLinks[KinematicChain::LThigh].M * bodyparts.upperLeg[i];
-      LINE_3D(ColorClasses::blue, ll1, ll2);
-      ll1 = ll2;
-    }// end for
-    Vector3<double> lknee1 = getKinematicChain().theLinks[KinematicChain::LThigh].M * bodyparts.lowerLeg[0];
-    Vector3<double> lknee2 = getKinematicChain().theLinks[KinematicChain::LThigh].M * bodyparts.lowerLeg[1];
-    Vector3<double> rknee1 = getKinematicChain().theLinks[KinematicChain::RThigh].M * Vector3<double>(bodyparts.lowerLeg[0].x, bodyparts.lowerLeg[0].y * (-1), bodyparts.lowerLeg[0].z);
-    Vector3<double> rknee2 = getKinematicChain().theLinks[KinematicChain::RThigh].M * Vector3<double>(bodyparts.lowerLeg[1].x, bodyparts.lowerLeg[1].y * (-1), bodyparts.lowerLeg[1].z);
-    LINE_3D(ColorClasses::blue, lknee1, lknee2);
-    LINE_3D(ColorClasses::blue, rknee1, rknee2);
-  );
-  DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_torso",
-    Vector3<double> t1 = getKinematicChain().theLinks[KinematicChain::Torso].M * bodyparts.torso[0];
-    for (unsigned int i = 1; i < bodyparts.torso.size(); i++)
-    {
-      Vector3<double> t2 = getKinematicChain().theLinks[KinematicChain::Torso].M * bodyparts.torso[i];
-      LINE_3D(ColorClasses::green, t1, t2);
-      t1 = t2;
-    }// end for
-  );
-  DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_shoulders",
-    Vector3<double> rua1 = getKinematicChain().theLinks[KinematicChain::RBicep].M * Vector3<double>(bodyparts.upperArm[0].x, bodyparts.upperArm[0].y * (-1), bodyparts.upperArm[0].z);
-    for (unsigned int i = 1; i < bodyparts.upperArm.size(); i++)
-    {
-      Vector3<double> rua2 = getKinematicChain().theLinks[KinematicChain::RBicep].M * Vector3<double>(bodyparts.upperArm[i].x, bodyparts.upperArm[i].y * (-1), bodyparts.upperArm[i].z);
-      LINE_3D(ColorClasses::yellow, rua1, rua2);
-      rua1 = rua2;
-    }// end for
-    Vector3<double> lua1 = getKinematicChain().theLinks[KinematicChain::LBicep].M * bodyparts.upperArm[0];
-    for (unsigned int i = 1; i < bodyparts.upperArm.size(); i++)
-    {
-      Vector3<double> lua2 = getKinematicChain().theLinks[KinematicChain::LBicep].M * bodyparts.upperArm[i];
-      LINE_3D(ColorClasses::yellow, lua1, lua2);
-      lua1 = lua2;
-    }// end for
-  );
-  DEBUG_REQUEST("BodyContourProvider:draw_3d_body_contour_forearms",
-    Vector3<double> rla1 = getKinematicChain().theLinks[KinematicChain::RForeArm].M * Vector3<double>(bodyparts.lowerArm[0].x, bodyparts.lowerArm[0].y * (-1), bodyparts.lowerArm[0].z);
-    for (unsigned int i = 1; i < bodyparts.lowerArm.size(); i++)
-    {
-      Vector3<double> rla2 = getKinematicChain().theLinks[KinematicChain::RForeArm].M * Vector3<double>(bodyparts.lowerArm[i].x, bodyparts.lowerArm[i].y * (-1), bodyparts.lowerArm[i].z);
-      LINE_3D(ColorClasses::orange, rla1, rla2);
-      rla1 = rla2;
-    }// end for
-    Vector3<double> lla1 = getKinematicChain().theLinks[KinematicChain::LForeArm].M * bodyparts.lowerArm[0];
-    for (unsigned int i = 1; i < bodyparts.lowerArm.size(); i++)
-    {
-      Vector3<double> lla2 = getKinematicChain().theLinks[KinematicChain::LForeArm].M * bodyparts.lowerArm[i];
-      LINE_3D(ColorClasses::orange, lla1, lla2);
-      lla1 = lla2;
-    }// end for
-  );
-  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Top)
-    {
-      for(int i = 0; i < getBodyContour().xDensity; i++)
+      Vector2i a(q1);
+      Vector2i b(q2);
+      
+      bool lineCutsImage = clampSegment(frameUpperLeft, frameLowerRight, a, b);
+      if(lineCutsImage) 
       {
-        for (int j = 0; j < getBodyContour().yDensity; j++)
-        {
-          if (getBodyContour().grid[i][j].occupied)
-          {
-              TOP_RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
+        updateBodyContur(a,b,id);
+      }
+
+      // Treat the special cases when either q1 or q2 are above the image
+      // NOTE: this is enough because we assume that a body part always covers
+      //       the lower part of the image
+      if(lineCutsImage)
+      {
+        if(q2.y < 0 && b.y == 0) {
+          int x2 = Math::clamp(q2.x, frameUpperLeft.x, frameLowerRight.x);
+          updateBodyContur(b, Vector2i(x2, 0), id);
+        }
+
+        if(q1.y < 0 && a.y == 0) {
+          int x1 = Math::clamp(q1.x, frameUpperLeft.x, frameLowerRight.x);
+          updateBodyContur(Vector2i(x1, 0), a, id);
+        }
+      }
+      else
+      {
+        if(q1.y < 0 || q2.y < 0) {
+          int x1 = Math::clamp(q1.x, frameUpperLeft.x, frameLowerRight.x);
+          int x2 = Math::clamp(q2.x, frameUpperLeft.x, frameLowerRight.x);
+          if(x1 != x2) {
+            updateBodyContur(Vector2i(x1, 0), Vector2i(x2, 0), id);
+          }
+        }
+      }
+    }// end if projected
+
+    p1 = p2;
+    q1 = q2;
+    q1_ok = q2_ok;
+  }// end for
+}// end add
+
+void BodyContourProvider::updateBodyContur(const Vector2i& p1, const Vector2i& p2, BodyContour::BodyPartID id)
+{
+  const Vector2i cellOneCoords = getBodyContour().getCellCoord(p1);
+  const Vector2i cellTwoCoords = getBodyContour().getCellCoord(p2);
+
+  const BodyContour::Cell& cellOne = getBodyContour().getCell(cellOneCoords);
+  const BodyContour::Cell& cellTwo = getBodyContour().getCell(cellTwoCoords);
+
+  if(!cellOne.occupied || !cellTwo.occupied || cellOne.id == id || cellTwo.id == id)
+  {
+    DEBUG_REQUEST("BodyContourProvider:draw_projected_contour_lines",
+      LINE_PX(ColorClasses::skyblue,p1.x, p1.y, p2.x, p2.y);
+    );
+
+    BresenhamLineScan scanLine(cellOneCoords, cellTwoCoords);
+    Vector2i point(cellOneCoords);
+
+    for(int i = 0; i <= scanLine.numberOfPixels; i++) {
+      for (int j = point.y; j < getBodyContour().gridHeight(); j++) {
+        getBodyContour().setCell(point.x, j, id, true);
+      }
+      scanLine.getNext(point);
+    }
+  }
+}//end updateBodyContur
+
+bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b)
+{
+  bool aInside = isInsideImage(a);
+  bool bInside = isInsideImage(b);
+
+  if(!aInside || !bInside) {
+    Math::LineSegment segment(a, b);
+    Vector2i ac, bc;
+    if(!Geometry::getIntersectionPointsOfLineAndRectangle(ul, lr, segment, ac, bc)) {
+      return false;
+    }
+
+    // check if the clamped points are inside of the segment (a,b)
+    if(!aInside && !bInside) {
+      if(ac.x > max(a.x,b.x) || ac.x < min(a.x,b.x) || ac.y > max(a.y,b.y) || ac.y < min(a.y,b.y) ||
+         bc.x > max(a.x,b.x) || bc.x < min(a.x,b.x) || bc.y > max(a.y,b.y) || bc.y < min(a.y,b.y))
+      {
+        return false;
+      }
+    }
+
+    // clamp if necessary
+    if(!aInside) { a = ac; }
+    if(!bInside) { b = bc; }
+  }
+
+  return true;
+}//end clampSegment
+
+
+ void BodyContourProvider::debug()
+ {
+  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_activated_cells",
+    if(cameraID == CameraInfo::Top) {
+      for(int i = 0; i < getBodyContour().gridWidth(); i++) {
+        for (int j = 0; j < getBodyContour().gridHeight(); j++) {
+          if (getBodyContour().getGrid()[i][j].occupied) {
+              TOP_RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
           }
         }
       }
     }
   );
   DEBUG_REQUEST("BodyContourProvider:BottomCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Bottom)
-    {
-      for(int i = 0; i < getBodyContour().xDensity; i++)
-      {
-        for (int j = 0; j < getBodyContour().yDensity; j++)
-        {
-          if (getBodyContour().grid[i][j].occupied)
-          {
+    if(cameraID == CameraInfo::Bottom) {
+      for(int i = 0; i < getBodyContour().gridWidth(); i++) {
+        for (int j = 0; j < getBodyContour().gridHeight(); j++) {
+          if (getBodyContour().getGrid()[i][j].occupied) {
               IMAGE_DRAWING_CONTEXT;
-              RECT_PX(ColorClasses::black, i*getBodyContour().stepSize, j*getBodyContour().stepSize, (i+1)*getBodyContour().stepSize, (j+1)*getBodyContour().stepSize);
+              RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
           }
         }
       }
     }
   );
-}// end execute
 
-// TODO: Comment
-inline bool BodyContourProvider::withinImage(const Vector2<double>& point) const
-{ 
-  return ((point.x >= 0 && point.x < (int)getImage().cameraInfo.resolutionWidth) &&
-          (point.y >= 0 && point.y < (int)getImage().cameraInfo.resolutionHeight));
-}
+  DEBUG_REQUEST("BodyContourProvider:draw_3d:feet",
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot,  1, ColorClasses::red);
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, ColorClasses::red);
+  );
+  DEBUG_REQUEST("BodyContourProvider:draw_3d:legs",
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg,  1, ColorClasses::blue);
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, ColorClasses::blue);
 
-// TODO: Comment
-inline void BodyContourProvider::initializeGrid()
-{
-  for(int i = 0; i < getBodyContour().xDensity; i++)
-  {
-    for (int j = 0; j < getBodyContour().yDensity; j++)
-    {
-      getBodyContour().grid[i][j].occupied = false;
-      getBodyContour().grid[i][j].lineNumbers = -1;
-    }
-  }
-}
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg,  1, ColorClasses::blue);
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, ColorClasses::blue);
+  );
+  DEBUG_REQUEST("BodyContourProvider:draw_3d:torso",
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso,  1, ColorClasses::green);
+  );
+  DEBUG_REQUEST("BodyContourProvider:draw_3d:shoulders",
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm,  1, ColorClasses::yellow);
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, ColorClasses::yellow);
+  );
+  DEBUG_REQUEST("BodyContourProvider:draw_3d:forearms",
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm,  1, ColorClasses::orange);
+    drawContur3D(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, ColorClasses::orange);
+  );
+}//end debug
 
-// TODO: Comment
-
-inline void BodyContourProvider::eraseGrid()
-{
-  getBodyContour().grid.clear();
-}
-
-// TODO:Comment
-inline void BodyContourProvider::cellPos(const BodyContour::Line& line, Vector2<int>& firstCell, Vector2<int>& secondCell) const
-{
-   firstCell.x = line.p1.x / getBodyContour().stepSize;
-   firstCell.y = line.p1.y / getBodyContour().stepSize;
-   secondCell.x = line.p2.x / getBodyContour().stepSize;
-   secondCell.y = line.p2.y / getBodyContour().stepSize;
-   if (firstCell.x == getBodyContour().xDensity)
-   {
-     firstCell.x = firstCell.x - 1;
-   }
-   if (firstCell.y == getBodyContour().yDensity)
-   {
-     firstCell.y = firstCell.y - 1;
-   }
-   if (firstCell.x == getBodyContour().xDensity && firstCell.y == getBodyContour().yDensity)
-   {
-     firstCell.x = firstCell.x - 1;
-     firstCell.y = firstCell.y - 1;
-   }
-   if (secondCell.x == getBodyContour().xDensity)
-   {
-     secondCell.x = secondCell.x - 1;
-   }
-   if (secondCell.y == getBodyContour().yDensity)
-   {
-     secondCell.y = secondCell.y - 1;
-   }
-   if (secondCell.x == getBodyContour().xDensity && secondCell.y == getBodyContour().yDensity)
-   {
-     secondCell.x = secondCell.x - 1;
-     secondCell.y = secondCell.y - 1;
-   }
-}
-
-inline void BodyContourProvider::cellPos(const Vector2<int>& point, Vector2<int>& cell) const
-{
-  cell.x = point.x / getBodyContour().stepSize;
-  cell.y = point.y / getBodyContour().stepSize;
-  if (cell.x == getBodyContour().xDensity)
-  {
-    cell.x = cell.x - 1;
-  }
-  if (cell.y == getBodyContour().yDensity)
-  {
-    cell.y = cell.y - 1;
-  }
-  if (cell.x == getBodyContour().xDensity && cell.y == getBodyContour().yDensity)
-  {
-    cell.x = cell.x - 1;
-    cell.y = cell.y - 1;
-  }
-}
-
-// TODO: Comment
-inline void BodyContourProvider::setCells(const BodyContour::Line& line, BodyContour& bodyContour) const
-{
-  Vector2<int> firstCell, secondCell;
-  cellPos(line, firstCell, secondCell);
-  int lineNumber = line.lineNumber;
-  int F, x, y;
-  int p1x = firstCell.x;
-  int p1y = firstCell.y;
-  int p2x = secondCell.x;
-  int p2y = secondCell.y;
-  if (p1x > p2x)  // Swap points if p1 is on the right of p2
-  {
-    swap(p1x, p2x);
-    swap(p1y, p2y);
-  }
-  // Handle trivial cases separately for algorithm speed up.
-  // Trivial case 1: m = +/-INF (Vertical line)
-  if (p1x == p2x)
-  {
-    if (p1y > p2y)  // Swap y-coordinates if p1 is above p2
-    {
-      swap(p1y, p2y);
-    }
-    x = p1x;
-    y = p1y;
-    while (y < bodyContour.yDensity)
-    {
-      bodyContour.grid[x][y].lineNumbers = lineNumber;
-      bodyContour.grid[x][y].occupied = true;
-      y++;
-    }
-    return;
-  }
-  // Trivial case 2: m = 0 (Horizontal line)
-  else if (p1y == p2y)
-  {
-    x = p1x;
-    y = p1y;
-    for (int j = x; j <= p2x; j++)
-    {
-      for (int i = y; i < bodyContour.yDensity; i++)
-      {
-        bodyContour.grid[j][i].lineNumbers = lineNumber;
-        bodyContour.grid[j][i].occupied = true;
-      }
-    }
-    return;
-  }
-  int dy            = p2y - p1y;  // y-increment from p1 to p2
-  int dx            = p2x - p1x;  // x-increment from p1 to p2
-  int dy2           = (dy << 1);  // dy << 1 == 2*dy
-  int dx2           = (dx << 1);
-  int dy2_minus_dx2 = dy2 - dx2;  // precompute constant for speed up
-  int dy2_plus_dx2  = dy2 + dx2;
-  if (dy >= 0)    // m >= 0
-  {
-    // Case 1: 0 <= m <= 1 (Original case)
-    if (dy <= dx)   
-    {
-      F = dy2 - dx;    // initial F
-      x = p1x;
-      y = p1y;
-      for (int a = x; a <= p2x; a++)
-      {
-        bodyContour.grid[a][y].lineNumbers = lineNumber;
-        bodyContour.grid[a][y].occupied = true;
-        for (int c = y+1; c < bodyContour.yDensity; c++)
-        {
-          bodyContour.grid[a][c].lineNumbers = lineNumber;
-          bodyContour.grid[a][c].occupied = true;
-        }
-        if (F <= 0)
-        {
-          F += dy2;
-        }
-        else
-        {
-          y++;
-          F += dy2_minus_dx2;
-        }
-      } // end for
-    } // end if
-    // Case 2: 1 < m < INF (Mirror about y=x line
-    // replace all dy by dx and dx by dy)
-    else
-    {
-      F = dx2 - dy;    // initial F
-      y = p1y;
-      x = p1x;
-      while (y <= p2y)
-      {
-        bodyContour.grid[x][y].lineNumbers = lineNumber;
-        bodyContour.grid[x][y].occupied = true;
-        for (int c = y+1; c < bodyContour.yDensity; c++)
-        {
-          bodyContour.grid[x][c].lineNumbers = lineNumber;
-          bodyContour.grid[x][c].occupied = true;
-        }
-        if (F <= 0)
-        {
-          F += dx2;
-        }
-        else
-        {
-          x++;
-          F -= dy2_minus_dx2;
-        }
-        y++;
-      } // end while
-    } // end else
-  } // end if
-  else    // m < 0
-  {
-    // Case 3: -1 <= m < 0 (Mirror about x-axis, replace all dy by -dy)
-    if (dx >= -dy)
-    {
-      F = -dy2 - dx;    // initial F
-      x = p1x;
-      y = p1y;
-      while (x <= p2x)
-      {
-        bodyContour.grid[x][y].lineNumbers = lineNumber;
-        bodyContour.grid[x][y].occupied = true;
-        for (int c = y+1; c < bodyContour.yDensity; c++)
-        {
-          bodyContour.grid[x][c].lineNumbers = lineNumber;
-          bodyContour.grid[x][c].occupied = true;
-        }
-        if (F <= 0)
-        {
-          F -= dy2;
-        }
-        else
-        {
-          y--;
-          F -= dy2_plus_dx2;
-        }
-        x++;
-      }
-    }
-    // Case 4: -INF < m < -1 (Mirror about x-axis and mirror 
-    // about y=x line, replace all dx by -dy and dy by dx)
-    else    
-    {
-      F = dx2 + dy;    // initial F
-      y = p1y;
-      x = p1x;
-      while (y >= p2y)
-      {
-        bodyContour.grid[x][y].lineNumbers = lineNumber;
-        bodyContour.grid[x][y].occupied = true;
-        for (int c = y+1; c < bodyContour.yDensity; c++)
-        {
-          bodyContour.grid[x][c].lineNumbers = lineNumber;
-          bodyContour.grid[x][c].occupied = true;
-        }
-        if (F <= 0)
-        {
-          F += dx2;
-        }
-        else
-        {
-          x++;
-          F += dy2_plus_dx2;
-        }
-        y--;
-      }
-    }
-  }
-}
-
-// TODO: Comment
-
-inline void BodyContourProvider::pushLine(const BodyContour::Line& line, BodyContour& bodyContour)
-{
-  Vector2<int> cell1, cell2;
-  int cell1Line, cell2Line, point1Line, point2Line;
-  bool cell1occ, cell2occ;
-  cellPos(line.p1, cell1);
-  cellPos(line.p2, cell2);
-  cell1Line = bodyContour.grid[cell1.x][cell1.y].lineNumbers;
-  cell1occ = bodyContour.grid[cell1.x][cell1.y].occupied;
-  cell2Line = bodyContour.grid[cell2.x][cell2.y].lineNumbers;
-  cell2occ = bodyContour.grid[cell2.x][cell2.y].occupied;
-  if (cell1occ)
-  {
-    point1Line = bodyContour.lines[cell1Line].id;
-  } 
-  else
-  {
-    point1Line = -1;
-  }
-  if (cell2occ)
-  {
-    point2Line = bodyContour.lines[cell2Line].id;
-  } 
-  else
-  {
-    point2Line = -1;
-  }
-  if (cell1occ && cell2occ && point1Line != line.id && point2Line != line.id)
-  {
-    return;
-  }
-  else
-  {
-    bodyContour.lines.push_back(line);
-    setCells(line, bodyContour);
-    lineNumber++;
-  }
-}
-
-// TODO: Comment
-inline void BodyContourProvider::add(
+void BodyContourProvider::drawContur3D(
   const Pose3D& origin, 
-  const std::vector<Vector3<double> >& c, 
-  float sign, 
-  const CameraInfo& cameraInfo,  
-  const CameraMatrix& cameraMatrix,
-  BodyContour& bodyContour, 
-  BodyContour::bodyPartID id)
+  const std::vector<Vector3d>& c, 
+  double sign,
+  ColorClasses::Color color)
 {
-  // some variables
-  const Vector2<int> frameUpperLeft(0,0);
-  const Vector2<int> frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
-  
-  Vector2<int> q1, q2, tempPoint(0,0);
+  Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
 
-  Vector2<int> leftShoulderPoint(0,0);
-  Vector2<int> rightShoulderPoint(320,0);
-  Vector3<double> shoulderUpperPoint(-45, 20, 5);
-  bool intersectionShoulder = false;
-  Vector3<double> shoulderUpperPointCP;
-  Vector2<int> shoulderUpperPointImage;
-
-  if(id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight)
+  for(size_t i = 1; i < c.size(); i++)
   {
-    shoulderUpperPointCP = origin * shoulderUpperPoint;
-    shoulderUpperPointImage = CameraGeometry::relativePointToImage(cameraMatrix, cameraInfo, shoulderUpperPointCP);
+    Vector3d p2 = origin * Vector3d(c[i].x, c[i].y * sign, c[i].z);
+    LINE_3D(color, p1, p2);
+    p1 = p2;
   }
-
-  // estimate the position of contour-point based on current position of the limb
-  Vector3<double> p1 = origin * Vector3<double>(c[0].x, c[0].y * sign, c[0].z);
-  // project this point into the image
-  q1 = CameraGeometry::relativePointToImage(cameraMatrix, cameraInfo, p1);
-  // start building the contour lines
-  for(unsigned i = 1; i < c.size(); i++)
-  {
-    Vector3<double> p2 = origin * Vector3<double>(c[i].x, c[i].y * sign, c[i].z);
-    q2 = CameraGeometry::relativePointToImage(cameraMatrix, cameraInfo, p2);
-
-    BodyContour::Line tempLine = BodyContour::Line(q1, q2, lineNumber, id);
-
-    // estimate, whether the points are within the image-boundaries
-    bool p1InImage = withinImage(tempLine.p1);
-    bool p2InImage = withinImage(tempLine.p2);
-    // if the points aren't behind the robot 
-    if (q1.x != -1 && q2.x != -1)
-    {
-      if (p1InImage && p2InImage )
-      {
-        pushLine(tempLine, bodyContour);
-      }//end if
-      //at least one point is not in image
-      else if (p1InImage || p2InImage)
-      {
-        //temporary points
-        Vector2<int> pointOne;
-        Vector2<int> pointTwo;
-        Math::LineSegment segment(tempLine.p1, tempLine.p2);
-        //the first point is not in image
-        if (!p1InImage)
-        {
-          Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
-          BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
-          BodyContour::Line line2(tempLine2.p1, tempLine.p2, lineNumber, id);
-          pushLine(line2, bodyContour);
-          if (tempLine2.p1.y <= 1 && (id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight))
-          {
-            rightShoulderPoint = tempLine2.p1;
-            intersectionShoulder = true;
-          }
-        }
-        else
-        {
-          Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
-          BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
-          BodyContour::Line line2(tempLine.p1, tempLine2.p2, lineNumber, id);
-          pushLine(line2, bodyContour);
-          if (tempLine2.p2.y <= 1 && (id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight))
-          {
-            leftShoulderPoint = tempLine2.p2;
-            intersectionShoulder = true;
-          }
-        }
-      }//end else
-    }//end if
-  p1 = p2;
-  q1 = q2;
-  if (intersectionShoulder || ((shoulderUpperPointImage.y < 0 && (shoulderUpperPointImage.x < 320 && shoulderUpperPointImage.x > 0)) &&  !intersectionShoulder))
-  {
-    pushLine(BodyContour::Line(leftShoulderPoint, rightShoulderPoint, lineNumber, id), bodyContour);
-  }
-  }// end for
-}// end add)
+}

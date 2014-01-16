@@ -51,50 +51,35 @@ int main(int argc, char** argv)
 
   g_type_init();
   
-  bool compatibleMode = false;
   bool backendMode = false;
+  bool realTime = false;
 
   char* logpath = getenv("NAOTH_LOGFILE");
-
-  if(logpath == NULL)
-  {
-    if(argc > 1)
-    {
-      logpath = argv[argc-1];
-
-      if(argc > 2)
-      {
-        for (int i = 1; i < argc - 1; i++)
-        {
-          // check if compatible mode
-          if (strcmp(argv[i], "-c") == 0)
-          {
-            compatibleMode = true;
-          } else if (strcmp(argv[i], "-b") == 0)
-          {
-            backendMode = true;
-          }
-        }//end for
-      }//end if > 2
-    }//end if > 1
-  }
-  else
-  {
-    compatibleMode = getenv("NAOTH_LOGCOMPAT") != NULL;
+  if(logpath == NULL && argc > 1) {
+    logpath = argv[argc-1];
   }
 
+  // search for parameters
+  for (int i = 1; i < argc - 1; i++) {
+    if (strcmp(argv[i], "-b") == 0) {
+      backendMode = true;
+    }
+    if (strcmp(argv[i], "-r") == 0) {
+      realTime = true;
+    }
+  }
 
   if(logpath == NULL)
   {
     cerr << "You need to give the path to the logfile as argument" << endl;
-    cerr << "arguments: (-b)? (-c)? <logfile>" << endl;
+    cerr << "arguments: (-b)? (-r)? <logfile>" << endl;
     cerr << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << endl;
-    cerr << "when using \"-c\" you are forcing a compatible mode" << endl;
+    cerr << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << endl;
     return (EXIT_FAILURE);
   }
   
   // create the simulator instance
-  Simulator sim(logpath, compatibleMode, backendMode);
+  Simulator sim(logpath, backendMode, realTime);
   
   // init the platform
   Platform::getInstance().init(&sim);
@@ -119,7 +104,7 @@ int main(int argc, char** argv)
   sim.registerMotion((naoth::Callable*)(&theMotion));
  
   theLogProvider->setEnabled(true);
-  theLogProvider->getModuleT()->init(sim.getRepresentations(), sim.getIncludedRepresentations());
+  theLogProvider->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
   
 
   // start the execution

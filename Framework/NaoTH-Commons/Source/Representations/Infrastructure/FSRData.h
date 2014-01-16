@@ -37,7 +37,6 @@ namespace naoth
     double force[numOfFSR]; // the force that applied to the sensor
     double data[numOfFSR]; // the data read from the platform directly
     bool valid[numOfFSR]; // if the sensor data is valid
-    static const Vector3<double> offset[numOfFSR];
 
     /** total force on left foot */
     double forceLeft() const;
@@ -50,7 +49,7 @@ namespace naoth
 
     FSRData();
     ~FSRData();
-    static std::string getFSRName(FSRID fsr);
+    static const std::string getFSRName(FSRID fsr);
 
     virtual void print(std::ostream& stream) const;
   };

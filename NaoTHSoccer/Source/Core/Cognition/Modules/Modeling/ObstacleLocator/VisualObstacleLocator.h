@@ -31,7 +31,6 @@
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BallPercept.h"
-//#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Modeling/RadarGrid.h"
 
 

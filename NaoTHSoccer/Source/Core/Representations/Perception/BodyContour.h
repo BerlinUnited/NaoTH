@@ -24,21 +24,9 @@
 */
 class BodyContour : public naoth::Printable
 {
-private:
- 
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "BodyContour: lines: " << '\n';
-    for(std::vector<Line>::const_iterator iter=lines.begin();
-      iter!=lines.end(); ++iter)
-      {
-        stream <<"Line number: " << iter->lineNumber << " First Point: " << " X coord: " << iter->p1.x << " Y coord: " << iter->p1.y << " Second Point: " << " X coord: " << iter->p2.x << " Y coord: " << iter->p2.y << " LineID: " << iter->id << '\n';
-      } // end for
-    }// end print
-
 public:
   
-  enum bodyPartID
+  enum BodyPartID
   {
     Torso,
     UpperArmLeft,
@@ -49,196 +37,120 @@ public:
     LegRight,
     FootLeft,
     FootRight,
-    numOfBodyPart,
+    numOfBodyPart
   };
 
   struct Cell {
-    int lineNumbers;
+    Cell():id(numOfBodyPart), occupied(false) {}
+    BodyPartID id;
     bool occupied;
   };
 
-  
-  Vector2<int> returnCellCoord(const Vector2<int>& point) const
+public:
+  typedef std::vector<std::vector<Cell> > Grid;
+
+  BodyContour()
+  :
+    stepSize(0),
+    xDensity(0),
+    yDensity(0)
   {
-    Vector2<int> cell;
+  }
+
+private:
+  Grid grid;
+  int stepSize;
+  int xDensity;
+  int yDensity;
+  Vector2i cameraResolution;
+
+public:
+  void setGridSize(int step, int imageWidth, int imageHeight) 
+  {
+    stepSize = step;
+    yDensity = imageHeight/stepSize;
+    xDensity = imageWidth/stepSize;
+    cameraResolution.x = imageWidth;
+    cameraResolution.y = imageHeight;
+
+    grid.resize(xDensity);
+    for (size_t i = 0; i < grid.size(); i++) {
+      grid[i].resize(yDensity);
+    }
+  }
+
+  int gridWidth() {
+    return xDensity;
+  }
+  int gridHeight() {
+    return yDensity;
+  }
+  int cellSize() {
+    return stepSize;
+  }
+
+  Vector2i getCellCoord(const Vector2i& point) const
+  {
+    Vector2i cell;
     cell.x = point.x / stepSize;
     cell.y = point.y / stepSize;
-    if (cell.x == xDensity)
-    {
+    if (cell.x == xDensity) {
       cell.x = cell.x - 1;
     }
-    if (cell.y == yDensity)
-    {
-      cell.y = cell.y - 1;
-    }
-    if (cell.x == xDensity && cell.y == yDensity)
-    {
-      cell.x = cell.x - 1;
+    if (cell.y == yDensity) {
       cell.y = cell.y - 1;
     }
     return cell;
-  }//end returnCellCoord
+  }
 
-  bool isOccupied(const Vector2<int>& point) const
+  inline const Grid& getGrid() {
+    return grid;
+  }
+
+  const Cell& getCell(const Vector2i& point) const
   {
-    Vector2<int> temp = returnCellCoord(point);
+    ASSERT(point.x > -1 && point.y > -1 && point.x < xDensity && point.y < yDensity);
+    return grid[point.x][point.y];
+  }
+
+  void setCell(int x, int y, BodyPartID id, bool value)
+  {
+    ASSERT(x > -1 && y > -1 && x < xDensity && y < yDensity);
+    grid[x][y].id = id;
+    grid[x][y].occupied = value;
+  }
+
+  bool isOccupied(const Vector2i& point) const
+  {
+    Vector2i temp = getCellCoord(point);
     return grid[temp.x][temp.y].occupied;
   }
 
-  
-  Vector2<int> returnFirstFreeCell(const Vector2<int>& start) const
+  Vector2i getFirstFreeCell(const Vector2i& start) const
   {
-    Vector2<int> point(start);
-    while (isOccupied(point) && (point.y - stepSize) >= 0)
-    {
+    Vector2i point(start);
+    while (isOccupied(point) && (point.y - stepSize) >= 0) {
       point.y -= stepSize;
     }
     ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
     return point;
   }
 
-  std::vector<std::vector<Cell> > grid;
-
-  /** A class representing a line in 2-D space. */
-  class Line
+  void reset()
   {
-  private:
-   
-
-  public:
-    
-    Vector2<int> p1, /**< The left point of the line. */
-                 p2; /**< The right point of the line. */
-    int lineNumber; /**< The number of the Line. */
-    double lineLenght; /**< The lenght of the Line. */
-    bodyPartID id;
-
-    /** Default constructor. */
-    Line()
-    :
-      lineNumber(0),
-      lineLenght(0.0),
-      id(BodyContour::numOfBodyPart)
-    {}
-
-    /**
-    * Constructor.
-    * @param p1 The first endpoint of the line.
-    * @param p2 The second endpoint of the line.
-    */
-    
-    Line(const Vector2<int> p1, const Vector2<int> p2, int lineNumber, bodyPartID id) 
-    :
-      p1((p1.x < p2.x) || ((p1.x == p2.x) && (p1.y < p2.y)) ? p1 : p2),
-      p2((p1.x < p2.x) || ((p1.x == p2.x) && (p1.y < p2.y)) ? p2 : p1),
-      lineNumber(lineNumber),
-      lineLenght(0.0),
-      id(id)
-    {}
-
-
-    /**
-    * The method determines the x coordinate of the line for a certain y coordinate 
-    * if the is any.
-    * @param y The y coordinate.
-    * @param x The x coordinate is returned here if it exists.
-    * @return Does such an x coordinate exist?
-    */
-    bool xAt(int y, int& x) const
-    {
-      if((p1.y <= y && p2.y > y) || (p1.y > y && p2.y <= y))
-      {
-        x = p1.x + (p2.x - p1.x) * (y - p1.y) / (p2.y - p1.y);
-        return true;
+    for(size_t i = 0; i < grid.size(); i++) {
+      for (size_t j = 0; j < grid[i].size(); j++) {
+        grid[i][j].occupied = false;
+        grid[i][j].id = BodyContour::numOfBodyPart;
       }
-      else
-        return false;
     }
-
-    /**
-    * The method determines the y coordinate of the line for a certain x coordinate 
-    * if the is any.
-    * @param x The x coordinate.
-    * @param y The y coordinate is returned here if it exists.
-    * @return Does such a y coordinate exist?
-    */
-    bool yAt(int x, int& y) const
-    {
-      if(p1.x <= x && p2.x > x)
-      {
-        y = p1.y + (p2.y - p1.y) * (x - p1.x) / (p2.x - p1.x);
-        return true;
-      }
-      else
-        return false;
-    }
-    /**
-    *
-    *
-  */
-  
-    inline void interpolate(Vector2<int>& point) const
-    {
-      point.x = (p1.x + p2.x)/2;
-      point.y = (p1.y + p2.y)/2;
-    }
-  }; //end class Line
-
-  std::vector<Line> lines; /** The clipping lines. */
-  
-  Vector2<int> cameraResolution;
-
-  /** Default constructor. */
-  BodyContour()
-  :   
-    stepSize(1),
-    xDensity(1),
-    yDensity(1)
-  {
-    lines.reserve(100);
   }
 
-  /**
-  * The method clips the bottom y coordinate of a vertical line.
-  * @param x The x coordinate of the vertical line.
-  * @param y The original y coordinate of the bottom of the vertical line.
-  *          It will be replaced if necessary. Note that the resulting point
-  *          can be outside the image!
-  */
-  void clipBottom(int x, int& y) const;
+  virtual void print(std::ostream& stream) const
+  {
+    stream << "BodyContour" << '\n';
+  }
 
-  /**
-  * The method clips the top y coordinate of a vertical line.
-  * @param x The x coordinate of the vertical line.
-  * @param y The original y coordinate of the top of the vertical line.
-  *          It will be replaced if necessary. Note that the resulting point
-  *          can be outside the image!
-  */
-  void clipTop(int x, int& y) const;
-
-  /**
-  * The method clips the left x coordinate of a horizontal line.
-  * It only considers descending clipping lines.
-  * @param x The original x coordinate of the left end of the horizontal line.
-  *          It will be replaced if necessary. Note that the resulting point
-  *          can be outside the image!
-  * @param y The y coordinate of the horizontal line.
-  */
-  void clipLeft(int& x, int y) const;
-
-  /**
-  * The method clips the right x coordinate of a horizontal line.
-  * It only considers ascending clipping lines.
-  * @param x The original x coordinate of the right end of the horizontal line.
-  *          It will be replaced if necessary. Note that the resulting point
-  *          can be outside the image!
-  * @param y The y coordinate of the horizontal line.
-  */
-  void clipRight(int& x, int y) const;
-
-  int stepSize;
-  int xDensity;
-  int yDensity;
 };
 
 class BodyContourTop : public BodyContour

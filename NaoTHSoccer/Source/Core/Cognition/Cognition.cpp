@@ -35,8 +35,8 @@
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
+#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -90,7 +90,6 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-//#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/Debug/Trace.h"
@@ -143,8 +142,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixFinder);
 
   // perception
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
@@ -200,7 +199,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // experiment
   REGISTER_MODULE(Evolution);
-  //REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);
@@ -259,23 +257,20 @@ void Cognition::call()
 
 
   STOPWATCH_START("CognitionExecute");
-  //GT_TRACE("beginning to iterate over all modules");
 
   // execute all modules
   list<AbstractModuleCreator*>::const_iterator iter;
   for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
-    // get entry
-    AbstractModuleCreator* module = *iter;//getModule(*iter);
+    AbstractModuleCreator* module = *iter;
     if (module != NULL && module->isEnabled())
     {
       std::string name(module->getModule()->getName());
       GT_TRACE("executing " << name);
       module->execute();
-    }//end if
-  }//end for all modules
+    }
+  }
   
-  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 

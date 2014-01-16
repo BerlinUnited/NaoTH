@@ -19,7 +19,7 @@ void DebugExecutor::execute()
     std::stringstream answer;
     DebugCommandManager::getInstance().handleCommand(iter->command, iter->arguments, answer);
     getDebugMessageOut().answers.push_back(answer.str());
-  }//end for
+  }
 }//end execute
 
 

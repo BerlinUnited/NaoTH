@@ -38,9 +38,10 @@ public:
   /**
   * the same as relativePointToImage but without rounding to int
   */
-  static Vector2<double> relativePointToImageDouble( const CameraMatrix& cameraMatrix,
-                                                     const naoth::CameraInfo& cameraInfo,
-                                                     const Vector3<double>& point);
+  static bool relativePointToImage( const CameraMatrix& cameraMatrix,
+                                    const naoth::CameraInfo& cameraInfo,
+                                    const Vector3d& point,
+                                    Vector2d& pointInImage);
 
   /**
    * Calculate the projection of a point in relative coordinates of the robot 
@@ -50,9 +51,10 @@ public:
    * @param point 3D point in robot coordinates
    * @return calculated projection in px
    */
-  static Vector2<int> relativePointToImage( const CameraMatrix& cameraMatrix,
-                                            const naoth::CameraInfo& cameraInfo,
-                                            const Vector3<double>& point);
+  static bool relativePointToImage( const CameraMatrix& cameraMatrix,
+                                    const naoth::CameraInfo& cameraInfo,
+                                    const Vector3<double>& point,
+                                    Vector2i& pointInImage);
 
   /** 
    * Calculates the angles to a point in the image

@@ -3,6 +3,13 @@
 
 KinematicChainProvider::KinematicChainProvider()
 {
+  udpateTime = getFrameInfo().getTime();
+
+  // HACK
+  if(!getKinematicChain().is_initialized())
+  {
+    getKinematicChain().init(getSensorJointData());
+  }
 }
 
 void KinematicChainProvider::execute()
@@ -11,14 +18,12 @@ void KinematicChainProvider::execute()
   udpateTime = getFrameInfo().getTime();
 
   // calculate the kinematic chain
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
+  Kinematics::ForwardKinematics::updateKinematicChainAll(
     getInertialModel().orientation,
     getAccelerometerData().getAcceleration(),
+    deltaTime,
     getKinematicChain(),
-    theFSRPos,
-    deltaTime);
-
-  //getKinematicChain().updateCoM();
+    theFSRPos);
 }
 
 KinematicChainProvider::~KinematicChainProvider()

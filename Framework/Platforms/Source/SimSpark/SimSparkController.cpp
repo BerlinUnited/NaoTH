@@ -16,6 +16,7 @@
 #include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
+#include <Tools/NaoInfo.h>
 
 using namespace std;
 
@@ -1104,7 +1105,7 @@ Vector3d SimSparkController::decomposeForce(double f, double fx, double fy, cons
 
 void SimSparkController::calFSRForce(double f, double x, double y, FSRData::FSRID id0, FSRData::FSRID id1, FSRData::FSRID id2)
 {
-  Vector3d F = decomposeForce(f, x, y, FSRData::offset[id0], FSRData::offset[id1], FSRData::offset[id2]);
+  Vector3d F = decomposeForce(f, x, y, NaoInfo::FSRPositions[id0], NaoInfo::FSRPositions[id1], NaoInfo::FSRPositions[id2]);
   theFSRData.data[id0] += F.x;
   theFSRData.data[id1] += F.y;
   theFSRData.data[id2] += F.z;

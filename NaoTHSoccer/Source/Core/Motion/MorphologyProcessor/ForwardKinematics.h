@@ -17,70 +17,82 @@
 
 
 
-namespace Kinematics {
+namespace Kinematics 
+{
 
 class ForwardKinematics
 {
 public:
 
-  /** */
-  static void calculateKinematicChainAll(
-    //const naoth::AccelerometerData& theAccelerometerData,
-    //const InertialPercept& theInertialPercept,
+  /** Update the whole kinematic chain based on the provided data. */
+  static void updateKinematicChainAll(
     const Vector2<double>& theBodyRotation,
     const Vector3<double>& theBodyAcceleration,
+    const double deltaTime,
     KinematicChain& theKinematicChain,
-    Vector3<double>* theFSRPos,
-    const double deltaTime);
+    Vector3d* theFSRPos);
 
-  /** update the position, velocity and acceleration of links according to joint angles data directly */
+  /** 
+  * update the position, velocity and acceleration of the links according to joint angles data
+  */
   static void forwardAllKinematics(Link* theLink);
+  static void forwardAllKinematics(Link& theLink);
+  static void forwardAllKinematics(KinematicChain& theKinematicChain, KinematicChain::LinkID start);
 
-  /** */
-  static void calcCoMs(Link* l);
+  /** calculate the CoM for every link and the total CoM for the kinematic chain*/
+  static void updateCoM(Link* l);
+  static void updateCoM(KinematicChain& theKinematicChain);
 
   /** */
   static void updateKinematicChainFrom(Link* l);
+  static void updateKinematicChainFrom(KinematicChain& theKinematicChain, KinematicChain::LinkID start);
 
-  /** calculate rotation based on foot - torso transformation */
+  /** calculate rotation based on foot-torso transformation */
   static RotationMatrix calcChestFeetRotation(const KinematicChain& theKinematicChain);
+
+  /** translate the whole kinematic chain by vector t */
+  static void translate(KinematicChain& theKinematicChain, const Vector3d& t);
+  
+  /**
+  * Set the chest position to (0,0,0) and its rotation to the provided theBodyRotation.
+  * Update the speed and the acceleration.
+  * NOTE: only the link 'Torso' is modified.
+  */
+  static void updateChest(
+          KinematicChain& kinematicChain,
+          const Vector2d& theBodyRotation,
+          const Vector3d& theBodyAcceleration,
+          const double deltaTime);
 
 private:
   ForwardKinematics() {} // don't create an instance
 
-  /** */
-  static void calcChestRotation(Link* theLinks, const Vector2d& rotation);
+  /**
+  */
+  static void setRotation(Link& link, const Vector2d& rotation);
 
-  /** */
-  static void calcChestAll(Link* theLinks,
-          //const naoth::AccelerometerData& theAccelerometerData,
-          //const InertialPercept& theInertialPercept,
-          const Vector2<double>& theBodyRotation,
-          const Vector3<double>& theBodyAcceleration,
-          const double deltaTime);
   
   /** */
-  static double calcChestHeight(const Vector3<double>* fsrPos);
+  static double estimateChestHeight(const Vector3d* fsrPos);
+
 
   /** */
   static void calcLinkUp(Link* l);
 
-  /** */
-  static void adjustKinematicChain(Link* l, Vector3<double>* fsrPos, double chestHeight);
-  
-  /** this function should be called after calcLink() */
-  static void calcFSRPos(const Link* theLink, Vector3<double>* theFSRPos);
-
   /* update the position from leaf to root 
    * @return the root
    */
-  static Link* updateToRoot(Link* &l);
+  static Link* updateToRoot(Link* l);
 
   /* update all children, except the given one
    * @parm theLink, all the children of theLink will be updated
    * @parm ept, this child will not be updated
    */
   static void forwardAllKinematicsExcept(Link* theLink, Link* ept);
+
+
+  static void updateFSRPos(const KinematicChain& kinematicChain, Vector3d* theFSRPos);
+  static int getLowestFSR(const Vector3d* theFSRPos);
 };
 
 } // namespace Kinematics
