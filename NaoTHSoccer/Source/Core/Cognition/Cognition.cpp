@@ -20,6 +20,7 @@
 #include "Modules/Infrastructure/IO/Sensor.h"
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/ButtonEventMonitor/ButtonEventMonitor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
@@ -136,6 +137,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(CameraInfoSetter);
 
   // pre-modelling
