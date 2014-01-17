@@ -10,7 +10,6 @@ void Serializer<TeamMessage::Data>::serialize(const TeamMessage::Data& r, std::o
 {
   naothmessages::TeamMessage msg;
 
-  // TODO: fill message
   msg.set_playernum(r.playerNum);
   msg.set_team(r.team);
   DataConversion::toMessage(r.pose, *(msg.mutable_pose()));
@@ -62,6 +61,4 @@ void Serializer<TeamMessage::Data>::deserialize(std::istream& stream, TeamMessag
     DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
                                 r.opponents[i].poseOnField);
   }
-
-  // TODO: fill representation
 }
