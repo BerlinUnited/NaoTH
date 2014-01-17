@@ -698,20 +698,21 @@ void protobuf_AddDesc_Representations_2eproto() {
     ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132"
     "\034.naothmessages.DoubleVector3\022\022\n\ncalibra"
     "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
-    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\214\002"
-    "\n\013TeamMessage\022\021\n\tplayerNum\030\001 \001(\r\022\014\n\004team"
-    "\030\002 \001(\r\022#\n\004pose\030\003 \001(\0132\025.naothmessages.Pos"
-    "e2D\022\017\n\007ballAge\030\004 \001(\005\0222\n\014ballPosition\030\005 \001"
-    "(\0132\034.naothmessages.DoubleVector2\0222\n\014ball"
-    "Velocity\030\006 \001(\0132\034.naothmessages.DoubleVec"
-    "tor2\022\016\n\006fallen\030\007 \001(\005\022.\n\004user\030\010 \001(\0132 .nao"
-    "thmessages.BUUserTeamMessage\"\214\001\n\021BUUserT"
-    "eamMessage\022\016\n\006bodyID\030\001 \001(\t\022\022\n\ntimeToBall"
-    "\030\002 \001(\005\022\022\n\nwasStriker\030\003 \001(\010\022\023\n\013isPenalize"
-    "d\030\004 \001(\010\022*\n\topponents\030\005 \003(\0132\027.naothmessag"
-    "es.Opponent\"I\n\010Opponent\022\021\n\tplayerNum\030\001 \002"
-    "(\005\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages."
-    "Pose2DB\026\n\024de.naoth.rc.messages", 4230);
+    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\232\002"
+    "\n\013TeamMessage\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004t"
+    "eam\030\002 \001(\r:\0010\022#\n\004pose\030\003 \001(\0132\025.naothmessag"
+    "es.Pose2D\022\023\n\007ballAge\030\004 \001(\005:\002-1\0222\n\014ballPo"
+    "sition\030\005 \001(\0132\034.naothmessages.DoubleVecto"
+    "r2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessages"
+    ".DoubleVector2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004us"
+    "er\030\010 \001(\0132 .naothmessages.BUUserTeamMessa"
+    "ge\"\247\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t"
+    ":\007unknown\022\026\n\ntimeToBall\030\002 \001(\005:\002-1\022\031\n\nwas"
+    "Striker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001("
+    "\010:\005false\022*\n\topponents\030\005 \003(\0132\027.naothmessa"
+    "ges.Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 "
+    "\002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessa"
+    "ges.Pose2DB\026\n\024de.naoth.rc.messages", 4274);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -7650,10 +7651,10 @@ void TeamMessage::SharedCtor() {
   playernum_ = 0u;
   team_ = 0u;
   pose_ = NULL;
-  ballage_ = 0;
+  ballage_ = -1;
   ballposition_ = NULL;
   ballvelocity_ = NULL;
-  fallen_ = 0;
+  fallen_ = -1;
   user_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -7698,14 +7699,14 @@ void TeamMessage::Clear() {
     if (has_pose()) {
       if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
     }
-    ballage_ = 0;
+    ballage_ = -1;
     if (has_ballposition()) {
       if (ballposition_ != NULL) ballposition_->::naothmessages::DoubleVector2::Clear();
     }
     if (has_ballvelocity()) {
       if (ballvelocity_ != NULL) ballvelocity_->::naothmessages::DoubleVector2::Clear();
     }
-    fallen_ = 0;
+    fallen_ = -1;
     if (has_user()) {
       if (user_ != NULL) user_->::naothmessages::BUUserTeamMessage::Clear();
     }
@@ -7720,7 +7721,7 @@ bool TeamMessage::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional uint32 playerNum = 1;
+      // optional uint32 playerNum = 1 [default = 0];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -7735,7 +7736,7 @@ bool TeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional uint32 team = 2;
+      // optional uint32 team = 2 [default = 0];
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -7765,7 +7766,7 @@ bool TeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int32 ballAge = 4;
+      // optional int32 ballAge = 4 [default = -1];
       case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -7809,7 +7810,7 @@ bool TeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int32 fallen = 7;
+      // optional int32 fallen = 7 [default = -1];
       case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -7857,12 +7858,12 @@ bool TeamMessage::MergePartialFromCodedStream(
 
 void TeamMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional uint32 playerNum = 1;
+  // optional uint32 playerNum = 1 [default = 0];
   if (has_playernum()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->playernum(), output);
   }
   
-  // optional uint32 team = 2;
+  // optional uint32 team = 2 [default = 0];
   if (has_team()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->team(), output);
   }
@@ -7873,7 +7874,7 @@ void TeamMessage::SerializeWithCachedSizes(
       3, this->pose(), output);
   }
   
-  // optional int32 ballAge = 4;
+  // optional int32 ballAge = 4 [default = -1];
   if (has_ballage()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->ballage(), output);
   }
@@ -7890,7 +7891,7 @@ void TeamMessage::SerializeWithCachedSizes(
       6, this->ballvelocity(), output);
   }
   
-  // optional int32 fallen = 7;
+  // optional int32 fallen = 7 [default = -1];
   if (has_fallen()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->fallen(), output);
   }
@@ -7909,12 +7910,12 @@ void TeamMessage::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* TeamMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // optional uint32 playerNum = 1;
+  // optional uint32 playerNum = 1 [default = 0];
   if (has_playernum()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->playernum(), target);
   }
   
-  // optional uint32 team = 2;
+  // optional uint32 team = 2 [default = 0];
   if (has_team()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->team(), target);
   }
@@ -7926,7 +7927,7 @@ void TeamMessage::SerializeWithCachedSizes(
         3, this->pose(), target);
   }
   
-  // optional int32 ballAge = 4;
+  // optional int32 ballAge = 4 [default = -1];
   if (has_ballage()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->ballage(), target);
   }
@@ -7945,7 +7946,7 @@ void TeamMessage::SerializeWithCachedSizes(
         6, this->ballvelocity(), target);
   }
   
-  // optional int32 fallen = 7;
+  // optional int32 fallen = 7 [default = -1];
   if (has_fallen()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->fallen(), target);
   }
@@ -7968,14 +7969,14 @@ int TeamMessage::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional uint32 playerNum = 1;
+    // optional uint32 playerNum = 1 [default = 0];
     if (has_playernum()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->playernum());
     }
     
-    // optional uint32 team = 2;
+    // optional uint32 team = 2 [default = 0];
     if (has_team()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
@@ -7989,7 +7990,7 @@ int TeamMessage::ByteSize() const {
           this->pose());
     }
     
-    // optional int32 ballAge = 4;
+    // optional int32 ballAge = 4 [default = -1];
     if (has_ballage()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -8010,7 +8011,7 @@ int TeamMessage::ByteSize() const {
           this->ballvelocity());
     }
     
-    // optional int32 fallen = 7;
+    // optional int32 fallen = 7 [default = -1];
     if (has_fallen()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -8135,6 +8136,7 @@ void TeamMessage::Swap(TeamMessage* other) {
 
 // ===================================================================
 
+const ::std::string BUUserTeamMessage::_default_bodyid_("unknown");
 #ifndef _MSC_VER
 const int BUUserTeamMessage::kBodyIDFieldNumber;
 const int BUUserTeamMessage::kTimeToBallFieldNumber;
@@ -8159,8 +8161,8 @@ BUUserTeamMessage::BUUserTeamMessage(const BUUserTeamMessage& from)
 
 void BUUserTeamMessage::SharedCtor() {
   _cached_size_ = 0;
-  bodyid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  timetoball_ = 0;
+  bodyid_ = const_cast< ::std::string*>(&_default_bodyid_);
+  timetoball_ = -1;
   wasstriker_ = false;
   ispenalized_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -8171,7 +8173,7 @@ BUUserTeamMessage::~BUUserTeamMessage() {
 }
 
 void BUUserTeamMessage::SharedDtor() {
-  if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
+  if (bodyid_ != &_default_bodyid_) {
     delete bodyid_;
   }
   if (this != default_instance_) {
@@ -8201,11 +8203,11 @@ BUUserTeamMessage* BUUserTeamMessage::New() const {
 void BUUserTeamMessage::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_bodyid()) {
-      if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
-        bodyid_->clear();
+      if (bodyid_ != &_default_bodyid_) {
+        bodyid_->assign(_default_bodyid_);
       }
     }
-    timetoball_ = 0;
+    timetoball_ = -1;
     wasstriker_ = false;
     ispenalized_ = false;
   }
@@ -8220,7 +8222,7 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional string bodyID = 1;
+      // optional string bodyID = 1 [default = "unknown"];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -8236,7 +8238,7 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int32 timeToBall = 2;
+      // optional int32 timeToBall = 2 [default = -1];
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -8252,7 +8254,7 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional bool wasStriker = 3;
+      // optional bool wasStriker = 3 [default = false];
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -8268,7 +8270,7 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional bool isPenalized = 4;
+      // optional bool isPenalized = 4 [default = false];
       case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -8317,7 +8319,7 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
 
 void BUUserTeamMessage::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional string bodyID = 1;
+  // optional string bodyID = 1 [default = "unknown"];
   if (has_bodyid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->bodyid().data(), this->bodyid().length(),
@@ -8326,17 +8328,17 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
       1, this->bodyid(), output);
   }
   
-  // optional int32 timeToBall = 2;
+  // optional int32 timeToBall = 2 [default = -1];
   if (has_timetoball()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->timetoball(), output);
   }
   
-  // optional bool wasStriker = 3;
+  // optional bool wasStriker = 3 [default = false];
   if (has_wasstriker()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->wasstriker(), output);
   }
   
-  // optional bool isPenalized = 4;
+  // optional bool isPenalized = 4 [default = false];
   if (has_ispenalized()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->ispenalized(), output);
   }
@@ -8355,7 +8357,7 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* BUUserTeamMessage::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // optional string bodyID = 1;
+  // optional string bodyID = 1 [default = "unknown"];
   if (has_bodyid()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->bodyid().data(), this->bodyid().length(),
@@ -8365,17 +8367,17 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
         1, this->bodyid(), target);
   }
   
-  // optional int32 timeToBall = 2;
+  // optional int32 timeToBall = 2 [default = -1];
   if (has_timetoball()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->timetoball(), target);
   }
   
-  // optional bool wasStriker = 3;
+  // optional bool wasStriker = 3 [default = false];
   if (has_wasstriker()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->wasstriker(), target);
   }
   
-  // optional bool isPenalized = 4;
+  // optional bool isPenalized = 4 [default = false];
   if (has_ispenalized()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->ispenalized(), target);
   }
@@ -8398,26 +8400,26 @@ int BUUserTeamMessage::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional string bodyID = 1;
+    // optional string bodyID = 1 [default = "unknown"];
     if (has_bodyid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->bodyid());
     }
     
-    // optional int32 timeToBall = 2;
+    // optional int32 timeToBall = 2 [default = -1];
     if (has_timetoball()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->timetoball());
     }
     
-    // optional bool wasStriker = 3;
+    // optional bool wasStriker = 3 [default = false];
     if (has_wasstriker()) {
       total_size += 1 + 1;
     }
     
-    // optional bool isPenalized = 4;
+    // optional bool isPenalized = 4 [default = false];
     if (has_ispenalized()) {
       total_size += 1 + 1;
     }
@@ -8592,7 +8594,7 @@ bool Opponent::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 playerNum = 1;
+      // required int32 playerNum = 1 [default = 0];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -8639,7 +8641,7 @@ bool Opponent::MergePartialFromCodedStream(
 
 void Opponent::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 playerNum = 1;
+  // required int32 playerNum = 1 [default = 0];
   if (has_playernum()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->playernum(), output);
   }
@@ -8658,7 +8660,7 @@ void Opponent::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Opponent::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 playerNum = 1;
+  // required int32 playerNum = 1 [default = 0];
   if (has_playernum()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->playernum(), target);
   }
@@ -8681,7 +8683,7 @@ int Opponent::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 playerNum = 1;
+    // required int32 playerNum = 1 [default = 0];
     if (has_playernum()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(

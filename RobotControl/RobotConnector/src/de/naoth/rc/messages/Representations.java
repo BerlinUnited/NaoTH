@@ -15254,11 +15254,11 @@ public final class Representations {
   public interface TeamMessageOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional uint32 playerNum = 1;
+    // optional uint32 playerNum = 1 [default = 0];
     boolean hasPlayerNum();
     int getPlayerNum();
     
-    // optional uint32 team = 2;
+    // optional uint32 team = 2 [default = 0];
     boolean hasTeam();
     int getTeam();
     
@@ -15267,7 +15267,7 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.Pose2D getPose();
     de.naoth.rc.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
     
-    // optional int32 ballAge = 4;
+    // optional int32 ballAge = 4 [default = -1];
     boolean hasBallAge();
     int getBallAge();
     
@@ -15281,7 +15281,7 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
     
-    // optional int32 fallen = 7;
+    // optional int32 fallen = 7 [default = -1];
     boolean hasFallen();
     int getFallen();
     
@@ -15319,7 +15319,7 @@ public final class Representations {
     }
     
     private int bitField0_;
-    // optional uint32 playerNum = 1;
+    // optional uint32 playerNum = 1 [default = 0];
     public static final int PLAYERNUM_FIELD_NUMBER = 1;
     private int playerNum_;
     public boolean hasPlayerNum() {
@@ -15329,7 +15329,7 @@ public final class Representations {
       return playerNum_;
     }
     
-    // optional uint32 team = 2;
+    // optional uint32 team = 2 [default = 0];
     public static final int TEAM_FIELD_NUMBER = 2;
     private int team_;
     public boolean hasTeam() {
@@ -15352,7 +15352,7 @@ public final class Representations {
       return pose_;
     }
     
-    // optional int32 ballAge = 4;
+    // optional int32 ballAge = 4 [default = -1];
     public static final int BALLAGE_FIELD_NUMBER = 4;
     private int ballAge_;
     public boolean hasBallAge() {
@@ -15388,7 +15388,7 @@ public final class Representations {
       return ballVelocity_;
     }
     
-    // optional int32 fallen = 7;
+    // optional int32 fallen = 7 [default = -1];
     public static final int FALLEN_FIELD_NUMBER = 7;
     private int fallen_;
     public boolean hasFallen() {
@@ -15415,10 +15415,10 @@ public final class Representations {
       playerNum_ = 0;
       team_ = 0;
       pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
-      ballAge_ = 0;
+      ballAge_ = -1;
       ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
-      fallen_ = 0;
+      fallen_ = -1;
       user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
@@ -15660,7 +15660,7 @@ public final class Representations {
           poseBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
-        ballAge_ = 0;
+        ballAge_ = -1;
         bitField0_ = (bitField0_ & ~0x00000008);
         if (ballPositionBuilder_ == null) {
           ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
@@ -15674,7 +15674,7 @@ public final class Representations {
           ballVelocityBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        fallen_ = 0;
+        fallen_ = -1;
         bitField0_ = (bitField0_ & ~0x00000040);
         if (userBuilder_ == null) {
           user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
@@ -15925,7 +15925,7 @@ public final class Representations {
       
       private int bitField0_;
       
-      // optional uint32 playerNum = 1;
+      // optional uint32 playerNum = 1 [default = 0];
       private int playerNum_ ;
       public boolean hasPlayerNum() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -15946,7 +15946,7 @@ public final class Representations {
         return this;
       }
       
-      // optional uint32 team = 2;
+      // optional uint32 team = 2 [default = 0];
       private int team_ ;
       public boolean hasTeam() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
@@ -16057,8 +16057,8 @@ public final class Representations {
         return poseBuilder_;
       }
       
-      // optional int32 ballAge = 4;
-      private int ballAge_ ;
+      // optional int32 ballAge = 4 [default = -1];
+      private int ballAge_ = -1;
       public boolean hasBallAge() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
@@ -16073,7 +16073,7 @@ public final class Representations {
       }
       public Builder clearBallAge() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        ballAge_ = 0;
+        ballAge_ = -1;
         onChanged();
         return this;
       }
@@ -16258,8 +16258,8 @@ public final class Representations {
         return ballVelocityBuilder_;
       }
       
-      // optional int32 fallen = 7;
-      private int fallen_ ;
+      // optional int32 fallen = 7 [default = -1];
+      private int fallen_ = -1;
       public boolean hasFallen() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
@@ -16274,7 +16274,7 @@ public final class Representations {
       }
       public Builder clearFallen() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        fallen_ = 0;
+        fallen_ = -1;
         onChanged();
         return this;
       }
@@ -16383,19 +16383,19 @@ public final class Representations {
   public interface BUUserTeamMessageOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional string bodyID = 1;
+    // optional string bodyID = 1 [default = "unknown"];
     boolean hasBodyID();
     String getBodyID();
     
-    // optional int32 timeToBall = 2;
+    // optional int32 timeToBall = 2 [default = -1];
     boolean hasTimeToBall();
     int getTimeToBall();
     
-    // optional bool wasStriker = 3;
+    // optional bool wasStriker = 3 [default = false];
     boolean hasWasStriker();
     boolean getWasStriker();
     
-    // optional bool isPenalized = 4;
+    // optional bool isPenalized = 4 [default = false];
     boolean hasIsPenalized();
     boolean getIsPenalized();
     
@@ -16438,7 +16438,7 @@ public final class Representations {
     }
     
     private int bitField0_;
-    // optional string bodyID = 1;
+    // optional string bodyID = 1 [default = "unknown"];
     public static final int BODYID_FIELD_NUMBER = 1;
     private java.lang.Object bodyID_;
     public boolean hasBodyID() {
@@ -16470,7 +16470,7 @@ public final class Representations {
       }
     }
     
-    // optional int32 timeToBall = 2;
+    // optional int32 timeToBall = 2 [default = -1];
     public static final int TIMETOBALL_FIELD_NUMBER = 2;
     private int timeToBall_;
     public boolean hasTimeToBall() {
@@ -16480,7 +16480,7 @@ public final class Representations {
       return timeToBall_;
     }
     
-    // optional bool wasStriker = 3;
+    // optional bool wasStriker = 3 [default = false];
     public static final int WASSTRIKER_FIELD_NUMBER = 3;
     private boolean wasStriker_;
     public boolean hasWasStriker() {
@@ -16490,7 +16490,7 @@ public final class Representations {
       return wasStriker_;
     }
     
-    // optional bool isPenalized = 4;
+    // optional bool isPenalized = 4 [default = false];
     public static final int ISPENALIZED_FIELD_NUMBER = 4;
     private boolean isPenalized_;
     public boolean hasIsPenalized() {
@@ -16522,8 +16522,8 @@ public final class Representations {
     }
     
     private void initFields() {
-      bodyID_ = "";
-      timeToBall_ = 0;
+      bodyID_ = "unknown";
+      timeToBall_ = -1;
       wasStriker_ = false;
       isPenalized_ = false;
       opponents_ = java.util.Collections.emptyList();
@@ -16715,9 +16715,9 @@ public final class Representations {
       
       public Builder clear() {
         super.clear();
-        bodyID_ = "";
+        bodyID_ = "unknown";
         bitField0_ = (bitField0_ & ~0x00000001);
-        timeToBall_ = 0;
+        timeToBall_ = -1;
         bitField0_ = (bitField0_ & ~0x00000002);
         wasStriker_ = false;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -16915,8 +16915,8 @@ public final class Representations {
       
       private int bitField0_;
       
-      // optional string bodyID = 1;
-      private java.lang.Object bodyID_ = "";
+      // optional string bodyID = 1 [default = "unknown"];
+      private java.lang.Object bodyID_ = "unknown";
       public boolean hasBodyID() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
@@ -16951,8 +16951,8 @@ public final class Representations {
         onChanged();
       }
       
-      // optional int32 timeToBall = 2;
-      private int timeToBall_ ;
+      // optional int32 timeToBall = 2 [default = -1];
+      private int timeToBall_ = -1;
       public boolean hasTimeToBall() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
@@ -16967,12 +16967,12 @@ public final class Representations {
       }
       public Builder clearTimeToBall() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        timeToBall_ = 0;
+        timeToBall_ = -1;
         onChanged();
         return this;
       }
       
-      // optional bool wasStriker = 3;
+      // optional bool wasStriker = 3 [default = false];
       private boolean wasStriker_ ;
       public boolean hasWasStriker() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
@@ -16993,7 +16993,7 @@ public final class Representations {
         return this;
       }
       
-      // optional bool isPenalized = 4;
+      // optional bool isPenalized = 4 [default = false];
       private boolean isPenalized_ ;
       public boolean hasIsPenalized() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
@@ -17214,7 +17214,7 @@ public final class Representations {
   public interface OpponentOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required int32 playerNum = 1;
+    // required int32 playerNum = 1 [default = 0];
     boolean hasPlayerNum();
     int getPlayerNum();
     
@@ -17252,7 +17252,7 @@ public final class Representations {
     }
     
     private int bitField0_;
-    // required int32 playerNum = 1;
+    // required int32 playerNum = 1 [default = 0];
     public static final int PLAYERNUM_FIELD_NUMBER = 1;
     private int playerNum_;
     public boolean hasPlayerNum() {
@@ -17590,7 +17590,7 @@ public final class Representations {
       
       private int bitField0_;
       
-      // required int32 playerNum = 1;
+      // required int32 playerNum = 1 [default = 0];
       private int playerNum_ ;
       public boolean hasPlayerNum() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -17918,20 +17918,21 @@ public final class Representations {
       ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132",
       "\034.naothmessages.DoubleVector3\022\022\n\ncalibra" +
       "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
-      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\214\002" +
-      "\n\013TeamMessage\022\021\n\tplayerNum\030\001 \001(\r\022\014\n\004team" +
-      "\030\002 \001(\r\022#\n\004pose\030\003 \001(\0132\025.naothmessages.Pos" +
-      "e2D\022\017\n\007ballAge\030\004 \001(\005\0222\n\014ballPosition\030\005 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\0222\n\014ball" +
-      "Velocity\030\006 \001(\0132\034.naothmessages.DoubleVec" +
-      "tor2\022\016\n\006fallen\030\007 \001(\005\022.\n\004user\030\010 \001(\0132 .nao" +
-      "thmessages.BUUserTeamMessage\"\214\001\n\021BUUserT",
-      "eamMessage\022\016\n\006bodyID\030\001 \001(\t\022\022\n\ntimeToBall" +
-      "\030\002 \001(\005\022\022\n\nwasStriker\030\003 \001(\010\022\023\n\013isPenalize" +
-      "d\030\004 \001(\010\022*\n\topponents\030\005 \003(\0132\027.naothmessag" +
-      "es.Opponent\"I\n\010Opponent\022\021\n\tplayerNum\030\001 \002" +
-      "(\005\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages." +
-      "Pose2DB\026\n\024de.naoth.rc.messages"
+      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"\232\002" +
+      "\n\013TeamMessage\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004t" +
+      "eam\030\002 \001(\r:\0010\022#\n\004pose\030\003 \001(\0132\025.naothmessag" +
+      "es.Pose2D\022\023\n\007ballAge\030\004 \001(\005:\002-1\0222\n\014ballPo" +
+      "sition\030\005 \001(\0132\034.naothmessages.DoubleVecto" +
+      "r2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessages" +
+      ".DoubleVector2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004us" +
+      "er\030\010 \001(\0132 .naothmessages.BUUserTeamMessa",
+      "ge\"\247\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t" +
+      ":\007unknown\022\026\n\ntimeToBall\030\002 \001(\005:\002-1\022\031\n\nwas" +
+      "Striker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(" +
+      "\010:\005false\022*\n\topponents\030\005 \003(\0132\027.naothmessa" +
+      "ges.Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 " +
+      "\002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessa" +
+      "ges.Pose2DB\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

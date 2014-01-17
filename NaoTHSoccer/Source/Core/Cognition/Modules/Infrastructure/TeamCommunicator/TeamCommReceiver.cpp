@@ -60,12 +60,12 @@ void TeamCommReceiver::execute()
 
 }
 
-void TeamCommReceiver::handleMessage(const string& data, bool allowOwn)
+void TeamCommReceiver::handleMessage(const string& msgContent, bool allowOwn)
 {
   // TODO: implement handleMessage
 
   naothmessages::TeamMessage msg;
-  msg.ParseFromString(data);
+  msg.ParseFromString(msgContent);
 
   unsigned int num = msg.playernum();
   unsigned int teamnum = msg.team();
@@ -75,10 +75,10 @@ void TeamCommReceiver::handleMessage(const string& data, bool allowOwn)
        && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
      )
   {
-    TeamMessage::Data& content = getTeamMessage().data[num];
-    content.frameInfo.setTime( getFrameInfo().getTime() );
+    TeamMessage::Data& data = getTeamMessage().data[num];
+    data.frameInfo.setTime( getFrameInfo().getTime() );
 
-//    Serializer<TeamMessage::Data>::serialize(content, )
+//    Serializer<TeamMessage::Data>::serialize(data)
 
 //    if ( msg.has_opponent() && msg.opponent().number() )
 //    {

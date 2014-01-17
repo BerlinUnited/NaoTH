@@ -2339,14 +2339,14 @@ class TeamMessage : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional uint32 playerNum = 1;
+  // optional uint32 playerNum = 1 [default = 0];
   inline bool has_playernum() const;
   inline void clear_playernum();
   static const int kPlayerNumFieldNumber = 1;
   inline ::google::protobuf::uint32 playernum() const;
   inline void set_playernum(::google::protobuf::uint32 value);
   
-  // optional uint32 team = 2;
+  // optional uint32 team = 2 [default = 0];
   inline bool has_team() const;
   inline void clear_team();
   static const int kTeamFieldNumber = 2;
@@ -2361,7 +2361,7 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::naothmessages::Pose2D* mutable_pose();
   inline ::naothmessages::Pose2D* release_pose();
   
-  // optional int32 ballAge = 4;
+  // optional int32 ballAge = 4 [default = -1];
   inline bool has_ballage() const;
   inline void clear_ballage();
   static const int kBallAgeFieldNumber = 4;
@@ -2384,7 +2384,7 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_ballvelocity();
   inline ::naothmessages::DoubleVector2* release_ballvelocity();
   
-  // optional int32 fallen = 7;
+  // optional int32 fallen = 7 [default = -1];
   inline bool has_fallen() const;
   inline void clear_fallen();
   static const int kFallenFieldNumber = 7;
@@ -2495,7 +2495,7 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional string bodyID = 1;
+  // optional string bodyID = 1 [default = "unknown"];
   inline bool has_bodyid() const;
   inline void clear_bodyid();
   static const int kBodyIDFieldNumber = 1;
@@ -2506,21 +2506,21 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline ::std::string* mutable_bodyid();
   inline ::std::string* release_bodyid();
   
-  // optional int32 timeToBall = 2;
+  // optional int32 timeToBall = 2 [default = -1];
   inline bool has_timetoball() const;
   inline void clear_timetoball();
   static const int kTimeToBallFieldNumber = 2;
   inline ::google::protobuf::int32 timetoball() const;
   inline void set_timetoball(::google::protobuf::int32 value);
   
-  // optional bool wasStriker = 3;
+  // optional bool wasStriker = 3 [default = false];
   inline bool has_wasstriker() const;
   inline void clear_wasstriker();
   static const int kWasStrikerFieldNumber = 3;
   inline bool wasstriker() const;
   inline void set_wasstriker(bool value);
   
-  // optional bool isPenalized = 4;
+  // optional bool isPenalized = 4 [default = false];
   inline bool has_ispenalized() const;
   inline void clear_ispenalized();
   static const int kIsPenalizedFieldNumber = 4;
@@ -2553,6 +2553,7 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* bodyid_;
+  static const ::std::string _default_bodyid_;
   ::google::protobuf::int32 timetoball_;
   bool wasstriker_;
   bool ispenalized_;
@@ -2624,7 +2625,7 @@ class Opponent : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 playerNum = 1;
+  // required int32 playerNum = 1 [default = 0];
   inline bool has_playernum() const;
   inline void clear_playernum();
   static const int kPlayerNumFieldNumber = 1;
@@ -4956,7 +4957,7 @@ inline ::naothmessages::DoubleVector2* InertialModel::release_orientation() {
 
 // TeamMessage
 
-// optional uint32 playerNum = 1;
+// optional uint32 playerNum = 1 [default = 0];
 inline bool TeamMessage::has_playernum() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -4978,7 +4979,7 @@ inline void TeamMessage::set_playernum(::google::protobuf::uint32 value) {
   playernum_ = value;
 }
 
-// optional uint32 team = 2;
+// optional uint32 team = 2 [default = 0];
 inline bool TeamMessage::has_team() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5029,7 +5030,7 @@ inline ::naothmessages::Pose2D* TeamMessage::release_pose() {
   return temp;
 }
 
-// optional int32 ballAge = 4;
+// optional int32 ballAge = 4 [default = -1];
 inline bool TeamMessage::has_ballage() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -5040,7 +5041,7 @@ inline void TeamMessage::clear_has_ballage() {
   _has_bits_[0] &= ~0x00000008u;
 }
 inline void TeamMessage::clear_ballage() {
-  ballage_ = 0;
+  ballage_ = -1;
   clear_has_ballage();
 }
 inline ::google::protobuf::int32 TeamMessage::ballage() const {
@@ -5109,7 +5110,7 @@ inline ::naothmessages::DoubleVector2* TeamMessage::release_ballvelocity() {
   return temp;
 }
 
-// optional int32 fallen = 7;
+// optional int32 fallen = 7 [default = -1];
 inline bool TeamMessage::has_fallen() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
@@ -5120,7 +5121,7 @@ inline void TeamMessage::clear_has_fallen() {
   _has_bits_[0] &= ~0x00000040u;
 }
 inline void TeamMessage::clear_fallen() {
-  fallen_ = 0;
+  fallen_ = -1;
   clear_has_fallen();
 }
 inline ::google::protobuf::int32 TeamMessage::fallen() const {
@@ -5164,7 +5165,7 @@ inline ::naothmessages::BUUserTeamMessage* TeamMessage::release_user() {
 
 // BUUserTeamMessage
 
-// optional string bodyID = 1;
+// optional string bodyID = 1 [default = "unknown"];
 inline bool BUUserTeamMessage::has_bodyid() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -5175,8 +5176,8 @@ inline void BUUserTeamMessage::clear_has_bodyid() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void BUUserTeamMessage::clear_bodyid() {
-  if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
-    bodyid_->clear();
+  if (bodyid_ != &_default_bodyid_) {
+    bodyid_->assign(_default_bodyid_);
   }
   clear_has_bodyid();
 }
@@ -5185,44 +5186,44 @@ inline const ::std::string& BUUserTeamMessage::bodyid() const {
 }
 inline void BUUserTeamMessage::set_bodyid(const ::std::string& value) {
   set_has_bodyid();
-  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+  if (bodyid_ == &_default_bodyid_) {
     bodyid_ = new ::std::string;
   }
   bodyid_->assign(value);
 }
 inline void BUUserTeamMessage::set_bodyid(const char* value) {
   set_has_bodyid();
-  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+  if (bodyid_ == &_default_bodyid_) {
     bodyid_ = new ::std::string;
   }
   bodyid_->assign(value);
 }
 inline void BUUserTeamMessage::set_bodyid(const char* value, size_t size) {
   set_has_bodyid();
-  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+  if (bodyid_ == &_default_bodyid_) {
     bodyid_ = new ::std::string;
   }
   bodyid_->assign(reinterpret_cast<const char*>(value), size);
 }
 inline ::std::string* BUUserTeamMessage::mutable_bodyid() {
   set_has_bodyid();
-  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
-    bodyid_ = new ::std::string;
+  if (bodyid_ == &_default_bodyid_) {
+    bodyid_ = new ::std::string(_default_bodyid_);
   }
   return bodyid_;
 }
 inline ::std::string* BUUserTeamMessage::release_bodyid() {
   clear_has_bodyid();
-  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+  if (bodyid_ == &_default_bodyid_) {
     return NULL;
   } else {
     ::std::string* temp = bodyid_;
-    bodyid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    bodyid_ = const_cast< ::std::string*>(&_default_bodyid_);
     return temp;
   }
 }
 
-// optional int32 timeToBall = 2;
+// optional int32 timeToBall = 2 [default = -1];
 inline bool BUUserTeamMessage::has_timetoball() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5233,7 +5234,7 @@ inline void BUUserTeamMessage::clear_has_timetoball() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void BUUserTeamMessage::clear_timetoball() {
-  timetoball_ = 0;
+  timetoball_ = -1;
   clear_has_timetoball();
 }
 inline ::google::protobuf::int32 BUUserTeamMessage::timetoball() const {
@@ -5244,7 +5245,7 @@ inline void BUUserTeamMessage::set_timetoball(::google::protobuf::int32 value) {
   timetoball_ = value;
 }
 
-// optional bool wasStriker = 3;
+// optional bool wasStriker = 3 [default = false];
 inline bool BUUserTeamMessage::has_wasstriker() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -5266,7 +5267,7 @@ inline void BUUserTeamMessage::set_wasstriker(bool value) {
   wasstriker_ = value;
 }
 
-// optional bool isPenalized = 4;
+// optional bool isPenalized = 4 [default = false];
 inline bool BUUserTeamMessage::has_ispenalized() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -5317,7 +5318,7 @@ BUUserTeamMessage::mutable_opponents() {
 
 // Opponent
 
-// required int32 playerNum = 1;
+// required int32 playerNum = 1 [default = 0];
 inline bool Opponent::has_playernum() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
