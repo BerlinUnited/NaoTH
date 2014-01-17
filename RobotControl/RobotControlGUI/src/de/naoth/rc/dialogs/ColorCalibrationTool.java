@@ -552,9 +552,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     if(colorClass != null)
     {
       String cmdString = this.getSetCalibValues;
-      String camera = "";
-      if(activeCamera.equals("CamTop"))
-        camera = "Top";
+      String camera = activeCamera.replace("Cam","");
       switch(colorClass)
       {
         case green:
@@ -591,7 +589,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       }
       System.out.println(cmdString);
       Command cmd = new Command(cmdString);
-      if(mode.equals("set"))
+      if(mode.equals(":set"))
       {
         String[][] values = this.colorValueSlidersPanel.getControlValues();
         for(int i = 0; i < values.length; i++)
