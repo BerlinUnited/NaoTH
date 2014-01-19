@@ -706,13 +706,13 @@ void protobuf_AddDesc_Representations_2eproto() {
     "r2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessages"
     ".DoubleVector2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004us"
     "er\030\010 \001(\0132 .naothmessages.BUUserTeamMessa"
-    "ge\"\247\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t"
-    ":\007unknown\022\026\n\ntimeToBall\030\002 \001(\005:\002-1\022\031\n\nwas"
-    "Striker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001("
-    "\010:\005false\022*\n\topponents\030\005 \003(\0132\027.naothmessa"
-    "ges.Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 "
-    "\002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessa"
-    "ges.Pose2DB\026\n\024de.naoth.rc.messages", 4274);
+    "ge\"\243\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t"
+    ":\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStri"
+    "ker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005f"
+    "alse\022*\n\topponents\030\005 \003(\0132\027.naothmessages."
+    "Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:"
+    "\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages."
+    "Pose2DB\026\n\024de.naoth.rc.messages", 4270);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -8162,7 +8162,7 @@ BUUserTeamMessage::BUUserTeamMessage(const BUUserTeamMessage& from)
 void BUUserTeamMessage::SharedCtor() {
   _cached_size_ = 0;
   bodyid_ = const_cast< ::std::string*>(&_default_bodyid_);
-  timetoball_ = -1;
+  timetoball_ = 0u;
   wasstriker_ = false;
   ispenalized_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -8207,7 +8207,7 @@ void BUUserTeamMessage::Clear() {
         bodyid_->assign(_default_bodyid_);
       }
     }
-    timetoball_ = -1;
+    timetoball_ = 0u;
     wasstriker_ = false;
     ispenalized_ = false;
   }
@@ -8238,13 +8238,13 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int32 timeToBall = 2 [default = -1];
+      // optional uint32 timeToBall = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_timeToBall:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &timetoball_)));
           set_has_timetoball();
         } else {
@@ -8328,9 +8328,9 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
       1, this->bodyid(), output);
   }
   
-  // optional int32 timeToBall = 2 [default = -1];
+  // optional uint32 timeToBall = 2;
   if (has_timetoball()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->timetoball(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->timetoball(), output);
   }
   
   // optional bool wasStriker = 3 [default = false];
@@ -8367,9 +8367,9 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
         1, this->bodyid(), target);
   }
   
-  // optional int32 timeToBall = 2 [default = -1];
+  // optional uint32 timeToBall = 2;
   if (has_timetoball()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->timetoball(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->timetoball(), target);
   }
   
   // optional bool wasStriker = 3 [default = false];
@@ -8407,10 +8407,10 @@ int BUUserTeamMessage::ByteSize() const {
           this->bodyid());
     }
     
-    // optional int32 timeToBall = 2 [default = -1];
+    // optional uint32 timeToBall = 2;
     if (has_timetoball()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->timetoball());
     }
     

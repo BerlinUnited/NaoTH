@@ -46,17 +46,19 @@ public:
                             const MotionStatus &motionStatus,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
-                            const TeamMessage &teamMessage, naothmessages::TeamCommMessage &msg);
+                            const TeamMessage &teamMessage,
+                            bool onlySendOneOpponent,
+                            TeamMessage::Data &out);
 
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
-  void createMessage(naothmessages::TeamCommMessage& msg);
+  void createMessage(TeamMessage::Data &msg);
 
   static unsigned int selectSendOpp(const PlayersModel &playersModel, const FrameInfo &frameInfo, const TeamMessage &teamMessage);
   static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
-                              naothmessages::TeamCommMessage &msg);
+                              TeamMessage::Opponent &out);
 };
 
 #endif // TEAMCOMMSENDER_H

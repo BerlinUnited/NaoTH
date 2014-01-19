@@ -3,6 +3,7 @@
 
 #include <Tools/Debug/DebugRequest.h>
 #include <Messages/Representations.pb.h>
+#include <Representations/Modeling/SPLStandardMessage.h>
 
 using namespace std;
 
@@ -49,26 +50,42 @@ void TeamCommReceiver::execute()
   // add our own status as artifical message
   // (so we are not dependant on a lousy network)
 
-  naothmessages::TeamCommMessage ownMsg;
+  TeamMessage::Data ownMsg;
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
                               getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
-                              getTeamMessage(), ownMsg);
+                              getTeamMessage(), true, ownMsg);
 
-  handleMessage(ownMsg.SerializeAsString(), true);
+//TODO:  handleMessage(ownMsg.SerializeAsString(), true);
 
 
 }
 
-void TeamCommReceiver::handleMessage(const string& msgContent, bool allowOwn)
+void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 {
   // TODO: implement handleMessage
+  SPLStandardMessage spl;
+  if(data.size() != sizeof(SPLStandardMessage))
+  {
+    // invalid message size
+    return;
+  }
+  memcpy(&spl, data.c_str(), sizeof(SPLStandardMessage));
+  // furter sanity check for header and version
+  if(spl.header[0] != 'S' ||
+     spl.header[1] != 'P' ||
+     spl.header[2] != 'L' ||
+     spl.header[3] != ' ')
+  {
+    return;
+  }
+  if(spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
+  {
+    return;
+  }
 
-  naothmessages::TeamMessage msg;
-  msg.ParseFromString(msgContent);
-
-  unsigned int num = msg.playernum();
-  unsigned int teamnum = msg.team();
+  unsigned int num = spl.playerNum;
+  unsigned int teamnum = spl.team;
 
   if ( teamnum == getPlayerInfo().gameData.teamNumber
        // ignore our own messages, we are adding it artficially later
@@ -78,12 +95,23 @@ void TeamCommReceiver::handleMessage(const string& msgContent, bool allowOwn)
     TeamMessage::Data& data = getTeamMessage().data[num];
     data.frameInfo.setTime( getFrameInfo().getTime() );
 
-//    Serializer<TeamMessage::Data>::serialize(data)
+    data.playerNum = spl.playerNum;
+    data.team = spl.team;
 
-//    if ( msg.has_opponent() && msg.opponent().number() )
-//    {
-//      // mark this opponent is updated
-//      getTeamMessage().lastFrameNumberHearOpp[msg.opponent().number()] = getFrameInfo().getFrameNumber();
-//    }
+    data.pose.translation.x = spl.pose[0];
+    data.pose.translation.y = spl.pose[1];
+    data.pose.rotation = spl.pose[2];
+
+    data.ballAge = spl.ballAge;
+
+    data.ballPosition.x = spl.ball[0];
+    data.ballPosition.y = spl.ball[1];
+
+    data.ballVelocity.x = spl.ballVel[0];
+    data.ballVelocity.y = spl.ballVel[1];
+
+    data.fallen = spl.fallen;
+
+    // TODO: fill the user defined information
   }
 }

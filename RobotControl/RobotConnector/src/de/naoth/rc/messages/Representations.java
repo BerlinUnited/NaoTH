@@ -16387,7 +16387,7 @@ public final class Representations {
     boolean hasBodyID();
     String getBodyID();
     
-    // optional int32 timeToBall = 2 [default = -1];
+    // optional uint32 timeToBall = 2;
     boolean hasTimeToBall();
     int getTimeToBall();
     
@@ -16470,7 +16470,7 @@ public final class Representations {
       }
     }
     
-    // optional int32 timeToBall = 2 [default = -1];
+    // optional uint32 timeToBall = 2;
     public static final int TIMETOBALL_FIELD_NUMBER = 2;
     private int timeToBall_;
     public boolean hasTimeToBall() {
@@ -16523,7 +16523,7 @@ public final class Representations {
     
     private void initFields() {
       bodyID_ = "unknown";
-      timeToBall_ = -1;
+      timeToBall_ = 0;
       wasStriker_ = false;
       isPenalized_ = false;
       opponents_ = java.util.Collections.emptyList();
@@ -16550,7 +16550,7 @@ public final class Representations {
         output.writeBytes(1, getBodyIDBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, timeToBall_);
+        output.writeUInt32(2, timeToBall_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBool(3, wasStriker_);
@@ -16576,7 +16576,7 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, timeToBall_);
+          .computeUInt32Size(2, timeToBall_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -16717,7 +16717,7 @@ public final class Representations {
         super.clear();
         bodyID_ = "unknown";
         bitField0_ = (bitField0_ & ~0x00000001);
-        timeToBall_ = -1;
+        timeToBall_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
         wasStriker_ = false;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -16890,7 +16890,7 @@ public final class Representations {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              timeToBall_ = input.readInt32();
+              timeToBall_ = input.readUInt32();
               break;
             }
             case 24: {
@@ -16951,8 +16951,8 @@ public final class Representations {
         onChanged();
       }
       
-      // optional int32 timeToBall = 2 [default = -1];
-      private int timeToBall_ = -1;
+      // optional uint32 timeToBall = 2;
+      private int timeToBall_ ;
       public boolean hasTimeToBall() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
@@ -16967,7 +16967,7 @@ public final class Representations {
       }
       public Builder clearTimeToBall() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        timeToBall_ = -1;
+        timeToBall_ = 0;
         onChanged();
         return this;
       }
@@ -17926,13 +17926,13 @@ public final class Representations {
       "r2\0222\n\014ballVelocity\030\006 \001(\0132\034.naothmessages" +
       ".DoubleVector2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004us" +
       "er\030\010 \001(\0132 .naothmessages.BUUserTeamMessa",
-      "ge\"\247\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t" +
-      ":\007unknown\022\026\n\ntimeToBall\030\002 \001(\005:\002-1\022\031\n\nwas" +
-      "Striker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(" +
-      "\010:\005false\022*\n\topponents\030\005 \003(\0132\027.naothmessa" +
-      "ges.Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 " +
-      "\002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessa" +
-      "ges.Pose2DB\026\n\024de.naoth.rc.messages"
+      "ge\"\243\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t" +
+      ":\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStri" +
+      "ker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005f" +
+      "alse\022*\n\topponents\030\005 \003(\0132\027.naothmessages." +
+      "Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:" +
+      "\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages." +
+      "Pose2DB\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

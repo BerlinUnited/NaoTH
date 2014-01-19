@@ -50,7 +50,14 @@ void Serializer<TeamMessage::Data>::deserialize(std::istream& stream, TeamMessag
   DataConversion::fromMessage(msg.ballvelocity(), r.ballVelocity);
   r.fallen = msg.fallen();
   r.bodyID = msg.user().bodyid();
-  r.timeToBall = msg.user().timetoball();
+  if(msg.user().has_timetoball())
+  {
+    r.timeToBall = msg.user().timetoball();
+  }
+  else
+  {
+    r.timeToBall = std::numeric_limits<unsigned int>::max();
+  }
   r.wasStriker = msg.user().wasstriker();
   r.isPenalized = msg.user().ispenalized();
   r.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());

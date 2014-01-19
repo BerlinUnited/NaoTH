@@ -71,7 +71,7 @@ public:
     // BEGIN BERLIN UNITED SPECIFIC
 
     std::string bodyID;
-    int timeToBall;
+    unsigned int timeToBall;
     bool wasStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;

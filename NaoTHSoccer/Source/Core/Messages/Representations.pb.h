@@ -2506,12 +2506,12 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline ::std::string* mutable_bodyid();
   inline ::std::string* release_bodyid();
   
-  // optional int32 timeToBall = 2 [default = -1];
+  // optional uint32 timeToBall = 2;
   inline bool has_timetoball() const;
   inline void clear_timetoball();
   static const int kTimeToBallFieldNumber = 2;
-  inline ::google::protobuf::int32 timetoball() const;
-  inline void set_timetoball(::google::protobuf::int32 value);
+  inline ::google::protobuf::uint32 timetoball() const;
+  inline void set_timetoball(::google::protobuf::uint32 value);
   
   // optional bool wasStriker = 3 [default = false];
   inline bool has_wasstriker() const;
@@ -2554,7 +2554,7 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   
   ::std::string* bodyid_;
   static const ::std::string _default_bodyid_;
-  ::google::protobuf::int32 timetoball_;
+  ::google::protobuf::uint32 timetoball_;
   bool wasstriker_;
   bool ispenalized_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
@@ -5223,7 +5223,7 @@ inline ::std::string* BUUserTeamMessage::release_bodyid() {
   }
 }
 
-// optional int32 timeToBall = 2 [default = -1];
+// optional uint32 timeToBall = 2;
 inline bool BUUserTeamMessage::has_timetoball() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5234,13 +5234,13 @@ inline void BUUserTeamMessage::clear_has_timetoball() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void BUUserTeamMessage::clear_timetoball() {
-  timetoball_ = -1;
+  timetoball_ = 0u;
   clear_has_timetoball();
 }
-inline ::google::protobuf::int32 BUUserTeamMessage::timetoball() const {
+inline ::google::protobuf::uint32 BUUserTeamMessage::timetoball() const {
   return timetoball_;
 }
-inline void BUUserTeamMessage::set_timetoball(::google::protobuf::int32 value) {
+inline void BUUserTeamMessage::set_timetoball(::google::protobuf::uint32 value) {
   set_has_timetoball();
   timetoball_ = value;
 }

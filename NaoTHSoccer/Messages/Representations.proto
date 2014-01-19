@@ -171,7 +171,7 @@ message TeamMessage
 message BUUserTeamMessage
 {
   optional string bodyID = 1 [default="unknown"];
-  optional int32 timeToBall = 2 [default=-1];
+  optional uint32 timeToBall = 2;
   optional bool wasStriker = 3 [default=false];
   optional bool isPenalized = 4 [default=false];
   repeated Opponent opponents = 5;
