@@ -4,6 +4,7 @@
 #include <Tools/Debug/DebugRequest.h>
 #include <Messages/Representations.pb.h>
 #include <Representations/Modeling/SPLStandardMessage.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace std;
 
@@ -111,6 +112,36 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.ballVelocity.y = spl.ballVel[1];
 
     data.fallen = spl.fallen;
+
+    // check if we can deserialize the user defined data
+    if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+    {
+      naothmessages::BUUserTeamMessage userData;
+      try
+      {
+        userData.ParseFromArray(spl.data, spl.numOfDataBytes);
+
+        data.bodyID = userData.bodyid();
+        data.timeToBall = userData.timetoball();
+        data.wasStriker = userData.wasstriker();
+        data.isPenalized = userData.ispenalized();
+        data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
+        for(unsigned int i=0; i < data.opponents.size(); i++)
+        {
+          const naothmessages::Opponent& oppMsg = userData.opponents(i);
+          TeamMessage::Opponent& opp = data.opponents[i];
+          opp.playerNum = oppMsg.playernum();
+          DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
+        }
+      }
+      catch(...)
+      {
+        // well, this is not one of our messages, ignore
+
+        // TODO: we might want to maintain a list of robots which send
+        // non-compliant messages in order to avoid overhead when trying to parse it
+      }
+    }
 
     // TODO: fill the user defined information
   }

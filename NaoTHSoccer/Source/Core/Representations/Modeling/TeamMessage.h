@@ -8,6 +8,7 @@
 #ifndef _TEAMMESSAGE_H
 #define _TEAMMESSAGE_H
 
+#include <limits>
 #include <vector>
 
 #include "Tools/DataStructures/Printable.h"
@@ -38,6 +39,17 @@ public:
 
   struct Data
   {
+    Data ()
+      : playerNum(0), team(0),
+        ballAge(-1), fallen(-1),
+        bodyID("unknown"),
+        timeToBall(std::numeric_limits<unsigned int>::max()),
+        wasStriker(false),
+        isPenalized(false)
+    {
+
+    }
+
     naoth::FrameInfo frameInfo;
 
     unsigned int playerNum;
