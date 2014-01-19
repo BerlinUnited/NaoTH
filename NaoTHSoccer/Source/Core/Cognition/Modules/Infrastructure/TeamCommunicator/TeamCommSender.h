@@ -1,6 +1,7 @@
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
+#include <Representations/Modeling/SPLStandardMessage.h>
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
@@ -54,7 +55,7 @@ private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
-  void createMessage(TeamMessage::Data &msg);
+  void createMessage(SPLStandardMessage &msg);
 
   static unsigned int selectSendOpp(const PlayersModel &playersModel, const FrameInfo &frameInfo, const TeamMessage &teamMessage);
   static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,

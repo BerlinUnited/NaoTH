@@ -142,7 +142,5 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         // non-compliant messages in order to avoid overhead when trying to parse it
       }
     }
-
-    // TODO: fill the user defined information
   }
 }

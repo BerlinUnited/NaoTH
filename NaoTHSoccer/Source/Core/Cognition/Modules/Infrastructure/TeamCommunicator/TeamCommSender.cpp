@@ -1,5 +1,6 @@
 #include "TeamCommSender.h"
 #include "PlatformInterface/Platform.h"
+#include <Messages/Representations.pb.h>
 
 using namespace std;
 
@@ -20,10 +21,11 @@ void TeamCommSender::execute()
   if((unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
     // send data
-    TeamMessage::Data msg;
+    SPLStandardMessage msg;
     createMessage(msg);
 
-//TODO:    getTeamMessageDataOut().data = msg.SerializeAsString();
+    getTeamMessageDataOut().data.assign((char*) &msg, sizeof(SPLStandardMessage));
+
     lastSentTimestamp = getFrameInfo().getTime();
   }
   else
@@ -97,11 +99,58 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
 }
 
-void TeamCommSender::createMessage(TeamMessage::Data &msg)
+void TeamCommSender::createMessage(SPLStandardMessage &msg)
 {
+  TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
               getRobotPose(), getBodyState(), getMotionStatus(), getSoccerStrategy(),
-              getPlayersModel(), getTeamMessage(), true, msg);
+              getPlayersModel(), getTeamMessage(), true, data);
+  // convert to SPLStandardMessage
+  if(data.playerNum < std::numeric_limits<uint8_t>::max())
+  {
+    msg.playerNum = (uint8_t) data.playerNum;
+  }
+  if(data.team < std::numeric_limits<uint16_t>::max())
+  {
+    msg.team = (uint16_t) data.team;
+  }
+  msg.pose[0] = (float) data.pose.translation.x;
+  msg.pose[1] = (float) data.pose.translation.y;
+  msg.pose[2] = (float) data.pose.rotation;
+
+  msg.ballAge = data.ballAge;
+
+  msg.ball[0] = (float) data.ballPosition.x;
+  msg.ball[1] = (float) data.ballPosition.y;
+
+  msg.ballVel[0] = (float) data.ballVelocity.x;
+  msg.ballVel[1] = (float) data.ballVelocity.y;
+
+  msg.fallen = data.fallen;
+
+  // user defined data
+  naothmessages::BUUserTeamMessage userMsg;
+  userMsg.set_bodyid(data.bodyID);
+  userMsg.set_timetoball(data.timeToBall);
+  userMsg.set_wasstriker(data.wasStriker);
+  userMsg.set_ispenalized(data.isPenalized);
+  for(unsigned int i=0; i < data.opponents.size(); i++)
+  {
+    naothmessages::Opponent* opp = userMsg.add_opponents();
+    opp->set_playernum(data.opponents[i].playerNum);
+    DataConversion::toMessage(data.opponents[i].poseOnField, *(opp->mutable_poseonfield()));
+  }
+
+  int userSize = userMsg.ByteSize();
+  if(msg.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+  {
+    msg.numOfDataBytes = (uint16_t) userMsg.ByteSize();
+    userMsg.SerializeToArray(msg.data, userSize);
+  }
+  else
+  {
+    msg.numOfDataBytes = 0;
+  }
 }
 
 // select one opponent:
