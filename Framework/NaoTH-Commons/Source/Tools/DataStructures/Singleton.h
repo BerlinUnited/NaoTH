@@ -9,6 +9,9 @@
 
    class MyClass: public Singleton<MyClass>
    {
+   private:
+     friend class Singleton<MyClass>; // allow Singleton access to the private constructor
+     MyClass(){} // hide constructor
       ...
    };
 
@@ -38,67 +41,54 @@
 namespace naoth 
 {
 
-template<class V, typename ReturnType=V, int storageType=_SINGLETON_USE_STACK>
+template<class V, int storageType=_SINGLETON_USE_HEAP>
 class Singleton
 {
-protected:
-  static V* theInstance;
-  Singleton(){}
+};
 
+
+template<class V>
+class Singleton<V,_SINGLETON_USE_STACK>
+{
+protected:
+  Singleton(){}
+  Singleton( const Singleton& ){}
+public:
+  virtual ~Singleton(){}
+  static V& getInstance()
+  {
+    static V theInstance;
+    return theInstance;
+  }
+};
+
+template<class V>
+class Singleton<V,_SINGLETON_USE_HEAP>
+{
+protected:
+  Singleton(){}
+  Singleton( const Singleton& ){}
 public:
   virtual ~Singleton(){}
 
-  static ReturnType& getInstance()
+  static V& getInstance()
   {
-    if(theInstance == NULL)
-    {
-      if(storageType == _SINGLETON_USE_HEAP)
-        theInstance = createInstanceOnHeap();
-      else
-        theInstance = createInstanceOnStack();
-    }//end if
-
-    return *theInstance;
-  }//end getInstance
-
+    static Watcher w;
+    return *w.theInstance;
+  }
 private:
-
-  // creates an instance on the heap
-  // (only the Watcher is created on the stack)
-  static V* createInstanceOnHeap()
-  {
-    static Watcher w; // create a watcher
-    if( theInstance == NULL)
-      theInstance = new V();
-    return theInstance;
-  }//end createInstanceOnHeap
-
-  // creates an instance on the stack
-  static V* createInstanceOnStack()
-  {
-    static V theInstance; // create a watcher
-    return &theInstance;
-  }//end createInstanceOnStack
-
-  Singleton( const Singleton& ){}
-
-  static void deleteInstance()
-  {
-    if( Singleton::theInstance != 0 )
-        delete Singleton::theInstance;
-  }//end deleteInstance
-
   class Watcher {
-    public: ~Watcher() {
-      Singleton::deleteInstance();
+  public:
+    Watcher() {
+      theInstance = new V();
     }
+    ~Watcher() {
+      delete theInstance;
+    }
+    V* theInstance;
   };
-  friend class Watcher;
 };
-
-template <class V, typename ReturnType, int storageType>
-V* Singleton<V,ReturnType,storageType>::theInstance = NULL;
 
 }//end namespace naoth
 
-#endif //__Singleton_h__
+#endif //_Singleton_h_
