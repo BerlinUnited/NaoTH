@@ -16,10 +16,9 @@ class OpenCVGrayScaleImageProvider : public OpenCVGrayScaleImageProviderBase
 {
 public:
   OpenCVGrayScaleImageProvider();
+  virtual ~OpenCVGrayScaleImageProvider() {}
 
   virtual void execute();
-
-  virtual ~OpenCVGrayScaleImageProvider() {}
 };
 
 #endif // OPENCVGRAYSCALEIMAGEPROVIDER_H

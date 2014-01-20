@@ -17,12 +17,9 @@ class OpenCVImageProvider : public OpenCVImageProviderBase
 {
 public:
   OpenCVImageProvider();
+  virtual ~OpenCVImageProvider(){}
 
   virtual void execute();
-
-  virtual ~OpenCVImageProvider();
-private:
-
 };
 
 #endif // OPENCVIMAGEPROVIDER_H
