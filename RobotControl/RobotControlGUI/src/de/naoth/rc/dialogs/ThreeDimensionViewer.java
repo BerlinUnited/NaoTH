@@ -19,20 +19,33 @@ import de.naoth.rc.manager.SecondaryImageManager;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.media.j3d.Appearance;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.PhysicalBody;
 import javax.media.j3d.PhysicalEnvironment;
+import javax.media.j3d.QuadArray;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Texture2D;
+import javax.media.j3d.TextureAttributes;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
 import javax.media.j3d.ViewPlatform;
 import javax.swing.JOptionPane;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.TexCoord2f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -114,6 +127,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         jCheckBoxField = new javax.swing.JCheckBox();
         jCheckBoxImage = new javax.swing.JCheckBox();
         jToggleButtonGetColorTable = new javax.swing.JToggleButton();
+        cbUseFieldViewer = new javax.swing.JCheckBox();
 
         javax.swing.GroupLayout jPanelCanvasLayout = new javax.swing.GroupLayout(jPanelCanvas);
         jPanelCanvas.setLayout(jPanelCanvasLayout);
@@ -176,6 +190,12 @@ public class ThreeDimensionViewer extends AbstractDialog
             }
         });
         jToolBar.add(jToggleButtonGetColorTable);
+
+        cbUseFieldViewer.setText("Use FieldViewer");
+        cbUseFieldViewer.setFocusable(false);
+        cbUseFieldViewer.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbUseFieldViewer.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(cbUseFieldViewer);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -306,7 +326,6 @@ public class ThreeDimensionViewer extends AbstractDialog
     canvas.setSize(1, 1);
     jPanelCanvas.addComponentListener(new ComponentListener()
     {
-
       @Override
       public void componentResized(ComponentEvent e)
       {
@@ -346,7 +365,6 @@ public class ThreeDimensionViewer extends AbstractDialog
         jCheckBoxImage.setSelected(false);
         ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
         image = null;
-        Helper.handleException(cause, null);
       }
     };
     
@@ -365,7 +383,6 @@ public class ThreeDimensionViewer extends AbstractDialog
         jCheckBoxImage.setSelected(false);
         ThreeDimensionViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
         imageTop = null;
-        Helper.handleException(cause, null);
       }
     };
     
@@ -402,6 +419,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     vw.add(viewBranch);
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox cbUseFieldViewer;
     private javax.swing.JCheckBox jCheckBoxField;
     private javax.swing.JCheckBox jCheckBoxImage;
     private javax.swing.JPanel jPanelCanvas;
@@ -420,7 +438,12 @@ public class ThreeDimensionViewer extends AbstractDialog
 
     // attach the image of camera
     object.addCameraImage(image, "bottom");
-    object.addCameraImage(imageTop, "top");    
+    object.addCameraImage(imageTop, "top");
+    
+    if(this.cbUseFieldViewer.isSelected() && FieldViewer.getCanvas() != null)
+    {
+        object.addChild(createFieldViewertexture());
+    }
     
     vw.add(object);
     if (activeScene != null)
@@ -428,8 +451,60 @@ public class ThreeDimensionViewer extends AbstractDialog
       activeScene.detach();
     }
     activeScene = object;
+    
+    //exportScreenshotToPNG(new File("test3d_" + (kkk++) + ".png"));
+  }
+  
+  
+  private Shape3D createFieldViewertexture()
+  {
+    float width = 3.7f; // in m
+    float height = 2.7f; // in m
+    int width_px = (int)(width*2000); // 1mm^2 ~ 1px
+    int height_px = (int)(height*2000); // 1mm^2 ~ 1px
+
+    // create the texture image
+    BufferedImage image = new BufferedImage(height_px, width_px, BufferedImage.TYPE_INT_RGB);
+    Graphics2D g2d = image.createGraphics();
+    g2d.setColor(new Color(0.9f,0.9f,0.9f));
+    g2d.fillRect(0, 0, height_px, width_px);
+    FieldViewer.getCanvas().paintDrawings(g2d, height_px/2, width_px/2, -Math.PI*0.5, 0.5);
+
+    // create the texture appearence
+    ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent2D.FORMAT_RGB, image);
+    Texture2D tex = new Texture2D(Texture2D.INTENSITY, Texture2D.RGB, imageComponent.getWidth(), imageComponent.getHeight());
+    tex.setImage(0, imageComponent);
+    TextureAttributes texAttr = new TextureAttributes();
+    texAttr.setPerspectiveCorrectionMode(TextureAttributes.NICEST);
+    Appearance app = new Appearance();
+    app.setTexture(tex);
+    app.setTextureAttributes(texAttr);
+
+    // create the geometry for the texture
+    QuadArray rect = new QuadArray(4, QuadArray.COORDINATES | QuadArray.TEXTURE_COORDINATE_2);
+    rect.setCoordinate(0, new Point3f(-width,  height, 0.0001f));
+    rect.setCoordinate(1, new Point3f(-width, -height, 0.0001f));
+    rect.setCoordinate(2, new Point3f( width, -height, 0.0001f));
+    rect.setCoordinate(3, new Point3f( width,  height, 0.0001f));
+
+    rect.setTextureCoordinate(0, 0, new TexCoord2f(1.0f, 1.0f));
+    rect.setTextureCoordinate(0, 1, new TexCoord2f(0.0f, 1.0f));
+    rect.setTextureCoordinate(0, 2, new TexCoord2f(0.0f, 0.0f));
+    rect.setTextureCoordinate(0, 3, new TexCoord2f(1.0f, 0.0f));
+
+    // create the 3D shape representing the image object
+    return new Shape3D(rect, app);
   }
 
+  private void exportScreenshotToPNG(File file) {
+    BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
+    Graphics2D g2d = image.createGraphics();
+    canvas.paintAll(g2d);
+    try{
+        ImageIO.write(image, "PNG", file);
+    }catch(Exception e){}
+  }
+  
   @Override
   public void errorOccured(String cause)
   {
