@@ -31,6 +31,7 @@
 #include "Modules/Infrastructure/TeamCommunicator/RCTCHandler.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
+#include "Modules/Infrastructure/OpenCV/OpenCVGrayScaleImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
@@ -151,6 +152,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(RCTCHandler);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
+  REGISTER_MODULE(OpenCVGrayScaleImageProvider);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(CameraInfoSetter);

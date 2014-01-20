@@ -6,13 +6,13 @@ OpenCVImageProvider::OpenCVImageProvider()
 
 void OpenCVImageProvider::execute()
 {
-  const Image& image = getImage();
-  if(image.width() == 320 && image.height() == 240)
-  {
-    OpenCVGrayScale::createSmallGrayScaleFromRaw(image.data(), getOpenCVGrayScale().image);
-  }
-}
+  getCVImage().image = CVImage::convertFromNaoImage(getImage(), getCVImage().image);
+  getCVImageTop().image = CVImage::convertFromNaoImage(getImageTop(), getCVImageTop().image);
 
-OpenCVImageProvider::~OpenCVImageProvider()
-{
+// debug
+//  cv::Mat asRgb;
+//  cv::cvtColor(getCVImage().image, asRgb, CV_YCrCb2RGB);
+//  cv::namedWindow("cv", cv::WINDOW_AUTOSIZE);
+//  cv::imshow("cv",asRgb);
+//  cv::waitKey(1);
 }
