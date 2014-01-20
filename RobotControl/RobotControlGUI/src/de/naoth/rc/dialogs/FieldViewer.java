@@ -79,7 +79,12 @@ public class FieldViewer extends AbstractDialog
 
   private StrokePlot strokePlot;
 
-  /** Creates new form FieldViewer */
+  // TODO: this is a hack
+  private static de.naoth.rc.dialogs.panels.DynamicCanvasPanel canvasExport = null;
+  public static de.naoth.rc.dialogs.panels.DynamicCanvasPanel getCanvas() {
+      return canvasExport;
+  }
+  
   public FieldViewer()
   {
     initComponents();
@@ -103,6 +108,7 @@ public class FieldViewer extends AbstractDialog
     this.plotDataListener = new PlotDataListener();
     
     this.fieldCanvas.setToolTipText("");
+    canvasExport = this.fieldCanvas;
   }
 
   

@@ -102,6 +102,14 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButtonGetColorTableActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="cbUseFieldViewer">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Use FieldViewer"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="4"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>
