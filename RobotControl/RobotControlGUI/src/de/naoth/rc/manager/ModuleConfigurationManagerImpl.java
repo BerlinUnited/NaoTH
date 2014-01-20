@@ -39,7 +39,8 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
       for(Module m : list.getModulesList())
       {
         String str[] = m.getName().split("\\|"); // hack
-        String name = str[0];
+        String simpleName = str[0];
+        String name = simpleName;
         
         if(str.length > 1) {
             String lower_name = name.toLowerCase();
@@ -47,20 +48,20 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
             name = hname + ":" + name;
         }
         
-        Node moduleNode = new Node(name, ModuleConfiguration.NodeType.Module, m.getActive());
-        moduleConfiguration.addVertex(moduleNode);
+        Node moduleNode = moduleConfiguration.addNode(
+                simpleName, name, ModuleConfiguration.NodeType.Module, m.getActive());
 
         for(String s : m.getProvidedRepresentationsList())
         {
-          Node repNode = new Node(s, ModuleConfiguration.NodeType.Represenation, true);
-          moduleConfiguration.addVertex(repNode);
+          Node repNode = moduleConfiguration.addNode(
+                  s, null, ModuleConfiguration.NodeType.Represenation, true);
           moduleConfiguration.addEdge(moduleNode,repNode);
         }
         
         for(String s : m.getUsedRepresentationsList())
         {
-          Node repNode = new Node(s, ModuleConfiguration.NodeType.Represenation, true);
-          moduleConfiguration.addVertex(repNode);
+          Node repNode = moduleConfiguration.addNode(
+                  s, null, ModuleConfiguration.NodeType.Represenation, true);
           moduleConfiguration.addEdge(repNode,moduleNode);
         }
       }
