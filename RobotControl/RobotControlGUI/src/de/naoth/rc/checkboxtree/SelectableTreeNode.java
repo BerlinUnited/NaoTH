@@ -285,6 +285,12 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
     this.cb.setToolTipText(tooltip);
   }
 
+    public void setEnabled(boolean bln) {
+        cb.setEnabled(bln);
+    }
+  
+  
+
   @Override
   public String toString()
   {

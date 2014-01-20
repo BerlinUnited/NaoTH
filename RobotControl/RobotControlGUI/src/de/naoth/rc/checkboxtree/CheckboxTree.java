@@ -22,13 +22,15 @@ import javax.swing.tree.TreeSelectionModel;
 public class CheckboxTree extends JTree
 {
 
-  private SelectableTreeNode rootNode;
-  private DefaultTreeModel model;
+  private final SelectableTreeNode rootNode;
+  private final DefaultTreeModel model;
+  private boolean nonLeafNodesEditable;
 
   public CheckboxTree()
   {
-    rootNode = new SelectableTreeNode("all debug requests", "", false);
-    model = new DefaultTreeModel(rootNode);
+    this.rootNode = new SelectableTreeNode("all debug requests", "", false);
+    this.model = new DefaultTreeModel(rootNode);
+    this.nonLeafNodesEditable = true;
     
     this.setModel(model);
     this.setCellRenderer(new CheckboxTreeCellRenderer());
@@ -71,6 +73,7 @@ public class CheckboxTree extends JTree
     {
       SelectableTreeNode matchingNode = null;
       Enumeration<SelectableTreeNode> childEnum = current.children();
+
       while(childEnum.hasMoreElements())
       {
         SelectableTreeNode child = childEnum.nextElement();
@@ -88,9 +91,11 @@ public class CheckboxTree extends JTree
         matchingNode = new SelectableTreeNode(n, null, false);
         matchingNode.setParent(current);
         model.insertNodeInto(matchingNode, current, current.getChildCount());
+        // current is not a leaf node
+        current.setEnabled(this.nonLeafNodesEditable);
       }
       current = matchingNode;
-    }
+    }//end for
     
     this.expandPath(new TreePath(rootNode));
     
@@ -150,4 +155,12 @@ public class CheckboxTree extends JTree
       model.removeNodeFromParent(n);
     }
   }
+
+    public boolean isNonLeafNodesEditable() {
+        return nonLeafNodesEditable;
+    }
+
+    public void setNonLeafNodesEditable(boolean nonLeafNodesEditable) {
+        this.nonLeafNodesEditable = nonLeafNodesEditable;
+    }
 }

@@ -16,13 +16,11 @@ import de.naoth.rc.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.dialogs.Tools.S20BinaryLookup;
-import de.naoth.rc.dialogs.panels.SimpleModulePanel;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -54,15 +52,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
     public static GenericManagerFactory genericManagerFactory;
   }//end Plugin
   
-  //private VisualizationViewer<Node, Edge> vv;
-
   private final String commandStringStoreModules = "modules:store";
   private final String commandStringSetModules = "modules:set";
   
   ModuleConfiguration moduleGraph = null;
   
-  private S20BinaryLookup cbModulesSearch;
-  private S20BinaryLookup cbRepresentationsSearch;
+  private final S20BinaryLookup cbModulesSearch;
+  private final S20BinaryLookup cbRepresentationsSearch;
   
   public ModuleConfigurationViewer()
   {
@@ -71,6 +67,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
     // search within the comboboxes
     this.cbModulesSearch = new S20BinaryLookup(this.cbModules);
     this.cbRepresentationsSearch = new S20BinaryLookup(this.cbRepresentations);
+    // only the leafe nodes can be modified
+    this.moduleConfigTree.setNonLeafNodesEditable(false);
   }
   
   @Init
