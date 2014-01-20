@@ -8,11 +8,22 @@ OpenCVDebug::OpenCVDebug()
 
 void OpenCVDebug::execute()
 {
-  Image& theImage = getImage();
-
   DEBUG_REQUEST("OpenCVDebug:show_debug_image",
+    cv::Mat result = getCVImage().image;
+    Image& theImage = getImage();
+    writeToImage(result, theImage);
+
+    result = getCVImageTop().image;
+    Image& theImageTop = getImageTop();
+    writeToImage(result, theImageTop);
+  );
+
+}
+
+void OpenCVDebug::writeToImage(cv::Mat result, Image& theImage)
+{
   // write result to real image (for debugging...)
-  cv::Mat result = getOpenCVGrayScale().image;
+
   for(unsigned int i=0; i < theImage.getIndexSize(); i++)
   {
     int x = theImage.getXOffsetFromIndex(i);
@@ -35,6 +46,14 @@ void OpenCVDebug::execute()
         p.y = value[0];
         p.u = value[1];
         p.v = value[3];
+      }
+      else if(result.channels() == 2)
+      {
+        // ignore the second channel and treat like grayscale
+        cv::Vec2b& value = result.at<cv::Vec2b>(y,x);
+        p.y = value[0];
+        p.u = 128;
+        p.v = 128;
       }
       else if(result.channels() == 1)
       {
@@ -60,6 +79,4 @@ void OpenCVDebug::execute()
       theImage.set(x,y,p);
     }
   }
-  );
-
 }
