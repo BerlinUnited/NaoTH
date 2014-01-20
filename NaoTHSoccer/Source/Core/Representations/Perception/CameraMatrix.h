@@ -42,6 +42,7 @@ class CameraMatrixTop : public CameraMatrix
 {
 public:
   CameraMatrixTop(){ cameraID = naoth::CameraInfo::Top; }
+  CameraMatrixTop(const Pose3D& pose): CameraMatrix(pose) { cameraID = naoth::CameraInfo::Top; }
   virtual ~CameraMatrixTop() {}
 };
 

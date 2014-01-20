@@ -79,8 +79,6 @@ void CameraMatrixCorrector::reset_calibration()
 void CameraMatrixCorrector::calibrate()
 {
   // calibrate the camera matrix
-  // currently it is in test-mode, the correction parameter
-  // are stored as static members of CameraMatrixCalculator
 
   if (getGoalPercept().getNumberOfSeenPosts() < 2
       || !getGoalPercept().getPost(0).positionReliable 

@@ -38,10 +38,10 @@ public:
     }; 
 
     /* the posts base point in the image */
-    Vector2<int> basePoint;
+    Vector2i basePoint;
 
     /* the posts base point in the image */
-    Vector2<int> topPoint;
+    Vector2i topPoint;
 
     /* color of the post */
     ColorClasses::Color color;
@@ -56,7 +56,7 @@ public:
     double seenHeight;
 
     /* the posts base point on the ground */
-    Vector2<double> position;
+    Vector2d position;
 
     static const char* getPostTypeName(PostType type)
     {
@@ -100,7 +100,7 @@ private:
 
 public:
 
-  void add(const Vector2<int>& basePoint, const Vector2<double>& position, GoalPost::PostType type, ColorClasses::Color color, bool reliable)
+  void add(const Vector2i& basePoint, const Vector2d& position, GoalPost::PostType type, ColorClasses::Color color, bool reliable)
   {
     if(numberOfSeenPosts < MAXNUMBEROFPOSTS)
     {

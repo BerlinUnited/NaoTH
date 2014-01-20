@@ -101,13 +101,6 @@ public:
   PixelT<double> meanEnv;
   PixelT<double> meanImg;
 
-  PixelT<double> minEnv;
-  PixelT<double> maxEnv;
-
-  PixelT<int> spanWidthEnv;
-
-  PixelT<double> diff;
-
   PixelT<double> dist;
 
   PixelT<double> fieldIndex;
@@ -176,25 +169,10 @@ public:
 
     meanEnv = meanImg;
 
-    minEnv.y = 0.0;
-    minEnv.u = 0.0;
-    minEnv.v = 0.0;
-    maxEnv.y = 255.0;
-    maxEnv.u = 255.0;
-    maxEnv.v = 255.0;
-
-    spanWidthEnv.y = 255;
-    spanWidthEnv.u = 255;
-    spanWidthEnv.v = 255;
-
     fieldImageMean = meanImg;
     goalImageMean = meanImg;
     ballImageMean = meanImg;
     linesImageMean = meanImg;
-
-    diff.y = 0.0;
-    diff.u = 0.0;
-    diff.v = 0.0;
   }
 
   ~BaseColorRegionPercept()

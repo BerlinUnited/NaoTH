@@ -10,14 +10,13 @@
 
 #include <ModuleFramework/Module.h>
 
-//Tools
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
-
 // Representations
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
+#include "Representations/Perception/Histograms.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
-#include "Representations/Perception/CameraMatrix.h"
+
+#include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -26,13 +25,11 @@ BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(ImageTop)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColorClassificationModelTop)
-  REQUIRE(FieldColorPercept)
-  REQUIRE(CameraMatrix)
 
+  PROVIDE(ColorClassesHistograms)
+  PROVIDE(ColorClassesHistogramsTop)
   PROVIDE(ColoredGrid)
   PROVIDE(ColoredGridTop)
-  PROVIDE(Histograms)
-  PROVIDE(HistogramsTop)
 END_DECLARE_MODULE(GridProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -46,10 +43,24 @@ public:
 
 
   /** executes the module */
-  void execute();
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+  }
 
 private:
+  CameraInfo::CameraID cameraID;
+
   void calculateColoredGrid();
+
+  DOUBLE_CAM_REQUIRE(GridProvider, Image);
+  DOUBLE_CAM_REQUIRE(GridProvider, ColorClassificationModel);
+
+  DOUBLE_CAM_PROVIDE(GridProvider, ColorClassesHistograms);
+  DOUBLE_CAM_PROVIDE(GridProvider, ColoredGrid);
 };
 
 #endif // _GridProvider_h_

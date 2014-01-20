@@ -20,12 +20,12 @@ BresenhamLineScan::BresenhamLineScan()
   setup(dir);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2<int>& start, const Vector2<int>& end)
+BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const Vector2i& end)
 {
   setup(start, end);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2<double>& direction)
+BresenhamLineScan::BresenhamLineScan(const Vector2d& direction)
 {
   setup(direction);
 }
@@ -35,12 +35,12 @@ BresenhamLineScan::BresenhamLineScan(const double& direction)
   setup(direction);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2<int>& start, const Vector2<double>& direction, const CameraInfo& cameraInfo)
+BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const Vector2d& direction, const CameraInfo& cameraInfo)
 {
   setup(start, direction, cameraInfo);
 }
 
-BresenhamLineScan::BresenhamLineScan(const Vector2<int>& start, const double& direction, const CameraInfo& cameraInfo)
+BresenhamLineScan::BresenhamLineScan(const Vector2i& start, const double& direction, const CameraInfo& cameraInfo)
 {
   setup(start, direction, cameraInfo);
 }
@@ -52,7 +52,7 @@ BresenhamLineScan::BresenhamLineScan(const Math::Line& line, const CameraInfo& c
 
 
 
-void BresenhamLineScan::setup(const Vector2<int>& diff)
+void BresenhamLineScan::setup(const Vector2i& diff)
 {
   int dx = diff.x;
   int dy = diff.y;
@@ -86,22 +86,22 @@ void BresenhamLineScan::setup(const Vector2<int>& diff)
   pixelCount = 0;
 }//end setup
 
-void BresenhamLineScan::setup(const Vector2<int>& start, const Vector2<int>& end)
+void BresenhamLineScan::setup(const Vector2i& start, const Vector2i& end)
 {
   setup(end-start);
 }
 
 void BresenhamLineScan::setup(const double& direction)
 {
-  setup(Vector2<int>(static_cast<int>(cos(direction)*1024.0), static_cast<int>(sin(direction)*1024.0)));
+  setup(Vector2i(static_cast<int>(cos(direction)*1024.0), static_cast<int>(sin(direction)*1024.0)));
 }
 
-void BresenhamLineScan::setup(const Vector2<double>& direction)
+void BresenhamLineScan::setup(const Vector2d& direction)
 {
-  setup(Vector2<int>(static_cast<int>(direction.x*1024.0), static_cast<int>(direction.y*1024.0)));
+  setup(Vector2i(static_cast<int>(direction.x*1024.0), static_cast<int>(direction.y*1024.0)));
 }
 
-void BresenhamLineScan::setup(const Vector2<int>& start, const double& direction, const CameraInfo& cameraInfo)
+void BresenhamLineScan::setup(const Vector2i& start, const double& direction, const CameraInfo& cameraInfo)
 {
   // Create a line through the point start with the given direction
   Math::Line line(Pose2D(direction, start));
@@ -109,7 +109,7 @@ void BresenhamLineScan::setup(const Vector2<int>& start, const double& direction
   setup(line, cameraInfo);
 }
 
-void BresenhamLineScan::setup(const Vector2<int>& start, const Vector2<double>& direction, const CameraInfo& cameraInfo)
+void BresenhamLineScan::setup(const Vector2i& start, const Vector2d& direction, const CameraInfo& cameraInfo)
 {
   // Create a line through the point start with the given direction
   Math::Line line(start, direction);
@@ -119,11 +119,11 @@ void BresenhamLineScan::setup(const Vector2<int>& start, const Vector2<double>& 
 
 void BresenhamLineScan::setup(const Math::Line& line, const CameraInfo& cameraInfo)
 {
-  Vector2<int> pointOne;
-  Vector2<int> pointTwo;
+  Vector2i pointOne;
+  Vector2i pointTwo;
 
-  const Vector2<int> frameUpperLeft(0,0);
-  const Vector2<int> frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
+  const Vector2i frameUpperLeft(0,0);
+  const Vector2i frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
   Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, line, pointOne, pointTwo);
 
   setup(pointTwo - line.getBase());

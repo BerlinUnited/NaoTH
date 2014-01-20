@@ -6,7 +6,7 @@
 */
 
 #include "Edgel.h"
-#include "LineDetectorConstParameters.h"
+#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
 
 #ifndef _ClusteredLine_H_
 #define _ClusteredLine_H_
@@ -15,7 +15,7 @@ class ClusteredLine
 {
 private:
   // parameter for hessian normal form
-  Vector2<double> angleSum;
+  Vector2d angleSum;
   double dSum;
 
   double thicknessSum;
@@ -40,8 +40,8 @@ public:
     start = edgel.center;
     end = edgel.center;
 
-    angleSum = Vector2<double>(1,0).rotate(angle);
-    Vector2<double> normal(angleSum);
+    angleSum = Vector2d(1,0).rotate(angle);
+    Vector2d normal(angleSum);
 
     dSum = normal.rotateLeft() * edgel.center;
 
@@ -58,21 +58,21 @@ public:
     double edgelThickness = fabs(((double)(edgel.begin - edgel.end).y) * sin(Math::pi_2 - edgel.center_angle));
     
     // the normal vector of the line in the hessian normalform
-    Vector2<double> lineNormal;
+    Vector2d lineNormal;
     // distance parameter for the hessian normalform
     double d = 0;
 
     if(count > 1)
     {
-      lineNormal = Vector2<double>(end - start).normalize().rotateLeft();
-      d = lineNormal * Vector2<double>(end + start)*0.5;
+      lineNormal = Vector2d(end - start).normalize().rotateLeft();
+      d = lineNormal * Vector2d(end + start)*0.5;
     }
     else
     {
-      lineNormal = Vector2<double>(edgel.center - start).normalize().rotateLeft();
+      lineNormal = Vector2d(edgel.center - start).normalize().rotateLeft();
 
       // distance parameter for the hessian normalform
-      d = lineNormal*Vector2<double>(edgel.center + start)*0.5;
+      d = lineNormal*Vector2d(edgel.center + start)*0.5;
 
       // check the id of the scanline
       if
@@ -87,10 +87,10 @@ public:
     }
 
     // distance of the edgel.center to the line
-    double distance = lineNormal*Vector2<double>(edgel.center);
+    double distance = lineNormal*Vector2d(edgel.center);
 
     // vector in the line direction
-    Vector2<double> lineDirection(Vector2<double>(lineNormal).rotateRight());
+    Vector2d lineDirection(Vector2d(lineNormal).rotateRight());
 
 
     return
@@ -116,9 +116,9 @@ public:
 
       end = edgel.center;
       
-      angleSum += Vector2<double>(1,0).rotate(edgel.center_angle);
+      angleSum += Vector2d(1,0).rotate(edgel.center_angle);
       
-      Vector2<double> direction = angleSum;
+      Vector2d direction = angleSum;
       direction.normalize();
 
       dSum += direction.rotateLeft() * edgel.center;
@@ -139,8 +139,8 @@ public:
   int count;
   double angle;
   double thickness;
-  Vector2<int> start;
-  Vector2<int> end;
+  Vector2i start;
+  Vector2i end;
 //  double hDist;
 };
 

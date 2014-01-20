@@ -13,13 +13,14 @@
 
 namespace Statistics
 {
-
-  template <int SIZE> class Histogram
+  class HistogramX
   {
     public:
-      int rawData[SIZE];
-      double normalizedData[SIZE];
-      double cumulativeData[SIZE];
+      int size;
+
+      std::vector<int> rawData;
+      std::vector<double> normalizedData;
+      std::vector<double> cumulativeData;
      
       int median;
       int min;
@@ -32,13 +33,21 @@ namespace Statistics
       double skewness;
       double kurtosis;
 
-      Histogram()
+      HistogramX()
       {
+        size = 0;
         clear();
-      };
+      }
       
-      ~Histogram()
-      {};
+      HistogramX(int newSize)
+      {
+        size = newSize;
+        resize(newSize);
+        clear();
+      }
+      
+      ~HistogramX()
+      {}
 
       void clear()
       {
@@ -53,26 +62,38 @@ namespace Statistics
         skewness = 0.0;
         kurtosis = 0.0;
         calculated = false;
-        memset(&rawData, 0, sizeof(rawData));
-        memset(&normalizedData, 0, sizeof(normalizedData));
-        memset(&cumulativeData, 0, sizeof(cumulativeData));
-      };
+        for(int i = 0; i < size; i++)
+        {
+          rawData[i] = 0;
+          normalizedData[i] = 0.0;
+          cumulativeData[i] = 0.0;
+        }
+      }
+
+      void resize(int newSize)
+      {
+        size = newSize;
+        rawData.resize(size, 0);
+        normalizedData.resize(size, 0.0);
+        cumulativeData.resize(size, 0.0);
+        clear();
+      }
 
       void add(int value)
       {
         rawData[value]++;
-      };
+      }
 
       void set(int idx, int value)
       {
         rawData[idx] = value;
-      };
+      }
 
       void calculate()
       {
         double sum = 0.0;
         mean = 0.0;
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           sum += rawData[i];
           mean += i * rawData[i];
@@ -85,7 +106,7 @@ namespace Statistics
         variance = 0.0;
         skewness = 0.0;
         kurtosis = 0.0;
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           normalizedData[i] = rawData[i] / sum;
           squareMean += i * i * normalizedData[i];
@@ -107,11 +128,11 @@ namespace Statistics
           {
             median = i;
           }
-          if(min == 255 &&  cumulativeData[i] > 0.0)
+          if(i < min && rawData[i] > 0)
           {
             min = i;
           }
-          if(max == 0 &&  cumulativeData[i] >= 1.0)
+          if(i > max && rawData[i] > 0)
           {
             max = i;
           }
@@ -123,11 +144,11 @@ namespace Statistics
         skewness /= (sigma * s2);
         kurtosis /= (s2 * s2);
         calculated = true;
-      };
+      }
 
       void plot(std::string id) const
       {
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
           if(calculated)
@@ -136,36 +157,43 @@ namespace Statistics
             PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
           }
         }
-      };
+      }
 
       void plotRaw(std::string id) const
       {
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
         }
-      };
+      }
 
       void plotNormalized(std::string id) const
       {
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
         }
-      };
+      }
 
       void plotCumulated(std::string id) const
       {
-        for(int i = 0; i < SIZE; i++)
+        for(int i = 0; i < size; i++)
         {
           PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
         }
-      };
+      }
 
-  private:
+  protected:
     bool calculated;
 
   };
+
+  template <int SIZE> class Histogram : public HistogramX
+  {
+  public:
+    Histogram() : HistogramX(SIZE) {}
+  };
+
 }
 #endif  /* _Histogram_H */
 

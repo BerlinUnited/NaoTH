@@ -149,8 +149,6 @@ void WholeGoalLocator::correct_the_goal_percept(
   GoalPercept::GoalPost& post2) const
 {
   // calibrate the camera matrix
-  // currently it is in test-mode, the correction parameter
-  // are stored as static members of CameraMatrixCalculator
 
   if (getGoalPercept().getNumberOfSeenPosts() < 2)
     return;

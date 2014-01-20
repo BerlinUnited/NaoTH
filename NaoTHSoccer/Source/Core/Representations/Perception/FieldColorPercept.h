@@ -9,13 +9,7 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
-
-#include <Tools/ImageProcessing/FieldColorParameters.h>
-
-#include <Tools/ColorClasses.h>
-
 #include <Tools/Math/Common.h>
-
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;
@@ -30,11 +24,7 @@ class FieldColorPercept : public naoth::Printable
     PixelT<int> max;
 
   public:
-
-    ColorRange()
-    {
-      
-    }
+    ColorRange(){}
 
     void set(int minY, int minU, int minV, int maxY, int maxU, int maxV)
     {
@@ -46,13 +36,11 @@ class FieldColorPercept : public naoth::Printable
       max.v = maxV;
     }
 
-    PixelT<int> getMax() const
-    {
+    PixelT<int> getMax() const {
       return max;
     }
 
-    PixelT<int> getMin() const
-    {
+    PixelT<int> getMin() const {
       return min;
     }
 
@@ -107,8 +95,6 @@ public:
   maxRateY(0.0),
   maxRateU(0.0),
   maxRateV(0.0),
-  //distV(5.0),
-  //indexV(100),
   borderLeftV(0),
   borderRightV(0),
   maxY(127),
@@ -126,18 +112,15 @@ public:
     range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
-  inline bool isFieldColorOld(int yy, int cb, int cr) const
-  {
+  inline bool isFieldColorOld(int yy, int cb, int cr) const {
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }
 
-  inline bool isFieldColor(const int& y, const int& u, const int& v) const
-  {
+  inline bool isFieldColor(int y, int u, int v) const {
     return range.inside(y, u, v);
   }
 
-  inline bool isFieldColor(const Pixel& pixel) const
-  {
+  inline bool isFieldColor(const Pixel& pixel) const {
     return isFieldColor(pixel.y, pixel.u, pixel.v);
   }
 

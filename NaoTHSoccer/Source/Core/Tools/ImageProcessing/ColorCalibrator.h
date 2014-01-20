@@ -4,10 +4,12 @@
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Perception/Histograms.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
@@ -16,8 +18,6 @@
 #include "Tools/DataStructures/Histogram.h"
 
 //Perception
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histograms.h"
 #include "Tools/ImageProcessing/ColorRegion.h"
 #include "Tools/ImageProcessing/CalibrationRect.h"
 
@@ -33,8 +33,8 @@
 class ColorCalibrator
 {
 public:
-  ColorCalibrator(string name, ColorClasses::Color color);
-  ColorCalibrator(double strength, string name, ColorClasses::Color color);
+  ColorCalibrator(std::string name, ColorClasses::Color color);
+  ColorCalibrator(double strength, std::string name, ColorClasses::Color color);
   virtual ~ColorCalibrator(){};
 
   /** executes the module */
@@ -55,10 +55,10 @@ public:
 
 private:
   double strength;
-  string name;
+  std::string name;
   ColorClasses::Color color;
 
-  vector<CalibrationRect*> calibrationRectangles;
+  std::vector<CalibrationRect*> calibrationRectangles;
   
   greenColorRegion greenParams;
   whiteColorRegion whiteParams;

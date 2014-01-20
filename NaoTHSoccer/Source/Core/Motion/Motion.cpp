@@ -17,15 +17,11 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 
-
-#include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-
+#include "Tools/CameraGeometry.h"
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugModify.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
-
-
 
 using namespace naoth;
 
@@ -319,15 +315,13 @@ void Motion::debugPlots()
 
 void Motion::updateCameraMatrix()
 {
-  CameraMatrixCalculator::calculateCameraMatrix(
-    getCameraMatrix(),
+  getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
     getKinematicChainSensor(),
     NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom],
     getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
   );
 
-  CameraMatrixCalculator::calculateCameraMatrix(
-    getCameraMatrixTop(),
+  getCameraMatrixTop() = CameraGeometry::calculateCameraMatrix(
     getKinematicChainSensor(),
     NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Top],
     getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]

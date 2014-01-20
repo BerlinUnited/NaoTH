@@ -11,7 +11,9 @@
 //include section
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
+
 //perceptions
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/FieldPercept.h"
@@ -25,6 +27,7 @@
 
 //common representations
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 
@@ -32,6 +35,8 @@
 
 //module declaration section
 BEGIN_DECLARE_MODULE(PerceptionsVisualization)
+  REQUIRE(ArtificialHorizon)
+  REQUIRE(ArtificialHorizonTop)
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
   REQUIRE(FieldPercept)
@@ -43,11 +48,13 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualization)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   
-  PROVIDE(CameraMatrixOffset)
+  REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  PROVIDE(Image)
-  PROVIDE(ImageTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+  REQUIRE(Image)
+  REQUIRE(ImageTop)
 
   REQUIRE(ObjectPercept)
   REQUIRE(PlayersPercept)
@@ -75,6 +82,7 @@ private:
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,ScanLineEdgelPercept);
 
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,Image);
+  DOUBLE_CAM_REQUIRE(PerceptionsVisualization,CameraInfo);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualization,CameraMatrix);
 };
 #endif // end _PerceptionsVisualization_h_

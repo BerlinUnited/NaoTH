@@ -21,7 +21,7 @@
 // Debug
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
-#include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
+#include "Tools/CameraGeometry.h"
 #include <Tools/Debug/DebugDrawings.h>
 
 
@@ -263,13 +263,11 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
   theKinematicChain.theLinks[KinematicChain::Neck].updateFromMother();
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
-  CameraMatrix cameraMatrix;
-  CameraMatrixCalculator::calculateCameraMatrix(
-    cameraMatrix,
-    theKinematicChain,
-    NaoInfo::robotDimensions.cameraTransformation[getHeadMotionRequest().cameraID],
-    getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
-  );
+  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrix(
+      theKinematicChain,
+      NaoInfo::robotDimensions.cameraTransformation[getHeadMotionRequest().cameraID],
+      getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
+    );
 
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 

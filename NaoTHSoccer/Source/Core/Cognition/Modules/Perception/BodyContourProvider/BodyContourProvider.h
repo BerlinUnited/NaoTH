@@ -25,14 +25,18 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/CameraInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 #include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include <vector>
 
+#include "Tools/DoubleCamHelpers.h"
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(BodyContourProvider)
+  REQUIRE(FrameInfo)
   REQUIRE(KinematicChain)
   //REQUIRE(CameraMatrix)
   //REQUIRE(CameraMatrixTop)
@@ -64,6 +68,7 @@ public:
   void execute()
   {
      execute(CameraInfo::Bottom);
+     execute(CameraInfo::Top);
   }
 
 private:

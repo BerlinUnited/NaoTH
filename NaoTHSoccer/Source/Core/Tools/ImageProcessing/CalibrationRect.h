@@ -11,8 +11,8 @@ using namespace naoth;
 class CalibrationRect : public ParameterList
 {
 public:
-  Vector2<int> lowerLeft;
-  Vector2<int> upperRight;
+  Vector2i lowerLeft;
+  Vector2i upperRight;
   ColorClasses::Color color;
 
   CalibrationRect(std::string rectName, ColorClasses::Color rectColor, int x0, int y0, int x1, int y1)
@@ -41,16 +41,11 @@ public:
     DebugParameterList::getInstance().remove(this);
   }
 
-  void draw()
+  void draw(CameraInfo::CameraID camID)
   {
+    CANVAS_PX(camID);
     RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
   }
-
-  void drawTop()
-  {
-    TOP_RECT_PX(color, lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
-  }
-
 };
 
 

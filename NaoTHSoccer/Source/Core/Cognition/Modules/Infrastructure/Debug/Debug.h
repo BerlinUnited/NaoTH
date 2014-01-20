@@ -36,15 +36,11 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
-  REQUIRE(GyrometerData)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   PROVIDE(Image)
   PROVIDE(ImageTop)
-  REQUIRE(SensorJointData)
-  REQUIRE(InertialSensorData)
-  REQUIRE(AccelerometerData)
-  REQUIRE(FSRData)
+
   REQUIRE(RobotPose)
   REQUIRE(KinematicChain)
   REQUIRE(BallModel)
@@ -56,8 +52,6 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(ColorTable64)
   PROVIDE(ColorClassificationModel)
   PROVIDE(MotionRequest)
-  PROVIDE(CameraSettingsRequest)
-  PROVIDE(CameraSettingsRequestTop)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, virtual private BlackBoardInterface, public DebugCommandExecutor

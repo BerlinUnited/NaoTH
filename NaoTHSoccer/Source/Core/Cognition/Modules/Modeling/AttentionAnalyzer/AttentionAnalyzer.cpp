@@ -99,9 +99,9 @@ void AttentionAnalyzer::execute()
     Vector2<double> centerOnField;
     if(CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
-      getImage().cameraInfo,
-      (double)getImage().cameraInfo.getOpticalCenterX(),
-      (double)getImage().cameraInfo.getOpticalCenterY(),
+      getCameraInfo(),
+      (double)getCameraInfo().getOpticalCenterX(),
+      (double)getCameraInfo().getOpticalCenterY(),
       0.0,
       centerOnField))
     {
@@ -128,9 +128,9 @@ int AttentionAnalyzer::compare(const PointOfInterest& one, const PointOfInterest
   Vector2<double> centerOnField;
   if(!CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
-      getImage().cameraInfo,
-      (double)getImage().cameraInfo.getOpticalCenterX(),
-      (double)getImage().cameraInfo.getOpticalCenterY(),
+      getCameraInfo(),
+      (double)getCameraInfo().getOpticalCenterX(),
+      (double)getCameraInfo().getOpticalCenterY(),
       0.0,
       centerOnField))
       return 0;
@@ -152,8 +152,8 @@ double AttentionAnalyzer::distanceToImageCenter(const Vector2<double>& point)
   // distance from center to a corner of the image
   // "+1" is for practiacl reasons (see below)
   static const double maxDistanceToCenter = 
-    Vector2<double>(getImage().cameraInfo.getOpticalCenterX()+1, 
-                    getImage().cameraInfo.getOpticalCenterY()+1).abs();
+    Vector2<double>(getCameraInfo().getOpticalCenterX()+1, 
+                    getCameraInfo().getOpticalCenterY()+1).abs();
 
 
   // Note: projectionInImage = (0,0) if no projection is possible.
@@ -161,14 +161,14 @@ double AttentionAnalyzer::distanceToImageCenter(const Vector2<double>& point)
   Vector2<int> projectionInImage;
   CameraGeometry::relativePointToImage(
     getCameraMatrix(),
-    getImage().cameraInfo,
+    getCameraInfo(),
     Vector3<double>(point.x, point.y, 0.0),
     projectionInImage
   );
 
   Vector2<double> pointToCenter(
-    projectionInImage.x-getImage().cameraInfo.getOpticalCenterX(),
-    projectionInImage.y-getImage().cameraInfo.getOpticalCenterY());
+    projectionInImage.x-getCameraInfo().getOpticalCenterX(),
+    projectionInImage.y-getCameraInfo().getOpticalCenterY());
 
   return std::min(pointToCenter.abs(), maxDistanceToCenter);
 }//end distanceToImageCenter
@@ -269,7 +269,7 @@ void AttentionAnalyzer::drawImageProjection()
   Vector2<double> lu;
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
-        getImage().cameraInfo,
+        getCameraInfo(),
         0.0, 
         0.0, 
         0.0,
@@ -278,8 +278,8 @@ void AttentionAnalyzer::drawImageProjection()
   Vector2<double> ru;
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
-        getImage().cameraInfo,
-        (double)getImage().cameraInfo.resolutionWidth, 
+        getCameraInfo(),
+        (double)getCameraInfo().resolutionWidth, 
         0.0, 
         0.0,
         ru);
@@ -287,18 +287,18 @@ void AttentionAnalyzer::drawImageProjection()
   Vector2<double> rb;
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
-        getImage().cameraInfo,
-        (double)getImage().cameraInfo.resolutionWidth, 
-        (double)getImage().cameraInfo.resolutionHeight, 
+        getCameraInfo(),
+        (double)getCameraInfo().resolutionWidth, 
+        (double)getCameraInfo().resolutionHeight, 
         0.0,
         rb);
 
   Vector2<double> lb;
   CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), 
-        getImage().cameraInfo,
+        getCameraInfo(),
         0.0, 
-        (double)getImage().cameraInfo.resolutionHeight, 
+        (double)getCameraInfo().resolutionHeight, 
         0.0,
         lb);
 

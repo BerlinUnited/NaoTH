@@ -1,13 +1,13 @@
 /**
 * @file PerceptionsVisualization.cpp
 *
-* @author Kirill Yasinovskiy <yasinovs@informatik.hu-berlin.de>
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 * Implementation of class PerceptionsVizualization
 */
 
 #include "PerceptionsVisualization.h"
 
-//include debugs
+//debug
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 
@@ -16,6 +16,8 @@ using namespace std;
 PerceptionsVisualization::PerceptionsVisualization()
   : cameraID(CameraInfo::numOfCamera)
 {
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:draw_horizon", "draw the hizon line in the image", false);
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamTop", "execute for the top cam", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:CamBottom", "execute for the bottom cam", false);
 
@@ -52,6 +54,13 @@ void PerceptionsVisualization::execute()
 void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  CANVAS_PX(cameraID);
+
+  DEBUG_REQUEST("PerceptionsVisualization:image:draw_horizon",
+    Vector2d a(getArtificialHorizon().begin());
+    Vector2d b(getArtificialHorizon().end());
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+  );
 
   //draw ball percept
   DEBUG_REQUEST("PerceptionsVisualization:field:ball_percept",
@@ -140,7 +149,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       Vector2<double> edgelOnFieldBegin;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.begin.x,
         e.begin.y,
         0.0,
@@ -148,7 +157,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         /*
       edgelOnField = CameraGeometry::angleToPointInImage(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.begin.x,
         e.begin.y) * 100;*/
       {
@@ -158,7 +167,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
-          getImage().cameraInfo,
+          getCameraInfo(),
           direction.x,
           direction.y,
           0.0,
@@ -175,7 +184,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       Vector2<double> edgelOnFieldEnd;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.end.x,
         e.end.y,
         0.0,
@@ -183,7 +192,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       /*
       edgelOnField = CameraGeometry::angleToPointInImage(
         getCameraMatrix(),
-        getImage().cameraInfo,
+        getCameraInfo(),
         e.end.x,
         e.end.y) * 100;*/
       {
@@ -193,7 +202,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
-          getImage().cameraInfo,
+          getCameraInfo(),
           direction.x,
           direction.y,
           0.0,
@@ -215,7 +224,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
-        getImage().cameraInfo,
+        getCameraInfo(),
         direction.x,
         direction.y,
         0.0,

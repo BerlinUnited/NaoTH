@@ -24,7 +24,7 @@ cv::Mat CVImage::convertFromNaoImage(const Image &orig, cv::Mat result)
   // wrap the original one in a way that uses 4 columns for two pixels
   cv::Mat wrappedYUV422((int) orig.height(), (int) orig.width()/2,
                         CV_8UC4, 
-                        (void*) orig.yuv422);
+                        (void*) orig.data());
 
   // Y1 U Y12 V will be converted to Y1 U V, Y2 U V
   // Y1=0 -> 0
@@ -49,7 +49,7 @@ cv::Mat CVImage::convertGrayscaleFromNaoImage(const Image &orig, cv::Mat result)
 
   cv::Mat wrappedYUV422((int) orig.height(), (int) orig.width(),
                         CV_8UC2,
-                        (void*) orig.yuv422);
+                        (void*) orig.data());
 
   // copy only the Y channel
   const int fromTo[] = { 0,0 };

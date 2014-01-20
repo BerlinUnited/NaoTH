@@ -1,5 +1,7 @@
 #include "ColorCalibrator.h"
 
+using namespace std;
+
 ColorCalibrator::ColorCalibrator(string name, ColorClasses::Color color)
 :
   strength(1.3),
@@ -137,7 +139,8 @@ void ColorCalibrator::getAverageDistances
   for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
-    calibRect.draw();
+    //TODO: check if this is needed here
+    calibRect.draw(image.cameraInfo.cameraID);
 
     //use every enclosed pixel for descriptive statistic
     for(int y = calibRect.lowerLeft.y; y <= calibRect.upperRight.y; y++)
@@ -298,13 +301,6 @@ void ColorCalibrator::drawCalibrationAreaRects(CameraInfo::CameraID camID)
   for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
-    if(camID == CameraInfo::Top)
-    {
-      calibRect.drawTop();
-    }
-    else
-    {
-      calibRect.draw();
-    }
+    calibRect.draw(camID);
   }
 }

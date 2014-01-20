@@ -688,11 +688,11 @@ void V4lCameraHandler::get(Image& theImage)
     }
     else
     {
-      //if(currentBuf.bytesused != theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL)
-      if(currentBuf.bytesused < theImage.cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL)
+      //if(currentBuf.bytesused != theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422)
+      if(currentBuf.bytesused < theImage.cameraInfo.getSize() * Image::PIXEL_SIZE_YUV422)
       {
         theImage.wrongBufferSizeCount++;
-//        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
+//        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
       }
       else
       {

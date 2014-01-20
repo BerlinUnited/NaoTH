@@ -25,12 +25,11 @@
 BEGIN_DECLARE_MODULE(CameraDebug)
   REQUIRE(HeadMotionRequest)
   REQUIRE(CurrentCameraSettings)
+  REQUIRE(CurrentCameraSettingsTop)
   REQUIRE(FrameInfo)
 
-  PROVIDE(ColorTable64)
   PROVIDE(CameraSettingsRequest)
-  PROVIDE(FieldInfo)
-  PROVIDE(Image)
+  PROVIDE(CameraSettingsRequestTop)
 END_DECLARE_MODULE(CameraDebug)
 
 

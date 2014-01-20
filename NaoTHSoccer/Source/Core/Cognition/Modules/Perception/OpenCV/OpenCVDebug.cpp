@@ -24,12 +24,10 @@ void OpenCVDebug::writeToImage(cv::Mat result, Image& theImage)
 {
   // write result to real image (for debugging...)
 
-  for(unsigned int i=0; i < theImage.getIndexSize(); i++)
+  for(unsigned int x=0; x < theImage.width(); x++) {
+    for(unsigned int y=0; y < theImage.height(); y++)
   {
-    int x = theImage.getXOffsetFromIndex(i);
-    int y = theImage.getYOffsetFromIndex(i);
-
-    if(x < result.cols && y < result.rows)
+    if((int)x < result.cols && (int)y < result.rows)
     {
       Pixel p;
 
@@ -78,5 +76,5 @@ void OpenCVDebug::writeToImage(cv::Mat result, Image& theImage)
       p.v = 128;
       theImage.set(x,y,p);
     }
-  }
+  }} //end for x/y
 }

@@ -232,7 +232,7 @@ void WebotsController::get(Image& data)
   //unsigned char *yuv422Image = transformRGBtoYUV422(webotsImage);
 
   // assume the Image to be 320x240
-  if(data.cameraInfo.resolutionWidth == 320)
+  if(data.width() == 320)
   {
     copyImage(data, webotsImage);
   }
@@ -248,8 +248,8 @@ void WebotsController::copyImage(Image& image, const unsigned char *woriginal_im
   int width = wb_camera_get_width(camera);
   int height = wb_camera_get_height(camera);
 
-  int factorW = image.cameraInfo.resolutionWidth/width;
-  int factorH = image.cameraInfo.resolutionHeight/height;
+  int factorW = image.width()/width;
+  int factorH = image.height()/height;
 
   unsigned char original_image[320*240*3];
 
@@ -336,8 +336,8 @@ void WebotsController::copyImage(Image& image, const unsigned char *woriginal_im
        {2.0/16.0, 4.0/16.0, 2.0/16.0},
        {1.0/16.0, 2.0/16.0, 1.0/16.0}};
 
-  for(int x = 1; x < theImage.cameraInfo.resolutionWidth-1; x++)
-    for(int y = 1; y < theImage.cameraInfo.resolutionHeight-1; y++)
+  for(int x = 1; x < theImage.width()-1; x++)
+    for(int y = 1; y < theImage.height()-1; y++)
     {
       double valueY = 0;
       double valueU = 0;
@@ -353,7 +353,7 @@ void WebotsController::copyImage(Image& image, const unsigned char *woriginal_im
         }//end for
       }//end for
 
-      int index = 3*(x + y*theImage.cameraInfo.resolutionWidth);
+      int index = 3*(x + y*theImage.width());
       theImage.image[index] = (unsigned char)valueY; // RED
       theImage.image[index+1] = (unsigned char)valueU; // GREEN
       theImage.image[index+2] = (unsigned char)valueV; // BLUE

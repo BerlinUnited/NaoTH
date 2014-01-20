@@ -84,9 +84,7 @@ BodyContourProvider::BodyContourProvider()
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:forearms", "draw 3D body contour of the forearms", false);
 
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_projected_contour_lines", "draw body contour on the image based on lines", false);
-
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:TopCam:draw_activated_cells", "draw activated cells", false);
-  DEBUG_REQUEST_REGISTER("BodyContourProvider:BottomCam:draw_activated_cells", "draw activated cells", false);
+  DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_activated_cells", "draws activated cells", false);
 }
 
 void BodyContourProvider::execute(CameraInfo::CameraID id)
@@ -95,6 +93,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
   CANVAS_PX(cameraID);
 
   getBodyContour().reset();
+  getBodyContour().timestamp = getFrameInfo().getTime();
 
 
   // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
@@ -250,25 +249,12 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
 
  void BodyContourProvider::debug()
  {
-  DEBUG_REQUEST("BodyContourProvider:TopCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Top) {
-      for(int i = 0; i < getBodyContour().gridWidth(); i++) {
-        for (int j = 0; j < getBodyContour().gridHeight(); j++) {
-          if (getBodyContour().getGrid()[i][j].occupied) {
-              TOP_RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
-          }
-        }
-      }
-    }
-  );
-  DEBUG_REQUEST("BodyContourProvider:BottomCam:draw_activated_cells",
-    if(cameraID == CameraInfo::Bottom) {
-      for(int i = 0; i < getBodyContour().gridWidth(); i++) {
-        for (int j = 0; j < getBodyContour().gridHeight(); j++) {
-          if (getBodyContour().getGrid()[i][j].occupied) {
-              IMAGE_DRAWING_CONTEXT;
-              RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
-          }
+
+  DEBUG_REQUEST("BodyContourProvider:draw_activated_cells",
+    for(int i = 0; i < getBodyContour().gridWidth(); i++) {
+      for (int j = 0; j < getBodyContour().gridHeight(); j++) {
+        if (getBodyContour().getGrid()[i][j].occupied) {
+            RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
         }
       }
     }

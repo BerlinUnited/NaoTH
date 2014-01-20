@@ -13,11 +13,11 @@ class Blob
 public:
   Blob() : blobMass(0), color(ColorClasses::none) {}
   
-  Vector2<int> upperLeft;
-  Vector2<int> upperRight;
-  Vector2<int> lowerLeft;
-  Vector2<int> lowerRight;
-  Vector2<int> centerOfMass;
+  Vector2i upperLeft;
+  Vector2i upperRight;
+  Vector2i lowerLeft;
+  Vector2i lowerRight;
+  Vector2i centerOfMass;
   Moments2<1>  moments;
   int blobMass;
   ColorClasses::Color color;

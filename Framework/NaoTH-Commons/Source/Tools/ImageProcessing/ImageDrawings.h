@@ -10,6 +10,7 @@
 #ifndef _ImageDrawings_H_
 #define _ImageDrawings_H_
 
+#include <Representations/Infrastructure/Image.h>
 #include <stdlib.h>
 
 namespace naoth
@@ -33,6 +34,27 @@ public:
   virtual unsigned int height() const = 0;
 };
 
+class ImageDrawingCanvas : public DrawingCanvas
+{
+private:
+  Image& image; // NOTE: because of this ImageDrawingCanvas cannot be copied
+public:
+  ImageDrawingCanvas(Image& image) : image(image) {}
+
+  virtual void drawPoint
+    (
+      const int x,
+      const int y,
+      const unsigned char a,
+      const unsigned char b,
+      const unsigned char c
+    ) {
+      image.set(x,y, a, b, c);
+    }
+
+  virtual unsigned int width() const { return image.width(); }
+  virtual unsigned int height() const { return image.height(); }
+};
 
 class ImageDrawings
 {
@@ -272,16 +294,16 @@ public:
    * Colors point x,y with the given color (a,b,c)
    */
   inline static void drawPointToImage(
-    DrawingCanvas& image, 
+    DrawingCanvas& canvas, 
     const int x, 
     const int y,
     const unsigned char a,
     const unsigned char b,
     const unsigned char c)
   { 
-    if (x >= 0 && y >=0 && x < (int)image.width() && y < (int)image.height())
+    if (x >= 0 && y >=0 && x < (int)canvas.width() && y < (int)canvas.height())
     {
-      image.drawPoint(x,y,a,b,c);
+      canvas.drawPoint(x,y,a,b,c);
     }//end if
   }//end drawPointToImage
 

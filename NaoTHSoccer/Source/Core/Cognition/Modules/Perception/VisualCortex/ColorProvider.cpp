@@ -10,11 +10,14 @@
 // needed to load the colortable
 #include <PlatformInterface/Platform.h>
 
+using namespace std;
+
 ColorProvider::ColorProvider()
 {
   const string colorTablePath = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
   getColorTable64().loadFromFile(colorTablePath);
   getColorClassificationModel().setColorTable(getColorTable64());
+  getColorClassificationModelTop().setColorTable(getColorTable64());
 }
 
 
