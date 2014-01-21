@@ -27,6 +27,8 @@
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/KinematicChain.h"
 
+#include "Matrix3x2.h"
+
 BEGIN_DECLARE_MODULE(InertiaSensorFilter)
   REQUIRE(FrameInfo)
   REQUIRE(RobotInfo)
