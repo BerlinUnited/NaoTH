@@ -175,7 +175,10 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
     newCameraInfo.resolutionHeight = img.height();
     newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
-    representation.copyImageDataYUV422(reinterpret_cast<const unsigned char*>(img.data().c_str()), img.data().size());
+    
+    const unsigned char* data = reinterpret_cast<const unsigned char*>(img.data().c_str());
+    const unsigned int size = static_cast<unsigned int>(img.data().size());
+    representation.copyImageDataYUV422(data,size);
   } else {
     THROW("Unknown image format.");
   }
