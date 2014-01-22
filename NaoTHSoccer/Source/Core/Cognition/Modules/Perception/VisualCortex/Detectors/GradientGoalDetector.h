@@ -19,6 +19,9 @@
 #include "Representations/Perception/GoalPercept.h"
 
 // tools
+#include "Tools/Math/Matrix_nxn.h"
+#include "Tools/Math/Matrix_mxn.h"
+
 #include "Tools/DoubleCamHelpers.h"
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
@@ -129,12 +132,24 @@ private:
 
   };
 
+  class TestFeature
+  {
+  public:
+    Vector2d diff;
+    Vector2i start;
+    size_t idxS;
+    size_t idxE;
+  };
+
   std::vector<Feature> features[5];
   int lastTestFeatureIdx[5];
   std::vector<GoalPercept::GoalPost> goalPosts;
 
+  std::vector<TestFeature> testFeatures;
+
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
+  Vector2d findBestDownScanDirection(const Vector2d& scanDir, const std::vector<Feature>& features);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
 
   // double cam stuff
