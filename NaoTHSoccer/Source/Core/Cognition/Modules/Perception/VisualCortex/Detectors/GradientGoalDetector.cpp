@@ -35,9 +35,6 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScans","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);   
-
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:meanFootScans","..", false);  
-
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
 }
 
@@ -125,10 +122,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       Vector2d newDir = findBestDownScanDirection(dir, GoodFeatures);
 
       //scan along post to find the foot point of it to be sure its a goal post of the field
-      //scanForFootPoints(dir, GoodFeatures[GoodFeatures.size() - 1].center, threshold, thresholdY, horizon);
-      //DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:meanFootScans",
-        scanForFootPoints(newDir, GoodFeatures[GoodFeatures.size() - 1].center, threshold, thresholdY, horizon);
-      //);
+      scanForFootPoints(newDir, GoodFeatures[GoodFeatures.size() - 1].center, threshold, thresholdY, horizon);
     }//end if
 
     //mark if candites is post or other possible obstacle
@@ -354,49 +348,6 @@ Vector2d GradientGoalDetector::findBestDownScanDirection(const Vector2d& scanDir
   testFeatures.clear();
 
   Vector2d meanDir(scanDir);
-
-  //  //get estimated startPoints and direction vectors from feature point combinations
-  //for(size_t i = 0; i < features.size() - 1; i++)
-  //{
-  //  for(size_t j = i + 1; j < features.size(); j++)
-  //  {
-  //    Vector2d diff(features[j].begin - features[i].begin);
-  //    diff /= diff.abs();
-  //    //meanDir += diff;
-  //    TestFeature tF;
-  //    tF.diff = diff;
-  //    tF.start = features[i].begin;
-  //    tF.idxS = i;
-  //    tF.idxE = j;
-  //    testFeatures.push_back(tF);
-  //  }
-  //}
-
-  ////for(size_t i = 0; i < startVec.size(); i++)
-  //for(size_t i = 0; i < testFeatures.size(); i++)
-  //{
-  //  Vector2d diffNormal(testFeatures[i].diff.y, testFeatures[i].diff.x);
-  //  meanDir += testFeatures[i].diff;
-
-  //  for(size_t j = 0; j < features.size(); j++)
-  //  {
-  //    if(j != testFeatures[i].idxS && j != testFeatures[i].idxE)
-  //    {
-  //      Math::Line scanLine(features[j].begin, testFeatures[i].diff);
-  //      Math::Line normalLine(features[j].begin, diffNormal);
-
-  //      Vector2d crossPoint = scanLine.point(scanLine.intersection(normalLine));
-
-  //      double dist2scanLine = 0.0;
-  //      dist2scanLine = (crossPoint - features[j].begin).abs();
-
-  //      dist2scanLine += 10;
-
-  //    }
-  //  }
-  //}
-  //meanDir /= meanDir.abs();
-
   std::vector<cv::Point2f> points;
   cv::Vec4f line;
 
@@ -425,7 +376,7 @@ Vector2d GradientGoalDetector::findBestDownScanDirection(const Vector2d& scanDir
 
   if(points.size() >= 3)
   {
-    fitLine(points, line, CV_DIST_FAIR, 1.3998, 0.5, 0.01);
+    fitLine(points, line, CV_DIST_L1, 0, 0.5, 0.01);
 
     Vector2<double> v(line[0], line[1]);
     Vector2<double> x(line[2], line[3]);
