@@ -56,12 +56,17 @@ void TeamCommReceiver::execute()
                               getBallModel(), getRobotPose(), getBodyState(),
                               getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
                               getTeamMessage(), true, ownTeamData);
-  SPLStandardMessage ownSPLMsg;
-  TeamCommSender::convertToSPLMessage(ownTeamData, ownSPLMsg);
+  // we don't have the right player number in the beginning, wait to send
+  // one to ourself until we have a valid one
+  if(ownTeamData.playerNum > 0)
+  {
+    SPLStandardMessage ownSPLMsg;
+    TeamCommSender::convertToSPLMessage(ownTeamData, ownSPLMsg);
 
-  std::string ownMsgData;
-  ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
-  handleMessage(ownMsgData, true);
+    std::string ownMsgData;
+    ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
+    handleMessage(ownMsgData, true);
+  }
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
@@ -70,7 +75,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
   SPLStandardMessage spl;
   if(data.size() != sizeof(SPLStandardMessage))
   {
-    std::cerr << "wrong package size for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
+    //std::cerr << "wrong package size for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     // invalid message size
     return;
   }
@@ -81,12 +86,12 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
      spl.header[2] != 'L' ||
      spl.header[3] != ' ')
   {
-    std::cerr << "wrong header '" << spl.header  << "' for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
+    //std::cerr << "wrong header '" << spl.header  << "' for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     return;
   }
   if(spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
   {
-    std::cerr << "wrong version for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
+    //std::cerr << "wrong version for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     return;
   }
 
