@@ -15,7 +15,7 @@ Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cam
                                                    const double imgX,
                                                    const double imgY)
 {
-  Vector3<double> pixelVector;
+  Vector3d pixelVector;
 
   pixelVector.x = cameraInfo.getFocalLength();
   pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
@@ -26,42 +26,43 @@ Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cam
 }//end imagePixelCameraCoords
 
 
-Vector2d CameraGeometry::relativePointToImageDouble( const CameraMatrix& cameraMatrix,
-                                             const CameraInfo& cameraInfo,
-                                             const Vector3<double>& point)
+bool CameraGeometry::relativePointToImage( 
+  const CameraMatrix& cameraMatrix,
+  const CameraInfo& cameraInfo,
+  const Vector3d& point,
+  Vector2d& pointInImage)
 {
   const static double epsilon = 1e-13;
 
   // vector: O ---> point (in camera coordinates)
-  Vector3<double> vectorToPoint = cameraMatrix.rotation.invert() * (point - cameraMatrix.translation);
+  Vector3d vectorToPoint = cameraMatrix.rotation.invert() * (point - cameraMatrix.translation);
 
   // the point is behind the camera plane
-  if(vectorToPoint.x <= epsilon)
-  {
-    return Vector2<int>(-1,-1);
-  }//end if
+  if(vectorToPoint.x <= epsilon) {
+    return false;
+  }
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
-  
-  Vector2d pointInImage;
   pointInImage.x = -(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX();
-  pointInImage.y = -(vectorToPoint.z * factor) + 0.5 +  cameraInfo.getOpticalCenterY();
+  pointInImage.y = -(vectorToPoint.z * factor) + 0.5 + cameraInfo.getOpticalCenterY();
 
-  return pointInImage;
+  return true;
 }//end relativePointToImageDouble
 
-Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMatrix,
-                                             const CameraInfo& cameraInfo,
-                                             const Vector3<double>& point)
+bool CameraGeometry::relativePointToImage( 
+  const CameraMatrix& cameraMatrix,
+  const CameraInfo& cameraInfo,
+  const Vector3d& point,
+  Vector2i& pointInImage)
 {
-  Vector2d pointInImageDouble = relativePointToImageDouble(cameraMatrix,cameraInfo,point);
-  
-  // round to pixel
-  Vector2<int> pointInImage;
-  pointInImage.x = (int)floor(pointInImageDouble.x + 0.5);
-  pointInImage.y = (int)floor(pointInImageDouble.y + 0.5);
+  Vector2d pointInImageDouble;
+  if(relativePointToImage(cameraMatrix,cameraInfo,point,pointInImageDouble)) {
+    pointInImage.x = (int)(pointInImageDouble.x + 0.5);
+    pointInImage.y = (int)(pointInImageDouble.y + 0.5);
+    return true;
+  }
 
-  return pointInImage;
+  return false;
 }//end relativePointToImage
 
 
@@ -194,3 +195,23 @@ Vector2<double> CameraGeometry::lookAtPoint(const Vector3<double>& point, double
 
   return result;
 }//end lookAtPoint
+
+
+Pose3D CameraGeometry::calculateCameraMatrix(
+    const KinematicChain& theKinematicChain,
+    const Pose3D& theCameraOffset,
+    const Vector2d& theCameraCorrectionOffset
+  )
+{
+  // get the pose of the head
+  Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
+
+  // transformation from the head to the camera
+  pose.conc(theCameraOffset);
+  
+  // apply the correction
+  pose.rotateY(theCameraCorrectionOffset.y) // tilt
+      .rotateX(theCameraCorrectionOffset.x); // roll
+
+  return pose;
+}//end calculateCameraMatrix

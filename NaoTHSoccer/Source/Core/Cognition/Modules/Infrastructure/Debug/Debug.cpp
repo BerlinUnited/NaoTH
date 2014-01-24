@@ -44,15 +44,20 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   // 3d drawings
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:Body", "Show the robot body in the 3D viewer.", true);
+  DEBUG_REQUEST_REGISTER("3DViewer:Robot:Camera", "Show the robot body in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:CoM", "Show the robot's center of mass in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 
-  // parameter list
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
+  // HACK: initialize the both canvases
+  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
+  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).init(getImage().width(), getImage().height());
+}
+
+Debug::~Debug()
+{
 }
 
 void Debug::execute()
@@ -79,8 +84,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     
     if(arguments.find("top") != arguments.end())
     {
-      DebugTopImageDrawings::getInstance().drawToImage(getImageTop());
-      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(getImageTop());
+      ImageDrawingCanvas canvas(getImageTop());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImageTop");
       Serializer<Image>::serialize(getImageTop(), outstream);
@@ -89,7 +94,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     }
     else
     {
-      DebugBottomImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(getImage());
+      ImageDrawingCanvas canvas(getImage());
+      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImage");
       Serializer<Image>::serialize(getImage(), outstream);
@@ -230,12 +236,6 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 
     }
   }
-}
-
-Debug::~Debug()
-{
-  // parameter list
-  DebugParameterList::getInstance().remove(&(getCameraSettingsRequest()));
 }
 
 void Debug::draw3D()

@@ -105,12 +105,10 @@ void SpiderScan::setMaxNumberOfScans(unsigned int maxScans)
 void SpiderScan::init()
 {
   drawScanLines = false;
-  drawScanLinesTop = false;
   max_length_of_beam = 30; //maximum length of the scan line
   currentColorSimThreshold = 8; //...
   maxColorPointsToSkip = 12; // maximum number of non search color ...
   maxNumberOfScans = 15; //maximum number of scanlines ...
-
 }
 
 void SpiderScan::setDrawScanLines(bool draw)
@@ -118,25 +116,19 @@ void SpiderScan::setDrawScanLines(bool draw)
   drawScanLines = draw;
 }
 
-void SpiderScan::setDrawScanLinesTop(bool draw)
-{
-  drawScanLinesTop = draw;
-}
-
-
-void SpiderScan::scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints)
+void SpiderScan::scan(const Vector2i& start, PointList<20>& goodPoints, PointList<20>& badPoints)
 {
   Scans scans; //a list of scans to perform
 
   //add the standard scan lines
-  scans.add(start, Vector2<int>( 0,-1));// down
-  scans.add(start, Vector2<int>(-1,-1));// to the lower left
-  scans.add(start, Vector2<int>(-1, 0));// to the left
-  scans.add(start, Vector2<int>(-1, 1));// to the upper left
-  scans.add(start, Vector2<int>( 0, 1));// up
-  scans.add(start, Vector2<int>( 1, 1));// to the upper right
-  scans.add(start, Vector2<int>( 1, 0));// to the right
-  scans.add(start, Vector2<int>( 1,-1));// to the lower right
+  scans.add(start, Vector2i( 0,-1));// down
+  scans.add(start, Vector2i(-1,-1));// to the lower left
+  scans.add(start, Vector2i(-1, 0));// to the left
+  scans.add(start, Vector2i(-1, 1));// to the upper left
+  scans.add(start, Vector2i( 0, 1));// up
+  scans.add(start, Vector2i( 1, 1));// to the upper right
+  scans.add(start, Vector2i( 1, 0));// to the right
+  scans.add(start, Vector2i( 1,-1));// to the lower right
   
   scan(goodPoints, badPoints, scans);
 }
@@ -150,8 +142,8 @@ void SpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans
   {
     // ...
     numberOfScans++;
-    //Vector2<int>& direction = scans.direction[0]; //get the direction of the scan line
-//    Vector2<int> currentPoint(scans.start[0]);    //and the starting point
+    //Vector2i& direction = scans.direction[0]; //get the direction of the scan line
+//    Vector2i currentPoint(scans.start[0]);    //and the starting point
 
     int badPointsBeforeScan = badPoints.length; //remember the number of bad points (to see if one was added after the scan)
 
@@ -160,22 +152,22 @@ void SpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans
     {
       if(badPoints.length > badPointsBeforeScan) //if a bad point was found
       {
-        const Vector2<int>& badPoint = badPoints[badPoints.length-1]; //get this point
+        const Vector2i& badPoint = badPoints[badPoints.length-1]; //get this point
 
         //if the pixel lies at the image border and was not the result of a scan along that border
         if(pixelAtImageBorder(badPoint, 2) && !isBorderScan(scans.start[0], scans.direction[0], 2))
         {
-          if(badPoint.x <= 1 || (unsigned int)badPoint.x >= theImage.cameraInfo.resolutionWidth-2)
+          if(badPoint.x <= 1 || (unsigned int)badPoint.x >= theImage.width()-2)
           {
             //... its not reliable and we should scan along the imageborder to find the real border point
-            scans.add(badPoint, Vector2<int>(0,  1));
-            scans.add(badPoint, Vector2<int>(0, -1));
+            scans.add(badPoint, Vector2i(0,  1));
+            scans.add(badPoint, Vector2i(0, -1));
           }
           //same for the vertical borders
-          else if(badPoint.y <= 1 || (unsigned int)badPoint.y >= theImage.cameraInfo.resolutionHeight-2)
+          else if(badPoint.y <= 1 || (unsigned int)badPoint.y >= theImage.height()-2)
           {
-            scans.add(badPoint, Vector2<int>( 1, 0));
-            scans.add(badPoint, Vector2<int>(-1, 0));
+            scans.add(badPoint, Vector2i( 1, 0));
+            scans.add(badPoint, Vector2i(-1, 0));
           }
 
           badPoints.remove(badPoints.length-1); //kick the unreliable Pixel
@@ -188,15 +180,15 @@ void SpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans
 
 }//end spiderSearch
 
-bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& direction, int maxColorPointsToSkip, PointList<20>& goodPoints, PointList<20>& badPoints) const
+bool SpiderScan::scanLine(const Vector2i& start, const Vector2i& direction, int maxColorPointsToSkip, PointList<20>& goodPoints, PointList<20>& badPoints) const
 {
-  Vector2<int> currentPoint(start);  //set the starting point
+  Vector2i currentPoint(start);  //set the starting point
   int searchColorPointsSkipIndex = 0;  //reset number of skipped pixels
-  Vector2<int> borderPoint;      // to remember the border point ...
+  Vector2i borderPoint;      // to remember the border point ...
   bool borderPointFound = false; //if one was found
   bool borderPixelFound = false;      //and if it was followed by a border pixel
 
-  Vector2<int> lastSearchColorPoint(-1,-1);
+  Vector2i lastSearchColorPoint(-1,-1);
 
   //expand in the selected direction
   for(unsigned int j = 0; j < max_length_of_beam; j++)
@@ -235,8 +227,8 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
 
 
         double useY = 0.0;
-  //      MODIFY("ImageProcessor:Detector:currentColorSimThreshold", currentColorSimThreshold);
-  //      MODIFY("ImageProcessor:Detector:useY", useY);
+  //      MODIFY("Vision:SpiderScan:currentColorSimThreshold", currentColorSimThreshold);
+  //      MODIFY("Vision:SpiderScan:useY", useY);
 
   //      hasColor =
   //        ((currentPixelColor == ColorClasses::none)  || (searchColor == ColorClasses::numOfColors && currentPixelColor != borderColor)) &&
@@ -282,6 +274,7 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
 
     if(drawScanLines)
     {
+      CANVAS_PX(theImage.cameraInfo.cameraID);
       if(hasColor)
       {
         if(currentPixelColor == ColorClasses::none)
@@ -296,24 +289,6 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
       else
       {
         POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-      }
-    }
-    if(drawScanLinesTop)
-    {
-      if(hasColor)
-      {
-        if(currentPixelColor == ColorClasses::none)
-        {
-          TOP_POINT_PX(ColorClasses::orange, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-        }
-        else
-        {
-          TOP_POINT_PX(ColorClasses::green, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
-        }
-      }
-      else
-      {
-        TOP_POINT_PX(ColorClasses::red, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
 
@@ -337,24 +312,24 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
 }//end scanLine
 
 //check wether a scan line goes along an image border
-bool SpiderScan::isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const
+bool SpiderScan::isBorderScan(const Vector2i& point, const Vector2i& direction, int borderWidth) const
 {
-  return ((point.x<borderWidth || (unsigned int)point.x>=theImage.cameraInfo.resolutionWidth-borderWidth) && direction.x==0) ||
-         ((point.y<borderWidth || (unsigned int)point.y>=theImage.cameraInfo.resolutionHeight-borderWidth) && direction.y==0);
+  return ((point.x<borderWidth || (unsigned int)point.x>=theImage.width()-borderWidth) && direction.x==0) ||
+         ((point.y<borderWidth || (unsigned int)point.y>=theImage.height()-borderWidth) && direction.y==0);
 }//end isBorderScan
 
 //check wether a point is in the image
-bool SpiderScan::pixelInImage(const Vector2<int>& pixel) const
+bool SpiderScan::pixelInImage(const Vector2i& pixel) const
 {
   return (pixel.x >= 0 && pixel.y >= 0 &&
-          (unsigned int)pixel.x<theImage.cameraInfo.resolutionWidth &&
-          (unsigned int)pixel.y<theImage.cameraInfo.resolutionHeight);
+          (unsigned int)pixel.x<theImage.width() &&
+          (unsigned int)pixel.y<theImage.height());
 }//end pixelInImage
 
 //check wether a point lies at the images border
-bool SpiderScan::pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const
+bool SpiderScan::pixelAtImageBorder(const Vector2i& pixel, int borderWidth) const
 {
   return (pixel.x < borderWidth || pixel.y < borderWidth ||
-          (unsigned int)pixel.x>=theImage.cameraInfo.resolutionWidth-borderWidth ||
-          (unsigned int)pixel.y>=theImage.cameraInfo.resolutionHeight-borderWidth);
+          (unsigned int)pixel.x>=theImage.width()-borderWidth ||
+          (unsigned int)pixel.y>=theImage.height()-borderWidth);
 }//end pixelAtImageBorder

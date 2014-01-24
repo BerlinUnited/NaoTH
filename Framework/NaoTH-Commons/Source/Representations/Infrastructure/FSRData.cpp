@@ -5,18 +5,7 @@
 using namespace naoth;
 using namespace std;
 
-// TODO: make it config
-const Vector3<double> FSRData::offset[FSRData::numOfFSR] =
-{Vector3<double>(70.1,30 ,-46),
- Vector3<double>(70.1,-23,-46),
- Vector3<double>(-30.4,30,-46),
- Vector3<double>(-29.8,-19,-46),
- Vector3<double>(70.1, 23,-46),
- Vector3<double>(70.1,-30,-46),
- Vector3<double>(-29.8,19,-46),
- Vector3<double>(-30.4,-30,-46)
-};
-   
+
 FSRData::FSRData()
 {
   for(int i=0;i<numOfFSR;i++)
@@ -24,14 +13,14 @@ FSRData::FSRData()
     force[i] = 0.0;
     data[i] = 0.0;
     valid[i] = true;
-  }//end for
+  }
 }
 
 FSRData::~FSRData()
 {
 }
 
-string FSRData::getFSRName(FSRID fsr)
+const string FSRData::getFSRName(FSRID fsr) // static
 {
   switch(fsr)
   {
@@ -44,22 +33,23 @@ string FSRData::getFSRName(FSRID fsr)
     case RFsrBL: return string("RFsrBL");
     case RFsrBR: return string("RFsrBR");
     default: return string("Unknown FSR");
-  }//end switch
-}//end getName
+  }
+}
 
 void FSRData::print(ostream& stream) const
 {
   stream << "Name : force(N) , data"<<endl;
-  double sum = 0;
+  
   for(int i = 0; i < numOfFSR; i++)
   {
-    stream << getFSRName((FSRID)i) << " : " << force[i] << " , " << data[i];
-    if ( !valid[i] ) stream << " INVALID!!";
-    stream << "\n";
-    sum += force[i];
-  }//end for
-  stream << "Sum: " << sum << endl;
-}//end print
+    stream  << getFSRName((FSRID)i) << " : " 
+            << force[i] << " , " 
+            << data[i] << " "
+            << (valid[i]?"\n":"INVALID!!\n");
+  }
+  stream << "Force Left: " << forceLeft() << std::endl;
+  stream << "Force Right: " << forceRight() << std::endl;
+}
 
 double FSRData::forceLeft() const
 {
@@ -70,9 +60,9 @@ double FSRData::forceLeft() const
     {
       f += force[i];
     }
-  }//end for
+  }
   return f;
-}//end forceLeft
+}
 
 double FSRData::forceRight() const
 {
@@ -83,9 +73,9 @@ double FSRData::forceRight() const
     {
       f += force[i];
     }
-  }//end for
+  }
   return f;
-}//end forceRight
+}
 
 void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream& stream)
 {
@@ -103,42 +93,23 @@ void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream&
 
 void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representation)
 {
-  // get length of data
-  stream.seekg (0, ios::end);
-  int length = (int)stream.tellg();
-  stream.seekg (0, ios::beg);
-
-  
   google::protobuf::io::IstreamInputStream buf(&stream);
-
-  if ( length == 144 )
+  naothmessages::FSRData msg;
+  msg.ParseFromZeroCopyStream(&buf);
+  for (int i = 0; i < FSRData::numOfFSR; i++)
   {
-    naothmessages::DoubleVector msg;
-    msg.ParseFromZeroCopyStream(&buf);
-    for (int i = 0; i < FSRData::numOfFSR; i++)
-    {
-      representation.force[i] = msg.v(i*2);
-      representation.data[i] = msg.v(i*2+1);
-    }
-  }
-  else
-  {
-    naothmessages::FSRData msg;
-    msg.ParseFromZeroCopyStream(&buf);
-    for (int i = 0; i < FSRData::numOfFSR; i++)
-    {
-      representation.force[i] = msg.force(i);
-      representation.data[i] = msg.data(i);
-      representation.valid[i] = msg.valid(i);
-    }
+    representation.force[i] = msg.force(i);
+    representation.data[i] = msg.data(i);
+    representation.valid[i] = msg.valid(i);
   }
 }
 
-double FSRData::forceOf(FSRID fsrId) const {
-  if (valid[fsrId])// check if the sensor is valid
-  {
+double FSRData::forceOf(FSRID fsrId) const 
+{
+  // check if the sensor is valid
+  if (valid[fsrId]) {
     return force[fsrId];
   }
   return -1;
-}//end forceRight
+}
 

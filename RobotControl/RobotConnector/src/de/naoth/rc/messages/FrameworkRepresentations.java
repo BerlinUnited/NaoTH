@@ -869,34 +869,34 @@ public final class FrameworkRepresentations {
     @java.lang.Deprecated boolean hasCameraTiltOffset();
     @java.lang.Deprecated double getCameraTiltOffset();
     
-    // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
-    java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> 
+    // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
+    @java.lang.Deprecated java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> 
         getCorrectionOffsetList();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index);
-    int getCorrectionOffsetCount();
-    java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index);
+    @java.lang.Deprecated int getCorrectionOffsetCount();
+    @java.lang.Deprecated java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
         getCorrectionOffsetOrBuilderList();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
         int index);
     
-    // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
-    java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> 
+    // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
+    @java.lang.Deprecated java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> 
         getHeadJointOffsetList();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index);
-    int getHeadJointOffsetCount();
-    java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index);
+    @java.lang.Deprecated int getHeadJointOffsetCount();
+    @java.lang.Deprecated java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
         getHeadJointOffsetOrBuilderList();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
         int index);
     
-    // repeated .naothmessages.Pose3D transformation = 14;
-    java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> 
+    // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
+    @java.lang.Deprecated java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> 
         getTransformationList();
-    de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index);
-    int getTransformationCount();
-    java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index);
+    @java.lang.Deprecated int getTransformationCount();
+    @java.lang.Deprecated java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
         getTransformationOrBuilderList();
-    de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+    @java.lang.Deprecated de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
         int index);
     
     // optional double openingAngleDiagonal = 15;
@@ -1060,65 +1060,65 @@ public final class FrameworkRepresentations {
       return cameraTiltOffset_;
     }
     
-    // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+    // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
     public static final int CORRECTIONOFFSET_FIELD_NUMBER = 18;
     private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> correctionOffset_;
-    public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
+    @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
       return correctionOffset_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+    @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
         getCorrectionOffsetOrBuilderList() {
       return correctionOffset_;
     }
-    public int getCorrectionOffsetCount() {
+    @java.lang.Deprecated public int getCorrectionOffsetCount() {
       return correctionOffset_.size();
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
       return correctionOffset_.get(index);
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
         int index) {
       return correctionOffset_.get(index);
     }
     
-    // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+    // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
     public static final int HEADJOINTOFFSET_FIELD_NUMBER = 19;
     private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> headJointOffset_;
-    public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getHeadJointOffsetList() {
+    @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getHeadJointOffsetList() {
       return headJointOffset_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+    @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
         getHeadJointOffsetOrBuilderList() {
       return headJointOffset_;
     }
-    public int getHeadJointOffsetCount() {
+    @java.lang.Deprecated public int getHeadJointOffsetCount() {
       return headJointOffset_.size();
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index) {
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index) {
       return headJointOffset_.get(index);
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
         int index) {
       return headJointOffset_.get(index);
     }
     
-    // repeated .naothmessages.Pose3D transformation = 14;
+    // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
     public static final int TRANSFORMATION_FIELD_NUMBER = 14;
     private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_;
-    public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+    @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
       return transformation_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+    @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
         getTransformationOrBuilderList() {
       return transformation_;
     }
-    public int getTransformationCount() {
+    @java.lang.Deprecated public int getTransformationCount() {
       return transformation_.size();
     }
-    public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
       return transformation_.get(index);
     }
-    public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+    @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
         int index) {
       return transformation_.get(index);
     }
@@ -2202,7 +2202,7 @@ public final class FrameworkRepresentations {
         return this;
       }
       
-      // repeated .naothmessages.DoubleVector2 correctionOffset = 18;
+      // repeated .naothmessages.DoubleVector2 correctionOffset = 18 [deprecated = true];
       private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> correctionOffset_ =
         java.util.Collections.emptyList();
       private void ensureCorrectionOffsetIsMutable() {
@@ -2215,28 +2215,28 @@ public final class FrameworkRepresentations {
       private com.google.protobuf.RepeatedFieldBuilder<
           de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> correctionOffsetBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
         if (correctionOffsetBuilder_ == null) {
           return java.util.Collections.unmodifiableList(correctionOffset_);
         } else {
           return correctionOffsetBuilder_.getMessageList();
         }
       }
-      public int getCorrectionOffsetCount() {
+      @java.lang.Deprecated public int getCorrectionOffsetCount() {
         if (correctionOffsetBuilder_ == null) {
           return correctionOffset_.size();
         } else {
           return correctionOffsetBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
         if (correctionOffsetBuilder_ == null) {
           return correctionOffset_.get(index);
         } else {
           return correctionOffsetBuilder_.getMessage(index);
         }
       }
-      public Builder setCorrectionOffset(
+      @java.lang.Deprecated public Builder setCorrectionOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (correctionOffsetBuilder_ == null) {
           if (value == null) {
@@ -2250,7 +2250,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder setCorrectionOffset(
+      @java.lang.Deprecated public Builder setCorrectionOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (correctionOffsetBuilder_ == null) {
           ensureCorrectionOffsetIsMutable();
@@ -2261,7 +2261,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addCorrectionOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+      @java.lang.Deprecated public Builder addCorrectionOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (correctionOffsetBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2274,7 +2274,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addCorrectionOffset(
+      @java.lang.Deprecated public Builder addCorrectionOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (correctionOffsetBuilder_ == null) {
           if (value == null) {
@@ -2288,7 +2288,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addCorrectionOffset(
+      @java.lang.Deprecated public Builder addCorrectionOffset(
           de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (correctionOffsetBuilder_ == null) {
           ensureCorrectionOffsetIsMutable();
@@ -2299,7 +2299,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addCorrectionOffset(
+      @java.lang.Deprecated public Builder addCorrectionOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (correctionOffsetBuilder_ == null) {
           ensureCorrectionOffsetIsMutable();
@@ -2310,7 +2310,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addAllCorrectionOffset(
+      @java.lang.Deprecated public Builder addAllCorrectionOffset(
           java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2> values) {
         if (correctionOffsetBuilder_ == null) {
           ensureCorrectionOffsetIsMutable();
@@ -2321,7 +2321,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder clearCorrectionOffset() {
+      @java.lang.Deprecated public Builder clearCorrectionOffset() {
         if (correctionOffsetBuilder_ == null) {
           correctionOffset_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00001000);
@@ -2331,7 +2331,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder removeCorrectionOffset(int index) {
+      @java.lang.Deprecated public Builder removeCorrectionOffset(int index) {
         if (correctionOffsetBuilder_ == null) {
           ensureCorrectionOffsetIsMutable();
           correctionOffset_.remove(index);
@@ -2341,18 +2341,18 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getCorrectionOffsetBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getCorrectionOffsetBuilder(
           int index) {
         return getCorrectionOffsetFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
           int index) {
         if (correctionOffsetBuilder_ == null) {
           return correctionOffset_.get(index);  } else {
           return correctionOffsetBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+      @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
            getCorrectionOffsetOrBuilderList() {
         if (correctionOffsetBuilder_ != null) {
           return correctionOffsetBuilder_.getMessageOrBuilderList();
@@ -2360,16 +2360,16 @@ public final class FrameworkRepresentations {
           return java.util.Collections.unmodifiableList(correctionOffset_);
         }
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder() {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder() {
         return getCorrectionOffsetFieldBuilder().addBuilder(
             de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder(
           int index) {
         return getCorrectionOffsetFieldBuilder().addBuilder(
             index, de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder> 
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder> 
            getCorrectionOffsetBuilderList() {
         return getCorrectionOffsetFieldBuilder().getBuilderList();
       }
@@ -2388,7 +2388,7 @@ public final class FrameworkRepresentations {
         return correctionOffsetBuilder_;
       }
       
-      // repeated .naothmessages.DoubleVector2 headJointOffset = 19;
+      // repeated .naothmessages.DoubleVector2 headJointOffset = 19 [deprecated = true];
       private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> headJointOffset_ =
         java.util.Collections.emptyList();
       private void ensureHeadJointOffsetIsMutable() {
@@ -2401,28 +2401,28 @@ public final class FrameworkRepresentations {
       private com.google.protobuf.RepeatedFieldBuilder<
           de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> headJointOffsetBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getHeadJointOffsetList() {
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getHeadJointOffsetList() {
         if (headJointOffsetBuilder_ == null) {
           return java.util.Collections.unmodifiableList(headJointOffset_);
         } else {
           return headJointOffsetBuilder_.getMessageList();
         }
       }
-      public int getHeadJointOffsetCount() {
+      @java.lang.Deprecated public int getHeadJointOffsetCount() {
         if (headJointOffsetBuilder_ == null) {
           return headJointOffset_.size();
         } else {
           return headJointOffsetBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index) {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2 getHeadJointOffset(int index) {
         if (headJointOffsetBuilder_ == null) {
           return headJointOffset_.get(index);
         } else {
           return headJointOffsetBuilder_.getMessage(index);
         }
       }
-      public Builder setHeadJointOffset(
+      @java.lang.Deprecated public Builder setHeadJointOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (headJointOffsetBuilder_ == null) {
           if (value == null) {
@@ -2436,7 +2436,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder setHeadJointOffset(
+      @java.lang.Deprecated public Builder setHeadJointOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (headJointOffsetBuilder_ == null) {
           ensureHeadJointOffsetIsMutable();
@@ -2447,7 +2447,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addHeadJointOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+      @java.lang.Deprecated public Builder addHeadJointOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (headJointOffsetBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2460,7 +2460,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addHeadJointOffset(
+      @java.lang.Deprecated public Builder addHeadJointOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
         if (headJointOffsetBuilder_ == null) {
           if (value == null) {
@@ -2474,7 +2474,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addHeadJointOffset(
+      @java.lang.Deprecated public Builder addHeadJointOffset(
           de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (headJointOffsetBuilder_ == null) {
           ensureHeadJointOffsetIsMutable();
@@ -2485,7 +2485,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addHeadJointOffset(
+      @java.lang.Deprecated public Builder addHeadJointOffset(
           int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
         if (headJointOffsetBuilder_ == null) {
           ensureHeadJointOffsetIsMutable();
@@ -2496,7 +2496,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addAllHeadJointOffset(
+      @java.lang.Deprecated public Builder addAllHeadJointOffset(
           java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2> values) {
         if (headJointOffsetBuilder_ == null) {
           ensureHeadJointOffsetIsMutable();
@@ -2507,7 +2507,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder clearHeadJointOffset() {
+      @java.lang.Deprecated public Builder clearHeadJointOffset() {
         if (headJointOffsetBuilder_ == null) {
           headJointOffset_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00002000);
@@ -2517,7 +2517,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder removeHeadJointOffset(int index) {
+      @java.lang.Deprecated public Builder removeHeadJointOffset(int index) {
         if (headJointOffsetBuilder_ == null) {
           ensureHeadJointOffsetIsMutable();
           headJointOffset_.remove(index);
@@ -2527,18 +2527,18 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getHeadJointOffsetBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getHeadJointOffsetBuilder(
           int index) {
         return getHeadJointOffsetFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getHeadJointOffsetOrBuilder(
           int index) {
         if (headJointOffsetBuilder_ == null) {
           return headJointOffset_.get(index);  } else {
           return headJointOffsetBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+      @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
            getHeadJointOffsetOrBuilderList() {
         if (headJointOffsetBuilder_ != null) {
           return headJointOffsetBuilder_.getMessageOrBuilderList();
@@ -2546,16 +2546,16 @@ public final class FrameworkRepresentations {
           return java.util.Collections.unmodifiableList(headJointOffset_);
         }
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addHeadJointOffsetBuilder() {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addHeadJointOffsetBuilder() {
         return getHeadJointOffsetFieldBuilder().addBuilder(
             de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addHeadJointOffsetBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addHeadJointOffsetBuilder(
           int index) {
         return getHeadJointOffsetFieldBuilder().addBuilder(
             index, de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder> 
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder> 
            getHeadJointOffsetBuilderList() {
         return getHeadJointOffsetFieldBuilder().getBuilderList();
       }
@@ -2574,7 +2574,7 @@ public final class FrameworkRepresentations {
         return headJointOffsetBuilder_;
       }
       
-      // repeated .naothmessages.Pose3D transformation = 14;
+      // repeated .naothmessages.Pose3D transformation = 14 [deprecated = true];
       private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_ =
         java.util.Collections.emptyList();
       private void ensureTransformationIsMutable() {
@@ -2587,28 +2587,28 @@ public final class FrameworkRepresentations {
       private com.google.protobuf.RepeatedFieldBuilder<
           de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> transformationBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
         if (transformationBuilder_ == null) {
           return java.util.Collections.unmodifiableList(transformation_);
         } else {
           return transformationBuilder_.getMessageList();
         }
       }
-      public int getTransformationCount() {
+      @java.lang.Deprecated public int getTransformationCount() {
         if (transformationBuilder_ == null) {
           return transformation_.size();
         } else {
           return transformationBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
         if (transformationBuilder_ == null) {
           return transformation_.get(index);
         } else {
           return transformationBuilder_.getMessage(index);
         }
       }
-      public Builder setTransformation(
+      @java.lang.Deprecated public Builder setTransformation(
           int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
         if (transformationBuilder_ == null) {
           if (value == null) {
@@ -2622,7 +2622,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder setTransformation(
+      @java.lang.Deprecated public Builder setTransformation(
           int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
         if (transformationBuilder_ == null) {
           ensureTransformationIsMutable();
@@ -2633,7 +2633,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addTransformation(de.naoth.rc.messages.CommonTypes.Pose3D value) {
+      @java.lang.Deprecated public Builder addTransformation(de.naoth.rc.messages.CommonTypes.Pose3D value) {
         if (transformationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2646,7 +2646,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addTransformation(
+      @java.lang.Deprecated public Builder addTransformation(
           int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
         if (transformationBuilder_ == null) {
           if (value == null) {
@@ -2660,7 +2660,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addTransformation(
+      @java.lang.Deprecated public Builder addTransformation(
           de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
         if (transformationBuilder_ == null) {
           ensureTransformationIsMutable();
@@ -2671,7 +2671,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addTransformation(
+      @java.lang.Deprecated public Builder addTransformation(
           int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
         if (transformationBuilder_ == null) {
           ensureTransformationIsMutable();
@@ -2682,7 +2682,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder addAllTransformation(
+      @java.lang.Deprecated public Builder addAllTransformation(
           java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.Pose3D> values) {
         if (transformationBuilder_ == null) {
           ensureTransformationIsMutable();
@@ -2693,7 +2693,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder clearTransformation() {
+      @java.lang.Deprecated public Builder clearTransformation() {
         if (transformationBuilder_ == null) {
           transformation_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00004000);
@@ -2703,7 +2703,7 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public Builder removeTransformation(int index) {
+      @java.lang.Deprecated public Builder removeTransformation(int index) {
         if (transformationBuilder_ == null) {
           ensureTransformationIsMutable();
           transformation_.remove(index);
@@ -2713,18 +2713,18 @@ public final class FrameworkRepresentations {
         }
         return this;
       }
-      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder getTransformationBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3D.Builder getTransformationBuilder(
           int index) {
         return getTransformationFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
           int index) {
         if (transformationBuilder_ == null) {
           return transformation_.get(index);  } else {
           return transformationBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+      @java.lang.Deprecated public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
            getTransformationOrBuilderList() {
         if (transformationBuilder_ != null) {
           return transformationBuilder_.getMessageOrBuilderList();
@@ -2732,16 +2732,16 @@ public final class FrameworkRepresentations {
           return java.util.Collections.unmodifiableList(transformation_);
         }
       }
-      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder() {
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder() {
         return getTransformationFieldBuilder().addBuilder(
             de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
       }
-      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder(
+      @java.lang.Deprecated public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder(
           int index) {
         return getTransformationFieldBuilder().addBuilder(
             index, de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D.Builder> 
+      @java.lang.Deprecated public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D.Builder> 
            getTransformationBuilderList() {
         return getTransformationFieldBuilder().getBuilderList();
       }
@@ -5842,7 +5842,7 @@ public final class FrameworkRepresentations {
       "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na" +
       "othmessages.Image.Format:\003YUV\022\021\n\ttimesta" +
       "mp\030\006 \001(\r\"\035\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"" +
-      "\306\004\n\nCameraInfo\022\027\n\017resolutionWidth\030\001 \002(\005\022" +
+      "\322\004\n\nCameraInfo\022\027\n\017resolutionWidth\030\001 \002(\005\022" +
       "\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 " +
       "\001(\0162\027.naothmessages.CameraID:\006bottom\022\027\n\013",
       "focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openingAngleWid" +
@@ -5851,23 +5851,23 @@ public final class FrameworkRepresentations {
       "calCenterY\030\t \001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026" +
       "\n\nmemorysize\030\013 \001(\003B\002\030\001\022\034\n\020cameraRollOffs" +
       "et\030\014 \001(\001B\002\030\001\022\034\n\020cameraTiltOffset\030\r \001(\001B\002" +
-      "\030\001\0226\n\020correctionOffset\030\022 \003(\0132\034.naothmess" +
-      "ages.DoubleVector2\0225\n\017headJointOffset\030\023 " +
-      "\003(\0132\034.naothmessages.DoubleVector2\022-\n\016tra" +
-      "nsformation\030\016 \003(\0132\025.naothmessages.Pose3D",
-      "\022\034\n\024openingAngleDiagonal\030\017 \001(\001\022\021\n\tpixelS" +
-      "ize\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n" +
-      "\010position\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp" +
-      "\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+" +
-      "\n\tjointData\030\001 \002(\0132\030.naothmessages.JointD" +
-      "ata\022\023\n\013temperature\030\002 \003(\001\022\027\n\017electricCurr" +
-      "ent\030\003 \003(\001\"i\n\025UltraSoundReceiveData\022\032\n\022ul" +
-      "traSoundTimeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022" +
-      "\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\".\n\t" +
-      "FrameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002",
-      " \002(\r\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002" +
-      " \003(\001\022\r\n\005valid\030\003 \003(\010B\026\n\024de.naoth.rc.messa" +
-      "ges"
+      "\030\001\022:\n\020correctionOffset\030\022 \003(\0132\034.naothmess" +
+      "ages.DoubleVector2B\002\030\001\0229\n\017headJointOffse" +
+      "t\030\023 \003(\0132\034.naothmessages.DoubleVector2B\002\030" +
+      "\001\0221\n\016transformation\030\016 \003(\0132\025.naothmessage",
+      "s.Pose3DB\002\030\001\022\034\n\024openingAngleDiagonal\030\017 \001" +
+      "(\001\022\021\n\tpixelSize\030\020 \001(\001\022\r\n\005focus\030\021 \001(\001\"I\n\t" +
+      "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness" +
+      "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso" +
+      "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
+      "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
+      "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei" +
+      "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra" +
+      "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
+      "ht\030\004 \003(\001\".\n\tFrameInfo\022\023\n\013frameNumber\030\001 \002",
+      "(\r\022\014\n\004time\030\002 \002(\r\"5\n\007FSRData\022\r\n\005force\030\001 \003" +
+      "(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010B\026\n\024de.na" +
+      "oth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

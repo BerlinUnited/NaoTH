@@ -17,41 +17,38 @@ using namespace std;
 
 Image::Image()
   :
+  selfCreatedImage(true),
   yuv422(NULL),
   timestamp(0),
   currentBuffer(0),
   bufferCount(0),
-  wrongBufferSizeCount(0),
-  selfCreatedImage(false)
+  wrongBufferSizeCount(0)
+  
 {
-  yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
-  selfCreatedImage = true;
+  yuv422 = new unsigned char[data_size()];
 }
 
-//copy constructor
-Image::Image(const Image& orig) :
-DrawingCanvas(),
-cameraInfo(orig.cameraInfo)
+Image::Image(const Image& orig)
 {
-  if(selfCreatedImage)
-  {
+  cameraInfo = orig.cameraInfo;
+  if(selfCreatedImage) {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
-  
-  std::memcpy(yuv422, orig.yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
+
+  yuv422 = new unsigned char[data_size()];
+  std::memcpy(yuv422, orig.yuv422, data_size());
   selfCreatedImage = true;
 }
 
 Image& Image::operator=(const Image& orig)
 {
   cameraInfo = orig.cameraInfo;
-  if(selfCreatedImage)
-  {
+  if(selfCreatedImage) {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
-  std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.getSize());
+
+  yuv422 = new unsigned char[data_size()];
+  std::memcpy(yuv422, orig.yuv422, data_size());
   selfCreatedImage = true;
 
   return *this;
@@ -59,31 +56,27 @@ Image& Image::operator=(const Image& orig)
 
 Image::~Image()
 {
-  if (selfCreatedImage && yuv422 != NULL)
-  {
+  if (selfCreatedImage) {
     delete[] yuv422;
-  }//end if
-}//end destructor
+  }
+}
 
 void Image::setCameraInfo(const CameraInfo& ci)
 {
   if (cameraInfo.resolutionHeight != ci.resolutionHeight || cameraInfo.resolutionWidth != ci.resolutionWidth)
   {
-    if(selfCreatedImage)
-    {
+    if(selfCreatedImage) {
       delete[] yuv422;
     }
-    yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL*ci.getSize()];
+    cameraInfo = ci;
+    yuv422 = new unsigned char[data_size()];
   }
-  cameraInfo = ci;
 }
 
 void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int size)
 {
-//  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
-  ASSERT(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
-  if(selfCreatedImage)
-  {
+  ASSERT(size == data_size());
+  if(selfCreatedImage) {
     delete[] yuv422;
   }
 
@@ -91,23 +84,18 @@ void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int size)
   selfCreatedImage = false;
 }
 
-void Image::copyImageDataYUV422(unsigned char* data, const unsigned int size)
+void Image::copyImageDataYUV422(const unsigned char* data, const unsigned int size)
 {
-//  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
-  if(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL)
-  {
-    if(!selfCreatedImage)
-    {
-      // throw the old pointer away, create a new buffer
-      yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
-    }
-
-    // just overwrite the old image data
-    memcpy(yuv422, data, size);
-
+  ASSERT(size == data_size());
+  
+  // create own buffer if necessary
+  if(!selfCreatedImage) {
+    yuv422 = new unsigned char[data_size()];
     selfCreatedImage = true;
-
   }
+
+  // just overwrite the old image data
+  memcpy(yuv422, data, size);
 }
 
 void Image::print(ostream& stream) const
@@ -123,110 +111,15 @@ void Image::print(ostream& stream) const
 }//end print
 
 
-void Image::toDataStream(ostream& stream) const
-{
-  // the data has to be converted to a YUV (1 byte for each) array. no interlacing
-  naothmessages::Image img;
-
-  if((int)cameraInfo.resolutionHeight != img.height())
-  {
-    img.set_height(cameraInfo.resolutionHeight);
-  }
-  if((int)cameraInfo.resolutionWidth != img.width())
-  {
-    img.set_width(cameraInfo.resolutionWidth);
-  }
-
-  img.set_format(naothmessages::Image_Format_YUV422);
-  img.set_data(yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
-  img.set_timestamp(timestamp);
-
-  google::protobuf::io::OstreamOutputStream buf(&stream);
-  img.SerializePartialToZeroCopyStream(&buf);
-
-}
-
-void Image::fromDataStream(istream& stream)
-{
-  naothmessages::Image img;
-
-  google::protobuf::io::IstreamInputStream buf(&stream);
-  img.ParseFromZeroCopyStream(&buf);
-
-  unsigned int width = img.width();
-  unsigned int height = img.height();
-
-  if(img.has_timestamp())
-  {
-    timestamp = img.timestamp();
-  }
-
-  // YUV full
-  if(img.format() == naothmessages::Image_Format_YUV)
-  {
-    if(img.data().size() != 3 * width * height)
-    {
-      return;
-    }
-
-    CameraInfo newCameraInfo;
-
-    newCameraInfo.resolutionHeight = height;
-    newCameraInfo.resolutionWidth = width;
-    setCameraInfo(newCameraInfo);
-
-    const char* data = img.data().c_str();
-
-    for(unsigned int i=0; i < getIndexSize(); i++)
-    {
-      unsigned int x = getXOffsetFromIndex(i);
-      unsigned int y = getYOffsetFromIndex(i);
-
-      Pixel p;
-
-      p.y = data[i * 3];
-      p.u = data[i * 3 + 1];
-      p.v = data[i * 3 + 2];
-
-      set(x,y, p);
-    }
-  }
-  // "native" YUV422 data
-  else if(img.format() == naothmessages::Image_Format_YUV422)
-  {
-    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height)
-    {
-      return;
-    }
-
-    CameraInfo newCameraInfo;
-
-    newCameraInfo.resolutionHeight = height;
-    newCameraInfo.resolutionWidth = width;
-    setCameraInfo(newCameraInfo);
-
-    memcpy(yuv422, img.data().c_str(), img.data().size());
-  }
-  
-}//end fromDataStream
-                       
-
 void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
 {
   // the data has to be converted to a YUV (1 byte for each) array. no interlacing
   naothmessages::Image img;
 
-  if((int)representation.cameraInfo.resolutionHeight != img.height())
-  {
-    img.set_height(representation.cameraInfo.resolutionHeight);
-  }
-  if((int)representation.cameraInfo.resolutionWidth != img.width())
-  {
-    img.set_width(representation.cameraInfo.resolutionWidth);
-  }
-
+  img.set_height(representation.height());
+  img.set_width(representation.width());
   img.set_format(naothmessages::Image_Format_YUV422);
-  img.set_data(representation.yuv422, representation.cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
+  img.set_data(representation.data(), representation.data_size());
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   img.SerializeToZeroCopyStream(&buf);
@@ -239,36 +132,32 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   google::protobuf::io::IstreamInputStream buf(&stream);
   img.ParseFromZeroCopyStream(&buf);
 
-  unsigned int width = img.width();
-  unsigned int height = img.height();
-
-  if(width != naoth::IMAGE_WIDTH || height != naoth::IMAGE_HEIGHT) {
+  //TODO: deprecated
+  if(img.width() != (int)naoth::IMAGE_WIDTH || img.height() != (int)naoth::IMAGE_HEIGHT) {
 	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
   }
 
-  // YUV full
+  // YUV444
   if(img.format() == naothmessages::Image_Format_YUV)
   {
-    if(img.data().size() != 3 * width * height)
-    {
-      return;
-    }
+    // check the integrity
+    ASSERT(img.data().size() != Image::PIXEL_SIZE_YUV444 * img.width() * img.height());
 
     CameraInfo newCameraInfo;
-
-    newCameraInfo.resolutionHeight = height;
-    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.resolutionHeight = img.height();
+    newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
 
     const char* data = img.data().c_str();
 
-    for(unsigned int i=0; i < representation.getIndexSize(); i++)
+    // HACK: copy the image pixel by pixel because the internal structure only 
+    //       representa the image in the YUV422 format
+    for(int i=0; i < img.width()*img.height(); i++)
     {
-      unsigned int x = representation.getXOffsetFromIndex(i);
-      unsigned int y = representation.getYOffsetFromIndex(i);
+      unsigned int x = i % newCameraInfo.resolutionWidth;
+      unsigned int y = i / newCameraInfo.resolutionWidth;
 
       Pixel p;
-
       p.y = data[i * 3];
       p.u = data[i * 3 + 1];
       p.v = data[i * 3 + 2];
@@ -279,16 +168,18 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   // "native" YUV422 data
   else if(img.format() == naothmessages::Image_Format_YUV422)
   {
-    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height) {
-      return;
-    }
+    // check the integrity
+    ASSERT(img.data().size() == Image::PIXEL_SIZE_YUV422 * img.width() * img.height());
 
     CameraInfo newCameraInfo;
-
-    newCameraInfo.resolutionHeight = height;
-    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.resolutionHeight = img.height();
+    newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
-
-    memcpy(representation.yuv422, img.data().c_str(), img.data().size());
+    
+    const unsigned char* data = reinterpret_cast<const unsigned char*>(img.data().c_str());
+    const unsigned int size = static_cast<unsigned int>(img.data().size());
+    representation.copyImageDataYUV422(data,size);
+  } else {
+    THROW("Unknown image format.");
   }
 }

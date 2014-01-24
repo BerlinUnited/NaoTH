@@ -45,12 +45,12 @@ public class ColorCalibrationTool extends AbstractDialog implements /*ObjectList
   private ImagePanel imageCanvas;
   private final String cameraAutoParam = "camera:switch_auto_parameters";
   
-  private final String showCalibArea = "ImageProcessor:BaseColorClassifier:[CAMERA]:calibration_areas:";
-  private final String showCalibPixel = "ImageProcessor:BaseColorClassifier:[CAMERA]:set_[OBJECT]_in_image";
-  private final String showCalibPixelField = "ImageProcessor:FieldColorClassifier:[CAMERA]:set_in_image";
+  private final String showCalibArea = "Vision:ColorClassifiers:BaseColorClassifier:[CAMERA]:calibration_areas:";
+  private final String showCalibPixel = "Vision:ColorClassifiers:BaseColorClassifier:[CAMERA]:set_[OBJECT]_in_image";
+  private final String showCalibPixelField = "Vision:ColorClassifiers:FieldColorClassifier:[CAMERA]:set_in_image";
   private final String getSetCalibAreaRect = "ParameterList:CalibrationAreaRect_";
-  private final String toggleCalibCommand = "ImageProcessor:BaseColorClassifier:[CAMERA]:calibrate_colors:";
-  private final String toggleCalibCommandField = "ImageProcessor:FieldColorClassifier:[CAMERA]:calibrate:";
+  private final String toggleCalibCommand = "Vision:ColorClassifiers:BaseColorClassifier:[CAMERA]:calibrate_colors:";
+  private final String toggleCalibCommandField = "Vision:ColorClassifiers:FieldColorClassifier:[CAMERA]:calibrate:";
   private final String getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]";
   private final String getSetCalibValuesField = "ParameterList:FieldColorParameters:";
   
@@ -298,7 +298,7 @@ public class ColorCalibrationTool extends AbstractDialog implements /*ObjectList
         this.coloredObjectChooserPanel.setEnabled(true);
         this.btAutoCameraParameters.setEnabled(true);
         this.btReceiveTopImages.setEnabled(false);
-        this.activeCamera = "BottomCam";
+        this.activeCamera = "CamBottom";
         if(this.coloredObjectChooserPanel.getSelectedColor() != Colors.ColorClass.none)
         {
           this.btCalibrate.setEnabled(true);
@@ -463,7 +463,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         this.coloredObjectChooserPanel.setEnabled(true);
         this.btAutoCameraParameters.setEnabled(true);
         this.btReceiveBottomImages.setEnabled(false);
-        this.activeCamera = "TopCam";
+        this.activeCamera = "CamTop";
         if(this.coloredObjectChooserPanel.getSelectedColor() != Colors.ColorClass.none)
         {
           this.btCalibrate.setEnabled(true);
@@ -552,9 +552,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     if(colorClass != null)
     {
       String cmdString = this.getSetCalibValues;
-      String camera = "";
-      if(activeCamera.equals("TopCam"))
-        camera = "Top";
+      String camera = activeCamera.replace("Cam","");
       switch(colorClass)
       {
         case green:
@@ -591,7 +589,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       }
       System.out.println(cmdString);
       Command cmd = new Command(cmdString);
-      if(mode.equals("set"))
+      if(mode.equals(":set"))
       {
         String[][] values = this.colorValueSlidersPanel.getControlValues();
         for(int i = 0; i < values.length; i++)
@@ -907,42 +905,42 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
 //          break;
           
         case white:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "WhiteLinesTop:set";
            else
             cmdString += "WhiteLines:set";
           break;
           
         case yellow:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "YellowGoalPostLeftTop:set";
            else
             cmdString += "YellowGoalPostLeft:set";
           break;
           
         case skyblue:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "YellowGoalPostRightTop:set";
            else
             cmdString += "YellowGoalPostRight:set";
           break;
           
         case orange:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "OrangeBallTop:set";
            else
             cmdString += "OrangeBall:set";
           break;
           
         case red:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "RedTeamTop:set";
            else
             cmdString += "RedTeam:set";
           break;
           
         case blue:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "BlueTeamTop:set";
            else
             cmdString += "BlueTeam:set";
@@ -954,7 +952,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       System.out.println(cmdString);
       Command cmd = new Command(cmdString); 
       int cam = 0;
-      if(activeCamera.equals("BottomCam"))
+      if(activeCamera.equals("CamBottom"))
       {
         cam++;
       }
@@ -1020,14 +1018,14 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       switch(colorClass)
       {
         case yellow:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "BlueGoalPostLeftTop:set";
            else
             cmdString += "BlueGoalPostLeft:set";
           break;
           
         case skyblue:
-          if(activeCamera.equals("TopCam"))
+          if(activeCamera.equals("CamTop"))
             cmdString += "BlueGoalPostRightTop:set";
            else
             cmdString += "BlueGoalPostRight:set";
@@ -1095,7 +1093,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       if(CalibColorIndex != null)
       {
         int cam = 0;
-        if(activeCamera.equals("BottomCam"))
+        if(activeCamera.equals("CamBottom"))
         {
           cam++;
         }
@@ -1121,7 +1119,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       if(CalibColorIndex != null && CalibColor != null)
       {
         int cam = 0;
-        if(activeCamera.equals("BottomCam"))
+        if(activeCamera.equals("CamBottom"))
         {
           cam++;
         }
@@ -1139,7 +1137,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       if(CalibColorIndex != null && CalibColor != null)
       {
         int cam = 0;
-        if(activeCamera.equals("BottomCam"))
+        if(activeCamera.equals("CamBottom"))
         {
           cam++;
         }
@@ -1199,7 +1197,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     private boolean isValidRect(int index)
     {
       int cam = 0;
-      if(activeCamera.equals("BottomCam"))
+      if(activeCamera.equals("CamBottom"))
       {
         cam++;
       }
@@ -1211,7 +1209,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       if(isValidRect(index))
       {
         int cam = 0;
-        if(activeCamera.equals("BottomCam"))
+        if(activeCamera.equals("CamBottom"))
         {
           cam++;
         }

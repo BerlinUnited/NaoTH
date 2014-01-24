@@ -48,10 +48,10 @@ public:
     unsigned int number;
     bool numberIsValid;
     bool isStanding;
-    Vector2<double> angleTo;
+    Vector2d angleTo;
 
     /** relative position of the seen foots on the field */
-    std::vector<Vector2<double> > footPosition;
+    std::vector<Vector2d > footPosition;
 
   }; //end class player
 
@@ -104,6 +104,12 @@ public:
   }
 };
 
+class PlayersPerceptTop : public PlayersPercept
+{
+public:
+  virtual ~PlayersPerceptTop() {}
+};
+
 namespace naoth
 {
   template<>
@@ -112,6 +118,11 @@ namespace naoth
   public:
     static void serialize(const PlayersPercept& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, PlayersPercept& representation);
+  };
+
+  template<>
+  class Serializer<PlayersPerceptTop> : public Serializer<PlayersPercept>
+  {
   };
 }
 

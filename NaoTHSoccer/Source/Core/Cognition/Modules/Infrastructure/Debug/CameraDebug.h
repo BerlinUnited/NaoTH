@@ -5,8 +5,8 @@
 * Declaration of class CameraDebug
 */
 
-#ifndef __CameraDebug_h_
-#define __CameraDebug_h_
+#ifndef _CameraDebug_h_
+#define _CameraDebug_h_
 
 
 #include <ModuleFramework/Module.h>
@@ -25,12 +25,11 @@
 BEGIN_DECLARE_MODULE(CameraDebug)
   REQUIRE(HeadMotionRequest)
   REQUIRE(CurrentCameraSettings)
+  REQUIRE(CurrentCameraSettingsTop)
   REQUIRE(FrameInfo)
 
-  PROVIDE(ColorTable64)
   PROVIDE(CameraSettingsRequest)
-  PROVIDE(FieldInfo)
-  PROVIDE(Image)
+  PROVIDE(CameraSettingsRequestTop)
 END_DECLARE_MODULE(CameraDebug)
 
 
@@ -51,13 +50,13 @@ public:
     std::ostream& outstream);
 
 private:
-    bool isAutoCalibratingCamera;
-    bool afterAutoCalibratingCamera;
-    bool afterQueryCameraSettings;
+  bool isAutoCalibratingCamera;
+  bool afterAutoCalibratingCamera;
+  bool afterQueryCameraSettings;
 
-    FrameInfo timeWhenCameraCalibrationStopped;
+  FrameInfo timeWhenCameraCalibrationStopped;
 };
 
-#endif //__CameraDebug_h_
+#endif //_CameraDebug_h_
 
 

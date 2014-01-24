@@ -88,6 +88,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* Opponent_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Opponent_reflection_ = NULL;
+const ::google::protobuf::Descriptor* CameraMatrixCalibration_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  CameraMatrixCalibration_reflection_ = NULL;
 
 }  // namespace
 
@@ -494,6 +497,21 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Opponent));
+  CameraMatrixCalibration_descriptor_ = file->message_type(21);
+  static const int CameraMatrixCalibration_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrixCalibration, correctionoffset_),
+  };
+  CameraMatrixCalibration_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      CameraMatrixCalibration_descriptor_,
+      CameraMatrixCalibration::default_instance_,
+      CameraMatrixCalibration_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrixCalibration, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrixCalibration, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(CameraMatrixCalibration));
 }
 
 namespace {
@@ -548,6 +566,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     BUUserTeamMessage_descriptor_, &BUUserTeamMessage::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Opponent_descriptor_, &Opponent::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    CameraMatrixCalibration_descriptor_, &CameraMatrixCalibration::default_instance());
 }
 
 }  // namespace
@@ -595,6 +615,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete BUUserTeamMessage_reflection_;
   delete Opponent::default_instance_;
   delete Opponent_reflection_;
+  delete CameraMatrixCalibration::default_instance_;
+  delete CameraMatrixCalibration_reflection_;
 }
 
 void protobuf_AddDesc_Representations_2eproto() {
@@ -712,7 +734,9 @@ void protobuf_AddDesc_Representations_2eproto() {
     "alse\022*\n\topponents\030\005 \003(\0132\027.naothmessages."
     "Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:"
     "\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages."
-    "Pose2DB\026\n\024de.naoth.rc.messages", 4270);
+    "Pose2D\"Q\n\027CameraMatrixCalibration\0226\n\020cor"
+    "rectionOffset\030\001 \003(\0132\034.naothmessages.Doub"
+    "leVector2B\026\n\024de.naoth.rc.messages", 4353);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -736,6 +760,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   TeamMessage::default_instance_ = new TeamMessage();
   BUUserTeamMessage::default_instance_ = new BUUserTeamMessage();
   Opponent::default_instance_ = new Opponent();
+  CameraMatrixCalibration::default_instance_ = new CameraMatrixCalibration();
   CameraMatrix::default_instance_->InitAsDefaultInstance();
   BallPercept::default_instance_->InitAsDefaultInstance();
   GoalPercept::default_instance_->InitAsDefaultInstance();
@@ -757,6 +782,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   TeamMessage::default_instance_->InitAsDefaultInstance();
   BUUserTeamMessage::default_instance_->InitAsDefaultInstance();
   Opponent::default_instance_->InitAsDefaultInstance();
+  CameraMatrixCalibration::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
 
@@ -8770,6 +8796,211 @@ void Opponent::Swap(Opponent* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = Opponent_descriptor_;
   metadata.reflection = Opponent_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int CameraMatrixCalibration::kCorrectionOffsetFieldNumber;
+#endif  // !_MSC_VER
+
+CameraMatrixCalibration::CameraMatrixCalibration()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void CameraMatrixCalibration::InitAsDefaultInstance() {
+}
+
+CameraMatrixCalibration::CameraMatrixCalibration(const CameraMatrixCalibration& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void CameraMatrixCalibration::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+CameraMatrixCalibration::~CameraMatrixCalibration() {
+  SharedDtor();
+}
+
+void CameraMatrixCalibration::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void CameraMatrixCalibration::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* CameraMatrixCalibration::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return CameraMatrixCalibration_descriptor_;
+}
+
+const CameraMatrixCalibration& CameraMatrixCalibration::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+CameraMatrixCalibration* CameraMatrixCalibration::default_instance_ = NULL;
+
+CameraMatrixCalibration* CameraMatrixCalibration::New() const {
+  return new CameraMatrixCalibration;
+}
+
+void CameraMatrixCalibration::Clear() {
+  correctionoffset_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool CameraMatrixCalibration::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_correctionOffset:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_correctionoffset()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_correctionOffset;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void CameraMatrixCalibration::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+  for (int i = 0; i < this->correctionoffset_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->correctionoffset(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* CameraMatrixCalibration::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+  for (int i = 0; i < this->correctionoffset_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->correctionoffset(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int CameraMatrixCalibration::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+  total_size += 1 * this->correctionoffset_size();
+  for (int i = 0; i < this->correctionoffset_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->correctionoffset(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void CameraMatrixCalibration::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const CameraMatrixCalibration* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const CameraMatrixCalibration*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void CameraMatrixCalibration::MergeFrom(const CameraMatrixCalibration& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  correctionoffset_.MergeFrom(from.correctionoffset_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void CameraMatrixCalibration::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void CameraMatrixCalibration::CopyFrom(const CameraMatrixCalibration& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CameraMatrixCalibration::IsInitialized() const {
+  
+  for (int i = 0; i < correctionoffset_size(); i++) {
+    if (!this->correctionoffset(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void CameraMatrixCalibration::Swap(CameraMatrixCalibration* other) {
+  if (other != this) {
+    correctionoffset_.Swap(&other->correctionoffset_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata CameraMatrixCalibration::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = CameraMatrixCalibration_descriptor_;
+  metadata.reflection = CameraMatrixCalibration_reflection_;
   return metadata;
 }
 

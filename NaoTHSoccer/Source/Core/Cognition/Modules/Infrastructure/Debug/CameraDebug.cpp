@@ -9,6 +9,9 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Representations/Infrastructure/Configuration.h>
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/DebugParameterList.h>
+
+using namespace std;
 
 CameraDebug::CameraDebug(): CameraDebugBase(),
   isAutoCalibratingCamera(false),
@@ -19,7 +22,10 @@ CameraDebug::CameraDebug(): CameraDebugBase(),
     "switch Automation for camera parameters", this);
   REGISTER_DEBUG_COMMAND("camera:force_reload",
     "force reading all parameters from camera", this);
-  //DebugParameterList::getInstance().add(&getCameraSettingsRequest());
+  
+  // register the CameraSettingsRequest as a parameter list
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
 }
 
 void CameraDebug::execute()
@@ -53,8 +59,7 @@ void CameraDebug::execute()
     afterQueryCameraSettings = false;
     
     // sync to the current settings
-    for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
-    {
+    for(int i=0; i < CameraSettings::numOfCameraSetting; i++) {
       getCameraSettingsRequest().data[i] = getCurrentCameraSettings().data[i];
     }
 
@@ -62,7 +67,6 @@ void CameraDebug::execute()
     //disabled auto exposure time setting
     getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 0;
-
 
     naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
     getCameraSettingsRequest().saveToConfig();
@@ -105,5 +109,4 @@ void CameraDebug::executeDebugCommand(
     timeWhenCameraCalibrationStopped = getFrameInfo();
     afterAutoCalibratingCamera = true;
   }
-  //end if command
 }//end executeDebugCommand

@@ -24,6 +24,7 @@
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Motion/MotionStatus.h"
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(RobotInfo)
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(CameraMatrixTop)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrixOffset)
 
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)

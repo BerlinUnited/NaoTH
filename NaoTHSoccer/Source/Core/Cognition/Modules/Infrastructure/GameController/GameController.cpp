@@ -3,7 +3,6 @@
 #include "Tools/Debug/DebugRequest.h"
 
 GameController::GameController()
-  : lastChestButtonEventCounter(0)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -14,15 +13,55 @@ GameController::GameController()
   getPlayerInfo().gameData.gameState = GameData::initial;
 }
 
+void GameController::execute()
+{
+  GameData::GameState oldState = getPlayerInfo().gameData.gameState;
+  GameData::TeamColor oldTeamColor = getPlayerInfo().gameData.teamColor;
+  GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
+
+  readButtons();
+
+  if ( getGameData().valid ) {
+    getPlayerInfo().gameData = getGameData();
+  }
+  getPlayerInfo().gameData.frameNumber = getFrameInfo().getFrameNumber();
+
+
+  DEBUG_REQUEST("gamecontroller:initial",
+    getPlayerInfo().gameData.gameState = GameData::initial;
+  );
+  DEBUG_REQUEST("gamecontroller:ready",
+    getPlayerInfo().gameData.gameState = GameData::ready;
+  );
+  DEBUG_REQUEST("gamecontroller:set",
+    getPlayerInfo().gameData.gameState = GameData::set;
+  );
+  DEBUG_REQUEST("gamecontroller:play",
+    getPlayerInfo().gameData.gameState = GameData::playing;
+  );
+  DEBUG_REQUEST("gamecontroller:penalized",
+    getPlayerInfo().gameData.gameState = GameData::penalized;
+  );
+
+  if(oldState != getPlayerInfo().gameData.gameState
+    || oldTeamColor != getPlayerInfo().gameData.teamColor
+    || oldPlayMode != getPlayerInfo().gameData.playMode
+    || getPlayerInfo().gameData.gameState == GameData::initial)
+  {
+    updateLEDs();
+  }
+  
+} // end execute
+
 void GameController::readButtons()
 {
   // default return message
   getGameReturnData().message = GameReturnData::alive;
 
   // state change?
-  if (getButtonData().eventCounter[ButtonData::Chest] > lastChestButtonEventCounter )
+  
+  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
   {
-    lastChestButtonEventCounter = getButtonData().eventCounter[ButtonData::Chest];
     switch (getPlayerInfo().gameData.gameState)
     {
     case GameData::initial :
@@ -57,89 +96,40 @@ void GameController::readButtons()
   // re-set team color or kickoff in initial
   if (getPlayerInfo().gameData.gameState == GameData::initial)
   {
-    if (getButtonData().numOfFramesPressed[ButtonData::LeftFootLeft] == 1
-      || getButtonData().numOfFramesPressed[ButtonData::LeftFootRight] == 1)
+    if ( getButtonState()[ButtonState::LeftFoot] == ButtonEvent::PRESSED )
     {
       // switch team color
       GameData::TeamColor oldColor = getPlayerInfo().gameData.teamColor;
-      if (oldColor == GameData::blue)
-      {
+      if (oldColor == GameData::blue) {
         getPlayerInfo().gameData.teamColor = GameData::red;
-      }
-      else if (oldColor == GameData::red)
-      {
+      } else if (oldColor == GameData::red) {
         getPlayerInfo().gameData.teamColor = GameData::blue;
       }
     }
 
-    if (getButtonData().numOfFramesPressed[ButtonData::RightFootLeft] == 1
-      || getButtonData().numOfFramesPressed[ButtonData::RightFootRight] == 1)
+    if ( getButtonState()[ButtonState::RightFoot] == ButtonEvent::PRESSED )
     {
       // switch kick off team
-      if ( getPlayerInfo().gameData.playMode == GameData::kick_off_own )
-      {
+      if ( getPlayerInfo().gameData.playMode == GameData::kick_off_own ) {
         getPlayerInfo().gameData.playMode = GameData::kick_off_opp;
-      }
-      else
-      {
+      } else {
         getPlayerInfo().gameData.playMode = GameData::kick_off_own;
       }
     }
   }
-    // go back from penalized to initial both foot bumpers are pressed for over 30 frames
+  // go back from penalized to initial both foot bumpers are pressed for more than 1s
   else if (getPlayerInfo().gameData.gameState == GameData::penalized &&
-    (getButtonData().numOfFramesPressed[ButtonData::LeftFootLeft] > 30
-    || getButtonData().numOfFramesPressed[ButtonData::LeftFootRight] > 30
-    )
+    (  getButtonState()[ButtonState::LeftFoot].isPressed && 
+       getFrameInfo().getTimeSince(getButtonState()[ButtonState::LeftFoot].timeOfLastEvent) > 1000 )
     &&
-    (getButtonData().numOfFramesPressed[ButtonData::RightFootLeft] > 30
-    || getButtonData().numOfFramesPressed[ButtonData::RightFootRight] > 30
-    )
+    (  getButtonState()[ButtonState::RightFoot].isPressed && 
+       getFrameInfo().getTimeSince(getButtonState()[ButtonState::RightFoot].timeOfLastEvent) > 1000 )
     )
   {
     getPlayerInfo().gameData.gameState = GameData::initial;
   }
 
 } // end readButtons
-
-void GameController::execute()
-{
-  GameData::GameState oldState = getPlayerInfo().gameData.gameState;
-  GameData::TeamColor oldTeamColor = getPlayerInfo().gameData.teamColor;
-  GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
-
-  readButtons();
-  if ( getGameData().valid )
-  {
-    getPlayerInfo().gameData = getGameData();
-  }
-  getPlayerInfo().gameData.frameNumber = getFrameInfo().getFrameNumber();
-
-  DEBUG_REQUEST("gamecontroller:initial",
-    getPlayerInfo().gameData.gameState = GameData::initial;
-  );
-  DEBUG_REQUEST("gamecontroller:ready",
-    getPlayerInfo().gameData.gameState = GameData::ready;
-  );
-  DEBUG_REQUEST("gamecontroller:set",
-    getPlayerInfo().gameData.gameState = GameData::set;
-  );
-  DEBUG_REQUEST("gamecontroller:play",
-    getPlayerInfo().gameData.gameState = GameData::playing;
-  );
-  DEBUG_REQUEST("gamecontroller:penalized",
-    getPlayerInfo().gameData.gameState = GameData::penalized;
-  );
-
-  if(oldState != getPlayerInfo().gameData.gameState
-    || oldTeamColor != getPlayerInfo().gameData.teamColor
-    || oldPlayMode != getPlayerInfo().gameData.playMode
-    || getPlayerInfo().gameData.gameState == GameData::initial)
-  {
-    updateLEDs();
-  }
-
-} // end execute
 
 void GameController::updateLEDs()
 {

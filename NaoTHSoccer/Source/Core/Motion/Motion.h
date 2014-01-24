@@ -24,9 +24,7 @@
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
 
-
-// representations
-#include "Representations/Modeling/FSRPositions.h"
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
@@ -37,7 +35,6 @@ BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 
-  //PROVIDE(FSRPositions)// TODO:strange...
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
 
@@ -56,6 +53,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
   
+  PROVIDE(CameraMatrixOffset)
 
   // from cognition
   PROVIDE(CameraInfo)
@@ -96,7 +94,7 @@ private:
 
 private:
   void debugPlots();
-  void updateCameraMatrix(string name, CameraMatrix &cameraMatrix, const CameraInfo &cameraInfo);
+  void updateCameraMatrix();
   void guard_cognition();
 
 private:

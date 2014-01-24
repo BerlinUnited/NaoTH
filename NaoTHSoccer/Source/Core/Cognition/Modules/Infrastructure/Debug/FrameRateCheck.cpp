@@ -4,6 +4,10 @@ FrameRateCheck::FrameRateCheck()
 {
 }
 
+FrameRateCheck::~FrameRateCheck()
+{
+}
+
 void FrameRateCheck::execute()
 {
   getFrameRateCheckLEDRequest().ignore = true;
@@ -26,10 +30,6 @@ void FrameRateCheck::execute()
     }
   }
   lastFrameInfo = getFrameInfo();
-
 }
 
-FrameRateCheck::~FrameRateCheck()
-{
 
-}

@@ -169,7 +169,7 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req)
 {
   ASSERT(step.rotation <= Math::pi);
-  ASSERT(step.rotation > -Math::pi);
+  ASSERT(step.rotation >= -Math::pi);
   
   // TODO: correct restriction
   restrictStepSize(step, lastStep, req.character);

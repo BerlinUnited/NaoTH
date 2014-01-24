@@ -20,6 +20,7 @@
 #include "Modules/Infrastructure/IO/Sensor.h"
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/ButtonEventMonitor/ButtonEventMonitor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
@@ -30,28 +31,46 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
+#include "Modules/Infrastructure/OpenCV/OpenCVGrayScaleImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
-#include "Modules/Perception/VisualCortex/ImageCorrector.h"
-#include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
-#include "Modules/Perception/VisualCortex/ColorProvider.h"
-#include "Modules/Perception/VisualCortex/GridProvider.h"
-#include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptProjector/PerceptProjector.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
 #include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
-
-// neo vision
-#include "Modules/Perception/NeoVision/NeoVision.h"
-
+#include "Modules/Perception/BodyContourProvider/BodyContourProvider.h"
+//Perception - Vision
+#include "Modules/Perception/VisualCortex/ImageCorrector.h"
+#include "Modules/Perception/VisualCortex/ColorProvider.h"
+#include "Modules/Perception/VisualCortex/GridProvider.h"
+#include "Modules/Perception/VisualCortex/HistogramProvider.h"
+#include "Modules/Perception/VisualCortex/HistogramOverTimeProvider.h"
+//Perception - Vision -- Classifiers
+#include "Modules/Perception/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/BaseColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/FieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/FieldColorClassifierFull.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/SimpleGoalColorClassifier.h"
+#include "Modules/Perception/VisualCortex/ColorClassifiers/Experimental/SimpleBallColorClassifier.h"
+//Perception - Vision -- ColorClass based Detectors
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/HistogramFieldDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/GoalDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/BallDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
+//Perception - Vision -- Detectors
+#include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
+#include "Modules/Perception/VisualCortex/Detectors/Experimental/NeoLineDetector.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -87,7 +106,6 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-//#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/Debug/Trace.h"
@@ -131,29 +149,51 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
+  REGISTER_MODULE(OpenCVGrayScaleImageProvider);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(CameraInfoSetter);
 
   // pre-modelling
   REGISTER_MODULE(CameraMatrixFinder);
 
   // perception
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
-  REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(HistogramOverTimeProvider);
   REGISTER_MODULE(BaseColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifierFull);
+  REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(SimpleGoalColorClassifier);
+  REGISTER_MODULE(SimpleBallColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
-  REGISTER_MODULE(ImageProcessor);
+  REGISTER_MODULE(BodyContourProvider);
+
+  REGISTER_MODULE(HistogramFieldDetector);
+
+  REGISTER_MODULE(ScanLineEdgelDetector);
+  REGISTER_MODULE(FieldDetector);
+  REGISTER_MODULE(LineDetector);
+  REGISTER_MODULE(NeoLineDetector);
+  REGISTER_MODULE(LineClusterProvider);
+
+  REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GradientGoalDetector);
+
+  REGISTER_MODULE(BallDetector);
+  REGISTER_MODULE(MaximumRedBallDetector);
+
+  REGISTER_MODULE(RobotDetector);
+
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(OpenCVDebug);
-  // neo vision
-  REGISTER_MODULE(NeoVision);
-
 
   // scene analysers 
   // (analyze the visual information seen in the image)
@@ -194,7 +234,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // experiment
   REGISTER_MODULE(Evolution);
-  //REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);
@@ -253,23 +292,20 @@ void Cognition::call()
 
 
   STOPWATCH_START("CognitionExecute");
-  //GT_TRACE("beginning to iterate over all modules");
 
   // execute all modules
   list<AbstractModuleCreator*>::const_iterator iter;
   for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
-    // get entry
-    AbstractModuleCreator* module = *iter;//getModule(*iter);
+    AbstractModuleCreator* module = *iter;
     if (module != NULL && module->isEnabled())
     {
       std::string name(module->getModule()->getName());
       GT_TRACE("executing " << name);
       module->execute();
-    }//end if
-  }//end for all modules
+    }
+  }
   
-  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 
@@ -277,9 +313,7 @@ void Cognition::call()
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
   DebugDrawings::getInstance().update();
+  DebugImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
-
-  DebugBottomImageDrawings::getInstance().reset();
-  DebugTopImageDrawings::getInstance().reset();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call

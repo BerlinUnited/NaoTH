@@ -5,7 +5,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class NDTreeNode extends DefaultMutableTreeNode
 {
 
-  private String toolTipText;
+  private final String toolTipText;
 
   public NDTreeNode(String str, String toolTipText)
   {

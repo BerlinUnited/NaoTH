@@ -31,16 +31,16 @@ void BlobFinder::execute(Container<Blob>& result,
                          const Area<int>& searchArea)
 {
   // mask for the search neighborhood
-  static const Vector2<int> mask[8] = 
+  static const Vector2i mask[8] = 
   {
-    Vector2<int>( 0, 1),
-    Vector2<int>( 1, 0),
-    Vector2<int>( 0,-1),
-    Vector2<int>(-1, 0),
-    Vector2<int>( 1, 1),
-    Vector2<int>(-1,-1),
-    Vector2<int>(-1, 1),
-    Vector2<int>( 1,-1)
+    Vector2i( 0, 1),
+    Vector2i( 1, 0),
+    Vector2i( 0,-1),
+    Vector2i(-1, 0),
+    Vector2i( 1, 1),
+    Vector2i(-1,-1),
+    Vector2i(-1, 1),
+    Vector2i( 1,-1)
   };
 
   //get width and height of the scaled image (uniformgrid)
@@ -70,7 +70,7 @@ void BlobFinder::execute(Container<Blob>& result,
     for(unsigned int startingPointIndex=0; startingPointIndex < coloredGrid.numberOfColorPoints[color]; startingPointIndex++)
     {
       int pixelIndex = coloredGrid.colorPointsIndex[color][startingPointIndex]; //(the index)
-      Vector2<int> startingPixel = coloredGrid.getColorPoint(pixelIndex);//uniformGrid.gridCoordinates[pixelIndex];
+      Vector2i startingPixel = coloredGrid.getColorPoint(pixelIndex);//uniformGrid.gridCoordinates[pixelIndex];
 
       //check if this point has been visited
       if(visitedPixels(startingPixel.x, startingPixel.y))
@@ -91,7 +91,7 @@ void BlobFinder::execute(Container<Blob>& result,
         
         // (pixelIndex)
         //get the GRID coordinates of pixel
-        const Vector2<int>& pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
+        const Vector2i& pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
 
         //check if the pixel wasn't treated allready and is of a relevant color
         if(visitedPixels(pixel.x, pixel.y) ||
@@ -99,7 +99,7 @@ void BlobFinder::execute(Container<Blob>& result,
 
         // (pixelIndex)
         //get the coordinates of pixel in the real image (as opposed to grid coordinates)
-        const Vector2<int>& pixelInImage = coloredGrid.getImagePoint(pixelIndex);//uniformGrid.pointsCoordinates[pixelIndex];
+        const Vector2i& pixelInImage = coloredGrid.getImagePoint(pixelIndex);//uniformGrid.pointsCoordinates[pixelIndex];
 
         //check if the pixel is inside the searchArea
         //TODO: give the Area in image coordinates
@@ -115,7 +115,7 @@ void BlobFinder::execute(Container<Blob>& result,
         //check the neighboring pixels
         for(int i = 0; i < 8; i++)
         {
-          Vector2<int> neighborPixel = pixel + mask[i];
+          Vector2i neighborPixel = pixel + mask[i];
           // check if the pixel is inside the grid
           // we have to ckeck it here, because in the case the pixel is 
           // outside the grid its index in scaledImageIndex is not defined
@@ -160,21 +160,21 @@ void BlobFinder::execute(Container<Blob>& result,
 
 
 Blob BlobFinder::regionGrowExpandArea(
-                          const Vector2<int>& startingPoint, 
+                          const Vector2i& startingPoint, 
                           ColorClasses::Color color)
 {
 
 //  const int numberOfDirections = 8;
-  Vector2<int> mask[] = 
+  Vector2i mask[] = 
   {
-    Vector2<int>(-1,  0),
-    Vector2<int>(-1, -1),
-    Vector2<int>( 0, -1),
-    Vector2<int>( 1, -1),
-    Vector2<int>( 1,  0),
-    Vector2<int>( 1,  1),
-    Vector2<int>( 0,  1),
-    Vector2<int>(-1,  1)
+    Vector2i(-1,  0),
+    Vector2i(-1, -1),
+    Vector2i( 0, -1),
+    Vector2i( 1, -1),
+    Vector2i( 1,  0),
+    Vector2i( 1,  1),
+    Vector2i( 0,  1),
+    Vector2i(-1,  1)
   };
 
   //get width and height of the scaled image (uniformgrid)
@@ -207,7 +207,7 @@ Blob BlobFinder::regionGrowExpandArea(
 
     // (pixelIndex)
     //get the GRID coordinates of pixel
-    const Vector2<int>& pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
+    const Vector2i& pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
 
     //check if the pixel wasn't treated allready and is of a relevant color
     if(visitedPixels(pixel.x, pixel.y) ||
@@ -215,7 +215,7 @@ Blob BlobFinder::regionGrowExpandArea(
 
     // (pixelIndex)
     //get the coordinates of pixel in the real image (as opposed to grid coordinates)
-    const Vector2<int>& pixelInImage = coloredGrid.getImagePoint(pixelIndex);// .uniformGrid.pointsCoordinates[pixelIndex];
+    const Vector2i& pixelInImage = coloredGrid.getImagePoint(pixelIndex);// .uniformGrid.pointsCoordinates[pixelIndex];
 
     //check if the pixel is inside the searchArea
     //TODO: give the Area in image coordinates
@@ -230,7 +230,7 @@ Blob BlobFinder::regionGrowExpandArea(
     //check the neighboring pixels
     for(int i = 0; i < 8; i++)
     {
-      Vector2<int> neighborPixel = pixel + mask[i];
+      Vector2i neighborPixel = pixel + mask[i];
       // check if the pixel is inside the grid
       // we have to ckeck it here, because in the case the pixel is 
       // outside the grid its index in scaledImageIndex is not defined

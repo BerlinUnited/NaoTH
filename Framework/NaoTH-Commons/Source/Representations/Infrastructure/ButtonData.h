@@ -32,11 +32,11 @@ namespace naoth
 
     /** Whether the button is pressed in this frame. */
     bool isPressed[numOfButtons];
+    /** The number of frames the button was contiguous pressed (isPressed[numOfButtons] is true). 
+    * I.e., it is 1 already in the first pressed frame and 0 if isPressed[numOfButtons] is false.*/
+    int numOfFramesPressed[numOfButtons];
     /** Overall number of contiguous pressing events */
     int eventCounter[numOfButtons];
-    /** The number of frames the button was contiguous pressed. Should be 1 already
-     * in the first pressed frame. */
-    int numOfFramesPressed[numOfButtons];
 
     virtual void print(std::ostream& stream) const;
   private:

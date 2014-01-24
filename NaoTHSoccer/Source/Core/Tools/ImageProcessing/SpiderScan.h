@@ -40,11 +40,11 @@ public:
   public:
     Scans() : number(0) {};
     enum{ MAXNUMBEROFSCANS=40};
-    Vector2<int> start[MAXNUMBEROFSCANS];
-    Vector2<int> direction[MAXNUMBEROFSCANS];
+    Vector2i start[MAXNUMBEROFSCANS];
+    Vector2i direction[MAXNUMBEROFSCANS];
     unsigned int number;
 
-    void add(const Vector2<int>& point, const Vector2<int>& dir)
+    void add(const Vector2i& point, const Vector2i& dir)
     {
       if(number < MAXNUMBEROFSCANS)
       {
@@ -54,7 +54,7 @@ public:
       }
     }//end add
 
-    void setStart(const Vector2<int>& startPoint)
+    void setStart(const Vector2i& startPoint)
     {
       for(unsigned int i  = 0; i < number; i++)
       {
@@ -73,30 +73,28 @@ public:
     }//end remove
   };//end class Scans
 
-  void scan(const Vector2<int>& start, PointList<20>& goodPoints, PointList<20>& badPoints);
+  void scan(const Vector2i& start, PointList<20>& goodPoints, PointList<20>& badPoints);
   void scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans scans);
   void setDrawScanLines(bool draw);
-  void setDrawScanLinesTop(bool draw);
   void setMaxBeamLength(unsigned int length);
   void setCurrentColorSimThreshold(double threshold);
   void setMaxColorPointsToSkip(unsigned int length);
   void setMaxNumberOfScans(unsigned int length);
 
 private:
-  bool scanLine(const Vector2<int>& start, const Vector2<int>& direction, int maxColorPointsToSkip, PointList<20>& goodPoints, PointList<20>& badPoints) const;
-  inline bool isBorderScan(const Vector2<int>& point, const Vector2<int>& direction, int borderWidth) const;
+  bool scanLine(const Vector2i& start, const Vector2i& direction, int maxColorPointsToSkip, PointList<20>& goodPoints, PointList<20>& badPoints) const;
+  inline bool isBorderScan(const Vector2i& point, const Vector2i& direction, int borderWidth) const;
 
   inline bool isBorderColor(ColorClasses::Color color) const;
   inline bool isSearchColor(ColorClasses::Color color) const;
 
-  inline bool pixelInImage(const Vector2<int>& pixel) const;
-  inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;
+  inline bool pixelInImage(const Vector2i& pixel) const;
+  inline bool pixelAtImageBorder(const Vector2i& pixel, int borderWidth) const;
 
   const Image& theImage;
   const ColorClassificationModel& theColorClassifier;
 
   bool drawScanLines;
-  bool drawScanLinesTop;
   vector<ColorClasses::Color> searchColors;
   vector<ColorClasses::Color> borderColors;
   unsigned int max_length_of_beam;

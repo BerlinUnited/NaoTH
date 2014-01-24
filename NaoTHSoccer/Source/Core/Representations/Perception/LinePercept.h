@@ -103,13 +103,13 @@ public:
   class Flag
   {
   public:
-    Flag(const Vector2<double>& seenPosOnField, const Vector2<double>& absolutePosOnField)
+    Flag(const Vector2d& seenPosOnField, const Vector2d& absolutePosOnField)
       : 
       seenPosOnField(seenPosOnField),
       absolutePosOnField(absolutePosOnField)
     {}
-    Vector2<double> seenPosOnField;
-    Vector2<double> absolutePosOnField; // model of the flag (i.e. its known absolute osition on the field)
+    Vector2d seenPosOnField;
+    Vector2d absolutePosOnField; // model of the flag (i.e. its known absolute osition on the field)
   };//end class Flag
 
 
@@ -123,7 +123,7 @@ public:
     {
     }
 
-    Intersection(const Vector2<double>& pos)
+    Intersection(const Vector2d& pos)
       :
       type(Math::Intersection::unknown),
       pos(pos)
@@ -146,23 +146,23 @@ public:
     }
 
     void setType(Math::Intersection::IntersectionType typeToSet){ type = typeToSet; }
-    void setPosOnField(const Vector2<double>& p) { posOnField = p; }
+    void setPosOnField(const Vector2d& p) { posOnField = p; }
     void setPosInImage(const Vector2<unsigned int>& p) { pos = p; }
     
 
     // getters
     Math::Intersection::IntersectionType getType() const { return type; }
     const Vector2<unsigned int>& getSegmentIndices() const { return segmentIndices; }
-    const Vector2<double>& getSegmentsDistancesToIntersection() const { return segmentsDistanceToIntersection; }
-    const Vector2<double>& getPos() const { return pos; }
-    const Vector2<double>& getPosOnField() const { return posOnField; }
+    const Vector2d& getSegmentsDistancesToIntersection() const { return segmentsDistanceToIntersection; }
+    const Vector2d& getPos() const { return pos; }
+    const Vector2d& getPosOnField() const { return posOnField; }
 
   private:
     Math::Intersection::IntersectionType type;
     Vector2<unsigned int> segmentIndices;
-    Vector2<double> segmentsDistanceToIntersection;
-    Vector2<double> pos;
-    Vector2<double> posOnField;
+    Vector2d segmentsDistanceToIntersection;
+    Vector2d pos;
+    Vector2d posOnField;
   };
 
   const static int INITIAL_NUMBER_OF_LINES = 11;
@@ -176,17 +176,17 @@ public:
 
   // middle circle was seen
   bool middleCircleWasSeen;
-  Vector2<double> middleCircleCenter;
+  Vector2d middleCircleCenter;
   bool middleCircleOrientationWasSeen;
-  Vector2<double> middleCircleOrientation;
+  Vector2d middleCircleOrientation;
 
 
   // representationc for the closest line
   // TODO: this calculations can be made sowhere else
   double closestLineSeenLength;
-  Vector2<double> closestPoint;
-  Vector2<double> estOrthPointOfClosestLine;
-  Vector2<double> closestPointOfClosestLine;
+  Vector2d closestPoint;
+  Vector2d estOrthPointOfClosestLine;
+  Vector2d closestPointOfClosestLine;
 
   // a line was seen
   // TODO: do we need it? (lines.empty() also does the job)

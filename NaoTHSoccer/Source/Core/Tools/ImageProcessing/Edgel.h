@@ -8,13 +8,15 @@
 #ifndef _Edgel_H_
 #define _Edgel_H_
 
+#include <Tools/Math/Vector2.h>
+
 class Edgel
 {
 public:
   Edgel() : angle(0.0)
   {}
 
-  Vector2<int> point;
+  Vector2i point;
   double angle;
 };
 
@@ -31,11 +33,11 @@ public:
     ScanLineID(0)
   {}
 
-  Vector2<int> center;
+  Vector2i center;
   double center_angle;
-  Vector2<int> begin;
+  Vector2i begin;
   double begin_angle;
-  Vector2<int> end;
+  Vector2i end;
   double end_angle;
 
   bool valid;

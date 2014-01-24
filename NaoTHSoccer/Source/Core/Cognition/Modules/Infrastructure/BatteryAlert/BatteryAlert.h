@@ -5,9 +5,8 @@
  *
  */
 
-
 #ifndef _BATTERYALERT_H
-#define  _BATTERYALERT_H
+#define _BATTERYALERT_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -19,12 +18,10 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(BatteryAlert)
-
   REQUIRE(FrameInfo)
   REQUIRE(BatteryData)
 
   PROVIDE(SoundPlayData)
-
 END_DECLARE_MODULE(BatteryAlert)
 
 class BatteryAlert : public BatteryAlertBase

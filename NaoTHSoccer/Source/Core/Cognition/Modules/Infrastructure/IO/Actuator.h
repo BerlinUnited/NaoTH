@@ -24,6 +24,7 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 
 using namespace naoth;
 
@@ -41,6 +42,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrixOffset)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

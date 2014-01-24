@@ -30,6 +30,7 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
 
   platformInterface.registerOutputChanel(getCameraInfo());
   platformInterface.registerOutputChanel(getCameraInfoTop());
+  platformInterface.registerOutputChanel(getCameraMatrixOffset());
   platformInterface.registerOutputChanel(getHeadMotionRequest());
   platformInterface.registerOutputChanel(getMotionRequest());
 }//end init

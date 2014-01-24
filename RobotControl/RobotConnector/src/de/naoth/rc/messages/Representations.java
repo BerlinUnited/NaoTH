@@ -17712,6 +17712,569 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.Opponent)
   }
   
+  public interface CameraMatrixCalibrationOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+    java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> 
+        getCorrectionOffsetList();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index);
+    int getCorrectionOffsetCount();
+    java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+        getCorrectionOffsetOrBuilderList();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+        int index);
+  }
+  public static final class CameraMatrixCalibration extends
+      com.google.protobuf.GeneratedMessage
+      implements CameraMatrixCalibrationOrBuilder {
+    // Use CameraMatrixCalibration.newBuilder() to construct.
+    private CameraMatrixCalibration(Builder builder) {
+      super(builder);
+    }
+    private CameraMatrixCalibration(boolean noInit) {}
+    
+    private static final CameraMatrixCalibration defaultInstance;
+    public static CameraMatrixCalibration getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public CameraMatrixCalibration getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrixCalibration_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrixCalibration_fieldAccessorTable;
+    }
+    
+    // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+    public static final int CORRECTIONOFFSET_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> correctionOffset_;
+    public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
+      return correctionOffset_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+        getCorrectionOffsetOrBuilderList() {
+      return correctionOffset_;
+    }
+    public int getCorrectionOffsetCount() {
+      return correctionOffset_.size();
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
+      return correctionOffset_.get(index);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+        int index) {
+      return correctionOffset_.get(index);
+    }
+    
+    private void initFields() {
+      correctionOffset_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getCorrectionOffsetCount(); i++) {
+        if (!getCorrectionOffset(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < correctionOffset_.size(); i++) {
+        output.writeMessage(1, correctionOffset_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (int i = 0; i < correctionOffset_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, correctionOffset_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.CameraMatrixCalibration parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.CameraMatrixCalibration prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.CameraMatrixCalibrationOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrixCalibration_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrixCalibration_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.CameraMatrixCalibration.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getCorrectionOffsetFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (correctionOffsetBuilder_ == null) {
+          correctionOffset_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          correctionOffsetBuilder_.clear();
+        }
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.CameraMatrixCalibration.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.CameraMatrixCalibration getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.CameraMatrixCalibration.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.CameraMatrixCalibration build() {
+        de.naoth.rc.messages.Representations.CameraMatrixCalibration result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.CameraMatrixCalibration buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.CameraMatrixCalibration result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.CameraMatrixCalibration buildPartial() {
+        de.naoth.rc.messages.Representations.CameraMatrixCalibration result = new de.naoth.rc.messages.Representations.CameraMatrixCalibration(this);
+        int from_bitField0_ = bitField0_;
+        if (correctionOffsetBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            correctionOffset_ = java.util.Collections.unmodifiableList(correctionOffset_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.correctionOffset_ = correctionOffset_;
+        } else {
+          result.correctionOffset_ = correctionOffsetBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.CameraMatrixCalibration) {
+          return mergeFrom((de.naoth.rc.messages.Representations.CameraMatrixCalibration)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.CameraMatrixCalibration other) {
+        if (other == de.naoth.rc.messages.Representations.CameraMatrixCalibration.getDefaultInstance()) return this;
+        if (correctionOffsetBuilder_ == null) {
+          if (!other.correctionOffset_.isEmpty()) {
+            if (correctionOffset_.isEmpty()) {
+              correctionOffset_ = other.correctionOffset_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureCorrectionOffsetIsMutable();
+              correctionOffset_.addAll(other.correctionOffset_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.correctionOffset_.isEmpty()) {
+            if (correctionOffsetBuilder_.isEmpty()) {
+              correctionOffsetBuilder_.dispose();
+              correctionOffsetBuilder_ = null;
+              correctionOffset_ = other.correctionOffset_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              correctionOffsetBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getCorrectionOffsetFieldBuilder() : null;
+            } else {
+              correctionOffsetBuilder_.addAllMessages(other.correctionOffset_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getCorrectionOffsetCount(); i++) {
+          if (!getCorrectionOffset(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addCorrectionOffset(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // repeated .naothmessages.DoubleVector2 correctionOffset = 1;
+      private java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> correctionOffset_ =
+        java.util.Collections.emptyList();
+      private void ensureCorrectionOffsetIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          correctionOffset_ = new java.util.ArrayList<de.naoth.rc.messages.CommonTypes.DoubleVector2>(correctionOffset_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> correctionOffsetBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2> getCorrectionOffsetList() {
+        if (correctionOffsetBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(correctionOffset_);
+        } else {
+          return correctionOffsetBuilder_.getMessageList();
+        }
+      }
+      public int getCorrectionOffsetCount() {
+        if (correctionOffsetBuilder_ == null) {
+          return correctionOffset_.size();
+        } else {
+          return correctionOffsetBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getCorrectionOffset(int index) {
+        if (correctionOffsetBuilder_ == null) {
+          return correctionOffset_.get(index);
+        } else {
+          return correctionOffsetBuilder_.getMessage(index);
+        }
+      }
+      public Builder setCorrectionOffset(
+          int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (correctionOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.set(index, value);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setCorrectionOffset(
+          int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (correctionOffsetBuilder_ == null) {
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addCorrectionOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (correctionOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.add(value);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addCorrectionOffset(
+          int index, de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (correctionOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.add(index, value);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addCorrectionOffset(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (correctionOffsetBuilder_ == null) {
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.add(builderForValue.build());
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addCorrectionOffset(
+          int index, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (correctionOffsetBuilder_ == null) {
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllCorrectionOffset(
+          java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2> values) {
+        if (correctionOffsetBuilder_ == null) {
+          ensureCorrectionOffsetIsMutable();
+          super.addAll(values, correctionOffset_);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearCorrectionOffset() {
+        if (correctionOffsetBuilder_ == null) {
+          correctionOffset_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeCorrectionOffset(int index) {
+        if (correctionOffsetBuilder_ == null) {
+          ensureCorrectionOffsetIsMutable();
+          correctionOffset_.remove(index);
+          onChanged();
+        } else {
+          correctionOffsetBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getCorrectionOffsetBuilder(
+          int index) {
+        return getCorrectionOffsetFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getCorrectionOffsetOrBuilder(
+          int index) {
+        if (correctionOffsetBuilder_ == null) {
+          return correctionOffset_.get(index);  } else {
+          return correctionOffsetBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+           getCorrectionOffsetOrBuilderList() {
+        if (correctionOffsetBuilder_ != null) {
+          return correctionOffsetBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(correctionOffset_);
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder() {
+        return getCorrectionOffsetFieldBuilder().addBuilder(
+            de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder addCorrectionOffsetBuilder(
+          int index) {
+        return getCorrectionOffsetFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder> 
+           getCorrectionOffsetBuilderList() {
+        return getCorrectionOffsetFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getCorrectionOffsetFieldBuilder() {
+        if (correctionOffsetBuilder_ == null) {
+          correctionOffsetBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  correctionOffset_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          correctionOffset_ = null;
+        }
+        return correctionOffsetBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.CameraMatrixCalibration)
+    }
+    
+    static {
+      defaultInstance = new CameraMatrixCalibration(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.CameraMatrixCalibration)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_CameraMatrix_descriptor;
   private static
@@ -17817,6 +18380,11 @@ public final class Representations {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_Opponent_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_CameraMatrixCalibration_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_CameraMatrixCalibration_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -17932,7 +18500,9 @@ public final class Representations {
       "alse\022*\n\topponents\030\005 \003(\0132\027.naothmessages." +
       "Opponent\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:" +
       "\0010\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages." +
-      "Pose2DB\026\n\024de.naoth.rc.messages"
+      "Pose2D\"Q\n\027CameraMatrixCalibration\0226\n\020cor" +
+      "rectionOffset\030\001 \003(\0132\034.naothmessages.Doub" +
+      "leVector2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -18107,6 +18677,14 @@ public final class Representations {
               new java.lang.String[] { "PlayerNum", "PoseOnField", },
               de.naoth.rc.messages.Representations.Opponent.class,
               de.naoth.rc.messages.Representations.Opponent.Builder.class);
+          internal_static_naothmessages_CameraMatrixCalibration_descriptor =
+            getDescriptor().getMessageTypes().get(21);
+          internal_static_naothmessages_CameraMatrixCalibration_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_CameraMatrixCalibration_descriptor,
+              new java.lang.String[] { "CorrectionOffset", },
+              de.naoth.rc.messages.Representations.CameraMatrixCalibration.class,
+              de.naoth.rc.messages.Representations.CameraMatrixCalibration.Builder.class);
           return null;
         }
       };

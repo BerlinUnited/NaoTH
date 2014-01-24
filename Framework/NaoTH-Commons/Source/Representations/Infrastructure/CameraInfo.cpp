@@ -38,16 +38,12 @@ double CameraInfo::getOpeningAngleWidth() const
 
 double CameraInfo::getOpticalCenterX() const
 {
-  // TODO: shouldn't we cast to double here? Now we get a double that is acutally
-  // an int...
-  return resolutionWidth / 2;
+  return double(resolutionWidth / 2);
 }
 
 double CameraInfo::getOpticalCenterY() const
 {
-  // TODO: shouldn't we cast to double here? Now we get a double that is acutally
-  // an int...
-  return resolutionHeight / 2;
+  return double(resolutionHeight / 2);
 }
 
 unsigned long CameraInfo::getSize() const
@@ -63,16 +59,6 @@ double CameraInfo::getOpeningAngleDiagonal() const
 void CameraInfo::print(ostream& stream) const
 {
   stream << "Camera selection: " << cameraID << endl
-         << "Roll Offset (x): "<< correctionOffset[cameraID].x << " rad" << endl
-         << "Tilt Offset: (y)"<< correctionOffset[cameraID].y << " rad" <<  endl
-         << "Head Joint Roll Offset (x): "<< headJointOffset[cameraID].x << " rad" << endl
-         << "Head Joint Tilt Offset: (y)"<< headJointOffset[cameraID].y << " rad" <<  endl
-         << "Transformation: " << "x=" << transformation[cameraID].translation.x << ", "
-            << " y=" <<transformation[cameraID].translation.y << ", "
-            << " z=" <<transformation[cameraID].translation.z << ", "
-            << " angleX=" <<transformation[cameraID].rotation.getXAngle() << " rad,"
-            << " angleY=" <<transformation[cameraID].rotation.getYAngle() << " rad,"
-            << " angleZ=" <<transformation[cameraID].rotation.getZAngle() << " rad" << endl
          << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
          << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
          << "Focal Length (calculated): "<< getFocalLength() << " Pixel"<< endl
@@ -83,21 +69,11 @@ void CameraInfo::print(ostream& stream) const
          << "Radial Asymmetric and Tangential Error: " << p1 << " mm, " << p2 << " mm" << endl
          << "Affinity and Shearing Error: " << b1 << " mm, " << b2 << " mm" << endl
          ;
-}//end CameraInfo::print
+}
 
 CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
 {
   PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
-  
-  PARAMETER_REGISTER(correctionOffset[Top].x) = 0;
-  PARAMETER_REGISTER(correctionOffset[Top].y) = 0;
-  PARAMETER_REGISTER(correctionOffset[Bottom].x) = 0;
-  PARAMETER_REGISTER(correctionOffset[Bottom].y) = 0;
-
-  PARAMETER_REGISTER(headJointOffset[Top].x) = 0;
-  PARAMETER_REGISTER(headJointOffset[Top].y) = 0;
-  PARAMETER_REGISTER(headJointOffset[Bottom].x) = 0;
-  PARAMETER_REGISTER(headJointOffset[Bottom].y) = 0;
 
   //size of an Pixel on the chip
   PARAMETER_REGISTER(pixelSize) = 0.0036;
@@ -117,34 +93,8 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(b1) = 0.0;
   PARAMETER_REGISTER(b2) = 0.0;
 
-  PARAMETER_REGISTER(cameraTrans[Top].offset.x) = 58.71;
-  PARAMETER_REGISTER(cameraTrans[Top].offset.y) = 0;
-  PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 63.64;
-  PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 1.2;
-
-  PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 50.71;
-  PARAMETER_REGISTER(cameraTrans[Bottom].offset.y) = 0;
-  PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 17.74;
-  PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 39.7;
-
-  init();
-}
-
-void CameraInfoParameter::init()
-{
-  // init config and values
   syncWithConfig();
-  setCameraTrans();
 }
-
-void CameraInfoParameter::setCameraTrans()
-{
-  for(int i = 0; i < numOfCamera; i++)
-  {
-    transformation[i].translation = cameraTrans[i].offset;
-    transformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
-  }
-}//end CameraInfoParameter::setCameraTrans
 
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
 {
@@ -152,20 +102,9 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_resolutionwidth(representation.resolutionWidth);
   msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
-  //msg.set_camerarolloffset(representation.cameraRollOffset);
-  //msg.set_cameratiltoffset(representation.cameraTiltOffset);
   msg.set_openinganglediagonal(representation.openingAngleDiagonal);
   msg.set_focus(representation.focus);
   msg.set_pixelsize(representation.pixelSize);
-  
-  // set transformations
-  for(int camID=0; camID < CameraInfo::numOfCamera; camID++)
-  {
-    naoth::DataConversion::toMessage(representation.transformation[camID], *msg.add_transformation());
-    naoth::DataConversion::toMessage(representation.correctionOffset[camID], *msg.add_correctionoffset());
-
-    naoth::DataConversion::toMessage(representation.headJointOffset[camID], *msg.add_headjointoffset());
-  }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
@@ -180,32 +119,8 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.resolutionWidth = msg.resolutionwidth();
   r.resolutionHeight = msg.resolutionheight();
   r.cameraID = (CameraInfo::CameraID) msg.cameraid();
-  //r.cameraRollOffset = msg.camerarolloffset();
-  //r.cameraTiltOffset = msg.cameratiltoffset();
   r.focus = msg.focus();
   r.openingAngleDiagonal = msg.openinganglediagonal();
   r.pixelSize = msg.pixelsize();
   
-  if(msg.transformation_size() == CameraInfo::numOfCamera)
-  {
-    for(int camID = 0; camID < CameraInfo::numOfCamera; camID++)
-    {
-      naoth::DataConversion::fromMessage(msg.transformation(camID), r.transformation[camID]);
-      naoth::DataConversion::fromMessage(msg.correctionoffset(camID), r.correctionOffset[camID]);
-
-      naoth::DataConversion::fromMessage(msg.headjointoffset(camID), r.headJointOffset[camID]);
-    }
-  }
 }
-
-void Serializer<CameraInfoTop>::serialize(const CameraInfoTop& representation, std::ostream& stream)
-{
-  Serializer<CameraInfo>::serialize(representation, stream);
-}
-
-void Serializer<CameraInfoTop>::deserialize(std::istream& stream, CameraInfoTop& r)
-{
-  Serializer<CameraInfo>::deserialize(stream, r);
-}
-
-

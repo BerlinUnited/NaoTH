@@ -19,183 +19,102 @@
 class FieldPercept : public naoth::Printable
 {
 public:
-  typedef Math::Polygon<4> FieldRect;
   typedef Math::Polygon<20> FieldPoly;
 
 private:
   FieldPoly fieldPoly;
-  FieldRect fieldRect;
+  Vector2i dimension;
 
-  bool valid;
-  Vector2<int> dimension;
-
-  // const stuff
-  FieldRect fullFieldRect;
+  // maximal field polygon containing the full image
   FieldPoly fullFieldPoly;
 
   void generateDefaultField()
   {
-    fullFieldRect.clear();
-    // create default field rect in image (the whole image) 
-    fullFieldRect.add(Vector2<int>(0, 0));
-    fullFieldRect.add(Vector2<int>(0, dimension.y - 1));
-    fullFieldRect.add(Vector2<int>(dimension.x - 1, dimension.y - 1));
-    fullFieldRect.add(Vector2<int>(dimension.x - 1, 0));
-
     fullFieldPoly.clear();
     // create default field poly in image (the whole image)
     // basicaly the same as rect
-    fullFieldPoly.add(Vector2<int>(0, 0));
-    fullFieldPoly.add(Vector2<int>(0, dimension.y - 1));
-    fullFieldPoly.add(Vector2<int>(dimension.x - 1, dimension.y - 1));
-    fullFieldPoly.add(Vector2<int>(dimension.x - 1, 0));
+    fullFieldPoly.add(Vector2i(0, 0));
+    fullFieldPoly.add(Vector2i(0, dimension.y - 1));
+    fullFieldPoly.add(Vector2i(dimension.x - 1, dimension.y - 1));
+    fullFieldPoly.add(Vector2i(dimension.x - 1, 0));
   }//end generateDefaultField
-  
+
 public:
+  bool valid;
 
   FieldPercept()
+  :
+    dimension(2,2),
+    valid(false)
   {
     //be sure the first initiated field is {0,0,0,0} and not {0,0,-1,-1}
-    dimension.x = 2;
-    dimension.y = 2;
     generateDefaultField();
     reset();
   }
 
-  ~FieldPercept(){}
+  virtual ~FieldPercept(){}
 
-  const FieldRect& getFullFieldRect() const
-  {
-    return fullFieldRect;
-  }
-
-  const FieldPoly& getFullFieldPoly() const
-  {
+  const FieldPoly& getFullField() const {
     return fullFieldPoly;
   }
 
-  void setDimension(Vector2<int> maxDim)
+  void setDimension(const Vector2i& maxDim)
   {
     dimension = maxDim;
     // regenerate the fields
     generateDefaultField();
   }
 
-  bool isValid() const
-  {
-    return valid;
+  const FieldPoly& getField() const {
+    return fieldPoly;
   }
 
-  void setValid(bool flag)
+  const FieldPoly& getValidField() const
   {
-    valid = flag;
+    if(valid) {
+      return getField();
+    }
+    return getFullField();
   }
-
-  const FieldPoly& getLargestValidPoly() const
-  {
-    if(isValid())
-    {
-      return getPoly();
-    }
-    return getFullFieldPoly();
-  }//end getLargestValidPoly
-
-  //HACK: left for compatibility
-  const FieldPoly& getLargestValidPoly(const Math::LineSegment& horizon) const
-  {
-     return getLargestValidPoly();
-  }//end getLargestValidPoly
-
-  const FieldRect& getLargestValidRect() const
-  {
-    if(isValid())
-    {
-      return getRect();
-    }
-    return getFullFieldRect();
-  }//end getLargestValidRect
-
-  //HACK: left for compatibility
-  const FieldRect& getLargestValidRect(const Math::LineSegment& horizon) const
-  {
-    return getLargestValidRect();
-  }//end getLargestValidRect
-
-  void checkRectIsUnderHorizon(const Math::LineSegment& horizon)
-  {
-    for(int i = 0; i < fieldRect.length; i++)
-    {
-      if(horizon.begin().y >= fieldRect[i].y)
-      {
-        fieldRect[i].y = Math::clamp((int) horizon.begin().y + 1, 0, dimension.y - 1);
-      }
-
-      if(horizon.end().y >= fieldRect[i].y )
-      {
-        fieldRect[i].y = Math::clamp((int) horizon.end().y + 1, 0, dimension.y - 1);
-      }
-    }
-  }//end isPolyUnderHorizont
 
   void checkPolyIsUnderHorizon(const Math::LineSegment& horizon)
   {
     for(int i = 0; i < fieldPoly.length; i++)
     {
-      if(horizon.begin().y >= fieldPoly[i].y)
-      {
+      if(horizon.begin().y >= fieldPoly[i].y) {
         fieldPoly[i].y = Math::clamp((int) horizon.begin().y + 1, 0, dimension.y - 1);
       }
 
-      if(horizon.end().y >= fieldPoly[i].y )
-      {
+      if(horizon.end().y >= fieldPoly[i].y ) {
         fieldPoly[i].y = Math::clamp((int) horizon.end().y + 1, 0, dimension.y - 1);
       }
     }
-  }//end isRectUnderHorizont
+  }
 
-  const FieldPoly& getPoly() const
-  {
-    return fieldPoly;
-  }//end getLargestPoly
-
-  const FieldRect& getRect() const
-  {
-    return fieldRect;
-  }//end getLargestRect
-
-  void setPoly(const FieldPoly& newField, const Math::LineSegment& horizon)
+  void setField(const FieldPoly& newField, const Math::LineSegment& horizon)
   {
     fieldPoly = newField;
     checkPolyIsUnderHorizon(horizon);
-  }//end add
+  }
 
-  void setRect(const FieldRect& newFieldRect, const Math::LineSegment& horizon)
-  {
-    fieldRect = newFieldRect;
-    checkRectIsUnderHorizon(horizon);
-  }//end add
-
-  /* reset percept */
   void reset()
   {
     valid = false;
-  }//end reset
+  }
 
   virtual void print(std::ostream& stream) const
   {
     stream << " valid: " << (valid ? "true" : "false") << std::endl;
-    stream << " Rect Area: " << fieldRect.getArea() << std::endl;
-    stream << " Poly Area: " << fieldPoly.getArea() << std::endl;
+    stream << " Field Area: " << fieldPoly.getArea() << std::endl;
     stream << " Poly Vertex Count: " << fieldPoly.length << std::endl;
-  }//end print
-
+  }
 };
 
-class FieldPerceptTop : public FieldPercept
-{
-public:
-  virtual ~FieldPerceptTop() {}
-};
+
+class FieldPerceptRaw : public FieldPercept{};
+class FieldPerceptRawTop : public FieldPerceptRaw{};
+
+class FieldPerceptTop : public FieldPercept{};
 
 namespace naoth
 {
@@ -207,10 +126,10 @@ namespace naoth
     static void deserialize(std::istream& stream, FieldPercept& representation);
   };
 
-  template<>
-  class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>
-  {};
+  template<> class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>{};
 
+  template<> class Serializer<FieldPerceptRaw> : public Serializer<FieldPercept>{};
+  template<> class Serializer<FieldPerceptRawTop> : public Serializer<FieldPercept>{};
 }
 
 

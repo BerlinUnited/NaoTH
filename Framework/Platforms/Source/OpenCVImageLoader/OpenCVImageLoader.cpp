@@ -345,12 +345,7 @@ void OpenCVImageLoader::listFiles()
 
 void OpenCVImageLoader::get(Image& data)
 {
-  //ACHTUNG: this is set by the module CameraInfoSetter
-  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
-  if (data.cameraInfo.resolutionWidth == naoth::IMAGE_WIDTH)
-  {
-    copyImage(data, loadedImage);
-  }//if
+  copyImage(data, loadedImage);
 }//end get
 
 void OpenCVImageLoader::get(FrameInfo& data)
@@ -364,8 +359,8 @@ void OpenCVImageLoader::copyImage(Image& image, Mat mat)
 {
   Mat temp;
   Size size;
-  size.width = naoth::IMAGE_WIDTH;
-  size.height = naoth::IMAGE_HEIGHT;
+  size.width = image.width();
+  size.height = image.height();
   //resize the image
   resize(mat, temp, size, 0, 0, INTER_CUBIC);
   cvtColor(temp, temp, CV_RGB2YCrCb);

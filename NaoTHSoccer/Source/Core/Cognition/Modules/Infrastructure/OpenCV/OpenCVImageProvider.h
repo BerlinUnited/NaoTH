@@ -4,23 +4,22 @@
 
 #include <ModuleFramework/Module.h>
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/OpenCVGrayScale.h"
+#include "Representations/Perception/CVImage.h"
 
 BEGIN_DECLARE_MODULE(OpenCVImageProvider)
   REQUIRE(Image)
-  PROVIDE(OpenCVGrayScale)
+  REQUIRE(ImageTop)
+  PROVIDE(CVImage)
+  PROVIDE(CVImageTop)
 END_DECLARE_MODULE(OpenCVImageProvider)
 
 class OpenCVImageProvider : public OpenCVImageProviderBase
 {
 public:
   OpenCVImageProvider();
+  virtual ~OpenCVImageProvider(){}
 
   virtual void execute();
-
-  virtual ~OpenCVImageProvider();
-private:
-
 };
 
 #endif // OPENCVIMAGEPROVIDER_H

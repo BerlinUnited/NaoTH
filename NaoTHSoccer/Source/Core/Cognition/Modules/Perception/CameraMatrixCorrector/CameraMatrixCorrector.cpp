@@ -18,14 +18,6 @@
 
 CameraMatrixCorrector::CameraMatrixCorrector()
 {
-  udpateTime = getFrameInfo().getTime();
-
-  // this is a HACK!!!!!!!!!!
-  if(!getKinematicChain().is_initialized())
-  {
-    getKinematicChain().init(getSensorJointData());
-  }
-
   DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
     false);
@@ -46,10 +38,6 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
-  udpateTime = getFrameInfo().getTime();
-  
-
   CameraInfo::CameraID camera_to_calibrate = CameraInfo::numOfCamera;
 
   DEBUG_REQUEST("CameraMatrix:CamTop", camera_to_calibrate = CameraInfo::Top; );
@@ -61,7 +49,7 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
   });
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", 
     if(cameraID == camera_to_calibrate) {
-      getCameraInfoParameter().saveToConfig(); 
+      getCameraMatrixOffset().saveToConfig(); 
   });
 
   DEBUG_REQUEST("CameraMatrix:reset_calibration", 
@@ -70,18 +58,9 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
   });
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", 
     if(cameraID == camera_to_calibrate) {
-      getCameraInfoParameter().saveToConfig(); 
+      getCameraMatrixOffset().saveToConfig(); 
   });
 
-  // calculate the kinematic chain
-  Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    getInertialModel().orientation,
-    getAccelerometerData().getAcceleration(),
-    getKinematicChain(),
-    theFSRPos,
-    deltaTime);
-
-  //getKinematicChain().updateCoM();
 
   /* TODO: this doesn't work properly
   getCameraMatrix()
@@ -94,17 +73,12 @@ void CameraMatrixCorrector::execute(CameraInfo::CameraID id)
 
 void CameraMatrixCorrector::reset_calibration()
 {
-  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
-  cameraInfo.correctionOffset[cameraID] = Vector2d();
-  //cameraInfo.cameraRollOffset = 0.0;
-  //cameraInfo.cameraTiltOffset = 0.0;
+  getCameraMatrixOffset().correctionOffset[cameraID] = Vector2d();
 }
 
 void CameraMatrixCorrector::calibrate()
 {
   // calibrate the camera matrix
-  // currently it is in test-mode, the correction parameter
-  // are stored as static members of CameraMatrixCalculator
 
   if (getGoalPercept().getNumberOfSeenPosts() < 2
       || !getGoalPercept().getPost(0).positionReliable 
@@ -140,25 +114,17 @@ void CameraMatrixCorrector::calibrate()
   }//end for
 
 
-  // apply changes
-  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
-
   double lambda = 0.01;
   if (offset.abs() > lambda) {
     offset.normalize(lambda);
   }
 
-
+  // apply changes
   double maxValue = Math::fromDegrees(10.0); // maximal correction offset
   offset.x = Math::clamp(offset.x, -maxValue, maxValue);
   offset.y = Math::clamp(offset.y, -maxValue, maxValue);
 
-  //cameraInfo.cameraRollOffset += offset.x;
-  //cameraInfo.cameraTiltOffset += offset.y;
-  cameraInfo.correctionOffset[cameraID] += offset;
-
-  // until now we only changed the parameters, change the pure CameraInfo as well
-  getCameraInfo() = cameraInfo;
+  getCameraMatrixOffset().correctionOffset[cameraID] += offset;
 }//end calibrate
 
 
@@ -170,7 +136,7 @@ double CameraMatrixCorrector::projectionError(double offsetX, double offsetY)
        .rotateX(offsetX);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = getCameraInfoParameter();
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   Vector2<double> leftPosition;
   CameraGeometry::imagePixelToFieldCoord(

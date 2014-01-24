@@ -40,9 +40,6 @@ namespace naoth
     b1(0.0),
     b2(0.0),
     cameraID(Bottom),
-    //cameraRollOffset(0.0),
-    //cameraTiltOffset(0.0),
-    transformation(),
     openingAngleDiagonal(0.0)
     {}
 
@@ -79,13 +76,6 @@ namespace naoth
 
     CameraID cameraID;
 
-    // for calibration
-    Vector2d correctionOffset[numOfCamera];
-    Vector2d headJointOffset[numOfCamera];
-    
-      // offset to the neck joint
-    Pose3D transformation[numOfCamera];
-
     // getter functions that use the existing values to calculate their result
 
     double getFocalLength() const;
@@ -98,7 +88,7 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
 
-    std::string getCameraIDName(CameraID id)
+    std::string getCameraIDName(CameraID id) const
     {
       switch(id)
       {
@@ -114,29 +104,10 @@ namespace naoth
 
   };
 
-  class CameraInfoTop : public CameraInfo
-  {
-  public:
-    using CameraInfo::operator =;
-    virtual ~CameraInfoTop() {}
-  };
-
   class CameraInfoParameter : public CameraInfo, public ParameterList
   {
-  private:
-    struct CameraTransInfo
-    {
-      Vector3d offset;
-      double rotationY;
-    };
-
-    CameraTransInfo cameraTrans[numOfCamera];
-    void setCameraTrans();
-
   public:
     CameraInfoParameter();
-    void init();
-
   };
 
   template<>
@@ -147,13 +118,17 @@ namespace naoth
     static void deserialize(std::istream& stream, CameraInfo& representation);
   };
 
-  template<>
-  class Serializer<CameraInfoTop>
+
+  class CameraInfoTop : public CameraInfo
   {
-    public:
-    static void serialize(const CameraInfoTop& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, CameraInfoTop& representation);
+  public:
+    using CameraInfo::operator =;
+    virtual ~CameraInfoTop() {}
   };
+
+  template<>
+  class Serializer<CameraInfoTop> : public Serializer<CameraInfo>
+  {};
   
 }
 

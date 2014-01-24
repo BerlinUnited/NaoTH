@@ -5,8 +5,8 @@
 * Declaration of class OdometrySelfLocator
 */
 
-#ifndef __OdometrySelfLocator_h_
-#define __OdometrySelfLocator_h_
+#ifndef _OdometrySelfLocator_h_
+#define _OdometrySelfLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -32,14 +32,12 @@ class OdometrySelfLocator : public OdometrySelfLocatorBase
 public:
 
   OdometrySelfLocator();
-  ~OdometrySelfLocator(){}
+  virtual ~OdometrySelfLocator(){}
 
-
-  /** executes the module */
-  void execute();
+  virtual void execute();
 
 private:
   OdometryData lastRobotOdometry;
 };
 
-#endif //__OdometrySelfLocator_h_
+#endif //_OdometrySelfLocator_h_
