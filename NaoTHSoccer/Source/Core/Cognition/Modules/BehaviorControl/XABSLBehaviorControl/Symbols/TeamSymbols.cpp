@@ -84,13 +84,13 @@ bool TeamSymbols::calculateIfStriker()
     const TeamMessage::Data& messageData = i->second;
     const unsigned int number = i->first;
 
-    if(number == 1) continue; // goalie is not considered
-  
     double time_bonus = messageData.wasStriker?4000.0:0.0;
 
     if(
-        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh
-        && messageData.fallen == -1
+           messageData.fallen == -1
+        && !messageData.isPenalized
+        && number != 1 // goalie is not considered
+        && theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh
         && (messageData.ballAge >= 0 && messageData.ballAge < 1000+time_bonus )// the guy sees the ball
       )
     {
@@ -128,6 +128,7 @@ bool TeamSymbols::calculateIfStrikerByTimeToBall()
     if (
       i->first != theInstance->playerInfo.gameData.playerNumber
       && msg.wasStriker
+      && !msg.isPenalized
       && msg.ballAge >= 0
       && msg.ballAge + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime())
         < theInstance->maximumFreshTime
@@ -175,7 +176,7 @@ bool TeamSymbols::calculateIfTheLast()
         !messageData.wasStriker &&
         number != 1 && // no goalie
         // we are already considered by the initial values
-        messageData.playerNum != (int) theInstance->playerInfo.gameData.playerNumber
+        messageData.playerNum != theInstance->playerInfo.gameData.playerNumber
         )
     {
       Vector2d robotpos = messageData.pose.translation;
