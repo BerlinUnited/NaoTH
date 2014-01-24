@@ -57,9 +57,9 @@ void TeamCommReceiver::execute()
                               getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
                               getTeamMessage(), true, ownMsg);
 
-//TODO:  handleMessage(ownMsg.SerializeAsString(), true);
-
-
+  std::string ownMsgData;
+  ownMsgData.assign((char*) &ownMsg, sizeof(SPLStandardMessage));
+  handleMessage(ownMsgData, true);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
