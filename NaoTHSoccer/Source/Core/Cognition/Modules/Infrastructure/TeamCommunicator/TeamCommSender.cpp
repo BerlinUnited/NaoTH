@@ -106,50 +106,55 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
               getRobotPose(), getBodyState(), getMotionStatus(), getSoccerStrategy(),
               getPlayersModel(), getTeamMessage(), true, data);
   // convert to SPLStandardMessage
-  if(data.playerNum < std::numeric_limits<uint8_t>::max())
+  convertToSPLMessage(data, msg);
+}
+
+void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLStandardMessage& splMsg)
+{
+  if(teamData.playerNum < std::numeric_limits<uint8_t>::max())
   {
-    msg.playerNum = (uint8_t) data.playerNum;
+    splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  if(data.team < std::numeric_limits<uint16_t>::max())
+  if(teamData.team < std::numeric_limits<uint16_t>::max())
   {
-    msg.team = (uint16_t) data.team;
+    splMsg.team = (uint16_t) teamData.team;
   }
-  msg.pose[0] = (float) data.pose.translation.x;
-  msg.pose[1] = (float) data.pose.translation.y;
-  msg.pose[2] = (float) data.pose.rotation;
+  splMsg.pose[0] = (float) teamData.pose.translation.x;
+  splMsg.pose[1] = (float) teamData.pose.translation.y;
+  splMsg.pose[2] = (float) teamData.pose.rotation;
 
-  msg.ballAge = data.ballAge;
+  splMsg.ballAge = teamData.ballAge;
 
-  msg.ball[0] = (float) data.ballPosition.x;
-  msg.ball[1] = (float) data.ballPosition.y;
+  splMsg.ball[0] = (float) teamData.ballPosition.x;
+  splMsg.ball[1] = (float) teamData.ballPosition.y;
 
-  msg.ballVel[0] = (float) data.ballVelocity.x;
-  msg.ballVel[1] = (float) data.ballVelocity.y;
+  splMsg.ballVel[0] = (float) teamData.ballVelocity.x;
+  splMsg.ballVel[1] = (float) teamData.ballVelocity.y;
 
-  msg.fallen = data.fallen;
+  splMsg.fallen = teamData.fallen;
 
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
-  userMsg.set_bodyid(data.bodyID);
-  userMsg.set_timetoball(data.timeToBall);
-  userMsg.set_wasstriker(data.wasStriker);
-  userMsg.set_ispenalized(data.isPenalized);
-  for(unsigned int i=0; i < data.opponents.size(); i++)
+  userMsg.set_bodyid(teamData.bodyID);
+  userMsg.set_timetoball(teamData.timeToBall);
+  userMsg.set_wasstriker(teamData.wasStriker);
+  userMsg.set_ispenalized(teamData.isPenalized);
+  for(unsigned int i=0; i < teamData.opponents.size(); i++)
   {
     naothmessages::Opponent* opp = userMsg.add_opponents();
-    opp->set_playernum(data.opponents[i].playerNum);
-    DataConversion::toMessage(data.opponents[i].poseOnField, *(opp->mutable_poseonfield()));
+    opp->set_playernum(teamData.opponents[i].playerNum);
+    DataConversion::toMessage(teamData.opponents[i].poseOnField, *(opp->mutable_poseonfield()));
   }
 
   int userSize = userMsg.ByteSize();
-  if(msg.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+  if(splMsg.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
   {
-    msg.numOfDataBytes = (uint16_t) userMsg.ByteSize();
-    userMsg.SerializeToArray(msg.data, userSize);
+    splMsg.numOfDataBytes = (uint16_t) userMsg.ByteSize();
+    userMsg.SerializeToArray(splMsg.data, userSize);
   }
   else
   {
-    msg.numOfDataBytes = 0;
+    splMsg.numOfDataBytes = 0;
   }
 }
 

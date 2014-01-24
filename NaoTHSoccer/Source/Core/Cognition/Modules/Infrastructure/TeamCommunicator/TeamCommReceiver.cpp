@@ -51,14 +51,16 @@ void TeamCommReceiver::execute()
   // add our own status as artifical message
   // (so we are not dependant on a lousy network)
 
-  TeamMessage::Data ownMsg;
+  TeamMessage::Data ownTeamData;
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
                               getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
-                              getTeamMessage(), true, ownMsg);
+                              getTeamMessage(), true, ownTeamData);
+  SPLStandardMessage ownSPLMsg;
+  TeamCommSender::convertToSPLMessage(ownTeamData, ownSPLMsg);
 
   std::string ownMsgData;
-  ownMsgData.assign((char*) &ownMsg, sizeof(SPLStandardMessage));
+  ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
   handleMessage(ownMsgData, true);
 }
 
@@ -68,6 +70,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
   SPLStandardMessage spl;
   if(data.size() != sizeof(SPLStandardMessage))
   {
+    std::cerr << "wrong package size for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     // invalid message size
     return;
   }
@@ -78,10 +81,12 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
      spl.header[2] != 'L' ||
      spl.header[3] != ' ')
   {
+    std::cerr << "wrong header '" << spl.header  << "' for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     return;
   }
   if(spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
   {
+    std::cerr << "wrong version for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     return;
   }
 

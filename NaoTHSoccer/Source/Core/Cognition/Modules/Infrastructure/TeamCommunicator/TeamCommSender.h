@@ -50,6 +50,7 @@ public:
                             const TeamMessage &teamMessage,
                             bool onlySendOneOpponent,
                             TeamMessage::Data &out);
+ static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
 
 private:
   unsigned int lastSentTimestamp;
