@@ -141,15 +141,17 @@ private:
     size_t idxE;
   };
 
-  std::vector<Feature> features[5];
-  int lastTestFeatureIdx[5];
-  std::vector<GoalPercept::GoalPost> goalPosts;
+  static const int numberOfScanlines = 5;
+  std::vector<std::vector<Feature> > features;
+  std::vector<int> lastTestFeatureIdx;
 
-  std::vector<TestFeature> testFeatures;
+  //std::vector<GoalPercept::GoalPost> goalPosts;
+
+  //std::vector<TestFeature> testFeatures;
 
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
-  Vector2d findBestDownScanDirection(const Vector2d& scanDir, const std::vector<Feature>& features);
+  Vector2d findBestDownScanDirection(const std::vector<Feature>& features);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
 
   // double cam stuff
