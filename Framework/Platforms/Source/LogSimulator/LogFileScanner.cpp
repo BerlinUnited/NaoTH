@@ -15,7 +15,7 @@
 
 LogFileScanner::LogFileScanner(const std::string& filePath)
 {
-  logFile.open(filePath, std::ios::in | std::ios::binary);
+  logFile.open(filePath.c_str(), std::ios::in | std::ios::binary);
 
   if(logFile.fail())
   {
@@ -91,7 +91,7 @@ void LogFileScanner::scanFile()
     logFile.seekg(currentSize, std::ios_base::cur);
 
     // save the frame markers
-    if(lastFrameNumber != currentFrameNumber)
+    if((unsigned int) lastFrameNumber != currentFrameNumber)
     {
       frameNumber2Pos[currentFrameNumber] = currentPos;
       frames.push_back(currentFrameNumber);

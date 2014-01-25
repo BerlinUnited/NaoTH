@@ -312,7 +312,7 @@ void Simulator::adjust_frame_time()
   else
   {
     // read the actual frame info
-    f.ParseFromArray(frameData.data.data(), frameData.data.size());
+    f.ParseFromArray(frameData.data.data(), (int) frameData.data.size());
     unsigned int frameTime = f.time();
 
     // logged time since the last frame
