@@ -288,7 +288,7 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
 
   Pixel pixel;
 
-  BresenhamLineScan goodFeatureScanner(candidate.center, scanDir, getImage().cameraInfo);
+  Vector2d scanDirection(scanDir);
 
   Vector2i pos = candidate.center;
   valueBuffer.init();
@@ -301,6 +301,7 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
   for(size_t y = 1; y < features.size(); y++)
   {
     bool stop = false;
+    BresenhamLineScan goodFeatureScanner(candidate.center, scanDirection, getImage().cameraInfo);
     for(int yy = 0; yy < 5; yy++)
     {
       if(goodFeatureScanner.getNextWithCheck(pos))
@@ -335,6 +336,8 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
       {
         lastTestFeatureIdx[y] = j;
         goodFeatures.push_back(features[y][j]);
+        pos = features[y][j].center;
+        scanDirection = findBestDownScanDirection(goodFeatures);
         stop = true;
           //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
       }
