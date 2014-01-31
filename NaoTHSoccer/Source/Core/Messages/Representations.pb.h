@@ -60,6 +60,10 @@ class MotionStatus;
 class OdometryData;
 class CalibrationData;
 class InertialModel;
+class TeamMessageCollection;
+class TeamMessage;
+class BUUserTeamMessage;
+class Opponent;
 class CameraMatrixCalibration;
 
 // ===================================================================
@@ -2280,6 +2284,481 @@ class InertialModel : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static InertialModel* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class TeamMessageCollection : public ::google::protobuf::Message {
+ public:
+  TeamMessageCollection();
+  virtual ~TeamMessageCollection();
+  
+  TeamMessageCollection(const TeamMessageCollection& from);
+  
+  inline TeamMessageCollection& operator=(const TeamMessageCollection& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamMessageCollection& default_instance();
+  
+  void Swap(TeamMessageCollection* other);
+  
+  // implements Message ----------------------------------------------
+  
+  TeamMessageCollection* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TeamMessageCollection& from);
+  void MergeFrom(const TeamMessageCollection& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated .naothmessages.TeamMessage data = 1;
+  inline int data_size() const;
+  inline void clear_data();
+  static const int kDataFieldNumber = 1;
+  inline const ::naothmessages::TeamMessage& data(int index) const;
+  inline ::naothmessages::TeamMessage* mutable_data(int index);
+  inline ::naothmessages::TeamMessage* add_data();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage >&
+      data() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage >*
+      mutable_data();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamMessageCollection)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage > data_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static TeamMessageCollection* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class TeamMessage : public ::google::protobuf::Message {
+ public:
+  TeamMessage();
+  virtual ~TeamMessage();
+  
+  TeamMessage(const TeamMessage& from);
+  
+  inline TeamMessage& operator=(const TeamMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TeamMessage& default_instance();
+  
+  void Swap(TeamMessage* other);
+  
+  // implements Message ----------------------------------------------
+  
+  TeamMessage* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TeamMessage& from);
+  void MergeFrom(const TeamMessage& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional uint32 playerNum = 1 [default = 0];
+  inline bool has_playernum() const;
+  inline void clear_playernum();
+  static const int kPlayerNumFieldNumber = 1;
+  inline ::google::protobuf::uint32 playernum() const;
+  inline void set_playernum(::google::protobuf::uint32 value);
+  
+  // optional uint32 team = 2 [default = 0];
+  inline bool has_team() const;
+  inline void clear_team();
+  static const int kTeamFieldNumber = 2;
+  inline ::google::protobuf::uint32 team() const;
+  inline void set_team(::google::protobuf::uint32 value);
+  
+  // optional .naothmessages.Pose2D pose = 3;
+  inline bool has_pose() const;
+  inline void clear_pose();
+  static const int kPoseFieldNumber = 3;
+  inline const ::naothmessages::Pose2D& pose() const;
+  inline ::naothmessages::Pose2D* mutable_pose();
+  inline ::naothmessages::Pose2D* release_pose();
+  
+  // optional int32 ballAge = 4 [default = -1];
+  inline bool has_ballage() const;
+  inline void clear_ballage();
+  static const int kBallAgeFieldNumber = 4;
+  inline ::google::protobuf::int32 ballage() const;
+  inline void set_ballage(::google::protobuf::int32 value);
+  
+  // optional .naothmessages.DoubleVector2 ballPosition = 5;
+  inline bool has_ballposition() const;
+  inline void clear_ballposition();
+  static const int kBallPositionFieldNumber = 5;
+  inline const ::naothmessages::DoubleVector2& ballposition() const;
+  inline ::naothmessages::DoubleVector2* mutable_ballposition();
+  inline ::naothmessages::DoubleVector2* release_ballposition();
+  
+  // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+  inline bool has_ballvelocity() const;
+  inline void clear_ballvelocity();
+  static const int kBallVelocityFieldNumber = 6;
+  inline const ::naothmessages::DoubleVector2& ballvelocity() const;
+  inline ::naothmessages::DoubleVector2* mutable_ballvelocity();
+  inline ::naothmessages::DoubleVector2* release_ballvelocity();
+  
+  // optional int32 fallen = 7 [default = -1];
+  inline bool has_fallen() const;
+  inline void clear_fallen();
+  static const int kFallenFieldNumber = 7;
+  inline ::google::protobuf::int32 fallen() const;
+  inline void set_fallen(::google::protobuf::int32 value);
+  
+  // optional .naothmessages.BUUserTeamMessage user = 8;
+  inline bool has_user() const;
+  inline void clear_user();
+  static const int kUserFieldNumber = 8;
+  inline const ::naothmessages::BUUserTeamMessage& user() const;
+  inline ::naothmessages::BUUserTeamMessage* mutable_user();
+  inline ::naothmessages::BUUserTeamMessage* release_user();
+  
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  inline bool has_frameinfo() const;
+  inline void clear_frameinfo();
+  static const int kFrameInfoFieldNumber = 9;
+  inline const ::naothmessages::FrameInfo& frameinfo() const;
+  inline ::naothmessages::FrameInfo* mutable_frameinfo();
+  inline ::naothmessages::FrameInfo* release_frameinfo();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.TeamMessage)
+ private:
+  inline void set_has_playernum();
+  inline void clear_has_playernum();
+  inline void set_has_team();
+  inline void clear_has_team();
+  inline void set_has_pose();
+  inline void clear_has_pose();
+  inline void set_has_ballage();
+  inline void clear_has_ballage();
+  inline void set_has_ballposition();
+  inline void clear_has_ballposition();
+  inline void set_has_ballvelocity();
+  inline void clear_has_ballvelocity();
+  inline void set_has_fallen();
+  inline void clear_has_fallen();
+  inline void set_has_user();
+  inline void clear_has_user();
+  inline void set_has_frameinfo();
+  inline void clear_has_frameinfo();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 playernum_;
+  ::google::protobuf::uint32 team_;
+  ::naothmessages::Pose2D* pose_;
+  ::naothmessages::DoubleVector2* ballposition_;
+  ::google::protobuf::int32 ballage_;
+  ::google::protobuf::int32 fallen_;
+  ::naothmessages::DoubleVector2* ballvelocity_;
+  ::naothmessages::BUUserTeamMessage* user_;
+  ::naothmessages::FrameInfo* frameinfo_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static TeamMessage* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BUUserTeamMessage : public ::google::protobuf::Message {
+ public:
+  BUUserTeamMessage();
+  virtual ~BUUserTeamMessage();
+  
+  BUUserTeamMessage(const BUUserTeamMessage& from);
+  
+  inline BUUserTeamMessage& operator=(const BUUserTeamMessage& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BUUserTeamMessage& default_instance();
+  
+  void Swap(BUUserTeamMessage* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BUUserTeamMessage* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BUUserTeamMessage& from);
+  void MergeFrom(const BUUserTeamMessage& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string bodyID = 1 [default = "unknown"];
+  inline bool has_bodyid() const;
+  inline void clear_bodyid();
+  static const int kBodyIDFieldNumber = 1;
+  inline const ::std::string& bodyid() const;
+  inline void set_bodyid(const ::std::string& value);
+  inline void set_bodyid(const char* value);
+  inline void set_bodyid(const char* value, size_t size);
+  inline ::std::string* mutable_bodyid();
+  inline ::std::string* release_bodyid();
+  
+  // optional uint32 timeToBall = 2;
+  inline bool has_timetoball() const;
+  inline void clear_timetoball();
+  static const int kTimeToBallFieldNumber = 2;
+  inline ::google::protobuf::uint32 timetoball() const;
+  inline void set_timetoball(::google::protobuf::uint32 value);
+  
+  // optional bool wasStriker = 3 [default = false];
+  inline bool has_wasstriker() const;
+  inline void clear_wasstriker();
+  static const int kWasStrikerFieldNumber = 3;
+  inline bool wasstriker() const;
+  inline void set_wasstriker(bool value);
+  
+  // optional bool isPenalized = 4 [default = false];
+  inline bool has_ispenalized() const;
+  inline void clear_ispenalized();
+  static const int kIsPenalizedFieldNumber = 4;
+  inline bool ispenalized() const;
+  inline void set_ispenalized(bool value);
+  
+  // repeated .naothmessages.Opponent opponents = 5;
+  inline int opponents_size() const;
+  inline void clear_opponents();
+  static const int kOpponentsFieldNumber = 5;
+  inline const ::naothmessages::Opponent& opponents(int index) const;
+  inline ::naothmessages::Opponent* mutable_opponents(int index);
+  inline ::naothmessages::Opponent* add_opponents();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >&
+      opponents() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >*
+      mutable_opponents();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
+ private:
+  inline void set_has_bodyid();
+  inline void clear_has_bodyid();
+  inline void set_has_timetoball();
+  inline void clear_has_timetoball();
+  inline void set_has_wasstriker();
+  inline void clear_has_wasstriker();
+  inline void set_has_ispenalized();
+  inline void clear_has_ispenalized();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* bodyid_;
+  static const ::std::string _default_bodyid_;
+  ::google::protobuf::uint32 timetoball_;
+  bool wasstriker_;
+  bool ispenalized_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BUUserTeamMessage* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Opponent : public ::google::protobuf::Message {
+ public:
+  Opponent();
+  virtual ~Opponent();
+  
+  Opponent(const Opponent& from);
+  
+  inline Opponent& operator=(const Opponent& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Opponent& default_instance();
+  
+  void Swap(Opponent* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Opponent* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Opponent& from);
+  void MergeFrom(const Opponent& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required int32 playerNum = 1 [default = 0];
+  inline bool has_playernum() const;
+  inline void clear_playernum();
+  static const int kPlayerNumFieldNumber = 1;
+  inline ::google::protobuf::int32 playernum() const;
+  inline void set_playernum(::google::protobuf::int32 value);
+  
+  // optional .naothmessages.Pose2D poseOnField = 2;
+  inline bool has_poseonfield() const;
+  inline void clear_poseonfield();
+  static const int kPoseOnFieldFieldNumber = 2;
+  inline const ::naothmessages::Pose2D& poseonfield() const;
+  inline ::naothmessages::Pose2D* mutable_poseonfield();
+  inline ::naothmessages::Pose2D* release_poseonfield();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Opponent)
+ private:
+  inline void set_has_playernum();
+  inline void clear_has_playernum();
+  inline void set_has_poseonfield();
+  inline void clear_has_poseonfield();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::Pose2D* poseonfield_;
+  ::google::protobuf::int32 playernum_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static Opponent* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -4654,6 +5133,480 @@ inline ::naothmessages::DoubleVector2* InertialModel::release_orientation() {
   clear_has_orientation();
   ::naothmessages::DoubleVector2* temp = orientation_;
   orientation_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// TeamMessageCollection
+
+// repeated .naothmessages.TeamMessage data = 1;
+inline int TeamMessageCollection::data_size() const {
+  return data_.size();
+}
+inline void TeamMessageCollection::clear_data() {
+  data_.Clear();
+}
+inline const ::naothmessages::TeamMessage& TeamMessageCollection::data(int index) const {
+  return data_.Get(index);
+}
+inline ::naothmessages::TeamMessage* TeamMessageCollection::mutable_data(int index) {
+  return data_.Mutable(index);
+}
+inline ::naothmessages::TeamMessage* TeamMessageCollection::add_data() {
+  return data_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage >&
+TeamMessageCollection::data() const {
+  return data_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::TeamMessage >*
+TeamMessageCollection::mutable_data() {
+  return &data_;
+}
+
+// -------------------------------------------------------------------
+
+// TeamMessage
+
+// optional uint32 playerNum = 1 [default = 0];
+inline bool TeamMessage::has_playernum() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TeamMessage::set_has_playernum() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TeamMessage::clear_has_playernum() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TeamMessage::clear_playernum() {
+  playernum_ = 0u;
+  clear_has_playernum();
+}
+inline ::google::protobuf::uint32 TeamMessage::playernum() const {
+  return playernum_;
+}
+inline void TeamMessage::set_playernum(::google::protobuf::uint32 value) {
+  set_has_playernum();
+  playernum_ = value;
+}
+
+// optional uint32 team = 2 [default = 0];
+inline bool TeamMessage::has_team() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void TeamMessage::set_has_team() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void TeamMessage::clear_has_team() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void TeamMessage::clear_team() {
+  team_ = 0u;
+  clear_has_team();
+}
+inline ::google::protobuf::uint32 TeamMessage::team() const {
+  return team_;
+}
+inline void TeamMessage::set_team(::google::protobuf::uint32 value) {
+  set_has_team();
+  team_ = value;
+}
+
+// optional .naothmessages.Pose2D pose = 3;
+inline bool TeamMessage::has_pose() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void TeamMessage::set_has_pose() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void TeamMessage::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void TeamMessage::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose2D& TeamMessage::pose() const {
+  return pose_ != NULL ? *pose_ : *default_instance_->pose_;
+}
+inline ::naothmessages::Pose2D* TeamMessage::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) pose_ = new ::naothmessages::Pose2D;
+  return pose_;
+}
+inline ::naothmessages::Pose2D* TeamMessage::release_pose() {
+  clear_has_pose();
+  ::naothmessages::Pose2D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+
+// optional int32 ballAge = 4 [default = -1];
+inline bool TeamMessage::has_ballage() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void TeamMessage::set_has_ballage() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void TeamMessage::clear_has_ballage() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void TeamMessage::clear_ballage() {
+  ballage_ = -1;
+  clear_has_ballage();
+}
+inline ::google::protobuf::int32 TeamMessage::ballage() const {
+  return ballage_;
+}
+inline void TeamMessage::set_ballage(::google::protobuf::int32 value) {
+  set_has_ballage();
+  ballage_ = value;
+}
+
+// optional .naothmessages.DoubleVector2 ballPosition = 5;
+inline bool TeamMessage::has_ballposition() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void TeamMessage::set_has_ballposition() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void TeamMessage::clear_has_ballposition() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void TeamMessage::clear_ballposition() {
+  if (ballposition_ != NULL) ballposition_->::naothmessages::DoubleVector2::Clear();
+  clear_has_ballposition();
+}
+inline const ::naothmessages::DoubleVector2& TeamMessage::ballposition() const {
+  return ballposition_ != NULL ? *ballposition_ : *default_instance_->ballposition_;
+}
+inline ::naothmessages::DoubleVector2* TeamMessage::mutable_ballposition() {
+  set_has_ballposition();
+  if (ballposition_ == NULL) ballposition_ = new ::naothmessages::DoubleVector2;
+  return ballposition_;
+}
+inline ::naothmessages::DoubleVector2* TeamMessage::release_ballposition() {
+  clear_has_ballposition();
+  ::naothmessages::DoubleVector2* temp = ballposition_;
+  ballposition_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector2 ballVelocity = 6;
+inline bool TeamMessage::has_ballvelocity() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void TeamMessage::set_has_ballvelocity() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void TeamMessage::clear_has_ballvelocity() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void TeamMessage::clear_ballvelocity() {
+  if (ballvelocity_ != NULL) ballvelocity_->::naothmessages::DoubleVector2::Clear();
+  clear_has_ballvelocity();
+}
+inline const ::naothmessages::DoubleVector2& TeamMessage::ballvelocity() const {
+  return ballvelocity_ != NULL ? *ballvelocity_ : *default_instance_->ballvelocity_;
+}
+inline ::naothmessages::DoubleVector2* TeamMessage::mutable_ballvelocity() {
+  set_has_ballvelocity();
+  if (ballvelocity_ == NULL) ballvelocity_ = new ::naothmessages::DoubleVector2;
+  return ballvelocity_;
+}
+inline ::naothmessages::DoubleVector2* TeamMessage::release_ballvelocity() {
+  clear_has_ballvelocity();
+  ::naothmessages::DoubleVector2* temp = ballvelocity_;
+  ballvelocity_ = NULL;
+  return temp;
+}
+
+// optional int32 fallen = 7 [default = -1];
+inline bool TeamMessage::has_fallen() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void TeamMessage::set_has_fallen() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void TeamMessage::clear_has_fallen() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void TeamMessage::clear_fallen() {
+  fallen_ = -1;
+  clear_has_fallen();
+}
+inline ::google::protobuf::int32 TeamMessage::fallen() const {
+  return fallen_;
+}
+inline void TeamMessage::set_fallen(::google::protobuf::int32 value) {
+  set_has_fallen();
+  fallen_ = value;
+}
+
+// optional .naothmessages.BUUserTeamMessage user = 8;
+inline bool TeamMessage::has_user() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void TeamMessage::set_has_user() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void TeamMessage::clear_has_user() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void TeamMessage::clear_user() {
+  if (user_ != NULL) user_->::naothmessages::BUUserTeamMessage::Clear();
+  clear_has_user();
+}
+inline const ::naothmessages::BUUserTeamMessage& TeamMessage::user() const {
+  return user_ != NULL ? *user_ : *default_instance_->user_;
+}
+inline ::naothmessages::BUUserTeamMessage* TeamMessage::mutable_user() {
+  set_has_user();
+  if (user_ == NULL) user_ = new ::naothmessages::BUUserTeamMessage;
+  return user_;
+}
+inline ::naothmessages::BUUserTeamMessage* TeamMessage::release_user() {
+  clear_has_user();
+  ::naothmessages::BUUserTeamMessage* temp = user_;
+  user_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.FrameInfo frameInfo = 9;
+inline bool TeamMessage::has_frameinfo() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void TeamMessage::set_has_frameinfo() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void TeamMessage::clear_has_frameinfo() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamMessage::clear_frameinfo() {
+  if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+  clear_has_frameinfo();
+}
+inline const ::naothmessages::FrameInfo& TeamMessage::frameinfo() const {
+  return frameinfo_ != NULL ? *frameinfo_ : *default_instance_->frameinfo_;
+}
+inline ::naothmessages::FrameInfo* TeamMessage::mutable_frameinfo() {
+  set_has_frameinfo();
+  if (frameinfo_ == NULL) frameinfo_ = new ::naothmessages::FrameInfo;
+  return frameinfo_;
+}
+inline ::naothmessages::FrameInfo* TeamMessage::release_frameinfo() {
+  clear_has_frameinfo();
+  ::naothmessages::FrameInfo* temp = frameinfo_;
+  frameinfo_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// BUUserTeamMessage
+
+// optional string bodyID = 1 [default = "unknown"];
+inline bool BUUserTeamMessage::has_bodyid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BUUserTeamMessage::set_has_bodyid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BUUserTeamMessage::clear_has_bodyid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BUUserTeamMessage::clear_bodyid() {
+  if (bodyid_ != &_default_bodyid_) {
+    bodyid_->assign(_default_bodyid_);
+  }
+  clear_has_bodyid();
+}
+inline const ::std::string& BUUserTeamMessage::bodyid() const {
+  return *bodyid_;
+}
+inline void BUUserTeamMessage::set_bodyid(const ::std::string& value) {
+  set_has_bodyid();
+  if (bodyid_ == &_default_bodyid_) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void BUUserTeamMessage::set_bodyid(const char* value) {
+  set_has_bodyid();
+  if (bodyid_ == &_default_bodyid_) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void BUUserTeamMessage::set_bodyid(const char* value, size_t size) {
+  set_has_bodyid();
+  if (bodyid_ == &_default_bodyid_) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* BUUserTeamMessage::mutable_bodyid() {
+  set_has_bodyid();
+  if (bodyid_ == &_default_bodyid_) {
+    bodyid_ = new ::std::string(_default_bodyid_);
+  }
+  return bodyid_;
+}
+inline ::std::string* BUUserTeamMessage::release_bodyid() {
+  clear_has_bodyid();
+  if (bodyid_ == &_default_bodyid_) {
+    return NULL;
+  } else {
+    ::std::string* temp = bodyid_;
+    bodyid_ = const_cast< ::std::string*>(&_default_bodyid_);
+    return temp;
+  }
+}
+
+// optional uint32 timeToBall = 2;
+inline bool BUUserTeamMessage::has_timetoball() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BUUserTeamMessage::set_has_timetoball() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BUUserTeamMessage::clear_has_timetoball() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BUUserTeamMessage::clear_timetoball() {
+  timetoball_ = 0u;
+  clear_has_timetoball();
+}
+inline ::google::protobuf::uint32 BUUserTeamMessage::timetoball() const {
+  return timetoball_;
+}
+inline void BUUserTeamMessage::set_timetoball(::google::protobuf::uint32 value) {
+  set_has_timetoball();
+  timetoball_ = value;
+}
+
+// optional bool wasStriker = 3 [default = false];
+inline bool BUUserTeamMessage::has_wasstriker() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void BUUserTeamMessage::set_has_wasstriker() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void BUUserTeamMessage::clear_has_wasstriker() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void BUUserTeamMessage::clear_wasstriker() {
+  wasstriker_ = false;
+  clear_has_wasstriker();
+}
+inline bool BUUserTeamMessage::wasstriker() const {
+  return wasstriker_;
+}
+inline void BUUserTeamMessage::set_wasstriker(bool value) {
+  set_has_wasstriker();
+  wasstriker_ = value;
+}
+
+// optional bool isPenalized = 4 [default = false];
+inline bool BUUserTeamMessage::has_ispenalized() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void BUUserTeamMessage::set_has_ispenalized() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void BUUserTeamMessage::clear_has_ispenalized() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void BUUserTeamMessage::clear_ispenalized() {
+  ispenalized_ = false;
+  clear_has_ispenalized();
+}
+inline bool BUUserTeamMessage::ispenalized() const {
+  return ispenalized_;
+}
+inline void BUUserTeamMessage::set_ispenalized(bool value) {
+  set_has_ispenalized();
+  ispenalized_ = value;
+}
+
+// repeated .naothmessages.Opponent opponents = 5;
+inline int BUUserTeamMessage::opponents_size() const {
+  return opponents_.size();
+}
+inline void BUUserTeamMessage::clear_opponents() {
+  opponents_.Clear();
+}
+inline const ::naothmessages::Opponent& BUUserTeamMessage::opponents(int index) const {
+  return opponents_.Get(index);
+}
+inline ::naothmessages::Opponent* BUUserTeamMessage::mutable_opponents(int index) {
+  return opponents_.Mutable(index);
+}
+inline ::naothmessages::Opponent* BUUserTeamMessage::add_opponents() {
+  return opponents_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >&
+BUUserTeamMessage::opponents() const {
+  return opponents_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >*
+BUUserTeamMessage::mutable_opponents() {
+  return &opponents_;
+}
+
+// -------------------------------------------------------------------
+
+// Opponent
+
+// required int32 playerNum = 1 [default = 0];
+inline bool Opponent::has_playernum() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Opponent::set_has_playernum() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Opponent::clear_has_playernum() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Opponent::clear_playernum() {
+  playernum_ = 0;
+  clear_has_playernum();
+}
+inline ::google::protobuf::int32 Opponent::playernum() const {
+  return playernum_;
+}
+inline void Opponent::set_playernum(::google::protobuf::int32 value) {
+  set_has_playernum();
+  playernum_ = value;
+}
+
+// optional .naothmessages.Pose2D poseOnField = 2;
+inline bool Opponent::has_poseonfield() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Opponent::set_has_poseonfield() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Opponent::clear_has_poseonfield() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Opponent::clear_poseonfield() {
+  if (poseonfield_ != NULL) poseonfield_->::naothmessages::Pose2D::Clear();
+  clear_has_poseonfield();
+}
+inline const ::naothmessages::Pose2D& Opponent::poseonfield() const {
+  return poseonfield_ != NULL ? *poseonfield_ : *default_instance_->poseonfield_;
+}
+inline ::naothmessages::Pose2D* Opponent::mutable_poseonfield() {
+  set_has_poseonfield();
+  if (poseonfield_ == NULL) poseonfield_ = new ::naothmessages::Pose2D;
+  return poseonfield_;
+}
+inline ::naothmessages::Pose2D* Opponent::release_poseonfield() {
+  clear_has_poseonfield();
+  ::naothmessages::Pose2D* temp = poseonfield_;
+  poseonfield_ = NULL;
   return temp;
 }
 

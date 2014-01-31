@@ -29,7 +29,7 @@ public:
   /** direction of the attack (based on potential field, see: PotentialFieldProvider) */
   Vector2<double> attackDirection; 
 
-  /** the shorest time that the robot reach the ball */
+  /** the shorest time that the robot reach the ball in milliseconds */
   double timeToBall;
 };
 

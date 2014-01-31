@@ -79,6 +79,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* InertialModel_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   InertialModel_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TeamMessageCollection_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TeamMessageCollection_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TeamMessage_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TeamMessage_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BUUserTeamMessage_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BUUserTeamMessage_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Opponent_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Opponent_reflection_ = NULL;
 const ::google::protobuf::Descriptor* CameraMatrixCalibration_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraMatrixCalibration_reflection_ = NULL;
@@ -431,7 +443,80 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(InertialModel));
-  CameraMatrixCalibration_descriptor_ = file->message_type(18);
+  TeamMessageCollection_descriptor_ = file->message_type(18);
+  static const int TeamMessageCollection_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageCollection, data_),
+  };
+  TeamMessageCollection_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      TeamMessageCollection_descriptor_,
+      TeamMessageCollection::default_instance_,
+      TeamMessageCollection_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageCollection, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageCollection, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(TeamMessageCollection));
+  TeamMessage_descriptor_ = file->message_type(19);
+  static const int TeamMessage_offsets_[9] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, playernum_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, team_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, pose_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballage_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballposition_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballvelocity_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, fallen_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, user_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, frameinfo_),
+  };
+  TeamMessage_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      TeamMessage_descriptor_,
+      TeamMessage::default_instance_,
+      TeamMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(TeamMessage));
+  BUUserTeamMessage_descriptor_ = file->message_type(20);
+  static const int BUUserTeamMessage_offsets_[5] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, bodyid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, timetoball_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, wasstriker_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, ispenalized_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, opponents_),
+  };
+  BUUserTeamMessage_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BUUserTeamMessage_descriptor_,
+      BUUserTeamMessage::default_instance_,
+      BUUserTeamMessage_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BUUserTeamMessage));
+  Opponent_descriptor_ = file->message_type(21);
+  static const int Opponent_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, playernum_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, poseonfield_),
+  };
+  Opponent_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Opponent_descriptor_,
+      Opponent::default_instance_,
+      Opponent_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Opponent));
+  CameraMatrixCalibration_descriptor_ = file->message_type(22);
   static const int CameraMatrixCalibration_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrixCalibration, correctionoffset_),
   };
@@ -495,6 +580,14 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     InertialModel_descriptor_, &InertialModel::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    TeamMessageCollection_descriptor_, &TeamMessageCollection::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    TeamMessage_descriptor_, &TeamMessage::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BUUserTeamMessage_descriptor_, &BUUserTeamMessage::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Opponent_descriptor_, &Opponent::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CameraMatrixCalibration_descriptor_, &CameraMatrixCalibration::default_instance());
 }
 
@@ -537,6 +630,14 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete CalibrationData_reflection_;
   delete InertialModel::default_instance_;
   delete InertialModel_reflection_;
+  delete TeamMessageCollection::default_instance_;
+  delete TeamMessageCollection_reflection_;
+  delete TeamMessage::default_instance_;
+  delete TeamMessage_reflection_;
+  delete BUUserTeamMessage::default_instance_;
+  delete BUUserTeamMessage_reflection_;
+  delete Opponent::default_instance_;
+  delete Opponent_reflection_;
   delete CameraMatrixCalibration::default_instance_;
   delete CameraMatrixCalibration_reflection_;
 }
@@ -642,10 +743,26 @@ void protobuf_AddDesc_Representations_2eproto() {
     ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132"
     "\034.naothmessages.DoubleVector3\022\022\n\ncalibra"
     "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
-    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"Q\n"
-    "\027CameraMatrixCalibration\0226\n\020correctionOf"
-    "fset\030\001 \003(\0132\034.naothmessages.DoubleVector2"
-    "B\026\n\024de.naoth.rc.messages", 3824);
+    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n"
+    "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n"
+    "aothmessages.TeamMessage\"\307\002\n\013TeamMessage"
+    "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022"
+    "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007"
+    "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132"
+    "\034.naothmessages.DoubleVector2\0222\n\014ballVel"
+    "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector"
+    "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na"
+    "othmessages.BUUserTeamMessage\022+\n\tframeIn"
+    "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B"
+    "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow"
+    "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001("
+    "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t"
+    "opponents\030\005 \003(\0132\027.naothmessages.Opponent"
+    "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po"
+    "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q"
+    "\n\027CameraMatrixCalibration\0226\n\020correctionO"
+    "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector"
+    "2B\026\n\024de.naoth.rc.messages", 4465);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -666,6 +783,10 @@ void protobuf_AddDesc_Representations_2eproto() {
   OdometryData::default_instance_ = new OdometryData();
   CalibrationData::default_instance_ = new CalibrationData();
   InertialModel::default_instance_ = new InertialModel();
+  TeamMessageCollection::default_instance_ = new TeamMessageCollection();
+  TeamMessage::default_instance_ = new TeamMessage();
+  BUUserTeamMessage::default_instance_ = new BUUserTeamMessage();
+  Opponent::default_instance_ = new Opponent();
   CameraMatrixCalibration::default_instance_ = new CameraMatrixCalibration();
   CameraMatrix::default_instance_->InitAsDefaultInstance();
   BallPercept::default_instance_->InitAsDefaultInstance();
@@ -685,6 +806,10 @@ void protobuf_AddDesc_Representations_2eproto() {
   OdometryData::default_instance_->InitAsDefaultInstance();
   CalibrationData::default_instance_->InitAsDefaultInstance();
   InertialModel::default_instance_->InitAsDefaultInstance();
+  TeamMessageCollection::default_instance_->InitAsDefaultInstance();
+  TeamMessage::default_instance_->InitAsDefaultInstance();
+  BUUserTeamMessage::default_instance_->InitAsDefaultInstance();
+  Opponent::default_instance_->InitAsDefaultInstance();
   CameraMatrixCalibration::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
@@ -7540,6 +7665,1424 @@ void InertialModel::Swap(InertialModel* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = InertialModel_descriptor_;
   metadata.reflection = InertialModel_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int TeamMessageCollection::kDataFieldNumber;
+#endif  // !_MSC_VER
+
+TeamMessageCollection::TeamMessageCollection()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void TeamMessageCollection::InitAsDefaultInstance() {
+}
+
+TeamMessageCollection::TeamMessageCollection(const TeamMessageCollection& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void TeamMessageCollection::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+TeamMessageCollection::~TeamMessageCollection() {
+  SharedDtor();
+}
+
+void TeamMessageCollection::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void TeamMessageCollection::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TeamMessageCollection::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TeamMessageCollection_descriptor_;
+}
+
+const TeamMessageCollection& TeamMessageCollection::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+TeamMessageCollection* TeamMessageCollection::default_instance_ = NULL;
+
+TeamMessageCollection* TeamMessageCollection::New() const {
+  return new TeamMessageCollection;
+}
+
+void TeamMessageCollection::Clear() {
+  data_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool TeamMessageCollection::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.TeamMessage data = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_data:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_data()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_data;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void TeamMessageCollection::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.TeamMessage data = 1;
+  for (int i = 0; i < this->data_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->data(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* TeamMessageCollection::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.TeamMessage data = 1;
+  for (int i = 0; i < this->data_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->data(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int TeamMessageCollection::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .naothmessages.TeamMessage data = 1;
+  total_size += 1 * this->data_size();
+  for (int i = 0; i < this->data_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->data(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TeamMessageCollection::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const TeamMessageCollection* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const TeamMessageCollection*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void TeamMessageCollection::MergeFrom(const TeamMessageCollection& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  data_.MergeFrom(from.data_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void TeamMessageCollection::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TeamMessageCollection::CopyFrom(const TeamMessageCollection& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TeamMessageCollection::IsInitialized() const {
+  
+  for (int i = 0; i < data_size(); i++) {
+    if (!this->data(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void TeamMessageCollection::Swap(TeamMessageCollection* other) {
+  if (other != this) {
+    data_.Swap(&other->data_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata TeamMessageCollection::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TeamMessageCollection_descriptor_;
+  metadata.reflection = TeamMessageCollection_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int TeamMessage::kPlayerNumFieldNumber;
+const int TeamMessage::kTeamFieldNumber;
+const int TeamMessage::kPoseFieldNumber;
+const int TeamMessage::kBallAgeFieldNumber;
+const int TeamMessage::kBallPositionFieldNumber;
+const int TeamMessage::kBallVelocityFieldNumber;
+const int TeamMessage::kFallenFieldNumber;
+const int TeamMessage::kUserFieldNumber;
+const int TeamMessage::kFrameInfoFieldNumber;
+#endif  // !_MSC_VER
+
+TeamMessage::TeamMessage()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void TeamMessage::InitAsDefaultInstance() {
+  pose_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  ballposition_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+  ballvelocity_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+  user_ = const_cast< ::naothmessages::BUUserTeamMessage*>(&::naothmessages::BUUserTeamMessage::default_instance());
+  frameinfo_ = const_cast< ::naothmessages::FrameInfo*>(&::naothmessages::FrameInfo::default_instance());
+}
+
+TeamMessage::TeamMessage(const TeamMessage& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void TeamMessage::SharedCtor() {
+  _cached_size_ = 0;
+  playernum_ = 0u;
+  team_ = 0u;
+  pose_ = NULL;
+  ballage_ = -1;
+  ballposition_ = NULL;
+  ballvelocity_ = NULL;
+  fallen_ = -1;
+  user_ = NULL;
+  frameinfo_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+TeamMessage::~TeamMessage() {
+  SharedDtor();
+}
+
+void TeamMessage::SharedDtor() {
+  if (this != default_instance_) {
+    delete pose_;
+    delete ballposition_;
+    delete ballvelocity_;
+    delete user_;
+    delete frameinfo_;
+  }
+}
+
+void TeamMessage::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TeamMessage::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TeamMessage_descriptor_;
+}
+
+const TeamMessage& TeamMessage::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+TeamMessage* TeamMessage::default_instance_ = NULL;
+
+TeamMessage* TeamMessage::New() const {
+  return new TeamMessage;
+}
+
+void TeamMessage::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    playernum_ = 0u;
+    team_ = 0u;
+    if (has_pose()) {
+      if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+    }
+    ballage_ = -1;
+    if (has_ballposition()) {
+      if (ballposition_ != NULL) ballposition_->::naothmessages::DoubleVector2::Clear();
+    }
+    if (has_ballvelocity()) {
+      if (ballvelocity_ != NULL) ballvelocity_->::naothmessages::DoubleVector2::Clear();
+    }
+    fallen_ = -1;
+    if (has_user()) {
+      if (user_ != NULL) user_->::naothmessages::BUUserTeamMessage::Clear();
+    }
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (has_frameinfo()) {
+      if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool TeamMessage::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional uint32 playerNum = 1 [default = 0];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &playernum_)));
+          set_has_playernum();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_team;
+        break;
+      }
+      
+      // optional uint32 team = 2 [default = 0];
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_team:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &team_)));
+          set_has_team();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_pose;
+        break;
+      }
+      
+      // optional .naothmessages.Pose2D pose = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_pose:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pose()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_ballAge;
+        break;
+      }
+      
+      // optional int32 ballAge = 4 [default = -1];
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_ballAge:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &ballage_)));
+          set_has_ballage();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_ballPosition;
+        break;
+      }
+      
+      // optional .naothmessages.DoubleVector2 ballPosition = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_ballPosition:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_ballposition()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(50)) goto parse_ballVelocity;
+        break;
+      }
+      
+      // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_ballVelocity:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_ballvelocity()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(56)) goto parse_fallen;
+        break;
+      }
+      
+      // optional int32 fallen = 7 [default = -1];
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_fallen:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &fallen_)));
+          set_has_fallen();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(66)) goto parse_user;
+        break;
+      }
+      
+      // optional .naothmessages.BUUserTeamMessage user = 8;
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_user:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_user()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(74)) goto parse_frameInfo;
+        break;
+      }
+      
+      // optional .naothmessages.FrameInfo frameInfo = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_frameInfo:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_frameinfo()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void TeamMessage::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional uint32 playerNum = 1 [default = 0];
+  if (has_playernum()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->playernum(), output);
+  }
+  
+  // optional uint32 team = 2 [default = 0];
+  if (has_team()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->team(), output);
+  }
+  
+  // optional .naothmessages.Pose2D pose = 3;
+  if (has_pose()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->pose(), output);
+  }
+  
+  // optional int32 ballAge = 4 [default = -1];
+  if (has_ballage()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->ballage(), output);
+  }
+  
+  // optional .naothmessages.DoubleVector2 ballPosition = 5;
+  if (has_ballposition()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->ballposition(), output);
+  }
+  
+  // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+  if (has_ballvelocity()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->ballvelocity(), output);
+  }
+  
+  // optional int32 fallen = 7 [default = -1];
+  if (has_fallen()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->fallen(), output);
+  }
+  
+  // optional .naothmessages.BUUserTeamMessage user = 8;
+  if (has_user()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      8, this->user(), output);
+  }
+  
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  if (has_frameinfo()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      9, this->frameinfo(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* TeamMessage::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional uint32 playerNum = 1 [default = 0];
+  if (has_playernum()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->playernum(), target);
+  }
+  
+  // optional uint32 team = 2 [default = 0];
+  if (has_team()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->team(), target);
+  }
+  
+  // optional .naothmessages.Pose2D pose = 3;
+  if (has_pose()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->pose(), target);
+  }
+  
+  // optional int32 ballAge = 4 [default = -1];
+  if (has_ballage()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->ballage(), target);
+  }
+  
+  // optional .naothmessages.DoubleVector2 ballPosition = 5;
+  if (has_ballposition()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->ballposition(), target);
+  }
+  
+  // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+  if (has_ballvelocity()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        6, this->ballvelocity(), target);
+  }
+  
+  // optional int32 fallen = 7 [default = -1];
+  if (has_fallen()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->fallen(), target);
+  }
+  
+  // optional .naothmessages.BUUserTeamMessage user = 8;
+  if (has_user()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        8, this->user(), target);
+  }
+  
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  if (has_frameinfo()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        9, this->frameinfo(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int TeamMessage::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional uint32 playerNum = 1 [default = 0];
+    if (has_playernum()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->playernum());
+    }
+    
+    // optional uint32 team = 2 [default = 0];
+    if (has_team()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->team());
+    }
+    
+    // optional .naothmessages.Pose2D pose = 3;
+    if (has_pose()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->pose());
+    }
+    
+    // optional int32 ballAge = 4 [default = -1];
+    if (has_ballage()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->ballage());
+    }
+    
+    // optional .naothmessages.DoubleVector2 ballPosition = 5;
+    if (has_ballposition()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->ballposition());
+    }
+    
+    // optional .naothmessages.DoubleVector2 ballVelocity = 6;
+    if (has_ballvelocity()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->ballvelocity());
+    }
+    
+    // optional int32 fallen = 7 [default = -1];
+    if (has_fallen()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->fallen());
+    }
+    
+    // optional .naothmessages.BUUserTeamMessage user = 8;
+    if (has_user()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->user());
+    }
+    
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional .naothmessages.FrameInfo frameInfo = 9;
+    if (has_frameinfo()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->frameinfo());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TeamMessage::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const TeamMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const TeamMessage*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void TeamMessage::MergeFrom(const TeamMessage& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_playernum()) {
+      set_playernum(from.playernum());
+    }
+    if (from.has_team()) {
+      set_team(from.team());
+    }
+    if (from.has_pose()) {
+      mutable_pose()->::naothmessages::Pose2D::MergeFrom(from.pose());
+    }
+    if (from.has_ballage()) {
+      set_ballage(from.ballage());
+    }
+    if (from.has_ballposition()) {
+      mutable_ballposition()->::naothmessages::DoubleVector2::MergeFrom(from.ballposition());
+    }
+    if (from.has_ballvelocity()) {
+      mutable_ballvelocity()->::naothmessages::DoubleVector2::MergeFrom(from.ballvelocity());
+    }
+    if (from.has_fallen()) {
+      set_fallen(from.fallen());
+    }
+    if (from.has_user()) {
+      mutable_user()->::naothmessages::BUUserTeamMessage::MergeFrom(from.user());
+    }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_frameinfo()) {
+      mutable_frameinfo()->::naothmessages::FrameInfo::MergeFrom(from.frameinfo());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void TeamMessage::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TeamMessage::CopyFrom(const TeamMessage& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TeamMessage::IsInitialized() const {
+  
+  if (has_pose()) {
+    if (!this->pose().IsInitialized()) return false;
+  }
+  if (has_ballposition()) {
+    if (!this->ballposition().IsInitialized()) return false;
+  }
+  if (has_ballvelocity()) {
+    if (!this->ballvelocity().IsInitialized()) return false;
+  }
+  if (has_user()) {
+    if (!this->user().IsInitialized()) return false;
+  }
+  if (has_frameinfo()) {
+    if (!this->frameinfo().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void TeamMessage::Swap(TeamMessage* other) {
+  if (other != this) {
+    std::swap(playernum_, other->playernum_);
+    std::swap(team_, other->team_);
+    std::swap(pose_, other->pose_);
+    std::swap(ballage_, other->ballage_);
+    std::swap(ballposition_, other->ballposition_);
+    std::swap(ballvelocity_, other->ballvelocity_);
+    std::swap(fallen_, other->fallen_);
+    std::swap(user_, other->user_);
+    std::swap(frameinfo_, other->frameinfo_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata TeamMessage::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TeamMessage_descriptor_;
+  metadata.reflection = TeamMessage_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+const ::std::string BUUserTeamMessage::_default_bodyid_("unknown");
+#ifndef _MSC_VER
+const int BUUserTeamMessage::kBodyIDFieldNumber;
+const int BUUserTeamMessage::kTimeToBallFieldNumber;
+const int BUUserTeamMessage::kWasStrikerFieldNumber;
+const int BUUserTeamMessage::kIsPenalizedFieldNumber;
+const int BUUserTeamMessage::kOpponentsFieldNumber;
+#endif  // !_MSC_VER
+
+BUUserTeamMessage::BUUserTeamMessage()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BUUserTeamMessage::InitAsDefaultInstance() {
+}
+
+BUUserTeamMessage::BUUserTeamMessage(const BUUserTeamMessage& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BUUserTeamMessage::SharedCtor() {
+  _cached_size_ = 0;
+  bodyid_ = const_cast< ::std::string*>(&_default_bodyid_);
+  timetoball_ = 0u;
+  wasstriker_ = false;
+  ispenalized_ = false;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BUUserTeamMessage::~BUUserTeamMessage() {
+  SharedDtor();
+}
+
+void BUUserTeamMessage::SharedDtor() {
+  if (bodyid_ != &_default_bodyid_) {
+    delete bodyid_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void BUUserTeamMessage::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BUUserTeamMessage::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BUUserTeamMessage_descriptor_;
+}
+
+const BUUserTeamMessage& BUUserTeamMessage::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+BUUserTeamMessage* BUUserTeamMessage::default_instance_ = NULL;
+
+BUUserTeamMessage* BUUserTeamMessage::New() const {
+  return new BUUserTeamMessage;
+}
+
+void BUUserTeamMessage::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_bodyid()) {
+      if (bodyid_ != &_default_bodyid_) {
+        bodyid_->assign(_default_bodyid_);
+      }
+    }
+    timetoball_ = 0u;
+    wasstriker_ = false;
+    ispenalized_ = false;
+  }
+  opponents_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BUUserTeamMessage::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string bodyID = 1 [default = "unknown"];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_bodyid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->bodyid().data(), this->bodyid().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_timeToBall;
+        break;
+      }
+      
+      // optional uint32 timeToBall = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_timeToBall:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &timetoball_)));
+          set_has_timetoball();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_wasStriker;
+        break;
+      }
+      
+      // optional bool wasStriker = 3 [default = false];
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_wasStriker:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &wasstriker_)));
+          set_has_wasstriker();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_isPenalized;
+        break;
+      }
+      
+      // optional bool isPenalized = 4 [default = false];
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_isPenalized:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &ispenalized_)));
+          set_has_ispenalized();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_opponents;
+        break;
+      }
+      
+      // repeated .naothmessages.Opponent opponents = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_opponents:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_opponents()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_opponents;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void BUUserTeamMessage::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional string bodyID = 1 [default = "unknown"];
+  if (has_bodyid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->bodyid().data(), this->bodyid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->bodyid(), output);
+  }
+  
+  // optional uint32 timeToBall = 2;
+  if (has_timetoball()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->timetoball(), output);
+  }
+  
+  // optional bool wasStriker = 3 [default = false];
+  if (has_wasstriker()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->wasstriker(), output);
+  }
+  
+  // optional bool isPenalized = 4 [default = false];
+  if (has_ispenalized()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->ispenalized(), output);
+  }
+  
+  // repeated .naothmessages.Opponent opponents = 5;
+  for (int i = 0; i < this->opponents_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->opponents(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BUUserTeamMessage::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional string bodyID = 1 [default = "unknown"];
+  if (has_bodyid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->bodyid().data(), this->bodyid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->bodyid(), target);
+  }
+  
+  // optional uint32 timeToBall = 2;
+  if (has_timetoball()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->timetoball(), target);
+  }
+  
+  // optional bool wasStriker = 3 [default = false];
+  if (has_wasstriker()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->wasstriker(), target);
+  }
+  
+  // optional bool isPenalized = 4 [default = false];
+  if (has_ispenalized()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->ispenalized(), target);
+  }
+  
+  // repeated .naothmessages.Opponent opponents = 5;
+  for (int i = 0; i < this->opponents_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->opponents(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BUUserTeamMessage::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional string bodyID = 1 [default = "unknown"];
+    if (has_bodyid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->bodyid());
+    }
+    
+    // optional uint32 timeToBall = 2;
+    if (has_timetoball()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->timetoball());
+    }
+    
+    // optional bool wasStriker = 3 [default = false];
+    if (has_wasstriker()) {
+      total_size += 1 + 1;
+    }
+    
+    // optional bool isPenalized = 4 [default = false];
+    if (has_ispenalized()) {
+      total_size += 1 + 1;
+    }
+    
+  }
+  // repeated .naothmessages.Opponent opponents = 5;
+  total_size += 1 * this->opponents_size();
+  for (int i = 0; i < this->opponents_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->opponents(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BUUserTeamMessage::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BUUserTeamMessage* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BUUserTeamMessage*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BUUserTeamMessage::MergeFrom(const BUUserTeamMessage& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  opponents_.MergeFrom(from.opponents_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_bodyid()) {
+      set_bodyid(from.bodyid());
+    }
+    if (from.has_timetoball()) {
+      set_timetoball(from.timetoball());
+    }
+    if (from.has_wasstriker()) {
+      set_wasstriker(from.wasstriker());
+    }
+    if (from.has_ispenalized()) {
+      set_ispenalized(from.ispenalized());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BUUserTeamMessage::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BUUserTeamMessage::CopyFrom(const BUUserTeamMessage& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BUUserTeamMessage::IsInitialized() const {
+  
+  for (int i = 0; i < opponents_size(); i++) {
+    if (!this->opponents(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void BUUserTeamMessage::Swap(BUUserTeamMessage* other) {
+  if (other != this) {
+    std::swap(bodyid_, other->bodyid_);
+    std::swap(timetoball_, other->timetoball_);
+    std::swap(wasstriker_, other->wasstriker_);
+    std::swap(ispenalized_, other->ispenalized_);
+    opponents_.Swap(&other->opponents_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BUUserTeamMessage::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BUUserTeamMessage_descriptor_;
+  metadata.reflection = BUUserTeamMessage_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Opponent::kPlayerNumFieldNumber;
+const int Opponent::kPoseOnFieldFieldNumber;
+#endif  // !_MSC_VER
+
+Opponent::Opponent()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Opponent::InitAsDefaultInstance() {
+  poseonfield_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+}
+
+Opponent::Opponent(const Opponent& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Opponent::SharedCtor() {
+  _cached_size_ = 0;
+  playernum_ = 0;
+  poseonfield_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Opponent::~Opponent() {
+  SharedDtor();
+}
+
+void Opponent::SharedDtor() {
+  if (this != default_instance_) {
+    delete poseonfield_;
+  }
+}
+
+void Opponent::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Opponent::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Opponent_descriptor_;
+}
+
+const Opponent& Opponent::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+Opponent* Opponent::default_instance_ = NULL;
+
+Opponent* Opponent::New() const {
+  return new Opponent;
+}
+
+void Opponent::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    playernum_ = 0;
+    if (has_poseonfield()) {
+      if (poseonfield_ != NULL) poseonfield_->::naothmessages::Pose2D::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Opponent::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 playerNum = 1 [default = 0];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &playernum_)));
+          set_has_playernum();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_poseOnField;
+        break;
+      }
+      
+      // optional .naothmessages.Pose2D poseOnField = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_poseOnField:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_poseonfield()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Opponent::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 playerNum = 1 [default = 0];
+  if (has_playernum()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->playernum(), output);
+  }
+  
+  // optional .naothmessages.Pose2D poseOnField = 2;
+  if (has_poseonfield()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->poseonfield(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Opponent::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 playerNum = 1 [default = 0];
+  if (has_playernum()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->playernum(), target);
+  }
+  
+  // optional .naothmessages.Pose2D poseOnField = 2;
+  if (has_poseonfield()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->poseonfield(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Opponent::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 playerNum = 1 [default = 0];
+    if (has_playernum()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->playernum());
+    }
+    
+    // optional .naothmessages.Pose2D poseOnField = 2;
+    if (has_poseonfield()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->poseonfield());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Opponent::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Opponent* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Opponent*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Opponent::MergeFrom(const Opponent& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_playernum()) {
+      set_playernum(from.playernum());
+    }
+    if (from.has_poseonfield()) {
+      mutable_poseonfield()->::naothmessages::Pose2D::MergeFrom(from.poseonfield());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Opponent::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Opponent::CopyFrom(const Opponent& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Opponent::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  if (has_poseonfield()) {
+    if (!this->poseonfield().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void Opponent::Swap(Opponent* other) {
+  if (other != this) {
+    std::swap(playernum_, other->playernum_);
+    std::swap(poseonfield_, other->poseonfield_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Opponent::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Opponent_descriptor_;
+  metadata.reflection = Opponent_reflection_;
   return metadata;
 }
 

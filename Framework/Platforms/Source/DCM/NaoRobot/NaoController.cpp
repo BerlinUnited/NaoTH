@@ -20,9 +20,7 @@ NaoController::NaoController()
     theSoundHandler(NULL),
     theBroadCaster(NULL),
     theBroadCastListener(NULL),
-    theDebugServer(NULL),
-    theRCTCBroadCaster(NULL),
-    theRCTCBroadCastListener(NULL)
+    theDebugServer(NULL)
 {
   // init shared memory
   // sensor data
@@ -90,10 +88,6 @@ NaoController::NaoController()
   registerInput<TeamMessageDataIn>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
 
-  // rctc teamcomm
-  registerInput<RCTCTeamMessageDataIn>(*this);
-  registerOutput<const RCTCTeamMessageDataOut>(*this);
-
   // debug comm
   registerInput<DebugMessageIn>(*this);
   registerOutput<const DebugMessageOut>(*this);
@@ -140,14 +134,6 @@ NaoController::NaoController()
   theBroadCaster = new BroadCaster(interfaceName, teamcomm_port);
   theBroadCastListener = new BroadCastListener(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
-
-  // create RCTC connections
-  int rctc_port = 22022; // default port
-  config.get("teamcomm", "rctc_port", rctc_port);
-  theRCTCBroadCaster = new BroadCaster(interfaceName, rctc_port);
-  theRCTCBroadCastListener = new BroadCastListener(rctc_port, rctc::PACKET_SIZE);
-
-
   // start the debug server at the default debug port
   std::cout << "Init DebugServer" << endl;
   int debug_port = 5401; // default port
@@ -172,8 +158,6 @@ NaoController::~NaoController()
   delete theBroadCastListener;
   delete theGameController;
   delete theDebugServer;
-  delete theRCTCBroadCaster;
-  delete theRCTCBroadCastListener;
 }
 
 void NaoController::setCameraSettingsInternal(const CameraSettingsRequest &data,
@@ -226,31 +210,3 @@ void NaoController::set(const CameraSettingsRequestTop &data)
   setCameraSettingsInternal(data, CameraInfo::Top);
 }
 
-void NaoController::get(RCTCTeamMessageDataIn& data) 
-{ 
-  data.data.clear();
-  std::vector<std::string> msg_vector;
-  theRCTCBroadCastListener->receive(msg_vector);
-  for(unsigned int i = 0; i < msg_vector.size(); i++)
-  {
-    const char* bin_msg = msg_vector[i].c_str();
-    rctc::Message msg;
-    if(rctc::binaryToMessage((const uint8_t*)bin_msg, msg))
-    {
-      data.data.push_back(msg);
-    }
-  }
-}//end get RCTCTeamMessageDataIn
-
-
-void NaoController::set(const RCTCTeamMessageDataOut& data)
-{
-  if(data.valid)
-  {
-    uint8_t bin_msg[rctc::PACKET_SIZE];
-    rctc::messageToBinary(data.data, bin_msg);
-    std::string msg((char*)bin_msg, rctc::PACKET_SIZE);
-//      std::cout << "sending RCTC " <<theRCTCBroadCaster->broadcastAddress << " (bcast adress) " << std::endl;
-    theRCTCBroadCaster->send(msg);
-  }
-}//end set RCTCTeamMessageDataOut

@@ -15,7 +15,7 @@ namespace naoth
 namespace DataConversion
 {
 
-void toMessage(const Vector2<double>& data, naothmessages::DoubleVector2& msg)
+void toMessage(const Vector2d &data, naothmessages::DoubleVector2& msg)
 {
   msg.set_x(data.x);
   msg.set_y(data.y);
@@ -27,7 +27,7 @@ void fromMessage(const naothmessages::DoubleVector2& msg, Vector2<double>& data)
   data.y = msg.y();
 }
 
-void toMessage(const Vector3<double>& data, naothmessages::DoubleVector3& msg)
+void toMessage(const Vector3d& data, naothmessages::DoubleVector3& msg)
 {
   msg.set_x(data.x);
   msg.set_y(data.y);
