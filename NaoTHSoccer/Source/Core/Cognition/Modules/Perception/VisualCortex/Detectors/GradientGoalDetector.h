@@ -29,6 +29,7 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
 
+#include <opencv2/core/core.hpp>
 #include <vector>
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
@@ -86,6 +87,7 @@ private:
       PARAMETER_REGISTER(gradientThreshold) = 60;
       PARAMETER_REGISTER(minY) = 140;
       PARAMETER_REGISTER(dist) = 5;
+      PARAMETER_REGISTER(maxSquareError) = 4.0;
       PARAMETER_REGISTER(responseHoldFactor) = 0.8;
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
@@ -100,6 +102,7 @@ private:
     int gradientThreshold;
     int minY;
     int dist;
+    double maxSquareError;
     double responseHoldFactor;
     int minGoodPoints;
     int minScanPointsAfterGoodPoints;
@@ -152,6 +155,7 @@ private:
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
   Vector2d findBestDownScanDirection(const std::vector<Feature>& features);
+  cv::Vec4f fitLine(const std::vector<Feature>& features);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
 
   // double cam stuff

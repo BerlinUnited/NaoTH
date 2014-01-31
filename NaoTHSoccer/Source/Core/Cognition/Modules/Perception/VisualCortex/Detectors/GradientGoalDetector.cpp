@@ -15,7 +15,6 @@
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
-#include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <algorithm>
 
@@ -296,6 +295,12 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
   pointBuffer.init();
     
   Vector2d last(pos);
+
+  double minSquareError = params.dist * params.dist;
+  double sumSquareError = 0.0;
+
+  //std::cout << std::endl << "****************" << std::endl;
+
   //scan 5 times (because 5 scanlines) 5 steps (because 5 pixel between 2 scanlines) along a normal 
   //of the horizon, to be able to validate features near that normal as good ones
   for(size_t y = 1; y < features.size(); y++)
@@ -334,12 +339,37 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
       int dist = (pos - features[y][j].center).abs();
       if(dist < params.dist)
       {
-        lastTestFeatureIdx[y] = j;
         goodFeatures.push_back(features[y][j]);
-        pos = features[y][j].center;
-        scanDirection = findBestDownScanDirection(goodFeatures);
+        cv::Vec4f line = fitLine(goodFeatures);
+        Vector2d v(line[0], line[1]);
+        Vector2d n(line[1], line[0]);
+        Vector2d b(line[2], line[3]);
+
+        //get squared distace to new point from line
+        Math::Line lDir(b, v);
+        Math::Line nDir(pos, n);
+        Vector2d intersectionPoint = lDir.point(lDir.intersection(nDir)); 
+        double squareError = (Vector2d(pos) - intersectionPoint).abs2();
+
+        //if error does not raise leave the point to the good points list else drop it out
+        if(squareError <= params.maxSquareError || sumSquareError == 0.0)
+        {
+          if(v.y < 0) { v *= -1.0; }
+          scanDirection = v;
+          sumSquareError += squareError;
+          lastTestFeatureIdx[y] = j;
+          pos.x = (int) intersectionPoint.x;
+          pos.y = (int) intersectionPoint.y;
+          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+            POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
+          );
+          //std::cout << y << "," <<j << " meanSquareError = " << (sumSquareError / y) << std::endl;
+        }
+        else
+        {
+          goodFeatures.pop_back();
+        }
         stop = true;
-          //std::cout << "good (" << i << ") " << dist << " pos: " << pos << " point:" << features[y][j].center << std::endl;
       }
       j++;
     }
@@ -348,6 +378,15 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
 }
 
 Vector2d GradientGoalDetector::findBestDownScanDirection(const std::vector<Feature>& features)
+{
+  cv::Vec4f line = fitLine(features);
+  Vector2d v(line[0], line[1]);
+
+  // always point upwards in image
+  return (v.y < 0) ? v*-1.0 : v;
+}
+
+cv::Vec4f GradientGoalDetector::fitLine(const std::vector<Feature>& features)
 {
   ASSERT(features.size() >= 2);
 
@@ -360,15 +399,10 @@ Vector2d GradientGoalDetector::findBestDownScanDirection(const std::vector<Featu
   
   // estimate the line
   cv::Vec4f line;
-  fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
+  cv::fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
 
-  Vector2d v(line[0], line[1]);
-  //Vector2d x(line[2], line[3]);
-
-  // always point upwards in image
-  return (v.y < 0) ? v*-1.0 : v;
+  return line;
 }
-
 
 void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon)
 {      
