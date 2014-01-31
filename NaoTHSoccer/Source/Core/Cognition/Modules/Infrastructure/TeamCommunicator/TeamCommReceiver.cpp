@@ -104,7 +104,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
      )
   {
     TeamMessage::Data& data = getTeamMessage().data[num];
-    data.frameInfo.setTime( getFrameInfo().getTime() );
+    data.frameInfo = getFrameInfo();
 
     data.playerNum = spl.playerNum;
     data.team = spl.team;
