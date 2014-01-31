@@ -14,6 +14,7 @@ private:
 
 public:
   RegistrationInterface(const std::string& name) : name(name){}
+  virtual ~RegistrationInterface(){}
   const std::string getName() const { return name; }
 
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard) = 0;
