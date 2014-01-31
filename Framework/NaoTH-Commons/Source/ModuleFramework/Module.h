@@ -154,12 +154,12 @@ public:
     // call the constructor of IF<T> once to initialize registryRequire and registryProvide
     // this construction compiles faster than a static variable of type IF<T>
     if(!init) { IF<T>(); init = true; } 
-    return registryRequire.registry; 
+    return registryRequire.registry(); 
   }
   static const RegistrationInterfaceMap& getProvide() { 
     // @see getRequire()
     if(!init) { IF<T>(); init = true; } 
-    return registryProvide.registry; 
+    return registryProvide.registry(); 
   }
   static std::string description;
 };
