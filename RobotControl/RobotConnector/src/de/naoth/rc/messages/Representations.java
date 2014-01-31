@@ -15852,6 +15852,11 @@ public final class Representations {
     boolean hasUser();
     de.naoth.rc.messages.Representations.BUUserTeamMessage getUser();
     de.naoth.rc.messages.Representations.BUUserTeamMessageOrBuilder getUserOrBuilder();
+    
+    // optional .naothmessages.FrameInfo frameInfo = 9;
+    boolean hasFrameInfo();
+    de.naoth.rc.messages.FrameworkRepresentations.FrameInfo getFrameInfo();
+    de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder();
   }
   public static final class TeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -15974,6 +15979,19 @@ public final class Representations {
       return user_;
     }
     
+    // optional .naothmessages.FrameInfo frameInfo = 9;
+    public static final int FRAMEINFO_FIELD_NUMBER = 9;
+    private de.naoth.rc.messages.FrameworkRepresentations.FrameInfo frameInfo_;
+    public boolean hasFrameInfo() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public de.naoth.rc.messages.FrameworkRepresentations.FrameInfo getFrameInfo() {
+      return frameInfo_;
+    }
+    public de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder() {
+      return frameInfo_;
+    }
+    
     private void initFields() {
       playerNum_ = 0;
       team_ = 0;
@@ -15983,6 +16001,7 @@ public final class Representations {
       ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       fallen_ = -1;
       user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
+      frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -16009,6 +16028,12 @@ public final class Representations {
       }
       if (hasUser()) {
         if (!getUser().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasFrameInfo()) {
+        if (!getFrameInfo().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -16043,6 +16068,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeMessage(8, user_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, frameInfo_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -16084,6 +16112,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, user_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, frameInfo_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16205,6 +16237,7 @@ public final class Representations {
           getBallPositionFieldBuilder();
           getBallVelocityFieldBuilder();
           getUserFieldBuilder();
+          getFrameInfoFieldBuilder();
         }
       }
       private static Builder create() {
@@ -16245,6 +16278,12 @@ public final class Representations {
           userBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000080);
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
+        } else {
+          frameInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -16331,6 +16370,14 @@ public final class Representations {
         } else {
           result.user_ = userBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (frameInfoBuilder_ == null) {
+          result.frameInfo_ = frameInfo_;
+        } else {
+          result.frameInfo_ = frameInfoBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -16371,6 +16418,9 @@ public final class Representations {
         if (other.hasUser()) {
           mergeUser(other.getUser());
         }
+        if (other.hasFrameInfo()) {
+          mergeFrameInfo(other.getFrameInfo());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -16396,6 +16446,12 @@ public final class Representations {
         }
         if (hasUser()) {
           if (!getUser().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasFrameInfo()) {
+          if (!getFrameInfo().isInitialized()) {
             
             return false;
           }
@@ -16480,6 +16536,15 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setUser(subBuilder.buildPartial());
+              break;
+            }
+            case 74: {
+              de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder subBuilder = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.newBuilder();
+              if (hasFrameInfo()) {
+                subBuilder.mergeFrom(getFrameInfo());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setFrameInfo(subBuilder.buildPartial());
               break;
             }
           }
@@ -16930,6 +16995,96 @@ public final class Representations {
           user_ = null;
         }
         return userBuilder_;
+      }
+      
+      // optional .naothmessages.FrameInfo frameInfo = 9;
+      private de.naoth.rc.messages.FrameworkRepresentations.FrameInfo frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder> frameInfoBuilder_;
+      public boolean hasFrameInfo() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public de.naoth.rc.messages.FrameworkRepresentations.FrameInfo getFrameInfo() {
+        if (frameInfoBuilder_ == null) {
+          return frameInfo_;
+        } else {
+          return frameInfoBuilder_.getMessage();
+        }
+      }
+      public Builder setFrameInfo(de.naoth.rc.messages.FrameworkRepresentations.FrameInfo value) {
+        if (frameInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          frameInfo_ = value;
+          onChanged();
+        } else {
+          frameInfoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setFrameInfo(
+          de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder builderForValue) {
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          frameInfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeFrameInfo(de.naoth.rc.messages.FrameworkRepresentations.FrameInfo value) {
+        if (frameInfoBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              frameInfo_ != de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance()) {
+            frameInfo_ =
+              de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.newBuilder(frameInfo_).mergeFrom(value).buildPartial();
+          } else {
+            frameInfo_ = value;
+          }
+          onChanged();
+        } else {
+          frameInfoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearFrameInfo() {
+        if (frameInfoBuilder_ == null) {
+          frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
+          onChanged();
+        } else {
+          frameInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder getFrameInfoBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getFrameInfoFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder getFrameInfoOrBuilder() {
+        if (frameInfoBuilder_ != null) {
+          return frameInfoBuilder_.getMessageOrBuilder();
+        } else {
+          return frameInfo_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder> 
+          getFrameInfoFieldBuilder() {
+        if (frameInfoBuilder_ == null) {
+          frameInfoBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.FrameworkRepresentations.FrameInfo, de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.Builder, de.naoth.rc.messages.FrameworkRepresentations.FrameInfoOrBuilder>(
+                  frameInfo_,
+                  getParentForChildren(),
+                  isClean());
+          frameInfo_ = null;
+        }
+        return frameInfoBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.TeamMessage)
@@ -19056,23 +19211,24 @@ public final class Representations {
       "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
       "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n" +
       "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n" +
-      "aothmessages.TeamMessage\"\232\002\n\013TeamMessage" +
+      "aothmessages.TeamMessage\"\307\002\n\013TeamMessage" +
       "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022" +
       "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007" +
       "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132" +
       "\034.naothmessages.DoubleVector2\0222\n\014ballVel" +
       "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector",
       "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na" +
-      "othmessages.BUUserTeamMessage\"\243\001\n\021BUUser" +
-      "TeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022\022\n\n" +
-      "timeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:\005fa" +
-      "lse\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\toppon" +
-      "ents\030\005 \003(\0132\027.naothmessages.Opponent\"L\n\010O" +
-      "pponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnF" +
-      "ield\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Cam" +
-      "eraMatrixCalibration\0226\n\020correctionOffset" +
-      "\030\001 \003(\0132\034.naothmessages.DoubleVector2B\026\n\024",
-      "de.naoth.rc.messages"
+      "othmessages.BUUserTeamMessage\022+\n\tframeIn" +
+      "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B" +
+      "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow" +
+      "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(" +
+      "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t" +
+      "opponents\030\005 \003(\0132\027.naothmessages.Opponent" +
+      "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po" +
+      "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q" +
+      "\n\027CameraMatrixCalibration\0226\n\020correctionO",
+      "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector" +
+      "2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -19236,7 +19392,7 @@ public final class Representations {
           internal_static_naothmessages_TeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_TeamMessage_descriptor,
-              new java.lang.String[] { "PlayerNum", "Team", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", },
+              new java.lang.String[] { "PlayerNum", "Team", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", },
               de.naoth.rc.messages.Representations.TeamMessage.class,
               de.naoth.rc.messages.Representations.TeamMessage.Builder.class);
           internal_static_naothmessages_BUUserTeamMessage_descriptor =

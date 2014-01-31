@@ -459,7 +459,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamMessageCollection));
   TeamMessage_descriptor_ = file->message_type(19);
-  static const int TeamMessage_offsets_[8] = {
+  static const int TeamMessage_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, playernum_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, team_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, pose_),
@@ -468,6 +468,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballvelocity_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, fallen_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, user_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, frameinfo_),
   };
   TeamMessage_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -744,23 +745,24 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
     "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n"
     "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n"
-    "aothmessages.TeamMessage\"\232\002\n\013TeamMessage"
+    "aothmessages.TeamMessage\"\307\002\n\013TeamMessage"
     "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022"
     "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007"
     "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132"
     "\034.naothmessages.DoubleVector2\0222\n\014ballVel"
     "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector"
     "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na"
-    "othmessages.BUUserTeamMessage\"\243\001\n\021BUUser"
-    "TeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022\022\n\n"
-    "timeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:\005fa"
-    "lse\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\toppon"
-    "ents\030\005 \003(\0132\027.naothmessages.Opponent\"L\n\010O"
-    "pponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnF"
-    "ield\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Cam"
-    "eraMatrixCalibration\0226\n\020correctionOffset"
-    "\030\001 \003(\0132\034.naothmessages.DoubleVector2B\026\n\024"
-    "de.naoth.rc.messages", 4420);
+    "othmessages.BUUserTeamMessage\022+\n\tframeIn"
+    "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B"
+    "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow"
+    "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001("
+    "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t"
+    "opponents\030\005 \003(\0132\027.naothmessages.Opponent"
+    "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po"
+    "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q"
+    "\n\027CameraMatrixCalibration\0226\n\020correctionO"
+    "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector"
+    "2B\026\n\024de.naoth.rc.messages", 4465);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -7883,6 +7885,7 @@ const int TeamMessage::kBallPositionFieldNumber;
 const int TeamMessage::kBallVelocityFieldNumber;
 const int TeamMessage::kFallenFieldNumber;
 const int TeamMessage::kUserFieldNumber;
+const int TeamMessage::kFrameInfoFieldNumber;
 #endif  // !_MSC_VER
 
 TeamMessage::TeamMessage()
@@ -7895,6 +7898,7 @@ void TeamMessage::InitAsDefaultInstance() {
   ballposition_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
   ballvelocity_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
   user_ = const_cast< ::naothmessages::BUUserTeamMessage*>(&::naothmessages::BUUserTeamMessage::default_instance());
+  frameinfo_ = const_cast< ::naothmessages::FrameInfo*>(&::naothmessages::FrameInfo::default_instance());
 }
 
 TeamMessage::TeamMessage(const TeamMessage& from)
@@ -7913,6 +7917,7 @@ void TeamMessage::SharedCtor() {
   ballvelocity_ = NULL;
   fallen_ = -1;
   user_ = NULL;
+  frameinfo_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -7926,6 +7931,7 @@ void TeamMessage::SharedDtor() {
     delete ballposition_;
     delete ballvelocity_;
     delete user_;
+    delete frameinfo_;
   }
 }
 
@@ -7966,6 +7972,11 @@ void TeamMessage::Clear() {
     fallen_ = -1;
     if (has_user()) {
       if (user_ != NULL) user_->::naothmessages::BUUserTeamMessage::Clear();
+    }
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (has_frameinfo()) {
+      if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -8093,6 +8104,20 @@ bool TeamMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(74)) goto parse_frameInfo;
+        break;
+      }
+      
+      // optional .naothmessages.FrameInfo frameInfo = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_frameInfo:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_frameinfo()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -8159,6 +8184,12 @@ void TeamMessage::SerializeWithCachedSizes(
       8, this->user(), output);
   }
   
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  if (has_frameinfo()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      9, this->frameinfo(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -8213,6 +8244,13 @@ void TeamMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         8, this->user(), target);
+  }
+  
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  if (has_frameinfo()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        9, this->frameinfo(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -8283,6 +8321,15 @@ int TeamMessage::ByteSize() const {
     }
     
   }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional .naothmessages.FrameInfo frameInfo = 9;
+    if (has_frameinfo()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->frameinfo());
+    }
+    
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -8334,6 +8381,11 @@ void TeamMessage::MergeFrom(const TeamMessage& from) {
       mutable_user()->::naothmessages::BUUserTeamMessage::MergeFrom(from.user());
     }
   }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_frameinfo()) {
+      mutable_frameinfo()->::naothmessages::FrameInfo::MergeFrom(from.frameinfo());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -8363,6 +8415,9 @@ bool TeamMessage::IsInitialized() const {
   if (has_user()) {
     if (!this->user().IsInitialized()) return false;
   }
+  if (has_frameinfo()) {
+    if (!this->frameinfo().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -8376,6 +8431,7 @@ void TeamMessage::Swap(TeamMessage* other) {
     std::swap(ballvelocity_, other->ballvelocity_);
     std::swap(fallen_, other->fallen_);
     std::swap(user_, other->user_);
+    std::swap(frameinfo_, other->frameinfo_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

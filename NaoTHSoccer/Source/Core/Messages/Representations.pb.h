@@ -2486,6 +2486,14 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::naothmessages::BUUserTeamMessage* mutable_user();
   inline ::naothmessages::BUUserTeamMessage* release_user();
   
+  // optional .naothmessages.FrameInfo frameInfo = 9;
+  inline bool has_frameinfo() const;
+  inline void clear_frameinfo();
+  static const int kFrameInfoFieldNumber = 9;
+  inline const ::naothmessages::FrameInfo& frameinfo() const;
+  inline ::naothmessages::FrameInfo* mutable_frameinfo();
+  inline ::naothmessages::FrameInfo* release_frameinfo();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.TeamMessage)
  private:
   inline void set_has_playernum();
@@ -2504,6 +2512,8 @@ class TeamMessage : public ::google::protobuf::Message {
   inline void clear_has_fallen();
   inline void set_has_user();
   inline void clear_has_user();
+  inline void set_has_frameinfo();
+  inline void clear_has_frameinfo();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2515,9 +2525,10 @@ class TeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::int32 fallen_;
   ::naothmessages::DoubleVector2* ballvelocity_;
   ::naothmessages::BUUserTeamMessage* user_;
+  ::naothmessages::FrameInfo* frameinfo_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -5359,6 +5370,35 @@ inline ::naothmessages::BUUserTeamMessage* TeamMessage::release_user() {
   clear_has_user();
   ::naothmessages::BUUserTeamMessage* temp = user_;
   user_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.FrameInfo frameInfo = 9;
+inline bool TeamMessage::has_frameinfo() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void TeamMessage::set_has_frameinfo() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void TeamMessage::clear_has_frameinfo() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamMessage::clear_frameinfo() {
+  if (frameinfo_ != NULL) frameinfo_->::naothmessages::FrameInfo::Clear();
+  clear_has_frameinfo();
+}
+inline const ::naothmessages::FrameInfo& TeamMessage::frameinfo() const {
+  return frameinfo_ != NULL ? *frameinfo_ : *default_instance_->frameinfo_;
+}
+inline ::naothmessages::FrameInfo* TeamMessage::mutable_frameinfo() {
+  set_has_frameinfo();
+  if (frameinfo_ == NULL) frameinfo_ = new ::naothmessages::FrameInfo;
+  return frameinfo_;
+}
+inline ::naothmessages::FrameInfo* TeamMessage::release_frameinfo() {
+  clear_has_frameinfo();
+  ::naothmessages::FrameInfo* temp = frameinfo_;
+  frameinfo_ = NULL;
   return temp;
 }
 

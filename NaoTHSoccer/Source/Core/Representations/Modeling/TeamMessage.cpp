@@ -36,6 +36,11 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
       opp->set_playernum(rOpp.playerNum);
       DataConversion::toMessage(rOpp.poseOnField, *(opp->mutable_poseonfield()));
     }
+
+    msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
+    msg->mutable_frameinfo()->set_time(d.frameInfo.getTime());
+
+
   } // end for each team message data
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -73,6 +78,10 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     }
     d.wasStriker = msg.user().wasstriker();
     d.isPenalized = msg.user().ispenalized();
+
+    d.frameInfo.setFrameNumber(msg.frameinfo().framenumber());
+    d.frameInfo.setTime(msg.frameinfo().time());
+
     d.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());
 
     for(unsigned int i=0; i < d.opponents.size(); i++)
@@ -84,5 +93,6 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 
     // add the single team message data to the collection
     r.data[d.playerNum] = d;
+
   } // end for each team message data
 }

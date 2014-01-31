@@ -170,6 +170,7 @@ message TeamMessage
   optional DoubleVector2 ballVelocity = 6;
   optional int32 fallen = 7 [default=-1];
   optional BUUserTeamMessage user = 8;
+  optional FrameInfo frameInfo = 9;
 }
 
 message BUUserTeamMessage
