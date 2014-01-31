@@ -155,6 +155,11 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
+message TeamMessageCollection
+{
+  repeated TeamMessage data = 1;
+}
+
 message TeamMessage
 {
   optional uint32 playerNum = 1 [default=0];

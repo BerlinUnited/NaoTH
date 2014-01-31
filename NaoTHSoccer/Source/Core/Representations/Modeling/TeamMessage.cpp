@@ -6,66 +6,83 @@
 
 using namespace naoth;
 
-void Serializer<TeamMessage::Data>::serialize(const TeamMessage::Data& r, std::ostream& stream)
+void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stream)
 {
-  naothmessages::TeamMessage msg;
+  naothmessages::TeamMessageCollection collection;
 
-  msg.set_playernum(r.playerNum);
-  msg.set_team(r.team);
-  DataConversion::toMessage(r.pose, *(msg.mutable_pose()));
-  msg.set_ballage(r.ballAge);
-  DataConversion::toMessage(r.ballPosition, *(msg.mutable_ballposition()));
-  DataConversion::toMessage(r.ballVelocity, *(msg.mutable_ballvelocity()));
-  msg.set_fallen(r.fallen);
-  naothmessages::BUUserTeamMessage* userMsg = msg.mutable_user();
-
-  userMsg->set_bodyid(r.bodyID);
-  userMsg->set_timetoball(r.timeToBall);
-  userMsg->set_wasstriker(r.wasStriker);
-  userMsg->set_ispenalized(r.isPenalized);
-  for(unsigned int i=0; i < r.opponents.size(); i++)
+  for(std::map<unsigned int, TeamMessage::Data>::const_iterator it=r.data.begin();
+      it != r.data.end(); it++)
   {
-    const TeamMessage::Opponent& rOpp = r.opponents[i];
-    naothmessages::Opponent* opp = userMsg->add_opponents();
-    opp->set_playernum(rOpp.playerNum);
-    DataConversion::toMessage(rOpp.poseOnField, *(opp->mutable_poseonfield()));
-  }
+    const TeamMessage::Data& d = it->second;
+    naothmessages::TeamMessage* msg = collection.add_data();
+
+    msg->set_playernum(d.playerNum);
+    msg->set_team(d.team);
+    DataConversion::toMessage(d.pose, *(msg->mutable_pose()));
+    msg->set_ballage(d.ballAge);
+    DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
+    DataConversion::toMessage(d.ballVelocity, *(msg->mutable_ballvelocity()));
+    msg->set_fallen(d.fallen);
+    naothmessages::BUUserTeamMessage* userMsg = msg->mutable_user();
+
+    userMsg->set_bodyid(d.bodyID);
+    userMsg->set_timetoball(d.timeToBall);
+    userMsg->set_wasstriker(d.wasStriker);
+    userMsg->set_ispenalized(d.isPenalized);
+    for(unsigned int i=0; i < d.opponents.size(); i++)
+    {
+      const TeamMessage::Opponent& rOpp = d.opponents[i];
+      naothmessages::Opponent* opp = userMsg->add_opponents();
+      opp->set_playernum(rOpp.playerNum);
+      DataConversion::toMessage(rOpp.poseOnField, *(opp->mutable_poseonfield()));
+    }
+  } // end for each team message data
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
-  msg.SerializeToZeroCopyStream(&buf);
+  collection.SerializeToZeroCopyStream(&buf);
 }
 
-void Serializer<TeamMessage::Data>::deserialize(std::istream& stream, TeamMessage::Data& r)
+void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 {
-  naothmessages::TeamMessage msg;
+  naothmessages::TeamMessageCollection collection;
 
   google::protobuf::io::IstreamInputStream buf(&stream);
-  msg.ParseFromZeroCopyStream(&buf);
+  collection.ParseFromZeroCopyStream(&buf);
 
-  r.playerNum = msg.playernum();
-  r.team = msg.team();
-  DataConversion::fromMessage(msg.pose(), r.pose);
-  r.ballAge = msg.ballage();
-  DataConversion::fromMessage(msg.ballposition(), r.ballPosition);
-  DataConversion::fromMessage(msg.ballvelocity(), r.ballVelocity);
-  r.fallen = msg.fallen();
-  r.bodyID = msg.user().bodyid();
-  if(msg.user().has_timetoball())
+  for(int i=0; i < collection.data_size(); i++)
   {
-    r.timeToBall = msg.user().timetoball();
-  }
-  else
-  {
-    r.timeToBall = std::numeric_limits<unsigned int>::max();
-  }
-  r.wasStriker = msg.user().wasstriker();
-  r.isPenalized = msg.user().ispenalized();
-  r.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());
+    const naothmessages::TeamMessage& msg = collection.data(i);
 
-  for(unsigned int i=0; i < r.opponents.size(); i++)
-  {
-    r.opponents[i].playerNum = msg.user().opponents().Get(i).playernum();
-    DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
-                                r.opponents[i].poseOnField);
-  }
+    TeamMessage::Data d;
+
+    d.playerNum = msg.playernum();
+    d.team = msg.team();
+    DataConversion::fromMessage(msg.pose(), d.pose);
+    d.ballAge = msg.ballage();
+    DataConversion::fromMessage(msg.ballposition(), d.ballPosition);
+    DataConversion::fromMessage(msg.ballvelocity(), d.ballVelocity);
+    d.fallen = msg.fallen();
+    d.bodyID = msg.user().bodyid();
+    if(msg.user().has_timetoball())
+    {
+      d.timeToBall = msg.user().timetoball();
+    }
+    else
+    {
+      d.timeToBall = std::numeric_limits<unsigned int>::max();
+    }
+    d.wasStriker = msg.user().wasstriker();
+    d.isPenalized = msg.user().ispenalized();
+    d.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());
+
+    for(unsigned int i=0; i < d.opponents.size(); i++)
+    {
+      d.opponents[i].playerNum = msg.user().opponents().Get(i).playernum();
+      DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
+                                  d.opponents[i].poseOnField);
+    }
+
+    // add the single team message data to the collection
+    r.data[d.playerNum] = d;
+  } // end for each team message data
 }

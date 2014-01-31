@@ -48,7 +48,6 @@ public:
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
                             const TeamMessage &teamMessage,
-                            bool onlySendOneOpponent,
                             TeamMessage::Data &out);
  static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
 
@@ -58,7 +57,6 @@ private:
 
   void createMessage(SPLStandardMessage &msg);
 
-  static unsigned int selectSendOpp(const PlayersModel &playersModel, const FrameInfo &frameInfo, const TeamMessage &teamMessage);
   static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
                               TeamMessage::Opponent &out);
 };

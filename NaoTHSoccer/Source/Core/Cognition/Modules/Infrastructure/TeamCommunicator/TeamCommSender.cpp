@@ -44,7 +44,6 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
                                    const TeamMessage& teamMessage,
-                                   bool onlySendOneOpponent,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
@@ -77,26 +76,14 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
-  if(onlySendOneOpponent)
-  {
-    unsigned int oppNum = selectSendOpp(playersModel, frameInfo,
-                                        teamMessage);
-    if (oppNum != 0)
-    {
-      out.opponents = std::vector<TeamMessage::Opponent>(1);
-      addSendOppModel(oppNum, playersModel, out.opponents[0]);
-    }
-  }
-  else
-  {
 
-    out.opponents = std::vector<TeamMessage::Opponent>(playersModel.opponents.size());
-    for(unsigned int i=0; i < playersModel.opponents.size(); i++)
-    {
-      out.opponents[i].playerNum = playersModel.opponents[i].number;
-      out.opponents[i].poseOnField = playersModel.opponents[i].globalPose;
-    }
+  out.opponents = std::vector<TeamMessage::Opponent>(playersModel.opponents.size());
+  for(unsigned int i=0; i < playersModel.opponents.size(); i++)
+  {
+    out.opponents[i].playerNum = playersModel.opponents[i].number;
+    out.opponents[i].poseOnField = playersModel.opponents[i].globalPose;
   }
+
 }
 
 void TeamCommSender::createMessage(SPLStandardMessage &msg)
@@ -104,7 +91,7 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
               getRobotPose(), getBodyState(), getMotionStatus(), getSoccerStrategy(),
-              getPlayersModel(), getTeamMessage(), true, data);
+              getPlayersModel(), getTeamMessage(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
 }
@@ -156,45 +143,6 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.numOfDataBytes = 0;
   }
-}
-
-// select one opponent:
-// * I see him
-// * the message about him is the oldest one
-unsigned int TeamCommSender::selectSendOpp(const PlayersModel& playersModel,
-                                           const FrameInfo& frameInfo,
-                                           const TeamMessage& teamMessage)
-{
-  set<unsigned int> seenOppNum;
-  for(vector<PlayersModel::Player>::const_iterator iter = playersModel.opponents.begin();
-    iter != playersModel.opponents.end(); ++iter)
-  {
-    if ( frameInfo.getFrameNumber() == iter->frameInfoWhenWasSeen.getFrameNumber() )
-    {
-      seenOppNum.insert(iter->number);
-    }
-  }
-
-  unsigned int selectedNum = 0;
-  unsigned int earliest = frameInfo.getFrameNumber();
-  for(set<unsigned int>::const_iterator iter = seenOppNum.begin();
-    iter != seenOppNum.end(); ++iter)
-  {
-    map<unsigned int, unsigned int>::const_iterator opp = teamMessage.lastFrameNumberHearOpp.find(*iter);
-    if ( opp == teamMessage.lastFrameNumberHearOpp.end() )
-    {
-      // no history of this opponent
-      return *iter;
-    }
-
-    if ( opp->second < earliest )
-    {
-      selectedNum = *iter;
-      earliest = opp->second;
-    }
-  }
-
-  return selectedNum;
 }
 
 void TeamCommSender::addSendOppModel(unsigned int oppNum,

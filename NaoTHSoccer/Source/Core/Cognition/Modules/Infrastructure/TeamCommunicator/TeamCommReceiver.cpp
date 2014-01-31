@@ -55,7 +55,7 @@ void TeamCommReceiver::execute()
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
                               getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
-                              getTeamMessage(), true, ownTeamData);
+                              getTeamMessage(), ownTeamData);
   // we don't have the right player number in the beginning, wait to send
   // one to ourself until we have a valid one
   if(ownTeamData.playerNum > 0)

@@ -93,9 +93,6 @@ public:
 
   std::map<unsigned int, Data> data;
 
-  // used for select opponent to send
-  std::map<unsigned int, unsigned int> lastFrameNumberHearOpp;
-
   virtual ~TeamMessage() {}
 
   virtual void print(std::ostream& stream) const
@@ -138,11 +135,11 @@ public:
 
 namespace naoth {
   template<>
-  class Serializer<TeamMessage::Data>
+  class Serializer<TeamMessage>
   {
   public:
-    static void serialize(const TeamMessage::Data& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, TeamMessage::Data& representation);
+    static void serialize(const TeamMessage& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, TeamMessage& representation);
   };
 }
 
