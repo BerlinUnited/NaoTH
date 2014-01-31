@@ -77,11 +77,19 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
 
-  out.opponents = std::vector<TeamMessage::Opponent>(playersModel.opponents.size());
+  out.opponents.clear();
+  out.opponents.reserve(playersModel.opponents.size());
   for(unsigned int i=0; i < playersModel.opponents.size(); i++)
   {
-    out.opponents[i].playerNum = playersModel.opponents[i].number;
-    out.opponents[i].poseOnField = playersModel.opponents[i].globalPose;
+    const PlayersModel::Player& p = playersModel.opponents[i];
+    // only add the players that where seen in this frame
+    if(p.frameInfoWhenWasSeen.getFrameNumber() == frameInfo.getFrameNumber())
+    {
+      TeamMessage::Opponent opp;
+      opp.playerNum = p.number;
+      opp.poseOnField = p.globalPose;
+      out.opponents.push_back(opp);
+    }
   }
 
 }
