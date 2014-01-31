@@ -1,8 +1,6 @@
 #include <ModuleFramework/Module.h>
 #include "ModuleFramework/ModuleManager.h"
 #include "Tools/StrategyTools.h"
-//#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugModify.h"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -47,7 +45,7 @@ TEST_F(StrategyToolsTest, arrangeRobots)
   playersPoints.push_back(Vector2d(-1600.0, -1700.0));
   
 
-  strategyTools.arrangeRobots(playersPoints, setPiecePoints, placesToRobots);
+  strategyTools->arrangeRobots(playersPoints, setPiecePoints, placesToRobots);
 
   std::vector<int> expectedPlacesToRobots;
   expectedPlacesToRobots.push_back(0);
