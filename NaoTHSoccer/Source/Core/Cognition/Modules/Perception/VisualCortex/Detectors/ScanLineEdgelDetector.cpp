@@ -98,7 +98,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 
 
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_edgels",
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
+    for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
       Vector2d g1 = Vector2d(10.0,0).rotate(edgel.angle).rotateRight();
       LINE_PX(ColorClasses::black,edgel.point.x, edgel.point.y, edgel.point.x + (int)(g1.x), edgel.point.y + (int)(g1.y));
@@ -107,7 +107,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 
   // mark finished valid edgels
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
     {
       const DoubleEdgel& double_edgel = getScanLineEdgelPercept().scanLineEdgels[i];
       LINE_PX(ColorClasses::red   ,double_edgel.begin.x ,double_edgel.begin.y ,double_edgel.begin.x + (int)(10 * cos(double_edgel.begin_angle))   ,double_edgel.begin.y + (int)(10 * sin(double_edgel.begin_angle)));
@@ -117,7 +117,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   );
   
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_endpoints",
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
       

@@ -28,7 +28,7 @@ void LineClusterProvider::execute()
   Vector2d edgelOnField_e;
   Vector2d edgelOnField_f;
 
-  for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+  for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
   {
     const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
     int k = -1;
@@ -43,7 +43,7 @@ void LineClusterProvider::execute()
         0.0,
         edgelOnField_e)) continue;
 
-    for(unsigned int j = i+1; j < getScanLineEdgelPercept().numOfSeenEdgels; j++)
+    for(size_t j = i+1; j < getScanLineEdgelPercept().scanLineEdgels.size(); j++)
     {
       const DoubleEdgel& f = getScanLineEdgelPercept().scanLineEdgels[j];
       if(!CameraGeometry::imagePixelToFieldCoord(

@@ -117,7 +117,7 @@ private:
     if(fabs(Math::normalizeAngle(double_edgel.begin_angle - double_edgel.end_angle)) <= theParameters.double_edgel_angle_threshold)
     {
       double_edgel.valid = true;
-      getScanLineEdgelPercept().add(double_edgel);
+      getScanLineEdgelPercept().scanLineEdgels.push_back(double_edgel);
     }
   }
 

@@ -21,11 +21,7 @@
 class ScanLineEdgelPercept : public naoth::Printable
 { 
 public:
-  ScanLineEdgelPercept()
-    :
-    numOfSeenEdgels(0)
-  {
-  }
+  ScanLineEdgelPercept(){}
 
   class EndPoint
   {
@@ -39,36 +35,23 @@ public:
   };
 
   /** */
-  unsigned int numOfSeenEdgels;
-  /** */
-  DoubleEdgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
+  std::vector<DoubleEdgel> scanLineEdgels;
+  std::vector<Edgel> edgels;
 
   /** */
   std::vector<EndPoint> endPoints;
 
-  std::vector<Edgel> edgels;
-
-  void add(const DoubleEdgel& edgel)
-  {
-    if(numOfSeenEdgels < MAX_NUMBER_OF_SCANLINE_EDGELS)
-    {
-      scanLineEdgels[numOfSeenEdgels] = edgel;
-      numOfSeenEdgels++;
-    }//end if
-  }//end add
-
-  /* reset percept */
   void reset()
   {
-    numOfSeenEdgels = 0;
     endPoints.clear();
     edgels.clear();
-  }//end reset
+    scanLineEdgels.clear();
+  }
 
   virtual void print(std::ostream& stream) const
   {
     stream << "ScanLine Edgels:" << std::endl << "------" << std::endl;
-    for(unsigned int i = 0; i < numOfSeenEdgels; i++)
+    for(size_t i = 0; i < scanLineEdgels.size(); i++)
     {
       stream << "Edgel " << i << std::endl;
       stream << "  Begin = " << scanLineEdgels[i].begin << " angle = " << scanLineEdgels[i].begin_angle << std::endl;
