@@ -6,8 +6,8 @@
 * Declaration of the class Line
 */
 
-#ifndef __Line_h__
-#define __Line_h__
+#ifndef _Line_h_
+#define _Line_h_
 
 #include <limits>
 #include <cmath>
@@ -20,8 +20,8 @@ namespace Math {
 class Line
 {
 protected:
-  Vector2<double> base;
-  Vector2<double> direction;
+  Vector2d base;
+  Vector2d direction;
   
 public:
   Line() : direction(1.0,0.0) {}
@@ -30,36 +30,37 @@ public:
   Line(const Vector2<V>& base, const Vector2<W>& direction) 
   {
     this->base = base;
-    this->direction = Vector2<double>(direction).normalize(); //TODO: make it better?
+    this->direction = Vector2d(direction).normalize(); //TODO: make it better?
   }
-
-
 
   Line(const Pose2D& pose)
   {
     this->base = pose.translation;
-    this->direction = (Pose2D(pose.rotation) + Pose2D(Vector2<double>(1.0,0))).translation;
+    this->direction = (Pose2D(pose.rotation) + Pose2D(Vector2d(1.0,0))).translation;
   }
+
+  Vector2d getDirection() const { return direction; }
+  Vector2d getBase() const { return base; }
+  Vector2d point(double t) const { return base + direction*t; }
 
   // ax*x + ay*y = b
   double intersection(const Line& other) const
   {
-    Vector2<double> normal(-other.direction.y, other.direction.x);
+    Vector2d normal(-other.direction.y, other.direction.x);
     double t = normal*direction;
     if(t == 0) return std::numeric_limits<double>::infinity(); // the lines are paralell
     return normal*(other.base-base)/(t);
-  }//end intersection
-
-  Vector2<double> point(double t) const { return base + direction*t; }
-  Vector2<double> getDirection() const { return direction; }
-  Vector2<double> getBase() const { return base; }
-
+  }
 
   double minDistance(const Vector2d& p) const
   {
-    return std::fabs(direction.x*(p.y-base.y)+direction.y*(p.x-base.x))/direction.abs();
+    return std::fabs(direction.x*(p.y-base.y)-direction.y*(p.x-base.x));
   }
 
+  Vector2d projection(const Vector2d& p) const
+  {
+    return point(direction*p - direction*base);
+  }
 };
 
 
@@ -67,9 +68,6 @@ public:
 class LineSegment: public Line 
 {
 protected:
-  //const Vector2<double> begin;
-  //const Vector2<double> end;
-  
   double length;
 
 public:
@@ -85,79 +83,41 @@ public:
   }
   ~LineSegment(){}
 
-  const Vector2<double>& begin() const { return base; }
-  Vector2<double> end() const { return base + direction*length; }
-  Vector2<double> point(double t) const { return Line::point(Math::clamp(t, 0.0, length)); }
+  const Vector2d& begin() const { return base; }
+  Vector2d end() const { return base + direction*length; }
+  Vector2d point(double t) const { return Line::point(Math::clamp(t, 0.0, length)); }
   double getLength() const { return length; }
 
   double intersection(const Line& other) const
   {
     double t = Line::intersection(other);
     return Math::clamp(t, 0.0, length);
-  }//end intersection
+  }
 
   bool intersect(const Line& other) const
   {
     double t = Line::intersection(other);
     return 0.0 <= t && t <= length;
-  }//end intersect
+  }
 
   /** projection of the point to the line */
-  double project(const Vector2<double>& p) const
+  double project(const Vector2d& p) const
   {
     return direction*p - direction*base;
-  }//end project
+  }
 
   /** projection of the point to the line */
-  Vector2<double> projection(const Vector2<double>& p) const
+  Vector2d projection(const Vector2d& p) const
   {
     double t = direction*p - direction*base;
     return point(t);
-  }//end projection
-
+  }
 
   /** Minimal distance to a point (2D). Will check the borders of the segment. */
-  double minDistance(const Vector2<double>& p) const
+  double minDistance(const Vector2d& p) const
   {
     return (projection(p) - p).abs();
-    /*
-    double distance = Line::minDistance(p);
-
-    // a^2 + b^2 = c^2 => a = sqrt(c^2-b^2)
-    Vector2<double> base2p = base - p;
-
-    double c2 = pow(base2p.abs(),2);
-    double b2 = pow(distance,2);
-
-    double diff = c2-b2;
-    if(diff < 0)
-    {
-      // fallback
-      return distance;
-    }
-
-    double distance2Intersection = sqrt(diff);
-    if(distance2Intersection <= length)
-    {
-      // in our bounds, return the result calculated by the line
-      return distance;
-    }
-    else
-    {
-      // out of bounds, return either distance to start or end
-      double distBegin = (begin()-p).abs();
-      double distEnd = (end()-p).abs();
-      if(distBegin <= distEnd)
-      {
-        return distBegin;
-      }
-      else
-      {
-        return distEnd;
-      }
-    }*/
-  }//end minDistance
-
+  }
 };
 
 class Intersection
@@ -214,4 +174,4 @@ public:
 
 }//end namespace Math
 
-#endif //__Line_h__
+#endif //_Line_h_

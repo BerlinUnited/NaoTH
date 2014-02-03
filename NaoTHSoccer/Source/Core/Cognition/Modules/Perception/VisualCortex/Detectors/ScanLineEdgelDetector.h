@@ -22,7 +22,6 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
-//#include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
 #include <Tools/DataStructures/ParameterList.h>
@@ -41,8 +40,6 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  //REQUIRE(FieldPerceptRaw)
-  //REQUIRE(FieldPerceptRawTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
 
@@ -83,30 +80,47 @@ public:
       DebugParameterList::getInstance().remove(this);
     }
 
-    // threshold for detection of the jumps in the Y channel
-    int brightness_threshold;
-
-    // number of scanlines
-    int scanline_count;
-
-    // don't scan the lower lines in the image
-    int pixel_border_y;
+    int brightness_threshold; // threshold for detection of the jumps in the Y channel
+    int scanline_count; // number of scanlines
+    int pixel_border_y; // don't scan the lower lines in the image
 
     double double_edgel_angle_threshold;
   } theParameters;
 
 private:
   CameraInfo::CameraID cameraID;
-  int current_scanlineID;
-  std::vector<double> vertical_confidence;
 
   void add_edgel(int x, int y) {
     Edgel edgel;
     edgel.point.x = x;
     edgel.point.y = y;
-    edgel.angle = getPointsAngle(edgel.point);
+    edgel.angle = calculateGradient(edgel.point).angle();
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
+
+
+  void add_edgel(int x0, int y0, int x1, int y1, int id) {
+    DoubleEdgel double_edgel;
+    double_edgel.begin.x = x0;
+    double_edgel.begin.y = y0;
+    double_edgel.begin_angle = calculateGradient(double_edgel.begin).angle();
+
+    double_edgel.end.x = x1;
+    double_edgel.end.y = y1;
+    double_edgel.end_angle = Math::normalizeAngle(calculateGradient(double_edgel.end).angle() + Math::pi);
+
+    double_edgel.center = (double_edgel.end + double_edgel.begin) / 2;
+    double_edgel.center_angle = calculateMeanAngle(double_edgel.begin_angle, double_edgel.end_angle);
+
+    double_edgel.ScanLineID = id;
+
+    if(fabs(Math::normalizeAngle(double_edgel.begin_angle - double_edgel.end_angle)) <= theParameters.double_edgel_angle_threshold)
+    {
+      double_edgel.valid = true;
+      getScanLineEdgelPercept().add(double_edgel);
+    }
+  }
+
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end) ;
@@ -114,11 +128,13 @@ private:
   /** */
   ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
 
-  /** Estimates the angle of the gray-gradient at the point by a Sobel Operator. */
-  double getPointsAngle(const Vector2i& point) const;
+  /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
+  Vector2d calculateGradient(const Vector2i& point) const;
 
   /** */
-  double calculateMeanAngle(double angle1, double angle2) const;
+  inline double calculateMeanAngle(double a, double b) const {
+    return atan2( sin(a)+sin(b), cos(a)+cos(b) );
+  }
 
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, CameraInfo);
