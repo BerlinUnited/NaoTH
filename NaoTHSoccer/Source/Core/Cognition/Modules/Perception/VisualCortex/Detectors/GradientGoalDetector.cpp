@@ -14,8 +14,6 @@
 
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-
-#include <opencv2/imgproc/imgproc.hpp>
 #include <algorithm>
 
 #define IMG_GET(x,y,p) \
@@ -296,7 +294,7 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
     
   Vector2d last(pos);
 
-  double minSquareError = params.dist * params.dist;
+  //double minSquareError = params.dist * params.dist;
   double sumSquareError = 0.0;
 
   //std::cout << std::endl << "****************" << std::endl;

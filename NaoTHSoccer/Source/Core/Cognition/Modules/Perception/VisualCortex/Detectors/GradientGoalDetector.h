@@ -29,8 +29,9 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
 
-#include <opencv2/core/core.hpp>
 #include <vector>
+
+#include "Tools/naoth_opencv.h"
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(Image)
