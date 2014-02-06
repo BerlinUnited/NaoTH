@@ -250,7 +250,7 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
                   .rotateX(getCameraMatrixOffset().offset.x);
     );
     
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
     {
       const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
       
