@@ -33,9 +33,10 @@ void OpenCVWebCamController::init()
   {
     std::cerr << "Can't open camera 0" << std::endl;
     exit(-1);
-  }//end if(!capture.isOpened())
+  }
 
-//   cvInitSystem(0, NULL);
+  capture.set(CV_CAP_PROP_FRAME_WIDTH, naoth::IMAGE_WIDTH);
+  capture.set(CV_CAP_PROP_FRAME_HEIGHT, naoth::IMAGE_HEIGHT);
 }//end init
 
 void OpenCVWebCamController::main()
@@ -50,7 +51,7 @@ void OpenCVWebCamController::main()
 void OpenCVWebCamController::get(Image& data)
 {
   copyImage(data, yCbCr);
-}//end get
+}
 
 void OpenCVWebCamController::get(FrameInfo& data)
 {
@@ -64,17 +65,17 @@ void OpenCVWebCamController::executeFrame()
 
   if(frameNative.data != NULL)
   {
-    Size size;
-    size.width = 320;
-    size.height = 240;
-    resize(frameNative, frame, size, 0, 0, INTER_CUBIC);
+    //Size size;
+    //size.width = naoth::IMAGE_WIDTH;
+    //size.height = naoth::IMAGE_HEIGHT;
+    //resize(frameNative, frame, size, 0, 0, INTER_CUBIC);
 
     // Kirill
-    cvtColor(frame, yCbCr, CV_BGR2YCrCb);
+    cvtColor(frameNative, yCbCr, CV_BGR2YCrCb);
     // opencv release libs have some issues with highgui imshow() window's names,
     // so we use the old C functions: cvShowImage,
     // requests ImpImage and NOT Mat, so we must convert Mat to IplImage
-    IplImage ipl_img = frame;
+    IplImage ipl_img = frameNative;
     cvShowImage(windowName.c_str(), &ipl_img);
     frameLossCounter = 0;
   }
@@ -91,22 +92,29 @@ void OpenCVWebCamController::executeFrame()
 
 void OpenCVWebCamController::copyImage(Image& image, Mat& capturedImage)
 {
-  int currentWidth = 320;
-  int currentHeight = 240;
-  Pixel pixel;
+  // variables for fast access (it's in particular faster in debug mode, when inlining is deactivated)
+  unsigned char* data = image.data();
+  unsigned int width = image.width();
+  unsigned int height = image.height();
 
-  // Kirill
-  for(int x = 0; x < currentWidth; x++)
-  {
-    for(int y = 0; y < currentHeight; y++)
+  for(unsigned int x = 0; x < width; x++) {
+    for(unsigned int y = 0; y < height; y++)
     {
-      int index = 3 * (x + y * currentWidth);
+      int index = 3 * (x + y * width);
+      int yOffset = Image::PIXEL_SIZE_YUV422 * (y * width + x);
+
       // YCrCb = YVU and NOT YUV, so we must
       // rotate channels
-      pixel.y = capturedImage.data[index + 0];
-      pixel.u = capturedImage.data[index + 2];
-      pixel.v = capturedImage.data[index + 1];
-      image.set(x, y, pixel);
+      //Pixel pixel;
+      //pixel.y = capturedImage.data[index + 0];
+      //pixel.u = capturedImage.data[index + 2];
+      //pixel.v = capturedImage.data[index + 1];
+      //image.set(x, y, pixel);
+      
+      data[yOffset] = capturedImage.data[index + 0]; // y
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      data[yOffset+1-((x & 1)<<1)] = capturedImage.data[index + 2]; // u
+      data[yOffset+3-((x & 1)<<1)] = capturedImage.data[index + 1]; // v
     }//end for
   }//end for
 }

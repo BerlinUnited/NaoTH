@@ -26,18 +26,11 @@ void TeamBallLocator::execute()
     //if (getTeamMessage().messageReceived[i])
     //{
       //const naothmessages::TeamCommMessage& msg = getTeamMessage().message[i];
-      const naothmessages::TeamCommMessage& msg = i->second.message;
-      if ( msg.has_ballposition() )
+      const TeamMessage::Data& msg = i->second;
+      if ( msg.ballAge >= 0)
       {
-
-
-        Vector2<double> ballPos;
-        ballPos.x = msg.ballposition().x();
-        ballPos.y = msg.ballposition().y();
-        Pose2D robotPos;
-        robotPos.rotation = msg.positiononfield().rotation();
-        robotPos.translation.x = msg.positiononfield().translation().x();
-        robotPos.translation.y = msg.positiononfield().translation().y();
+        Vector2d ballPos = msg.ballPosition;
+        Pose2D robotPos = msg.pose;
         ballPos = robotPos * ballPos;
 
         if ( i->second.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
@@ -63,7 +56,7 @@ void TeamBallLocator::execute()
         }
 
         // striker
-        if (msg.wasstriker()) 
+        if (msg.wasStriker)
         {
           getTeamBallModel().strikerPositionOnField = ballPos;
           getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;

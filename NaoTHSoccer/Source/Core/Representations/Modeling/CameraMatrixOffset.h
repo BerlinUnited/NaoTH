@@ -74,6 +74,11 @@ class Serializer<CameraMatrixOffset>
     naothmessages::CameraMatrixCalibration msg;
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
+    
+    ASSERT(msg.correctionoffset().size() == naoth::CameraInfo::numOfCamera);
+    for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
+      naoth::DataConversion::fromMessage(msg.correctionoffset(id), representation.correctionOffset[id]);
+    }
   }
 };
 }

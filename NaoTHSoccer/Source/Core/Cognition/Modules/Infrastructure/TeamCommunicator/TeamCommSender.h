@@ -1,6 +1,7 @@
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
+#include <Representations/Modeling/SPLStandardMessage.h>
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
@@ -46,17 +47,18 @@ public:
                             const MotionStatus &motionStatus,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
-                            const TeamMessage &teamMessage, naothmessages::TeamCommMessage &msg);
+                            const TeamMessage &teamMessage,
+                            TeamMessage::Data &out);
+ static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
 
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
-  void createMessage(naothmessages::TeamCommMessage& msg);
+  void createMessage(SPLStandardMessage &msg);
 
-  static unsigned int selectSendOpp(const PlayersModel &playersModel, const FrameInfo &frameInfo, const TeamMessage &teamMessage);
   static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
-                              naothmessages::TeamCommMessage &msg);
+                              TeamMessage::Opponent &out);
 };
 
 #endif // TEAMCOMMSENDER_H

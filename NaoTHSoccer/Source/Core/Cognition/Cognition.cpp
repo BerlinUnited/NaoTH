@@ -20,6 +20,7 @@
 #include "Modules/Infrastructure/IO/Sensor.h"
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/ButtonEventMonitor/ButtonEventMonitor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
@@ -28,7 +29,6 @@
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
-#include "Modules/Infrastructure/TeamCommunicator/RCTCHandler.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVGrayScaleImageProvider.h"
@@ -99,8 +99,6 @@
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
-#include "Modules/BehaviorControl/XABSLBehaviorControl2011/XABSLBehaviorControl2011.h"
-#include "Modules/BehaviorControl/XABSLBehaviorControl2012/XABSLBehaviorControl2012.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 #include "Modules/BehaviorControl/GraspingBehaviorControl/GraspingBehaviorControl.h"
@@ -149,12 +147,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // -- BEGIN MODULES --
 
   // infrastructure
-  REGISTER_MODULE(RCTCHandler);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVGrayScaleImageProvider);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(CameraInfoSetter);
 
   // pre-modelling
@@ -230,8 +228,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
   REGISTER_MODULE(CalibrationBehaviorControl);
-  REGISTER_MODULE(XABSLBehaviorControl2011);
-  REGISTER_MODULE(XABSLBehaviorControl2012);
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(GraspingBehaviorControl);
   REGISTER_MODULE(ArmMotionBehaviorControl);

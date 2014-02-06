@@ -90,27 +90,26 @@ void ModuleManagerWithDebug::modulesList(std::ostream& outstream)
 
     // get the module holder
     AbstractModuleCreator* moduleCreator = getModule(*iterModule);
-    ASSERT(moduleCreator != NULL); // shold never happen
+    ASSERT(moduleCreator != NULL); // should never happen
 
     // module name
     m->set_name(*iterModule + "|" + moduleCreator->modulePath());
     m->set_active(moduleCreator->isEnabled());
       
-    if(moduleCreator->isEnabled())
+    //if(moduleCreator->isEnabled())
     {
-      Module* module = moduleCreator->getModule();
-      ASSERT(module != NULL); // shold never happen
+      //Module* module = moduleCreator->getModule();
+      //ASSERT(module != NULL); // should never happen
 
-
-      RepresentationMap::const_iterator iterRep;
-      for (iterRep = module->getRequire().begin();
-        iterRep != module->getRequire().end(); ++iterRep)
+      RegistrationInterfaceMap::const_iterator iterRep;
+      for (iterRep = moduleCreator->staticRequired().begin();
+        iterRep != moduleCreator->staticRequired().end(); ++iterRep)
       {
         m->add_usedrepresentations(iterRep->second->getName());
       }
 
-      for (iterRep = module->getProvide().begin();
-        iterRep != module->getProvide().end(); ++iterRep)
+      for (iterRep = moduleCreator->staticProvided().begin();
+        iterRep != moduleCreator->staticProvided().end(); ++iterRep)
       {
         m->add_providedrepresentations(iterRep->second->getName());
       }

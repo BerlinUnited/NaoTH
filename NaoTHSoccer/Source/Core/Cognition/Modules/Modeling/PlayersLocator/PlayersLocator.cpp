@@ -202,7 +202,7 @@ void PlayersLocator::updateByTeamMessage()
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator iter =getTeamMessage().data.begin();
         iter != getTeamMessage().data.end(); ++iter)
   {
-    const naothmessages::TeamCommMessage& message = iter->second.message;
+    const TeamMessage::Data& message = iter->second;
     const unsigned int seen_number = iter->first;
     const FrameInfo& messageFrameInfo = iter->second.frameInfo;
   
@@ -213,13 +213,12 @@ void PlayersLocator::updateByTeamMessage()
     //TODO: this parameter is only for simspark!!!
     const unsigned int comm_delay = 40;
 
-    if (message.has_positiononfield()
-      && getPlayersModel().teammates[seen_number].frameInfoWhenWasSeen.getFrameNumber() < messageFrameInfo.getFrameNumber()-1 )
+    if (getPlayersModel().teammates[seen_number].frameInfoWhenWasSeen.getFrameNumber() < messageFrameInfo.getFrameNumber()-1 )
       {
         PlayersModel::Player& p = getPlayersModel().teammates[seen_number];
-        p.globalPose.rotation = message.positiononfield().rotation();
-        p.globalPose.translation.x = message.positiononfield().translation().x();
-        p.globalPose.translation.y = message.positiononfield().translation().y();
+        p.globalPose.rotation = message.pose.rotation;
+        p.globalPose.translation.x = message.pose.translation.x;
+        p.globalPose.translation.y = message.pose.translation.y;
         p.frameInfoWhenWasSeen = 
           FrameInfo(messageFrameInfo.getTime() - comm_delay, 
                     messageFrameInfo.getFrameNumber()-2);
@@ -227,17 +226,17 @@ void PlayersLocator::updateByTeamMessage()
     }//end if
 
     // update opponents
-    if (message.has_opponent())
+    if (message.opponents.size() > 0)
     {
-      unsigned int numOpp = message.opponent().number();
+      unsigned int numOpp = message.opponents[0].playerNum;
 
       // Note: the opponent should be seen at least once
       if (getPlayersModel().opponents[numOpp].frameInfoWhenWasSeen.getFrameNumber() < messageFrameInfo.getFrameNumber()-1 )
       {
         PlayersModel::Player& p = getPlayersModel().opponents[numOpp];
-        p.globalPose.rotation = message.opponent().poseonfield().rotation();
-        p.globalPose.translation.x = message.opponent().poseonfield().translation().x();
-        p.globalPose.translation.y = message.opponent().poseonfield().translation().y();
+        p.globalPose.rotation = message.opponents[0].poseOnField.rotation;
+        p.globalPose.translation.x = message.opponents[0].poseOnField.translation.x;
+        p.globalPose.translation.y = message.opponents[0].poseOnField.translation.y;
         p.frameInfoWhenWasSeen = 
           FrameInfo(messageFrameInfo.getTime() - comm_delay, 
                     messageFrameInfo.getFrameNumber()-2);

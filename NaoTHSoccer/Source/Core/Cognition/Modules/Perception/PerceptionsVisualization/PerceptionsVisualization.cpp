@@ -64,27 +64,36 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
   //draw ball percept
   DEBUG_REQUEST("PerceptionsVisualization:field:ball_percept",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF9900", 20);
-    CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
-      getBallPercept().bearingBasedOffsetOnField.y,
-      getFieldInfo().ballRadius);
-  );
+    if(getBallPercept().ballWasSeen) 
+    {
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF9900", 20);
+      CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
+        getBallPercept().bearingBasedOffsetOnField.y,
+        getFieldInfo().ballRadius);
+    }
+ );
 
   DEBUG_REQUEST("PerceptionsVisualization:image:ball_percept",
-    IMAGE_DRAWING_CONTEXT;
-    PEN("FF9900", 2);
-    CIRCLE(
-      (int)getBallPercept().centerInImage.x,
-      (int)getBallPercept().centerInImage.y,
-      (int)getBallPercept().radiusInImage);
+    if(getBallPercept().ballWasSeen) 
+    {
+      IMAGE_DRAWING_CONTEXT;
+      PEN("FF9900", 2);
+      CIRCLE(
+        (int)getBallPercept().centerInImage.x,
+        (int)getBallPercept().centerInImage.y,
+        (int)getBallPercept().radiusInImage);
+    }
   );
 
   DEBUG_REQUEST("PerceptionsVisualization:image_px:ball_percept",
-    CIRCLE_PX(ColorClasses::red,
-      (int)getBallPercept().centerInImage.x,
-      (int)getBallPercept().centerInImage.y,
-      (int)getBallPercept().radiusInImage);
+    if(getBallPercept().ballWasSeen) 
+    {
+      CIRCLE_PX(ColorClasses::red,
+        (int)getBallPercept().centerInImage.x,
+        (int)getBallPercept().centerInImage.y,
+        (int)getBallPercept().radiusInImage);
+    }
   );
 
 
@@ -145,8 +154,8 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
     {
       const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
     
-      Vector2<double> edgelOnFieldDirectionBegin;
-      Vector2<double> edgelOnFieldBegin;
+      Vector2d edgelOnFieldDirectionBegin;
+      Vector2d edgelOnFieldBegin;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
         getCameraInfo(),
@@ -154,14 +163,8 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         e.begin.y,
         0.0,
         edgelOnFieldBegin))
-        /*
-      edgelOnField = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getCameraInfo(),
-        e.begin.x,
-        e.begin.y) * 100;*/
       {
-        Vector2<double> direction(1,0);
+        Vector2d direction(1,0);
         direction.rotate(e.begin_angle);
         direction += e.begin;
         
@@ -180,8 +183,8 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         }
       }
 
-      Vector2<double> edgelOnFieldDirectionEnd;
-      Vector2<double> edgelOnFieldEnd;
+      Vector2d edgelOnFieldDirectionEnd;
+      Vector2d edgelOnFieldEnd;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
         getCameraInfo(),
@@ -189,12 +192,6 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
         e.end.y,
         0.0,
         edgelOnFieldEnd))
-      /*
-      edgelOnField = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getCameraInfo(),
-        e.end.x,
-        e.end.y) * 100;*/
       {
         Vector2<double> direction(1,0);
         direction.rotate(e.end_angle);
@@ -245,6 +242,36 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
 
   DEBUG_REQUEST("PerceptionsVisualization:image_px:edgels_percept",
+    FIELD_DRAWING_CONTEXT;
+
+    CameraMatrix cameraMatrix(getCameraMatrix());
+    DEBUG_REQUEST("PerceptionsVisualization:field:corrrect_camera_matrix",
+      cameraMatrix.rotateY(getCameraMatrixOffset().offset.y)
+                  .rotateX(getCameraMatrixOffset().offset.x);
+    );
+    
+    for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+    {
+      const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+      
+      Vector2d edgelOnFieldBegin = CameraGeometry::angleToPointInImage(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.begin.x,
+        e.begin.y) * 1000;
+
+      PEN("FF0000", 5);
+      CIRCLE(edgelOnFieldBegin.x, edgelOnFieldBegin.y, 10);
+
+      Vector2d edgelOnFieldEnd = CameraGeometry::angleToPointInImage(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        e.end.x,
+        e.end.y) * 1000;
+
+      PEN("0000FF", 5);
+      CIRCLE(edgelOnFieldEnd.x, edgelOnFieldEnd.y, 10);
+    }//end for
   );
 
 

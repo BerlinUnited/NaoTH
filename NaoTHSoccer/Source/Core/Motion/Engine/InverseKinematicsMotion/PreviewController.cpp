@@ -57,11 +57,14 @@ void PreviewController::loadParameter()
   path += "platform/";
   path += naoth::Platform::getInstance().thePlatform;
   path += "/previewControl.prm";
-  std::cout << "[PreviewController] load " << path << endl;
     
   // open the stream
   ifstream ifs(path.c_str());
-  ASSERT(ifs.good());
+  if(!ifs.good()){
+    THROW("[PreviewController] ERROR: load " << path << endl);
+  } else {
+    std::cout << "[PreviewController] load " << path << endl;
+  }
       
   // read the header
   double length_f(0.0), number_of_entries(0.0);

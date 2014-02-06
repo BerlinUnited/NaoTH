@@ -104,6 +104,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
   platformInterface.registerInputChanel(getCameraInfoTop());
+  platformInterface.registerInputChanel(getCameraMatrixOffset());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
 

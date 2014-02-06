@@ -63,7 +63,6 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
 
   PROVIDE(TeamMessageDataIn)
-  PROVIDE(RCTCTeamMessageDataIn)
 
   PROVIDE(GPSData)
   PROVIDE(GameData)
