@@ -50,7 +50,7 @@ public:
   {
     StepControlRequest()
       :
-      stepID(-1),
+      stepID(0),
       moveLeftFoot(false),
       time(0),
       speedDirection(0)
