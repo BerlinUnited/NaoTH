@@ -27,7 +27,6 @@ TEST_F(StrategyToolsTest, arrangeRobots)
   setPiecePoints.push_back(Vector2d(-2400.0,     0.0));
   setPiecePoints.push_back(Vector2d(-1700.0,  1700.0));
 
-
   std::vector<int> placesToRobots(3);
 
   // init
@@ -43,20 +42,15 @@ TEST_F(StrategyToolsTest, arrangeRobots)
   playersPoints.push_back(Vector2d(-2500.0,     0.0));
   playersPoints.push_back(Vector2d(-1600.0,  1600.0));
   playersPoints.push_back(Vector2d(-1600.0, -1700.0));
-  
 
   strategyTools->arrangeRobots(playersPoints, setPiecePoints, placesToRobots);
 
   std::vector<int> expectedPlacesToRobots;
-  expectedPlacesToRobots.push_back(0);
-  expectedPlacesToRobots.push_back(1);
-  expectedPlacesToRobots.push_back(2);
+  expectedPlacesToRobots.push_back(5);
+  expectedPlacesToRobots.push_back(3);
+  expectedPlacesToRobots.push_back(4);
 
-  for(unsigned int i = 0; i < placesToRobots.size(); i++)
-  {
-    if(placesToRobots[i] != expectedPlacesToRobots[1])
-    {
-      cout << "Assignement Wrong" << endl;
-    }
-  }//end for
+  ASSERT_EQ(expectedPlacesToRobots[0], placesToRobots[0]);
+  ASSERT_EQ(expectedPlacesToRobots[1], placesToRobots[1]);
+  ASSERT_EQ(expectedPlacesToRobots[2], placesToRobots[2]);
 }//end testArrangeRobots
