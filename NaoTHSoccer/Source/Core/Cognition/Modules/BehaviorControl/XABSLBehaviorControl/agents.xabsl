@@ -16,6 +16,7 @@ include "Symbols/team_symbols.xabsl";
 include "Symbols/led_symbols.xabsl";
 include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
+include "Symbols/sound_symbols.xabsl";
 //Experimental
 include "Symbols/field_symbols.xabsl";
 
