@@ -85,6 +85,8 @@ private:
 
     Parameters() : ParameterList("GradientGoalDetectorParameters")
     {
+      PARAMETER_REGISTER(numberOfScanlines) = 5;
+      PARAMETER_REGISTER(scanlinesDistance) = 6;
       PARAMETER_REGISTER(gradientThreshold) = 60;
       PARAMETER_REGISTER(minY) = 140;
       PARAMETER_REGISTER(dist) = 5;
@@ -100,6 +102,8 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
+    int numberOfScanlines;
+    int scanlinesDistance;
     int gradientThreshold;
     int minY;
     int dist;
@@ -145,7 +149,7 @@ private:
     size_t idxE;
   };
 
-  static const int numberOfScanlines = 5;
+  int numberOfScanlines;
   std::vector<std::vector<Feature> > features;
   std::vector<int> lastTestFeatureIdx;
 
