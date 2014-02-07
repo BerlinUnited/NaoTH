@@ -116,21 +116,6 @@ class FieldPerceptRawTop : public FieldPerceptRaw{};
 
 class FieldPerceptTop : public FieldPercept{};
 
-namespace naoth
-{
-  template<>
-  class Serializer<FieldPercept>
-  {
-  public:
-    static void serialize(const FieldPercept& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, FieldPercept& representation);
-  };
-
-  template<> class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>{};
-
-  template<> class Serializer<FieldPerceptRaw> : public Serializer<FieldPercept>{};
-  template<> class Serializer<FieldPerceptRawTop> : public Serializer<FieldPercept>{};
-}
 
 
 #endif /* _FIELDPERCEPT_H */

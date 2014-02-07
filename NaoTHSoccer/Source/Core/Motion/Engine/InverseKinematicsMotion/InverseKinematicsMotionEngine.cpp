@@ -561,7 +561,7 @@ double InverseKinematicsMotionEngine::solveHandsIK(
 
 void InverseKinematicsMotionEngine::autoArms(
   const RobotInfo& theRobotInfo,
-  const HipFeetPose& pose, 
+  const HipFeetPose& /* pose */,
   double (&position)[JointData::numOfJoint])
 {
   double target[JointData::LElbowYaw + 1];
@@ -625,7 +625,7 @@ void InverseKinematicsMotionEngine::autoArms(
 
 void InverseKinematicsMotionEngine::armsOnBack(
   const RobotInfo& theRobotInfo,
-  const HipFeetPose& pose,
+  const HipFeetPose& /* pose */,
   double (&position)[JointData::numOfJoint])
 {
   double target[JointData::LElbowYaw + 1];

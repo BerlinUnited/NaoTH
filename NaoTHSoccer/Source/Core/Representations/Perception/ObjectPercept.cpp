@@ -66,13 +66,3 @@ void ObjectPercept::print(ostream& stream) const
   stream << "Obstacle Count: " << numOfSeenObstacles << "/" << MAXNUMBEROFOBSTACLES << endl;
 }//end print
 
-
-void Serializer<ObjectPercept>::serialize(const ObjectPercept& representation, std::ostream& stream)
-{
-  
-}//end serialize
-
-void Serializer<ObjectPercept>::deserialize(std::istream& stream, ObjectPercept& representation)
-{
-  
-}//end deserialize
