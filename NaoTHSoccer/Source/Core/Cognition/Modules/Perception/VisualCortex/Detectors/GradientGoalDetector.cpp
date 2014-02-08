@@ -75,6 +75,12 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     return;
   }
 
+  //minimal 2  or more at all points have to be found
+  if(params.minGoodPoints < 2)
+  {
+    return;
+  }
+
   GT_TRACE("GradientGoalDetector:initializeScan");
   
   // clamp the scanline
@@ -96,7 +102,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
 
   // clear the features
-  for(size_t i = 0; i < features.size(); i++) {
+  for(int i = 0; i < params.numberOfScanlines; i++) {
      features[i].clear();
   }
 
@@ -120,38 +126,29 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   Vector2d scanDirection(-direction.y, direction.x); // orthogonal to the horizontal scan
 
-  for(size_t i = 0; i < features[0].size(); i++)
+  for(int scanLineId = 0; scanLineId < params.numberOfScanlines - (params.minGoodPoints - 1); scanLineId++)
   {
-    const Feature& candidate = features[0][i];
-
-    //check found features for goodness
-    const std::vector<Feature>& goodFeatures = checkForGoodFeatures(scanDirection, candidate, threshold, thresholdY);
-
-    GT_TRACE("GradientGoalDetector:getGoodFeatures");
-    if(goodFeatures.size() >= (size_t) params.minGoodPoints)
+    for(size_t i = 0; i < features[scanLineId].size(); i++)
     {
-      Vector2d postScanDirection(scanDirection);
-      if(goodFeatures.size() > 1) {
-        postScanDirection = findBestDownScanDirection(goodFeatures);
+      Feature& candidate = features[scanLineId][i];
+
+      if(!candidate.used)
+      {
+        //check found features for goodness
+        const std::vector<Feature>& goodFeatures = checkForGoodFeatures(scanDirection, candidate, scanLineId, threshold, thresholdY);
+
+        GT_TRACE("GradientGoalDetector:getGoodFeatures");
+        if(goodFeatures.size() >= (size_t) params.minGoodPoints)
+        {
+          Vector2d postScanDirection(scanDirection);
+          postScanDirection = findBestDownScanDirection(goodFeatures);
+
+          //scan along the post to find the foot point of it to be sure its on the field
+          scanForFootPoints(postScanDirection, goodFeatures.back().center, threshold, thresholdY, horizon);
+        }//end if
       }
-
-      //scan along the post to find the foot point of it to be sure its on the field
-      scanForFootPoints(postScanDirection, goodFeatures.back().center, threshold, thresholdY, horizon);
-    }//end if
-
-    //mark if candites is post or other possible obstacle
-    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
-      for(size_t i = 0; i < goodFeatures.size(); i++) {
-        const Feature& feature = goodFeatures[i];
-        if(feature.possibleObstacle) {
-          POINT_PX(ColorClasses::pink, feature.center.x, feature.center.y);
-        } else {
-          POINT_PX(ColorClasses::red, feature.center.x, feature.center.y);
-        }
-      }
-    );
-
-  }//end for features[0].size()
+    }//end for features[0].size()
+  }
   GT_TRACE("GradientGoalDetector:setGoalPostPercept");
 
   // exactly two posts are seen => assign site labels
@@ -198,13 +195,11 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
   if(start < 0)
   {
     start = 2;
-    //stop = stop - start + 2;
   }
 
   if(stop > (int) getImage().height())
   {
     start = start - (stop - getImage().height() - 2);
-    //stop = getImage().height() - 2;
   }
   int y = start;
   for(int yy = 0; yy < params.numberOfScanlines; yy++)
@@ -227,7 +222,6 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
       if(pointBuffer.isFull())
       {
         response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-        //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
         responseY = valueBufferY[2];
         response /= 10;
         DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:draw_scanlines",
@@ -256,7 +250,7 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
             lastResponseY = responseY;
           }
         );
-        if(/*fabs*/(response) >= threshold && fabs(responseY) >= thresholdY)
+        if(response >= threshold && fabs(responseY) >= thresholdY)
         {
           if(!isCandidate)
           {
@@ -271,19 +265,6 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
             }
           }
           isCandidate = true;
-          if(isObstacle)
-          {
-            candidate.possibleObstacle = isObstacle;
-            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
-              POINT_PX(ColorClasses::orange, pos.x - 2, pos.y);
-            );
-          }
-          else
-          {
-            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
-              POINT_PX(ColorClasses::blue, pos.x - 2, pos.y);
-            );
-          }
         }
         else
         {
@@ -294,6 +275,19 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
             candidate.responseAtEnd.x = response;
             candidate.responseAtEnd.y = diffVU;
             features[aktIdx].push_back(candidate);
+            if(isObstacle)
+            {
+              candidate.possibleObstacle = isObstacle;
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
+                LINE_PX(ColorClasses::orange, candidate.begin.x, candidate.begin.y, candidate.end.x, candidate.end.y);
+              );
+            }
+            else
+            {
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markPeaks", 
+                LINE_PX(ColorClasses::blue, candidate.begin.x, candidate.begin.y, candidate.end.x, candidate.end.y);
+              );
+            }
           }
           isCandidate = false;
           isObstacle = false;
@@ -305,13 +299,16 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
   }//end for
 }//end getFeatureResponses
 
-std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY)
+std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY)
 {
   STOPWATCH_START("GradientGoalDetector:checkForGoodFeatures");
   double response = 0.0;
+  double lastResponse = 0.0;
   double responseY = 0.0;
+  double lastResponseY = 0.0;
 
   std::vector<Feature> goodFeatures;
+  candidate.used = true;
   goodFeatures.push_back(candidate);
 
   Pixel pixel;
@@ -319,93 +316,96 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
   Vector2d scanDirection(scanDir);
 
   Vector2i pos(candidate.center);
-  valueBuffer.init();
-  valueBufferY.init();
-  pointBuffer.init();
-    
+
+  IMG_GET(pos.x, pos.y, pixel);
+  int diffVU = (int) pixel.v - (int) pixel.u;
+  for(int i = 0; i < 5; i++)
+  {
+    int y = pixel.y;
+    int vu = diffVU;
+    valueBuffer.add(diffVU);
+    valueBufferY.add(y);
+  }
+
   Vector2d last(pos);
   BresenhamLineScan goodFeatureScanner(pos, scanDirection, getImage().cameraInfo);
 
   double sumSquareError = 0.0;
 
-  //std::cout << std::endl << "****************" << std::endl;
-
   //scan 5 times (because 5 scanlines) 5 steps (because 5 pixel between 2 scanlines) along a normal 
   //of the horizon, to be able to validate features near that normal as good ones
-  for(size_t y = 1; y < features.size(); y++)
+  for(int y = scanLineId + 1; y < params.numberOfScanlines; y++)
   {
     bool stop = false;
-    for(int yy = 0; yy < params.numberOfScanlines && goodFeatureScanner.pixelCount < goodFeatureScanner.numberOfPixels - 1; yy++)
+
+    for(int yy = 0; !stop && yy < params.scanlinesDistance && goodFeatureScanner.pixelCount < goodFeatureScanner.numberOfPixels - 1; yy++)
     {
-      int aktY = pos.y;
       goodFeatureScanner.getNext(pos);
-      if(aktY + yy >= pos.y) break;
       DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
         POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
       );
-      pointBuffer.add(pos);
       IMG_GET(pos.x, pos.y, pixel);
       int diffVU = (int) pixel.v - (int) pixel.u;
       valueBuffer.add(diffVU);
       valueBufferY.add(pixel.y);
 
-      if(yy > 0)
+      response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
+      responseY = valueBufferY[2];
+      response /= 10;
+      if(response < threshold || fabs(responseY) < thresholdY)
       {
-        response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-        //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
-        responseY = valueBufferY[2];
-        response /= 10;
-        if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
-        {
-          stop = true;
-        }
+        stop = true;
       }
     }
     //try to find matching features of next scanline
     unsigned j = lastTestFeatureIdx[y];
     while (!stop && j < features[y].size())
     {
-      int dist = (pos - features[y][j].center).abs();
-      if(dist < params.dist)
+      if(!features[y][j].used)
       {
-        goodFeatures.push_back(features[y][j]);
-        cv::Vec4f line = fitLine(goodFeatures);
-        Vector2d v(line[0], line[1]);
-        Vector2d n(line[1], line[0]);
-        Vector2d b(line[2], line[3]);
-
-        //get squared distance to new point from line
-        Math::Line lDir(b, v);
-        Math::Line nDir(pos, n);
-        Vector2d intersectionPoint = lDir.point(lDir.intersection(nDir)); 
-        double squareError = (Vector2d(pos) - intersectionPoint).abs2();
-
-        //if error does not raise leave the point to the good points list else drop it out
-        if(squareError <= params.maxSquareError || sumSquareError == 0.0)
+        int dist = (pos - features[y][j].center).abs();
+        if(dist < params.dist)
         {
-          if(v.y < 0) { v *= -1.0; }
-          scanDirection = v;
-          sumSquareError += squareError;
-          lastTestFeatureIdx[y] = j;
-          Vector2i newPos((int) intersectionPoint.x, (int) intersectionPoint.y);
-          
-          if(!getImage().isInside(newPos.x, newPos.y))
+          features[y][j].used = true;
+          goodFeatures.push_back(features[y][j]);
+          cv::Vec4f line = fitLine(goodFeatures);
+          Vector2d v(line[0], line[1]);
+          Vector2d n(line[1], line[0]);
+          Vector2d b(line[2], line[3]);
+
+          //get squared distance to new point from line
+          Math::Line lDir(b, v);
+          Math::Line nDir(pos, n);
+          Vector2d intersectionPoint = lDir.point(lDir.intersection(nDir)); 
+          double squareError = (Vector2d(pos) - intersectionPoint).abs2();
+
+          //if error does not raise leave the point to the good points list else drop it out
+          if(squareError <= params.maxSquareError || sumSquareError == 0.0)
           {
-            newPos = features[y][j].center;
-          }
-          goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
-          pos = newPos;
+            if(v.y < 0) { v *= -1.0; }
+            scanDirection = v;
+            sumSquareError += squareError;
+            lastTestFeatureIdx[y] = j;
+            Vector2i newPos((int) intersectionPoint.x, (int) intersectionPoint.y);
+          
+            if(!getImage().isInside(newPos.x, newPos.y))
+            {
+              newPos = features[y][j].center;
+            }
+            goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
+            pos = newPos;
                 
-          DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-            POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
-          );
-          //std::cout << y << "," <<j << " meanSquareError = " << (sumSquareError / y) << std::endl;
+            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
+              CIRCLE_PX(ColorClasses::black, features[y][j].center.x, features[y][j].center.y, 3);
+              POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
+            );
+          }
+          else
+          {
+            goodFeatures.pop_back();
+          }
+          stop = true;
         }
-        else
-        {
-          goodFeatures.pop_back();
-        }
-        stop = true;
       }
       j++;
     }
@@ -468,7 +468,6 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     valueBufferY.add(pixel.y);
 
     response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-    //response = valueBuffer[4] + 2 * valueBuffer[3]  - valueBuffer[1] * 2 - valueBuffer[0];
     responseY = valueBufferY[2];
     response /= 10;
 
@@ -492,12 +491,11 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     IMG_GET((int) pointBuffer[4].x, (int) pointBuffer[4].y, pixel1);
     IMG_GET((int) pointBuffer[3].x, (int) pointBuffer[3].y, pixel2);
     IMG_GET((int) pointBuffer[2].x, (int) pointBuffer[2].y, pixel3);
-    if(/*fabs*/(response) < params.responseHoldFactor * threshold || fabs(responseY) < params.responseHoldFactor * thresholdY)
+    if(response < threshold || fabs(responseY) < thresholdY)
     {
       stop = true;
       if
       (
-        //c > params.minScanPointsAfterGoodPoints && 
         (getFieldColorPercept().isFieldColor(pixel1) || getFieldColorPercept().isFieldColor(pixel2) || getFieldColorPercept().isFieldColor(pixel3))
       )
       {

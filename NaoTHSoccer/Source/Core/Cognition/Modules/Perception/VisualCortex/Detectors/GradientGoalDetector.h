@@ -126,6 +126,7 @@ private:
     Vector2d responseAtEnd;
 
     bool possibleObstacle;
+    bool used;
 
     Feature()
     :
@@ -133,7 +134,8 @@ private:
       end(-1, -1),
       responseAtBegin(0.0, 0.0),
       responseAtEnd(0.0, 0.0),
-      possibleObstacle(false)
+      possibleObstacle(false),
+      used(false)
     {
 
     }
@@ -158,7 +160,7 @@ private:
   //std::vector<TestFeature> testFeatures;
 
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
-  std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
+  std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   Vector2d findBestDownScanDirection(const std::vector<Feature>& features);
   cv::Vec4f fitLine(const std::vector<Feature>& features);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
