@@ -93,7 +93,7 @@ void ColorCalibrator::calibrateColorRegionGoal(const naoth::Image& image)
   PixelT<int> ccIdx; ccIdx.y = 0; ccIdx.u = 0; ccIdx.v = 0;
   PixelT<int> ccDist; ccDist.y = 0; ccDist.u = 0; ccDist.v = 0;
 
-  getAverageDistances(image, ccdIdx, ccdDist, ccIdx, ccDist);
+  getAverageDistances(image /*, ccdIdx, ccdDist, ccIdx, ccDist*/);
 
   calculateRegions(ccdIdx, ccdDist, ccIdx, ccDist);
 
@@ -120,7 +120,7 @@ void ColorCalibrator::getAverageDistances
   PixelT<int> ccIdx; ccIdx.y = 0; ccIdx.u = 0; ccIdx.v = 0;
   PixelT<int> ccDist; ccDist.y = 0; ccDist.u = 0; ccDist.v = 0;
 
-  getAverageDistances(image, ccdIdx, ccdDist, ccIdx, ccDist);
+  getAverageDistances(image /*, ccdIdx, ccdDist, ccIdx, ccDist*/);
   calculateRegions(ccdIdx, ccdDist, ccIdx, ccDist);
 
   param.set(ccdIdx, ccdDist);
@@ -129,11 +129,11 @@ void ColorCalibrator::getAverageDistances
 
 void ColorCalibrator::getAverageDistances
 (
-  const naoth::Image& image,
+  const naoth::Image& image /*,
   colorPixel& ccdIdx,
   colorPixel& ccdDist,
   PixelT<int>& ccIdx,
-  PixelT<int>& ccDist
+  PixelT<int>& ccDist*/
 )
 {
   for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)

@@ -98,12 +98,12 @@ public:
 
   WholeArea() {}
 
-  virtual bool isInside(const Vector2i& point) const
+  virtual bool isInside(const Vector2i& /*point*/) const
   {
     return true;
   }
 
-  virtual ~WholeArea() {};
+  virtual ~WholeArea() {}
 };
 
 #endif // __BlobFinder_H_

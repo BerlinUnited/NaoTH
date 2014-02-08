@@ -214,7 +214,7 @@ public:
 
   ColorRegionParameter(std::string regionName, ColorClasses::Color regionColor)
   : 
-    ColorRegion(color),
+    ColorRegion(regionColor),
     ParameterList("ColorRegion_" + regionName)
   {
     PARAMETER_REGISTER(colorChannelDistance.Y) = colorChannelDistance.Y;        

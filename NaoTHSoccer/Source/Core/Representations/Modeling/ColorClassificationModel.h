@@ -26,8 +26,11 @@ public:
     DEBUG_REQUEST_REGISTER("ColorClassificationModel:use_simpleColorClassifier", "", false);
   }
 
-  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  inline ColorClasses::Color getColorClass(const Pixel& p) const
   {
+    unsigned char b = p.b;
+    unsigned char c = p.c;
+
     // ball color
       double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
       unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
@@ -82,7 +85,7 @@ public:
 
     // simple classifier (used for tests)
     DEBUG_REQUEST("ColorClassificationModel:use_simpleColorClassifier",
-      return simpleColorClassifier.getColorClass(p.y, p.u, p.v);
+      return simpleColorClassifier.getColorClass(p);
     );
 
     if(baseColorRegionPerceptValid)

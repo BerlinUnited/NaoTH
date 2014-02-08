@@ -89,11 +89,11 @@ private:
 
   void getAverageDistances
   (
-    const naoth::Image& image,
+    const naoth::Image& image/*,
     colorPixel& ccdIdx,
     colorPixel& ccdDist,
     PixelT<int>& ccIdx,
-    PixelT<int>& ccDist
+    PixelT<int>& ccDist*/
   );
 
   void calculateRegions
