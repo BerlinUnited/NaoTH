@@ -337,6 +337,7 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
     for(int yy = 0; !stop && yy < params.scanlinesDistance && goodFeatureScanner.pixelCount < goodFeatureScanner.numberOfPixels - 1; yy++)
     {
       goodFeatureScanner.getNext(pos);
+      pointBuffer.add(pos);
       DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
         POINT_PX(ColorClasses::skyblue, pos.x, pos.y);
       );
