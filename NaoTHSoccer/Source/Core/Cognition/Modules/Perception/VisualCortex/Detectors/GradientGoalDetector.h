@@ -139,7 +139,6 @@ private:
     {
 
     }
-
   };
 
   class TestFeature

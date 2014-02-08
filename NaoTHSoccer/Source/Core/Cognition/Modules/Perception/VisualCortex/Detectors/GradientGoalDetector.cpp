@@ -303,9 +303,7 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
 {
   STOPWATCH_START("GradientGoalDetector:checkForGoodFeatures");
   double response = 0.0;
-  double lastResponse = 0.0;
   double responseY = 0.0;
-  double lastResponseY = 0.0;
 
   std::vector<Feature> goodFeatures;
   candidate.used = true;
@@ -321,10 +319,8 @@ std::vector<GradientGoalDetector::Feature> GradientGoalDetector::checkForGoodFea
   int diffVU = (int) pixel.v - (int) pixel.u;
   for(int i = 0; i < 5; i++)
   {
-    int y = pixel.y;
-    int vu = diffVU;
     valueBuffer.add(diffVU);
-    valueBufferY.add(y);
+    valueBufferY.add(pixel.y);
   }
 
   Vector2d last(pos);
