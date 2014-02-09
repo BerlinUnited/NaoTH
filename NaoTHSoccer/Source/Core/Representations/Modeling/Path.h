@@ -13,7 +13,7 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
-class Path: public naoth::Printable
+class Path
 {
 private:
   unsigned int _timeNoNodeExpandable;
@@ -47,11 +47,6 @@ public:
     }
     _frameInfoWhenNoNodeExpanded = frameInfo;
   }//end setFrameInfoWhenBallWasSeen
-
-  virtual void print(std::ostream& stream) const
-  {
-  }//end print
-
 };
 
 #endif // end PATH_H_

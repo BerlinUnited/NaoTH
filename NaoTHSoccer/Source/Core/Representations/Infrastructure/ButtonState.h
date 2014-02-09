@@ -13,10 +13,10 @@ class ButtonEvent
 public:
   enum EventType
   {
+    NONE,
     PRESSED,
     RELEASED,
-    CLICKED, // button is pressed not longer than 1s
-    NONE
+    CLICKED  // button is pressed not longer than 1s
   } eventState;
 
   unsigned int timeOfLastEvent;
@@ -25,6 +25,16 @@ public:
   ButtonEvent() : eventState(NONE), timeOfLastEvent(0) {}
   void operator=(EventType id) { eventState = id; }
   bool operator==(EventType id) const { return this->eventState == id; }
+
+  std::string print() const
+  {
+    switch(eventState) {
+      case PRESSED: return "PRESSED";
+      case RELEASED: return "RELEASED";
+      case CLICKED: return "CLICKED";
+      default: return "NONE";
+    }
+  }
 };
 
 class ButtonState: public naoth::Printable
@@ -45,6 +55,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
+    stream << "Chest: " << buttons[Chest].print() << std::endl;
   }
 };
 

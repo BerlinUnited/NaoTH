@@ -9,13 +9,12 @@
 #define __MCSLParameters_h_
 
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/DataStructures/Printable.h>
 
-class MCSLParameters: public ParameterList, public naoth::Printable
+class MCSLParameters: public ParameterList
 {
 public: 
   MCSLParameters();
-  ~MCSLParameters();
+  virtual ~MCSLParameters();
 
   // standart deviations for the gausian angle and distance model
 
@@ -61,9 +60,6 @@ public:
 
   double minUpdateWeight;
   double downWeightFactorOwnHalf;
-
-  virtual void print(std::ostream& stream) const {}
-
 };
 
 #endif //__MCSLParameters_h_

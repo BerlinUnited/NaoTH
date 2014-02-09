@@ -72,7 +72,7 @@ public:
       getRobotInfo(), 
       getGroundContactModel(),
       getInertialSensorData(),
-      c.hip, c.feet.left, c.feet.right);
+      c.hip);
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
