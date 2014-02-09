@@ -34,7 +34,7 @@ public:
   const naoth::FrameInfo& getFrameInfoWhenNoNodeExpanded(){return _frameInfoWhenNoNodeExpanded;}
   // time how long we can't expand any nodes
   //const unsigned int& timeNoNodeExpandable;
-  const unsigned int getTimeNoNodeExpandable(){return _timeNoNodeExpandable;}
+  unsigned int getTimeNoNodeExpandable() const {return _timeNoNodeExpandable;}
 
   void setFrameInfoWhenNodeWasNotExpanded(const naoth::FrameInfo& frameInfo)
   {
