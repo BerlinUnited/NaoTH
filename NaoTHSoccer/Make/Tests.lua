@@ -1,5 +1,3 @@
---local EXTERN_PATH = "../../../Extern"
-
 project "NaoTHSoccer-Tests"
   kind "ConsoleApp"
   language "C++"
@@ -24,9 +22,11 @@ project "NaoTHSoccer-Tests"
   links {"NaoTHSoccer", "NaoTH-Commons", 
     "glib-2.0",
 	"gio-2.0",
-	"gobject-2.0", 
+	"gobject-2.0",
+	"gmodule-2.0",
+	"gthread-2.0",
 	"protobuf",
-    "gtest", 
+	"gtest", 
 	"gmock"
   }
   
@@ -34,4 +34,3 @@ project "NaoTHSoccer-Tests"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
-    --postbuildcommands {"../dist/Native/executeTests"}
