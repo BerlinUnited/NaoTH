@@ -148,7 +148,7 @@ namespace motion_symbols("Motion Symbols") {
   {
     left,
     right  
-   };
+  };
    
   /** Parameter of the kick */
   float output motion.kick.point.x [mm];
