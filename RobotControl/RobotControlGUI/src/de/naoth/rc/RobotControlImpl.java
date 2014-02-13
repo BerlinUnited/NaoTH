@@ -14,7 +14,8 @@ import bibliothek.gui.dock.station.split.SplitDockGrid;
 import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
-import de.naoth.rc.server.IMessageServerParent;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import java.awt.*;
 import java.io.*;
@@ -28,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
@@ -41,8 +43,7 @@ import org.apache.commons.lang.StringUtils;
  */
 @PluginImplementation
 public class RobotControlImpl extends javax.swing.JFrame
-  implements ByteRateUpdateHandler,
-  IMessageServerParent, RobotControl
+  implements ByteRateUpdateHandler, RobotControl
 {
 
   private static final String configlocation = System.getProperty("user.home")
@@ -69,13 +70,24 @@ public class RobotControlImpl extends javax.swing.JFrame
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
       UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
-    catch(Exception ex)
+    catch(UnsupportedLookAndFeelException ex)
     {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     initComponents();
 
+    try {
+        int x = Integer.parseInt(getConfig().getProperty("frame.position.x"));
+        int y = Integer.parseInt(getConfig().getProperty("frame.position.y"));
+        int width = Integer.parseInt(getConfig().getProperty("frame.width"));
+        int height = Integer.parseInt(getConfig().getProperty("frame.height"));
+        int extendedstate = Integer.parseInt(getConfig().getProperty("frame.extendedstate"));
+        setBounds(x, y, width, height);
+        setExtendedState(extendedstate);
+    } catch (NumberFormatException ex) {
+        // no info necessary
+    }
 
     // create the frontend and set some properties
     frontend = new DockFrontend(this);
@@ -95,18 +107,36 @@ public class RobotControlImpl extends javax.swing.JFrame
     // load the layout
     readLayoutFromFile();
 
-
-
     // icon
     Image icon = Toolkit.getDefaultToolkit().getImage(
       this.getClass().getResource("res/RobotControlLogo128.png"));
     setIconImage(icon);
 
 
-    this.messageServer = new MessageServer(this);
+    this.messageServer = new MessageServer();
+    this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
+    {
+        @Override
+        public void connected(ConnectionStatusEvent event) {
+            disconnectMenuItem.setEnabled(true);
+            connectMenuItem.setEnabled(false);
+            lblConnect.setText("Connected to " + event.getAddress());
+        }
+
+        @Override
+        public void disconnected(ConnectionStatusEvent event) {
+            disconnectMenuItem.setEnabled(false);
+            connectMenuItem.setEnabled(true);
+            lblConnect.setText("Not connected");
+            if(event.getMessage() != null) {
+                JOptionPane.showMessageDialog(RobotControlImpl.this,
+                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    });
 
     // connection dialog
-    this.connectionDialog = new ConnectionDialog(this, this);
+    this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
     disconnectMenuItem.setEnabled(false);
   }//end constructor
 
@@ -490,24 +520,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
 
-  @Override
-  public void showConnected(boolean isConnected)
-  {
-    disconnectMenuItem.setEnabled(isConnected);
-    connectMenuItem.setEnabled(!isConnected);
-
-    if(isConnected)
-    {
-      lblConnect.setText("Connected to " + messageServer.getAddress().toString());
-    }
-    else
-    {
-      lblConnect.setText("Not connected");
-    }
-  }
 
   @Override
-  public Properties getConfig()
+  final public Properties getConfig()
   {
     if(fConfig == null || config == null)
     {
@@ -548,6 +563,14 @@ public class RobotControlImpl extends javax.swing.JFrame
       }
     }
     getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
+    
+    // remember the window size and position
+    getConfig().put("frame.position.x", Integer.toString(getX()));
+    getConfig().put("frame.position.y", Integer.toString(getY()));
+    getConfig().put("frame.width", Integer.toString(getWidth()));
+    getConfig().put("frame.height", Integer.toString(getHeight()));
+    getConfig().put("frame.extendedstate", Integer.toString(getExtendedState()));
+
     // save configuration to file
     try
     {
@@ -573,8 +596,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       frontend.read(new DataInputStream(new FileInputStream(layoutFile)));
     }
-    catch(Exception ex)
+    catch(IOException ex)
     {
+      Helper.handleException(ex);
     }
   }
 
@@ -586,7 +610,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     }
     catch(Exception ex)
     {
-      //ex.printStackTrace();
+      Helper.handleException(ex);
     }
   }//end configureDocking
 

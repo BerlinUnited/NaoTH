@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * class.
  * @author thomas
  */
-public class MessageServer
+public class MessageServer extends AbstractMessageServer
 {
 
   /**
@@ -62,20 +62,12 @@ public class MessageServer
   private List<SingleExecEntry> answerRequestQueue;
   private boolean isActive;
 
-  private IMessageServerParent parent;
-
   private long receivedBytes;
   private long sentBytes;
 
   public MessageServer()
   {
-    this(null);
-  }
-
-  public MessageServer(IMessageServerParent parent)
-  {
     this.serverSocket = null;
-    this.parent = parent;
     this.receivedBytes = 0;
     this.sentBytes = 0;
 
@@ -116,10 +108,7 @@ public class MessageServer
     
     isActive = true;
 
-    if(parent != null)
-    {
-      parent.showConnected(true);
-    }
+    this.fireConnected(this.address);
 
     // create and start the sender thread
     this.senderThread = new Thread(new Runnable()
@@ -136,6 +125,7 @@ public class MessageServer
           isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
           close_connection();
+          MessageServer.this.fireDisconnected(ex.getMessage());
         }
         catch(Exception ex)
         {
@@ -143,6 +133,7 @@ public class MessageServer
             "Unexpected exception...",
             ex);
           close_connection();
+          MessageServer.this.fireDisconnected(ex.getMessage());
         }
       }
     });
@@ -155,26 +146,6 @@ public class MessageServer
   {
     if(serverSocket != null && serverSocket.isConnected())
     {
-      // is it necessary?
-      // In case the serverSocket is broken this end up in a 
-      // deadlock...
-      /*
-      try
-      {
-        // cleanup
-        ByteBuffer buffer = ByteBuffer.allocate(1);
-        serverSocket.configureBlocking(false);
-        while(serverSocket.read(buffer) > 0)
-        {
-          buffer.clear();
-        }
-      }
-      catch(IOException ex)
-      {
-        // ignore
-      }
-      */
-
       // call error handlers of remaining requests
       for(SingleExecEntry a : answerRequestQueue)
       {
@@ -185,7 +156,6 @@ public class MessageServer
       }
       answerRequestQueue.clear();
 
-
       // disconnect
       try
       {
@@ -193,17 +163,12 @@ public class MessageServer
       }
       catch(IOException ex)
       {
-        //TODO: ignore?!
+        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+            "Unexpected exception...",
+            ex);
       }
       serverSocket = null;
-
-      // notifiy disconnect
-      if(parent != null)
-      {
-        parent.showConnected(false);
-      }
     }//end if
-
   }//end close_connection
   
   
@@ -221,6 +186,7 @@ public class MessageServer
     }//end if
     
     close_connection();
+    MessageServer.this.fireDisconnected(null);
     
   }//end disconnect
 
@@ -228,14 +194,14 @@ public class MessageServer
   public InetSocketAddress getAddress()
   {
     return address;
-  }//end getAddress
+  }
 
   
   /** Return whether RC is connected to a robot */
   public boolean isConnected()
   {
     return serverSocket != null && serverSocket.isConnected();
-  }//end isConnected
+  }
 
   /**
    * Add a {@link CommandSender} to the repeating schedule.

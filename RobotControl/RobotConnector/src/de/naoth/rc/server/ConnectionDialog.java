@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -26,25 +27,30 @@ import javax.swing.KeyStroke;
 public class ConnectionDialog extends javax.swing.JDialog
 {
 
-  private MessageServer messageServer;
-  private IMessageServerParent messageServerParent;
-  private ArrayList<String> addressReqistry;
+  private final MessageServer messageServer;
+  private final Properties properties;
+  private final ArrayList<String> addressReqistry;
 
-  /** Creates new form ConnectionDialog */
-  public ConnectionDialog(java.awt.Frame parent, IMessageServerParent messageServerParent)
+  public ConnectionDialog(java.awt.Frame parent, MessageServer messageServer)
+  {
+      this(parent, messageServer, new Properties());
+  }
+          
+  public ConnectionDialog(java.awt.Frame parent, MessageServer messageServer, Properties properties)
   {
     super(parent, true);
     initComponents();
-    this.messageServerParent = messageServerParent;
-    this.messageServer = messageServerParent.getMessageServer();
+    
+    this.messageServer = messageServer;
+    this.properties = properties;
 
-    String host = messageServerParent.getConfig().getProperty("hostname");
+    String host = this.properties.getProperty("hostname");
     if(host != null)
     {
       cbHost.setSelectedItem(host);
     }
 
-    String port = messageServerParent.getConfig().getProperty("port");
+    String port = this.properties.getProperty("port");
     if(port != null)
     {
       txtPort.setText(port);
@@ -71,6 +77,7 @@ public class ConnectionDialog extends javax.swing.JDialog
 
     // close by pressing esc
     ActionListener actionListener = new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent actionEvent) {
         dispose();
       }
@@ -187,10 +194,10 @@ public class ConnectionDialog extends javax.swing.JDialog
         String host = (String) cbHost.getSelectedItem();
         int port = Integer.parseInt(txtPort.getText());
         
-        messageServer.connect(host, port);
+        this.messageServer.connect(host, port);
 
-        messageServerParent.getConfig().put("hostname", host);
-        messageServerParent.getConfig().put("port", "" + port);
+        this.properties.put("hostname", host);
+        this.properties.put("port", "" + port);
 
         DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
         if(!addressReqistry.contains(host))
@@ -220,7 +227,7 @@ public class ConnectionDialog extends javax.swing.JDialog
         try
         {
           txtPort.setText("" + currentPort);
-          messageServer.connect(host, currentPort);
+          this.messageServer.connect(host, currentPort);
 
           wasConnected = true;
 
@@ -236,7 +243,7 @@ public class ConnectionDialog extends javax.swing.JDialog
         try
         {
           txtPort.setText("" + currentPort);
-          messageServer.connect(host, currentPort);
+          this.messageServer.connect(host, currentPort);
 
           wasConnected = true;
 
@@ -249,8 +256,8 @@ public class ConnectionDialog extends javax.swing.JDialog
 
       if(wasConnected)
       {
-        messageServerParent.getConfig().put("hostname", (String) cbHost.getSelectedItem());
-        messageServerParent.getConfig().put("port", txtPort.getText());
+        this.properties.put("hostname", (String) cbHost.getSelectedItem());
+        this.properties.put("port", txtPort.getText());
 
         DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
         model.addElement(host);
