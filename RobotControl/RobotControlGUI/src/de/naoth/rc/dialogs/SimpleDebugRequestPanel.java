@@ -10,34 +10,44 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
+import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.manager.DebugRequestManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
  * @author thomas
  */
-@PluginImplementation
 public class SimpleDebugRequestPanel extends AbstractDialog
   implements CommandSender, ObjectListener<String[]>
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public DebugRequestManager dbgRequestManager;
+    @PluginImplementation
+    public static class Plugin extends DialogPlugin<SimpleDebugRequestPanel>
+    {
+        @InjectPlugin
+        public static RobotControl parent;
+        @InjectPlugin
+        public static DebugRequestManager dbgRequestManager;
+        
+        @Override
+        public String getDisplayName()
+        {
+          return "Debug Requests";
+        }
+    }
 
   /** Creates new form DebugRequestPanel */
   public SimpleDebugRequestPanel()
@@ -45,6 +55,20 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     initComponents();
     
     ToolTipManager.sharedInstance().setDismissDelay(60000);
+    
+    // NOTE: experimental auto update on connect
+    /*
+    Plugin.parent.getMessageServer().addConnectionStatusListener(new ConnectionStatusListener() 
+    {
+        @Override
+        public void connected(ConnectionStatusEvent event) {
+            Plugin.dbgRequestManager.addListener(SimpleDebugRequestPanel.this);
+        }
+        @Override
+        public void disconnected(ConnectionStatusEvent event) {
+        }
+    });
+    */
   }
 
   /** This method is called from within the constructor to
@@ -104,13 +128,13 @@ public class SimpleDebugRequestPanel extends AbstractDialog
             
     if (btRefresh.isSelected())
     {
-      if (parent.checkConnected()) {
-        dbgRequestManager.addListener(this);
+      if (Plugin.parent.checkConnected()) {
+        Plugin.dbgRequestManager.addListener(this);
       } else {
         btRefresh.setSelected(false);
       }
     } else {
-      dbgRequestManager.removeListener(this);
+      Plugin.dbgRequestManager.removeListener(this);
     }
 
   }//GEN-LAST:event_btRefreshActionPerformed
@@ -118,13 +142,13 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     private void btUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUpdateActionPerformed
         if (btUpdate.isSelected())
         {
-          if (parent.checkConnected()) {
-            dbgRequestManager.addListener(this);
+          if (Plugin.parent.checkConnected()) {
+            Plugin.dbgRequestManager.addListener(this);
           } else {
             btUpdate.setSelected(false);
           }
         } else {
-          dbgRequestManager.removeListener(this);
+          Plugin.dbgRequestManager.removeListener(this);
         }
     }//GEN-LAST:event_btUpdateActionPerformed
 
@@ -135,12 +159,6 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToolBar toolbarMain;
     // End of variables declaration//GEN-END:variables
-
-  @Init
-  @Override
-  public void init()
-  {
-  }
 
   private void sendCommand(String path, boolean enable)
   {
@@ -155,8 +173,8 @@ public class SimpleDebugRequestPanel extends AbstractDialog
 
   private void send(Command command)
   {
-    if (parent.checkConnected()) {
-      parent.getMessageServer().executeSingleCommand(this, command);
+    if (Plugin.parent.checkConnected()) {
+      Plugin.parent.getMessageServer().executeSingleCommand(this, command);
     }
   }
 
@@ -224,19 +242,14 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     this.debugRequestTree.repaint();
     btRefresh.setSelected(false);
     btUpdate.setSelected(false);
-    dbgRequestManager.removeListener(this);
+    Plugin.dbgRequestManager.removeListener(this);
   }
 
   @Override
   public void errorOccured(String cause)
   {
-    JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
+    btRefresh.setSelected(false);
+    btUpdate.setSelected(false);
+    Plugin.dbgRequestManager.removeListener(this);
   }
-
-  @Override
-  public String getDisplayName()
-  {
-    return "Debug Requests";
-  }
-  
 }
