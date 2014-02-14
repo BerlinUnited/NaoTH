@@ -164,45 +164,41 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
-agent basic_striker("basic_striker", basic_striker_agent);
-
-agent basic_goali("basic_goali", basic_goali_agent);
-
-agent passive_player("passive_player", passive_player_agent);
+agent role_basic_striker("basic_striker", basic_striker_agent);
+agent role_basic_goali("basic_goali", basic_goali_agent);
+agent role_passive_player("passive_player", passive_player_agent);
+agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
+agent role_penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
+agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
 /** The Test agents */
 // Test agents Kicks
 agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
-agent sidekick_test("sidekick_test_agent", sidekick_test_agent);
-agent omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
+agent kick_sidekick_test("sidekick_test_agent", sidekick_test_agent);
+agent kick_omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
 agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent);
-agent walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
+agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
-agent test_benji("test benji level 1", test_benji_agent);
+agent motion_test_benji("test benji level 1", test_benji_agent);
+agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
+agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 
-agent test_walk_lv1("test walk level 1", test_walk_lv1_agent);
-agent test_walk_lv2("test walk level 2", test_walk_lv2_agent);
-agent follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
-agent go_to_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
-agent go_to_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
-agent go_to_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
-agent go_to_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
-agent obstacle_test("obstacle_test", obstacle_test_agent);
+agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
+agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
+agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);
+agent goto_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
+agent goto_clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
+agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
+agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
+agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
+agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
-// Test agents Penalty
-agent penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
-agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
-
-agent arm_back_test("arm_back_test_agent",arm_back_test_agent);
-agent role_change_test ("role_change_test_agent",role_change_test_agent);
-agent clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
-agent turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
-agent simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
-
-agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 
 // Test agents search
-agent only_looking_for_ball("only_looking_for_ball",only_ball_looking);
-agent only_looking_for_goal("only_looking_for_goal",only_goal_looking);
+agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
+agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
+agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
+agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
+
