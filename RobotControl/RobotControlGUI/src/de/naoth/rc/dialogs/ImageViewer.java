@@ -314,8 +314,8 @@ public class ImageViewer extends AbstractDialog
     }
     else
     {
-      debugDrawingManager.removeListener(this.drawingsListener);
-	  this.imageCanvas.getDrawingList().clear();
+      this.debugDrawingManager.removeListener(this.drawingsListener);
+      this.imageCanvas.getDrawingList().clear();
     }
   }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 

@@ -4,7 +4,6 @@
 
 package de.naoth.rc.manager;
 
-import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dialogs.drawings.Circle;
 import de.naoth.rc.dialogs.drawings.Drawable;
@@ -18,12 +17,8 @@ import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.TeamCommMessage;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -39,10 +34,6 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
 
   private static class DummyServer extends MessageServer
   {
-    @Override
-    public void addCommandSender(CommandSender commandSender) {
-      // do nothing
-    }
   }
 
   DummyServer dummyServer = new DummyServer();
@@ -55,6 +46,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
   private String currenId = null;
   private HashMap<String, ArrayList<Drawable>> drawingMap = new HashMap<String, ArrayList<Drawable>>();
 
+  @Override
   public void setCurrenId(String currenId) {
     this.currenId = currenId;
   }

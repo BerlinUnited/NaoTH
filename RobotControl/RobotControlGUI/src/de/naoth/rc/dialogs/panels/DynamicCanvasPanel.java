@@ -37,8 +37,9 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   private boolean showCoordinates = true; 
   private double dragOffsetX;
   private double dragOffsetY;
-  private ArrayList<Drawable> drawingList;
   private boolean antializing;
+  
+  private final ArrayList<Drawable> drawingList = new ArrayList<Drawable>();
 
   public DynamicCanvasPanel()
   {
@@ -57,8 +58,6 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
       this.addMouseWheelListener(this);
     }
     this.setOpaque(true);
-
-    drawingList = new ArrayList<Drawable>();
 
     this.offsetX = 0.0;
     this.offsetY = 0.0;
@@ -122,12 +121,12 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   public void addDrawing(Drawable drawing)
   {
     this.drawingList.add(drawing);
-  }//end addDrawing
+  }
 
   public void removeDrawing(Drawable drawing)
   {
     this.drawingList.remove(drawing);
-  }//end removeDrawing
+  }
 
   @Override
   public String getToolTipText(MouseEvent e)
@@ -146,15 +145,15 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   }
   
   @Override
-  public synchronized void paintComponent(Graphics g)
+  protected void paintComponent(Graphics g)
   {
     super.paintComponent(g);
     Graphics2D g2d = (Graphics2D) g;
     paintDrawings(g2d, offsetX, offsetY, rotation, scale);
-  }//end paintComponent
+  }
   
   
-  public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
+  public synchronized void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
   {
     if (this.antializing)
     {
@@ -183,7 +182,6 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     }
     g2d.translate(-x, -y);
-    
     
     if(this.showCoordinates) {
         drawCoordinateSystem(g2d, this.getSize().width-30, this.getSize().height-30);
@@ -309,7 +307,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     this.scale = scale;
   }
 
-  public synchronized ArrayList<Drawable> getDrawingList()
+  public ArrayList<Drawable> getDrawingList()
   {
     return drawingList;
   }

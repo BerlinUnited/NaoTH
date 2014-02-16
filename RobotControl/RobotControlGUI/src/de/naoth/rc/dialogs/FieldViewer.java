@@ -12,7 +12,6 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.PNGExportFileType;
 import de.naoth.rc.dialogs.Tools.PlainPDFExportFileType;
-import de.naoth.rc.dialogs.drawings.Circle;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
@@ -21,7 +20,6 @@ import de.naoth.rc.dialogs.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2013;
 import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
-import de.naoth.rc.dialogs.drawings.Pen;
 import de.naoth.rc.dialogs.drawings.RadarDrawing;
 import de.naoth.rc.dialogs.drawings.StrokePlot;
 import de.naoth.rc.manager.DebugDrawingManager;
@@ -72,11 +70,10 @@ public class FieldViewer extends AbstractDialog
   
   private Drawable backgroundDrawing;
 
-  private ImageListener imageListener;
+  private final ImageListener imageListener;
   private ImageDrawing imageDrawing;
 
-  private PlotDataListener plotDataListener;
-
+  private final PlotDataListener plotDataListener;
   private StrokePlot strokePlot;
 
   // TODO: this is a hack
@@ -453,10 +450,12 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   {
     this.fieldCanvas.getDrawingList().clear();
     this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
-    if(btTrace.isSelected())
+    if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
-    if(imageDrawing != null)
+    }
+    if(imageDrawing != null) {
         this.fieldCanvas.getDrawingList().add(imageDrawing);
+    }
   }//end clearView
 
   
@@ -470,8 +469,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         resetView();
       }
       DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
-      if(drawingCollection != null)
+      if(drawingCollection != null) {
         this.fieldCanvas.getDrawingList().add(drawingCollection);
+      }
 
       repaint();
     }//end if

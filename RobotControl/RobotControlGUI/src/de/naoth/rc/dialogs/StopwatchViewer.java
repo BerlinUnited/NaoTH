@@ -175,12 +175,7 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
 
   panelStopwatches.removeAll();
   GridLayout layout = (GridLayout) panelStopwatches.getLayout();
-
-  synchronized(panelStopwatches)
-  {
-    layout.setRows(0);
-  }
-  
+  layout.setRows(0);
 }//GEN-LAST:event_btResetActionPerformed
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
