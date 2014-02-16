@@ -7,11 +7,12 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.manager.GenericManager;
+import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.manager.SwingCommandExecutor;
+import de.naoth.rc.manager.SwingCommandListener;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -22,29 +23,17 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 @PluginImplementation
 public class HelpViewer extends AbstractDialog
-  implements CommandSender, ObjectListener<String[]>
+  implements ObjectListener<byte[]>
 {
-
   @InjectPlugin
   public RobotControl parent;
-
-  private Command commandToExecute;
+  @InjectPlugin
+  public SwingCommandExecutor commandExecutor;
 
   /** Creates new form HelpViewer */
   public HelpViewer()
   {
     initComponents();
-  }
-
-  @Init
-  public void init()
-  {
-  }
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
   }
 
   /** This method is called from within the constructor to
@@ -95,92 +84,51 @@ public class HelpViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
-      if(parent.checkConnected())
+      if(this.jToggleButtonRefresh.isSelected())
       {
-        if(jToggleButtonRefresh.isSelected())
-        {
-          Command command = new Command("help");
-          sendCommand(command);
+        if(this.parent.checkConnected()) {
+          this.commandExecutor.executeCommand(this, new Command("help"));
+        } else {
+          this.jToggleButtonRefresh.setSelected(false);
         }
-      }
-      else
-      {
-        jToggleButtonRefresh.setSelected(false);
       }
     }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
     
   @Override
-    public void errorOccured(String cause) {
-        jToggleButtonRefresh.setSelected(false);
-    }
-
-  @Override
-    public void newObjectReceived(String[] object) {
-
-        //this.contentPanel.removeAll();
-        
-        for (String str : object) {
-            
-        }//end for
-        
-        //this.contentPanel.revalidate();
-        jToggleButtonRefresh.setSelected(false);
-    }//end newObjectReceived
-    
-  private void sendCommand(Command command)
+  public void newObjectReceived(byte[] result)
   {
-      commandToExecute = command;
-      this.parent.getMessageServer().executeSingleCommand(this, command);
-  }
-  
-  
-  @Override
-  public void handleResponse(byte[] result, Command originalCommand)
-  {
-    if(originalCommand.getName().equals("help"))
+    String[] commands = new String(result).split("\n");
+    String text = "<h2>" + commands[0] + "</h2>";
+
+    text += "<table>";
+    for(String str: commands)
     {
-        //System.out.println(new String(result));
-        String[] commands = new String(result).split("\n");
-        String text = "<h2>" + commands[0] + "</h2>";
-        
-        text += "<table>";
-        for(String str: commands)
+        int idx = str.indexOf(": ");
+        if(idx > 0)
         {
-            int idx = str.indexOf(": ");
-            if(idx > 0)
-            {
-                text += "<tr>";
-                text += "<td valign=\"top\"><b><u><font color=#0000FF>" + str.substring(0, idx) + "</font></u></b></td>";
-                text += "<td valign=\"top\"><i>" + str.substring(idx + 2) + "</i></td>";
-                text += "</tr>";
-            }
-        }//end for
-        text += "</table><br>";
-        
-        jEditorPane.setText(text);
-        jToggleButtonRefresh.setSelected(false);
-    }//end if
-  }
+            text += "<tr>";
+            text += "<td valign=\"top\"><b><u><font color=#0000FF>" + str.substring(0, idx) + "</font></u></b></td>";
+            text += "<td valign=\"top\"><i>" + str.substring(idx + 2) + "</i></td>";
+            text += "</tr>";
+        }
+    }//end for
+    text += "</table><br>";
 
-  @Override
-  public void handleError(int code)
-  {
-    jToggleButtonRefresh.setSelected(false);
-    JOptionPane.showMessageDialog(this,
-              "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
+    this.jEditorPane.setText(text);
+    this.jToggleButtonRefresh.setSelected(false);
   }
-
+  
   @Override
-  public Command getCurrentCommand()
+  public void errorOccured(String cause)
   {
-    return commandToExecute;
+    dispose();
   }
 
   @Override
   public void dispose()
   {
-    System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-  }//end dispose
+    jToggleButtonRefresh.setSelected(false);
+  }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane jEditorPane;

@@ -13,15 +13,12 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.checkboxtree.SelectableTreeNode;
-import de.naoth.rc.manager.DebugRequestManager;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.manager.SwingCommandExecutor;
+import de.naoth.rc.manager.SwingCommandListener;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
-import de.naoth.rc.server.ConnectionStatusEvent;
-import de.naoth.rc.server.ConnectionStatusListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -31,7 +28,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 public class SimpleDebugRequestPanel extends AbstractDialog
-  implements CommandSender, ObjectListener<String[]>
+  implements ObjectListener<byte[]>
 {
 
     @PluginImplementation
@@ -40,15 +37,14 @@ public class SimpleDebugRequestPanel extends AbstractDialog
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
-        public static DebugRequestManager dbgRequestManager;
+        public static SwingCommandExecutor commandExecutor;
         
         @Override
-        public String getDisplayName()
-        {
+        public String getDisplayName() {
           return "Debug Requests";
         }
     }
-
+    
   /** Creates new form DebugRequestPanel */
   public SimpleDebugRequestPanel()
   {
@@ -129,26 +125,23 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     if (btRefresh.isSelected())
     {
       if (Plugin.parent.checkConnected()) {
-        Plugin.dbgRequestManager.addListener(this);
+        Plugin.commandExecutor.executeCommand(this, new Command("debug_request:list"));
       } else {
         btRefresh.setSelected(false);
+        btUpdate.setSelected(false);
       }
-    } else {
-      Plugin.dbgRequestManager.removeListener(this);
     }
-
   }//GEN-LAST:event_btRefreshActionPerformed
 
     private void btUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUpdateActionPerformed
         if (btUpdate.isSelected())
         {
           if (Plugin.parent.checkConnected()) {
-            Plugin.dbgRequestManager.addListener(this);
+            Plugin.commandExecutor.executeCommand(this, new Command("debug_request:list"));
           } else {
+            btRefresh.setSelected(false);
             btUpdate.setSelected(false);
           }
-        } else {
-          Plugin.dbgRequestManager.removeListener(this);
         }
     }//GEN-LAST:event_btUpdateActionPerformed
 
@@ -159,58 +152,44 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToolBar toolbarMain;
     // End of variables declaration//GEN-END:variables
-
-  private void sendCommand(String path, boolean enable)
+  
+  private class DebugRequestAction 
+    implements ActionListener, ObjectListener<byte[]>
   {
-    Command command = new Command();
-    command.setName(path);
-    String arg = enable ? "on" : "off";
-    command.addArg(arg);
-
-    System.err.println(path + " " + arg);
-    send(command);
-  }
-
-  private void send(Command command)
-  {
-    if (Plugin.parent.checkConnected()) {
-      Plugin.parent.getMessageServer().executeSingleCommand(this, command);
+    SelectableTreeNode node;
+    String path;
+    
+    DebugRequestAction(SelectableTreeNode node, String path) {
+        this.node = node;
+        this.path = path;
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Command command = new Command(path);
+        command.addArg(node.isSelected() ? "on" : "off");
+        Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), command);
+    }
+      
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+        System.out.println(new String(object));
+    }
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+        System.err.println(cause);
     }
   }
-
+  
+  
   @Override
-  public JPanel getPanel() {
-    return this;
-  }
-
-  @Override
-  public void dispose() {
-    remove(debugRequestTree);
-  }
-
-  @Override
-  public void handleResponse(byte[] result, Command originalCommand)
+  public void newObjectReceived(byte[] object)
   {
-    System.out.println("handleResponse: " + new String(result));
-  }
-
-  @Override
-  public void handleError(int code)
-  {
-    // TODO: handle errors
-    System.err.println("handleError: " + code);
-  }
-
-  @Override
-  public Command getCurrentCommand()
-  {
-    return new Command("ping");
-  }
-
-  @Override
-  public void newObjectReceived(String[] object)
-  {
-    for (String str : object)
+    String[] messages = (new String(object)).split("\n");
+    for (String str : messages)
     {
       String[] tokens = str.split("\\|");
 
@@ -229,20 +208,16 @@ public class SimpleDebugRequestPanel extends AbstractDialog
         final SelectableTreeNode node = this.debugRequestTree.insertPath(path, ':');
         node.setSelected(selected);
         node.setTooltip(tooltip);
-
-        node.getComponent().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendCommand(path, node.isSelected());
-            }
-        });
+        //NOTE: add the listener only once
+        if(node.getComponent().getActionListeners().length == 0) {
+            node.getComponent().addActionListener(new DebugRequestAction(node,path));
+        }
       }
     }//end for
     
     this.debugRequestTree.repaint();
     btRefresh.setSelected(false);
     btUpdate.setSelected(false);
-    Plugin.dbgRequestManager.removeListener(this);
   }
 
   @Override
@@ -250,6 +225,11 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   {
     btRefresh.setSelected(false);
     btUpdate.setSelected(false);
-    Plugin.dbgRequestManager.removeListener(this);
+    dispose();
+  }
+  
+  @Override
+  public void dispose() {
+    this.debugRequestTree.clear();
   }
 }
