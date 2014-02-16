@@ -13,17 +13,11 @@ import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
 import bibliothek.gui.dock.action.actions.SimpleButtonAction;
 import bibliothek.gui.dock.event.DockFrontendAdapter;
-import bibliothek.gui.dock.event.DockFrontendListener;
-import bibliothek.gui.dock.event.DockableSelectionEvent;
-import bibliothek.gui.dock.event.DockableSelectionListener;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -36,13 +30,12 @@ public class DialogRegistry
 {
 
   private Frame parent = null;
-  private JMenu menu;
-  private DockStation station;
-  private DockFrontend frontend;
-  private ArrayList<String> allDialogNames;
+  private final JMenu menu;
+  private final DockStation station;
+  private final DockFrontend frontend;
+  private final ArrayList<String> allDialogNames;
   
-  
-  private TabKeyController tabKeyController = new TabKeyController();
+  private final TabKeyController tabKeyController = new TabKeyController();
   
   public DialogRegistry(Frame parent, JMenu menu, DockFrontend frontend, DockStation station)
   {
@@ -93,10 +86,9 @@ public class DialogRegistry
     actions.add(new HelpAction(this.parent, text));
     result.setActionOffers(actions);
 
-    
     return result;
   }//end createView
-
+  
   
   public void dockDialog(Dialog dialog, boolean smart_place)
   {
@@ -111,15 +103,13 @@ public class DialogRegistry
     {
       Dockable newDockable = createView(dialogName, dialog);
       
-      
-      if(!smart_place || station.getDockableCount() == 0)
+      if(!smart_place || station.getDockableCount() == 0) {
           station.drop(newDockable);
-      else if (station.getFrontDockable() != null)
+      } else if (station.getFrontDockable() != null) {
         station.drop(newDockable, station.getDockableProperty(station.getFrontDockable(), newDockable));
-      else
+      } else {
         station.drop(newDockable, station.getDockableProperty(station.getDockable(0), newDockable));
-    
-    
+      }
     }
     else
     {
@@ -163,11 +153,10 @@ public class DialogRegistry
   }//end HelpAction
   
   
-  
   class DisposeListener extends DockFrontendAdapter
   {
-    private Dialog dialog;
-    private Dockable observed;
+    private final Dialog dialog;
+    private final Dockable observed;
     
     public DisposeListener(Dockable observed, Dialog dialog)
     {

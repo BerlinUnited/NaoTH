@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 /**
  * This class is in fact a dialog loader. This is used to wrap 
- * dialog into plugins.
+ * dialog into a plugin.
  * @author Heinrich Mellmann
  * @param <T> 
  */
@@ -21,8 +21,8 @@ public class DialogPlugin<T extends AbstractDialog>
     private Class getInstanceClass()
     {
         return ((Class)((ParameterizedType)this.getClass().
-   getGenericSuperclass()).getActualTypeArguments()[0]);
-    }//end getInstanceClass
+                getGenericSuperclass()).getActualTypeArguments()[0]);
+    }
 
     private T create()
     {
@@ -51,13 +51,13 @@ public class DialogPlugin<T extends AbstractDialog>
         {
             instance.dispose();
         }
-    }//end dispose
+    }
 
     @Override
     public void destroy() {
         dispose();
         instance = null;
-    }//end dispose
+    }
     
     
     @Override
