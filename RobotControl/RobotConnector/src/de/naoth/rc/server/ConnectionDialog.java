@@ -13,8 +13,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Properties;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -29,7 +32,6 @@ public class ConnectionDialog extends javax.swing.JDialog
 
   private final MessageServer messageServer;
   private final Properties properties;
-  private final ArrayList<String> addressReqistry;
 
   public ConnectionDialog(java.awt.Frame parent, MessageServer messageServer)
   {
@@ -56,24 +58,7 @@ public class ConnectionDialog extends javax.swing.JDialog
       txtPort.setText(port);
     }
 
-    addressReqistry = new ArrayList<String>(cbHost.getItemCount());
-    for(int i = 0; i < cbHost.getItemCount(); i++)
-    {
-      Object item = cbHost.getItemAt(i);
-      if(item instanceof String) // :)
-        addressReqistry.add((String)item);
-    }//end for
-
     this.getRootPane().setDefaultButton(this.btConnect);
-
-    /*
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    Dimension screenSize = tk.getScreenSize();
-    int screenHeight = screenSize.height;
-    int screenWidth = screenSize.width;
-    setLocation((screenWidth / 2) - (this.getWidth() / 2), (screenHeight / 2) - (this.getHeight() / 2));
-     * */
-
 
     // close by pressing esc
     ActionListener actionListener = new ActionListener() {
@@ -196,24 +181,33 @@ public class ConnectionDialog extends javax.swing.JDialog
         
         this.messageServer.connect(host, port);
 
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
+        if(model.getIndexOf(host) == -1) {
+            cbHost.addItem(host);
+        }
+        
         this.properties.put("hostname", host);
         this.properties.put("port", "" + port);
 
-        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
-        if(!addressReqistry.contains(host))
-        {
-          addressReqistry.add(host);
-          model.addElement(host);
-        }
-
         setVisible(false);
+      }
+      catch(UnknownHostException ex)
+      {
+        JOptionPane.showMessageDialog(this,
+          "Could not connect: host \'" + this.messageServer.getAddress() + "\' is unknown.", 
+          "ERROR", JOptionPane.ERROR_MESSAGE);
+      }
+      catch(SocketTimeoutException ex)
+      {
+        JOptionPane.showMessageDialog(this,
+          "Could not connect: socket timeout exception.",
+          "ERROR", JOptionPane.ERROR_MESSAGE);
       }
       catch(IOException ex)
       {
-
         JOptionPane.showMessageDialog(this,
-          "Etablishing connection failed: " + ex.getLocalizedMessage(), "ERROR",
-          JOptionPane.ERROR_MESSAGE);
+          "Etablishing connection failed: " + ex.getLocalizedMessage(), 
+          "ERROR", JOptionPane.ERROR_MESSAGE);
       }
     }//GEN-LAST:event_btConnectActionPerformed
 
@@ -260,14 +254,13 @@ public class ConnectionDialog extends javax.swing.JDialog
         this.properties.put("port", txtPort.getText());
 
         DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
-        model.addElement(host);
-
+        if(model.getIndexOf(host) == -1) {
+            cbHost.addItem(host);
+        }
         setVisible(false);
-
       }
       else
       {
-
         JOptionPane.showMessageDialog(this,
           "Auto-Etablishing connection failed.", "ERROR", JOptionPane.ERROR_MESSAGE);
       }
