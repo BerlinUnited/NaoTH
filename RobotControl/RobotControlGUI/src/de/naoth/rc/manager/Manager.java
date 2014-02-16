@@ -1,20 +1,16 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 
 package de.naoth.rc.manager;
 
-import de.naoth.rc.server.CommandSender;
-import net.xeoh.plugins.base.Plugin;
-
 /**
  *
  * @author thomas
+ * @param <T> type of the message for this manager to handle
  */
-public interface Manager<T> extends Plugin, CommandSender
+public interface Manager<T>
 {
-  public void addListener(ObjectListener<T> l);
-  public void removeListener(ObjectListener<T> l);
-
+  abstract public void addListener(ObjectListener<T> l);
+  abstract public void removeListener(ObjectListener<T> l);
 }
