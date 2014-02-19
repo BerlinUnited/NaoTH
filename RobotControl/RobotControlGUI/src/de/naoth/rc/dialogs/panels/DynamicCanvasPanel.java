@@ -21,6 +21,8 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -39,7 +41,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   private double dragOffsetY;
   private boolean antializing;
   
-  private final ArrayList<Drawable> drawingList = new ArrayList<Drawable>();
+  private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<Drawable>());
 
   public DynamicCanvasPanel()
   {
@@ -153,7 +155,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   }
   
   
-  public synchronized void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
+  public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
   {
     if (this.antializing)
     {
@@ -171,8 +173,11 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     g2d.rotate(r);
     g2d.scale(s, s);
 
-    for (Drawable object : drawingList) {
-      object.draw(g2d);
+    synchronized(drawingList)
+    {
+        for (Drawable object : drawingList) {
+          object.draw(g2d);
+        }
     }
     
     // transform the drawing-pane back (nessesary to draw the other components corect)
@@ -307,7 +312,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     this.scale = scale;
   }
 
-  public ArrayList<Drawable> getDrawingList()
+  public List<Drawable> getDrawingList()
   {
     return drawingList;
   }
