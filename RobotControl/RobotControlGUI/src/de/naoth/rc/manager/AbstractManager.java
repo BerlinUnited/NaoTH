@@ -47,6 +47,8 @@ public abstract class AbstractManager<T> implements Manager<T>, CommandSender
   private final List<ObjectListener<T>> listener = 
     Collections.synchronizedList(new LinkedList<ObjectListener<T>>());
 
+  private Thread responceThread;
+  
   public AbstractManager()
   {
   }
@@ -74,25 +76,33 @@ public abstract class AbstractManager<T> implements Manager<T>, CommandSender
   @Override
   public void handleResponse(final byte[] result, Command originalCommand)
   {
-    SwingUtilities.invokeLater(new Runnable() {
+    if(this.responceThread != null) {
+        try {
+            this.responceThread.join();
+        } catch (InterruptedException ex) {/* should never happen*/ }
+    }
+      
+    this.responceThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            try
-            {
-              final T object = convertByteArrayToType(result);
-              synchronized(listener) {
-                for(ObjectListener<T> l: listener) {
-                  l.newObjectReceived(object);
-                }
-              }
-            }
-            catch(IllegalArgumentException ex)
-            {
-              notifyErrorOccured("Conversion of the received byte array failed.\n" +
-                "Reason:\n" + ex.getLocalizedMessage());
-            }
+            parseDataAndNotifyListeners(result);
         }
     });
+    this.responceThread.start();
+  }
+  
+  private void parseDataAndNotifyListeners(final byte[] result)
+  {
+    try {
+        T object = convertByteArrayToType(result);
+        synchronized(listener) {
+          for(ObjectListener<T> l: listener) {
+            l.newObjectReceived(object);
+          }
+        }
+    } catch(IllegalArgumentException ex) {
+      handleError(-7); // why '-7'?? why not!!
+    }
   }
 
   @Override
@@ -101,7 +111,7 @@ public abstract class AbstractManager<T> implements Manager<T>, CommandSender
     SwingUtilities.invokeLater(new Runnable() { 
         @Override 
         public void run() {
-            notifyErrorOccured("Robot detected an error: error code " + code);
+            notifyErrorOccured("Error while receiving the message occured " + code);
         }
     });
   }
