@@ -12,6 +12,8 @@ import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.SecondaryImageManager;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -427,7 +429,6 @@ public class ImageViewer extends AbstractDialog
       
       secondaryImageCanvas.setImage(object.getRgb());
       secondaryImageCanvas.repaint();
-
     }//end newObjectReceived
 
     @Override
