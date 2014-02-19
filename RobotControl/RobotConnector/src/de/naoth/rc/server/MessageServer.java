@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,9 +43,9 @@ public class MessageServer extends AbstractMessageServer {
     private final long updateIntervall = 33;
 
     private SocketChannel socketChannel;
-    private Thread senderThread;
-    private boolean isActive;
     private InetSocketAddress address;
+    private ScheduledExecutorService scheduledExecutorService;
+    //private ScheduledFuture sendReceiveTask;
 
     // list of requested commands to be sent once (can be modified from outside)
     private final List<SingleExecEntry> pendingCommandsList = Collections.synchronizedList(new LinkedList<SingleExecEntry>());
@@ -73,18 +76,14 @@ public class MessageServer extends AbstractMessageServer {
         //this.socketChannel.connect(address);
         this.socketChannel.socket().connect(address, 1000);
 
-        this.isActive = true;
-
-        // create and start the sender thread
-        this.senderThread = new Thread(new Runnable() {
+        this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 sendReceiveLoop();
             }
-        });
-
-        this.senderThread.start();
-
+        }, 0, updateIntervall, TimeUnit.MILLISECONDS);
+        
         this.fireConnected(this.address);
     }//end connect
 
@@ -97,29 +96,34 @@ public class MessageServer extends AbstractMessageServer {
             return;
         }
 
-        this.isActive = false;
-
-        // wait until the sender Thread is dead
-        if (this.senderThread != null) {
-            try {
-                senderThread.join(1000); // wait max one second for the thread to stop
-            } catch (InterruptedException e) { /* ignore */ }
-        }
-
-        // call error handlers of remaining requests
-        for (SingleExecEntry a : answerRequestList) {
-            a.listener.handleError(-2);
-        }
-        answerRequestList.clear();
+        // stop the server thread and wait for it to die (max 2s)
+        this.scheduledExecutorService.shutdown();
+        try {
+            if(!this.scheduledExecutorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
+                    "The server thread couldn't be stopped gracefully.");
+            }
+        } catch (InterruptedException e) {  }
 
         // close the soccet
         try {
             socketChannel.close();
         } catch (IOException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-                    "Unexpected exception...", ex);
+                    "Unexpected exception while closing the socket.", ex);
         }
         socketChannel = null;
+        
+        // NOTE: we expect the server thread to be dead by now
+        //       either due to the executor service shutdown or
+        //       because it tried to read from the closed socket.
+        //       So, we don't synchronize the answerRequestList.
+        
+        // call error handlers of remaining requests
+        for (SingleExecEntry a : answerRequestList) {
+            a.listener.handleError(-2);
+        }
+        answerRequestList.clear();
 
         MessageServer.this.fireDisconnected(message);
     }//end disconnect
@@ -214,28 +218,19 @@ public class MessageServer extends AbstractMessageServer {
     // send-receive-loop //
     private void sendReceiveLoop() {
         try {
-            while (isActive && isConnected()) {
-                long startTime = System.currentTimeMillis();
+            if (isConnected()) {
+
                 // send all new commands
                 sendPendingCommands();
 
                 // read the answers for all the requests in answerRequestQueue
                 pollAnswers();
-
-                long stopTime = System.currentTimeMillis();
-                long diff = updateIntervall - (stopTime - startTime);
-                long wait = Math.max(5, diff);
-                if (wait > 0) {
-                    Thread.sleep(wait);
-                }
             }
         } catch (AsynchronousCloseException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.INFO, "Connection was closed while trying to read.", ex);
             disconnect(ex.getMessage());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-            disconnect(ex.getMessage());
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
                     "Unexpected exception...", ex);
             disconnect(ex.getMessage());
