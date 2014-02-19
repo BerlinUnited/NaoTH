@@ -5,13 +5,8 @@
  */
 package de.naoth.rc;
 
-import bibliothek.extension.gui.dock.theme.EclipseTheme;
-import bibliothek.gui.DockFrontend;
-import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.SplitDockStation;
-import bibliothek.gui.dock.frontend.MissingDockableStrategy;
-import bibliothek.gui.dock.station.split.SplitDockGrid;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+import bibliothek.gui.DockUI;
+import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
@@ -23,22 +18,20 @@ import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
-import org.apache.commons.lang.StringUtils;
+import net.xeoh.plugins.base.util.uri.ClassURI;
 
 /**
  *
@@ -54,12 +47,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   private final File layoutFile = new File(configlocation, "layout.dat");
   private final File fConfig = new File(configlocation, "config");
   
-  private final DockFrontend frontend;
-  private final DialogRegistry dialogRegistry;
   private final MessageServer messageServer;
   
   private final Properties config = new Properties();
   private final ConnectionDialog connectionDialog;
+  
+  private final DialogRegistry dialogRegistry;
 
   // remember the window position and size to restore it later
   private Rectangle defaultWindowBounds = new Rectangle();
@@ -74,6 +67,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
       UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      // set explicitely the Nimbus colors to be used
+      DockUI.getDefaultDockUI().registerColors("javax.swing.plaf.nimbus.NimbusLookAndFeel", new Nimbus6u10());
     }
     catch(UnsupportedLookAndFeelException ex)
     {
@@ -112,25 +107,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         }
     });
-
-    // create the frontend and set some properties
-    this.frontend = new DockFrontend(this);
-    this.frontend.getController().setTheme(new EclipseTheme());
-    this.frontend.setShowHideAction(true);
-    this.frontend.setMissingDockableStrategy(MissingDockableStrategy.DISCARD_ALL);
-
-    // Let's create a DockStation for our Dockables
-    SplitDockStation station = new SplitDockStation();
-    // add the station to the frame
-    this.add(station);
-    this.frontend.addRoot("split", station);
-
+    
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, dialogsMenu, frontend, station);
+    this.dialogRegistry = new DialogRegistry(this, dialogsMenu);
 
-    // load the layout
-    readLayoutFromFile();
-
+    
     // initialize the message server
     this.messageServer = new MessageServer();
     this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
@@ -189,24 +170,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   public void registerDialog(final Dialog dialog)
   {
     splashScreenMessage("Loading dialog " + dialog.getDisplayName() + "...");
-
-    dialogRegistry.registerDialog(dialog);
-    // load dialog if it was open in the last session
-    String openDialogsString = getConfig().getProperty("dialogs");
-    if(openDialogsString != null)
-    {
-      String[] splitted = openDialogsString.split(",");
-      for(String s : splitted)
-      {
-        if(s.trim().equals(dialog.getDisplayName()))
-        {
-          dialogRegistry.dockDialog(dialog, false);
-          loadLayout();
-          break;
-        }
-      }
-    }//end if
-  }//end registerDialog
+    this.dialogRegistry.registerDialog(dialog);
+  }
 
   @Override
   public boolean checkConnected()
@@ -419,21 +384,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
-      List<Dockable> dockables = frontend.listDockables();
-      SplitDockGrid grid = new SplitDockGrid();
-
-      // stack all
-      for(Dockable d : dockables)
-      {
-        if(d.getTitleText().startsWith("Debug Request")) {
-          grid.addDockable(2, 0, 1, 1, d);
-        } else {
-          grid.addDockable(0, 0, 2, 1, d);
-        }
-        //frontend.remove(d);
-      }
-
-      ((SplitDockStation) frontend.getRoot("split")).dropTree(grid.toTree());
+        this.dialogRegistry.setDefaultLayout();
     }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
@@ -469,6 +420,9 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         try
         {
+          // make sure the main frame if loaded first
+          pluginManager.addPluginsFrom(new ClassURI(RobotControlImpl.class).toURI());
+          
           //
           pluginManager.addPluginsFrom(new URI("classpath://*"));
 
@@ -515,6 +469,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables
 
+    
+    @Override
+    public void setVisible(boolean t)
+    {
+        splashScreenMessage("Loading layout and open dialogs ...");
+        loadLayout();
+        super.setVisible(t);
+    }
 
   @Override
   final public Properties getConfig()
@@ -525,18 +487,6 @@ public class RobotControlImpl extends javax.swing.JFrame
   private void beforeClose()
   {
     messageServer.disconnect();
-
-    // remember open dialogs
-    List<Dockable> dockables = frontend.listDockables();
-    Set<String> dockablesAsstring = new HashSet<String>();
-    for(Dockable d : dockables)
-    {
-      if(!frontend.isHidden(d))
-      {
-        dockablesAsstring.add(d.getTitleText());
-      }
-    }
-    getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
     
     // remember the window size and position
     getConfig().put("frame.position.x", Integer.toString(defaultWindowBounds.x));
@@ -552,8 +502,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       getConfig().store(new FileWriter(fConfig), "");
 
       // save layout
-      frontend.save("naoth-robotcontrol-default");
-      frontend.write(new DataOutputStream(new FileOutputStream(layoutFile)));
+     this.dialogRegistry.saveToFile(layoutFile);
     }
     catch(IOException ex)
     {
@@ -567,25 +516,19 @@ public class RobotControlImpl extends javax.swing.JFrame
       config.load(new FileReader(fConfig));
     } catch(IOException ex) {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-              "Could not find the config file. It will be created after the first execution.", ex);
-    }
-  }
-  
-  private void readLayoutFromFile()
-  {
-    try {
-      frontend.read(new DataInputStream(new FileInputStream(layoutFile)));
-    } catch(IOException ex) {
-      Helper.handleException(ex);
+              "Could not open the config file. It will be created after the first execution.", ex);
     }
   }
 
   private void loadLayout()
   {
     try {
-      frontend.load("naoth-robotcontrol-default");
-    } catch(Exception ex) {
-      Helper.handleException(ex);
+      this.dialogRegistry.loadFromFile(layoutFile);
+    } catch(FileNotFoundException ex) {
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+              "Could not find the layout file: " + layoutFile.getAbsolutePath());
+    } catch(IOException ex) {
+        Helper.handleException("Error while reading the layout file.", ex);
     }
   }//end configureDocking
 
