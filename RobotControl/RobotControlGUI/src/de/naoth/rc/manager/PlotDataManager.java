@@ -9,7 +9,7 @@ import de.naoth.rc.messages.Messages.Plots;
  *
  * @author Heinrich Mellmann
  */
-public interface PlotDataManager extends Manager<Plots>
+public interface PlotDataManager extends ManagerPlugin<Plots>
 {
 
 }

@@ -6,12 +6,8 @@
 
 package de.naoth.rc.server;
 
-//import de.hu_berlin.informatik.ki.nao.Dialog;
-//import de.hu_berlin.informatik.ki.nao.Main;
-//import de.hu_berlin.informatik.ki.nao.dialogs.*;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -24,7 +20,7 @@ public class ConnectUI extends javax.swing.JPanel
   
   //private final Main parent;
   private MessageServer messageServer;
-  private IMessageServerParent parent;
+  private Properties properties;
 
   /** Creates new form ConnectUI */
   public ConnectUI() 
@@ -32,28 +28,21 @@ public class ConnectUI extends javax.swing.JPanel
     initComponents();  
   }
 
-  public void init(Object parent)
+  public void init(MessageServer messageServer, Properties properties)
   {
-    init((IMessageServerParent) parent);
-  }
+    this.messageServer = messageServer;
 
-  public void init(IMessageServerParent parent)
-  {
-    this.parent = parent;
-    this.messageServer = parent.getMessageServer();
-
-    String host = parent.getConfig().getProperty("hostname");
+    String host = properties.getProperty("hostname");
     if(host != null)
     {
       txtHost.setText(host);
     }
 
-    String port = parent.getConfig().getProperty("port");
+    String port = properties.getProperty("port");
     if(port != null)
     {
       txtPort.setText(port);
     }
-
   }
 
   public JPanel getPanel()
@@ -76,8 +65,6 @@ public class ConnectUI extends javax.swing.JPanel
       lblStatus.setText("not connected");
     }
   }
-  
-  
   
   /** This method is called from within the constructor to
    * initialize the form.
@@ -181,13 +168,9 @@ public class ConnectUI extends javax.swing.JPanel
     
     try
     {
-      messageServer.connect(txtHost.getText(),
-        Integer.parseInt(txtPort.getText()));
-
-      parent.getConfig().put("hostname", txtHost.getText());
-      parent.getConfig().put("port", txtPort.getText());
-
-      
+      this.messageServer.connect(txtHost.getText(), Integer.parseInt(txtPort.getText()));
+      this.properties.put("hostname", txtHost.getText());
+      this.properties.put("port", txtPort.getText());
     }
     catch (IOException ex)
     {
@@ -203,16 +186,12 @@ public class ConnectUI extends javax.swing.JPanel
   }//GEN-LAST:event_btConnectActionPerformed
 
   private void btDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDisconnectActionPerformed
-    
-
-  messageServer.disconnect();
-
+ 
+    this.messageServer.disconnect();
   }//GEN-LAST:event_btDisconnectActionPerformed
 
 private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAutoActionPerformed
 
-
-  
   String host = txtHost.getText();
   boolean wasConnected = false;
   for(int currentPort = 5400; !wasConnected && currentPort <= 5403; currentPort++ )
@@ -220,10 +199,8 @@ private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
     try
     {
       txtPort.setText("" + currentPort);
-      messageServer.connect(host, currentPort);
-
+      this.messageServer.connect(host, currentPort);
       wasConnected = true;
-      
     }
     catch (IOException ex)
     {
@@ -236,10 +213,8 @@ private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
     try
     {
       txtPort.setText("" + currentPort);
-      messageServer.connect(host, currentPort);
-      
+      this.messageServer.connect(host, currentPort);
       wasConnected = true;
-
     }
     catch (IOException ex)
     {
@@ -249,9 +224,8 @@ private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
   
   if(wasConnected)
   {
-    parent.getConfig().put("hostname", txtHost.getText());
-    parent.getConfig().put("port", txtPort.getText());
-
+    this.properties.put("hostname", txtHost.getText());
+    this.properties.put("port", txtPort.getText());
   }
   else
   {
@@ -259,13 +233,8 @@ private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
     JOptionPane.showMessageDialog(this, 
       "Auto-Etablishing connection failed.", "ERROR", JOptionPane.ERROR_MESSAGE);
   }
-  
-  
-  
 }//GEN-LAST:event_btAutoActionPerformed
 
-  
-  
   
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btAuto;

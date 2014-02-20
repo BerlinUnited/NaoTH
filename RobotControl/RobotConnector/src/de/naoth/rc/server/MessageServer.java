@@ -7,554 +7,341 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class handles all debug and connection stuff.
- * Manager will register itself here and all communication is done through this
- * class.
+ * This class handles all debug and connection stuff. Manager will register
+ * itself here and all communication is done through this class.
+ *
  * @author thomas
  */
-public class MessageServer
-{
+public class MessageServer extends AbstractMessageServer {
 
-  /**
-   * When using this lock you should have understood the meaning of the
-   * following caller-graph.<br>
-   * <b>Be warned an don't produce dead-locks!</b>
-   * 
-   * <pre>
-   * 
-   * +-------------+            
-   * |MessageServer|            
-   * +-------------+      +-----+
-   *  |^                +-| GUI |
-   *  ||                | +-----+
-   *  ||                | | GUI |
-   *  ||                | +-----+
-   *  v|                |    ^   
-   * +--------+ &lt;-------+    |   
-   * |ManagerX| -------------+   
-   * +--------+
-   * 
-   * </pre>
-   */
-  private final Lock LISTENER_LOCK = new ReentrantLock();
-  private final Lock SINGLE_EXE_LOCK = new ReentrantLock();
-  
-  public final static String STRING_ENCODING = "ISO-8859-15";
-  private final long updateIntervall = 33;
-  
-  private SocketChannel serverSocket;
-  private Thread senderThread;
-  private InetSocketAddress address;
-  private List<CommandSender> listeners;
-  private List<SingleExecEntry> singleExec;
-  private List<SingleExecEntry> answerRequestQueue;
-  private boolean isActive;
+    private class SingleExecEntry {
+        private final ResponseListener listener;
+        private final Command command;
 
-  private IMessageServerParent parent;
-
-  private long receivedBytes;
-  private long sentBytes;
-
-  public MessageServer()
-  {
-    this(null);
-  }
-
-  public MessageServer(IMessageServerParent parent)
-  {
-    this.serverSocket = null;
-    this.parent = parent;
-    this.receivedBytes = 0;
-    this.sentBytes = 0;
-
-    this.listeners = new LinkedList<CommandSender>();
-    this.singleExec = new LinkedList<SingleExecEntry>();
-    this.answerRequestQueue = Collections.synchronizedList(new LinkedList<SingleExecEntry>());
-  }
-
-  public void connect(String host, int port) throws IOException
-  {
-    // close previous connection if necessary
-    disconnect();
+        public SingleExecEntry(ResponseListener sender, Command command) {
+            this.listener = sender;
+            this.command = command;
+        }
+    }
     
-    address = new InetSocketAddress(host, port);
+    public final static String STRING_ENCODING = "ISO-8859-15";
+    private final long updateIntervall = 33;
 
-    // open and configure the socket
-    serverSocket = SocketChannel.open();
+    private SocketChannel socketChannel;
+    private InetSocketAddress address;
+    private ScheduledExecutorService scheduledExecutorService;
+    //private ScheduledFuture sendReceiveTask;
 
-    //serverSocket.socket().setSoTimeout(1000);
-    serverSocket.configureBlocking(false);
-    serverSocket.connect(address);
-
-    // wait a little...
-    int trials = 0;
-    while(!serverSocket.finishConnect())
-    {
-      trials++;
-      try{
-        Thread.sleep(100);
-      }catch(InterruptedException e){}
-
-      if(trials > 10)
-        throw new IOException("Couldn't connect to address " + address );
-    }//end while
-
-    serverSocket.configureBlocking(true);
+    // list of requested commands to be sent once (can be modified from outside)
+    private final List<SingleExecEntry> pendingCommandsList = Collections.synchronizedList(new LinkedList<SingleExecEntry>());
+    // list of requested commands to be executed periodically (can be modified from outside)
+    private final List<CommandSender> pendingSubscribersList = Collections.synchronizedList(new LinkedList<CommandSender>());
+    // list of commands which have been sent and are waiting for the response
+    private final List<SingleExecEntry> answerRequestList = new LinkedList<SingleExecEntry>();
 
     
-    isActive = true;
+    private long receivedBytes;
+    private long sentBytes;
 
-    if(parent != null)
-    {
-      parent.showConnected(true);
+    public MessageServer() {
+        this.socketChannel = null;
+        this.receivedBytes = 0;
+        this.sentBytes = 0;
     }
 
-    // create and start the sender thread
-    this.senderThread = new Thread(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        try
-        {
-            sendReceiveLoop();
+    public void connect(String host, int port) throws IOException {
+        // close previous connection if necessary
+        disconnect();
+
+        this.address = new InetSocketAddress(host, port);
+
+        // open and configure the socket
+        this.socketChannel = SocketChannel.open();
+        this.socketChannel.configureBlocking(true);
+        //this.socketChannel.connect(address);
+        this.socketChannel.socket().connect(address, 1000);
+
+        this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                sendReceiveLoop();
+            }
+        }, 0, updateIntervall, TimeUnit.MILLISECONDS);
+        
+        this.fireConnected(this.address);
+    }//end connect
+
+    public void disconnect() {
+        disconnect(null);
+    }
+
+    private void disconnect(String message) {
+        if (!isConnected()) {
+            return;
         }
-        catch(InterruptedException ex)
-        {
-          isActive = false;
-          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-          close_connection();
+
+        // stop the server thread and wait for it to die (max 2s)
+        this.scheduledExecutorService.shutdown();
+        try {
+            if(!this.scheduledExecutorService.awaitTermination(2, TimeUnit.SECONDS)) {
+                Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
+                    "The server thread couldn't be stopped gracefully.");
+            }
+        } catch (InterruptedException e) {  }
+
+        // close the soccet
+        try {
+            socketChannel.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+                    "Unexpected exception while closing the socket.", ex);
         }
-        catch(Exception ex)
-        {
-          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-            "Unexpected exception...",
-            ex);
-          close_connection();
+        socketChannel = null;
+        
+        // NOTE: we expect the server thread to be dead by now
+        //       either due to the executor service shutdown or
+        //       because it tried to read from the closed socket.
+        //       So, we don't synchronize the answerRequestList.
+        
+        // call error handlers of remaining requests
+        for (SingleExecEntry a : answerRequestList) {
+            a.listener.handleError(-2);
         }
-      }
-    });
+        answerRequestList.clear();
+
+        MessageServer.this.fireDisconnected(message);
+    }//end disconnect
+
+    public InetSocketAddress getAddress() {
+        return address;
+    }
+
+    /**
+     * @return whether RC is connected to a robot
+     */
+    public boolean isConnected() {
+        return socketChannel != null && socketChannel.isConnected();
+    }
     
-    senderThread.start();
-  }//end connect
+    @Deprecated
+    public List<CommandSender> getListeners() {
+        return new ArrayList<CommandSender>();
+    }
 
-  
-  public void close_connection()
-  {
-    if(serverSocket != null && serverSocket.isConnected())
-    {
-      // is it necessary?
-      // In case the serverSocket is broken this end up in a 
-      // deadlock...
-      /*
-      try
-      {
-        // cleanup
-        ByteBuffer buffer = ByteBuffer.allocate(1);
-        serverSocket.configureBlocking(false);
-        while(serverSocket.read(buffer) > 0)
-        {
-          buffer.clear();
-        }
-      }
-      catch(IOException ex)
-      {
-        // ignore
-      }
-      */
+    public long getReceivedBytes() {
+        return receivedBytes;
+    }
 
-      // call error handlers of remaining requests
-      for(SingleExecEntry a : answerRequestQueue)
-      {
-        if(a.sender != null)
-        {
-          a.sender.handleError(-2);
-        }
-      }
-      answerRequestQueue.clear();
+    public long getSentBytes() {
+        return sentBytes;
+    }
 
-
-      // disconnect
-      try
-      {
-        serverSocket.close();
-      }
-      catch(IOException ex)
-      {
-        //TODO: ignore?!
-      }
-      serverSocket = null;
-
-      // notifiy disconnect
-      if(parent != null)
-      {
-        parent.showConnected(false);
-      }
-    }//end if
-
-  }//end close_connection
-  
-  
-  public void disconnect()
-  {
-    isActive = false;
-    
-    // wait until the sender Thread is dead
-    
-    if(senderThread != null)
-    {
-      try {
-        senderThread.join(1000); // wait max one second for the thread to stop
-      } catch (InterruptedException e) { /* ignore */ }
-    }//end if
-    
-    close_connection();
-    
-  }//end disconnect
-
-  
-  public InetSocketAddress getAddress()
-  {
-    return address;
-  }//end getAddress
-
-  
-  /** Return whether RC is connected to a robot */
-  public boolean isConnected()
-  {
-    return serverSocket != null && serverSocket.isConnected();
-  }//end isConnected
-
-  /**
+    /**
    * Add a {@link CommandSender} to the repeating schedule.
    * A {@link CommandSender} will not be added twice.
    * @param commandSender
    */
-  public void addCommandSender(CommandSender commandSender)
-  {
-    LISTENER_LOCK.lock();
-    if(!listeners.contains(commandSender))
-    {
-      listeners.add(commandSender);
+    public void subscribe(CommandSender commandSender)
+            throws NotYetConnectedException, IllegalArgumentException {
+        if (!isConnected()) {
+            throw new NotYetConnectedException();
+        }
+
+        if (commandSender == null || commandSender.getCurrentCommand() == null) {
+            throw new IllegalArgumentException("A valid command is required.");
+        }
+
+        if(!this.pendingSubscribersList.contains(commandSender)) {
+            this.pendingSubscribersList.add(commandSender);
+        }
+    }//end subscribe
+    
+    /**
+    * Remove a {@link CommandSender} from the repeating schedule.
+    * @param commandSender
+    */
+    public void unsubscribe(CommandSender commandSender) {
+        this.pendingSubscribersList.remove(commandSender);
     }
-    LISTENER_LOCK.unlock();
-  }//end addCommandSender
+    
+    /**
+     * Schedule a single command for execution. It is not guaranteed when it
+     * will be executed but the {@link ResponseListener} will be notified with 
+     * the command and the response data as arguments.
+     *
+     * @param listener This listener will be called when the response has arrived
+     * @param command Command to be sent
+     *
+     * @throws NotYetConnectedException is thrown if the server is not connected
+     */
+    public void executeCommand(ResponseListener listener, Command command)
+            throws NotYetConnectedException, IllegalArgumentException {
+        if (!isConnected()) {
+            throw new NotYetConnectedException();
+        }
 
-  /**
-   * Remove a {@link CommandSender} from the repeating schedule.
-   * @param commandSender
-   */
-  public void removeCommandSender(CommandSender commandSender)
-  {
-    LISTENER_LOCK.lock();
-    listeners.remove(commandSender);
-    LISTENER_LOCK.unlock();
-  }//end removeCommandSender
+        if (listener == null || command == null) {
+            throw new IllegalArgumentException("A valid command is required.");
+        }
 
-  /**
-   * Schedule a single command for execution. It is not guaranteed when it
-   * will be executed but the {@link CommandSender} will be notified using the
-   * right command as argument.
-   * 
-   * @param commandSender The command sender responsible for this command.
-   * @param command       Instead of using {@link CommandSender#getCurrentCommand()}
-   *                      this command is used.
-   * 
-   * @throws NotYetConnectedException is thrown if the server is not connected
-   */
-  public void executeSingleCommand(CommandSender commandSender, Command command)
-          throws NotYetConnectedException
-  {
-    if(!isConnected())
-      throw new NotYetConnectedException();
+        this.pendingCommandsList.add(new SingleExecEntry(listener, command));
+    }//end executeSingleCommand
 
-    SINGLE_EXE_LOCK.lock();
-    SingleExecEntry e = new SingleExecEntry();
-    e.command = command;
-    e.sender = commandSender;
-    singleExec.add(e);
-    SINGLE_EXE_LOCK.unlock();
-  }//end executeSingleCommand
+    @Deprecated
+    public void executeSingleCommand(CommandSender commandSender, Command command)
+            throws NotYetConnectedException {
+        executeCommand(commandSender, command);
+    }
 
-  /**
-   * Schedule a single command for execution. It is not guaranteed when it
-   * will be executed but the {@link CommandSender} will be notified using the
-   * right command as argument.
-   * 
-   * @param commandSender The command sender responsible for this command.
-   * 
-   * @throws NotYetConnectedException is thrown if the server is not connected
-   */
-  public void executeSingleCommand(CommandSender commandSender)
-          throws NotYetConnectedException
-  {
-    executeSingleCommand(commandSender, commandSender.getCurrentCommand());
-  }
-  
-  
-  // send-receive-loop //
-  public void sendReceiveLoop() throws Exception, InterruptedException
-  {
-      while(isActive && serverSocket != null && serverSocket.isConnected())
-      {
-          long startTime = System.currentTimeMillis();
+    @Deprecated
+    public void executeSingleCommand(CommandSender commandSender)
+            throws NotYetConnectedException {
+        executeCommand(commandSender, commandSender.getCurrentCommand());
+    }
 
-          pollAnswers();
-          sendPendingCommands();
-          while(answerRequestQueue.size() > 0)
-          {
-            pollAnswers();
-            // HACK: prevent deadlock on single core machines
-            // ...for Thomas to fix :)
-            Thread.sleep(5);
-          }
-          long stopTime = System.currentTimeMillis();
-          long diff = updateIntervall - (stopTime-startTime);
-          long wait = Math.max(0, diff);
-          if(wait > 0)
-          {
-            Thread.sleep(wait);
-          }
-      } // while(isActive)
-  }//end sendReceiveLoop
+    // send-receive-loop //
+    private void sendReceiveLoop() {
+        try {
+            if (isConnected()) {
 
-      
-      
-  public void sendPendingCommands() throws IOException
-  {
-    // single execution //
+                // send all new commands
+                sendPendingCommands();
 
-    serverSocket.configureBlocking(true);
+                // read the answers for all the requests in answerRequestQueue
+                pollAnswers();
+            }
+        } catch (AsynchronousCloseException ex) {
+            Logger.getLogger(MessageServer.class.getName()).log(Level.INFO, "Connection was closed while trying to read.", ex);
+            disconnect(ex.getMessage());
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+                    "Unexpected exception...", ex);
+            disconnect(ex.getMessage());
+        }
+    }//end sendReceiveLoop
 
-    // copy
-    SINGLE_EXE_LOCK.lock();
-    LinkedList<SingleExecEntry> copySingle = new LinkedList<SingleExecEntry>();
-    copySingle.addAll(singleExec);
-    singleExec.clear();
-    SINGLE_EXE_LOCK.unlock();
+    private void sendPendingCommands() throws IOException {
+        socketChannel.configureBlocking(true);
 
-    for(SingleExecEntry e : copySingle)
-    {
-      try
-      {
-        sendSingleCommandReturn(serverSocket, e.command);
-
-        answerRequestQueue.add(e);
-      }
-      catch(IOException ex)
-      {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-          "writing to the network stream to the robot failed, " +
-          "will disconnect", ex);
-        disconnect();
-      }
-    }//end for
-
-    // periodic execution //
-
-    // copy the listeners
-    LISTENER_LOCK.lock();
-    LinkedList<CommandSender> copyListener = new LinkedList<CommandSender>();
-    copyListener.addAll(listeners);
-    LISTENER_LOCK.unlock();
-
-    // check each command sender and perform a request
-    for(CommandSender sender : copyListener)
-    {
-      try
-      {
-        // clear buffer, just to be sure...
-
-        // send command and get generated ID
-        Command command = sender.getCurrentCommand();
-
+        // handle the single execution requests
+        synchronized (this.pendingCommandsList) {
+            for (SingleExecEntry e : this.pendingCommandsList) {
+                sendCommand(socketChannel, e.command);
+                answerRequestList.add(e);
+            }
+            this.pendingCommandsList.clear();
+        }
         
-        sendSingleCommandReturn(serverSocket, command);
-
-        SingleExecEntry e = new SingleExecEntry();
-        e.command = command;
-        e.sender = sender;
-        answerRequestQueue.add(e);
-
-      }
-      catch(IOException ex)
-      {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "writing to the network stream to the robot failed, " +
-          "will disconnect", ex);
-        disconnect();
-      }
-    }  // end for each listenerF
-  }//end sendPendingCommands
-
-  public void pollAnswers() throws IOException
-  {
-
-    boolean somethingFound = true;
-    while(somethingFound)
-    {
-      somethingFound = false;
-      
-      serverSocket.configureBlocking(false);
-      // read size of data
-      
-      ByteBuffer sizeBuffer = readContent(serverSocket, 4);
-      
-      if(sizeBuffer == null)
-      {
-        return;
-      }
-      somethingFound = true;
-      
-      int size = sizeBuffer.getInt(0);
-
-      serverSocket.configureBlocking(true);
-      
-      // approximated size of received data
-      receivedBytes += size;
-
-      SingleExecEntry e = answerRequestQueue.remove(0);
-
-      try
-      {
-        if(e.sender != null)
-        {
-          ByteBuffer data = readContent(serverSocket, size);
-
-          if(data == null)
-            throw new IOException("No data could be read from the socket.");
-
-          // call sender
-          e.sender.handleResponse(data.array(), e.command);
+        // handle the periodic execution requests
+        synchronized (this.pendingSubscribersList) {
+            for (CommandSender c : this.pendingSubscribersList) {
+                SingleExecEntry e = new SingleExecEntry(c, c.getCurrentCommand());
+                sendCommand(socketChannel, e.command);
+                answerRequestList.add(e);
+            }
         }
-      }
-      catch(IOException ex)
-      {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-          "reading from the network stream from the robot failed, will disconnect",
-          ex);
-        disconnect();
-      }
-    }//end while
-  }//end pollAnswers
+    }//end sendPendingCommands
 
+    private void pollAnswers() throws IOException {
+        socketChannel.configureBlocking(true);
+        for (SingleExecEntry e : answerRequestList) {
+            // read size of data
+            int size = readContent(socketChannel, 4).getInt();
 
-  // helpers
-  private void sendSingleCommandReturn(SocketChannel socket, Command command) throws IOException
-  {
-    // convert to Protobuf
-    CMD.Builder cmd = CMD.newBuilder().setName(command.getName());
-    
-    if(command.getArguments() != null)
-    {
-      for(Map.Entry<String, byte[]> e : command.getArguments().entrySet())
-      {
-        CMDArg.Builder arg = CMDArg.newBuilder()
-          .setName(e.getKey());
-        if(e.getValue() != null)
-        {
-          arg = arg.setBytes(ByteString.copyFrom(e.getValue()));
+            ByteBuffer data = readContent(socketChannel, size);
+            if (data == null) {
+                throw new IOException("No data could be read from the socket.");
+            }
+
+            // call sender
+            e.listener.handleResponse(data.array(), e.command);
+        }//end while
+
+        answerRequestList.clear();
+    }//end pollAnswers
+
+    // helpers
+    private void sendCommand(SocketChannel socket, Command command) throws IOException {
+        // convert to Protobuf
+        CMD.Builder cmd = CMD.newBuilder().setName(command.getName());
+
+        if (command.getArguments() != null) {
+            for (Map.Entry<String, byte[]> e : command.getArguments().entrySet()) {
+                CMDArg.Builder arg = CMDArg.newBuilder()
+                        .setName(e.getKey());
+                if (e.getValue() != null) {
+                    arg = arg.setBytes(ByteString.copyFrom(e.getValue()));
+                }
+                cmd = cmd.addArgs(arg);
+            }
         }
-        cmd = cmd.addArgs(arg);
-      }
+
+        byte[] commandAsByteArray = cmd.build().toByteArray();
+        int intLength = commandAsByteArray.length;
+
+        ByteBuffer bLength = byteBufferFromInt(intLength);
+
+        ByteBuffer bCommand = ByteBuffer.wrap(commandAsByteArray);
+
+        // write length    
+        sentBytes += socket.write(bLength);
+        // write data
+        sentBytes += socket.write(bCommand);
+    }//end sendCommand
+
+    private ByteBuffer readContent(SocketChannel socket, int length) throws IOException {
+        if (length < 0) {
+            throw new IOException("invalid message length: " + length);
+        }
+        if (length > 10485760) { // more than 10 MB
+            throw new IOException("Message size received bigger than 10 MB, this is too big! Will disconnect.");
+        }
+        if (socket == null) {
+            throw new IOException("Socket is null.");
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
+
+        int byteCountTotal = 0;
+        int byteCountSingle = 0;
+        while ((byteCountSingle = socket.read(buffer)) > 0) {
+            byteCountTotal += byteCountSingle;
+        }
+
+        // accumulate the size of received data
+        receivedBytes += byteCountTotal;
+
+        if (byteCountTotal == length) {
+            buffer.flip();
+            return buffer;
+        } else if (byteCountSingle == -1) {
+            throw new IOException("socket stream closed");
+        } else {
+            return null;
+        }
+    }//end readContent
+
+    public static ByteBuffer byteBufferFromInt(int value) {
+        ByteBuffer b = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        b.putInt(value);
+        b.flip();
+        return b;
     }
-    
-    byte[] commandAsByteArray = cmd.build().toByteArray();
-    int intLength = commandAsByteArray.length;
-    
-    ByteBuffer bLength = byteBufferFromInt(intLength);
-   
-    ByteBuffer bCommand = ByteBuffer.wrap(commandAsByteArray);
-
-    // write length    
-    sentBytes += socket.write(bLength);
-    // write data
-    sentBytes += socket.write(bCommand);
-
-  }//end sendSingleCommandReturnID
-
-  
-  private ByteBuffer readContent(SocketChannel socket, int length) throws IOException
-  {
-    if(length < 0)
-    {
-      //System.err.println("invalid message length: " + length);
-      //return null;
-      throw new IOException("invalid message length: " + length);
-    }
-    else if(length > 10485760) // more than 10 MB
-    {
-      //System.err.println("Message size received bigger than 10 MB, this is too big! Will disconnect.");
-      //disconnect();
-      //return null;
-      throw new IOException("Message size received bigger than 10 MB, this is too big! Will disconnect.");
-    }
-
-    if(socket == null)
-    {
-      throw new IOException("Socket is null.");
-    }
-    
-    ByteBuffer buffer = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
-
-    int byteCountTotal = 0;
-    int byteCountSingle = 0;
-    while((byteCountSingle = socket.read(buffer)) > 0)
-    {
-      byteCountTotal += byteCountSingle;
-    }
-    
-    if(byteCountTotal == length)
-    {
-      buffer.flip();
-      return buffer;
-    }
-    else if(byteCountSingle == -1)
-    {
-      throw new IOException("socket stream closed");
-    }
-    else
-    {
-      return null;
-    }
-  }//end readContent
-
-  
-  public ByteBuffer byteBufferFromInt(int value)
-  {
-    ByteBuffer b = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-    b.putInt(value);
-    b.flip();
-    return b;
-  }//end byteBufferFromInt
-
-  private class SingleExecEntry
-  {
-    public CommandSender sender;
-    public Command command;
-  }//end SingleExecEntry
-
-  public List<CommandSender> getListeners() {
-    return listeners;
-  }//end getListeners
-
-  public long getReceivedBytes() {
-    return receivedBytes;
-  }//end getReceivedBytes
-
-  public long getSentBytes() {
-    return sentBytes;
-  }//end getSentBytes
-  
 }//end class MessageServer

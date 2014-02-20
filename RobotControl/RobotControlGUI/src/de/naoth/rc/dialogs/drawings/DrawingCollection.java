@@ -11,22 +11,20 @@ import java.util.ArrayList;
  *
  * @author Heinrich Mellmann
  */
-public class DrawingCollection extends ArrayList<Drawable> implements Drawable
+public class DrawingCollection implements Drawable
 {
+  private final ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+  
+  public void add(Drawable d) {
+      this.drawables.add(d);
+  }
 
-  public DrawingCollection(){}
-
+  @Override
   public void draw(Graphics2D g2d) {
-    if(isEmpty()) return;
-
-    synchronized(this)
+    for(Drawable drawing: drawables)
     {
-      for(Drawable drawing: this)
-      {
-        if(drawing != null)
-          drawing.draw(g2d);
-      }//end for
+      if(drawing != null)
+        drawing.draw(g2d);
     }
   }//end draw
-  
 }//end DrawingCollection

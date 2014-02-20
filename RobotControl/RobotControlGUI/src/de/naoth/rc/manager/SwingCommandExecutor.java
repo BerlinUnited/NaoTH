@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 
 package de.naoth.rc.manager;
@@ -11,7 +11,6 @@ import net.xeoh.plugins.base.Plugin;
  *
  * @author Heinrich Mellmann
  */
-public interface GenericManagerFactory extends Plugin
-{
-  abstract GenericManager getManager(Command command);
+public interface SwingCommandExecutor extends Plugin{
+    abstract public void executeCommand(ObjectListener<byte[]> listener, Command command);
 }

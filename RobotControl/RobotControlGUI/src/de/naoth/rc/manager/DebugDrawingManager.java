@@ -11,7 +11,7 @@ import de.naoth.rc.dialogs.drawings.DrawingsContainer;
  *
  * @author thomas
  */
-public interface DebugDrawingManager extends Manager<DrawingsContainer>
+public interface DebugDrawingManager extends ManagerPlugin<DrawingsContainer>
 {
 
 }

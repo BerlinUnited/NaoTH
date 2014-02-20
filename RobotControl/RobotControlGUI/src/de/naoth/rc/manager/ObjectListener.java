@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 
 package de.naoth.rc.manager;
@@ -8,10 +7,10 @@ package de.naoth.rc.manager;
 /**
  * A generic listener for all kinds of debug objects.
  * @author thomas
+ * @param <T> type of the object to listen for
  */
 public interface ObjectListener<T>
 {
   public void newObjectReceived(T object);
-  
   public void errorOccured(String cause);
 }

@@ -4,110 +4,64 @@
  */
 package de.naoth.rc;
 
-import bibliothek.gui.DockFrontend;
-import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.DefaultDockable;
-import bibliothek.gui.dock.event.DockFrontendAdapter;
-import bibliothek.gui.dock.event.DockableSelectionEvent;
-import bibliothek.gui.dock.event.DockableSelectionListener;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.event.CControlListener;
+import bibliothek.gui.dock.common.event.CFocusListener;
+import bibliothek.gui.dock.common.intern.AbstractCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
+import java.awt.KeyEventPostProcessor;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author admin
  */
-public class TabKeyController 
+public class TabKeyController implements KeyEventPostProcessor
 {
-    private TabDockableSelectionListener tabDockableSelectionListener = new TabDockableSelectionListener();
-    private TabDockableAddRemoveListener tabDockableAddRemoveListener = new TabDockableAddRemoveListener();
-    private KeyAdapter keyAdapter = new KeyAdapter();
-    private DockFrontend frontend;
+    private final TabDockableSelectionListener tabDockableSelectionListener = new TabDockableSelectionListener();
+    private final TabDockableAddRemoveListener tabDockableAddRemoveListener = new TabDockableAddRemoveListener();
     
-    private ArrayList<Dockable> traversingList = new ArrayList<Dockable>();
-
-            
-    public void install(DockFrontend frontend)
+    private final ArrayList<CDockable> traversingList = new ArrayList<CDockable>();
+    private final CControl control;
+       
+    public TabKeyController(CControl control)
     {
-        this.frontend = frontend;
-        this.frontend.addFrontendListener(tabDockableAddRemoveListener);
-        this.frontend.getController().addDockableSelectionListener(tabDockableSelectionListener);
-        this.frontend.getController().getKeyboardController().addGlobalListener(keyAdapter);
+        this.control = control;
+        this.control.addFocusListener(tabDockableSelectionListener);
+        this.control.addControlListener(tabDockableAddRemoveListener);
     }
     
-    public void uninstall()
+    private boolean removed = false;
+    private int idx = 0;
+    
+    @Override
+    public boolean postProcessKeyEvent(KeyEvent e) 
     {
-        if(this.frontend != null)
-        {
-            this.frontend.removeFrontendListener(tabDockableAddRemoveListener);
-            this.frontend.getController().removeDockableSelectionListener(tabDockableSelectionListener);
-            this.frontend.getController().getKeyboardController().removeGlobalListener(keyAdapter);
+        if(this.control.getCDockableCount() == 0) {
+            return false;
         }
-    }
-    
-    
-    class KeyAdapter implements KeyListener
-    {
-                
-        private boolean removed = false;
-        private int idx = 0;
         
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if(traversingList.size() <= 1) return;
-
-
-            if((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK
-                    &&
-               (e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK
-                    &&
-                e.getKeyCode() >= KeyEvent.VK_A && e.getKeyCode() <= KeyEvent.VK_Z)
-            {
-                char c = (char)e.getKeyCode();
-                c = Character.toLowerCase(c);
-                List<Dockable> dockables =  frontend.listDockables();
-
-                for(Dockable d : dockables)
-                {
-                  if(!frontend.isHidden(d))
-                  {
-                     if(d.getTitleText() != null && d.getTitleText().length()>0)
-                     {
-                         if(c == Character.toLowerCase(d.getTitleText().charAt(0)))
-                         {
-                             frontend.getController().setFocusedDockable(d, true);
-                             return;
-                         }
-                     }
-                  }
-                }
-            }//end if
-
-
-            if(e.getKeyCode() == KeyEvent.VK_TAB &&
-               (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)
+        if(traversingList.size() <= 1) return false;
+        
+        
+        if(  e.getKeyCode() == KeyEvent.VK_TAB &&
+            (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)
+        {
+            
+            if(e.getID() == KeyEvent.KEY_PRESSED)
             {
                 if(!removed)
                 {
-                    //DialogRegistry.this.frontend.removeFrontendListener(tabIterator);
-                    frontend.getController().removeDockableSelectionListener(tabDockableSelectionListener);
-
+                    this.control.removeFocusListener(tabDockableSelectionListener);
                     removed = true;
                     idx = traversingList.size()-1;
                 }
-
+                
+                // move backwards in the history
                 int direction = 
-                        ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK)?1:-1;
+                    ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) == KeyEvent.SHIFT_DOWN_MASK)?1:-1;
 
-                //Dockable current = DialogRegistry.this.station.getFrontDockable();
-                //int idx = traversingList.indexOf(current);
 
                 if(idx != -1)
                 {
@@ -115,83 +69,87 @@ public class TabKeyController
 
                     // this is a strange solution for modulo, since %
                     // doesn't work for negative numbers'
-                    if(idx > traversingList.size()-1)
+                    if(idx > traversingList.size()-1) {
                         idx = 0;
-                    else if(idx < 0)
+                    } else if(idx < 0) {
                         idx = traversingList.size()-1;
-
-
-                    Dockable next = traversingList.get(idx);
-
-                    frontend.getController().setFocusedDockable(next, true);
-                }
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_CONTROL)
-            {
-                if(removed)
-                {
-                    //DialogRegistry.this.frontend.addFrontendListener(tabIterator);
-                    frontend.getController().addDockableSelectionListener(tabDockableSelectionListener);
-                    if(frontend.getController().getFocusedDockable() != null)
-                    {
-                        traversingList.remove(frontend.getController().getFocusedDockable());
-                        traversingList.add(frontend.getController().getFocusedDockable());
                     }
 
-                    removed = false;
-                    idx = 0;
-                }
+                    CDockable next = traversingList.get(idx);
+                    if(next instanceof AbstractCDockable){
+                        ((AbstractCDockable)next).toFront();
+                    }
+                }       
             }
         }
-    }//end KeyController
+        
+        
+        if(e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            if(removed)
+            {
+                this.control.addFocusListener(tabDockableSelectionListener);
+                if(this.control.getFocusedCDockable() != null)
+                {
+                    traversingList.remove(this.control.getFocusedCDockable());
+                    traversingList.add(this.control.getFocusedCDockable());
+                }
+
+                removed = false;
+                idx = 0;
+            }
+        }
+        
+        //System.out.println(e);
+        return true;
+    }
     
     
-    
-    class TabDockableSelectionListener implements DockableSelectionListener
+    class TabDockableSelectionListener implements CFocusListener
     {
         @Override
-        public void dockableSelected(DockableSelectionEvent event) {
-            if(event.getNewSelected() != null)
+        public void focusGained(CDockable cd) {
+            if(cd != null)
             {
-                traversingList.remove(event.getNewSelected());
-                traversingList.add(event.getNewSelected());
+                traversingList.remove(cd);
+                traversingList.add(cd);
             }
+        }
+
+        @Override
+        public void focusLost(CDockable cd) {
+
         }
     }//end DockableSelectionListener
     
     
-    class TabDockableAddRemoveListener extends DockFrontendAdapter
+    class TabDockableAddRemoveListener implements CControlListener
     {
         @Override
-        public void added(DockFrontend frontend, Dockable dockable) {
-            if(dockable instanceof DefaultDockable && dockable != null)
+        public void added(CControl cc, CDockable cd) {
+            if(cd != null)
             {
-                traversingList.remove(dockable);
-                traversingList.add(dockable);
+                traversingList.remove(cd);
+                traversingList.add(cd);
             }
         }
         
         @Override
-        public void hidden(DockFrontend fronend, Dockable dockable) {
-            traversingList.remove(dockable);
+        public void closed(CControl cc, CDockable cd) {
+            traversingList.remove(cd);
         }
         
         @Override
-        public void shown(DockFrontend frontend, Dockable dockable) {
-            if(dockable instanceof DefaultDockable && dockable != null)
+        public void opened(CControl cc, CDockable cd) {
+            if(cd != null)
             {
-                traversingList.remove(dockable);
-                traversingList.add(dockable);
+                traversingList.remove(cd);
+                traversingList.add(cd);
             }
         }
         
         @Override
-        public void removed(DockFrontend frontend, Dockable dockable) {
-            traversingList.remove(dockable);
+        public void removed(CControl cc, CDockable cd) {
+            traversingList.remove(cd);
         }
     }//end TabDockableAddRemoveListener
 }//end KeyController

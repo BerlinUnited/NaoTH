@@ -12,8 +12,8 @@ import java.util.HashMap;
  */
 public class DrawingsContainer
 {
-  HashMap<Class, DrawingCollection> drawingMap = new HashMap<Class, DrawingCollection>();
-  DrawingCollection currentCollection = null;
+  private final HashMap<Class, DrawingCollection> drawingMap = new HashMap<Class, DrawingCollection>();
+  private DrawingCollection currentCollection = null;
 
   public DrawingsContainer()
   {

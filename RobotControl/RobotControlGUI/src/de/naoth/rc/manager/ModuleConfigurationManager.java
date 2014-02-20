@@ -10,7 +10,7 @@ import de.naoth.rc.dataformats.ModuleConfiguration;
  *
  * @author Heinrich Mellmann
  */
-public interface ModuleConfigurationManager extends Manager<ModuleConfiguration>
+public interface ModuleConfigurationManager extends ManagerPlugin<ModuleConfiguration>
 {
     abstract void setModuleOwner(String name);
 }
