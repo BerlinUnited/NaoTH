@@ -102,8 +102,9 @@ void* motionThreadCallback(void* ref)
   Stopwatch stopwatch;
   while(true)
   {
-    if(g_atomic_int_get(&framesSinceCognitionLastSeen) > 1000)
+    if(g_atomic_int_get(&framesSinceCognitionLastSeen) > 4000)
     {
+      std::cerr << std::endl;
       std::cerr << "+==================================+" << std::endl;
       std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
       std::cerr << "+==================================+" << std::endl;
