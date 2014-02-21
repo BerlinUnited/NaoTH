@@ -1,6 +1,0 @@
-package crf.msg;
-
-message BaseMessage
-{
-  extensions 1 to max;
-}
