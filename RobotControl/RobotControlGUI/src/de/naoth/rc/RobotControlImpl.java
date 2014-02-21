@@ -44,7 +44,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
   private static final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
-  private final File layoutFile = new File(configlocation, "layout.dat");
+  private final File layoutFile = new File(configlocation, "layout_df1.1.1.xml");
   private final File fConfig = new File(configlocation, "config");
   
   private final MessageServer messageServer;
@@ -86,17 +86,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     readConfigFromFile();
     
     // restore the bounds and the state of the frame from the config
-    try {
-        defaultWindowBounds.x = Integer.parseInt(getConfig().getProperty("frame.position.x"));
-        defaultWindowBounds.y = Integer.parseInt(getConfig().getProperty("frame.position.y"));
-        defaultWindowBounds.width = Integer.parseInt(getConfig().getProperty("frame.width"));
-        defaultWindowBounds.height = Integer.parseInt(getConfig().getProperty("frame.height"));
-        int extendedstate = Integer.parseInt(getConfig().getProperty("frame.extendedstate"));
-        setBounds(defaultWindowBounds);
-        setExtendedState(extendedstate);
-    } catch (NumberFormatException ex) {
-        // no info necessary
-    }
+    defaultWindowBounds = getBounds();
+    defaultWindowBounds.x = readValueFromConfig("frame.position.x", defaultWindowBounds.x);
+    defaultWindowBounds.y = readValueFromConfig("frame.position.y", defaultWindowBounds.y);
+    defaultWindowBounds.width = readValueFromConfig("frame.width", defaultWindowBounds.width);
+    defaultWindowBounds.height = readValueFromConfig("frame.height", defaultWindowBounds.height);
+    int extendedstate = readValueFromConfig("frame.extendedstate", getExtendedState());
+    setBounds(defaultWindowBounds);
+    setExtendedState(extendedstate);
     
     // remember the bounds of the frame when not maximized
     this.addComponentListener(new ComponentAdapter() {
@@ -141,6 +138,17 @@ public class RobotControlImpl extends javax.swing.JFrame
     this.disconnectMenuItem.setEnabled(false);
   }//end constructor
 
+  
+  private int readValueFromConfig(String key, int default_value) {
+    try {
+      String value = getConfig().getProperty(key);
+      if(value != null) {
+        return Integer.parseInt(value);
+      }
+    } catch(NumberFormatException e){}
+    return default_value;
+  }
+  
   private void splashScreenMessage(String message)
   {
     final SplashScreen splash = SplashScreen.getSplashScreen();
@@ -516,7 +524,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       config.load(new FileReader(fConfig));
     } catch(IOException ex) {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-              "Could not open the config file. It will be created after the first execution.", ex);
+              "Could not open the config file. It will be created after the first execution.");
     }
   }
 

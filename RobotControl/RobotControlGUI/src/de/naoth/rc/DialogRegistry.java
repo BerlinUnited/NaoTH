@@ -137,16 +137,16 @@ public class DialogRegistry {
         // create a new one if necessary
         if (dockableDialog == null) {
             dockableDialog = new DialogDockable(dialog);
-            this.control.addDockable(dockableDialog);
             
             // put the new dialog aside the currently focused one
             CDockable focusedDialog = this.control.getFocusedCDockable();
-            if(focusedDialog == null) {
+            if(focusedDialog == null && this.control.getCDockableCount() > 0) {
                 focusedDialog = this.control.getCDockable(0);
             }
             if (focusedDialog != null) {
                 dockableDialog.setLocation(focusedDialog.getBaseLocation().aside());
             }
+            this.control.addDockable(dockableDialog);
         }
 
         dockableDialog.setVisible(true);
