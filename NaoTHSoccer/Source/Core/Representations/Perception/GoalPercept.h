@@ -85,7 +85,7 @@ public:
   double angleToSeenGoal;
 
   /* estimated position of the goal-centroid relative to the robot */
-  Vector3<double> goalCentroid;
+  Vector3d goalCentroid;
 
   // the goal was found at the horizon
   bool horizonScan; 
@@ -110,7 +110,7 @@ public:
       post[numberOfSeenPosts].color             = color;
       post[numberOfSeenPosts].positionReliable  = reliable;
       numberOfSeenPosts++;
-    }//end if
+    }
   }//end add
 
   void add(const GoalPost& goalPost)
@@ -119,17 +119,16 @@ public:
     {
       post[numberOfSeenPosts] = goalPost;
       numberOfSeenPosts++;
-    }//end if
+    }
   }//end add
 
 
-  /* reset percept */
   void reset()
   {
     numberOfSeenPosts = 0;
     angleToSeenGoal = 0; 
     horizonScan = false;
-  }//end reset
+  }
 
 
   virtual void print(std::ostream& stream) const
