@@ -6,27 +6,24 @@ package de.naoth.rc.manager;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.server.MessageServer;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 
 /**
  *
  * @author Heinrich Mellmann
  */
-public abstract class AbstractManagerPlugin<T> extends AbstractManager<T>
+public abstract class AbstractManagerPlugin<T> extends AbstractManager<T> implements Manager<T>
 {
-  @InjectPlugin
-  public RobotControl robotControl;
+  private MessageServer messageServer;
+  
+  @PluginLoaded
+  public void setServer(RobotControl robotControl) {
+      this.messageServer = robotControl.getMessageServer();
+  }
 
   @Override
   public MessageServer getServer()
   {
-    if(robotControl == null)
-    {
-      return null;
-    }
-    else
-    {
-      return robotControl.getMessageServer();
-    }
+    return messageServer;
   }
 }//end AbstractManagerPlugin

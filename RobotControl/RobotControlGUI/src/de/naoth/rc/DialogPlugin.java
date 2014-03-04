@@ -1,15 +1,14 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 package de.naoth.rc;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import javax.swing.JPanel;
 
 /**
  * This class is in fact a dialog loader. This is used to wrap 
- * dialog into plugins.
+ * dialog into a plugin.
  * @author Heinrich Mellmann
  * @param <T> 
  */
@@ -18,11 +17,13 @@ public class DialogPlugin<T extends AbstractDialog>
 {
     private T instance = null;
 
-    private Class getInstanceClass()
+    // use reflection to obtain the Class of the type T
+    private Class<T> getInstanceClass()
     {
-        return ((Class)((ParameterizedType)this.getClass().
-   getGenericSuperclass()).getActualTypeArguments()[0]);
-    }//end getInstanceClass
+        Type type = this.getClass().getGenericSuperclass();
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        return (Class<T>) parameterizedType.getActualTypeArguments()[0];
+    }
 
     private T create()
     {
@@ -31,8 +32,7 @@ public class DialogPlugin<T extends AbstractDialog>
             try {
                 instance = (T)(getInstanceClass().newInstance());
                 instance.init();
-            }catch(Exception ex)
-            {
+            }catch(Exception ex) {
                 System.err.println("Could not load the dialog " + getInstanceClass().getSimpleName());
                 ex.printStackTrace(System.err);
             }
@@ -51,14 +51,13 @@ public class DialogPlugin<T extends AbstractDialog>
         {
             instance.dispose();
         }
-    }//end dispose
+    }
 
     @Override
     public void destroy() {
         dispose();
         instance = null;
-    }//end dispose
-    
+    }
     
     @Override
     public JPanel getPanel() {

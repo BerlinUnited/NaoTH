@@ -223,7 +223,7 @@ public:
   ~IKDynamicKickMotion();
 
   void execute();
-  virtual void calculateTrajectory(const MotionRequest& motionRequest);
+  void calculateTrajectory();
 
 };
 

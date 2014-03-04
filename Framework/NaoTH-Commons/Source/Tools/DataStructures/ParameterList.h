@@ -17,6 +17,7 @@ class ParameterList
 {
 public:
   ParameterList(const std::string& parentClassName);
+  virtual ~ParameterList() {}
 
   bool& registerParameter(const std::string& name, bool& parameter);
   unsigned int& registerParameter(const std::string& name, unsigned int& parameter);

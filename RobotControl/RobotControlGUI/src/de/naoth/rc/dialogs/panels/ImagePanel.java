@@ -25,14 +25,13 @@ public class ImagePanel extends javax.swing.JPanel
     private Image backgroundImage;
     private boolean keepAspectRatio;
     private boolean stretchImage;
-    private ArrayList<Drawable> drawigs;
+    private final ArrayList<Drawable> drawigs = new ArrayList<Drawable>();
     
     /** Creates new form ImagePanel */
     public ImagePanel()
     {
         initComponents();
         
-        this.drawigs = new ArrayList<Drawable>();
         this.keepAspectRatio = true;
         this.stretchImage = true;
     }
@@ -43,35 +42,37 @@ public class ImagePanel extends javax.swing.JPanel
       this.backgroundImage = image;
       //this.setSize(imagePanel.getSize());
       this.repaint();
-    }//end setImage
+    }
 
     public void setKeepAspectRatio(boolean value)
     {
       this.keepAspectRatio = value;
-    }//end setKeepAspectRatio
+    }
 
     public void setStretchImage(boolean value)
     {
       this.stretchImage = value;
-    }//end setStretchImage
+    }
 
     public Image getImage()
     {
       return this.backgroundImage;
-    }//end getImage
+    }
 
     public ArrayList<Drawable> getDrawingList()
     {
       return this.drawigs;
-    }//end getDrawingList
+    }
 
     @Override
     public void paint(Graphics g)
     {
-      Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g;
 
-      if (backgroundImage != null)
-      {
+        if (backgroundImage == null) {
+            return;
+        }
+      
         double hPanel = (double) getHeight() - 2;
         double wPanel = (double) getWidth() - 2;
 
@@ -111,12 +112,12 @@ public class ImagePanel extends javax.swing.JPanel
         for (Drawable d : drawigs)
         {
           d.draw(g2d);
-        }//end for
+        }
 
-        // transform the drawing-pane back (nessesary to draw the other components corect)
+        // transform the drawing-pane back (nessesary to draw the other components correct)
         g2d.scale(1.0, 1.0);
         g2d.translate(-(posX + 1), -(posY + 1));
-      }//end if
+
     }//end paint
 
     /** This method is called from within the constructor to

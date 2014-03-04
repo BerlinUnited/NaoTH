@@ -84,7 +84,7 @@ void IKDynamicKickMotion::execute()
 
 
   //
-  calculateTrajectory(getMotionRequest());
+  calculateTrajectory();
 
 
   if(!trajectory.empty())
@@ -157,7 +157,7 @@ void IKDynamicKickMotion::execute()
         getRobotInfo(),
         getGroundContactModel(),
         getInertialSensorData(),
-        c.hip, c.feet.left, c.feet.right); // stabilize
+        c.hip); // stabilize
     }
 
     getEngine().solveHipFeetIK(c);
@@ -176,7 +176,7 @@ void IKDynamicKickMotion::execute()
 }//end execute
 
 
-void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest)
+void IKDynamicKickMotion::calculateTrajectory()
 {
   const unsigned int state_time = getFrameInfo().getTimeSince(state_start_time);
 

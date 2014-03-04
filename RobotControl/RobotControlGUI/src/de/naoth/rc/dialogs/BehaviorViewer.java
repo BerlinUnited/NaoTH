@@ -472,7 +472,8 @@ public class BehaviorViewer extends AbstractDialog
            .append("\n");
       }//end if
 
-      Plugin.debugDrawingManager.handleResponse(msg.toString().getBytes(), null);
+      //HACK: behavior viewer wants to use the field viewer to visualize data
+      //Plugin.debugDrawingManager.handleResponse(msg.toString().getBytes(), null);
       //this.parent.getDebugDrawingManager().handleResponse(msg.toString().getBytes(), null);
       
     }catch(Exception ex)
@@ -1117,13 +1118,10 @@ public class BehaviorViewer extends AbstractDialog
     return false;
   }//end checkSearchTextMatch
 
-  private void sendCommand(Command command)
+  private void sendCommand(final Command command)
   {
     if( !Plugin.parent.checkConnected() )
       return;
-
-    final Command commandToExecute = command;
-    final BehaviorViewer thisFinal = this;
 
     Plugin.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
@@ -1136,16 +1134,16 @@ public class BehaviorViewer extends AbstractDialog
       @Override
       public void handleError(int code)
       {
-        JOptionPane.showMessageDialog(thisFinal,
+        JOptionPane.showMessageDialog(BehaviorViewer.this,
           "Could not send or receive behavior command, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
       }
 
       @Override
       public Command getCurrentCommand()
       {
-        return commandToExecute;
+        return command;
       }
-    }, command);
+    });
   }//end sendCommand
 
   

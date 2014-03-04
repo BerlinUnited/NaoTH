@@ -150,7 +150,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
 }//end updateByGoalModel
 
 
-void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double sigmaAngle) const
+void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const
 {
   const double bestPossibleDistanceWeighting = 1.0;
   //const double bestPossibleAngleWeighting = 1.0;

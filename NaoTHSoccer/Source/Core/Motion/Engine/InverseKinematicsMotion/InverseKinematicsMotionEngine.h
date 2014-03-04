@@ -130,13 +130,9 @@ public:
     double (&position)[naoth::JointData::numOfJoint]);
 
   bool rotationStabilize(
-    const RobotInfo& theRobotInfo,
-    const GroundContactModel& theGroundContactModel,
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
-    Pose3D& hip, 
-    const Pose3D& leftFoot, 
-    const Pose3D& rightFoot);
+    Pose3D& hip);
 
   /**
    * @return if stabilizer is working
@@ -145,9 +141,7 @@ public:
     const naoth::RobotInfo& theRobotInfo,
     const GroundContactModel& theGroundContactModel,
     const naoth::InertialSensorData& theInertialSensorData,
-    Pose3D& hip, 
-    const Pose3D& leftFoot, 
-    const Pose3D& rightFoot);
+    Pose3D& hip);
 
 
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;

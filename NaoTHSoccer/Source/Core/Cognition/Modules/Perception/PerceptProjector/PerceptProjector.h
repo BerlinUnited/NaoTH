@@ -80,7 +80,7 @@ private:
     double offsetY, 
     const DoubleEdgel& edgel) const;
 
-  double operator ()(double x, double y, float nil) const
+  double operator ()(double x, double y, float /*nil*/) const
   {
     if(getLinePercept().lines.size() > 1)
     {

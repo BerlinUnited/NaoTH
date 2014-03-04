@@ -9,9 +9,8 @@
 #define __PFBLParameters_h_
 
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/DataStructures/Printable.h>
 
-class PFBLParameters: public ParameterList, public naoth::Printable
+class PFBLParameters: public ParameterList
 {
 public: 
   PFBLParameters();
@@ -25,9 +24,6 @@ public:
   double sigmaDistance;
 
   double speedWehnParticleIsMoving;
-
-  virtual void print(std::ostream& stream) const {}
-
 };
 
 #endif //__PFBLParameters_h_

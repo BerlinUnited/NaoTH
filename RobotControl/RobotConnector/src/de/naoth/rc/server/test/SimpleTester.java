@@ -24,7 +24,7 @@ public class SimpleTester
     try
     {
       server.connect("localhost", 5401);
-      server.addCommandSender(new TestSender());
+      server.subscribe(new TestSender());
       try
       {
         Thread.sleep(5000000);

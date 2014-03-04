@@ -6,21 +6,22 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.server.Command;
+import de.naoth.rc.server.CommandSender;
 import de.naoth.rc.server.MessageServer;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.List;
+import javax.swing.SwingUtilities;
 
 /**
  * This is the basic class for every manager. It does a lot of work in order
  * to avoid deadlocks. It should be much easier to extend you manager from 
  * this class instead of implementing you own <code>CommandSender</code>. <br><br>
  * 
- * The type <code>T</code> is the type of the (data) object that is managed.
- * 
+ * @param <T> The type <code>T</code> is the type of the (data) object that is managed.
  * @author thomas
  */
-public abstract class AbstractManager<T> implements Manager<T>
+public abstract class AbstractManager<T> implements Manager<T>, CommandSender
 {
   /**
    * When using this lock you should have understood the meaning of the
@@ -37,17 +38,17 @@ public abstract class AbstractManager<T> implements Manager<T>
    *  ||                | | GUI |
    *  ||                | +-----+
    *  v|                |    ^   
-   * +--------+ &lt;-------+    |   
+   * +--------+ &lt;----+    |   
    * |ManagerX| -------------+   
    * +--------+
    * 
    * </pre>
    */
-  private final Lock LISTENER_LOCK = new ReentrantLock();
-  
-  private LinkedList<ObjectListener<T>> listener = 
-    new LinkedList<ObjectListener<T>>();
+  private final List<ObjectListener<T>> listener = 
+    Collections.synchronizedList(new LinkedList<ObjectListener<T>>());
 
+  private Thread responceThread;
+  
   public AbstractManager()
   {
   }
@@ -55,75 +56,72 @@ public abstract class AbstractManager<T> implements Manager<T>
   @Override
   public void addListener(ObjectListener<T> l)
   {
-    LISTENER_LOCK.lock();
-    if(!listener.contains(l))
-    {
+    if(!listener.contains(l)) {
       listener.add(l);
     }
-    int size = listener.size();
-    LISTENER_LOCK.unlock();
-    if(size == 1)
-    {
-      getServer().addCommandSender(this);
+    if(listener.size() == 1) {
+      getServer().subscribe(this);
     }
   }
 
   @Override
   public void removeListener(ObjectListener<T> l)
   {
-    LISTENER_LOCK.lock();
     listener.remove(l);
-    int size = listener.size();
-    LISTENER_LOCK.unlock();
-    if(size == 0)
-    {
-      getServer().removeCommandSender(this);
-    }    
+    if(listener.isEmpty()) {
+      getServer().unsubscribe(this);
+    }
   }
 
   @Override
-  public void handleResponse(byte[] result, Command originalCommand)
-  {    
-    // copy listeners
-    LISTENER_LOCK.lock();
-    LinkedList<ObjectListener<T>> copyListener = new LinkedList<ObjectListener<T>>();
-    copyListener.addAll(listener);
-    LISTENER_LOCK.unlock();
-    
-    try
-    {
-      T object = convertByteArrayToType(result);
-      
-      for(ObjectListener<T> l : copyListener)
-      {
-        l.newObjectReceived(object);
-      }
-    }
-    catch(IllegalArgumentException ex)
-    {
-      privateErrorHandler("Conversion of the received byte array failed.\n" +
-        "Reason:\n" + ex.getLocalizedMessage(), copyListener);
-    }
-    
-  }
-
-  @Override
-  public void handleError(int code)
+  public void handleResponse(final byte[] result, Command originalCommand)
   {
-    // copy listeners
-    LISTENER_LOCK.lock();
-    LinkedList<ObjectListener<T>> copyListener = new LinkedList<ObjectListener<T>>();
-    copyListener.addAll(listener);
-    LISTENER_LOCK.unlock();
-    
-    privateErrorHandler("Robot detected an error: error code " + code, copyListener);
+    if(this.responceThread != null) {
+        try {
+            this.responceThread.join();
+        } catch (InterruptedException ex) {/* should never happen*/ }
+    }
+      
+    this.responceThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            parseDataAndNotifyListeners(result);
+        }
+    });
+    this.responceThread.start();
   }
   
-  private void privateErrorHandler(String message, LinkedList<ObjectListener<T>> list)
+  private void parseDataAndNotifyListeners(final byte[] result)
   {
-    for(ObjectListener<T> l : list)
-    {
-      l.errorOccured(message);
+    try {
+        T object = convertByteArrayToType(result);
+        synchronized(listener) {
+          for(ObjectListener<T> l: listener) {
+            l.newObjectReceived(object);
+          }
+        }
+    } catch(IllegalArgumentException ex) {
+      handleError(-7); // why '-7'?? why not!!
+    }
+  }
+
+  @Override
+  public void handleError(final int code)
+  {
+    SwingUtilities.invokeLater(new Runnable() { 
+        @Override 
+        public void run() {
+            notifyErrorOccured("Error while receiving the message occured " + code);
+        }
+    });
+  }
+  
+  private void notifyErrorOccured(final String message)
+  {
+    synchronized(listener) {
+      for(final ObjectListener<T> l : listener) {
+        l.errorOccured(message);
+      }
     }
   }
   

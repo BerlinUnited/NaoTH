@@ -218,7 +218,7 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
   }
 }//end firstStep
 
-void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const
+void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& /*lastStep*/, double character) const
 {
   //restrictStepSizeSimple(step, lastStep, character);
   //return;
@@ -295,7 +295,7 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, d
 }//end restrictStepSize
 
 
-void FootStepPlanner::restrictStepSizeSimple(Pose2D& step, const FootStep& lastStep, double character) const
+void FootStepPlanner::restrictStepSizeSimple(Pose2D& step, const FootStep& /*lastStep*/, double character) const
 {
   character = 0.5*character + 0.5;
 

@@ -9,7 +9,7 @@ package de.naoth.rc.manager;
  *
  * @author thomas
  */
-public interface DebugRequestManager extends Manager<String[]>
+public interface DebugRequestManager extends ManagerPlugin<String[]>
 {
 
 }

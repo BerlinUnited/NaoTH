@@ -1196,13 +1196,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }//end class ImageDrawing
   }//end class ImagePanel
 
-  private void sendCommand(Command command)
+  private void sendCommand(final Command command)
   {
-    final Command commandToExecute = command;
-    final ColorTableTool thisFinal = this;
     this.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
-
       @Override
       public void handleResponse(byte[] result, Command originalCommand)
       {
@@ -1219,7 +1216,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
           {
             lastPath = path;
 
-            char[] buffer = thisFinal.currentColorTable.getCharArray();
+            char[] buffer = ColorTableTool.this.currentColorTable.getCharArray();
             
             Command command = new Command(setColorTableCommandBase)
                     .addArg("path", lastPath)
@@ -1230,7 +1227,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
           }
           else
           {
-            JOptionPane.showMessageDialog(thisFinal,
+            JOptionPane.showMessageDialog(ColorTableTool.this,
               "Colortable path is empty", "Colortable NOT sent to robot", JOptionPane.ERROR_MESSAGE);
           }
         }
@@ -1239,12 +1236,12 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
           String answer = new String(result);
           if(answer.endsWith("successfull written."))
           {
-            JOptionPane.showMessageDialog(thisFinal,
+            JOptionPane.showMessageDialog(ColorTableTool.this,
                 "Colortable has been written to\n" + lastPath, "Colortable sent to robot", JOptionPane.INFORMATION_MESSAGE);
           }
           else
           {
-            JOptionPane.showMessageDialog(thisFinal,
+            JOptionPane.showMessageDialog(ColorTableTool.this,
                 answer, "Colortable NOT sent to robot", JOptionPane.INFORMATION_MESSAGE);
           }
         }
@@ -1255,12 +1252,12 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
           String answer = new String(result);
           if(answer.endsWith("parameter were saved"))
           {
-            JOptionPane.showMessageDialog(thisFinal,
+            JOptionPane.showMessageDialog(ColorTableTool.this,
               "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
           }
           else
           {
-            JOptionPane.showMessageDialog(thisFinal,
+            JOptionPane.showMessageDialog(ColorTableTool.this,
                 answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
           }
           
@@ -1271,16 +1268,16 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       @Override
       public void handleError(int code)
       {
-        JOptionPane.showMessageDialog(thisFinal,
+        JOptionPane.showMessageDialog(ColorTableTool.this,
               "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
       }
 
       @Override
       public Command getCurrentCommand()
       {
-        return commandToExecute;
+        return command;
       }
-    }, command);
+    });
   }//end sendCommand
 
   private void saveColorTable()

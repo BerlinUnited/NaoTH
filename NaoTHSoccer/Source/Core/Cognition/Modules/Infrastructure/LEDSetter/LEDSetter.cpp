@@ -68,7 +68,7 @@ void LEDSetter::copyMonoLEDData(const LEDRequest &data, int from, int to)
 {
   // head LEDs from behavior
 
-  for(int i=0; i < LEDData::numOfMonoLED; i++)
+  for(int i=from; i <= to; i++)
   {
     if(data.request.theMonoLED[i] != getLEDData().theMonoLED[i])
     {
@@ -76,7 +76,6 @@ void LEDSetter::copyMonoLEDData(const LEDRequest &data, int from, int to)
       getLEDData().change = true;
     }
   }
-
 
 }//end copyData
 

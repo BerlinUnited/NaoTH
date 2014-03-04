@@ -71,7 +71,7 @@ void Walk::execute()
         getRobotInfo(),
         getGroundContactModel(),
         getInertialSensorData(),
-        c.hip, c.feet.left, c.feet.right);
+        c.hip);
     }
 
     getEngine().solveHipFeetIK(c);
@@ -535,9 +535,7 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.extendDoubleSupport,
                                                         theWalkParameters.step.stepHeight, 
                                                         0, //footPitchOffset
-                                                        0, //footYawOffset
                                                         0, //footRollOffset
-                                                        0, //theWalkParameters.curveFactor, // not used right now
                                                         executingStep.speedDirection);
     }
     else
@@ -550,9 +548,7 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.extendDoubleSupport,
                                                         theWalkParameters.step.stepHeight,
                                                         0, //getInertialModel.orientation.y*footPitchOffset, // footPitchOffset
-                                                        0, //footYawOffset
-                                                        0, //getInertialModel.orientation.x*footRollOffset, // footRollOffset
-                                                        0  //theWalkParameters.curveFactor // not used right now
+                                                        0  //getInertialModel.orientation.x*footRollOffset, // footRollOffset
                                                         );
     }
   }

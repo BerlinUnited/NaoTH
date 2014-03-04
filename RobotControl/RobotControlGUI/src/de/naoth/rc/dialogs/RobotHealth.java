@@ -53,15 +53,16 @@ public class RobotHealth extends AbstractDialog
   private final Command getFSRDataCommand = new Command("Cognition:representation:getbinary").addArg("FSRData");
   private final Command getSensorJointDataCommand = new Command("Cognition:representation:getbinary").addArg("SensorJointData");
   
+  private final DecimalFormat df = new DecimalFormat  ( "##0.00" );
   
-  FSRDataListener fSRDataListener = new FSRDataListener();
-  SensorJointDataListener sensorJointDataListener = new SensorJointDataListener();
+  private final FSRDataListener fSRDataListener = new FSRDataListener();
+  private final SensorJointDataListener sensorJointDataListener = new SensorJointDataListener();
   
-  BufferedImage nao_body;
-  BufferedImage nao_feet;
+  private BufferedImage nao_body;
+  private BufferedImage nao_feet;
   
-  final int nao_feet_offset_x = 300;
-  final int nao_feet_offset_y = 0;
+  private final int nao_feet_offset_x = 300;
+  private final int nao_feet_offset_y = 0;
   
   
   private final String jointNames[] = {
@@ -123,11 +124,12 @@ public class RobotHealth extends AbstractDialog
                   -260, -1010  // LAnkleRoll
       };
   
-  private final MicroPlot[] jointPlots = new MicroPlot[joints.length];
-  
+
+  private final MicroPlot[] jointPlots = new MicroPlot[jointNames.length];
+  private final JointState[] jointStates = new JointState[jointNames.length];
   
   // ATTENTION: the order is the same as the in the NaoTH-2011
-  final FSRState[] theFSRStates = new FSRState[]{
+  private final FSRState[] theFSRStates = new FSRState[]{
       new FSRState(45, 84, 10), // theLFsrFL
       new FSRState(139, 85, 10), // theLFsrFR
       new FSRState(45, 262, 10), // theLFsrBL
@@ -138,6 +140,7 @@ public class RobotHealth extends AbstractDialog
       new FSRState(270, 262, 10), // theRFsrBL
       new FSRState(356, 262, 10) // theRFsrBR
    };
+  
   
     /** Creates new form RobotHealth */
     public RobotHealth() {
@@ -158,9 +161,9 @@ public class RobotHealth extends AbstractDialog
         } catch (IOException e) {
         }
         
-        for(int i = 0; i < joints.length; i++)
-        {
+        for(int i = 0; i < jointNames.length; i++) {
             jointPlots[i] = new MicroPlot(-30, 30);
+            jointStates[i] = new JointState(jointNames[i], 10);
         }
     }
     
@@ -173,7 +176,7 @@ public class RobotHealth extends AbstractDialog
     
     // this is called by the drawingPanel.paintComponent(...)
     // see: (NetBeans) Properties: "Custom Creation Code" for drawingPanel
-      public synchronized void paintDrawingComponent(Graphics g)
+      public void paintDrawingComponent(Graphics g)
       {
         Graphics2D g2d = (Graphics2D) g;
         
@@ -185,38 +188,23 @@ public class RobotHealth extends AbstractDialog
         g2d.setColor(Color.black);
         */
         g2d.translate(nao_feet_offset_x, nao_feet_offset_y);
-        for(int i = 0; i < theFSRStates.length; i++)
-        {
-            theFSRStates[i].draw(g2d);
+        for(FSRState fsr: theFSRStates) {
+            fsr.draw(g2d);
         }
         g2d.translate(-nao_feet_offset_x, -nao_feet_offset_y);
         
-        
         g2d.translate(150, 40);
-        if(sensorJointData != null)
+        int numberOfJoints = jointStates.length;
+        for(int i = 0; i < numberOfJoints; i++)
         {
-            for(int i = 0; i < sensorJointData.getTemperatureCount(); i++)
-            {
-                int x = (joints[0] - joints[i*2])/5;// mirror horizontal
-                int y = (joints[1] - joints[i*2+1])/5; // mirror vertical
-                int radius = 10;
-                
-                double value = sensorJointData.getTemperature(i);
-                //double value = sensorJointData.getJointData().getPosition(i);
-                
-                g2d.setColor(getColorMix(0, 85f, (float)value));
-                g2d.fillOval(x-radius, y-radius, radius*2, radius*2);
-                g2d.setColor(Color.black);
-                g2d.drawString(df.format(value), x+10, y+5);
-                g2d.drawString(jointNames[i], x+10, y-10);
-                
-                g2d.translate(x, y);
-                jointPlots[i].draw(g2d);
-                g2d.translate(-x,-y);
-            }
-        }//end if
+            int x = (joints[0] - joints[i*2])/5;// mirror horizontal
+            int y = (joints[1] - joints[i*2+1])/5; // mirror vertical
+            g2d.translate(x, y);
+            jointStates[i].draw(g2d);
+            jointPlots[i].draw(g2d);
+            g2d.translate(-x,-y);
+        }
         g2d.translate(-150, -40);
-        
       }//end paintComponent
 
       
@@ -232,13 +220,12 @@ public class RobotHealth extends AbstractDialog
         {
           try
           {
-            FrameworkRepresentations.FSRData fsrData = FrameworkRepresentations.FSRData.parseFrom(object);
+            FrameworkRepresentations.FSRData fsrData = 
+                    FrameworkRepresentations.FSRData.parseFrom(object);
 
-            for(int i = 0; i < theFSRStates.length; i++)
-            {
+            for(int i = 0; i < theFSRStates.length; i++) {
                 theFSRStates[i].setValue(fsrData.getForce(i));
             }
-
             RobotHealth.this.repaint();
           }
           catch (InvalidProtocolBufferException ex)
@@ -253,7 +240,6 @@ public class RobotHealth extends AbstractDialog
     }//end class FSRDataListener
       
     
-    FrameworkRepresentations.SensorJointData sensorJointData;
     class SensorJointDataListener implements ObjectListener<byte[]>
     {
         @Override
@@ -266,13 +252,15 @@ public class RobotHealth extends AbstractDialog
         {
           try
           {
-            sensorJointData = FrameworkRepresentations.SensorJointData.parseFrom(object);
+            FrameworkRepresentations.SensorJointData sensorJointData = 
+                    FrameworkRepresentations.SensorJointData.parseFrom(object);
             
             for(int i = 0; i < sensorJointData.getTemperatureCount(); i++)
             {
                 //double v = sensorJointData.getJointData().getPosition(i)*10;
                 double v = sensorJointData.getElectricCurrent(i)*10;
                 jointPlots[i].setValue(v);
+                jointStates[i].setValue(sensorJointData.getTemperature(i));
             }
             
             RobotHealth.this.repaint();
@@ -289,15 +277,12 @@ public class RobotHealth extends AbstractDialog
     }//end class SensorJointDataListener
     
     
-      
-      
-    DecimalFormat df =   new DecimalFormat  ( "##0.00" );
     class FSRState implements Drawable
     {
+        private final int x;
+        private final int y;
+        private final int radius;
         private double value;
-        private int x;
-        private int y;
-        private int radius;
 
         public FSRState(int x, int y, int radius) {
             this.x = x;
@@ -317,6 +302,38 @@ public class RobotHealth extends AbstractDialog
             g2d.drawOval(x-radius, y-radius, radius*2, radius*2);
             
             g2d.drawString("["+df.format(value)+"]", x+radius+3, y);
+        }
+    }
+    
+    class JointState implements Drawable
+    {
+        //private final int x;
+        //private final int y;
+        private final int radius;
+        private final String name;
+        private double value;
+
+        public JointState(String name, int radius) {
+            //this.x = x;
+            //this.y = y;
+            this.radius = radius;
+            this.name = name;
+        }
+        
+        public void setValue(double value)
+        { 
+            this.value = value; 
+        }
+        
+        @Override
+        public void draw(Graphics2D g2d) 
+        {
+            //double value = sensorJointData.getJointData().getPosition(i);
+            g2d.setColor(getColorMix(0, 85f, (float)value));
+            g2d.fillOval(-radius, -radius, radius*2, radius*2);
+            g2d.setColor(Color.black);
+            g2d.drawString(df.format(value), 10, 5);
+            g2d.drawString(name, 10, -10);
         }
     }
     
@@ -352,17 +369,15 @@ public class RobotHealth extends AbstractDialog
     }//end getColor
     
     
-    
-    
     class MicroPlot implements Drawable
     {
-        private int min;
-        private int max;
-        private int samples = 20;
-        private int step = 3;
-        private int height = 30;
+        private final int min;
+        private final int max;
+        private final int samples = 20;
+        private final int step = 3;
+        //private final int height = 30;
 
-        private ArrayList<Double> values = new ArrayList<Double>();
+        private final ArrayList<Double> values = new ArrayList<Double>();
         
         public MicroPlot(int min, int max) {
             this.min = min;

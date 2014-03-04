@@ -12,11 +12,11 @@ import java.util.HashMap;
  */
 public class DrawingsContainer
 {
-  HashMap<Class, DrawingCollection> drawingMap = new HashMap<Class, DrawingCollection>();
-  HashMap<String, Canvas> drawingMapId = new HashMap<String, Canvas>();
+  private final HashMap<Class, DrawingCollection> drawingMap = new HashMap<Class, DrawingCollection>();
+  private final HashMap<String, Canvas> drawingMapId = new HashMap<String, Canvas>();
   
-  DrawingCollection currentCollection = null;
-  Canvas currentCanvas = null;
+  private DrawingCollection currentCollection = null;
+  private Canvas currentCanvas = null;
 
   public DrawingsContainer()
   {

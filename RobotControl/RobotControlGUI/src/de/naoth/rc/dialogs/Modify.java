@@ -13,6 +13,7 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
+import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
@@ -36,23 +37,23 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author admin
  */
-@PluginImplementation
 public class Modify extends AbstractDialog
         implements Dialog, ObjectListener<byte[]>, CommandSender
 {
-
-    private static Command getModifyCommand = new Command("modify:list");
-    private static Command setModifyCommand = new Command("modify:set");
-    private static Command releaseModifyCommand = new Command("modify:release");
+    private static final Command getModifyCommand = new Command("modify:list");
+    private static final Command setModifyCommand = new Command("modify:set");
+    private static final Command releaseModifyCommand = new Command("modify:release");
 
     Command commandToExecute = null;
 
-    
-    @InjectPlugin
-    public RobotControl parent;
-    @InjectPlugin
-    public GenericManagerFactory genericManagerFactory;
-
+    @PluginImplementation
+    public static class Plugin extends DialogPlugin<Modify>
+    {
+        @InjectPlugin
+        public static RobotControl parent;
+        @InjectPlugin
+        public static GenericManagerFactory genericManagerFactory;
+    }
 
     private ModifyDataModel treeTableModel = new ModifyDataModel();
     private TreeTable myTreeTable = new TreeTable(treeTableModel);
@@ -111,23 +112,25 @@ public class Modify extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void btRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRefreshActionPerformed
-
+  
       if(btRefresh.isSelected())
       {
-        if(parent.checkConnected())
+        if(Plugin.parent.checkConnected())
         {
-          genericManagerFactory.getManager(getModifyCommand).addListener(this);
-          //parent.getGenericManager(getModifyCommand).addListener(this);
-        }
-        else
-        {
+          // HACK: recreate the whole table
+          treeTableModel = new ModifyDataModel();
+          myTreeTable = new TreeTable(treeTableModel);
+          myTreeTable.getColumn("Modify").setMaxWidth(50);
+          jScrollPane2.setViewportView(myTreeTable);
+      
+          Plugin.genericManagerFactory.getManager(getModifyCommand).addListener(this);
+        } else {
           btRefresh.setSelected(false);
         }
       }
       else
       {
-        genericManagerFactory.getManager(getModifyCommand).removeListener(this);
-        //parent.getGenericManager(getModifyCommand).removeListener(this);
+        Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
       }
     }//GEN-LAST:event_btRefreshActionPerformed
 
@@ -168,17 +171,12 @@ public class Modify extends AbstractDialog
   public void errorOccured(String cause)
   {
     btRefresh.setSelected(false);
-    genericManagerFactory.getManager(getModifyCommand).removeListener(this);
-    //parent.getGenericManager(getModifyCommand).removeListener(this);
-
-    JOptionPane.showMessageDialog(null,
-      cause, "Error", JOptionPane.ERROR_MESSAGE);
-  }//end errorOccured
+    Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
+  }
 
   @Override
   public void newObjectReceived(byte[] object)
   {
-
     String str = new String(object);
     String[] modifies = str.split("(\n|\t| |\r)+");
 
@@ -194,7 +192,6 @@ public class Modify extends AbstractDialog
         if(node.enabledListener == null) {
             node.enabledListener = new FlagModifiedListener(s[1]);
         }
-        
       }//end for
     }catch(Exception e)
     {
@@ -204,13 +201,15 @@ public class Modify extends AbstractDialog
 
     myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
     myTreeTable.getTree().setRootVisible(false);
+    myTreeTable.revalidate();
     myTreeTable.repaint();
   }//end newObjectReceived
+  int k = 0;
 
   private void sendCommand(Command command)
   {
     commandToExecute = command;
-    parent.getMessageServer().executeSingleCommand(this, command);
+    Plugin.parent.getMessageServer().executeSingleCommand(this, command);
   }
 
   @Override
@@ -236,9 +235,6 @@ public class Modify extends AbstractDialog
       
     }
   }
-
-
-
 
   class ColorRenderer extends DefaultTableCellRenderer
   {
@@ -266,8 +262,7 @@ public class Modify extends AbstractDialog
   @Override
   public void dispose()
   {
-    genericManagerFactory.getManager(getModifyCommand).removeListener(this);
-    //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
+    Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
   }//end dispose
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
