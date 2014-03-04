@@ -96,7 +96,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
   
   // adjust the vectors if the parameters change
-  if(features.size() != params.numberOfScanlines)
+  if((int) features.size() != params.numberOfScanlines)
   {
     features.resize(params.numberOfScanlines);
     lastTestFeatureIdx.resize(params.numberOfScanlines,0);
