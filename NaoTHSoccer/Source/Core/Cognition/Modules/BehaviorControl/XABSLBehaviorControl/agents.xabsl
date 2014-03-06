@@ -39,6 +39,8 @@ include "Options/Skills/go_to_ball_with_foot.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
+include "Options/Skills/fast_forward_kick_with_right.xabsl";
+include "Options/Skills/fast_forward_kick_with_left.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
@@ -89,6 +91,7 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 // Test agents (options)
 // Test agents (options) Kicks
 include "Options/Test/sidekick_test_agent.xabsl";
+include "Options/Test/fast_forward_kick_test_agent.xabsl";
 include "Options/Test/kick_direction_test_agent.xabsl";
 include "Options/Test/kick_attack_direction_test_agent.xabsl";
 include "Options/Test/omnidirectional_kick_test_agent.xabsl";
@@ -116,6 +119,7 @@ include "Options/Test/ball_search/only_goal_looking.xabsl";
 // Test options
 // Test options Kicks
 include "Options/Test/kicks/sidekick_test.xabsl";
+include "Options/Test/kicks/fast_forward_kick_test.xabsl";
 include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
 include "Options/Test/kicks/omnidirectional_kick_test.xabsl";
@@ -176,6 +180,7 @@ agent role_penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_
 agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
 agent kick_sidekick_test("sidekick_test_agent", sidekick_test_agent);
+agent kick_fast_forward_kick_test("fast_forward_kick_test_agent", fast_forward_kick_test_agent);
 agent kick_omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
 agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent);
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
