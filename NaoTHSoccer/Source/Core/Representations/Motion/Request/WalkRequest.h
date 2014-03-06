@@ -53,7 +53,8 @@ public:
       stepID(-1),
       moveLeftFoot(false),
       time(0),
-      speedDirection(0)
+      speedDirection(0),
+      scale(1.0)
     {}
 
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
@@ -61,6 +62,7 @@ public:
     Pose2D target; // in coordinate
     unsigned int time; // in ms
     double speedDirection; //TODO: what is that?
+    double scale;
   };
 
   // indicates speed and stability, in range [0, 1]

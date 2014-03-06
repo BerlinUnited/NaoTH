@@ -11,9 +11,17 @@
 using namespace std;
 
 Pose3D FootTrajectorGenerator::genTrajectory(
-  const Pose3D& oldFoot, const Pose3D& targetFoot,
-  double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
-  double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor)
+  const Pose3D& oldFoot, 
+  const Pose3D& targetFoot,
+  double cycle, 
+  double samplesDoubleSupport, 
+  double samplesSingleSupport, 
+  double extendDoubleSupport,
+  double stepHeight, 
+  double footPitchOffset, 
+  double footYawOffset, 
+  double footRollOffset,
+  double curveFactor)
 {
   double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
@@ -65,7 +73,8 @@ Pose3D FootTrajectorGenerator::stepControl(
   double footYawOffset, 
   double footRollOffset, 
   double curveFactor,
-  double speedDirection
+  double speedDirection,
+  double scale
   )
 {
   double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
@@ -79,34 +88,24 @@ Pose3D FootTrajectorGenerator::stepControl(
   else if (cycle <= doubleSupportBegin)
   {
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-    //double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor));// this one has jumps for some values of curveFactor
-    double xp = (1 - cos(t*Math::pi))*0.5;
+    //double xp = (1 - cos(t*Math::pi))*0.5;
+    double xp = (t < scale) ? (1-cos(t/scale*Math::pi))*0.5 : 1.0;
     double zp = (1 - cos(t*Math::pi2))*0.5;
-
-    double s = 0.7;
-
-    if(t < s) {
-      xp = (1 - cos(t/s*Math::pi))*0.5;
-    } else {
-      xp = 1.0;
-    }
 
     // TODO: optmize
     Pose3D speedTarget = targetFoot;
     speedTarget.translate(cos(speedDirection)*30, sin(speedDirection)*30, 0);
-    vector<Vector2<double> > vecX;
-    vecX.push_back(Vector2<double>(0, oldFoot.translation.x));
-    vecX.push_back(Vector2<double>(1, targetFoot.translation.x));
-    vecX.push_back(Vector2<double>(1.1, speedTarget.translation.x));
-    CubicSpline theCubicSplineX;
-    theCubicSplineX.init(vecX);
+    vector<Vector2d > vecX;
+    vecX.push_back(Vector2d(0.0, oldFoot.translation.x));
+    vecX.push_back(Vector2d(1.0, targetFoot.translation.x));
+    vecX.push_back(Vector2d(1.1, speedTarget.translation.x));
+    CubicSpline theCubicSplineX(vecX);
 
-    vector<Vector2<double> > vecY;
-    vecY.push_back(Vector2<double>(0, oldFoot.translation.y));
-    vecY.push_back(Vector2<double>(1, targetFoot.translation.y));
-    vecY.push_back(Vector2<double>(1.1, speedTarget.translation.y));
-    CubicSpline theCubicSplineY;
-    theCubicSplineY.init(vecY);
+    vector<Vector2d > vecY;
+    vecY.push_back(Vector2d(0.0, oldFoot.translation.y));
+    vecY.push_back(Vector2d(1.0, targetFoot.translation.y));
+    vecY.push_back(Vector2d(1.1, speedTarget.translation.y));
+    CubicSpline theCubicSplineY(vecY);
 
     Pose3D foot;
     foot.translation.z = targetFoot.translation.z + zp*stepHeight;
