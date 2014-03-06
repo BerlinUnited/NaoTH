@@ -25,19 +25,13 @@ Pose3D FootTrajectorGenerator::genTrajectory(
   }
   else if (cycle <= doubleSupportBegin)
   {
-    //      cout<<"foot stat 1"<<endl;
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-    //        double xp = 10*t*t*t - 15*t*t*t*t + 6*t*t*t*t*t;
-    //double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor)); // this one has jumps for some values of curveFactor
+
+    // parameter for the step curve
+    // NOTE: xp is used to interpolate the motion in x/y-plane, while
+    //       yp is for the mition in the z-axis
     double xp = (1 - cos(t*Math::pi))*0.5;
-    //        double xp = exp( -1 * exp(-10*(t-0.5)) );
-    //        double yp = 16*t*t - 32*t*t*t + 16*t*t*t*t;
-    //        cout<<"t = "<<t<<endl;
-    t = t * Math::pi - Math::pi_2;
-    //        double xp = (1+sin(t))*0.5;
-    double yp = (1 + cos(t * 2))*0.5; //cos(t);
-    //    if (t < 0) yp = cos(t);
-    //        cout<<"t= "<<t<<" yp="<<yp<<endl;
+    double yp = (1 - cos(t*Math::pi2))*0.5;
 
     Pose3D foot;
     foot.translation.z = targetFoot.translation.z + yp*stepHeight;
@@ -87,8 +81,15 @@ Pose3D FootTrajectorGenerator::stepControl(
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
     //double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor));// this one has jumps for some values of curveFactor
     double xp = (1 - cos(t*Math::pi))*0.5;
-    t = t * Math::pi - Math::pi_2;
-    double zp = (1 + cos(t * 2))*0.5;
+    double zp = (1 - cos(t*Math::pi2))*0.5;
+
+    double s = 0.7;
+
+    if(t < s) {
+      xp = (1 - cos(t/s*Math::pi))*0.5;
+    } else {
+      xp = 1.0;
+    }
 
     // TODO: optmize
     Pose3D speedTarget = targetFoot;
