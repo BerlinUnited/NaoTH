@@ -419,6 +419,12 @@ public class RobotControlImpl extends javax.swing.JFrame
       @Override
       public void run()
       {
+        // create the configlocation is not existing
+        if(!new File(configlocation).mkdirs()) {
+            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
+                    "Could not create the configuration path: \"" + configlocation + "\".");
+        }
+          
         final JSPFProperties props = new JSPFProperties();
         props.setProperty(PluginManager.class, "cache.enabled", "true");
         props.setProperty(PluginManager.class, "cache.mode", "stong"); //optional
