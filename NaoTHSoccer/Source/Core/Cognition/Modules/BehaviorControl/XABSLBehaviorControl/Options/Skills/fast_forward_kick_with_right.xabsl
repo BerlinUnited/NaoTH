@@ -45,6 +45,7 @@ option fast_forward_kick_with_right
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 0;
       motion.walk.step_control.time = 300;
+      motion.walk.step_control.scale = 0.7;
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
