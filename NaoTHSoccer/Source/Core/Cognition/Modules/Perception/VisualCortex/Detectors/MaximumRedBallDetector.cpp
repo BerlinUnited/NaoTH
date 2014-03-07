@@ -57,6 +57,8 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 
 bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
 {
+  const FieldPercept& p = getFieldPercept();
+
   if(!getFieldPercept().valid) {
     return false;
   }
@@ -83,8 +85,10 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
   poly = getFieldPercept().getValidField();
   Vector2i point;
 
-  for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += params.stepSize) {
-    for(point.x = 0; point.x < (int) getImage().width(); point.x += params.stepSize)
+  int stepSize = cameraID == CameraInfo::Bottom ? params.stepSize * 3 : params.stepSize;
+
+  for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += stepSize) {
+    for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSize)
     {
       getImage().get(point.x, point.y, pixel);
       if
