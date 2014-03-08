@@ -149,7 +149,14 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
   Vector2i lastSearchColorPoint(-1,-1);
 
   Pixel lastPixel = startPixel;
-  scanPixelBuffer.add(startPixel.channels[imageChannelNumber]);
+  if(useVUdifference)
+  {
+    scanPixelBuffer.add(static_cast<int>(startPixel.v - startPixel.u));
+  }
+  else
+  {
+    scanPixelBuffer.add(startPixel.channels[imageChannelNumber]);
+  }
   currentPoint += direction;
 
   int maxJump = -1;
@@ -239,7 +246,14 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
     }
     else if(! borderPointFound)
     {
-      scanPixelBuffer.add(pixel.channels[imageChannelNumber]);
+      if(useVUdifference)
+      {
+        scanPixelBuffer.add(static_cast<int>(pixel.v - pixel.u));
+      }
+      else
+      {
+        scanPixelBuffer.add(pixel.channels[imageChannelNumber]);
+      }
     }//end if
 
     if(drawScanLines)
