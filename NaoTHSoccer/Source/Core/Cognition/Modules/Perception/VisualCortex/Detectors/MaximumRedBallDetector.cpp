@@ -57,8 +57,6 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 
 bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
 {
-  const FieldPercept& p = getFieldPercept();
-
   if(!getFieldPercept().valid) {
     return false;
   }
