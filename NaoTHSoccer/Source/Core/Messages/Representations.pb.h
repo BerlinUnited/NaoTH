@@ -700,6 +700,13 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline double speeddirection() const;
   inline void set_speeddirection(double value);
   
+  // required double scale = 6;
+  inline bool has_scale() const;
+  inline void clear_scale();
+  static const int kScaleFieldNumber = 6;
+  inline double scale() const;
+  inline void set_scale(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
  private:
   inline void set_has_stepid();
@@ -712,6 +719,8 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline void clear_has_time();
   inline void set_has_speeddirection();
   inline void clear_has_speeddirection();
+  inline void set_has_scale();
+  inline void clear_has_scale();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -719,10 +728,11 @@ class StepControlRequest : public ::google::protobuf::Message {
   bool moveleftfoot_;
   ::naothmessages::Pose2D* target_;
   double speeddirection_;
+  double scale_;
   ::google::protobuf::uint32 time_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3593,6 +3603,28 @@ inline double StepControlRequest::speeddirection() const {
 inline void StepControlRequest::set_speeddirection(double value) {
   set_has_speeddirection();
   speeddirection_ = value;
+}
+
+// required double scale = 6;
+inline bool StepControlRequest::has_scale() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void StepControlRequest::set_has_scale() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void StepControlRequest::clear_has_scale() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void StepControlRequest::clear_scale() {
+  scale_ = 0;
+  clear_has_scale();
+}
+inline double StepControlRequest::scale() const {
+  return scale_;
+}
+inline void StepControlRequest::set_scale(double value) {
+  set_has_scale();
+  scale_ = value;
 }
 
 // -------------------------------------------------------------------

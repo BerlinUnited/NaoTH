@@ -383,6 +383,7 @@ void Walk::manageSteps(const WalkRequest& req)
       step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
       step.stepControlling = true;
       step.speedDirection = req.stepControl.speedDirection;
+      step.scale = req.stepControl.scale;
     }
     else
     {
@@ -538,7 +539,19 @@ CoMFeetPose Walk::executeStep()
                                                         0, //footYawOffset
                                                         0, //footRollOffset
                                                         0, //theWalkParameters.curveFactor, // not used right now
-                                                        executingStep.speedDirection);
+                                                        executingStep.speedDirection,
+                                                        executingStep.scale);
+      /*
+      StepControlTrajectory trajectory(
+        exeFootStep.footBegin(),
+        exeFootStep.footEnd(),
+        executingStep.samplesDoubleSupport,
+        executingStep.samplesSingleSupport,
+        executingStep.extendDoubleSupport,
+        theWalkParameters.step.stepHeight,
+        executingStep.speedDirection);
+
+      *liftFoot = trajectory(executingStep.executingCycle);*/
     }
     else
     {
@@ -554,6 +567,16 @@ CoMFeetPose Walk::executeStep()
                                                         0, //getInertialModel.orientation.x*footRollOffset, // footRollOffset
                                                         0  //theWalkParameters.curveFactor // not used right now
                                                         );
+      /*
+      WalkTrajectory trajectory(
+        exeFootStep.footBegin(),
+        exeFootStep.footEnd(),
+        executingStep.samplesDoubleSupport,
+        executingStep.samplesSingleSupport,
+        executingStep.extendDoubleSupport,
+        theWalkParameters.step.stepHeight);
+
+      *liftFoot = trajectory(executingStep.executingCycle);*/
     }
   }
 

@@ -127,6 +127,7 @@ private:
   double stepControlRequestTime;
   Pose2D stepControlRequestTarget;
   double stepControlRequestSpeedDirection;
+  double stepControlScale;
 };//end class MotionSymbols
 
 #endif // _MotionSymbols_H_

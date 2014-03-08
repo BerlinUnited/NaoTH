@@ -11,9 +11,17 @@
 using namespace std;
 
 Pose3D FootTrajectorGenerator::genTrajectory(
-  const Pose3D& oldFoot, const Pose3D& targetFoot,
-  double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
-  double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor)
+  const Pose3D& oldFoot, 
+  const Pose3D& targetFoot,
+  double cycle, 
+  double samplesDoubleSupport, 
+  double samplesSingleSupport, 
+  double extendDoubleSupport,
+  double stepHeight, 
+  double footPitchOffset, 
+  double footYawOffset, 
+  double footRollOffset,
+  double curveFactor)
 {
   double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
@@ -25,19 +33,13 @@ Pose3D FootTrajectorGenerator::genTrajectory(
   }
   else if (cycle <= doubleSupportBegin)
   {
-    //      cout<<"foot stat 1"<<endl;
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-    //        double xp = 10*t*t*t - 15*t*t*t*t + 6*t*t*t*t*t;
-    //double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor)); // this one has jumps for some values of curveFactor
+
+    // parameter for the step curve
+    // NOTE: xp is used to interpolate the motion in x/y-plane, while
+    //       yp is for the mition in the z-axis
     double xp = (1 - cos(t*Math::pi))*0.5;
-    //        double xp = exp( -1 * exp(-10*(t-0.5)) );
-    //        double yp = 16*t*t - 32*t*t*t + 16*t*t*t*t;
-    //        cout<<"t = "<<t<<endl;
-    t = t * Math::pi - Math::pi_2;
-    //        double xp = (1+sin(t))*0.5;
-    double yp = (1 + cos(t * 2))*0.5; //cos(t);
-    //    if (t < 0) yp = cos(t);
-    //        cout<<"t= "<<t<<" yp="<<yp<<endl;
+    double yp = (1 - cos(t*Math::pi2))*0.5;
 
     Pose3D foot;
     foot.translation.z = targetFoot.translation.z + yp*stepHeight;
@@ -71,7 +73,8 @@ Pose3D FootTrajectorGenerator::stepControl(
   double footYawOffset, 
   double footRollOffset, 
   double curveFactor,
-  double speedDirection
+  double speedDirection,
+  double scale
   )
 {
   double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
@@ -85,27 +88,24 @@ Pose3D FootTrajectorGenerator::stepControl(
   else if (cycle <= doubleSupportBegin)
   {
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-    //double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor));// this one has jumps for some values of curveFactor
-    double xp = (1 - cos(t*Math::pi))*0.5;
-    t = t * Math::pi - Math::pi_2;
-    double zp = (1 + cos(t * 2))*0.5;
+    //double xp = (1 - cos(t*Math::pi))*0.5;
+    double xp = (t < scale) ? (1-cos(t/scale*Math::pi))*0.5 : 1.0;
+    double zp = (1 - cos(t*Math::pi2))*0.5;
 
     // TODO: optmize
     Pose3D speedTarget = targetFoot;
     speedTarget.translate(cos(speedDirection)*30, sin(speedDirection)*30, 0);
-    vector<Vector2<double> > vecX;
-    vecX.push_back(Vector2<double>(0, oldFoot.translation.x));
-    vecX.push_back(Vector2<double>(1, targetFoot.translation.x));
-    vecX.push_back(Vector2<double>(1.1, speedTarget.translation.x));
-    CubicSpline theCubicSplineX;
-    theCubicSplineX.init(vecX);
+    vector<Vector2d > vecX;
+    vecX.push_back(Vector2d(0.0, oldFoot.translation.x));
+    vecX.push_back(Vector2d(1.0, targetFoot.translation.x));
+    vecX.push_back(Vector2d(1.1, speedTarget.translation.x));
+    CubicSpline theCubicSplineX(vecX);
 
-    vector<Vector2<double> > vecY;
-    vecY.push_back(Vector2<double>(0, oldFoot.translation.y));
-    vecY.push_back(Vector2<double>(1, targetFoot.translation.y));
-    vecY.push_back(Vector2<double>(1.1, speedTarget.translation.y));
-    CubicSpline theCubicSplineY;
-    theCubicSplineY.init(vecY);
+    vector<Vector2d > vecY;
+    vecY.push_back(Vector2d(0.0, oldFoot.translation.y));
+    vecY.push_back(Vector2d(1.0, targetFoot.translation.y));
+    vecY.push_back(Vector2d(1.1, speedTarget.translation.y));
+    CubicSpline theCubicSplineY(vecY);
 
     Pose3D foot;
     foot.translation.z = targetFoot.translation.z + zp*stepHeight;
