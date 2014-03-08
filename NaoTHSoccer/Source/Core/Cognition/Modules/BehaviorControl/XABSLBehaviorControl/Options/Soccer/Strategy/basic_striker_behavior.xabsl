@@ -121,13 +121,7 @@ option basic_striker_behavior{
     }
     action {
       //close_to_ball_with_USOA_situation();
-      motion.type = walk;
-      motion.walk.style = fast;
-      motion.walk_speed.x=ball.preview.x+500;
-      motion.walk_speed.y=ball.preview.y;
-      motion.walk_speed.rot=0;
-
-      head.control_mode = search_for_ball;
+      fast_forward_kick_with_right();
     }
   }
 
