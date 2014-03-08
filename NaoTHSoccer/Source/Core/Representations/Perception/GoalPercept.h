@@ -58,6 +58,9 @@ public:
     /* the posts base point on the ground */
     Vector2d position;
 
+    /* the posts up/down direction in the image*/
+    Vector2d directionInImage;
+
     static const char* getPostTypeName(PostType type)
     {
       switch(type) 

@@ -494,7 +494,8 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     getImage().cameraInfo,
     post.basePoint.x, post.basePoint.y, 0.0,
     post.position);
-
+  
+  post.directionInImage = scanDir;
 
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans",
     ColorClasses::Color c = post.positionReliable?ColorClasses::yellowOrange:ColorClasses::red;
