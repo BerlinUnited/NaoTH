@@ -42,6 +42,23 @@ option positioning_for_opp_kickoff
       // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100) alt;
     }
   }
+
+  state goto_opp_kickoff_position_supporter2
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
+      head.control_mode = search_for_goal;
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
+    }
+  }
   
   state goto_opp_kickoff_position_striker
   {
@@ -61,6 +78,24 @@ option positioning_for_opp_kickoff
     }
   }
 
+  state goto_opp_kickoff_position_defender
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=0);
+      head.control_mode = search_for_goal;
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
+
+    }
+  }
+
   state goto_opp_kickoff_position_supporter
   {
     decision {
@@ -74,41 +109,6 @@ option positioning_for_opp_kickoff
       //go_to_point_with_USOA(x=-2500, y=900, rot=0);
       
       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank,rot=10);
-      head.control_mode = search_for_goal;
-      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
-
-    }
-  }
-
-  state goto_opp_kickoff_position_supporter2
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
-      head.control_mode = search_for_goal;
-      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
-    }
-  }
-
-  state goto_opp_kickoff_position_defender
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=0);
       head.control_mode = search_for_goal;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
 
