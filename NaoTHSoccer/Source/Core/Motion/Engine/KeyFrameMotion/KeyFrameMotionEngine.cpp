@@ -29,11 +29,12 @@ KeyFrameMotionFactory::KeyFrameMotionFactory()
   
   // load motion nets in different folders
   const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
-  const std::string& scheme = Platform::getInstance().theScheme;
+  //const std::string& scheme = Platform::getInstance().theScheme;
   const std::string& id = Platform::getInstance().theHardwareIdentity;
+  const std::string& platform = Platform::getInstance().thePlatform;
   const std::string motionnet = "motionnet/";
   loadAvailableMotionNets(dirlocation + "general/" + motionnet);
-  loadAvailableMotionNets(dirlocation + "scheme/" + scheme + "/" + motionnet);
+  loadAvailableMotionNets(dirlocation + "platform/" + platform + "/" + motionnet);
   loadAvailableMotionNets(dirlocation + "robots/" + id + "/" + motionnet);
   loadAvailableMotionNets(dirlocation + "private/" + motionnet);
 
