@@ -1,0 +1,70 @@
+/** Side kick the ball to the right (with the left foot) in a 90 degree angle
+    assumes ball is infront of hip instead of foot **/
+
+option sidekick
+{
+  bool @to_right;
+  
+  initial state direction
+  {
+    decision
+    {
+		  if(@to_right)
+		    goto sidekick_to_right_side;
+		  else
+		    goto sidekick_to_left_side;
+    }
+    action
+    {
+    }
+  }
+
+  state sidekick_to_right_side
+  {
+    decision{
+      if(action_done)
+        goto finished;
+      else
+        stay;
+      
+    }
+    action
+    {
+      sidekick_to_right();
+    }
+  }
+
+  state sidekick_to_left_side
+  {
+    decision{
+      if(action_done)
+        goto finished;
+      else
+        stay;
+      
+    }
+    action
+    {
+      sidekick_to_left();
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+}

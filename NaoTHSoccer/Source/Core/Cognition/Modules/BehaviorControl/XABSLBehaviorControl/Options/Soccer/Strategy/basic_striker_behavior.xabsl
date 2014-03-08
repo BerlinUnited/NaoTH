@@ -10,7 +10,7 @@ option basic_striker_behavior{
   initial state idle {
     decision {
       else if(game.current_mode == playing)
-        goto decide_search_far_or_close;
+        goto decide_search;
       else
         stay;
     }
@@ -18,54 +18,23 @@ option basic_striker_behavior{
     }
   }
 
-  state decide_search_far_or_close{
+  state decide_search{
     decision{
       else if (ball.was_seen || ball.time_since_last_seen < 100)
         goto go_to_ball;
-      else if((vector.abs(y=ball.preview.y,x=ball.preview.x)<250) && (state_time>1500))
-        goto search_ball_close;
-      else  if(state_time>3000)
-        goto search_ball_far;
       else
         stay;
     }
     action{
-      motion.type = stand;
-      head.control_mode = search_for_ball;
+      search_ball();
     }
   
-  }
-  
-  state search_ball_close {
-    decision {
-      else if (ball.was_seen || ball.time_since_last_seen < 100)
-        goto go_to_ball;
-      else if(action_done)
-        goto search_ball_far;
-      else
-        stay;
-    }
-    action {
-      search_ball_back_rot();
-    }
-  }
-
-  state search_ball_far {
-    decision {
-      else if(action_done)
-        goto go_to_ball;
-      else
-        stay;
-    }
-    action {
-      simple_search_ball();
-    }
   }
 
   state go_to_ball {
     decision {
       else if (ball.time_since_last_seen>1500)
-        goto decide_search_far_or_close;
+        goto decide_search;
       else if(action_done)
         goto check_for_obstacles;
       else
@@ -77,73 +46,47 @@ option basic_striker_behavior{
   }
 
   state check_for_obstacles {
-	  decision {
+	   decision {
       else if((obstacle.ultrasound.distance < 350) && (obstacle.ultrasound.blockedtime > 200))
         goto close_to_ball_with_USOA_situation_state;
       else
         goto decide_turning_direction;
-	  }
-	  action {
-	  }
-	}
+	   }
+	   action {
+	   }
+	 }
 
   state close_to_ball_with_USOA_situation_state {
-	  decision {
+	   decision {
       else if (ball.time_since_last_seen>1500)
-        goto decide_search_far_or_close;
+        goto decide_search;
       else if(action_done)
         goto go_to_ball;
       else
         stay;
-	  }
-	  action {
+	   }
+	   action {
       close_to_ball_with_USOA_situation();
-	  }
-	}
+	   }
+	 }
 
   state decide_turning_direction {
     decision{
       else if (ball.time_since_last_seen>1500)
-        goto decide_search_far_or_close;
-      else if(abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500)
-        goto preattack;
-      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
-              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
-      {
-        if(attack.direction.preview>0)
-          goto sidekick_to_left_state;
-        else
-          goto sidekick_to_right_state;
-      }
-      else 
-        goto turn_around_ball;
-    }
-    action{
-    }
-  }
-
-  state turn_around_ball {
-    decision {
+        goto decide_search;
       else if (obstacle.ultrasound.blockedtime > 200 && obstacle.ultrasound.distance < 350  && state_time > 500)
         goto check_for_obstacles;
-      else if (ball.time_since_last_seen>1500)
-        goto decide_search_far_or_close;
-      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>210)
-        goto go_to_ball;
+      else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        goto preattack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
               ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
-      {
-        if(attack.direction.preview>0)
-          goto sidekick_to_left_state;
-        else
-          goto sidekick_to_right_state;
-      }
-      else if(abs(value=attack.direction.preview)<12)
-        goto preattack;
+        goto sidekick_with_foot;
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>250)
+        goto go_to_ball;
       else
         stay;
     }
-    action {
+    action{
       move_around_ball(direction=(attack.direction.preview>0)?30:-30, radius=190);
       motion.walk.style = fast;
     }
@@ -155,7 +98,7 @@ option basic_striker_behavior{
       else if (obstacle.ultrasound.blockedtime > 200 && obstacle.ultrasound.distance < 350)
         goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
-        goto decide_search_far_or_close;
+        goto decide_search;
       else if (random < 0.3)
         goto approach_for_kick;
       else
@@ -167,7 +110,8 @@ option basic_striker_behavior{
       motion.walk.style = normal;
     }
   }
-
+ 
+  //dash
   state attack {
     decision {
       else if(state_time > 2000)
@@ -203,18 +147,18 @@ option basic_striker_behavior{
   }
 
   state do_kick {
-  decision {
-    else if(action_done)
-      goto go_to_ball;
-    else
-      stay;
+    decision {
+      else if(action_done)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action {
+      kick_with_foot(right = true);
+    }
   }
-  action {
-    kick_with_foot(right = true);
-  }
-}
 
-  state sidekick_to_left_state{ 
+  state sidekick_with_foot{
     decision{
       else if(action_done)
         goto go_to_ball;
@@ -222,22 +166,7 @@ option basic_striker_behavior{
         stay;
     }
     action{
-      sidekick_to_left();
-      
-      motion.walk.style = normal;
-      //motion.walk.style = stable;
-    }
-  }
-
-  state sidekick_to_right_state{ //obstacle_to_left{
-    decision{
-      else if(action_done)
-        goto go_to_ball;
-      else
-        stay;
-    }
-    action{
-      sidekick_to_right();
+      sidekick(to_right=attack.direction.preview<0);
       
       motion.walk.style = normal;
       //motion.walk.style = stable;
