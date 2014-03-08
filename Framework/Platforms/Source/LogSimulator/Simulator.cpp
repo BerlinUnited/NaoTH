@@ -356,7 +356,7 @@ void Simulator::generalGet(T& data, std::string name) const
 
 ///// end Getter/Setter /////
 
-MessageQueue* Simulator::createMessageQueue(const std::string& name)
+MessageQueue* Simulator::createMessageQueue(const std::string& /*name*/)
 {
   // for single thread
   return new MessageQueue();

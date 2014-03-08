@@ -438,7 +438,7 @@ double BallDetector::calculateBase(Vector2i& x, Vector2i& y, Vector2i& z)
   return  fabs(v*w);
 }//end calculateBase
 
-bool BallDetector::randomScan(ColorClasses::Color color, Vector2i& result, const Vector2i& orgMin, const Vector2i& orgMax) const
+bool BallDetector::randomScan(ColorClasses::Color color, Vector2i& result, const Vector2i& /*orgMin*/, const Vector2i& /*orgMax*/) const
 {
   int maxNumberOfScanPoints = 30;
   

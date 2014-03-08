@@ -11,7 +11,7 @@ import de.naoth.rc.dialogs.drawings.three_dimension.Scene;
  *
  * @author Heinrich Mellmann
  */
-public interface ThreeDimensionSceneManager extends Manager<Scene>
+public interface ThreeDimensionSceneManager extends ManagerPlugin<Scene>
 {
 
 }

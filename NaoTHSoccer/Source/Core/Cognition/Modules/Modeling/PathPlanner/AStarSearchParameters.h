@@ -15,11 +15,11 @@
 *
 * A class for all parameters for A* search
 */
-class AStarSearchParameters: public ParameterList, public naoth::Printable
+class AStarSearchParameters: public ParameterList
 {
 public: 
   AStarSearchParameters();
-  ~AStarSearchParameters();
+  virtual ~AStarSearchParameters();
 
   /** The minimum branching factor*/
   double minBranchingFactor;
@@ -47,9 +47,6 @@ public:
   double numberOfCalls;
   /** The max number of nodes, the could be expanded*/
   double maxNumberOfNodes;
-  
-  virtual void print(std::ostream& stream) const {}
-
 };
 
 

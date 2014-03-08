@@ -14,6 +14,7 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #include "jpgd.h"
@@ -3173,7 +3174,9 @@ unsigned char *decompress_jpeg_image_from_file(const char *pSrc_filename, int *w
 
 #if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
 #if __GNUC__ > 3 && __GNUC_MINOR__ > 5
-#pragma GCC diagnostic push
-#endif
+#pragma GCC diagnostic pop
+#else
 #pragma GCC diagnostic error "-Wconversion"
+#pragma GCC diagnostic error "-Wunused-parameter"
+#endif
 #endif

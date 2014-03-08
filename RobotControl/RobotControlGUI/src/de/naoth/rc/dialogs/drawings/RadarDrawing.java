@@ -27,7 +27,7 @@ public class RadarDrawing implements Drawable
 
     // draw grid
     g2d.setColor(new Color(backLight, backLight, colorLight));
-    double maxDist = 2000;
+    double maxDist = 3000;
     double distStep = 500;
     for(double a = 500; a <= maxDist; a +=distStep)
     {
@@ -78,17 +78,17 @@ public class RadarDrawing implements Drawable
     // draw coordinate system
     g2d.setColor(new Color(backLight, backLight, backLight));
     g2d.setStroke(new BasicStroke(30.0f));
-    new Arrow(-3000, 0, 3000, 0).draw(g2d);
-    new Arrow(0, -3000, 0, 3000).draw(g2d);
+    new Arrow(-4000, 0, 4000, 0).draw(g2d);
+    new Arrow(0, -4000, 0, 4000).draw(g2d);
 
     
     g2d.scale(10, 10);
     g2d.rotate(-Math.PI*0.5);
     g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     // x-axis
-    g2d.drawString("Y", -3000/10, -100/10);
+    g2d.drawString("Y", -4000/10, -100/10);
     // y-axis
-    g2d.drawString("X", 100/10, -3000/10);
+    g2d.drawString("X", 100/10, -4000/10);
     g2d.transform(new AffineTransform(1,0,0,-1,0,0));
     g2d.rotate(Math.PI*0.5);
     g2d.scale(0.1, 0.1);

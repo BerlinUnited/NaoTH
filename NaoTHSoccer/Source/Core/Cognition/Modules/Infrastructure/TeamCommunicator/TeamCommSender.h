@@ -44,11 +44,10 @@ public:
                             const BallModel &ballModel,
                             const RobotPose &robotPose,
                             const BodyState &bodyState,
-                            const MotionStatus &motionStatus,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
-                            const TeamMessage &teamMessage,
                             TeamMessage::Data &out);
+
  static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
 
 private:

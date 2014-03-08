@@ -18,10 +18,9 @@ Pose3D FootTrajectorGenerator::genTrajectory(
   double samplesSingleSupport, 
   double extendDoubleSupport,
   double stepHeight, 
-  double footPitchOffset, 
-  double footYawOffset, 
-  double footRollOffset,
-  double curveFactor)
+  double footPitchOffset,
+  double footRollOffset
+ )
 {
   double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
@@ -43,7 +42,6 @@ Pose3D FootTrajectorGenerator::genTrajectory(
 
     Pose3D foot;
     foot.translation.z = targetFoot.translation.z + yp*stepHeight;
-
     foot.translation.x = (1.0 - xp) * oldFoot.translation.x + xp * targetFoot.translation.x;
     foot.translation.y = (1.0 - xp) * oldFoot.translation.y + xp * targetFoot.translation.y;
 
@@ -70,9 +68,7 @@ Pose3D FootTrajectorGenerator::stepControl(
   double extendDoubleSupport,
   double stepHeight, 
   double footPitchOffset, 
-  double footYawOffset, 
-  double footRollOffset, 
-  double curveFactor,
+  double footRollOffset,
   double speedDirection,
   double scale
   )

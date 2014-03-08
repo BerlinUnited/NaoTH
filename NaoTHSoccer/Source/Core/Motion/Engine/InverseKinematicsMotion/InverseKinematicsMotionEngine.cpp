@@ -288,13 +288,9 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
 
 bool InverseKinematicsMotionEngine::rotationStabilize(
-  const RobotInfo& theRobotInfo,
-  const GroundContactModel& theGroundContactModel,
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
-  Pose3D& hip, 
-  const Pose3D& leftFoot, 
-  const Pose3D& rightFoot)
+  Pose3D& hip)
 {
   Vector2d r;
   r.x = hip.rotation.getXAngle();
@@ -342,9 +338,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
   const naoth::InertialSensorData& theInertialSensorData,
-  Pose3D& hip, 
-  const Pose3D& leftFoot, 
-  const Pose3D& rightFoot)
+  Pose3D& hip)
 {
   // disable stablization slowly when no foot is on the ground
   const double switchingTime = 3000; // ms
@@ -561,7 +555,7 @@ double InverseKinematicsMotionEngine::solveHandsIK(
 
 void InverseKinematicsMotionEngine::autoArms(
   const RobotInfo& theRobotInfo,
-  const HipFeetPose& pose, 
+  const HipFeetPose& /* pose */,
   double (&position)[JointData::numOfJoint])
 {
   double target[JointData::LElbowYaw + 1];
@@ -625,7 +619,7 @@ void InverseKinematicsMotionEngine::autoArms(
 
 void InverseKinematicsMotionEngine::armsOnBack(
   const RobotInfo& theRobotInfo,
-  const HipFeetPose& pose,
+  const HipFeetPose& /* pose */,
   double (&position)[JointData::numOfJoint])
 {
   double target[JointData::LElbowYaw + 1];

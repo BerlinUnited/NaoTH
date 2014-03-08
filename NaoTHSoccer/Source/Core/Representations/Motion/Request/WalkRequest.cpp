@@ -26,7 +26,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
   DataConversion::toMessage(representation.offset, *(msg->mutable_offset()));
 
   // step control
-  if ( representation.stepControl.stepID >= 0 )
+  if ( representation.stepControl.stepID > 0 )
   {
     naothmessages::StepControlRequest* stepControl = msg->mutable_stepcontrol();
     stepControl->set_stepid(representation.stepControl.stepID);
@@ -67,6 +67,6 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
   }
   else
   {
-    representation.stepControl.stepID = -1;
+    representation.stepControl.stepID = 0;
   }
 }

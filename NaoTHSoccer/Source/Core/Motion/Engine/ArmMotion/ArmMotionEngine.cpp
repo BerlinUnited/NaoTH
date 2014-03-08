@@ -192,10 +192,12 @@ void ArmMotionEngine::setLeftElbowStiffness(double elbowYaw, double elbowRoll) {
 
 void ArmMotionEngine::setLeftArmJointPosition(double shoulderPitch, double shoulderRoll, double elbowYaw, double elbowRoll) {
     setLeftShoulderPosition(shoulderPitch, shoulderRoll);
+    setLeftElbowPosition(elbowYaw, elbowRoll);
 }
 
 void ArmMotionEngine::setLeftArmJointStiffness(double shoulderPitch, double shoulderRoll, double elbowYaw, double elbowRoll) {
     setLeftShoulderStiffness(shoulderPitch, shoulderRoll);
+    setLeftElbowStiffness(elbowYaw, elbowRoll);
 }
 
 void ArmMotionEngine::setRightShoulderPosition(double shoulderPitch, double shoulderRoll) {
@@ -272,10 +274,12 @@ void ArmMotionEngine::setRightElbowStiffness(double elbowYaw, double elbowRoll) 
 
 void ArmMotionEngine::setRightArmJointPosition(double shoulderPitch, double shoulderRoll, double elbowYaw, double elbowRoll) {
     setRightShoulderPosition(shoulderPitch, shoulderRoll);
+    setRightElbowPosition(elbowYaw, elbowRoll);
 }
 
 void ArmMotionEngine::setRightArmJointStiffness(double shoulderPitch, double shoulderRoll, double elbowYaw, double elbowRoll) {
     setRightShoulderStiffness(shoulderPitch, shoulderRoll);
+    setRightElbowStiffness(elbowYaw, elbowRoll);
 }
 
 void ArmMotionEngine::setBothArmsJointPosition(double left_shoulderPitch, double left_shoulderRoll, double left_elbowYaw, double left_elbowRoll,

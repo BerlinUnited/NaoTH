@@ -11,7 +11,7 @@ import java.util.HashMap;
  *
  * @author thomas
  */
-public interface StopwatchManager extends Manager<HashMap<String, Integer>>
+public interface StopwatchManager extends ManagerPlugin<HashMap<String, Integer>>
 {
 
 }

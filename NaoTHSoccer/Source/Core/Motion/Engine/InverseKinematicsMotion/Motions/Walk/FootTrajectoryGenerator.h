@@ -183,11 +183,11 @@ class FootTrajectorGenerator
 public:
   static Pose3D genTrajectory(const Pose3D& oldFoot, const Pose3D& targetFoot,
     double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
-    double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor);
+    double stepHeight, double footPitchOffset, double footRollOffset /*, double curveFactor*/ );
 
   static Pose3D stepControl(const Pose3D& oldFoot, const Pose3D& targetFoot,
     double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
-    double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor,
+    double stepHeight, double footPitchOffset, double footRollOffset,/*double curveFactor,*/
                             double speedDirection, double scale);
 };
 

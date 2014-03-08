@@ -9,15 +9,14 @@
 #define _AGLLParameters_h_
 
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/DataStructures/Printable.h>
 
 #include "PostParticleFilter.h"
 
-class AGLParameters: public ParameterList, public naoth::Printable
+class AGLParameters: public ParameterList
 {
 public: 
   AGLParameters();
-  ~AGLParameters();
+  virtual ~AGLParameters();
 
   //double standardDeviationDist;
   //double standardDeviationAngle;
@@ -36,9 +35,6 @@ public:
   double possibleGoalWidhtError;
 
   double deletePFbyTotalWeightingThreshold;
-
-  virtual void print(std::ostream& stream) const {}
-
 };
 
 #endif //_AGLParameters_h_

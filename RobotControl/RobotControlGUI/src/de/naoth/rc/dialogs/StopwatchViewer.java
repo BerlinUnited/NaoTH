@@ -15,9 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.UIManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -44,17 +42,13 @@ public class StopwatchViewer extends AbstractDialog
   }
 
   @Init
+  @Override
   public void init()
   {
     stopwatchEntries = new HashMap<String, StopwatchEntry>();
     progressBars = new HashMap<String, JProgressBar>();
-  }//end init
-  
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
   }
+
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -175,12 +169,7 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
 
   panelStopwatches.removeAll();
   GridLayout layout = (GridLayout) panelStopwatches.getLayout();
-
-  synchronized(panelStopwatches)
-  {
-    layout.setRows(0);
-  }
-  
+  layout.setRows(0);
 }//GEN-LAST:event_btResetActionPerformed
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -236,7 +225,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   for(StopwatchEntry entry: stopwatchList)
   {
     panelStopwatches.add(progressBars.get(entry.name));
-  }//end for
+  }
   panelStopwatches.revalidate();
 }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -256,12 +245,9 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   public void newObjectReceived(HashMap<String, Integer> sw)
   {
     double warn = Double.MAX_VALUE;
-    try
-    {
+    try {
       warn = Double.parseDouble(txtWarn.getText());
-    }
-    catch(NumberFormatException ex)
-    {
+    } catch(NumberFormatException ex) {
       ex.printStackTrace();
     }
 
@@ -400,6 +386,5 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   public void dispose()
   {
     stopwatchManager.removeListener(this);
-  }//end dispose
-  
+  }
 }

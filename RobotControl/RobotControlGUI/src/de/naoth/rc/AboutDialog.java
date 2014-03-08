@@ -43,10 +43,10 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jEditorPane1.setBorder(null);
-        jEditorPane1.setContentType("text/html");
         jEditorPane1.setEditable(false);
-        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de/\">http://naoth.de</a> \n  <br>&copy; 2008-2013\n</center>\n</html>");
+        jEditorPane1.setBorder(null);
+        jEditorPane1.setContentType("text/html"); // NOI18N
+        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de/\">http://naoth.de</a> \n  <br>&copy; 2008-2014\n</center>\n</html>");
         jScrollPane1.setViewportView(jEditorPane1);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/naos.png"))); // NOI18N
@@ -70,10 +70,10 @@ public class AboutDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btOk, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .addComponent(btOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 

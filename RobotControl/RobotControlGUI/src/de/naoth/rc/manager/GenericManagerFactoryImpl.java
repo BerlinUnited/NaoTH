@@ -21,8 +21,7 @@ public class GenericManagerFactoryImpl implements GenericManagerFactory
   @InjectPlugin
   public RobotControl robotControl;
 
-  private HashMap<Command, GenericManager> mapOfGenericManager;
-
+  private final HashMap<Command, GenericManager> mapOfGenericManager;
 
   public GenericManagerFactoryImpl()
   {
@@ -32,21 +31,19 @@ public class GenericManagerFactoryImpl implements GenericManagerFactory
   @Override
   public GenericManager getManager(Command command)
   {
-    if(mapOfGenericManager.get(command) == null)
+    if(mapOfGenericManager.get(command) == null) {
       mapOfGenericManager.put(command, new GenericManager(getServer(), command));
+    }
     return mapOfGenericManager.get(command);
-  }//end getManager
+  }
 
   
   public MessageServer getServer()
   {
-    if(robotControl == null)
-    {
+    if(robotControl == null) {
       return null;
-    }
-    else
-    {
+    } else {
       return robotControl.getMessageServer();
     }
-  }//end getServer
+  }
 }//end GenericManagerFactoryImpl

@@ -37,7 +37,7 @@ void StopwatchSender::execute()
   );
 }//end execute
 
-void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
+void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& /*arguments*/, std::ostream& outstream)
 {
   if ("stopwatch" == command)
   {

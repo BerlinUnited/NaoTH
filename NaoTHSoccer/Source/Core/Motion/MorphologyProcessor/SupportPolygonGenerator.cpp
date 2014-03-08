@@ -152,8 +152,9 @@ bool SupportPolygonGenerator::isFootSupportable(bool isLeft) const
 //TODO
 
 void SupportPolygonGenerator::executeDebugCommand(
-        const std::string& command, const std::map<std::string, std::string>& arguments,
-        std::ostream &outstream)
+        const std::string& /*command*/,
+        const std::map<std::string, std::string>& /*arguments*/,
+        std::ostream & /*outstream*/)
 {
 /*    if ("CalibrateFootTouchDetector" == command)
     {

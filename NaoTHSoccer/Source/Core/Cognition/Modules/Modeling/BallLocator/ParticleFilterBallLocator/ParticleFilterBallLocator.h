@@ -78,7 +78,7 @@ private:
   void updateByBallPercept(SampleSet& sampleSet);
   void motionUpdate(SampleSet& sampleSet, bool noise);
 
-  void resampleGT07(SampleSet& sampleSet, bool noise);
+  void resampleGT07(SampleSet& sampleSet);
   Sample generateNewSample();
 
   /** */

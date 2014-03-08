@@ -14,4 +14,4 @@ import net.xeoh.plugins.base.Plugin;
 public interface GenericManagerFactory extends Plugin
 {
   abstract GenericManager getManager(Command command);
-}//end GenericManagerFactory
+}

@@ -39,7 +39,7 @@ void ParticleFilterBallLocator::execute()
       updateByBallPercept(theSampleSet);
 
       // 
-      resampleGT07(theSampleSet, false);
+      resampleGT07(theSampleSet);
     }//end if
 
     // replace a random particle
@@ -246,7 +246,7 @@ void ParticleFilterBallLocator::motionUpdate(SampleSet& sampleSet, bool noise)
 }//end updateByOdometry
 
 
-void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
+void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet)
 {
   // parameters
   double processNoiseDistance = 5;

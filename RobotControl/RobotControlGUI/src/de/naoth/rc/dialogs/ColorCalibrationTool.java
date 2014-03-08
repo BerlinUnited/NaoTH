@@ -1271,11 +1271,8 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     }
   }
   
-  private boolean sendCommand(Command command)
+  private boolean sendCommand(final Command command)
   {
-    final Command commandToExecute = command;
-    final ColorCalibrationTool thisFinal = this;
-    
     if(this.parent.getMessageServer().isConnected())
     {
       this.parent.getMessageServer().executeSingleCommand(new CommandSender()
@@ -1308,12 +1305,12 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
             String answer = new String(result);
             if(answer.endsWith("parameter were saved"))
             {
-              JOptionPane.showMessageDialog(thisFinal,
+              JOptionPane.showMessageDialog(ColorCalibrationTool.this,
                 "Written camera parameters.", "INFO", JOptionPane.INFORMATION_MESSAGE);
             }
             else
             {
-              JOptionPane.showMessageDialog(thisFinal,
+              JOptionPane.showMessageDialog(ColorCalibrationTool.this,
                   answer, "Camera parameters NOT written", JOptionPane.INFORMATION_MESSAGE);
             }
 
@@ -1324,16 +1321,16 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         @Override
         public void handleError(int code)
         {
-          JOptionPane.showMessageDialog(thisFinal,
+          JOptionPane.showMessageDialog(ColorCalibrationTool.this,
                 "Could not send or receive colortable, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
         }
 
         @Override
         public Command getCurrentCommand()
         {
-          return commandToExecute;
+          return command;
         }
-      }, command);
+      });
       return true;
     }
     else

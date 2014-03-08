@@ -40,8 +40,8 @@ TEST_F(RingBufferWithSumTest,ArrayAccess) {
   ASSERT_EQ(buffer.size(),(int)test_vector.size());
 
   for(size_t i = 0; i < test_vector.size(); i++) {
-    ASSERT_DOUBLE_EQ(test_vector[test_vector.size()-i-1],buffer[i]);
-    ASSERT_DOUBLE_EQ(buffer.getEntry(i),buffer[i]);
+    ASSERT_DOUBLE_EQ(test_vector[test_vector.size()-i-1],buffer[(int)i]);
+    ASSERT_DOUBLE_EQ(buffer.getEntry((int)i),buffer[(int)i]);
   }
 
   EXPECT_DEATH(buffer.getEntry(buffer.size()), "");

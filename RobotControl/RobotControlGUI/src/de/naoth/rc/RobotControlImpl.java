@@ -5,35 +5,33 @@
  */
 package de.naoth.rc;
 
-import bibliothek.extension.gui.dock.theme.EclipseTheme;
-import bibliothek.gui.DockFrontend;
-import bibliothek.gui.Dockable;
-import bibliothek.gui.dock.SplitDockStation;
-import bibliothek.gui.dock.frontend.MissingDockableStrategy;
-import bibliothek.gui.dock.station.split.SplitDockGrid;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+import bibliothek.gui.DockUI;
+import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
-import de.naoth.rc.server.IMessageServerParent;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
-import org.apache.commons.lang.StringUtils;
+import net.xeoh.plugins.base.util.uri.ClassURI;
 
 /**
  *
@@ -41,75 +39,116 @@ import org.apache.commons.lang.StringUtils;
  */
 @PluginImplementation
 public class RobotControlImpl extends javax.swing.JFrame
-  implements ByteRateUpdateHandler,
-  IMessageServerParent, RobotControl
+  implements ByteRateUpdateHandler, RobotControl
 {
 
   private static final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
-  private File layoutFile = new File(configlocation + "layout.dat");
-  private DockFrontend frontend;
-  private DialogRegistry dialogRegistry;
-  private MessageServer messageServer;
-  // Propertes
-  private File fConfig;
-  private Properties config;
-  private ConnectionDialog connectionDialog;
-  private boolean doNotSaveLayoutOnClose = false;
+  private final File layoutFile = new File(configlocation, "layout_df1.1.1.xml");
+  private final File fConfig = new File(configlocation, "config");
+  
+  private final MessageServer messageServer;
+  
+  private final Properties config = new Properties();
+  private final ConnectionDialog connectionDialog;
+  
+  private final DialogRegistry dialogRegistry;
 
+  // remember the window position and size to restore it later
+  private Rectangle defaultWindowBounds = new Rectangle();
+  
   /**
    * Creates new form RobotControlGUI
    */
   public RobotControlImpl()
   {
-
     splashScreenMessage("Welcome to RobotControl");
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
       UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      // set explicitely the Nimbus colors to be used
+      DockUI.getDefaultDockUI().registerColors("javax.swing.plaf.nimbus.NimbusLookAndFeel", new Nimbus6u10());
     }
-    catch(Exception ex)
+    catch(UnsupportedLookAndFeelException ex)
     {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    initComponents();
-
-
-    // create the frontend and set some properties
-    frontend = new DockFrontend(this);
-    frontend.getController().setTheme(new EclipseTheme());
-    frontend.setShowHideAction(true);
-    frontend.setMissingDockableStrategy(MissingDockableStrategy.DISCARD_ALL);
-
-    // Let's create a DockStation for our Dockables
-    SplitDockStation station = new SplitDockStation();
-    // add the station to the frame
-    this.add(station);
-    frontend.addRoot("split", station);
-
-    // set up a list of all dialogs
-    dialogRegistry = new DialogRegistry(this, dialogsMenu, frontend, station);
-
-    // load the layout
-    readLayoutFromFile();
-
-
-
+    
     // icon
     Image icon = Toolkit.getDefaultToolkit().getImage(
       this.getClass().getResource("res/RobotControlLogo128.png"));
     setIconImage(icon);
 
+    initComponents();
 
-    this.messageServer = new MessageServer(this);
+    // load the configuration
+    readConfigFromFile();
+    
+    // restore the bounds and the state of the frame from the config
+    defaultWindowBounds = getBounds();
+    defaultWindowBounds.x = readValueFromConfig("frame.position.x", defaultWindowBounds.x);
+    defaultWindowBounds.y = readValueFromConfig("frame.position.y", defaultWindowBounds.y);
+    defaultWindowBounds.width = readValueFromConfig("frame.width", defaultWindowBounds.width);
+    defaultWindowBounds.height = readValueFromConfig("frame.height", defaultWindowBounds.height);
+    int extendedstate = readValueFromConfig("frame.extendedstate", getExtendedState());
+    setBounds(defaultWindowBounds);
+    setExtendedState(extendedstate);
+    
+    // remember the bounds of the frame when not maximized
+    this.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentMoved(ComponentEvent event) {
+            if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != JFrame.MAXIMIZED_BOTH) {
+                defaultWindowBounds = getBounds();
+            }
+        }
+    });
+    
+    // set up a list of all dialogs
+    this.dialogRegistry = new DialogRegistry(this, dialogsMenu);
+
+    
+    // initialize the message server
+    this.messageServer = new MessageServer();
+    this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
+    {
+        @Override
+        public void connected(ConnectionStatusEvent event) {
+            disconnectMenuItem.setEnabled(true);
+            connectMenuItem.setEnabled(false);
+            lblConnect.setText("Connected to " + event.getAddress());
+        }
+
+        @Override
+        public void disconnected(ConnectionStatusEvent event) {
+            disconnectMenuItem.setEnabled(false);
+            connectMenuItem.setEnabled(true);
+            lblConnect.setText("Not connected");
+            if(event.getMessage() != null) {
+                JOptionPane.showMessageDialog(RobotControlImpl.this,
+                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    });
 
     // connection dialog
-    this.connectionDialog = new ConnectionDialog(this, this);
-    disconnectMenuItem.setEnabled(false);
+    this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
+    this.connectionDialog.setLocationRelativeTo(this);
+    this.disconnectMenuItem.setEnabled(false);
   }//end constructor
 
+  
+  private int readValueFromConfig(String key, int default_value) {
+    try {
+      String value = getConfig().getProperty(key);
+      if(value != null) {
+        return Integer.parseInt(value);
+      }
+    } catch(NumberFormatException e){}
+    return default_value;
+  }
+  
   private void splashScreenMessage(String message)
   {
     final SplashScreen splash = SplashScreen.getSplashScreen();
@@ -139,24 +178,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   public void registerDialog(final Dialog dialog)
   {
     splashScreenMessage("Loading dialog " + dialog.getDisplayName() + "...");
-
-    dialogRegistry.registerDialog(dialog);
-    // load dialog if it was open in the last session
-    String openDialogsString = getConfig().getProperty("dialogs");
-    if(openDialogsString != null)
-    {
-      String[] splitted = openDialogsString.split(",");
-      for(String s : splitted)
-      {
-        if(s.trim().equals(dialog.getDisplayName()))
-        {
-          dialogRegistry.dockDialog(dialog, false);
-          loadLayout();
-          break;
-        }
-      }
-    }//end if
-  }//end registerDialog
+    this.dialogRegistry.registerDialog(dialog);
+  }
 
   @Override
   public boolean checkConnected()
@@ -165,12 +188,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       return true;
     }
-
-    // show a warning: we are not connected
-    /*
-     * JOptionPane.showMessageDialog(this, "Not connected. Please connect first
-     * to a robot.", "WARNING", JOptionPane.WARNING_MESSAGE);
-     */
 
     // show connection dialog
     connectionDialog.setVisible(true);
@@ -184,153 +201,151 @@ public class RobotControlImpl extends javax.swing.JFrame
    * regenerated by the Form Editor.
    */
   @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-    statusPanel = new javax.swing.JPanel();
-    lblConnect = new javax.swing.JLabel();
-    btManager = new javax.swing.JButton();
-    lblReceivedBytesS = new javax.swing.JLabel();
-    lblSentBytesS = new javax.swing.JLabel();
-    menuBar = new javax.swing.JMenuBar();
-    mainControlMenu = new javax.swing.JMenu();
-    connectMenuItem = new javax.swing.JMenuItem();
-    disconnectMenuItem = new javax.swing.JMenuItem();
-    resetLayoutMenuItem = new javax.swing.JMenuItem();
-    jSeparator1 = new javax.swing.JSeparator();
-    exitMenuItem = new javax.swing.JMenuItem();
-    dialogsMenu = new javax.swing.JMenu();
-    helpMenu = new javax.swing.JMenu();
-    aboutMenuItem = new javax.swing.JMenuItem();
+        statusPanel = new javax.swing.JPanel();
+        lblConnect = new javax.swing.JLabel();
+        btManager = new javax.swing.JButton();
+        lblReceivedBytesS = new javax.swing.JLabel();
+        lblSentBytesS = new javax.swing.JLabel();
+        menuBar = new javax.swing.JMenuBar();
+        mainControlMenu = new javax.swing.JMenu();
+        connectMenuItem = new javax.swing.JMenuItem();
+        disconnectMenuItem = new javax.swing.JMenuItem();
+        resetLayoutMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        exitMenuItem = new javax.swing.JMenuItem();
+        dialogsMenu = new javax.swing.JMenu();
+        helpMenu = new javax.swing.JMenu();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("RobotControl for Nao");
-    addWindowListener(new java.awt.event.WindowAdapter() {
-      public void windowClosing(java.awt.event.WindowEvent evt) {
-        formWindowClosing(evt);
-      }
-    });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("RobotControl for Nao");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
-    statusPanel.setBackground(java.awt.Color.lightGray);
-    statusPanel.setPreferredSize(new java.awt.Dimension(966, 25));
+        statusPanel.setBackground(java.awt.Color.lightGray);
+        statusPanel.setPreferredSize(new java.awt.Dimension(966, 25));
 
-    lblConnect.setText("Not connected");
-    lblConnect.setToolTipText("Indicates if the RobotControl is connected to a Robot");
+        lblConnect.setText("Not connected");
+        lblConnect.setToolTipText("Indicates if the RobotControl is connected to a Robot");
 
-    btManager.setText("Running Manager --");
-    btManager.setToolTipText("Shows the number of currently registered Manager");
-    btManager.setBorder(null);
-    btManager.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        btManagerActionPerformed(evt);
-      }
-    });
+        btManager.setText("Running Manager --");
+        btManager.setToolTipText("Shows the number of currently registered Manager");
+        btManager.setBorder(null);
+        btManager.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btManagerActionPerformed(evt);
+            }
+        });
 
-    lblReceivedBytesS.setText("Recived byte/s: ");
+        lblReceivedBytesS.setText("Recived byte/s: ");
 
-    lblSentBytesS.setText("Sent byte/s: ");
+        lblSentBytesS.setText("Sent byte/s: ");
 
-    javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
-    statusPanel.setLayout(statusPanelLayout);
-    statusPanelLayout.setHorizontalGroup(
-      statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(statusPanelLayout.createSequentialGroup()
-        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 381, Short.MAX_VALUE)
-        .addComponent(lblConnect)
-        .addContainerGap())
-    );
-    statusPanelLayout.setVerticalGroup(
-      statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-        .addComponent(lblReceivedBytesS)
-        .addComponent(lblSentBytesS))
-    );
+        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+        statusPanel.setLayout(statusPanelLayout);
+        statusPanelLayout.setHorizontalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
+                .addComponent(lblConnect)
+                .addContainerGap())
+        );
+        statusPanelLayout.setVerticalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblReceivedBytesS)
+                .addComponent(lblSentBytesS))
+        );
 
-    getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
 
-    mainControlMenu.setMnemonic('R');
-    mainControlMenu.setText("Main");
+        mainControlMenu.setMnemonic('R');
+        mainControlMenu.setText("Main");
 
-    connectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
-    connectMenuItem.setMnemonic('c');
-    connectMenuItem.setText("Connect");
-    connectMenuItem.setToolTipText("Connect to robot");
-    connectMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        connectMenuItemActionPerformed(evt);
-      }
-    });
-    mainControlMenu.add(connectMenuItem);
+        connectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
+        connectMenuItem.setMnemonic('c');
+        connectMenuItem.setText("Connect");
+        connectMenuItem.setToolTipText("Connect to robot");
+        connectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectMenuItemActionPerformed(evt);
+            }
+        });
+        mainControlMenu.add(connectMenuItem);
 
-    disconnectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
-    disconnectMenuItem.setMnemonic('d');
-    disconnectMenuItem.setText("Disconnect");
-    disconnectMenuItem.setToolTipText("Disconnect from robot");
-    disconnectMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        disconnectMenuItemActionPerformed(evt);
-      }
-    });
-    mainControlMenu.add(disconnectMenuItem);
+        disconnectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        disconnectMenuItem.setMnemonic('d');
+        disconnectMenuItem.setText("Disconnect");
+        disconnectMenuItem.setToolTipText("Disconnect from robot");
+        disconnectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                disconnectMenuItemActionPerformed(evt);
+            }
+        });
+        mainControlMenu.add(disconnectMenuItem);
 
-    resetLayoutMenuItem.setText("Reset layout");
-    resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
-    resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        resetLayoutMenuItemActionPerformed(evt);
-      }
-    });
-    mainControlMenu.add(resetLayoutMenuItem);
-    mainControlMenu.add(jSeparator1);
+        resetLayoutMenuItem.setText("Reset layout");
+        resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
+        resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetLayoutMenuItemActionPerformed(evt);
+            }
+        });
+        mainControlMenu.add(resetLayoutMenuItem);
+        mainControlMenu.add(jSeparator1);
 
-    exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-    exitMenuItem.setMnemonic('e');
-    exitMenuItem.setText("Exit");
-    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        exitMenuItemActionPerformed(evt);
-      }
-    });
-    mainControlMenu.add(exitMenuItem);
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        exitMenuItem.setMnemonic('e');
+        exitMenuItem.setText("Exit");
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
+        mainControlMenu.add(exitMenuItem);
 
-    menuBar.add(mainControlMenu);
+        menuBar.add(mainControlMenu);
 
-    dialogsMenu.setMnemonic('d');
-    dialogsMenu.setText("Dialogs");
-    menuBar.add(dialogsMenu);
+        dialogsMenu.setMnemonic('d');
+        dialogsMenu.setText("Dialogs");
+        menuBar.add(dialogsMenu);
 
-    helpMenu.setMnemonic('h');
-    helpMenu.setText("Help");
+        helpMenu.setMnemonic('h');
+        helpMenu.setText("Help");
 
-    aboutMenuItem.setMnemonic('a');
-    aboutMenuItem.setText("About");
-    aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        aboutMenuItemActionPerformed(evt);
-      }
-    });
-    helpMenu.add(aboutMenuItem);
+        aboutMenuItem.setMnemonic('a');
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
 
-    menuBar.add(helpMenu);
+        menuBar.add(helpMenu);
 
-    setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
 
-    java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-    setBounds((screenSize.width-974)/2, (screenSize.height-626)/2, 974, 626);
-  }// </editor-fold>//GEN-END:initComponents
+        setSize(new java.awt.Dimension(974, 626));
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
     {//GEN-HEADEREND:event_connectMenuItemActionPerformed
-
       connectionDialog.setVisible(true);
-
     }//GEN-LAST:event_connectMenuItemActionPerformed
 
     private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_disconnectMenuItemActionPerformed
@@ -352,9 +367,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     {//GEN-HEADEREND:event_aboutMenuItemActionPerformed
 
       AboutDialog dlg = new AboutDialog(this, true);
-      Point location = this.getLocation();
-      location.translate(100, 100);
-      dlg.setLocation(location);
+      dlg.setLocationRelativeTo(this);
       dlg.setVisible(true);
 
     }//GEN-LAST:event_aboutMenuItemActionPerformed
@@ -379,32 +392,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
-      List<Dockable> dockables = frontend.listDockables();
-      SplitDockGrid grid = new SplitDockGrid();
-
-      // stack all
-      for(Dockable d : dockables)
-      {
-        if(d.getTitleText().startsWith("Debug Request"))
-        {
-          grid.addDockable(2, 0, 1, 1, d);
-        }
-        else
-        {
-          grid.addDockable(0, 0, 2, 1, d);
-        }
-        //frontend.remove(d);
-      }
-
-      ((SplitDockStation) frontend.getRoot("split")).dropTree(grid.toTree());
-
-      /*
-       * doNotSaveLayoutOnClose = true; if(layoutFile.exists() &&
-       * layoutFile.isFile() && layoutFile.canWrite()) { layoutFile.delete();
-       *
-       * JOptionPane.showMessageDialog(null, "You need to restart RobotControl
-       * now."); }//end if
-       */
+        this.dialogRegistry.setDefaultLayout();
     }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
@@ -431,6 +419,12 @@ public class RobotControlImpl extends javax.swing.JFrame
       @Override
       public void run()
       {
+        // create the configlocation is not existing
+        if(!new File(configlocation).mkdirs()) {
+            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
+                    "Could not create the configuration path: \"" + configlocation + "\".");
+        }
+          
         final JSPFProperties props = new JSPFProperties();
         props.setProperty(PluginManager.class, "cache.enabled", "true");
         props.setProperty(PluginManager.class, "cache.mode", "stong"); //optional
@@ -440,6 +434,9 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         try
         {
+          // make sure the main frame if loaded first
+          pluginManager.addPluginsFrom(new ClassURI(RobotControlImpl.class).toURI());
+          
           //
           pluginManager.addPluginsFrom(new URI("classpath://*"));
 
@@ -465,101 +462,61 @@ public class RobotControlImpl extends javax.swing.JFrame
         {
           Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch(Exception ex)
-        {
-          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
       }
     });
   }
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JMenuItem aboutMenuItem;
-  private javax.swing.JButton btManager;
-  private javax.swing.JMenuItem connectMenuItem;
-  private javax.swing.JMenu dialogsMenu;
-  private javax.swing.JMenuItem disconnectMenuItem;
-  private javax.swing.JMenuItem exitMenuItem;
-  private javax.swing.JMenu helpMenu;
-  private javax.swing.JSeparator jSeparator1;
-  private javax.swing.JLabel lblConnect;
-  private javax.swing.JLabel lblReceivedBytesS;
-  private javax.swing.JLabel lblSentBytesS;
-  private javax.swing.JMenu mainControlMenu;
-  private javax.swing.JMenuBar menuBar;
-  private javax.swing.JMenuItem resetLayoutMenuItem;
-  private javax.swing.JPanel statusPanel;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btManager;
+    private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JMenu dialogsMenu;
+    private javax.swing.JMenuItem disconnectMenuItem;
+    private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lblConnect;
+    private javax.swing.JLabel lblReceivedBytesS;
+    private javax.swing.JLabel lblSentBytesS;
+    private javax.swing.JMenu mainControlMenu;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem resetLayoutMenuItem;
+    private javax.swing.JPanel statusPanel;
+    // End of variables declaration//GEN-END:variables
+
+    
+    @Override
+    public void setVisible(boolean t)
+    {
+        splashScreenMessage("Loading layout and open dialogs ...");
+        loadLayout();
+        super.setVisible(t);
+    }
 
   @Override
-  public void showConnected(boolean isConnected)
+  final public Properties getConfig()
   {
-    disconnectMenuItem.setEnabled(isConnected);
-    connectMenuItem.setEnabled(!isConnected);
-
-    if(isConnected)
-    {
-      lblConnect.setText("Connected to " + messageServer.getAddress().toString());
-    }
-    else
-    {
-      lblConnect.setText("Not connected");
-    }
-  }
-
-  @Override
-  public Properties getConfig()
-  {
-    if(fConfig == null || config == null)
-    {
-      fConfig = new File(configlocation + "config");
-      config = new Properties();
-      try
-      {
-        config.load(new FileReader(fConfig));
-      }
-      catch(IOException ex)
-      {
-        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-                "Could not find the config file. It will be created after the first execution.", ex);
-        /*
-        JOptionPane.showMessageDialog(this,
-          "Config could not be loaded from " + fConfig, "WARNING",
-          JOptionPane.WARNING_MESSAGE);
-        */
-      }
-    }//end if
-
     return config;
   }
 
   private void beforeClose()
   {
     messageServer.disconnect();
-
-    // remember open dialogs
-
-    List<Dockable> dockables = frontend.listDockables();
-    Set<String> dockablesAsstring = new HashSet<String>();
-    for(Dockable d : dockables)
-    {
-      if(!frontend.isHidden(d))
-      {
-        dockablesAsstring.add(d.getTitleText());
-      }
-    }
-    getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
-    // save configuration to file
+    
+    // remember the window size and position
+    getConfig().put("frame.position.x", Integer.toString(defaultWindowBounds.x));
+    getConfig().put("frame.position.y", Integer.toString(defaultWindowBounds.y));
+    getConfig().put("frame.width", Integer.toString(defaultWindowBounds.width));
+    getConfig().put("frame.height", Integer.toString(defaultWindowBounds.height));
+    getConfig().put("frame.extendedstate", Integer.toString(getExtendedState()));
+    
     try
     {
+      // save configuration to file
       new File(configlocation).mkdirs();
       getConfig().store(new FileWriter(fConfig), "");
 
       // save layout
-      if(!doNotSaveLayoutOnClose)
-      {
-        frontend.save("naoth-robotcontrol-default");
-        frontend.write(new DataOutputStream(new FileOutputStream(layoutFile)));
-      }
+     this.dialogRegistry.saveToFile(layoutFile);
     }
     catch(IOException ex)
     {
@@ -567,26 +524,25 @@ public class RobotControlImpl extends javax.swing.JFrame
     }
   }
 
-  private void readLayoutFromFile()
+  private void readConfigFromFile()
   {
-    try
-    {
-      frontend.read(new DataInputStream(new FileInputStream(layoutFile)));
-    }
-    catch(Exception ex)
-    {
+    try {
+      config.load(new FileReader(fConfig));
+    } catch(IOException ex) {
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+              "Could not open the config file. It will be created after the first execution.");
     }
   }
 
   private void loadLayout()
   {
-    try
-    {
-      frontend.load("naoth-robotcontrol-default");
-    }
-    catch(Exception ex)
-    {
-      //ex.printStackTrace();
+    try {
+      this.dialogRegistry.loadFromFile(layoutFile);
+    } catch(FileNotFoundException ex) {
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+              "Could not find the layout file: " + layoutFile.getAbsolutePath());
+    } catch(IOException ex) {
+        Helper.handleException("Error while reading the layout file.", ex);
     }
   }//end configureDocking
 

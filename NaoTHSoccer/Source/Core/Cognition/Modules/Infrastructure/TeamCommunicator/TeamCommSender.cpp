@@ -40,10 +40,8 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const BallModel& ballModel,
                                    const RobotPose& robotPose,
                                    const BodyState& bodyState,
-                                   const MotionStatus& motionStatus,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
-                                   const TeamMessage& teamMessage,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
@@ -98,8 +96,8 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
 {
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
-              getRobotPose(), getBodyState(), getMotionStatus(), getSoccerStrategy(),
-              getPlayersModel(), getTeamMessage(), data);
+              getRobotPose(), getBodyState(), getSoccerStrategy(),
+              getPlayersModel(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
 }

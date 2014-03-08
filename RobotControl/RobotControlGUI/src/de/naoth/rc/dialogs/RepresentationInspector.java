@@ -271,7 +271,7 @@ public class RepresentationInspector extends AbstractDialog
             @Override
             public void handleResponse(byte[] result, Command originalCommand)
             {
-                System.out.println(new String(result));
+                //System.out.println(new String(result));
                 String[] representations = new String(result).split("\n");
 
                 DefaultListModel model = new DefaultListModel();

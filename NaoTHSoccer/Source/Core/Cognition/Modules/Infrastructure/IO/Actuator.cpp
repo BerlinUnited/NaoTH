@@ -16,7 +16,7 @@ Actuator::~Actuator()
 #define REG_OUTPUT(R) \
   platformInterface.registerOutput(get##R())
 
-void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
+void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& /*platform*/)
 {
   REG_OUTPUT(LEDData);
   REG_OUTPUT(IRSendData);
