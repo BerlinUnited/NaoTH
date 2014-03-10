@@ -39,6 +39,8 @@ PerceptionsVisualization::PerceptionsVisualization()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:players_percept", "draw players percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:corrrect_camera_matrix","", false);
+
+  DEBUG_REQUEST_REGISTER( "PerceptionsVisualization:image:draw_field_polygon", "draw field boundaries in image", false);
 }
 
 void PerceptionsVisualization::execute()
@@ -423,5 +425,18 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("PerceptionsVisualization:image_px:players_percept",
   );
+
+
+
+  DEBUG_REQUEST("PerceptionsVisualization:image:draw_field_polygon",
+    int idx = 0;
+    ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
+    const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
+    for(int i = 1; i < fieldpoly.length; i++)
+    {
+      LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
+      idx = i;
+    }
+  );    
 
 }//end execute
