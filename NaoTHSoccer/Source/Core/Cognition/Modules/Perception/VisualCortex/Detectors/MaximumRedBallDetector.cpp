@@ -68,7 +68,7 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
   int minY = 5000;
   for(int i = 0; i < poly.length ; i++)
   {
-    if(poly.points[i].y < minY && poly.points[i].y > 0) {
+    if(poly.points[i].y < minY && poly.points[i].y >= 0) {
       minY = poly.points[i].y;
     }
   }
