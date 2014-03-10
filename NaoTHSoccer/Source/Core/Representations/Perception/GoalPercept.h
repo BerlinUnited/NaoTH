@@ -26,8 +26,8 @@ public:
   class GoalPost
   {
   public:
-    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0){};
-    ~GoalPost(){};
+    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0){}
+    ~GoalPost(){}
 
     /* possible types of goalposts */
     enum PostType 
@@ -103,19 +103,6 @@ private:
 
 public:
 
-  void add(const Vector2i& basePoint, const Vector2d& position, GoalPost::PostType type, ColorClasses::Color color, bool reliable)
-  {
-    if(numberOfSeenPosts < MAXNUMBEROFPOSTS)
-    {
-      post[numberOfSeenPosts].basePoint         = basePoint;
-      post[numberOfSeenPosts].position          = position;
-      post[numberOfSeenPosts].type              = type;
-      post[numberOfSeenPosts].color             = color;
-      post[numberOfSeenPosts].positionReliable  = reliable;
-      numberOfSeenPosts++;
-    }
-  }//end add
-
   void add(const GoalPost& goalPost)
   {
     if(numberOfSeenPosts < MAXNUMBEROFPOSTS)
@@ -123,7 +110,7 @@ public:
       post[numberOfSeenPosts] = goalPost;
       numberOfSeenPosts++;
     }
-  }//end add
+  }
 
 
   void reset()

@@ -465,15 +465,9 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     }
   }//end while
 
-
-  //goalPostFound = true;
-  GoalPercept::GoalPost post;
-  post.basePoint = pos;
-  getGoalPercept().add(post);
-
-
+  
   // check some pixels below the foot point
-  BresenhamLineScan footPointGreenScanner(post.basePoint, scanDir, getImage().cameraInfo);
+  BresenhamLineScan footPointGreenScanner(pos, scanDir, getImage().cameraInfo);
   double greenPixelCount = 0;
   for(int k = 0; k < params.footGreenScanSize && footPointGreenScanner.getNextWithCheck(pos); k++) {
     IMG_GET(pos.x, pos.y, pixel);
@@ -484,6 +478,11 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       POINT_PX(c, pos.x, pos.y);
     );
   }
+
+
+  // create a new goal post
+  GoalPercept::GoalPost post;
+  post.basePoint = pos;
 
   // 40% of the pixel below the post have to be green
   post.positionReliable = greenPixelCount > 0 && 
@@ -497,6 +496,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.position);
   
   post.directionInImage = scanDir;
+  getGoalPercept().add(post);
 
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans",
     ColorClasses::Color c = post.positionReliable?ColorClasses::yellowOrange:ColorClasses::red;
