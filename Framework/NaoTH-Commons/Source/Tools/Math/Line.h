@@ -57,9 +57,14 @@ public:
     return std::fabs(direction.x*(p.y-base.y)-direction.y*(p.x-base.x));
   }
 
+  double project(const Vector2d& p) const
+  {
+    return direction*p - direction*base;
+  }
+
   Vector2d projection(const Vector2d& p) const
   {
-    return point(direction*p - direction*base);
+    return point(project(p));
   }
 };
 
