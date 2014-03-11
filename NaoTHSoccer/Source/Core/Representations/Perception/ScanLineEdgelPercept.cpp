@@ -8,6 +8,7 @@
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -16,25 +17,36 @@ void Serializer<ScanLineEdgelPercept>::serialize(const ScanLineEdgelPercept& rep
 {
   naothmessages::ScanLineEdgelPercept percept_msg;
 
-  for(unsigned int i = 0; i < representation.endPoints.size(); i++)
+  for(size_t i = 0; i < representation.endPoints.size(); i++)
   {
     const ScanLineEdgelPercept::EndPoint& point = representation.endPoints[i];
     naothmessages::ScanLineEndPoint& point_msg = *(percept_msg.add_endpoints());
 
-    // posInImage
-    point_msg.mutable_posinimage()->set_x(point.posInImage.x);
-    point_msg.mutable_posinimage()->set_y(point.posInImage.y);
+    DataConversion::toMessage(point.posInImage, *point_msg.mutable_posinimage());
+    DataConversion::toMessage(point.posOnField, *point_msg.mutable_posonfield());
 
-    // posOnField
-    point_msg.mutable_posonfield()->set_x(point.posOnField.x);
-    point_msg.mutable_posonfield()->set_y(point.posOnField.y);
-
-    // color
     point_msg.set_color((naothmessages::Color) point.color);
-
-    // ScanLineID
     point_msg.set_scanlineid(point.ScanLineID);
   }//end for
+
+  for(size_t i = 0; i < representation.edgels.size(); i++)
+  {
+    const Edgel& edgel = representation.edgels[i];
+    naothmessages::Edgel& edgel_msg = *(percept_msg.add_edgels());
+
+    DataConversion::toMessage(edgel.point, *edgel_msg.mutable_point());
+    DataConversion::toMessage(edgel.direction, *edgel_msg.mutable_direction());
+  }
+
+  for(size_t i = 0; i < representation.pairs.size(); i++)
+  {
+    const ScanLineEdgelPercept::EdgelPair& pair = representation.pairs[i];
+    naothmessages::EdgelPair& pair_msg = *(percept_msg.add_pairs());
+
+    pair_msg.set_begin(pair.begin);
+    pair_msg.set_end(pair.end);
+    pair_msg.set_id(pair.id);
+  }
 
   // serialize the message
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -49,27 +61,37 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
   google::protobuf::io::IstreamInputStream buf(&stream);
   percept_msg.ParseFromZeroCopyStream(&buf);
 
-
   for(int i = 0; i < percept_msg.endpoints_size(); i++)
   {
     ScanLineEdgelPercept::EndPoint point;
     const naothmessages::ScanLineEndPoint& point_msg = percept_msg.endpoints(i);
 
-    // posInImage
-    point.posInImage.x = point_msg.posinimage().x();
-    point.posInImage.y = point_msg.posinimage().y();
-    
-
-    // posOnField
-    point.posOnField.x = point_msg.posonfield().x();
-    point.posOnField.y = point_msg.posonfield().y();
-
-    // color
+    DataConversion::fromMessage(point_msg.posinimage(), point.posInImage);
+    DataConversion::fromMessage(point_msg.posonfield(), point.posOnField);
     point.color = (ColorClasses::Color) point_msg.color();
-
-    // ScanLineID
     point.ScanLineID = point_msg.scanlineid();
 
     representation.endPoints.push_back(point);
   }//end for
+
+  representation.edgels.resize(percept_msg.edgels_size());
+  for(int i = 0; i < percept_msg.edgels_size(); i++)
+  {
+    Edgel& edgel = representation.edgels[i];
+    const naothmessages::Edgel& edgel_msg = percept_msg.edgels(i);   
+
+    DataConversion::fromMessage(edgel_msg.point(), edgel.point);
+    DataConversion::fromMessage(edgel_msg.direction(), edgel.direction);
+  }
+
+  representation.pairs.resize(percept_msg.pairs_size());
+  for(int i = 0; i < percept_msg.pairs_size(); i++)
+  {
+    const naothmessages::EdgelPair& pair_msg = percept_msg.pairs(i);
+    ScanLineEdgelPercept::EdgelPair& pair = representation.pairs[i];
+    
+    pair.begin = pair_msg.begin();
+    pair.end = pair_msg.end();
+    pair.id = pair_msg.id();
+  }
 }//end deserialize
