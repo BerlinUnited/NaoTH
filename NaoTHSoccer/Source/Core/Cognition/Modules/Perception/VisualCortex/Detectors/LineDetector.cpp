@@ -894,10 +894,11 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
           matchingClusterFound = true;
           DEBUG_REQUEST("Vision:Detectors:LineDetector:line_clusters",
             int idx = ((lineClusters[clusterIndex].id() ) % (unsigned int)ColorClasses::numOfColors);
+            int radius = ((lineClusters[clusterIndex].id() ) / (unsigned int)ColorClasses::numOfColors);
             CIRCLE_PX(
               (ColorClasses::Color) (idx) , 
               edgel.center.x, edgel.center.y, 
-              5 + idx);
+              5 + radius);
           );
         }
         clusterIndex++;
@@ -909,10 +910,11 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
         ClusteredLine newCluster(edgel, static_cast<int> (lineClusters.size()));
         DEBUG_REQUEST("Vision:Detectors:LineDetector:line_clusters",
           int idx = ((newCluster.id() ) % (unsigned int)ColorClasses::numOfColors);
+          int radius = ((newCluster.id() ) / (unsigned int)ColorClasses::numOfColors);
           CIRCLE_PX(
             (ColorClasses::Color) (idx) , 
             edgel.center.x, edgel.center.y, 
-            5 + idx);
+            5 + radius);
         );
         lineClusters.push_back(newCluster);
       }//end if
