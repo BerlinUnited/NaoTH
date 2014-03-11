@@ -67,7 +67,7 @@ void LineDetector::execute(CameraInfo::CameraID id)
   // maybe it should be in edgel detector
   vector<DoubleEdgel> edgelList;
   edgelList.reserve(MAX_NUMBER_OF_SCANLINE_EDGELS);
-  for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+  for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
   {
     if
     (
@@ -351,7 +351,7 @@ void LineDetector::analyzeEndPoints()
   
   DoubleEdgel edgelStart;
   DoubleEdgel edgelEnd;
-  for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
+  for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
   {
     const DoubleEdgel& edgel = getScanLineEdgelPercept().scanLineEdgels[i];
 

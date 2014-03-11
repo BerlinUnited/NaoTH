@@ -39,7 +39,7 @@ void PerceptProjector::execute()
   }
   */
   
-  if(false && getScanLineEdgelPerceptTop().numOfSeenEdgels > 10)
+  if(false && getScanLineEdgelPerceptTop().scanLineEdgels.size() > 10)
   {
     last_iteration = -1;
     Vector2d offset_edgels(getCameraMatrixOffset().offset);

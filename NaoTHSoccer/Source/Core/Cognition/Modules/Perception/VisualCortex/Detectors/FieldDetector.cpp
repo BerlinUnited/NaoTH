@@ -18,6 +18,8 @@ FieldDetector::FieldDetector()
   cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:Detectors:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:FieldDetector:mark_corrected_field_polygon", "mark polygonal boundary of the detected field cutted by horizon on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:FieldDetector:setHoleImageAsField", "mark hole image as if field were detected", false);
 }
 
 
@@ -31,11 +33,50 @@ void FieldDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   CANVAS_PX(id);
 
-  if(getScanLineEdgelPercept().endPoints.size() > 0)
+  bool simulateField = false;
+
+  DEBUG_REQUEST("Vision:Detectors:FieldDetector:setHoleImageAsField",
+    simulateField = true;
+  );
+
+  if(simulateField)
+  {
+    vector<Vector2i > result;
+    result.push_back(Vector2i(0,0));
+    result.push_back(Vector2i(0,getImage().height()-1));
+    result.push_back(Vector2i(getImage().width()-1, getImage().height()-0));
+    result.push_back(Vector2i(getImage().width()-1,0));
+    result.push_back(Vector2i(0,0));
+
+    // create the polygon
+    FieldPercept::FieldPoly fieldPoly;
+    for(size_t i = 0; i < result.size(); i++)
+    {
+      fieldPoly.add(result[i]);
+    }
+    Math::LineSegment horizon(Vector2i(0, 0), Vector2i(getImage().width() - 1, 0));
+
+    getFieldPercept().setField(fieldPoly, horizon);
+    if(fieldPoly.getArea() >= 5600)
+    {
+      getFieldPercept().valid = true;
+    }
+
+    DEBUG_REQUEST( "Vision:Detectors:FieldDetector:mark_field_polygon",
+      size_t idx = 0;
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
+      for(size_t i = 1; i < result.size(); i++)
+      {
+        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
+        idx = i;
+      }
+    );    
+  }
+  else if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2i > points(getScanLineEdgelPercept().endPoints.size());
 
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
     }
@@ -54,7 +95,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
 
-    for(unsigned int i = 0; i < result.size(); i++)
+    for(size_t i = 0; i < result.size(); i++)
     {
       fieldPoly.add(result[i]);
     }
@@ -70,11 +111,22 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     }
 
     DEBUG_REQUEST( "Vision:Detectors:FieldDetector:mark_field_polygon",
-      int idx = static_cast<int>(result.size())-1;
-      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
-      for(int i = 0; i < (int)result.size(); i++)
+      size_t idx = 0;
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::black : ColorClasses::red;
+      for(size_t i = 1; i < result.size(); i++)
       {
         LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
+        idx = i;
+      }
+    );    
+
+    DEBUG_REQUEST( "Vision:Detectors:FieldDetector:mark_corrected_field_polygon",
+      int idx = 0;
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
+      const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
+      for(int i = 1; i < fieldpoly.length; i++)
+      {
+        LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
         idx = i;
       }
     );    

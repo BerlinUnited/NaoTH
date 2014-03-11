@@ -19,6 +19,9 @@
 #include "Representations/Perception/GoalPercept.h"
 
 // tools
+#include "Tools/Math/Matrix_nxn.h"
+#include "Tools/Math/Matrix_mxn.h"
+
 #include "Tools/DoubleCamHelpers.h"
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
@@ -27,6 +30,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include <vector>
+
+#include "Tools/naoth_opencv.h"
 
 BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(Image)
@@ -52,7 +57,7 @@ class GradientGoalDetector: private GradientGoalDetectorBase
 public:
 
   GradientGoalDetector();
-  ~GradientGoalDetector(){};
+  virtual ~GradientGoalDetector(){};
 
   // override the Module execute method
   virtual void execute(CameraInfo::CameraID id, bool horizon = true);
@@ -70,7 +75,7 @@ private:
   static const int imageBorderOffset = 25;
   CameraInfo::CameraID cameraID;
   
-  RingBuffer<Vector2d, 5> pointBuffer;
+  RingBuffer<Vector2i, 5> pointBuffer;
   RingBufferWithSum<double, 5> valueBuffer;
   RingBufferWithSum<double, 5> valueBufferY;
 
@@ -80,26 +85,33 @@ private:
 
     Parameters() : ParameterList("GradientGoalDetectorParameters")
     {
-      PARAMETER_REGISTER(gradientThreshold) = 60;
-      PARAMETER_REGISTER(minY) = 140;
-      PARAMETER_REGISTER(dist) = 5;
-      PARAMETER_REGISTER(responseHoldFactor) = 0.8;
+      PARAMETER_REGISTER(numberOfScanlines) = 5;
+      PARAMETER_REGISTER(scanlinesDistance) = 6;
+      PARAMETER_REGISTER(thresholdUV) = 60;
+      PARAMETER_REGISTER(thresholdY) = 140;
+      
+      PARAMETER_REGISTER(maxFeatureDeviation) = 5;
+      PARAMETER_REGISTER(maxFootScanSquareError) = 4.0;
       PARAMETER_REGISTER(minGoodPoints) = 3;
+      PARAMETER_REGISTER(footGreenScanSize) = 10;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters() {
+    virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
 
-    int gradientThreshold;
-    int minY;
-    int dist;
-    double responseHoldFactor;
+    int numberOfScanlines;
+    int scanlinesDistance;
+    int thresholdUV;
+    int thresholdY;
+
+    int maxFeatureDeviation;
+    double maxFootScanSquareError;
     int minGoodPoints;
-    int minScanPointsAfterGoodPoints;
+    double footGreenScanSize; // number of pixels to scan for green below the footpoint
   };
 
   Parameters params;
@@ -115,6 +127,7 @@ private:
     Vector2d responseAtEnd;
 
     bool possibleObstacle;
+    bool used;
 
     Feature()
     :
@@ -122,20 +135,25 @@ private:
       end(-1, -1),
       responseAtBegin(0.0, 0.0),
       responseAtEnd(0.0, 0.0),
-      possibleObstacle(false)
+      possibleObstacle(false),
+      used(false)
     {
 
     }
-
   };
 
-  std::vector<Feature> features[5];
-  int lastTestFeatureIdx[5];
-  std::vector<GoalPercept::GoalPost> goalPosts;
+  std::vector<std::vector<Feature> > features;
+  std::vector<Feature> goodFeatures;
+
+  // NOTE: needed by checkForGoodFeatures (has to have the same size as features)
+  std::vector<int> lastTestFeatureIdx;
+
 
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
-  std::vector<Feature> checkForGoodFeatures(const Vector2d& scanDir, const Feature& candidate, double threshold, double thresholdY);
-  void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY, bool horizon);
+  void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
+  void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
+
+  Math::Line fitLine(const std::vector<Feature>& features) const;
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, Image);

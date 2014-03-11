@@ -103,6 +103,7 @@ std::ostream& operator<<(std::ostream& stream, const DebugDrawings::Color& color
 
 
 #ifdef DEBUG
+#define CANVAS(id) DebugDrawings::getInstance().out() << "Canvas:" << id << std::endl
 #define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << std::endl
 #define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << std::endl
 #define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << std::endl

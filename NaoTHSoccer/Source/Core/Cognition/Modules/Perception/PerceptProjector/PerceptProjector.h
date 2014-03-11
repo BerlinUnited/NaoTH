@@ -106,12 +106,12 @@ private:
   int last_idx;
   double operator ()(double x, double y, int i)
   {
-    if(getScanLineEdgelPerceptTop().numOfSeenEdgels > 10)
+    if(getScanLineEdgelPerceptTop().scanLineEdgels.size() > 10)
     {
       // take two random lines
       // (if they are the same no correction is made)
       if(last_iteration != i) {
-        int idx = Math::random((int)getScanLineEdgelPerceptTop().numOfSeenEdgels);
+        int idx = Math::random((int)getScanLineEdgelPerceptTop().scanLineEdgels.size());
         const DoubleEdgel& p = getScanLineEdgelPerceptTop().scanLineEdgels[idx];
         if((p.begin - p.end).abs2() > 8) {
           last_idx = idx;
@@ -119,7 +119,7 @@ private:
       }
 
       last_iteration = i;
-      if(last_idx >= 0 && last_idx < (int)getScanLineEdgelPerceptTop().numOfSeenEdgels) {
+      if(last_idx >= 0 && last_idx < (int)getScanLineEdgelPerceptTop().scanLineEdgels.size()) {
         return projectionErrorDoubleEdgel(x, y, getScanLineEdgelPerceptTop().scanLineEdgels[last_idx]);
       }
     }

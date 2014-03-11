@@ -4,6 +4,7 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.ExtendedFileChooser;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
+import de.naoth.rc.dialogs.drawings.Canvas;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnImage;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
@@ -384,11 +385,23 @@ public class ImageViewer extends AbstractDialog
       if (objectList != null)
       {
         imageCanvas.getDrawingList().clear();
+        secondaryImageCanvas.getDrawingList().clear();
+        
         DrawingCollection drawingCollection = objectList.get(DrawingOnImage.class);
-        if (drawingCollection != null)
-        {
+        if (drawingCollection != null) {
           imageCanvas.getDrawingList().add(drawingCollection);
         }
+        
+        Canvas canvasTop = objectList.get("ImageTop");
+        if (canvasTop != null) {
+          ImageViewer.this.secondaryImageCanvas.getDrawingList().add(canvasTop);
+        }
+        
+        Canvas canvasBottom = objectList.get("ImageBottom");
+        if (canvasTop != null) {
+          ImageViewer.this.imageCanvas.getDrawingList().add(canvasBottom);
+        }
+        
         repaint();
 
       }//end if

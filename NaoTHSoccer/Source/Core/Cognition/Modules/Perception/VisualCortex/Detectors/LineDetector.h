@@ -116,15 +116,6 @@ private:
   unsigned int edgelBrightnessLevel;
 
 
-  // double cam interface
-  inline const CameraSettings& getBlobFinder() const {
-    if(cameraID == CameraInfo::Top) {
-      return getCurrentCameraSettingsTop();
-    } else { 
-      return getCurrentCameraSettings();
-    }
-  }
-
   DOUBLE_CAM_REQUIRE(LineDetector,Image);
   DOUBLE_CAM_REQUIRE(LineDetector,ColoredGrid);
   DOUBLE_CAM_REQUIRE(LineDetector,ColorClassificationModel);

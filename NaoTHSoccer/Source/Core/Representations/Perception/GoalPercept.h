@@ -26,8 +26,8 @@ public:
   class GoalPost
   {
   public:
-    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0){};
-    ~GoalPost(){};
+    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0){}
+    ~GoalPost(){}
 
     /* possible types of goalposts */
     enum PostType 
@@ -58,6 +58,9 @@ public:
     /* the posts base point on the ground */
     Vector2d position;
 
+    /* the posts up/down direction in the image*/
+    Vector2d directionInImage;
+
     static const char* getPostTypeName(PostType type)
     {
       switch(type) 
@@ -85,7 +88,7 @@ public:
   double angleToSeenGoal;
 
   /* estimated position of the goal-centroid relative to the robot */
-  Vector3<double> goalCentroid;
+  Vector3d goalCentroid;
 
   // the goal was found at the horizon
   bool horizonScan; 
@@ -100,36 +103,22 @@ private:
 
 public:
 
-  void add(const Vector2i& basePoint, const Vector2d& position, GoalPost::PostType type, ColorClasses::Color color, bool reliable)
-  {
-    if(numberOfSeenPosts < MAXNUMBEROFPOSTS)
-    {
-      post[numberOfSeenPosts].basePoint         = basePoint;
-      post[numberOfSeenPosts].position          = position;
-      post[numberOfSeenPosts].type              = type;
-      post[numberOfSeenPosts].color             = color;
-      post[numberOfSeenPosts].positionReliable  = reliable;
-      numberOfSeenPosts++;
-    }//end if
-  }//end add
-
   void add(const GoalPost& goalPost)
   {
     if(numberOfSeenPosts < MAXNUMBEROFPOSTS)
     {
       post[numberOfSeenPosts] = goalPost;
       numberOfSeenPosts++;
-    }//end if
-  }//end add
+    }
+  }
 
 
-  /* reset percept */
   void reset()
   {
     numberOfSeenPosts = 0;
     angleToSeenGoal = 0; 
     horizonScan = false;
-  }//end reset
+  }
 
 
   virtual void print(std::ostream& stream) const

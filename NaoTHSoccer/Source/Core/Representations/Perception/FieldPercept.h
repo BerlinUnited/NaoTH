@@ -37,6 +37,7 @@ private:
     fullFieldPoly.add(Vector2i(0, dimension.y - 1));
     fullFieldPoly.add(Vector2i(dimension.x - 1, dimension.y - 1));
     fullFieldPoly.add(Vector2i(dimension.x - 1, 0));
+    fullFieldPoly.add(Vector2i(0, 0));
   }//end generateDefaultField
 
 public:
@@ -81,12 +82,10 @@ public:
   {
     for(int i = 0; i < fieldPoly.length; i++)
     {
-      if(horizon.begin().y >= fieldPoly[i].y) {
-        fieldPoly[i].y = Math::clamp((int) horizon.begin().y + 1, 0, dimension.y - 1);
-      }
+      Vector2i projectedPoint(horizon.projection(fieldPoly[i])); 
 
-      if(horizon.end().y >= fieldPoly[i].y ) {
-        fieldPoly[i].y = Math::clamp((int) horizon.end().y + 1, 0, dimension.y - 1);
+      if(projectedPoint.y > fieldPoly[i].y) {
+        fieldPoly[i].y = projectedPoint.y;  
       }
     }
   }
