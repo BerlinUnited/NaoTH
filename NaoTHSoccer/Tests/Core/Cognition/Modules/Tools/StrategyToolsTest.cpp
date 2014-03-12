@@ -7,9 +7,6 @@ using namespace std;
 
 class StrategyToolsTest : public ::testing::Test
 {
-public:
-	StrategyTools* strategyTools;
-
 protected:
   StrategyToolsTest(){}
   virtual void SetUp()
@@ -43,7 +40,7 @@ TEST_F(StrategyToolsTest, arrangeRobots)
   playersPoints.push_back(Vector2d(-1600.0,  1600.0));
   playersPoints.push_back(Vector2d(-1600.0, -1700.0));
 
-  strategyTools->arrangeRobots(playersPoints, setPiecePoints, placesToRobots);
+  StrategyTools::arrangeRobots(playersPoints, setPiecePoints, placesToRobots);
 
   std::vector<int> expectedPlacesToRobots;
   expectedPlacesToRobots.push_back(5);

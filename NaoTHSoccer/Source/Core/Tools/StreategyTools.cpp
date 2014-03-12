@@ -7,11 +7,14 @@
 */
 
 #include "StrategyTools.h"
+#include <Tools/Debug/NaoTHAssert.h>
+#include <Tools/Math/Common.h>
 
 void StrategyTools::arrangeRobots(
   const std::vector<Vector2d>& robots, 
   const std::vector<Vector2d>& places, 
-  std::vector<int>& placesToRobots )
+  std::vector<int>& placesToRobots,
+  int numberOfIterations)
 {
   size_t numberOfRobots = robots.size();
   size_t numberOfPlaces = places.size();
@@ -36,33 +39,35 @@ void StrategyTools::arrangeRobots(
   }//end for
 
 
-  int numberOfIterations = 50;//20;
   for(int i = 0; i < numberOfIterations; i++)
   {
     // select place
-    int placeIndexOne = (int)(Math::random()*(static_cast<double> (numberOfPlaces)-1)+0.5);
+    int placeIndexOne = (int)(Math::random()*(static_cast<double> (numberOfPlaces)-1.0)+0.5);
     // take the robot assighned to this place
     int robotIndexOne = placesToRobots[placeIndexOne];
 
     // select another robot
-    int robotIndexTwo = (int)(Math::random()*(static_cast<double> (numberOfRobots)-1)+0.5);
+    int robotIndexTwo = (int)(Math::random()*(static_cast<double> (numberOfRobots)-1.0)+0.5);
     // take the place of this robot (!!!could be -1)
     int placeIndexTwo = robotsToPlaces[robotIndexTwo];
 
-    if(robotIndexOne == robotIndexTwo) 
+    if(robotIndexOne == robotIndexTwo) {
       continue;
+    }
 
     // current distance
     double distOne = (robots[robotIndexOne] - places[placeIndexOne]).abs();
     double distTwo = fakeDistance;
-    if(placeIndexTwo != -1)
+    if(placeIndexTwo != -1) {
       distTwo = (robots[robotIndexTwo] - places[placeIndexTwo]).abs();
+    }
     double currentDistance = distOne + distTwo;
   
     // alternative distance
     double alternativeDistOne = fakeDistance;
-    if(placeIndexTwo != -1)
+    if(placeIndexTwo != -1) {
       alternativeDistOne = (robots[robotIndexOne] - places[placeIndexTwo]).abs();
+    }
 
     double alternativeDistTwo = (robots[robotIndexTwo] - places[placeIndexOne]).abs();
     double alternativeDistance = alternativeDistOne + alternativeDistTwo;
@@ -71,8 +76,9 @@ void StrategyTools::arrangeRobots(
     if(alternativeDistance < currentDistance)
     {
       placesToRobots[placeIndexOne] = robotIndexTwo;
-      if(placeIndexTwo != -1)
+      if(placeIndexTwo != -1) {
         placesToRobots[placeIndexTwo] = robotIndexOne;
+      }
 
       robotsToPlaces[robotIndexOne] = placeIndexTwo;
       robotsToPlaces[robotIndexTwo] = placeIndexOne;

@@ -9,10 +9,8 @@
 #ifndef _StrategyTools_h_
 #define _StrategyTools_h_
 
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugModify.h"
-
-using namespace std;
+#include <vector>
+#include <Tools/Math/Vector2.h>
 
 class StrategyTools
 {
@@ -20,10 +18,11 @@ private:
   StrategyTools(){} // there shouldn't be any instances of it
 
 public:
-   void arrangeRobots(
+   static void arrangeRobots(
     const std::vector<Vector2d >& robots, 
     const std::vector<Vector2d >& places, 
-    std::vector<int>& placesToRobots );
+    std::vector<int>& placesToRobots,
+    int numberOfIterations = 50);
 };
 
 #endif //_StrategyTools_h_
