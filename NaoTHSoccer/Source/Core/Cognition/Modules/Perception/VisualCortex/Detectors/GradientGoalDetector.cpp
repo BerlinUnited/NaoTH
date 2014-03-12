@@ -489,7 +489,8 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
                           params.footGreenScanSize > 0 && 
                           greenPixelCount/params.footGreenScanSize > 0.4;
 
-  post.positionReliable = post.positionReliable && CameraGeometry::imagePixelToFieldCoord(
+  // NOTE: if the projection is not successfull, then post.position = (0,0)
+  CameraGeometry::imagePixelToFieldCoord(
     getCameraMatrix(),
     getImage().cameraInfo,
     post.basePoint.x, post.basePoint.y, 0.0,
