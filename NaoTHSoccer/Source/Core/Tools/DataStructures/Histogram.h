@@ -16,16 +16,20 @@ namespace Statistics
   class HistogramX
   {
     public:
+      static const int maxInt = (int)((unsigned) -1 / 2);
       int size;
 
       std::vector<int> rawData;
       std::vector<double> normalizedData;
       std::vector<double> cumulativeData;
      
+      bool firstRun;
       int median;
       int min;
       int max;
       int spanWidth;
+      double firstSum;
+      double sum;
       double mean;
       double variance;
       double sigma;
@@ -37,13 +41,14 @@ namespace Statistics
       {
         size = 0;
         clear();
+        firstRun = true;
+        firstSum = 0.0;
       }
       
       HistogramX(int newSize)
       {
         size = newSize;
         resize(newSize);
-        clear();
       }
       
       ~HistogramX()
@@ -55,6 +60,7 @@ namespace Statistics
         min = 0;
         max = 0;
         spanWidth = 0;
+        sum = 0.0;
         mean = 0.0;
         variance = 0.0;
         sigma = 0.0;
@@ -77,6 +83,8 @@ namespace Statistics
         normalizedData.resize(size, 0.0);
         cumulativeData.resize(size, 0.0);
         clear();
+        firstRun = true;
+        firstSum = 0.0;
       }
 
       void add(int value)
@@ -91,12 +99,19 @@ namespace Statistics
 
       void calculate()
       {
-        double sum = 0.0;
+        sum = 0.0;
         mean = 0.0;
         for(int i = 0; i < size; i++)
         {
           sum += rawData[i];
           mean += i * rawData[i];
+        }
+        if(sum == 0) 
+          return;
+        if(firstRun) 
+        {
+          firstSum = sum;
+          firstRun = false;
         }
         mean /= sum;
         median = 0;
@@ -106,9 +121,14 @@ namespace Statistics
         variance = 0.0;
         skewness = 0.0;
         kurtosis = 0.0;
+        bool reachingMaxSum = sum + firstSum >= maxInt;
+        double newSum = 0.0;
         for(int i = 0; i < size; i++)
         {
           normalizedData[i] = rawData[i] / sum;
+          if(reachingMaxSum) 
+            rawData[i] = (int) Math::round(normalizedData[i] * firstSum);
+          newSum += rawData[i];
           squareMean += i * i * normalizedData[i];
           double v = (i - mean);
           double v2 = v * v;
@@ -137,6 +157,7 @@ namespace Statistics
             max = i;
           }
         }
+        sum = newSum;
         spanWidth = max - min;
         squareMean = sqrt(squareMean);
         sigma = sqrt(variance);
