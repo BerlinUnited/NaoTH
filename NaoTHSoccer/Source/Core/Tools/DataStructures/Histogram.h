@@ -76,6 +76,7 @@ namespace Statistics
         }
       }
 
+      //resize histogram to newSize bins
       void resize(int newSize)
       {
         size = newSize;
@@ -87,16 +88,25 @@ namespace Statistics
         firstSum = 0.0;
       }
 
+      //add 1 to the bin for value
       void add(int value)
       {
         rawData[value]++;
       }
 
+      //add value to the bin at index idx
+      void add(int idx, int value)
+      {
+        rawData[idx] += value;
+      }
+
+      //set value of bin at index idx
       void set(int idx, int value)
       {
         rawData[idx] = value;
       }
 
+      //calculate normalized and cumulated histograms and some moments
       void calculate()
       {
         sum = 0.0;
@@ -106,8 +116,10 @@ namespace Statistics
           sum += rawData[i];
           mean += i * rawData[i];
         }
+        //if histogram is empty skip here
         if(sum == 0) 
           return;
+        //save total sum of bins if calculate() is running the first time, needed for recalculation if accumulation behaviour is used
         if(firstRun) 
         {
           firstSum = sum;
@@ -121,11 +133,15 @@ namespace Statistics
         variance = 0.0;
         skewness = 0.0;
         kurtosis = 0.0;
+        //can only be true if accumulation behaviour is used and total sum is about to reach max value of int
         bool reachingMaxSum = sum + firstSum >= maxInt;
         double newSum = 0.0;
         for(int i = 0; i < size; i++)
         {
           normalizedData[i] = rawData[i] / sum;
+          //if accumulation behaviour is used and total sum is about to reach max value of int,
+          //recalculate bin values by use of normalized bin value and the total sum of first run
+          //we do loose some accuracy here and total sum of bins is not equal to the one from first run because of rounding doubles to ints
           if(reachingMaxSum) 
             rawData[i] = (int) Math::round(normalizedData[i] * firstSum);
           newSum += rawData[i];
@@ -167,6 +183,7 @@ namespace Statistics
         calculated = true;
       }
 
+      //generate plot for raw, normalized and cumulated histograms
       void plot(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -180,6 +197,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for raw histogram
       void plotRaw(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -188,6 +206,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for normalized histogram
       void plotNormalized(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -196,6 +215,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for cumulated histogram
       void plotCumulated(std::string id) const
       {
         for(int i = 0; i < size; i++)
