@@ -65,6 +65,7 @@ void GradientSpiderScan::init()
   maxNumberOfScans = 15; //maximum number of scanlines ...
   CANVAS_PX(cameraID);
   maxChannelDif = 0.5;
+  minChannelValue = 0.0;
 }
 
 void GradientSpiderScan::setDrawScanLines(bool draw)
@@ -232,7 +233,9 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       }
 
   //      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
-		  jumpFound = newJump > currentGradientThreshold  || 
+		  jumpFound = newJump > currentGradientThreshold  ||
+                  //if below a minimum, handle it as if jump
+                  minChannelValue >= pixel.channels[imageChannelNumber] ||
                   meanJump > currentMeanThreshold;
       
       maxJump = newJump;
@@ -244,7 +247,7 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       //borderPoint = currentPoint;
       borderPointFound = true;
     }
-    else if(! borderPointFound)
+    else if(!borderPointFound)
     {
       if(useVUdifference)
       {

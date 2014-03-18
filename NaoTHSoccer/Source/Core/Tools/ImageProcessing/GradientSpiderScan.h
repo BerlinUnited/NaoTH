@@ -85,6 +85,11 @@ public:
   void setMaxNumberOfScans(unsigned int length);
   void setUseVUdifference(bool value);
 
+  void setMinChannelValue(double val)
+  {
+    minChannelValue = val;
+  }
+
 private:
   Pixel startPixel;
   bool scanLine(const Vector2i& start, const Vector2i& direction, ScanPointList& goodPoints, ScanPointList& badPoints);
@@ -108,6 +113,7 @@ private:
   double maxChannelDif;
   bool useVUdifference;
   CameraInfo::CameraID cameraID;
+  double minChannelValue;
 };
 
 
