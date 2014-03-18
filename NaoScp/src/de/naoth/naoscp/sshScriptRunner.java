@@ -25,16 +25,16 @@ abstract class SshScriptRunner extends SshWorker
   private OutputStream out;
   private String lastOut;
 
-  public SshScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public SshScriptRunner(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
-    super(config, sNaoNo, sNaoByte);
+    super(config, progressBar, sNaoNo, sNaoByte);
     init(scriptName);
     config.reboot = reboot;
   }
 
-  public SshScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public SshScriptRunner(NaoScpConfig config, JProgressBar progressBar, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
-    super(config, Ip, sNaoNo, sNaoByte);
+    super(config, progressBar, Ip, sNaoNo, sNaoByte);
     init(scriptName);
     config.reboot = reboot;
   }

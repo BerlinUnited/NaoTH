@@ -42,7 +42,7 @@ public class NaoScp extends NaoScpMainFrame
 {
   // if true, all ActionInfo is sent to log
   // @see actionInfo()
-  private boolean logActionInfo = true;
+  private final boolean logActionInfo = true;
 //  private boolean debugVersion = true;
   
   private HashMap<String, JTextField> networkConfigTags = new HashMap<String, JTextField>();
@@ -71,7 +71,7 @@ public class NaoScp extends NaoScpMainFrame
   private String setupPlayerNo;
   private String lastBashColorOption;
   
-  private NaoScpConfig config; 
+  private final NaoScpConfig config;
   
   @SuppressWarnings("unchecked")
   public NaoScp()
@@ -99,8 +99,6 @@ public class NaoScp extends NaoScpMainFrame
 
     config = new NaoScpConfig();
     config.debugVersion = true;
-
-    updateConfig();
 
     this.cbNoBackup.setVisible(config.debugVersion);
     this.cbNoBackup.setEnabled(config.debugVersion);
@@ -184,12 +182,12 @@ public class NaoScp extends NaoScpMainFrame
 //    {
 //    }
        
-    String value = System.getenv("NAOTH_BZR");
+    String naothHomePath = System.getenv("NAOTH_BZR");
     
-    if(value != null)
+    if(naothHomePath != null)
     {
-      value = value + "/NaoTHSoccer";
-      setDirectory(value);
+      naothHomePath = naothHomePath + "/NaoTHSoccer";
+      setNaoControllerDirectory(naothHomePath);
     }
     else
     {
@@ -205,7 +203,7 @@ public class NaoScp extends NaoScpMainFrame
         File ProgramDir = new File(programPath);
         if(ProgramDir.exists())
         {
-          setDirectory(ProgramDir.getAbsolutePath());
+          setNaoControllerDirectory(ProgramDir.getAbsolutePath());
         }
       }
       catch(UnsupportedEncodingException ueEx)
@@ -213,7 +211,7 @@ public class NaoScp extends NaoScpMainFrame
         actionInfo("could not determine current work directory\n" + ueEx.getMessage());
       }
     }
-
+            
     if(config.fhIsTesting)
     {
       config.remotePrefix = "/Users/robotest/deploy";
@@ -222,6 +220,7 @@ public class NaoScp extends NaoScpMainFrame
       sshPassword.setText("robotest");
     }
     setActionBtnLabel();
+    updateConfig();
   }
 
   public void addJmdnsListenerService(final ServiceEvent event, final int idx)
@@ -262,7 +261,6 @@ public class NaoScp extends NaoScpMainFrame
           naoModel.addElement(entry.getValue());
         }
       }
-
     }
   }
 
@@ -422,21 +420,22 @@ public class NaoScp extends NaoScpMainFrame
   
   private NaoScpConfig createDeployConfig()
   {
+    // update the main config
+    updateConfig();
+    
     NaoScpConfig cfg = new NaoScpConfig(config);
     cfg.addresses.clear();
+    
     cfg.copyConfig = cbCopyConfig.isSelected();
     cfg.copyLib = cbCopyLib.isSelected();
     cfg.copyExe = cbCopyExe.isSelected();
     cfg.copyLogs = cbCopyLogs.isSelected();
+    
     cfg.restartNaoqi = cbRestartNaoqi.isSelected();
     cfg.restartNaoth = cbRestartNaoth.isSelected();
+    
     cfg.noBackup = cbNoBackup.isSelected();
     cfg.forceBackup = cbForceBackup.isSelected();
-    cfg.sTeamCommPort = jTeamCommPort.getText();
-    cfg.scheme = jSchemeBox.getSelectedItem().toString();
-    cfg.teamNumber = jTeamNumber.getText();
-    cfg.teamColor = jColorBox.getSelectedItem().toString();
-    cfg.comment = jCommentTextArea.getText();
     
     if(cfg.backupIsSelected)
     {
@@ -525,12 +524,12 @@ public class NaoScp extends NaoScpMainFrame
         {
           if (naoCfg.restartNaoqi)
           {
-            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoqi", false);
+            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, this.progressBar, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoqi", false);
             scriptRunner.execute();
           }
           else if(naoCfg.restartNaoth)
           {
-            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoTH", false);
+            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, this.progressBar, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoTH", false);
             scriptRunner.execute();
           }
           else
@@ -540,7 +539,7 @@ public class NaoScp extends NaoScpMainFrame
         }
         else
         {
-          remoteCopier copier = new remoteCopier(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)));
+          remoteCopier copier = new remoteCopier(naoCfg, this.progressBar, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)));
           copier.execute();
         }
       }
@@ -550,6 +549,39 @@ public class NaoScp extends NaoScpMainFrame
       }
     }
   }
+  
+  //NOTE: experimental
+  private void makeDeploy(NaoScpConfig cfg, final String deployPath)
+  {
+    new Thread(new Runnable() { public void run() 
+    {
+        NaoScpConfig cfg = createDeployConfig();
+        actionInfo("Starting to copy files");
+        if(DeployUtils.assembleDeployDir(NaoScp.this, cfg, deployPath + "/deploy"))
+        {
+          if(cfg.copyConfig)
+          {
+            actionInfo("Configuring files on stick");
+            DeployUtils.configureUSBDeployDir(NaoScp.this, cfg, bodyIdToPlayerNumber, deployPath + "/deploy");
+          }
+
+          File scriptFile = new File(cfg.localSetupStickPath(), "startBrainwashing.sh");
+          if(scriptFile.isFile())
+          {
+            actionInfo("Copying brain wash script");
+            FileUtils.copyFiles(NaoScp.this, scriptFile, new File(deployPath, "startBrainwashing.sh"));
+          }
+          else
+          {
+            actionError("No brainwashing script found (should be " + scriptFile.getAbsolutePath() + ")");
+          }
+
+          actionFinish("Finished");
+          setFormEnabled(true);
+        }//end if
+    }}).start();
+  }
+  
   
   // todo: take this apart
   private boolean prepareDeploy(NaoScpConfig cfg, boolean init)
@@ -587,11 +619,11 @@ public class NaoScp extends NaoScpMainFrame
 
   private boolean checkDirPath(boolean verbose)
   {
-    if(config == null || config.jDirPathLabel == null)
+    if(config == null || config.naoControllerDirectoryPath == null)
     {
       if(verbose)
       {
-        JOptionPane.showMessageDialog(null, "Main Directory not set");
+        JOptionPane.showMessageDialog(null, "Nao Controller Directory not set.");
       }
       return false;
     }
@@ -766,7 +798,6 @@ public class NaoScp extends NaoScpMainFrame
 
     cbRestartNaoth.setEnabled(enable);
     cbRestartNaoqi.setEnabled(enable);
-    cbRebootSystem.setEnabled(enable);
     if(config.debugVersion)
     {
       cbNoBackup.setEnabled(enable);
@@ -860,10 +891,11 @@ public class NaoScp extends NaoScpMainFrame
       File mySetupScriptDir = new File(mySetupScriptPath);
       if(mySetupScriptDir.isDirectory())
       {
-        DeployUtils.deleteDir(mySetupScriptDir);
+        FileUtils.deleteDir(mySetupScriptDir);
       }
       mySetupScriptDir.mkdirs();
 
+      /*
       File mySetupScriptCheckRC = new File(mySetupScriptPath +"/checkRC.sh");        
       DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/checkRC.sh"), mySetupScriptCheckRC);
       File mySetupScriptInitEnv = new File(mySetupScriptPath +"/init_env.sh");        
@@ -874,12 +906,17 @@ public class NaoScp extends NaoScpMainFrame
       DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/autoload.ini"), myAutoloadIni);
       File myNaothScript = new File(mySetupScriptPath +"/naoth");        
       DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/naoth"), myNaothScript);
-            
+      */
+      
+      /*
+      // deprecated
       File libRT = new File(cfg.stagingLibDir +"/usr/lib/librt.so");
       if(libRT.exists())
       {
         libRT.delete();
       }
+      */
+      /*
       File mySetupDirEtc = new File(mySetupScriptPath + "/etc");
       mySetupDirEtc.mkdirs();
       DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/etc"), mySetupDirEtc);
@@ -887,9 +924,11 @@ public class NaoScp extends NaoScpMainFrame
       File mySetupDirBin = new File(mySetupScriptPath + "/usr/bin");
       mySetupDirBin.mkdirs();
       DeployUtils.copyFiles(this, new File(cfg.localSetupScriptPath() + "/bin"), mySetupDirBin);
+      */
       
+      FileUtils.copyFiles(this, new File(cfg.localSetupScriptPath()), mySetupScriptDir);
       
-      setConfdNet(cfg, sNaoByte);
+      configureNetwork(cfg, sNaoByte);
       setHostname(cfg, sNaoByte);
       saveWpaSupplicant(cfg, cfg.localDeployOutPath("0") + cfg.setupScriptPath());
     }
@@ -899,23 +938,12 @@ public class NaoScp extends NaoScpMainFrame
     return true;
   }//end prepareSetupDeploy
 
-  private void setConfdNet(NaoScpConfig cfg, String sNaoByte)
+  private void configureNetwork(NaoScpConfig cfg, String sNaoByte)
   {
       try
       {
-        BufferedReader br = new BufferedReader(new FileReader(cfg.localSetupScriptPath() + "/etc/conf.d/net"));
+        String fileContent = FileUtils.readFile(new File(cfg.localSetupScriptPath() + "/etc/conf.d/net"));
 
-        String line = "";
-        String fileContent = "";
-        while(line != null)
-        {
-          line = br.readLine();
-          if(line != null)
-          {
-            fileContent += line + "\n";
-          }
-        }
-        br.close();
         if(subnetFieldLAN.getText().endsWith("."))
         {
           fileContent = fileContent.replace("ETH_ADDR", subnetFieldLAN.getText() + sNaoByte);
@@ -936,17 +964,14 @@ public class NaoScp extends NaoScpMainFrame
         fileContent = fileContent.replace("WLAN_NETMASK", netmaskFieldWLAN.getText());
         fileContent = fileContent.replace("ETH_BRD", broadcastFieldLAN.getText());
         fileContent = fileContent.replace("WLAN_BRD", broadcastFieldWLAN.getText());
-        //fileContent.trim();
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(cfg.localDeployOutPath("0") + cfg.setupScriptPath() + "/etc/conf.d/net"));
-        bw.write(fileContent);
-        bw.close();
+        
+        FileUtils.writeToFile(fileContent, new File(cfg.localDeployOutPath("0") + cfg.setupScriptPath() + "/etc/conf.d/net"));
       }
-      catch(Exception e)
+      catch(IOException e)
       {
         actionInfo(e.toString());
       }
-  }//end setConfdNet
+  }//end configureNetwork
 
   private void loadWpaSupplicant()
   {
@@ -990,7 +1015,7 @@ public class NaoScp extends NaoScpMainFrame
         radioWEP.setSelected(true);
       }
     }
-    catch(Exception e)
+    catch(IOException e)
     {}
 
   }//end loadWpaSupplicant
@@ -1030,7 +1055,7 @@ public class NaoScp extends NaoScpMainFrame
       bw.write(fileContent);
       bw.close();
     }
-    catch(Exception e)
+    catch(IOException e)
     {
       actionInfo(e.toString());
     }
@@ -1079,7 +1104,7 @@ public class NaoScp extends NaoScpMainFrame
       bw.write(fileContent);
       bw.close();
     }
-    catch(Exception e)
+    catch(IOException e)
     {
       actionInfo(e.toString());
     }
@@ -1120,10 +1145,10 @@ public class NaoScp extends NaoScpMainFrame
     return content.toString();
   }//end readFile
 
-  private void setDirectory(String directoryName)
+  private void setNaoControllerDirectory(String directoryName)
   {
     jDirPathLabel.setText(directoryName);
-    config.jDirPathLabel = directoryName;
+    config.naoControllerDirectoryPath = directoryName;
     setSchemes();
     copyButton.setEnabled(true);
     jButtonSaveNetworkConfig.setEnabled(true);
@@ -1497,7 +1522,7 @@ public class NaoScp extends NaoScpMainFrame
         line = reader.readLine();
       }
     }
-    catch(Exception e)
+    catch(IOException e)
     {
       actionInfo(e.toString());
     }
@@ -1544,44 +1569,22 @@ public class NaoScp extends NaoScpMainFrame
 
   public boolean isIPV4Address(String hostAddress)
   {
-    if(hostAddress.contains(":") || !hostAddress.contains(".") || hostAddress.length() < 8)
-    {
-      return false;
-    }
-    String[] IPv4Parts = hostAddress.trim().split("\\.");
-    if(IPv4Parts.length != 4)
-    {
-      return false;
-    }
-    for(int p = 0; p < 4; p++)
-    {
-      int part;
-      try
-      {
-        part = Integer.parseInt(IPv4Parts[p]);
-      }
-      catch(NumberFormatException ex)
-      {
+    if(hostAddress == null) {
         return false;
-      }
-      if(part < 0 || part > 255)
-      {
-        return false;
-      }
-    }    
-    return true;
+    }
+    return IPAddressValidator.validate(hostAddress);
   }
 
   
-  private class robotConfigPreparator
+  private class RobotConfigPreparator
   {
-    private ArrayList<String> addresses;
+    private final ArrayList<String> addresses;
     String address;
-    robotConfigPreparator(NaoScpConfig naoScpConfig)
+    RobotConfigPreparator(NaoScpConfig naoScpConfig)
     {
       synchronized (naoModel)
       {
-        clearLog();
+        //clearLog();
         naoScpConfig.copyConfig = true;
         naoScpConfig.copyLib = true;
         naoScpConfig.copyExe = true;
@@ -1690,7 +1693,7 @@ public class NaoScp extends NaoScpMainFrame
           {
             iNaoByte = Integer.parseInt(sNaoByte);
           }
-          catch(Exception e)
+          catch(NumberFormatException e)
           {
             iNaoByte = -1;
           }
@@ -1729,7 +1732,7 @@ public class NaoScp extends NaoScpMainFrame
   {
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);
-    robotConfigPreparator preparator = new robotConfigPreparator(cfg);
+    RobotConfigPreparator preparator = new RobotConfigPreparator(cfg);
     String address = preparator.getDefaultAddress();
     cfg.addresses = preparator.getAdressList();
 
@@ -1747,18 +1750,25 @@ public class NaoScp extends NaoScpMainFrame
       setFormEnabled(true);
       return;
     }
-    remoteScriptRunner scriptRunner = new remoteScriptRunner(cfg, "0", "0", "reloadKernelVideoModule", false);
+    remoteScriptRunner scriptRunner = new remoteScriptRunner(cfg, this.progressBar, "0", "0", "reloadKernelVideoModule", false);
     scriptRunner.execute();
   }
   
   private void updateConfig()
   {
+    // ssh
     config.sshUser = this.sshUser.getText();
     config.sshPassword = this.sshPassword.getText();
     config.sshRootPassword = this.sshRootPassword.getText();
-    config.progressBar = this.progressBar;
-    config.comment = jCommentTextArea.getText();
-    config.scheme = jSchemeBox.getSelectedItem().toString();
+    
+    //
+    config.sTeamCommPort = this.jTeamCommPort.getText();
+    config.scheme = this.jSchemeBox.getSelectedItem().toString();
+    config.teamNumber = this.jTeamNumber.getText();
+    config.teamColor = this.jColorBox.getSelectedItem().toString();
+    
+    // deploy info
+    config.comment = this.jCommentTextArea.getText();
   }
   
   private void initializeRobot()
@@ -1766,56 +1776,51 @@ public class NaoScp extends NaoScpMainFrame
     updateConfig();
     
     config.comment = "Initialized Robot on " + new Date().toString();
-    
     clearLog();
-    NaoScpConfig cfg = new NaoScpConfig(config);
-    cfg.stagingLibDir = null;
-    File stdCtcDir = new File("/opt/aldebaran/info/crosscompile/staging");
-
-    if(stdCtcDir.isDirectory())
-    {
-      stdCtcDir = new File("/opt/aldebaran/info/crosscompile/staging");
-    }
-    else
-    {
-      stdCtcDir = new File("./../../");
-    }      
+ 
 
     JFileChooser chooser = new JFileChooser();
-    chooser.setCurrentDirectory(stdCtcDir);
-    chooser.setDialogTitle("Select toolchain \"extern\" Directory");
+    if(config.stagingLibDir != null) {
+        chooser.setCurrentDirectory(new File(config.stagingLibDir));
+    } else {
+        chooser.setCurrentDirectory(new File("./../../"));
+    }
+    chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setAcceptAllFileFilterUsed(false);
     int ret = chooser.showOpenDialog(this);
 
-    while(ret != JFileChooser.CANCEL_OPTION && cfg.stagingLibDir == null)
+    // obtain the staging directory
+    config.stagingLibDir = null;
+    while(ret != JFileChooser.CANCEL_OPTION && config.stagingLibDir == null)
     {
       if(ret == JFileChooser.APPROVE_OPTION)
       {
-        cfg.stagingLibDir = chooser.getSelectedFile().getPath();
+        config.stagingLibDir = chooser.getSelectedFile().getPath();
       }
 
-      if(cfg.stagingLibDir != null)
+      if(config.stagingLibDir != null)
       {
-        cfg.stagingLibDir += "/lib";
-        File gioFile = new File(cfg.stagingLibDir + "/libgio-2.0.so");
-        File glibDir = new File(cfg.stagingLibDir + "/glib-2.0");
+        File gioFile = new File(config.stagingLibDir, "libgio-2.0.so");
+        File glibDir = new File(config.stagingLibDir, "glib-2.0");
         if(!gioFile.isFile() || !glibDir.isDirectory())
         {
-          cfg.stagingLibDir = null;
-          chooser.setDialogTitle("toolchain \"extern\" Directory seems to be wrong. Try again");
+          config.stagingLibDir = null;
+          chooser.setDialogTitle("toolchain \"extern/lib\" Directory seems to be wrong. Try again");
           ret = chooser.showOpenDialog(this);
         }
       }
-    }     
-    if(cfg.stagingLibDir == null)
+    }
+    if(config.stagingLibDir == null)
     {
       actionInfo("no valid toolchain \"extern\" Directory selected");
       setFormEnabled(true);
       return;
     }
     
-    robotConfigPreparator preparator = new robotConfigPreparator(cfg);
+    
+    NaoScpConfig cfg = new NaoScpConfig(config);
+    RobotConfigPreparator preparator = new RobotConfigPreparator(cfg);
     cfg.copySysLibs = true;
     String address = preparator.getDefaultAddress();
     cfg.addresses = preparator.getAdressList();
@@ -1829,14 +1834,15 @@ public class NaoScp extends NaoScpMainFrame
         setupPlayerNo = preparator.askForPlayerNumber();
       }
     }    
-    iNaoBytes = iNaoBytes;
+    //iNaoBytes = iNaoBytes;
     if(address == null || sNaoByte == null || setupPlayerNo == null || !prepareDeploy(cfg, true) || !prepareSetupDeploy(cfg, sNaoByte))
     {
       actionInfo("robot initialization aborted");
       setFormEnabled(true);
       return;
     }
-    remoteSetupCopier setupCopier = new remoteSetupCopier(cfg, sNaoByte, "full");
+    
+    remoteSetupCopier setupCopier = new remoteSetupCopier(cfg, this.progressBar, sNaoByte, "full");
     setupCopier.execute();
   }
 
@@ -1845,7 +1851,7 @@ public class NaoScp extends NaoScpMainFrame
   {
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);
-    robotConfigPreparator preparator = new robotConfigPreparator(cfg);
+    RobotConfigPreparator preparator = new RobotConfigPreparator(cfg);
     cfg.copySysLibs = false;
     final String address = preparator.getDefaultAddress();
     cfg.addresses = preparator.getAdressList();
@@ -1861,7 +1867,7 @@ public class NaoScp extends NaoScpMainFrame
       setFormEnabled(true);
       return;
     }
-    remoteSetupCopier setupCopier = new remoteSetupCopier(cfg, sNaoByte, "network");
+    remoteSetupCopier setupCopier = new remoteSetupCopier(cfg, this.progressBar, sNaoByte, "network");
     setupCopier.execute();
   }
     
@@ -2005,7 +2011,6 @@ public class NaoScp extends NaoScpMainFrame
         jButtonSaveNetworkConfig = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         lstNaos = new javax.swing.JList();
-        cbRebootSystem = new javax.swing.JCheckBox();
         jButtonRemoteKernelVideoReload = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -2163,7 +2168,7 @@ public class NaoScp extends NaoScpMainFrame
         });
 
         playerNumbersPanel.setMinimumSize(new java.awt.Dimension(0, 23));
-        playerNumbersPanel.setLayout(new javax.swing.BoxLayout(playerNumbersPanel, javax.swing.BoxLayout.X_AXIS));
+        playerNumbersPanel.setLayout(new java.awt.GridLayout(2, 0));
 
         javax.swing.GroupLayout stickPanelLayout = new javax.swing.GroupLayout(stickPanel);
         stickPanel.setLayout(stickPanelLayout);
@@ -2171,12 +2176,13 @@ public class NaoScp extends NaoScpMainFrame
             stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stickPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(playerNumbersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btWriteToStick, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, stickPanelLayout.createSequentialGroup()
+                .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(stickPanelLayout.createSequentialGroup()
                         .addComponent(jLabel10)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 374, Short.MAX_VALUE))
+                    .addComponent(playerNumbersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btWriteToStick)
                 .addContainerGap())
         );
         stickPanelLayout.setVerticalGroup(
@@ -2185,10 +2191,10 @@ public class NaoScp extends NaoScpMainFrame
                 .addContainerGap()
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(playerNumbersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btWriteToStick)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(stickPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btWriteToStick, javax.swing.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
+                    .addComponent(playerNumbersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         actionsTab.addTab("Stick", stickPanel);
@@ -2405,7 +2411,7 @@ public class NaoScp extends NaoScpMainFrame
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(actionsTab)
+            .addComponent(actionsTab, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         panelCopyLayout.setVerticalGroup(
             panelCopyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2559,6 +2565,7 @@ public class NaoScp extends NaoScpMainFrame
         jLabel9.setText("WLAN Key");
 
         wlanKey.setText("SPLRC2012");
+        wlanKey.setEchoChar('\u0000');
         wlanKey.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 wlanKeyActionPerformed(evt);
@@ -2583,43 +2590,43 @@ public class NaoScp extends NaoScpMainFrame
                                     .addComponent(jLabel1)
                                     .addComponent(jLabel22))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(subnetFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
-                                    .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
-                                    .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel14)
                                     .addGroup(jSettingsPanel1Layout.createSequentialGroup()
                                         .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel21)
-                                                    .addComponent(jLabel19))
-                                                .addGap(28, 28, 28))
-                                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel23)
-                                                .addGap(18, 18, 18)))
+                                            .addComponent(subnetFieldLAN, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(netmaskFieldLAN, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(wlanSSID, javax.swing.GroupLayout.Alignment.LEADING))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(broadcastFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                            .addComponent(subnetFieldWLAN)
-                                            .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
-                                            .addComponent(radioWPA, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                            .addComponent(jLabel14)
+                                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                                                        .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                            .addComponent(jLabel21)
+                                                            .addComponent(jLabel19))
+                                                        .addGap(28, 28, 28))
+                                                    .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                                                        .addComponent(jLabel23)
+                                                        .addGap(18, 18, 18)))
+                                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(broadcastFieldWLAN)
+                                                    .addComponent(subnetFieldWLAN)
+                                                    .addComponent(netmaskFieldWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)))))
+                                    .addComponent(wlanKey)))))
                     .addGroup(jSettingsPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                .addGap(84, 84, 84)
-                                .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(wlanKey, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                        .addComponent(wlanSSID, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(radioWEP)
-                                        .addGap(168, 168, 168))))
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel9))))
-                .addGap(13, 13, 13))
+                            .addComponent(jLabel9)
+                            .addGroup(jSettingsPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(221, 221, 221)
+                                .addComponent(radioWEP)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(radioWPA)))
+                        .addGap(7, 7, 7)))
+                .addContainerGap())
         );
         jSettingsPanel1Layout.setVerticalGroup(
             jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2663,7 +2670,7 @@ public class NaoScp extends NaoScpMainFrame
                 .addGroup(jSettingsPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(wlanKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         jSettingsPanel2.setBackground(new java.awt.Color(204, 204, 255));
@@ -2690,6 +2697,7 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel26.setText(":");
 
+        jTeamCommPort.setColumns(10);
         jTeamCommPort.setText("10400");
 
         jLabel27.setText("ssh:");
@@ -2704,6 +2712,7 @@ public class NaoScp extends NaoScpMainFrame
         jLabel28.setText(":");
 
         sshPassword.setText("nao");
+        sshPassword.setEchoChar('\u0000');
 
         jLabel29.setText("ssh:");
 
@@ -2718,6 +2727,7 @@ public class NaoScp extends NaoScpMainFrame
         jLabel30.setText(":");
 
         sshRootPassword.setText("root");
+        sshRootPassword.setEchoChar('\u0000');
 
         javax.swing.GroupLayout jSettingsPanel2Layout = new javax.swing.GroupLayout(jSettingsPanel2);
         jSettingsPanel2.setLayout(jSettingsPanel2Layout);
@@ -2728,17 +2738,17 @@ public class NaoScp extends NaoScpMainFrame
                 .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jSettingsPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel24)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel25)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel26)
+                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTeamCommPort, javax.swing.GroupLayout.DEFAULT_SIZE, 12, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
+                        .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                    .addGroup(jSettingsPanel2Layout.createSequentialGroup()
                         .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jSettingsPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel29)
@@ -2754,8 +2764,8 @@ public class NaoScp extends NaoScpMainFrame
                                 .addComponent(jLabel28)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sshPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-                            .addComponent(sshRootPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))))
+                            .addComponent(sshPassword)
+                            .addComponent(sshRootPassword))))
                 .addContainerGap())
         );
         jSettingsPanel2Layout.setVerticalGroup(
@@ -2816,8 +2826,6 @@ public class NaoScp extends NaoScpMainFrame
         });
         jScrollPane3.setViewportView(lstNaos);
 
-        cbRebootSystem.setText("reboot OS");
-
         jButtonRemoteKernelVideoReload.setText("Reload kernel video module");
         jButtonRemoteKernelVideoReload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2836,26 +2844,20 @@ public class NaoScp extends NaoScpMainFrame
                     .addComponent(jSettingsPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbRebootSystem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonSetRobotNetwork, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                    .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                    .addComponent(jButtonInitRobotSystem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonSaveNetworkConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jButtonRemoteKernelVideoReload, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
+                    .addComponent(jButtonRemoteKernelVideoReload, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelConfigLayout.setVerticalGroup(
             panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelConfigLayout.createSequentialGroup()
-                .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panelConfigLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(cbRebootSystem)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3))
-                    .addGroup(panelConfigLayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(14, 14, 14)
+                .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSettingsPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelConfigLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSettingsPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2940,171 +2942,6 @@ public class NaoScp extends NaoScpMainFrame
 //        catch(Exception e){}
 //      }
     }//GEN-LAST:event_formWindowClosing
-
-  private void jButtonRemoteKernelVideoReloadActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonRemoteKernelVideoReloadActionPerformed
-  {//GEN-HEADEREND:event_jButtonRemoteKernelVideoReloadActionPerformed
-    remoteReloadKernelVideoModule();
-  }//GEN-LAST:event_jButtonRemoteKernelVideoReloadActionPerformed
-
-  private void lstNaosMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_lstNaosMouseClicked
-  {//GEN-HEADEREND:event_lstNaosMouseClicked
-
-    if (evt.getClickCount() == 2 && checkDirPath(true))
-    {
-      Object[] options={ "initialize Robot", "set network config" };
-      int pressedBtnId = JOptionPane.showOptionDialog
-      (
-        null, "Choose or loose!",
-        "Demand", JOptionPane.DEFAULT_OPTION,
-        JOptionPane.INFORMATION_MESSAGE,
-        null, options, options[0]
-      );
-      if(pressedBtnId == 0)
-      {
-        initializeRobot();
-      }
-      else if(pressedBtnId == 1)
-      {
-        setRobotNetwork();
-      }
-    }
-  }//GEN-LAST:event_lstNaosMouseClicked
-
-  private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
-  {//GEN-HEADEREND:event_jButtonSaveNetworkConfigActionPerformed
-    try
-    {
-      actionInfo("saving network configuration");
-      writeNetworkConfig();
-      saveWpaSupplicant(config, config.localSetupScriptPath());
-      DeployUtils.writePlayerCfg(this, 
-        new File(config.localConfigPath() + "/general/player.cfg"), 
-        setupPlayerNo, jTeamNumber.getText(), jColorBox.getSelectedItem().toString());
-      DeployUtils.writeTeamcommCfg(this, jTeamCommPort.getText(), new File(config.localConfigPath() + "/general/teamcomm.cfg"));
-      //todo: why writing scheme here?
-      DeployUtils.writeScheme(this, jSchemeBox.getSelectedItem().toString(), new File(config.localConfigPath() + "/scheme.cfg"));
-    }
-    catch(IOException ex)
-    {
-      actionInfo("Could'nt write network config file\n"  + ex.getMessage());
-    }
-  }//GEN-LAST:event_jButtonSaveNetworkConfigActionPerformed
-
-  private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
-  {//GEN-HEADEREND:event_jButtonInitRobotSystemActionPerformed
-    if(checkDirPath(true))
-    {
-      initializeRobot();
-    }
-  }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
-
-  private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
-  {//GEN-HEADEREND:event_jButtonSetRobotNetworkActionPerformed
-    if(checkDirPath(true))
-    {
-      setRobotNetwork();
-    }
-  }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
-
-  private void sshRootUserActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_sshRootUserActionPerformed
-  {//GEN-HEADEREND:event_sshRootUserActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_sshRootUserActionPerformed
-
-  private void sshUserActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_sshUserActionPerformed
-  {//GEN-HEADEREND:event_sshUserActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_sshUserActionPerformed
-
-  private void lblTeamCommLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_lblTeamCommLANActionPerformed
-  {//GEN-HEADEREND:event_lblTeamCommLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_lblTeamCommLANActionPerformed
-
-  private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_lblTeamCommWLANActionPerformed
-  {//GEN-HEADEREND:event_lblTeamCommWLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_lblTeamCommWLANActionPerformed
-
-  private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wlanKeyActionPerformed
-  {//GEN-HEADEREND:event_wlanKeyActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_wlanKeyActionPerformed
-
-  private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_wlanSSIDActionPerformed
-  {//GEN-HEADEREND:event_wlanSSIDActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_wlanSSIDActionPerformed
-
-  private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException//GEN-FIRST:event_broadcastFieldWLANVetoableChange
-  {//GEN-HEADEREND:event_broadcastFieldWLANVetoableChange
-
-  }//GEN-LAST:event_broadcastFieldWLANVetoableChange
-
-  private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldWLANKeyPressed
-  {//GEN-HEADEREND:event_broadcastFieldWLANKeyPressed
-    lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-  }//GEN-LAST:event_broadcastFieldWLANKeyPressed
-
-  private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldWLANKeyTyped
-  {//GEN-HEADEREND:event_broadcastFieldWLANKeyTyped
-
-  }//GEN-LAST:event_broadcastFieldWLANKeyTyped
-
-  private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt)//GEN-FIRST:event_broadcastFieldWLANPropertyChange
-  {//GEN-HEADEREND:event_broadcastFieldWLANPropertyChange
-
-  }//GEN-LAST:event_broadcastFieldWLANPropertyChange
-
-  private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
-  {//GEN-HEADEREND:event_broadcastFieldWLANCaretPositionChanged
-
-  }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
-
-  private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
-  {//GEN-HEADEREND:event_broadcastFieldWLANInputMethodTextChanged
-
-  }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
-
-  private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_broadcastFieldWLANActionPerformed
-  {//GEN-HEADEREND:event_broadcastFieldWLANActionPerformed
-    lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-  }//GEN-LAST:event_broadcastFieldWLANActionPerformed
-
-  private void netmaskFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_netmaskFieldWLANActionPerformed
-  {//GEN-HEADEREND:event_netmaskFieldWLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_netmaskFieldWLANActionPerformed
-
-  private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_subnetFieldWLANActionPerformed
-  {//GEN-HEADEREND:event_subnetFieldWLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_subnetFieldWLANActionPerformed
-
-  private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_broadcastFieldLANKeyPressed
-  {//GEN-HEADEREND:event_broadcastFieldLANKeyPressed
-    lblTeamCommLAN.setText(broadcastFieldLAN.getText());
-  }//GEN-LAST:event_broadcastFieldLANKeyPressed
-
-  private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt)//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
-  {//GEN-HEADEREND:event_broadcastFieldLANInputMethodTextChanged
-
-  }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
-
-  private void broadcastFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_broadcastFieldLANActionPerformed
-  {//GEN-HEADEREND:event_broadcastFieldLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_broadcastFieldLANActionPerformed
-
-  private void netmaskFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_netmaskFieldLANActionPerformed
-  {//GEN-HEADEREND:event_netmaskFieldLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_netmaskFieldLANActionPerformed
-
-  private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_subnetFieldLANActionPerformed
-  {//GEN-HEADEREND:event_subnetFieldLANActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_subnetFieldLANActionPerformed
 
   private void cbForceBackupActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbForceBackupActionPerformed
   {//GEN-HEADEREND:event_cbForceBackupActionPerformed
@@ -3199,7 +3036,7 @@ public class NaoScp extends NaoScpMainFrame
     chooser.setAcceptAllFileFilterUsed(false);
     if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
     {
-      setDirectory(String.valueOf(chooser.getSelectedFile()));
+      setNaoControllerDirectory(String.valueOf(chooser.getSelectedFile()));
     }
   }//GEN-LAST:event_jDirChooserPerformed
 
@@ -3267,17 +3104,17 @@ public class NaoScp extends NaoScpMainFrame
             actionInfo("Starting to copy files");
             if(DeployUtils.assembleDeployDir(NaoScp.this, cfg, usbStickPath + "/deploy"))
             {
-              if(cfg.copyConfig) 
+              if(cfg.copyConfig)
               {
                 actionInfo("Configuring files on stick");
                 DeployUtils.configureUSBDeployDir(NaoScp.this, cfg, bodyIdToPlayerNumber, usbStickPath + "/deploy");
               }
 
-              File scriptFile = new File(cfg.localSetupStickPath() + "/startBrainwashing.sh");
+              File scriptFile = new File(cfg.localSetupStickPath(), "startBrainwashing.sh");
               if(scriptFile.isFile())
               {          
                 actionInfo("Copying brain wash script");
-                DeployUtils.copyFiles(NaoScp.this, scriptFile, new File(usbStickPath + "/startBrainwashing.sh"));
+                FileUtils.copyFiles(NaoScp.this, scriptFile, new File(usbStickPath, "startBrainwashing.sh"));
               }
               else
               {
@@ -3289,8 +3126,148 @@ public class NaoScp extends NaoScpMainFrame
             }//end if
         }//end run
       }).start();
-        }
+    }
     }//GEN-LAST:event_btWriteToStickActionPerformed
+
+    private void jButtonRemoteKernelVideoReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoteKernelVideoReloadActionPerformed
+        remoteReloadKernelVideoModule();
+    }//GEN-LAST:event_jButtonRemoteKernelVideoReloadActionPerformed
+
+    private void lstNaosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstNaosMouseClicked
+
+        if (evt.getClickCount() == 2 && checkDirPath(true))
+        {
+            Object[] options={ "initialize Robot", "set network config" };
+            int pressedBtnId = JOptionPane.showOptionDialog
+            (
+                null, "Choose or loose!",
+                "Demand", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null, options, options[0]
+            );
+            if(pressedBtnId == 0)
+            {
+                initializeRobot();
+            }
+            else if(pressedBtnId == 1)
+            {
+                setRobotNetwork();
+            }
+        }
+    }//GEN-LAST:event_lstNaosMouseClicked
+
+    private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
+        try
+        {
+            actionInfo("saving network configuration");
+            writeNetworkConfig();
+            saveWpaSupplicant(config, config.localSetupScriptPath());
+            DeployUtils.writePlayerCfg(this,
+                new File(config.localConfigPath() + "/general/player.cfg"),
+                setupPlayerNo, jTeamNumber.getText(), jColorBox.getSelectedItem().toString());
+            DeployUtils.writeTeamcommCfg(this, jTeamCommPort.getText(), new File(config.localConfigPath() + "/general/teamcomm.cfg"));
+            //todo: why writing scheme here?
+            DeployUtils.writeScheme(this, jSchemeBox.getSelectedItem().toString(), new File(config.localConfigPath() + "/scheme.cfg"));
+        }
+        catch(IOException ex)
+        {
+            actionInfo("Could'nt write network config file\n"  + ex.getMessage());
+        }
+    }//GEN-LAST:event_jButtonSaveNetworkConfigActionPerformed
+
+    private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
+        if(checkDirPath(true))
+        {
+            initializeRobot();
+        }
+    }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
+
+    private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
+        if(checkDirPath(true))
+        {
+            setRobotNetwork();
+        }
+    }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
+
+    private void sshRootUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshRootUserActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sshRootUserActionPerformed
+
+    private void sshUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshUserActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sshUserActionPerformed
+
+    private void lblTeamCommLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblTeamCommLANActionPerformed
+
+    private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommWLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblTeamCommWLANActionPerformed
+
+    private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanKeyActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_wlanKeyActionPerformed
+
+    private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanSSIDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_wlanSSIDActionPerformed
+
+    private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_broadcastFieldWLANVetoableChange
+
+    }//GEN-LAST:event_broadcastFieldWLANVetoableChange
+
+    private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyPressed
+        lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
+    }//GEN-LAST:event_broadcastFieldWLANKeyPressed
+
+    private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyTyped
+
+    }//GEN-LAST:event_broadcastFieldWLANKeyTyped
+
+    private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_broadcastFieldWLANPropertyChange
+
+    }//GEN-LAST:event_broadcastFieldWLANPropertyChange
+
+    private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
+
+    }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
+
+    private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
+
+    }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
+
+    private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldWLANActionPerformed
+        lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
+    }//GEN-LAST:event_broadcastFieldWLANActionPerformed
+
+    private void netmaskFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldWLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_netmaskFieldWLANActionPerformed
+
+    private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_subnetFieldWLANActionPerformed
+
+    private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldLANKeyPressed
+        lblTeamCommLAN.setText(broadcastFieldLAN.getText());
+    }//GEN-LAST:event_broadcastFieldLANKeyPressed
+
+    private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
+
+    }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
+
+    private void broadcastFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_broadcastFieldLANActionPerformed
+
+    private void netmaskFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_netmaskFieldLANActionPerformed
+
+    private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldLANActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_subnetFieldLANActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane actionsTab;
@@ -3303,7 +3280,6 @@ public class NaoScp extends NaoScpMainFrame
     private javax.swing.JCheckBox cbCopyLogs;
     private javax.swing.JCheckBox cbForceBackup;
     private javax.swing.JCheckBox cbNoBackup;
-    private javax.swing.JCheckBox cbRebootSystem;
     private javax.swing.JCheckBox cbRestartNaoqi;
     private javax.swing.JCheckBox cbRestartNaoth;
     private javax.swing.JButton copyButton;

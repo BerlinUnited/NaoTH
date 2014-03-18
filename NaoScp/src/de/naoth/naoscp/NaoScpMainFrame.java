@@ -41,24 +41,24 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteScriptRunner extends SshScriptRunner
   {
-    public remoteScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+    public remoteScriptRunner(NaoScpConfig config, JProgressBar progressBar, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
     {
-      super(config, Ip, sNaoNo, sNaoByte, scriptName, reboot);
+      super(config, progressBar, Ip, sNaoNo, sNaoByte, scriptName, reboot);
     }
 
-    public remoteScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName)
+    public remoteScriptRunner(NaoScpConfig config, JProgressBar progressBar, String Ip, String sNaoNo, String sNaoByte, String scriptName)
     {
-      super(config, Ip, sNaoNo, sNaoByte, scriptName, false);
+      super(config, progressBar, Ip, sNaoNo, sNaoByte, scriptName, false);
     }
 
-    public remoteScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+    public remoteScriptRunner(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
     {
-      super(config, sNaoNo, sNaoByte, scriptName, reboot);
+      super(config, progressBar, sNaoNo, sNaoByte, scriptName, reboot);
     }
 
-    public remoteScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName)
+    public remoteScriptRunner(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte, String scriptName)
     {
-      super(config, sNaoNo, sNaoByte, scriptName, false);
+      super(config, progressBar, sNaoNo, sNaoByte, scriptName, false);
     }
 
     @Override
@@ -110,9 +110,9 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteSetupCopier extends SshSetupCopier
   {
-    public remoteSetupCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
+    public remoteSetupCopier(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte)
     {
-      super(config, sNaoNo, sNaoByte);
+      super(config, progressBar, sNaoNo, sNaoByte);
     }
 
     @Override
@@ -193,7 +193,7 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
           runFunction = "setRobotNetworkConfig";
         }
         config.addresses.clear();
-        remoteScriptRunner scriptRunner = new remoteScriptRunner(config, config.actIp, "0", config.sNaoByte, runFunction, config.reboot);
+        remoteScriptRunner scriptRunner = new remoteScriptRunner(config, progressBar, config.actIp, "0", config.sNaoByte, runFunction, config.reboot);
         scriptRunner.execute();
       }
       actionDone(action);
@@ -203,9 +203,9 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteCopier extends SshCopier
   {
-    public remoteCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
+    public remoteCopier(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte)
     {
-      super(config, sNaoNo, sNaoByte);
+      super(config, progressBar, sNaoNo, sNaoByte);
     }
 
     @Override
@@ -281,12 +281,12 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
       {
         if (config.restartNaoqi)
         {
-          remoteScriptRunner scriptRunner = new remoteScriptRunner(config, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoqi", false);
+          remoteScriptRunner scriptRunner = new remoteScriptRunner(config, progressBar, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoqi", false);
           scriptRunner.execute();
         }
         else if(config.restartNaoth)
         {
-          remoteScriptRunner scriptRunner = new remoteScriptRunner(config, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
+          remoteScriptRunner scriptRunner = new remoteScriptRunner(config, progressBar, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
           scriptRunner.execute();
         }
         else

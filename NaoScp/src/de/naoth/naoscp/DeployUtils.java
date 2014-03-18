@@ -1,15 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 package de.naoth.naoscp;
 
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
+import static de.naoth.naoscp.FileUtils.copyFiles;
+import static de.naoth.naoscp.FileUtils.deleteDir;
+import static de.naoth.naoscp.FileUtils.writeToFile;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
@@ -25,6 +22,8 @@ public class DeployUtils
     // STEP 1: create the deploy directory for the playerNumber
     File currentDeployDir = new File(deployPath);
     
+    // delete the target directory if it's existing, 
+    // so we have a fresh new directory
     if(currentDeployDir.isDirectory())
     {
       deleteDir(currentDeployDir);
@@ -36,52 +35,38 @@ public class DeployUtils
       return false;
     }
 
-    File localLibPath = new File(deployPath + cfg.libnaoPath());
-    localLibPath.mkdirs();
-    File localBinPath = new File(deployPath + cfg.binPath());
-    localBinPath.mkdirs();
+    File deployBinPath = new File(deployPath + cfg.binPath());
+    deployBinPath.mkdirs();
 
     //STEP 2: copy the binaries
     if(cfg.copyLib)
     {
-      File localLib = new File( deployPath + 
-                                cfg.libnaoPath() + 
-                                "/libnaosmal.so");
-      if(localLib.exists())
-      {
-        localLib.delete();
-      }
-      copyFiles(parent, new File(cfg.localLibnaosmalPath() + "/libnaosmal.so"), localLib);
+      File dst = new File(deployBinPath, "libnaosmal.so");
+      File src = new File(cfg.localBinPath(), "libnaosmal.so");
+      copyFiles(parent, src, dst);
     }
 
     if(cfg.copyExe)
     {
-      File localExe = new File( deployPath + 
-                                cfg.binPath() + "/naoth");
-      if(localExe.exists())
-      {
-        localExe.delete();
-      }
+      File dst = new File(deployBinPath, "naoth");
+      File src = new File(cfg.localBinPath(), "naoth");
+      copyFiles(parent, src, dst);
+      
       try
       {
-        FileOutputStream fos = new FileOutputStream(deployPath + cfg.libnaoPath() + "/comment.cfg");
-        DataOutputStream out = new DataOutputStream(fos);
-        out.writeBytes(cfg.comment);
-        fos.close();
+        writeToFile(cfg.comment, new File(deployBinPath, "comment.cfg"));
       }
       catch(IOException ioe)
       {
         parent.actionError("I/O Error in prepareDeploy- " + ioe.toString());
       }
-
-      copyFiles(parent, new File(cfg.localLibnaosmalPath() + "/naoth"), localExe);
     }
     
     if(cfg.copyConfig)
     {
-      String myConfigPath = deployPath + cfg.configPath();
-      File myConfigDir = new File(myConfigPath);
-      copyFiles(parent, new File(cfg.localConfigPath()), myConfigDir);
+      File dst = new File(deployPath, cfg.configPath());
+      File src = new File(cfg.localConfigPath());
+      copyFiles(parent, src, dst);
     }
     
     return true;
@@ -95,7 +80,7 @@ public class DeployUtils
     myGeneralConfigDir.mkdirs();
 
     writeTeamcommCfg(parent, cfg.sTeamCommPort, new File(myGeneralConfigDir, "teamcomm.cfg"));
-    writeScheme(parent, cfg.scheme, new File(myConfigPath + "/scheme.cfg"));
+    writeScheme(parent, cfg.scheme, new File(myConfigPath, "scheme.cfg"));
     
     for(Map.Entry<String,Integer> e: bodyIdToPlayerNumber.entrySet())
     {
@@ -121,7 +106,7 @@ public class DeployUtils
     myGeneralConfigDir.mkdirs();
 
     writeTeamcommCfg(parent, cfg.sTeamCommPort, new File(myGeneralConfigDir, "teamcomm.cfg"));
-    writeScheme(parent, cfg.scheme, new File(myConfigPath + "/scheme.cfg"));
+    writeScheme(parent, cfg.scheme, new File(myConfigPath, "scheme.cfg"));
     writePlayerCfg(parent, new File(myGeneralConfigDir, "player.cfg"), 
                             String.valueOf(playerNumber), cfg.teamNumber, cfg.teamColor);
   }
@@ -164,9 +149,7 @@ public class DeployUtils
     
     try
     {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-      writer.write(c.toString());
-      writer.close();
+      writeToFile(c.toString(), configFile);
     }
     catch(IOException ex)
     {
@@ -184,9 +167,7 @@ public class DeployUtils
     {
       try
       {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(schemeCfg));
-        writer.write(scheme);
-        writer.close();
+        writeToFile(scheme, schemeCfg);
       }
       catch(IOException ioe)
       {
@@ -197,7 +178,6 @@ public class DeployUtils
   
   public static void writeTeamcommCfg(NaoScp parent, String teamCommPort, File configFile)
   {
-    
     StringBuilder c = new StringBuilder();
     
     c.append("[teamcomm]\n");
@@ -220,90 +200,12 @@ public class DeployUtils
     
     try
     {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
-      writer.write(c.toString());
-      writer.close();
+      writeToFile(c.toString(), configFile);
     }
     catch(IOException ex)
     {
       parent.actionInfo("I/O Error in writeTeamcommCfg- " + ex.getMessage());
     }
   }
-  
-  /**
-   * recursively delete local dir
-   * @param dir File dir
-   */
-  public static void deleteDir(File dir)
-  {
-    if(dir.isDirectory())
-    {
-      File fileList[] = dir.listFiles();
-      for(int index = 0; index < fileList.length; index ++)
-      {
-        File file = fileList[index];
-        deleteDir(file);
-      }
-    }
-    dir.delete();
-  }//end deleteDir
-
-  
-  /**
-   * recursively copy local files, skips .svn
-   *
-   * @param src File source
-   * @param dest File destination
-   */
-  public static void copyFiles(NaoScp parent, File src, File dest)
-  {
-    if( ! src.exists() ||  ! src.canRead() || src.getName().equals(".svn") || src.getName().equals(".bzr") || src.getName().equals(".hg") || src.getName().equals(".git"))
-    {
-      return;
-    }
-    if(src.isDirectory())
-    {
-      if( ! dest.exists())
-      {
-        if( ! dest.mkdirs())
-        {
-          parent.actionInfo("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
-          return;
-        }
-      }
-      String list[] = src.list();
-      for(int i = 0; i < list.length; i ++)
-      {
-        File dest1 = new File(dest, list[i]);
-        File src1 = new File(src, list[i]);
-        copyFiles(parent, src1, dest1);
-      }
-    }
-    else
-    {
-      try
-      {
-        byte[] buffer = new byte[4096]; //Buffer 4K at a time (you can change this).
-        int bytesRead;
-
-        FileInputStream fin = new FileInputStream(src);
-        FileOutputStream fout = new FileOutputStream(dest);
-
-        while((bytesRead = fin.read(buffer)) >= 0)
-        {
-          fout.write(buffer, 0, bytesRead);
-        }
-        fin.close();
-        fout.close();
-      }
-      catch(IOException e)
-      {
-        e.printStackTrace();
-        parent.actionInfo("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
-        getAbsolutePath() + ".");
-      }
-    }
-  }//end copyFiles
-
 }
 

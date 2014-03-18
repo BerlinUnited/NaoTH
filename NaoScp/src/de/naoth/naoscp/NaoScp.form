@@ -150,7 +150,7 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Component id="actionsTab" alignment="0" max="32767" attributes="0"/>
+                      <Component id="actionsTab" alignment="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -375,14 +375,15 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
-                                      <Component id="btWriteToStick" alignment="0" pref="556" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
                                           <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          <EmptySpace min="0" pref="374" max="32767" attributes="0"/>
                                       </Group>
+                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
                                   </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btWriteToStick" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -393,10 +394,11 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="playerNumbersPanel" min="-2" pref="23" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="btWriteToStick" pref="61" max="32767" attributes="0"/>
+                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btWriteToStick" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -422,8 +424,9 @@
                             </Property>
                           </Properties>
 
-                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
-                            <Property name="axis" type="int" value="0"/>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                            <Property name="columns" type="int" value="0"/>
+                            <Property name="rows" type="int" value="2"/>
                           </Layout>
                         </Container>
                       </SubComponents>
@@ -687,12 +690,11 @@
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="cbRebootSystem" max="32767" attributes="0"/>
                               <Component id="jButtonSetRobotNetwork" max="32767" attributes="0"/>
-                              <Component id="jButtonInitRobotSystem" alignment="1" pref="189" max="32767" attributes="1"/>
-                              <Component id="jButtonSaveNetworkConfig" pref="189" max="32767" attributes="0"/>
+                              <Component id="jButtonInitRobotSystem" alignment="1" max="32767" attributes="1"/>
+                              <Component id="jButtonSaveNetworkConfig" max="32767" attributes="0"/>
                               <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="189" max="32767" attributes="0"/>
+                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="164" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -701,17 +703,10 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbRebootSystem" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane3" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                                  <Component id="jSettingsPanel1" max="32767" attributes="1"/>
-                              </Group>
+                          <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jSettingsPanel1" max="32767" attributes="1"/>
+                              <Component id="jScrollPane3" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -758,35 +753,40 @@
                                                   <Component id="jLabel22" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="1" attributes="0">
-                                                  <Component id="subnetFieldLAN" alignment="0" pref="106" max="32767" attributes="1"/>
-                                                  <Component id="netmaskFieldLAN" alignment="0" pref="106" max="32767" attributes="1"/>
-                                                  <Component id="broadcastFieldLAN" alignment="0" pref="106" max="32767" attributes="1"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" attributes="0">
-                                                          <Group type="102" attributes="0">
-                                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                                  <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                                  <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                              </Group>
-                                                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                                                          </Group>
-                                                          <Group type="102" alignment="1" attributes="0">
-                                                              <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
-                                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                                          </Group>
+                                                          <Component id="subnetFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="netmaskFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="broadcastFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="wlanSSID" alignment="0" max="32767" attributes="1"/>
                                                       </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
                                                       <Group type="103" groupAlignment="0" attributes="0">
-                                                          <Component id="broadcastFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
-                                                          <Component id="subnetFieldWLAN" max="32767" attributes="1"/>
-                                                          <Component id="netmaskFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
-                                                          <Component id="radioWPA" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                                                          <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                          <Group type="102" alignment="0" attributes="0">
+                                                              <Group type="103" groupAlignment="1" attributes="0">
+                                                                  <Group type="102" attributes="0">
+                                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                                          <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                                          <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                                      </Group>
+                                                                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                                                  </Group>
+                                                                  <Group type="102" alignment="1" attributes="0">
+                                                                      <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
+                                                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                                  </Group>
+                                                              </Group>
+                                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                                  <Component id="broadcastFieldWLAN" alignment="0" max="32767" attributes="1"/>
+                                                                  <Component id="subnetFieldWLAN" max="32767" attributes="1"/>
+                                                                  <Component id="netmaskFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
+                                                              </Group>
+                                                          </Group>
                                                       </Group>
                                                   </Group>
+                                                  <Component id="wlanKey" alignment="0" max="32767" attributes="3"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -794,24 +794,19 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <EmptySpace min="84" pref="84" max="84" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="wlanKey" alignment="0" pref="289" max="32767" attributes="3"/>
-                                                  <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="wlanSSID" pref="60" max="32767" attributes="1"/>
-                                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                                      <Component id="radioWEP" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace min="-2" pref="168" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
-                                          </Group>
-                                          <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="221" max="-2" attributes="0"/>
+                                              <Component id="radioWEP" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="radioWPA" min="-2" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
+                                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="13" pref="13" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -867,7 +862,7 @@
                                   <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="wlanKey" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1007,6 +1002,7 @@
                     <Component class="javax.swing.JPasswordField" name="wlanKey">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="SPLRC2012"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
@@ -1027,20 +1023,20 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="lblTeamCommWLAN" min="-2" pref="131" max="-2" attributes="3"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="lblTeamCommWLAN" min="-2" pref="100" max="-2" attributes="3"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel25" min="-2" max="-2" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lblTeamCommLAN" min="-2" pref="111" max="-2" attributes="3"/>
+                                      <Component id="lblTeamCommLAN" min="-2" pref="97" max="-2" attributes="3"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
+                                      <Component id="jLabel26" min="-2" pref="4" max="-2" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTeamCommPort" pref="12" max="32767" attributes="3"/>
+                                      <Component id="jTeamCommPort" pref="0" max="32767" attributes="3"/>
                                   </Group>
-                                  <Group type="102" alignment="1" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                           <Group type="102" alignment="0" attributes="1">
                                               <Component id="jLabel29" min="-2" max="-2" attributes="0"/>
@@ -1059,8 +1055,8 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="sshPassword" pref="246" max="32767" attributes="3"/>
-                                          <Component id="sshRootPassword" alignment="0" pref="246" max="32767" attributes="3"/>
+                                          <Component id="sshPassword" max="32767" attributes="3"/>
+                                          <Component id="sshRootPassword" alignment="0" max="32767" attributes="3"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -1135,6 +1131,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamCommPort">
                       <Properties>
+                        <Property name="columns" type="int" value="10"/>
                         <Property name="text" type="java.lang.String" value="10400"/>
                       </Properties>
                     </Component>
@@ -1159,6 +1156,7 @@
                     <Component class="javax.swing.JPasswordField" name="sshPassword">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="nao"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel29">
@@ -1183,6 +1181,7 @@
                     <Component class="javax.swing.JPasswordField" name="sshRootPassword">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="root"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1234,11 +1233,6 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JCheckBox" name="cbRebootSystem">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="reboot OS"/>
-                  </Properties>
-                </Component>
                 <Component class="javax.swing.JButton" name="jButtonRemoteKernelVideoReload">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Reload kernel video module"/>
