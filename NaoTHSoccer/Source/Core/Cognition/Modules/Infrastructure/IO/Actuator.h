@@ -18,6 +18,7 @@
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
+#include <Representations/Infrastructure/GameData.h>
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -43,6 +44,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixOffset)
+  REQUIRE(GameReturnData)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

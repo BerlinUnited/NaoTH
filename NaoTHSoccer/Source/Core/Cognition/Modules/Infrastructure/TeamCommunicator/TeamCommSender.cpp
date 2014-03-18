@@ -45,8 +45,10 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
-  out.team = playerInfo.gameData.teamNumber;
+  out.teamNumber = playerInfo.gameData.teamNumber;
+  out.teamColor = playerInfo.gameData.teamColor;
   out.pose = robotPose;
+
   if(ballModel.valid)
   {
     out.ballAge = frameInfo.getTimeSince(ballModel.frameInfoWhenBallWasSeen.getTime());
@@ -63,11 +65,11 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
   if(bodyState.fall_down_state == BodyState::upright)
   {
-    out.fallen = -1;
+    out.fallen = false;
   }
   else
   {
-    out.fallen = frameInfo.getTimeSince(bodyState.fall_down_state_time);
+    out.fallen = true;
   }
 
   out.bodyID = robotInfo.bodyID;
@@ -108,10 +110,8 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  if(teamData.team < std::numeric_limits<uint16_t>::max())
-  {
-    splMsg.team = (uint16_t) teamData.team;
-  }
+  splMsg.team = (uint8_t) teamData.teamColor;
+
   splMsg.pose[0] = (float) teamData.pose.translation.x;
   splMsg.pose[1] = (float) teamData.pose.translation.y;
   splMsg.pose[2] = (float) teamData.pose.rotation;
@@ -124,7 +124,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   splMsg.ballVel[0] = (float) teamData.ballVelocity.x;
   splMsg.ballVel[1] = (float) teamData.ballVelocity.y;
 
-  splMsg.fallen = teamData.fallen;
+  splMsg.fallen = (uint8_t) teamData.fallen;
 
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
@@ -149,6 +149,14 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.numOfDataBytes = 0;
   }
+
+
+  // TODO: actually set walkingTo when we are walking to some point
+  splMsg.walkingTo[0] = splMsg.pose[0];
+  splMsg.walkingTo[1] = splMsg.pose[1];
+  // TODO: actually set shootingTo when we are shooting to some point
+  splMsg.shootingTo[0] = splMsg.pose[0];
+  splMsg.shootingTo[1] = splMsg.pose[1];
 }
 
 void TeamCommSender::addSendOppModel(unsigned int oppNum,

@@ -8,6 +8,78 @@ public final class Representations {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public enum TeamColor
+      implements com.google.protobuf.ProtocolMessageEnum {
+    blueTeam(0, 0),
+    redTeam(1, 1),
+    invalidTeam(2, 2),
+    ;
+    
+    public static final int blueTeam_VALUE = 0;
+    public static final int redTeam_VALUE = 1;
+    public static final int invalidTeam_VALUE = 2;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static TeamColor valueOf(int value) {
+      switch (value) {
+        case 0: return blueTeam;
+        case 1: return redTeam;
+        case 2: return invalidTeam;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<TeamColor>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<TeamColor>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<TeamColor>() {
+            public TeamColor findValueByNumber(int number) {
+              return TeamColor.valueOf(number);
+            }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.getDescriptor().getEnumTypes().get(0);
+    }
+    
+    private static final TeamColor[] VALUES = {
+      blueTeam, redTeam, invalidTeam, 
+    };
+    
+    public static TeamColor valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    
+    private final int index;
+    private final int value;
+    
+    private TeamColor(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    // @@protoc_insertion_point(enum_scope:naothmessages.TeamColor)
+  }
+  
   public interface CameraMatrixOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -15821,9 +15893,9 @@ public final class Representations {
     boolean hasPlayerNum();
     int getPlayerNum();
     
-    // optional uint32 team = 2 [default = 0];
-    boolean hasTeam();
-    int getTeam();
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    boolean hasTeamColor();
+    de.naoth.rc.messages.Representations.TeamColor getTeamColor();
     
     // optional .naothmessages.Pose2D pose = 3;
     boolean hasPose();
@@ -15844,9 +15916,9 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
     
-    // optional int32 fallen = 7 [default = -1];
+    // optional bool fallen = 10 [default = false];
     boolean hasFallen();
-    int getFallen();
+    boolean getFallen();
     
     // optional .naothmessages.BUUserTeamMessage user = 8;
     boolean hasUser();
@@ -15897,14 +15969,14 @@ public final class Representations {
       return playerNum_;
     }
     
-    // optional uint32 team = 2 [default = 0];
-    public static final int TEAM_FIELD_NUMBER = 2;
-    private int team_;
-    public boolean hasTeam() {
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    public static final int TEAMCOLOR_FIELD_NUMBER = 11;
+    private de.naoth.rc.messages.Representations.TeamColor teamColor_;
+    public boolean hasTeamColor() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public int getTeam() {
-      return team_;
+    public de.naoth.rc.messages.Representations.TeamColor getTeamColor() {
+      return teamColor_;
     }
     
     // optional .naothmessages.Pose2D pose = 3;
@@ -15956,13 +16028,13 @@ public final class Representations {
       return ballVelocity_;
     }
     
-    // optional int32 fallen = 7 [default = -1];
-    public static final int FALLEN_FIELD_NUMBER = 7;
-    private int fallen_;
+    // optional bool fallen = 10 [default = false];
+    public static final int FALLEN_FIELD_NUMBER = 10;
+    private boolean fallen_;
     public boolean hasFallen() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public int getFallen() {
+    public boolean getFallen() {
       return fallen_;
     }
     
@@ -15994,12 +16066,12 @@ public final class Representations {
     
     private void initFields() {
       playerNum_ = 0;
-      team_ = 0;
+      teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
       pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
       ballAge_ = -1;
       ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
-      fallen_ = -1;
+      fallen_ = false;
       user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
       frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
     }
@@ -16048,9 +16120,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt32(1, playerNum_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt32(2, team_);
-      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, pose_);
       }
@@ -16063,14 +16132,17 @@ public final class Representations {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeMessage(8, user_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeMessage(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(11, teamColor_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -16084,10 +16156,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, playerNum_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, team_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -16105,10 +16173,6 @@ public final class Representations {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, user_);
@@ -16116,6 +16180,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(11, teamColor_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16248,7 +16320,7 @@ public final class Representations {
         super.clear();
         playerNum_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        team_ = 0;
+        teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
         bitField0_ = (bitField0_ & ~0x00000002);
         if (poseBuilder_ == null) {
           pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
@@ -16270,7 +16342,7 @@ public final class Representations {
           ballVelocityBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        fallen_ = -1;
+        fallen_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
         if (userBuilder_ == null) {
           user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
@@ -16329,7 +16401,7 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.team_ = team_;
+        result.teamColor_ = teamColor_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -16397,8 +16469,8 @@ public final class Representations {
         if (other.hasPlayerNum()) {
           setPlayerNum(other.getPlayerNum());
         }
-        if (other.hasTeam()) {
-          setTeam(other.getTeam());
+        if (other.hasTeamColor()) {
+          setTeamColor(other.getTeamColor());
         }
         if (other.hasPose()) {
           mergePose(other.getPose());
@@ -16487,11 +16559,6 @@ public final class Representations {
               playerNum_ = input.readUInt32();
               break;
             }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              team_ = input.readUInt32();
-              break;
-            }
             case 26: {
               de.naoth.rc.messages.CommonTypes.Pose2D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder();
               if (hasPose()) {
@@ -16524,11 +16591,6 @@ public final class Representations {
               setBallVelocity(subBuilder.buildPartial());
               break;
             }
-            case 56: {
-              bitField0_ |= 0x00000040;
-              fallen_ = input.readInt32();
-              break;
-            }
             case 66: {
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder subBuilder = de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder();
               if (hasUser()) {
@@ -16545,6 +16607,22 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setFrameInfo(subBuilder.buildPartial());
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000040;
+              fallen_ = input.readBool();
+              break;
+            }
+            case 88: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.Representations.TeamColor value = de.naoth.rc.messages.Representations.TeamColor.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(11, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                teamColor_ = value;
+              }
               break;
             }
           }
@@ -16574,23 +16652,26 @@ public final class Representations {
         return this;
       }
       
-      // optional uint32 team = 2 [default = 0];
-      private int team_ ;
-      public boolean hasTeam() {
+      // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+      private de.naoth.rc.messages.Representations.TeamColor teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
+      public boolean hasTeamColor() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public int getTeam() {
-        return team_;
+      public de.naoth.rc.messages.Representations.TeamColor getTeamColor() {
+        return teamColor_;
       }
-      public Builder setTeam(int value) {
+      public Builder setTeamColor(de.naoth.rc.messages.Representations.TeamColor value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
         bitField0_ |= 0x00000002;
-        team_ = value;
+        teamColor_ = value;
         onChanged();
         return this;
       }
-      public Builder clearTeam() {
+      public Builder clearTeamColor() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        team_ = 0;
+        teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
         onChanged();
         return this;
       }
@@ -16886,15 +16967,15 @@ public final class Representations {
         return ballVelocityBuilder_;
       }
       
-      // optional int32 fallen = 7 [default = -1];
-      private int fallen_ = -1;
+      // optional bool fallen = 10 [default = false];
+      private boolean fallen_ ;
       public boolean hasFallen() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public int getFallen() {
+      public boolean getFallen() {
         return fallen_;
       }
-      public Builder setFallen(int value) {
+      public Builder setFallen(boolean value) {
         bitField0_ |= 0x00000040;
         fallen_ = value;
         onChanged();
@@ -16902,7 +16983,7 @@ public final class Representations {
       }
       public Builder clearFallen() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        fallen_ = -1;
+        fallen_ = false;
         onChanged();
         return this;
       }
@@ -17126,6 +17207,10 @@ public final class Representations {
         getOpponentsOrBuilderList();
     de.naoth.rc.messages.Representations.OpponentOrBuilder getOpponentsOrBuilder(
         int index);
+    
+    // optional uint32 teamNumber = 6 [default = 0];
+    boolean hasTeamNumber();
+    int getTeamNumber();
   }
   public static final class BUUserTeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -17239,12 +17324,23 @@ public final class Representations {
       return opponents_.get(index);
     }
     
+    // optional uint32 teamNumber = 6 [default = 0];
+    public static final int TEAMNUMBER_FIELD_NUMBER = 6;
+    private int teamNumber_;
+    public boolean hasTeamNumber() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getTeamNumber() {
+      return teamNumber_;
+    }
+    
     private void initFields() {
       bodyID_ = "unknown";
       timeToBall_ = 0;
       wasStriker_ = false;
       isPenalized_ = false;
       opponents_ = java.util.Collections.emptyList();
+      teamNumber_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -17279,6 +17375,9 @@ public final class Representations {
       for (int i = 0; i < opponents_.size(); i++) {
         output.writeMessage(5, opponents_.get(i));
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(6, teamNumber_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -17307,6 +17406,10 @@ public final class Representations {
       for (int i = 0; i < opponents_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, opponents_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, teamNumber_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -17447,6 +17550,8 @@ public final class Representations {
         } else {
           opponentsBuilder_.clear();
         }
+        teamNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -17510,6 +17615,10 @@ public final class Representations {
         } else {
           result.opponents_ = opponentsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.teamNumber_ = teamNumber_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -17563,6 +17672,9 @@ public final class Representations {
               opponentsBuilder_.addAllMessages(other.opponents_);
             }
           }
+        }
+        if (other.hasTeamNumber()) {
+          setTeamNumber(other.getTeamNumber());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -17625,6 +17737,11 @@ public final class Representations {
               de.naoth.rc.messages.Representations.Opponent.Builder subBuilder = de.naoth.rc.messages.Representations.Opponent.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addOpponents(subBuilder.buildPartial());
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              teamNumber_ = input.readUInt32();
               break;
             }
           }
@@ -17916,6 +18033,27 @@ public final class Representations {
           opponents_ = null;
         }
         return opponentsBuilder_;
+      }
+      
+      // optional uint32 teamNumber = 6 [default = 0];
+      private int teamNumber_ ;
+      public boolean hasTeamNumber() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getTeamNumber() {
+        return teamNumber_;
+      }
+      public Builder setTeamNumber(int value) {
+        bitField0_ |= 0x00000020;
+        teamNumber_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTeamNumber() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        teamNumber_ = 0;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.BUUserTeamMessage)
@@ -19211,24 +19349,27 @@ public final class Representations {
       "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
       "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n" +
       "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n" +
-      "aothmessages.TeamMessage\"\307\002\n\013TeamMessage" +
-      "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022" +
-      "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007" +
-      "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132" +
-      "\034.naothmessages.DoubleVector2\0222\n\014ballVel" +
-      "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector",
-      "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na" +
-      "othmessages.BUUserTeamMessage\022+\n\tframeIn" +
-      "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B" +
-      "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow" +
-      "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(" +
-      "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t" +
-      "opponents\030\005 \003(\0132\027.naothmessages.Opponent" +
-      "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po" +
-      "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q" +
-      "\n\027CameraMatrixCalibration\0226\n\020correctionO",
-      "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector" +
-      "2B\026\n\024de.naoth.rc.messages"
+      "aothmessages.TeamMessage\"\360\002\n\013TeamMessage" +
+      "\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\013 \001(" +
+      "\0162\030.naothmessages.TeamColor:\010blueTeam\022#\n" +
+      "\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007ba" +
+      "llAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132\034." +
+      "naothmessages.DoubleVector2\0222\n\014ballVeloc",
+      "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022" +
+      "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n" +
+      "aothmessages.BUUserTeamMessage\022+\n\tframeI" +
+      "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\272\001\n\021" +
+      "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno" +
+      "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001" +
+      "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n" +
+      "\topponents\030\005 \003(\0132\027.naothmessages.Opponen" +
+      "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\"L\n\010Opponent\022\024\n\t" +
+      "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132",
+      "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
+      "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na" +
+      "othmessages.DoubleVector2*7\n\tTeamColor\022\014" +
+      "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam" +
+      "\020\002B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -19392,7 +19533,7 @@ public final class Representations {
           internal_static_naothmessages_TeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_TeamMessage_descriptor,
-              new java.lang.String[] { "PlayerNum", "Team", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", },
+              new java.lang.String[] { "PlayerNum", "TeamColor", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", },
               de.naoth.rc.messages.Representations.TeamMessage.class,
               de.naoth.rc.messages.Representations.TeamMessage.Builder.class);
           internal_static_naothmessages_BUUserTeamMessage_descriptor =
@@ -19400,7 +19541,7 @@ public final class Representations {
           internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BUUserTeamMessage_descriptor,
-              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", },
+              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", },
               de.naoth.rc.messages.Representations.BUUserTeamMessage.class,
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder.class);
           internal_static_naothmessages_Opponent_descriptor =

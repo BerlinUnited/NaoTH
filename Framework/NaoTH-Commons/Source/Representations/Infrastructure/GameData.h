@@ -80,9 +80,9 @@ public:
 
   enum TeamColor
   {
-    red,
-    blue,
-    numOfTeamColor
+    blue = 0,
+    red = 1,
+    numOfTeamColor = 2
   };
 
   static TeamColor teamColorFromString(const std::string& teamColor);
