@@ -154,7 +154,35 @@ public:
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
 
-class GoalPostHistograms : public ColorChannelHistograms{};
+class GoalPostHistograms : public ColorChannelHistograms
+{
+public:
+  Vector2d colU;
+  Vector2d colV;
+
+  void calculate()
+  {
+    ColorChannelHistograms::calculate();
+    setBorders();
+  }
+
+  void setBorders()
+  {
+    //.x = low border, .y = high border
+    colU.x = histogramU.median - 2 * histogramU.sigma;
+    colU.y = histogramU.median + 2 * histogramU.sigma;
+    colV.x = histogramV.median - 2 * histogramV.sigma;
+    colV.y = histogramV.median + 2 * histogramV.sigma;
+  }
+
+  bool isPostColor(Pixel pixel) const
+  {
+    //.x = low border, .y = high border
+    return colU.x < pixel.u && pixel.u < colU.y && colV.x < pixel.v && pixel.v < colV.y;
+  }
+
+};
+
 class GoalPostHistogramsTop: public GoalPostHistograms{};
 
 #endif  /* _Histogram_H */
