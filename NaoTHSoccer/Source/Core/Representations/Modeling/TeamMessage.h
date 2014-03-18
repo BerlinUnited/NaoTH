@@ -116,6 +116,8 @@ public:
       stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
       stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
+      stream << "team color: " << naoth::GameData::teamColorToString(d.teamColor) << std::endl;
+      stream << "team number: " << d.teamNumber << std::endl;
       for(unsigned int i=0; i < d.opponents.size(); i++)
       {
         stream << "opponent " << d.opponents[i].playerNum << " : "
