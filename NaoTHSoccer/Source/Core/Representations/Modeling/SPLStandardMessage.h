@@ -2,7 +2,9 @@
 #define SPLSTANDARDMESSAGE_H
 
 #include <stdint.h>
-#include <string>
+#ifdef __cplusplus
+  #include <string>
+#endif
 
 #define SPL_STANDARD_MESSAGE_STRUCT_HEADER  "SPL "
 #define SPL_STANDARD_MESSAGE_STRUCT_VERSION 4

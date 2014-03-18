@@ -37,8 +37,8 @@ SPLGameController::SPLGameController()
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.team = static_cast<uint16>(data.teamNumber);
-    dataOut.player = static_cast<uint16>(data.playerNumber);
+    dataOut.team = static_cast<uint8_t>(data.teamNumber);
+    dataOut.player = static_cast<uint8_t>(data.playerNumber);
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
     if (!g_thread_supported()) {
