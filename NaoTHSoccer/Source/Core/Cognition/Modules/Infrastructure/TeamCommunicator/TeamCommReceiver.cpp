@@ -125,6 +125,8 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 
     data.fallen = spl.fallen;
 
+    // TODO: use walkingTo and shootTo
+
     // check if we can deserialize the user defined data
     if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
     {

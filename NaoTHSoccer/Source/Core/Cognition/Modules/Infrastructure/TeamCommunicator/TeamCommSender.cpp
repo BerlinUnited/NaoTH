@@ -48,6 +48,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.teamNumber = playerInfo.gameData.teamNumber;
   out.teamColor = playerInfo.gameData.teamColor;
   out.pose = robotPose;
+
   if(ballModel.valid)
   {
     out.ballAge = frameInfo.getTimeSince(ballModel.frameInfoWhenBallWasSeen.getTime());
@@ -148,6 +149,14 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.numOfDataBytes = 0;
   }
+
+
+  // TODO: actually set walkingTo when we are walking to some point
+  splMsg.walkingTo[0] = splMsg.pose[0];
+  splMsg.walkingTo[1] = splMsg.pose[1];
+  // TODO: actually set shootingTo when we are shooting to some point
+  splMsg.shootingTo[0] = splMsg.pose[0];
+  splMsg.shootingTo[1] = splMsg.pose[1];
 }
 
 void TeamCommSender::addSendOppModel(unsigned int oppNum,
