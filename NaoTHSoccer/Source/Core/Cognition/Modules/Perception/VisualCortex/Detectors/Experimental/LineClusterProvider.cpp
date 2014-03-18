@@ -61,7 +61,7 @@ void LineClusterProvider::execute()
       if(d < distance && (f.center - e.center).abs2() < 30*30)
       {
         distance = d;
-        k = j;
+        k = (int) j;
       }
     }//end for
 
