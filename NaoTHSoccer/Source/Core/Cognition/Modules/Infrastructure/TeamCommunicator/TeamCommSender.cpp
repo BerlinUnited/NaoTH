@@ -45,7 +45,8 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
-  out.team = playerInfo.gameData.teamNumber;
+  out.teamNumber = playerInfo.gameData.teamNumber;
+  out.teamColor = playerInfo.gameData.teamColor;
   out.pose = robotPose;
   if(ballModel.valid)
   {
@@ -108,10 +109,8 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  if(teamData.team < std::numeric_limits<uint16_t>::max())
-  {
-    splMsg.team = (uint16_t) teamData.team;
-  }
+  splMsg.team = (uint8_t) teamData.teamColor;
+
   splMsg.pose[0] = (float) teamData.pose.translation.x;
   splMsg.pose[1] = (float) teamData.pose.translation.y;
   splMsg.pose[2] = (float) teamData.pose.rotation;
@@ -124,7 +123,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   splMsg.ballVel[0] = (float) teamData.ballVelocity.x;
   splMsg.ballVel[1] = (float) teamData.ballVelocity.y;
 
-  splMsg.fallen = teamData.fallen;
+  splMsg.fallen = (uint8_t) teamData.fallen;
 
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;

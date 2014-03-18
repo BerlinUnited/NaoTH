@@ -40,7 +40,7 @@ public:
   struct Data
   {
     Data ()
-      : playerNum(0), team(0),
+      : playerNum(0), teamColor(naoth::GameData::numOfTeamColor), teamNumber(0),
         ballAge(-1), fallen(-1),
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
@@ -53,7 +53,8 @@ public:
     naoth::FrameInfo frameInfo;
 
     unsigned int playerNum;
-    unsigned int team;
+    naoth::GameData::TeamColor teamColor;
+    unsigned int teamNumber;
 
     /**
      * @brief Own robot pose
@@ -75,10 +76,9 @@ public:
      */
     Vector2d ballVelocity;
     /**
-     * @brief milliseconds since the robot has been fallen.
-     * -1 if not fallen
+     * @brief true means that the robot is fallen, false means that the robot can play
      */
-    int fallen;
+    bool fallen;
 
     // BEGIN BERLIN UNITED SPECIFIC
 

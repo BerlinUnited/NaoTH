@@ -66,6 +66,26 @@ class BUUserTeamMessage;
 class Opponent;
 class CameraMatrixCalibration;
 
+enum TeamColor {
+  blueTeam = 0,
+  redTeam = 1,
+  invalidTeam = 2
+};
+bool TeamColor_IsValid(int value);
+const TeamColor TeamColor_MIN = blueTeam;
+const TeamColor TeamColor_MAX = invalidTeam;
+const int TeamColor_ARRAYSIZE = TeamColor_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* TeamColor_descriptor();
+inline const ::std::string& TeamColor_Name(TeamColor value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    TeamColor_descriptor(), value);
+}
+inline bool TeamColor_Parse(
+    const ::std::string& name, TeamColor* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<TeamColor>(
+    TeamColor_descriptor(), name, value);
+}
 // ===================================================================
 
 class CameraMatrix : public ::google::protobuf::Message {
@@ -2433,12 +2453,12 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 playernum() const;
   inline void set_playernum(::google::protobuf::uint32 value);
   
-  // optional uint32 team = 2 [default = 0];
-  inline bool has_team() const;
-  inline void clear_team();
-  static const int kTeamFieldNumber = 2;
-  inline ::google::protobuf::uint32 team() const;
-  inline void set_team(::google::protobuf::uint32 value);
+  // optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+  inline bool has_teamcolor() const;
+  inline void clear_teamcolor();
+  static const int kTeamColorFieldNumber = 2;
+  inline naothmessages::TeamColor teamcolor() const;
+  inline void set_teamcolor(naothmessages::TeamColor value);
   
   // optional .naothmessages.Pose2D pose = 3;
   inline bool has_pose() const;
@@ -2498,8 +2518,8 @@ class TeamMessage : public ::google::protobuf::Message {
  private:
   inline void set_has_playernum();
   inline void clear_has_playernum();
-  inline void set_has_team();
-  inline void clear_has_team();
+  inline void set_has_teamcolor();
+  inline void clear_has_teamcolor();
   inline void set_has_pose();
   inline void clear_has_pose();
   inline void set_has_ballage();
@@ -2518,7 +2538,7 @@ class TeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 playernum_;
-  ::google::protobuf::uint32 team_;
+  int teamcolor_;
   ::naothmessages::Pose2D* pose_;
   ::naothmessages::DoubleVector2* ballposition_;
   ::google::protobuf::int32 ballage_;
@@ -2637,6 +2657,13 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >*
       mutable_opponents();
   
+  // optional uint32 teamNumber = 6 [default = 0];
+  inline bool has_teamnumber() const;
+  inline void clear_teamnumber();
+  static const int kTeamNumberFieldNumber = 6;
+  inline ::google::protobuf::uint32 teamnumber() const;
+  inline void set_teamnumber(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
  private:
   inline void set_has_bodyid();
@@ -2647,6 +2674,8 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline void clear_has_wasstriker();
   inline void set_has_ispenalized();
   inline void clear_has_ispenalized();
+  inline void set_has_teamnumber();
+  inline void clear_has_teamnumber();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2656,9 +2685,10 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   bool wasstriker_;
   bool ispenalized_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
+  ::google::protobuf::uint32 teamnumber_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -5191,26 +5221,27 @@ inline void TeamMessage::set_playernum(::google::protobuf::uint32 value) {
   playernum_ = value;
 }
 
-// optional uint32 team = 2 [default = 0];
-inline bool TeamMessage::has_team() const {
+// optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+inline bool TeamMessage::has_teamcolor() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void TeamMessage::set_has_team() {
+inline void TeamMessage::set_has_teamcolor() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void TeamMessage::clear_has_team() {
+inline void TeamMessage::clear_has_teamcolor() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void TeamMessage::clear_team() {
-  team_ = 0u;
-  clear_has_team();
+inline void TeamMessage::clear_teamcolor() {
+  teamcolor_ = 0;
+  clear_has_teamcolor();
 }
-inline ::google::protobuf::uint32 TeamMessage::team() const {
-  return team_;
+inline naothmessages::TeamColor TeamMessage::teamcolor() const {
+  return static_cast< naothmessages::TeamColor >(teamcolor_);
 }
-inline void TeamMessage::set_team(::google::protobuf::uint32 value) {
-  set_has_team();
-  team_ = value;
+inline void TeamMessage::set_teamcolor(naothmessages::TeamColor value) {
+  GOOGLE_DCHECK(naothmessages::TeamColor_IsValid(value));
+  set_has_teamcolor();
+  teamcolor_ = value;
 }
 
 // optional .naothmessages.Pose2D pose = 3;
@@ -5555,6 +5586,28 @@ BUUserTeamMessage::mutable_opponents() {
   return &opponents_;
 }
 
+// optional uint32 teamNumber = 6 [default = 0];
+inline bool BUUserTeamMessage::has_teamnumber() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void BUUserTeamMessage::set_has_teamnumber() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void BUUserTeamMessage::clear_has_teamnumber() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void BUUserTeamMessage::clear_teamnumber() {
+  teamnumber_ = 0u;
+  clear_has_teamnumber();
+}
+inline ::google::protobuf::uint32 BUUserTeamMessage::teamnumber() const {
+  return teamnumber_;
+}
+inline void BUUserTeamMessage::set_teamnumber(::google::protobuf::uint32 value) {
+  set_has_teamnumber();
+  teamnumber_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // Opponent
@@ -5648,6 +5701,10 @@ CameraMatrixCalibration::mutable_correctionoffset() {
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< naothmessages::TeamColor>() {
+  return naothmessages::TeamColor_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf
