@@ -88,6 +88,16 @@ void GradientSpiderScan::scan(const Vector2i& start, ScanPointList& goodPoints, 
   scans.add(start, Vector2i( 2,-2));// to the lower right
   scans.add(start, Vector2i( 0, 2));// up
   
+  //add more scan lines
+  scans.add(start, Vector2i( 1,-2));
+  scans.add(start, Vector2i( 2,-1));
+  scans.add(start, Vector2i( 2, 1));
+  scans.add(start, Vector2i( 1, 2));
+  scans.add(start, Vector2i(-1, 2));
+  scans.add(start, Vector2i(-2, 1));
+  scans.add(start, Vector2i(-2,-1));
+  scans.add(start, Vector2i(-1,-2));
+  
   startPixel = theImage.get(start.x, start.y);
   scan(goodPoints, badPoints, scans);
   useDynamicThresholdY = false;
