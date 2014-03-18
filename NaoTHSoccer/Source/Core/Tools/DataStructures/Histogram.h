@@ -23,12 +23,11 @@ namespace Statistics
       std::vector<double> normalizedData;
       std::vector<double> cumulativeData;
      
-      bool firstRun;
+      int maxTotalSum;
       int median;
       int min;
       int max;
       int spanWidth;
-      double firstSum;
       double sum;
       double mean;
       double variance;
@@ -39,14 +38,14 @@ namespace Statistics
 
       HistogramX()
       {
+        maxTotalSum = maxInt;
         size = 0;
         clear();
-        firstRun = true;
-        firstSum = 0.0;
       }
       
       HistogramX(int newSize)
       {
+        maxTotalSum = maxInt;
         size = newSize;
         resize(newSize);
       }
@@ -84,8 +83,6 @@ namespace Statistics
         normalizedData.resize(size, 0.0);
         cumulativeData.resize(size, 0.0);
         clear();
-        firstRun = true;
-        firstSum = 0.0;
       }
 
       //add 1 to the bin for value
@@ -106,6 +103,18 @@ namespace Statistics
         rawData[idx] = value;
       }
 
+      //set maximal total sum for recalulation of bins
+      void setMaxTotalSum(int maxSum)
+      {
+        maxTotalSum = maxSum > 10 * size ? maxSum : 10 * size;
+      }
+
+      //reset maximal total sum for recalulation of bins to max integer value
+      void resetMaxTotalSum()
+      {
+        maxTotalSum = maxInt;
+      }
+
       //calculate normalized and cumulated histograms and some moments
       void calculate()
       {
@@ -120,11 +129,6 @@ namespace Statistics
         if(sum == 0) 
           return;
         //save total sum of bins if calculate() is running the first time, needed for recalculation if accumulation behaviour is used
-        if(firstRun) 
-        {
-          firstSum = sum;
-          firstRun = false;
-        }
         mean /= sum;
         median = 0;
         min = 255;
@@ -134,7 +138,7 @@ namespace Statistics
         skewness = 0.0;
         kurtosis = 0.0;
         //can only be true if accumulation behaviour is used and total sum is about to reach max value of int
-        bool reachingMaxSum = sum + firstSum >= maxInt;
+        bool reachingMaxSum = sum + 10 * size >= maxTotalSum;
         double newSum = 0.0;
         for(int i = 0; i < size; i++)
         {
@@ -143,7 +147,7 @@ namespace Statistics
           //recalculate bin values by use of normalized bin value and the total sum of first run
           //we do loose some accuracy here and total sum of bins is not equal to the one from first run because of rounding doubles to ints
           if(reachingMaxSum) 
-            rawData[i] = (int) Math::round(normalizedData[i] * firstSum);
+            rawData[i] = (int) Math::round(normalizedData[i] * 10 * size);
           newSum += rawData[i];
           squareMean += i * i * normalizedData[i];
           double v = (i - mean);
