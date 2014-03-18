@@ -114,7 +114,6 @@ private:
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
       PARAMETER_REGISTER(gradientThreshold) = 20;
-      PARAMETER_REGISTER(meanThreshold) = 60;
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
@@ -133,7 +132,6 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    int meanThreshold;
     int gradientThreshold;
     int stepSize;
     double percentOfRadius;

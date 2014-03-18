@@ -168,7 +168,6 @@ bool MaximumRedBallDetector::findBall ()
   spiderSearch.setImageColorChannelNumber(2); // scan in the V channel
 	spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
-	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
   spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
 

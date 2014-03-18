@@ -84,11 +84,7 @@ public:
   void setImageColorChannelNumber(int channelNumber);
   void setMaxNumberOfScans(unsigned int length);
   void setUseVUdifference(bool value);
-
-  void setMinChannelValue(double val)
-  {
-    minChannelValue = val;
-  }
+  void setMinChannelValue(double value);
 
 private:
   Pixel startPixel;
@@ -104,7 +100,6 @@ private:
   bool drawScanLines;
   unsigned int max_length_of_beam;
   double currentGradientThreshold;
-  double currentMeanThreshold;
   double dynamicThresholdY;
   bool useDynamicThresholdY;
   int imageChannelNumber;
