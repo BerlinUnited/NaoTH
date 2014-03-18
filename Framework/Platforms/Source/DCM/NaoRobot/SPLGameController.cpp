@@ -121,7 +121,7 @@ bool SPLGameController::update()
 {
   std::string header;
   header.assign(dataIn.header, 4);
-  if(header == GAMECONTROLLER_STRUCT_HEADER)
+  if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
     int teamInfoIndex = -1;
     TeamInfo tinfo;
