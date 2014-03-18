@@ -28,7 +28,7 @@ MaximumRedBallDetector::MaximumRedBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:markPeakScan", "mark the scanned points in image", false);
   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_scanlines","..", false);  
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", true);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_points","",false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points","",false);
 
@@ -97,6 +97,10 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
         && !getBodyContour().isOccupied(point)
       )
       {
+        DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
+          LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
+          LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
+        );
         maxRedPeak = pixel.v;
         peakPos = point;
       }
@@ -166,6 +170,7 @@ bool MaximumRedBallDetector::findBall ()
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
 	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
+  spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
 
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
@@ -514,8 +519,8 @@ Vector2i MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList)
 bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel) 
 {
   return
-    pixel.v > pixel.u + params.maxBlueValue && // check the UV-difference
-    pixel.v > params.maxRedValue &&
+    !getGoalPostHistograms().isPostColor(pixel) && //not within goal color
+    getGoalPostHistograms().colV.y < pixel.v && // at least as red as the goal mean/median red
     !getFieldColorPercept().isFieldColor(pixel) && // check green
     pixel.y < dynamicThresholdY; // check too bright (white etc.)
 }

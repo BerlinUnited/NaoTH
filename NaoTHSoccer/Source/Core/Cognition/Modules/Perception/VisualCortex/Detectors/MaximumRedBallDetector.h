@@ -58,6 +58,7 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(FrameInfo)
   REQUIRE(OverTimeHistogram)
   REQUIRE(OverTimeHistogramTop)
+  REQUIRE(GoalPostHistograms)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
@@ -157,7 +158,7 @@ private:
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldPercept);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, OverTimeHistogram);
-
+ 
   DOUBLE_CAM_PROVIDE(MaximumRedBallDetector, BallPercept);
           
 };//end class MaximumRedBallDetector
