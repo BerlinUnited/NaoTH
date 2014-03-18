@@ -149,22 +149,6 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     getGoalPostHistograms().calculate();
   }
 
-  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHisogram",
-    int imageWidth = getImageTop().width();
-    int imageHeight = getImageTop().height();
-    for(int x = 0; x < imageWidth; x++)
-    {
-      for(int y = 0; y < imageHeight; y++)
-      {
-        const Pixel& pixel = getImageTop().get(x, y);
-        if(getGoalPostHistograms().isPostColor(pixel))
-        {
-          POINT_PX(ColorClasses::pink, x, y);
-        }
-      }
-    }
-  );
-
   // exactly two posts are seen => assign site labels
   if(getGoalPercept().getNumberOfSeenPosts() == 2) 
   {
@@ -184,6 +168,25 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   getGoalPercept().horizonScan = horizon;
 }//end execute
+
+void GradientGoalDetector::debugStuff(CameraInfo::CameraID camID)
+{
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHisogram",
+    CANVAS_PX(camID);
+    cameraID = camID;
+    for(unsigned int x = 0; x < getImage().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y++)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if(getGoalPostHistograms().isPostColor(pixel))
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
+}
 
 
 void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)

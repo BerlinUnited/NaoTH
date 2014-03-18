@@ -42,8 +42,6 @@ BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
 
-  //REQUIRE(FieldPercept)
-  //REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(FrameInfo)
@@ -51,7 +49,6 @@ BEGIN_DECLARE_MODULE(GradientGoalDetector)
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
   PROVIDE(GoalPostHistograms)
-  PROVIDE(GoalPostHistogramsTop)
 END_DECLARE_MODULE(GradientGoalDetector)
 
 
@@ -68,10 +65,13 @@ public:
   void execute()
   {
     execute(CameraInfo::Top);
+    debugStuff(CameraInfo::Top);
     if( getGoalPercept().getNumberOfSeenPosts() == 0) {
-      execute(CameraInfo::Top, false);
+      //execute(CameraInfo::Top, false);
+      execute(CameraInfo::Bottom);
     }
-    execute(CameraInfo::Bottom);
+    //execute(CameraInfo::Bottom);
+    debugStuff(CameraInfo::Bottom);
   }
  
 private:
@@ -155,6 +155,7 @@ private:
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
+  void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;
 
@@ -165,7 +166,6 @@ private:
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPercept);
-  DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPostHistograms);
           
 };//end class GradientGoalDetector
 
