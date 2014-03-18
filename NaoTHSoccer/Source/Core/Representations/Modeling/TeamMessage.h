@@ -40,8 +40,9 @@ public:
   struct Data
   {
     Data ()
-      : playerNum(0), teamColor(naoth::GameData::numOfTeamColor), teamNumber(0),
+      : playerNum(0), teamColor(naoth::GameData::numOfTeamColor),
         ballAge(-1), fallen(false),
+        teamNumber(0),
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
@@ -54,7 +55,6 @@ public:
 
     unsigned int playerNum;
     naoth::GameData::TeamColor teamColor;
-    unsigned int teamNumber;
 
     /**
      * @brief Own robot pose
@@ -81,7 +81,7 @@ public:
     bool fallen;
 
     // BEGIN BERLIN UNITED SPECIFIC
-
+    unsigned int teamNumber;
     std::string bodyID;
     unsigned int timeToBall;
     bool wasStriker;
