@@ -157,12 +157,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       for(int y = 0; y < imageHeight; y++)
       {
         const Pixel& pixel = getImageTop().get(x, y);
-        if
-        (
-          getGoalPostHistograms().histogramU.median - 2*getGoalPostHistograms().histogramU.sigma <= pixel.u && pixel.u <= getGoalPostHistograms().histogramU.median + 2*getGoalPostHistograms().histogramU.sigma
-          &&
-          getGoalPostHistograms().histogramV.median - 2*getGoalPostHistograms().histogramV.sigma <= pixel.v && pixel.v <= getGoalPostHistograms().histogramV.median + 2*getGoalPostHistograms().histogramV.sigma
-        )
+        if(getGoalPostHistograms().isPostColor(pixel))
         {
           POINT_PX(ColorClasses::pink, x, y);
         }
