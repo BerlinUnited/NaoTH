@@ -163,16 +163,16 @@ public:
   void calculate()
   {
     ColorChannelHistograms::calculate();
-    setBorders();
+    setBorders(2.0);
   }
 
-  void setBorders()
+  void setBorders(double deviationFactor)
   {
     //.x = low border, .y = high border
-    colU.x = histogramU.median - 2 * histogramU.sigma;
-    colU.y = histogramU.median + 2 * histogramU.sigma;
-    colV.x = histogramV.median - 2 * histogramV.sigma;
-    colV.y = histogramV.median + 2 * histogramV.sigma;
+    colU.x = histogramU.median - deviationFactor * histogramU.sigma;
+    colU.y = histogramU.median + deviationFactor * histogramU.sigma;
+    colV.x = histogramV.median - deviationFactor * histogramV.sigma;
+    colV.y = histogramV.median + deviationFactor * histogramV.sigma;
   }
 
   bool isPostColor(Pixel pixel) const
@@ -183,7 +183,7 @@ public:
 
 };
 
-class GoalPostHistogramsTop: public GoalPostHistograms{};
+//class GoalPostHistogramsTop: public GoalPostHistograms{};
 
 #endif  /* _Histogram_H */
 
