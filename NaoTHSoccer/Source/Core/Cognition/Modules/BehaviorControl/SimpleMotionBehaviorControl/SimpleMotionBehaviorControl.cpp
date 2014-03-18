@@ -154,7 +154,7 @@ void SimpleMotionBehaviorControl::testHead()
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
 
     double yaw  = -14;
-    MODIFY("SimpleMotionBehaviorControl:head:headPitch_deg",yaw);
+    MODIFY("SimpleMotionBehaviorControl:head:headYaw_deg",yaw);
     double pitch = 0;
     MODIFY("SimpleMotionBehaviorControl:head:headPitch_deg",pitch);
     getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(yaw);
