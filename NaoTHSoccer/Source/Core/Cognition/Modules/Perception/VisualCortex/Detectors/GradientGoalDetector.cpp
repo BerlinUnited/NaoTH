@@ -37,6 +37,7 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:showColorByHisogram","..", false);
 }
 
 
@@ -142,6 +143,32 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
   GT_TRACE("GradientGoalDetector:setGoalPostPercept");
 
+  if(getGoalPercept().getNumberOfSeenPosts() > 0) 
+  {
+    //calculate histogram only, if a goalpost was found
+    getGoalPostHistograms().calculate();
+  }
+
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHisogram",
+    int imageWidth = getImageTop().width();
+    int imageHeight = getImageTop().height();
+    for(int x = 0; x < imageWidth; x++)
+    {
+      for(int y = 0; y < imageHeight; y++)
+      {
+        const Pixel& pixel = getImageTop().get(x, y);
+        if
+        (
+          getGoalPostHistograms().histogramU.median - 2*getGoalPostHistograms().histogramU.sigma <= pixel.u && pixel.u <= getGoalPostHistograms().histogramU.median + 2*getGoalPostHistograms().histogramU.sigma
+          &&
+          getGoalPostHistograms().histogramV.median - 2*getGoalPostHistograms().histogramV.sigma <= pixel.v && pixel.v <= getGoalPostHistograms().histogramV.median + 2*getGoalPostHistograms().histogramV.sigma
+        )
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
 
   // exactly two posts are seen => assign site labels
   if(getGoalPercept().getNumberOfSeenPosts() == 2) 
@@ -440,6 +467,9 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     valueBuffer.add(diffVU);
     valueBufferY.add(pixel.y);
 
+    //collect some values for statisics of colors
+    getGoalPostHistograms().increaseChannelValue(pixel);
+
     if(pointBuffer.isFull())
     {
       response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
@@ -464,8 +494,6 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       lastResponse = response;
     }
   }//end while
-
-  
 
   // create a new goal post
   GoalPercept::GoalPost post;

@@ -17,6 +17,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/GoalPercept.h"
+#include "Representations/Perception/Histograms.h"
 
 // tools
 #include "Tools/Math/Matrix_nxn.h"
@@ -49,6 +50,8 @@ BEGIN_DECLARE_MODULE(GradientGoalDetector)
 
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
+  PROVIDE(GoalPostHistograms)
+  PROVIDE(GoalPostHistogramsTop)
 END_DECLARE_MODULE(GradientGoalDetector)
 
 
@@ -162,6 +165,7 @@ private:
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPercept);
+  DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPostHistograms);
           
 };//end class GradientGoalDetector
 

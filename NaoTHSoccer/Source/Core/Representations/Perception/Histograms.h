@@ -96,6 +96,13 @@ public:
     histogramV.clear();
   }
 
+  void calculate()
+  {
+    histogramY.calculate();
+    histogramU.calculate();
+    histogramV.calculate();
+  }
+
   ColorChannelHistograms();
   void showDebugInfos() const;
 
@@ -146,5 +153,9 @@ public:
 };
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
+
+class GoalPostHistograms : public ColorChannelHistograms{};
+class GoalPostHistogramsTop: public GoalPostHistograms{};
+
 #endif  /* _Histogram_H */
 
