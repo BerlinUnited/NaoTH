@@ -15893,7 +15893,7 @@ public final class Representations {
     boolean hasPlayerNum();
     int getPlayerNum();
     
-    // optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
     boolean hasTeamColor();
     de.naoth.rc.messages.Representations.TeamColor getTeamColor();
     
@@ -15916,9 +15916,9 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
     
-    // optional int32 fallen = 7 [default = -1];
+    // optional bool fallen = 10 [default = false];
     boolean hasFallen();
-    int getFallen();
+    boolean getFallen();
     
     // optional .naothmessages.BUUserTeamMessage user = 8;
     boolean hasUser();
@@ -15969,8 +15969,8 @@ public final class Representations {
       return playerNum_;
     }
     
-    // optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
-    public static final int TEAMCOLOR_FIELD_NUMBER = 2;
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    public static final int TEAMCOLOR_FIELD_NUMBER = 11;
     private de.naoth.rc.messages.Representations.TeamColor teamColor_;
     public boolean hasTeamColor() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
@@ -16028,13 +16028,13 @@ public final class Representations {
       return ballVelocity_;
     }
     
-    // optional int32 fallen = 7 [default = -1];
-    public static final int FALLEN_FIELD_NUMBER = 7;
-    private int fallen_;
+    // optional bool fallen = 10 [default = false];
+    public static final int FALLEN_FIELD_NUMBER = 10;
+    private boolean fallen_;
     public boolean hasFallen() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public int getFallen() {
+    public boolean getFallen() {
       return fallen_;
     }
     
@@ -16071,7 +16071,7 @@ public final class Representations {
       ballAge_ = -1;
       ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
-      fallen_ = -1;
+      fallen_ = false;
       user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
       frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
     }
@@ -16120,9 +16120,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt32(1, playerNum_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeEnum(2, teamColor_.getNumber());
-      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, pose_);
       }
@@ -16135,14 +16132,17 @@ public final class Representations {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeMessage(8, user_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeMessage(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(11, teamColor_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -16156,10 +16156,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, playerNum_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, teamColor_.getNumber());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -16177,10 +16173,6 @@ public final class Representations {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, user_);
@@ -16188,6 +16180,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(11, teamColor_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16342,7 +16342,7 @@ public final class Representations {
           ballVelocityBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        fallen_ = -1;
+        fallen_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
         if (userBuilder_ == null) {
           user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
@@ -16559,17 +16559,6 @@ public final class Representations {
               playerNum_ = input.readUInt32();
               break;
             }
-            case 16: {
-              int rawValue = input.readEnum();
-              de.naoth.rc.messages.Representations.TeamColor value = de.naoth.rc.messages.Representations.TeamColor.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(2, rawValue);
-              } else {
-                bitField0_ |= 0x00000002;
-                teamColor_ = value;
-              }
-              break;
-            }
             case 26: {
               de.naoth.rc.messages.CommonTypes.Pose2D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder();
               if (hasPose()) {
@@ -16602,11 +16591,6 @@ public final class Representations {
               setBallVelocity(subBuilder.buildPartial());
               break;
             }
-            case 56: {
-              bitField0_ |= 0x00000040;
-              fallen_ = input.readInt32();
-              break;
-            }
             case 66: {
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder subBuilder = de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder();
               if (hasUser()) {
@@ -16623,6 +16607,22 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setFrameInfo(subBuilder.buildPartial());
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000040;
+              fallen_ = input.readBool();
+              break;
+            }
+            case 88: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.Representations.TeamColor value = de.naoth.rc.messages.Representations.TeamColor.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(11, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                teamColor_ = value;
+              }
               break;
             }
           }
@@ -16652,7 +16652,7 @@ public final class Representations {
         return this;
       }
       
-      // optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+      // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
       private de.naoth.rc.messages.Representations.TeamColor teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
       public boolean hasTeamColor() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
@@ -16967,15 +16967,15 @@ public final class Representations {
         return ballVelocityBuilder_;
       }
       
-      // optional int32 fallen = 7 [default = -1];
-      private int fallen_ = -1;
+      // optional bool fallen = 10 [default = false];
+      private boolean fallen_ ;
       public boolean hasFallen() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public int getFallen() {
+      public boolean getFallen() {
         return fallen_;
       }
-      public Builder setFallen(int value) {
+      public Builder setFallen(boolean value) {
         bitField0_ |= 0x00000040;
         fallen_ = value;
         onChanged();
@@ -16983,7 +16983,7 @@ public final class Representations {
       }
       public Builder clearFallen() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        fallen_ = -1;
+        fallen_ = false;
         onChanged();
         return this;
       }
@@ -19349,27 +19349,27 @@ public final class Representations {
       "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
       "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n" +
       "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n" +
-      "aothmessages.TeamMessage\"\355\002\n\013TeamMessage" +
-      "\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\002 \001(" +
+      "aothmessages.TeamMessage\"\360\002\n\013TeamMessage" +
+      "\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\013 \001(" +
       "\0162\030.naothmessages.TeamColor:\010blueTeam\022#\n" +
       "\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007ba" +
       "llAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132\034." +
       "naothmessages.DoubleVector2\0222\n\014ballVeloc",
       "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022" +
-      "\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .naot" +
-      "hmessages.BUUserTeamMessage\022+\n\tframeInfo" +
-      "\030\t \001(\0132\030.naothmessages.FrameInfo\"\272\001\n\021BUU" +
-      "serTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022" +
-      "\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:" +
-      "\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\top" +
-      "ponents\030\005 \003(\0132\027.naothmessages.Opponent\022\025" +
-      "\n\nteamNumber\030\006 \001(\r:\0010\"L\n\010Opponent\022\024\n\tpla" +
-      "yerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132\025.n",
-      "aothmessages.Pose2D\"Q\n\027CameraMatrixCalib" +
-      "ration\0226\n\020correctionOffset\030\001 \003(\0132\034.naoth" +
-      "messages.DoubleVector2*7\n\tTeamColor\022\014\n\010b" +
-      "lueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam\020\002B" +
-      "\026\n\024de.naoth.rc.messages"
+      "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n" +
+      "aothmessages.BUUserTeamMessage\022+\n\tframeI" +
+      "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\272\001\n\021" +
+      "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno" +
+      "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001" +
+      "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n" +
+      "\topponents\030\005 \003(\0132\027.naothmessages.Opponen" +
+      "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\"L\n\010Opponent\022\024\n\t" +
+      "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132",
+      "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
+      "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na" +
+      "othmessages.DoubleVector2*7\n\tTeamColor\022\014" +
+      "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam" +
+      "\020\002B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

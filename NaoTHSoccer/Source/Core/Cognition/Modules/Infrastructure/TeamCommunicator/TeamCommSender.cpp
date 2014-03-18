@@ -64,11 +64,11 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
   if(bodyState.fall_down_state == BodyState::upright)
   {
-    out.fallen = -1;
+    out.fallen = false;
   }
   else
   {
-    out.fallen = frameInfo.getTimeSince(bodyState.fall_down_state_time);
+    out.fallen = true;
   }
 
   out.bodyID = robotInfo.bodyID;

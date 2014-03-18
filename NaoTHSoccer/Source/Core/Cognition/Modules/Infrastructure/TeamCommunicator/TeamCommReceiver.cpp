@@ -123,7 +123,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.ballVelocity.x = spl.ballVel[0];
     data.ballVelocity.y = spl.ballVel[1];
 
-    data.fallen = spl.fallen == 1;
+    data.fallen = spl.fallen;
 
     // check if we can deserialize the user defined data
     if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)

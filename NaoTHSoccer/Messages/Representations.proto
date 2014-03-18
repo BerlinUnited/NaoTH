@@ -168,12 +168,12 @@ enum TeamColor
 message TeamMessage
 {
   optional uint32 playerNum = 1 [default=0];
-  optional TeamColor teamColor = 2 [default=blueTeam];
+  optional TeamColor teamColor = 11 [default=blueTeam];
   optional Pose2D pose = 3;
   optional int32 ballAge = 4 [default=-1];
   optional DoubleVector2 ballPosition = 5;
   optional DoubleVector2 ballVelocity = 6;
-  optional int32 fallen = 7 [default=-1];
+  optional bool fallen = 10 [default=false];
   optional BUUserTeamMessage user = 8;
   optional FrameInfo frameInfo = 9;
 }

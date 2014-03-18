@@ -2453,10 +2453,10 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 playernum() const;
   inline void set_playernum(::google::protobuf::uint32 value);
   
-  // optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+  // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
   inline bool has_teamcolor() const;
   inline void clear_teamcolor();
-  static const int kTeamColorFieldNumber = 2;
+  static const int kTeamColorFieldNumber = 11;
   inline naothmessages::TeamColor teamcolor() const;
   inline void set_teamcolor(naothmessages::TeamColor value);
   
@@ -2491,12 +2491,12 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_ballvelocity();
   inline ::naothmessages::DoubleVector2* release_ballvelocity();
   
-  // optional int32 fallen = 7 [default = -1];
+  // optional bool fallen = 10 [default = false];
   inline bool has_fallen() const;
   inline void clear_fallen();
-  static const int kFallenFieldNumber = 7;
-  inline ::google::protobuf::int32 fallen() const;
-  inline void set_fallen(::google::protobuf::int32 value);
+  static const int kFallenFieldNumber = 10;
+  inline bool fallen() const;
+  inline void set_fallen(bool value);
   
   // optional .naothmessages.BUUserTeamMessage user = 8;
   inline bool has_user() const;
@@ -2542,7 +2542,7 @@ class TeamMessage : public ::google::protobuf::Message {
   ::naothmessages::Pose2D* pose_;
   ::naothmessages::DoubleVector2* ballposition_;
   ::google::protobuf::int32 ballage_;
-  ::google::protobuf::int32 fallen_;
+  bool fallen_;
   ::naothmessages::DoubleVector2* ballvelocity_;
   ::naothmessages::BUUserTeamMessage* user_;
   ::naothmessages::FrameInfo* frameinfo_;
@@ -5221,7 +5221,7 @@ inline void TeamMessage::set_playernum(::google::protobuf::uint32 value) {
   playernum_ = value;
 }
 
-// optional .naothmessages.TeamColor teamColor = 2 [default = blueTeam];
+// optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
 inline bool TeamMessage::has_teamcolor() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5353,7 +5353,7 @@ inline ::naothmessages::DoubleVector2* TeamMessage::release_ballvelocity() {
   return temp;
 }
 
-// optional int32 fallen = 7 [default = -1];
+// optional bool fallen = 10 [default = false];
 inline bool TeamMessage::has_fallen() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
@@ -5364,13 +5364,13 @@ inline void TeamMessage::clear_has_fallen() {
   _has_bits_[0] &= ~0x00000040u;
 }
 inline void TeamMessage::clear_fallen() {
-  fallen_ = -1;
+  fallen_ = false;
   clear_has_fallen();
 }
-inline ::google::protobuf::int32 TeamMessage::fallen() const {
+inline bool TeamMessage::fallen() const {
   return fallen_;
 }
-inline void TeamMessage::set_fallen(::google::protobuf::int32 value) {
+inline void TeamMessage::set_fallen(bool value) {
   set_has_fallen();
   fallen_ = value;
 }

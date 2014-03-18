@@ -41,7 +41,7 @@ public:
   {
     Data ()
       : playerNum(0), teamColor(naoth::GameData::numOfTeamColor), teamNumber(0),
-        ballAge(-1), fallen(-1),
+        ballAge(-1), fallen(false),
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
@@ -115,7 +115,7 @@ public:
       stream << "TimeToBall: "<< d.timeToBall << std::endl;
       stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
-      stream << "fallenDown: " << d.fallen << std::endl;
+      stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
       for(unsigned int i=0; i < d.opponents.size(); i++)
       {
         stream << "opponent " << d.opponents[i].playerNum << " : "
