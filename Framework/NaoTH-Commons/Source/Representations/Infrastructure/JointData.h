@@ -28,10 +28,17 @@ class JointData
       LShoulderRoll,
       RShoulderPitch,
       LShoulderPitch,
+
       RElbowRoll,
       LElbowRoll,
       RElbowYaw,
       LElbowYaw,
+
+      LWristYaw,
+      RWristYaw,
+
+      LHand,
+      RHand,
 
       RHipYawPitch, // doesn't exist on Nao
       LHipYawPitch,

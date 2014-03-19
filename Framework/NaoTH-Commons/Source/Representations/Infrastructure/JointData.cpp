@@ -61,6 +61,12 @@ string JointData::getJointName(JointID joint)
     case LElbowRoll: return string("LElbowRoll");
     case RElbowYaw: return string("RElbowYaw");
     case LElbowYaw: return string("LElbowYaw");
+    
+    case LWristYaw: return string("LWristYaw");
+    case RWristYaw: return string("RWristYaw");
+    case LHand: return string("LHand");
+    case RHand: return string("RHand");
+    
     case LHipYawPitch: return string("LHipYawPitch");
     case RHipYawPitch: return string("RHipYawPitch");
     case RHipPitch: return string("RHipPitch");

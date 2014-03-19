@@ -69,6 +69,27 @@ string DCMHandler::getBodyNickName()
   return getFromALMemory(DCMPath_BodyNickName);
 }
 
+void DCMHandler::getJointPositionLimits(JointData& jointData)
+{
+  for(int i=0;i<JointData::numOfJoint;i++)
+  {
+    if(i == JointData::RHipYawPitch) {
+      continue;
+    }
+    string joint_max_path = "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Actuator/Max";
+    string joint_min_path = "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Actuator/Min";
+
+    const ALValue al_joint_max = getFromALMemory(joint_max_path);
+    const ALValue al_joint_min = getFromALMemory(joint_min_path);
+    
+    jointData.min[i] = float(al_joint_min);
+    jointData.max[i] = float(al_joint_max);
+  }
+
+  jointData.min[JointData::RHipYawPitch] = jointData.min[JointData::LHipYawPitch];
+  jointData.max[JointData::RHipYawPitch] = jointData.max[JointData::LHipYawPitch];
+}
+
 int DCMHandler::getTime(unsigned int time_delay)
 {
   return al_dcmproxy->getTime(time_delay);
@@ -120,7 +141,7 @@ void DCMHandler::initSensorJoint()
   for(int i=0;i<JointData::numOfJoint;i++)
   {
     DCMPath_SensorJointPosition[(JointData::JointID) i] =
-      "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Sensor/Value";
+     "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Sensor/Value"; 
 
     DCMPath_SensorJointElectricCurrent[(JointData::JointID) i] =
       "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/ElectricCurrent/Sensor/Value";
