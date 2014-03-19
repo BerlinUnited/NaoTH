@@ -154,7 +154,7 @@ public:
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
 
-class GoalPostHistograms : public ColorChannelHistograms
+class GoalPostHistograms : public ColorChannelHistograms, public naoth::Printable 
 {
 public:
   Vector2d colU;
@@ -192,9 +192,34 @@ public:
     return colU.x < pixel.u && pixel.u < colU.y && colV.x < pixel.v && pixel.v < colV.y;
   }
 
-};
+   virtual void print(std::ostream& stream) const
+   {
+     stream << "GoalPostHistogram" << std::endl
+            << "=================" << std::endl << std::endl
+            << "histogram U channel" << std::endl
+            << "min        : " << histogramU.min << std::endl
+            << "max        : " << histogramU.max << std::endl
+            << "mean       : " << histogramU.mean << std::endl
+            << "median     : " << histogramU.median << std::endl
+            << "spanWidth  : " << histogramU.spanWidth << std::endl
+            << "sigma      : " << histogramU.sigma << std::endl
+            << "sum        : " << histogramU.sum << std::endl
+            << "maxTotalSum: " << histogramU.maxTotalSum << std::endl
+            << std::endl
+            << "histogramV" << std::endl
+            << "min        : " << histogramV.min << std::endl
+            << "max        : " << histogramV.max << std::endl
+            << "mean       : " << histogramV.mean << std::endl
+            << "median     : " << histogramV.median << std::endl
+            << "spanWidth  : " << histogramV.spanWidth << std::endl
+            << "sigma      : " << histogramV.sigma << std::endl
+            << "sum        : " << histogramV.sum << std::endl
+            << "maxTotalSum: " << histogramV.maxTotalSum
+            << std::endl;
 
-//class GoalPostHistogramsTop: public GoalPostHistograms{};
+   }
+
+};
 
 #endif  /* _Histogram_H */
 
