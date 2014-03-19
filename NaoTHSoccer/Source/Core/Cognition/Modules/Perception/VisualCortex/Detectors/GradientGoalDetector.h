@@ -60,22 +60,24 @@ public:
   virtual ~GradientGoalDetector(){};
 
   // override the Module execute method
-  virtual void execute(CameraInfo::CameraID id, bool horizon = true);
+  virtual bool execute(CameraInfo::CameraID id, bool horizon = true);
 
   void execute()
   {
-    execute(CameraInfo::Top);
+    if( !execute(CameraInfo::Top)) {
+      execute(CameraInfo::Top, false);
+    }
     debugStuff(CameraInfo::Top);
     if( getGoalPercept().getNumberOfSeenPosts() == 0) {
-      //execute(CameraInfo::Top, false);
-      execute(CameraInfo::Bottom);
+      if( !execute(CameraInfo::Bottom)) {
+        execute(CameraInfo::Bottom, false);
+      }
     }
-    //execute(CameraInfo::Bottom);
     debugStuff(CameraInfo::Bottom);
   }
  
 private:
-  static const int imageBorderOffset = 25;
+  static const int imageBorderOffset = 5;
   CameraInfo::CameraID cameraID;
   
   RingBuffer<Vector2i, 5> pointBuffer;

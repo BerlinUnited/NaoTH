@@ -41,7 +41,7 @@ GradientGoalDetector::GradientGoalDetector()
 }
 
 
-void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
+bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
@@ -52,6 +52,15 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
   Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
   Vector2d horizonDirection(1,0);
+
+  if(!horizon && cameraID == CameraInfo::Bottom)
+  {
+    int offsetY = (params.numberOfScanlines * params.scanlinesDistance) / 2 + imageBorderOffset;
+
+    p1.y = offsetY;
+    p2.y = offsetY;
+  }
+
 
   if(horizon) {
     p1 = getArtificialHorizon().begin();
@@ -70,21 +79,21 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       p2.y < imageBorderOffset || p2.y > getImage().height() - imageBorderOffset
       ) 
   {
-    return;
+    return false;
   }
   
   int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
   if(heightOfHorizon > (int) getImage().height() - 10) 
   { 
-    return;
+    return false;
   }
 
 
   // correct parameters
   //minimal 2  or more at all points have to be found
   if(params.minGoodPoints < 2 || params.numberOfScanlines < 2) {
-    return;
+    return false;
   }
   if(params.minGoodPoints > params.numberOfScanlines) {
     params.minGoodPoints = params.numberOfScanlines;
@@ -167,6 +176,7 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
 
   getGoalPercept().horizonScan = horizon;
+  return true;
 }//end execute
 
 void GradientGoalDetector::debugStuff(CameraInfo::CameraID camID)
