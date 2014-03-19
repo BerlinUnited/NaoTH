@@ -31,22 +31,22 @@ public class SPLMessage
   public short numOfDataBytes; // 2
   public byte[] data;
 
-  public SPLMessage(ByteBuffer buffer)
+  public SPLMessage(ByteBuffer buffer) throws Exception
   {
       if( buffer.get() != 'S' ||
           buffer.get() != 'P' ||
           buffer.get() != 'L' ||
           buffer.get() != ' ')
       {
-          System.out.println("Not an SPL Message.");
-          return;
+          throw new Exception("Not an SPL Message.");
+          //System.out.println("Not an SPL Message.");
       }
 
       byte version = buffer.get();
       if(version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
       {
-          System.out.println("Wrong version " + version + ", expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
-          return;
+          throw new Exception("Wrong version: reveived " + version + ", but expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
+          //System.out.println("Wrong version " + version + ", expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
       }
 
       this.playerNum = buffer.get();
