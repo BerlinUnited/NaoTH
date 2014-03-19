@@ -342,6 +342,8 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
 
   Vector2d last(pos);
   BresenhamLineScan goodFeatureScanner(pos, scanDirection, getImage().cameraInfo);
+  Statistics::Histogram<256> histU;
+  Statistics::Histogram<256> histV;
 
   double sumSquareError = 0.0;
 
@@ -362,6 +364,9 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
       int diffVU = (int) pixel.v - (int) pixel.u;
       valueBuffer.add(diffVU);
       valueBufferY.add(pixel.y);
+
+      histU.add(pixel.u);
+      histV.add(pixel.v);
 
       response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
       responseY = valueBufferY[2];
@@ -417,6 +422,15 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
       }
     }
   }//end for
+
+  if(goodFeatures.size() >= (size_t) params.minGoodPoints)
+  {
+    for(int i = 0; i < getGoalPostHistograms().VALUE_COUNT; i++) 
+    {
+      getGoalPostHistograms().histogramU.add(i, histU.rawData[i]);
+      getGoalPostHistograms().histogramV.add(i, histV.rawData[i]);
+    }
+  }
   STOPWATCH_STOP("GradientGoalDetector:checkForGoodFeatures");
 }
 
