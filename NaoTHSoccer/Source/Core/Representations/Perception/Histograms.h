@@ -159,20 +159,31 @@ class GoalPostHistograms : public ColorChannelHistograms
 public:
   Vector2d colU;
   Vector2d colV;
+  bool valid;
+
+  GoalPostHistograms()
+  :
+    valid(false)
+  { }
 
   void calculate()
   {
+    valid = false;
     ColorChannelHistograms::calculate();
     setBorders(2.0);
   }
 
   void setBorders(double deviationFactor)
   {
+    valid = histogramU.sum >= 2 * histogramU.size && histogramV.sum >= 2 * histogramV.size;
+    if(valid)
+    {
     //.x = low border, .y = high border
-    colU.x = histogramU.median - deviationFactor * histogramU.sigma;
-    colU.y = histogramU.median + deviationFactor * histogramU.sigma;
-    colV.x = histogramV.median - deviationFactor * histogramV.sigma;
-    colV.y = histogramV.median + deviationFactor * histogramV.sigma;
+      colU.x = histogramU.median - deviationFactor * histogramU.sigma;
+      colU.y = histogramU.median + deviationFactor * histogramU.sigma;
+      colV.x = histogramV.median - deviationFactor * histogramV.sigma;
+      colV.y = histogramV.median + deviationFactor * histogramV.sigma;
+    }
   }
 
   bool isPostColor(Pixel pixel) const
