@@ -178,8 +178,14 @@ bool MaximumRedBallDetector::findBall ()
 	spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
-  spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
-
+  if(getGoalPostHistograms().valid)
+  {
+    spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
+  }
+  else
+  {
+    spiderSearch.setMinChannelValue(0);
+  }
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
   );
