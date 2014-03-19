@@ -55,6 +55,8 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   if(!horizon && cameraID == CameraInfo::Bottom)
   {
+    if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(10)) return false;
+
     int offsetY = (params.numberOfScanlines * params.scanlinesDistance) / 2 + imageBorderOffset;
 
     p1.y = offsetY;
