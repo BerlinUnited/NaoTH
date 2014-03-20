@@ -123,7 +123,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.ballVelocity.x = spl.ballVel[0];
     data.ballVelocity.y = spl.ballVel[1];
 
-    data.fallen = spl.fallen > 0;
+    data.fallen = (spl.fallen == 1);
 
     // TODO: use walkingTo and shootTo
 
