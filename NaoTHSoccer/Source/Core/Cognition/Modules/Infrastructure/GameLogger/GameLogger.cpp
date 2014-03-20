@@ -1,6 +1,7 @@
 #include "GameLogger.h"
 
 GameLogger::GameLogger()
+  : logfileManager(true)
 {
   logfileManager.openFile("/home/nao/game.log");
 }
