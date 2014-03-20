@@ -22,7 +22,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     theErrorHandler(error_stream),
     agentName("soccer")
 {
-  REGISTER_DEBUG_COMMAND("behavior:status", "send the active XABSL options", this);
   REGISTER_DEBUG_COMMAND("behavior:reload", "reload the behavior file", this);
   REGISTER_DEBUG_COMMAND("behavior:get_agent", "get the current selected agent", this);
   REGISTER_DEBUG_COMMAND("behavior:set_agent", "behavior:set_agent agent=<agent_name>", this);
@@ -301,10 +300,6 @@ void XABSLBehaviorControl::executeDebugCommand(
       outstream << error_stream.str();
     else
       outstream << "behavior reloaded";
-  }
-  else if(command == "behavior:status")
-  {
-    naoth::Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), outstream);
   }
   else if(command == "behavior:get_agent")
   {

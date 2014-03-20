@@ -40,6 +40,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
 
+  REGISTER_DEBUG_COMMAND("behavior:status", "send the active XABSL options", this);
+
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -50,6 +52,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+
 
   // HACK: initialize the both canvases
   DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
@@ -235,6 +238,10 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       g_usleep(500000);
 
     }
+  }
+  else if(command == "behavior:status")
+  {
+    naoth::Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), outstream);
   }
 }
 

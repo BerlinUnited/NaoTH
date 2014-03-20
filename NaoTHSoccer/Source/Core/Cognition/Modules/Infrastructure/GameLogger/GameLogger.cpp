@@ -8,9 +8,13 @@ GameLogger::GameLogger()
 
 void GameLogger::execute()
 {
-  std::stringstream& stream =
+  std::stringstream& streamFrameInfo =
+      logfileManager.log(getFrameInfo().getFrameNumber(), "FrameInfo");
+  Serializer<FrameInfo>::serialize(getFrameInfo(), streamFrameInfo);
+
+  std::stringstream& streamBehavior =
       logfileManager.log(getFrameInfo().getFrameNumber(), "BehaviorStatus");
-  Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), stream);
+  Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), streamBehavior);
 }
 
 GameLogger::~GameLogger()

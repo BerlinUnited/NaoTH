@@ -27,6 +27,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/BehaviorStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/RobotPose.h"
@@ -48,6 +49,8 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraInfoParameter)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+
+  REQUIRE(BehaviorStatus)
   
   PROVIDE(ColorTable64)
   PROVIDE(ColorClassificationModel)
