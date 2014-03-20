@@ -30,6 +30,8 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     userMsg->set_timetoball(d.timeToBall);
     userMsg->set_wasstriker(d.wasStriker);
     userMsg->set_ispenalized(d.isPenalized);
+    userMsg->set_batterycharge(d.batteryCharge);
+    userMsg->set_temperature(d.temperature);
     for(unsigned int i=0; i < d.opponents.size(); i++)
     {
       const TeamMessage::Opponent& rOpp = d.opponents[i];
@@ -80,6 +82,8 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     d.teamNumber = msg.user().teamnumber();
     d.wasStriker = msg.user().wasstriker();
     d.isPenalized = msg.user().ispenalized();
+    d.batteryCharge = msg.user().batterycharge();
+    d.temperature = msg.user().temperature();
 
     d.frameInfo.setFrameNumber(msg.frameinfo().framenumber());
     d.frameInfo.setTime(msg.frameinfo().time());

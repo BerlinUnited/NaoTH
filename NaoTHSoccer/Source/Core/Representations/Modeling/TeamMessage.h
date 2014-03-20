@@ -87,6 +87,8 @@ public:
     bool wasStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
+    float batteryCharge;
+    float temperature;
     // END BERLIN UNITED SPECIFIC
 
   };

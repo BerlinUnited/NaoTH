@@ -483,13 +483,15 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamMessage));
   BUUserTeamMessage_descriptor_ = file->message_type(20);
-  static const int BUUserTeamMessage_offsets_[6] = {
+  static const int BUUserTeamMessage_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, bodyid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, timetoball_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, wasstriker_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, ispenalized_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, opponents_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, teamnumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, batterycharge_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, temperature_),
   };
   BUUserTeamMessage_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -757,18 +759,19 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022"
     "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n"
     "aothmessages.BUUserTeamMessage\022+\n\tframeI"
-    "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\272\001\n\021"
+    "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\354\001\n\021"
     "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno"
     "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001"
     "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n"
     "\topponents\030\005 \003(\0132\027.naothmessages.Opponen"
-    "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\"L\n\010Opponent\022\024\n\t"
-    "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132"
-    "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa"
-    "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na"
-    "othmessages.DoubleVector2*7\n\tTeamColor\022\014"
-    "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam"
-    "\020\002B\026\n\024de.naoth.rc.messages", 4586);
+    "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatteryCharg"
+    "e\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\"L\n\010Op"
+    "ponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFi"
+    "eld\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Came"
+    "raMatrixCalibration\0226\n\020correctionOffset\030"
+    "\001 \003(\0132\034.naothmessages.DoubleVector2*7\n\tT"
+    "eamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013i"
+    "nvalidTeam\020\002B\026\n\024de.naoth.rc.messages", 4636);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -8482,6 +8485,8 @@ const int BUUserTeamMessage::kWasStrikerFieldNumber;
 const int BUUserTeamMessage::kIsPenalizedFieldNumber;
 const int BUUserTeamMessage::kOpponentsFieldNumber;
 const int BUUserTeamMessage::kTeamNumberFieldNumber;
+const int BUUserTeamMessage::kBatteryChargeFieldNumber;
+const int BUUserTeamMessage::kTemperatureFieldNumber;
 #endif  // !_MSC_VER
 
 BUUserTeamMessage::BUUserTeamMessage()
@@ -8505,6 +8510,8 @@ void BUUserTeamMessage::SharedCtor() {
   wasstriker_ = false;
   ispenalized_ = false;
   teamnumber_ = 0u;
+  batterycharge_ = 1;
+  temperature_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -8551,6 +8558,8 @@ void BUUserTeamMessage::Clear() {
     wasstriker_ = false;
     ispenalized_ = false;
     teamnumber_ = 0u;
+    batterycharge_ = 1;
+    temperature_ = 0;
   }
   opponents_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -8654,6 +8663,38 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(61)) goto parse_batteryCharge;
+        break;
+      }
+      
+      // optional float batteryCharge = 7 [default = 1];
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_batteryCharge:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &batterycharge_)));
+          set_has_batterycharge();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(69)) goto parse_temperature;
+        break;
+      }
+      
+      // optional float temperature = 8 [default = 0];
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_temperature:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &temperature_)));
+          set_has_temperature();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -8711,6 +8752,16 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->teamnumber(), output);
   }
   
+  // optional float batteryCharge = 7 [default = 1];
+  if (has_batterycharge()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->batterycharge(), output);
+  }
+  
+  // optional float temperature = 8 [default = 0];
+  if (has_temperature()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->temperature(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -8756,6 +8807,16 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->teamnumber(), target);
   }
   
+  // optional float batteryCharge = 7 [default = 1];
+  if (has_batterycharge()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->batterycharge(), target);
+  }
+  
+  // optional float temperature = 8 [default = 0];
+  if (has_temperature()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->temperature(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -8796,6 +8857,16 @@ int BUUserTeamMessage::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->teamnumber());
+    }
+    
+    // optional float batteryCharge = 7 [default = 1];
+    if (has_batterycharge()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float temperature = 8 [default = 0];
+    if (has_temperature()) {
+      total_size += 1 + 4;
     }
     
   }
@@ -8849,6 +8920,12 @@ void BUUserTeamMessage::MergeFrom(const BUUserTeamMessage& from) {
     if (from.has_teamnumber()) {
       set_teamnumber(from.teamnumber());
     }
+    if (from.has_batterycharge()) {
+      set_batterycharge(from.batterycharge());
+    }
+    if (from.has_temperature()) {
+      set_temperature(from.temperature());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -8881,6 +8958,8 @@ void BUUserTeamMessage::Swap(BUUserTeamMessage* other) {
     std::swap(ispenalized_, other->ispenalized_);
     opponents_.Swap(&other->opponents_);
     std::swap(teamnumber_, other->teamnumber_);
+    std::swap(batterycharge_, other->batterycharge_);
+    std::swap(temperature_, other->temperature_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

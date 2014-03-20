@@ -186,6 +186,8 @@ message BUUserTeamMessage
   optional bool isPenalized = 4 [default=false];
   repeated Opponent opponents = 5;
   optional uint32 teamNumber = 6 [default=0];
+  optional float batteryCharge = 7 [default=1.0];
+  optional float temperature = 8 [default=0.0];
 }
 
 message Opponent {

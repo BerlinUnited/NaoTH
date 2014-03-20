@@ -6,9 +6,12 @@
 
 package de.naoth.rc.dialogs.panels;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.TeamCommViewer;
+import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.MessageServer;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -60,10 +63,12 @@ public class RobotStatus extends javax.swing.JPanel {
       if((currentTime - lastSeen) > MAX_TIME_BEFORE_DEAD || msgPerSecond <= 0.0)
       {
         this.jlTimestamp.setText("DEAD");
+        this.jlTimestamp.setForeground(Color.red);
       }
       else
       {
         this.jlTimestamp.setText(String.format("%4.2f msg/s", msgPerSecond));
+        this.jlTimestamp.setForeground(Color.black);
       }
       
       this.jlTeamNumber.setText("TN: " + msg.team);
@@ -78,6 +83,40 @@ public class RobotStatus extends javax.swing.JPanel {
 
       this.jlFallenTime.setText("FT: " + msg.fallen);
       this.jlBallAge.setText("BA: " + msg.ballAge);
+      
+      jlTemperature.setForeground(Color.black);
+      jlBatteryCharge.setForeground(Color.black);
+      try
+      {
+        Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
+        jlTemperature.setText(String.format("TEMP  %3.1f °C", user.getTemperature()));
+        jlBatteryCharge.setText(String.format("BATTERY %3.1f%%", user.getBatteryCharge()*100.0f));
+        
+        if(user.getTemperature() >= 60.0f)
+        {
+          jlTemperature.setForeground(Color.orange);
+        }
+        if(user.getTemperature() >= 75.0f)
+        {
+          jlTemperature.setForeground(Color.red);
+        }
+        
+        if(user.getBatteryCharge() <= 0.3f)
+        {
+          jlBatteryCharge.setForeground(Color.orange);
+        }
+        if(user.getBatteryCharge() <= 0.1f)
+        {
+          jlBatteryCharge.setForeground(Color.red);
+        }
+      }
+      catch(InvalidProtocolBufferException ex)
+      {
+        Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, null, ex);
+        
+        jlTemperature.setText("TEMP ??");
+        jlBatteryCharge.setText("BATTERY ??");
+      }
       
       this.connectButton.setEnabled(!this.messageServer.isConnected());
     }
@@ -130,6 +169,8 @@ public class RobotStatus extends javax.swing.JPanel {
     jlTeamColor = new javax.swing.JLabel();
     jlFallenTime = new javax.swing.JLabel();
     jlBallAge = new javax.swing.JLabel();
+    jlBatteryCharge = new javax.swing.JLabel();
+    jlTemperature = new javax.swing.JLabel();
     jlAddress = new javax.swing.JLabel();
     connectButton = new javax.swing.JButton();
 
@@ -150,7 +191,7 @@ public class RobotStatus extends javax.swing.JPanel {
     setMaximumSize(new java.awt.Dimension(150, 200));
     setMinimumSize(new java.awt.Dimension(150, 100));
     setPreferredSize(new java.awt.Dimension(150, 100));
-    setLayout(new java.awt.GridLayout(4, 2));
+    setLayout(new java.awt.GridLayout(5, 2));
 
     jlPlayerNumber.setText("PN");
     add(jlPlayerNumber);
@@ -169,6 +210,12 @@ public class RobotStatus extends javax.swing.JPanel {
 
     jlBallAge.setText("BA");
     add(jlBallAge);
+
+    jlBatteryCharge.setText("BATTERY 100%");
+    add(jlBatteryCharge);
+
+    jlTemperature.setText("TEMP 000°C");
+    add(jlTemperature);
 
     jlAddress.setText("-");
     add(jlAddress);
@@ -208,10 +255,12 @@ public class RobotStatus extends javax.swing.JPanel {
   private javax.swing.JPanel jPanel1;
   private javax.swing.JLabel jlAddress;
   private javax.swing.JLabel jlBallAge;
+  private javax.swing.JLabel jlBatteryCharge;
   private javax.swing.JLabel jlFallenTime;
   private javax.swing.JLabel jlPlayerNumber;
   private javax.swing.JLabel jlTeamColor;
   private javax.swing.JLabel jlTeamNumber;
+  private javax.swing.JLabel jlTemperature;
   private javax.swing.JLabel jlTimestamp;
   // End of variables declaration//GEN-END:variables
 

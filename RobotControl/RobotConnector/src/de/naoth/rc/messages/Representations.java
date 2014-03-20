@@ -17211,6 +17211,14 @@ public final class Representations {
     // optional uint32 teamNumber = 6 [default = 0];
     boolean hasTeamNumber();
     int getTeamNumber();
+    
+    // optional float batteryCharge = 7 [default = 1];
+    boolean hasBatteryCharge();
+    float getBatteryCharge();
+    
+    // optional float temperature = 8 [default = 0];
+    boolean hasTemperature();
+    float getTemperature();
   }
   public static final class BUUserTeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -17334,6 +17342,26 @@ public final class Representations {
       return teamNumber_;
     }
     
+    // optional float batteryCharge = 7 [default = 1];
+    public static final int BATTERYCHARGE_FIELD_NUMBER = 7;
+    private float batteryCharge_;
+    public boolean hasBatteryCharge() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public float getBatteryCharge() {
+      return batteryCharge_;
+    }
+    
+    // optional float temperature = 8 [default = 0];
+    public static final int TEMPERATURE_FIELD_NUMBER = 8;
+    private float temperature_;
+    public boolean hasTemperature() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public float getTemperature() {
+      return temperature_;
+    }
+    
     private void initFields() {
       bodyID_ = "unknown";
       timeToBall_ = 0;
@@ -17341,6 +17369,8 @@ public final class Representations {
       isPenalized_ = false;
       opponents_ = java.util.Collections.emptyList();
       teamNumber_ = 0;
+      batteryCharge_ = 1F;
+      temperature_ = 0F;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -17378,6 +17408,12 @@ public final class Representations {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt32(6, teamNumber_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeFloat(7, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeFloat(8, temperature_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -17410,6 +17446,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(6, teamNumber_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(7, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(8, temperature_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -17552,6 +17596,10 @@ public final class Representations {
         }
         teamNumber_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
+        batteryCharge_ = 1F;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        temperature_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
       
@@ -17619,6 +17667,14 @@ public final class Representations {
           to_bitField0_ |= 0x00000010;
         }
         result.teamNumber_ = teamNumber_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.batteryCharge_ = batteryCharge_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.temperature_ = temperature_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -17675,6 +17731,12 @@ public final class Representations {
         }
         if (other.hasTeamNumber()) {
           setTeamNumber(other.getTeamNumber());
+        }
+        if (other.hasBatteryCharge()) {
+          setBatteryCharge(other.getBatteryCharge());
+        }
+        if (other.hasTemperature()) {
+          setTemperature(other.getTemperature());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -17742,6 +17804,16 @@ public final class Representations {
             case 48: {
               bitField0_ |= 0x00000020;
               teamNumber_ = input.readUInt32();
+              break;
+            }
+            case 61: {
+              bitField0_ |= 0x00000040;
+              batteryCharge_ = input.readFloat();
+              break;
+            }
+            case 69: {
+              bitField0_ |= 0x00000080;
+              temperature_ = input.readFloat();
               break;
             }
           }
@@ -18052,6 +18124,48 @@ public final class Representations {
       public Builder clearTeamNumber() {
         bitField0_ = (bitField0_ & ~0x00000020);
         teamNumber_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional float batteryCharge = 7 [default = 1];
+      private float batteryCharge_ = 1F;
+      public boolean hasBatteryCharge() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public float getBatteryCharge() {
+        return batteryCharge_;
+      }
+      public Builder setBatteryCharge(float value) {
+        bitField0_ |= 0x00000040;
+        batteryCharge_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBatteryCharge() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        batteryCharge_ = 1F;
+        onChanged();
+        return this;
+      }
+      
+      // optional float temperature = 8 [default = 0];
+      private float temperature_ ;
+      public boolean hasTemperature() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public float getTemperature() {
+        return temperature_;
+      }
+      public Builder setTemperature(float value) {
+        bitField0_ |= 0x00000080;
+        temperature_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTemperature() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        temperature_ = 0F;
         onChanged();
         return this;
       }
@@ -19358,18 +19472,19 @@ public final class Representations {
       "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022" +
       "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n" +
       "aothmessages.BUUserTeamMessage\022+\n\tframeI" +
-      "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\272\001\n\021" +
+      "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\354\001\n\021" +
       "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno" +
       "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001" +
       "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n" +
       "\topponents\030\005 \003(\0132\027.naothmessages.Opponen" +
-      "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\"L\n\010Opponent\022\024\n\t" +
-      "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132",
-      "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
-      "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na" +
-      "othmessages.DoubleVector2*7\n\tTeamColor\022\014" +
-      "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam" +
-      "\020\002B\026\n\024de.naoth.rc.messages"
+      "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatteryCharg" +
+      "e\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\"L\n\010Op",
+      "ponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFi" +
+      "eld\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Came" +
+      "raMatrixCalibration\0226\n\020correctionOffset\030" +
+      "\001 \003(\0132\034.naothmessages.DoubleVector2*7\n\tT" +
+      "eamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013i" +
+      "nvalidTeam\020\002B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -19541,7 +19656,7 @@ public final class Representations {
           internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BUUserTeamMessage_descriptor,
-              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", },
+              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", "BatteryCharge", "Temperature", },
               de.naoth.rc.messages.Representations.BUUserTeamMessage.class,
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder.class);
           internal_static_naothmessages_Opponent_descriptor =
