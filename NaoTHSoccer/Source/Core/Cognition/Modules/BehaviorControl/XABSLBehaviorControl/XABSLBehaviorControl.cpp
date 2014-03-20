@@ -304,8 +304,7 @@ void XABSLBehaviorControl::executeDebugCommand(
   }
   else if(command == "behavior:status")
   {
-    google::protobuf::io::OstreamOutputStream buf(&outstream);
-    getBehaviorStatus().status.SerializeToZeroCopyStream(&buf);
+    naoth::Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), outstream);
   }
   else if(command == "behavior:get_agent")
   {

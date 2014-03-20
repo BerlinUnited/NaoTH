@@ -9,7 +9,7 @@
 #define _BEHAVIORSTATUS_H
 
 #include "Tools/DataStructures/Printable.h"
-
+#include <Tools/DataStructures/Serializer.h>
 
 #include "Messages/Messages.pb.h"
 
@@ -28,5 +28,17 @@ public:
   naothmessages::BehaviorStatus status;
 
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<BehaviorStatus>
+  {
+  public:
+    static void serialize(const BehaviorStatus& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, BehaviorStatus& representation);
+  };
+}
+
 #endif  /* _BEHAVIORSTATUS_H */
 
