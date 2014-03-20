@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/OpenCV/OpenCVGrayScaleImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
@@ -154,6 +155,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(CameraInfoSetter);
+  REGISTER_MODULE(GameLogger);
 
   // pre-modelling
   REGISTER_MODULE(CameraMatrixFinder);
