@@ -73,8 +73,6 @@ public class RobotStatus extends javax.swing.JPanel {
         this.jlTimestamp.setForeground(Color.black);
       }
       
-      this.jlTeamNumber.setText("TN: " + msg.team);
-      
       if(msg.team==1) {
         this.jlTeamColor.setText("TEAM RED");
       } else if(msg.team==0) {
@@ -111,6 +109,11 @@ public class RobotStatus extends javax.swing.JPanel {
         {
           jlBatteryCharge.setForeground(Color.red);
         }
+        
+        
+      
+      this.jlTeamNumber.setText("TN: " + user.getTeamNumber());
+        
       }
       catch(InvalidProtocolBufferException ex)
       {

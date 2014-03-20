@@ -142,6 +142,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         data.isPenalized = userData.ispenalized();
         data.batteryCharge = userData.batterycharge();
         data.temperature = userData.temperature();
+        data.teamNumber = userData.teamnumber();
         data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
         for(unsigned int i=0; i < data.opponents.size(); i++)
         {

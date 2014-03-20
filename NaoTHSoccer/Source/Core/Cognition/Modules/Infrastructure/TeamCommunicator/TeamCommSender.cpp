@@ -140,6 +140,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   userMsg.set_ispenalized(teamData.isPenalized);
   userMsg.set_batterycharge(teamData.batteryCharge);
   userMsg.set_temperature(teamData.temperature);
+  userMsg.set_teamnumber(teamData.teamNumber);
   for(unsigned int i=0; i < teamData.opponents.size(); i++)
   {
     naothmessages::Opponent* opp = userMsg.add_opponents();
