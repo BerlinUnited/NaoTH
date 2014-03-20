@@ -11,7 +11,6 @@ import de.naoth.me.core.JointPrototypeConfiguration;
 import de.naoth.me.core.MotionNet;
 import de.naoth.me.core.MotionNetLoader;
 import de.naoth.rc.server.ConnectionDialog;
-import de.naoth.rc.server.IMessageServerParent;
 import de.naoth.rc.server.MessageServer;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -34,7 +33,7 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author  Heinrich Mellmann
  */
-public class MotionEditor extends javax.swing.JFrame implements IMessageServerParent
+public class MotionEditor extends javax.swing.JFrame
 {
 
   private JointPrototypeConfiguration jointDefaultConfiguration;
@@ -105,8 +104,8 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     this.motionNetLoader = new MotionNetLoader();
     this.jointDefaultConfiguration = new JointDefaultConfiguration();
 
-    this.messageServer = new MessageServer(this);
-    connectionDialog = new ConnectionDialog(this, this);
+    this.messageServer = new MessageServer();
+    connectionDialog = new ConnectionDialog(this, this.messageServer);
 
 
     this.motionPlayer1.setMessageServer(this.messageServer);

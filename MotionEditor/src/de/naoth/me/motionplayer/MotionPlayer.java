@@ -8,9 +8,9 @@ import de.naoth.me.core.MotionNet;
 import de.naoth.me.core.Transition;
 //import de.naoth.rc.messages.Messages.CMDArg;
 //import de.naoth.rc.messages.Messages.CMD;
-import de.naoth.rc.messages.Representations.JointData;
 import de.naoth.rc.messages.CommonTypes.JointID;
-import de.naoth.rc.messages.Representations.SensorJointData;
+import de.naoth.rc.messages.FrameworkRepresentations.JointData;
+import de.naoth.rc.messages.FrameworkRepresentations.SensorJointData;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 
