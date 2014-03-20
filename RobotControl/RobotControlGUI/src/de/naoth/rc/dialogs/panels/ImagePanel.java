@@ -10,11 +10,16 @@
  */
 package de.naoth.rc.dialogs.panels;
 
+import de.naoth.rc.dialogs.Tools.PNGImageFileFilter;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -34,6 +39,8 @@ public class ImagePanel extends javax.swing.JPanel
         
         this.keepAspectRatio = true;
         this.stretchImage = true;
+        
+        this.fileChooser.setFileFilter(new PNGImageFileFilter());
     }
     
     
@@ -119,6 +126,37 @@ public class ImagePanel extends javax.swing.JPanel
         g2d.translate(-(posX + 1), -(posY + 1));
 
     }//end paint
+    
+    public void saveImage(File file)
+    {
+        try
+        {
+          if (this.backgroundImage == null)
+          {
+            throw new Exception("There is no Image to save");
+          }
+          int height = this.backgroundImage.getHeight(this);
+          int width = this.backgroundImage.getWidth(this);
+
+          BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+          Graphics2D g2d = bi.createGraphics();
+          g2d.drawImage(this.backgroundImage, 0, 0, width, height, this);
+
+          ImageIO.write(bi, "PNG", file);
+
+          /*
+          ImageIO.write(bi, "JPEG", selectedFile);
+          ImageIO.write(bi, "gif", selectedFile);
+          ImageIO.write(bi, "BMP", selectedFile);
+           */
+        }
+        catch (Exception e)
+        {
+          JOptionPane.showMessageDialog(this,
+            e.toString(), "The image could not be written.", JOptionPane.ERROR_MESSAGE);
+        }//end catch
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -128,6 +166,20 @@ public class ImagePanel extends javax.swing.JPanel
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
+        jPopupMenuImagePanel = new javax.swing.JPopupMenu();
+        jMenuItemSaveAs = new javax.swing.JMenuItem();
+        fileChooser = new de.naoth.rc.dialogs.panels.ExtendedFileChooser();
+
+        jMenuItemSaveAs.setText("Save As...");
+        jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSaveAsActionPerformed(evt);
+            }
+        });
+        jPopupMenuImagePanel.add(jMenuItemSaveAs);
+
+        setComponentPopupMenu(jPopupMenuImagePanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -140,6 +192,20 @@ public class ImagePanel extends javax.swing.JPanel
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAsActionPerformed
+        fileChooser.setSelectedFile(new File("image.png"));
+        fileChooser.showSaveDialog(this);
+        File selectedFile = fileChooser.getSelectedFile();
+        if (selectedFile != null)
+        {
+            this.saveImage(selectedFile);
+        }
+    }//GEN-LAST:event_jMenuItemSaveAsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
+    private javax.swing.JMenuItem jMenuItemSaveAs;
+    private javax.swing.JPopupMenu jPopupMenuImagePanel;
     // End of variables declaration//GEN-END:variables
 }

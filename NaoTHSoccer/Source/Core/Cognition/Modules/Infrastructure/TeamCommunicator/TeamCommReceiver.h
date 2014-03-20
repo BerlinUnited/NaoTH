@@ -4,6 +4,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/BatteryData.h>
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/RobotInfo.h"
@@ -29,6 +30,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(MotionStatus)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
+  REQUIRE(BatteryData)
 
   PROVIDE(TeamMessage)
 END_DECLARE_MODULE(TeamCommReceiver)

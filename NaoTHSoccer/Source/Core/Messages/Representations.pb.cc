@@ -94,6 +94,7 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* CameraMatrixCalibration_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraMatrixCalibration_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* TeamColor_descriptor_ = NULL;
 
 }  // namespace
 
@@ -461,7 +462,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
   TeamMessage_descriptor_ = file->message_type(19);
   static const int TeamMessage_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, playernum_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, team_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, teamcolor_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, pose_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballage_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, ballposition_),
@@ -482,12 +483,15 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamMessage));
   BUUserTeamMessage_descriptor_ = file->message_type(20);
-  static const int BUUserTeamMessage_offsets_[5] = {
+  static const int BUUserTeamMessage_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, bodyid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, timetoball_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, wasstriker_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, ispenalized_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, opponents_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, teamnumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, batterycharge_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, temperature_),
   };
   BUUserTeamMessage_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -531,6 +535,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraMatrixCalibration));
+  TeamColor_descriptor_ = file->enum_type(0);
 }
 
 namespace {
@@ -745,24 +750,28 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
     "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n"
     "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n"
-    "aothmessages.TeamMessage\"\307\002\n\013TeamMessage"
-    "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022"
-    "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007"
-    "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132"
-    "\034.naothmessages.DoubleVector2\0222\n\014ballVel"
-    "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector"
-    "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na"
-    "othmessages.BUUserTeamMessage\022+\n\tframeIn"
-    "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B"
-    "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow"
-    "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001("
-    "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t"
-    "opponents\030\005 \003(\0132\027.naothmessages.Opponent"
-    "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po"
-    "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q"
-    "\n\027CameraMatrixCalibration\0226\n\020correctionO"
-    "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector"
-    "2B\026\n\024de.naoth.rc.messages", 4465);
+    "aothmessages.TeamMessage\"\360\002\n\013TeamMessage"
+    "\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\013 \001("
+    "\0162\030.naothmessages.TeamColor:\010blueTeam\022#\n"
+    "\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007ba"
+    "llAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132\034."
+    "naothmessages.DoubleVector2\0222\n\014ballVeloc"
+    "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022"
+    "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n"
+    "aothmessages.BUUserTeamMessage\022+\n\tframeI"
+    "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\354\001\n\021"
+    "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno"
+    "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001"
+    "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n"
+    "\topponents\030\005 \003(\0132\027.naothmessages.Opponen"
+    "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatteryCharg"
+    "e\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\"L\n\010Op"
+    "ponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFi"
+    "eld\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Came"
+    "raMatrixCalibration\0226\n\020correctionOffset\030"
+    "\001 \003(\0132\034.naothmessages.DoubleVector2*7\n\tT"
+    "eamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013i"
+    "nvalidTeam\020\002B\026\n\024de.naoth.rc.messages", 4636);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -820,6 +829,21 @@ struct StaticDescriptorInitializer_Representations_2eproto {
     protobuf_AddDesc_Representations_2eproto();
   }
 } static_descriptor_initializer_Representations_2eproto_;
+
+const ::google::protobuf::EnumDescriptor* TeamColor_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TeamColor_descriptor_;
+}
+bool TeamColor_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
 
 
 // ===================================================================
@@ -7878,7 +7902,7 @@ void TeamMessageCollection::Swap(TeamMessageCollection* other) {
 
 #ifndef _MSC_VER
 const int TeamMessage::kPlayerNumFieldNumber;
-const int TeamMessage::kTeamFieldNumber;
+const int TeamMessage::kTeamColorFieldNumber;
 const int TeamMessage::kPoseFieldNumber;
 const int TeamMessage::kBallAgeFieldNumber;
 const int TeamMessage::kBallPositionFieldNumber;
@@ -7910,12 +7934,12 @@ TeamMessage::TeamMessage(const TeamMessage& from)
 void TeamMessage::SharedCtor() {
   _cached_size_ = 0;
   playernum_ = 0u;
-  team_ = 0u;
+  teamcolor_ = 0;
   pose_ = NULL;
   ballage_ = -1;
   ballposition_ = NULL;
   ballvelocity_ = NULL;
-  fallen_ = -1;
+  fallen_ = false;
   user_ = NULL;
   frameinfo_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -7958,7 +7982,7 @@ TeamMessage* TeamMessage::New() const {
 void TeamMessage::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     playernum_ = 0u;
-    team_ = 0u;
+    teamcolor_ = 0;
     if (has_pose()) {
       if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
     }
@@ -7969,7 +7993,7 @@ void TeamMessage::Clear() {
     if (has_ballvelocity()) {
       if (ballvelocity_ != NULL) ballvelocity_->::naothmessages::DoubleVector2::Clear();
     }
-    fallen_ = -1;
+    fallen_ = false;
     if (has_user()) {
       if (user_ != NULL) user_->::naothmessages::BUUserTeamMessage::Clear();
     }
@@ -7997,22 +8021,6 @@ bool TeamMessage::MergePartialFromCodedStream(
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &playernum_)));
           set_has_playernum();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(16)) goto parse_team;
-        break;
-      }
-      
-      // optional uint32 team = 2 [default = 0];
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_team:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &team_)));
-          set_has_team();
         } else {
           goto handle_uninterpreted;
         }
@@ -8074,22 +8082,6 @@ bool TeamMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(56)) goto parse_fallen;
-        break;
-      }
-      
-      // optional int32 fallen = 7 [default = -1];
-      case 7: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_fallen:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &fallen_)));
-          set_has_fallen();
-        } else {
-          goto handle_uninterpreted;
-        }
         if (input->ExpectTag(66)) goto parse_user;
         break;
       }
@@ -8115,6 +8107,43 @@ bool TeamMessage::MergePartialFromCodedStream(
          parse_frameInfo:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_frameinfo()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(80)) goto parse_fallen;
+        break;
+      }
+      
+      // optional bool fallen = 10 [default = false];
+      case 10: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_fallen:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &fallen_)));
+          set_has_fallen();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(88)) goto parse_teamColor;
+        break;
+      }
+      
+      // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+      case 11: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_teamColor:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (naothmessages::TeamColor_IsValid(value)) {
+            set_teamcolor(static_cast< naothmessages::TeamColor >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(11, value);
+          }
         } else {
           goto handle_uninterpreted;
         }
@@ -8145,11 +8174,6 @@ void TeamMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->playernum(), output);
   }
   
-  // optional uint32 team = 2 [default = 0];
-  if (has_team()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->team(), output);
-  }
-  
   // optional .naothmessages.Pose2D pose = 3;
   if (has_pose()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
@@ -8173,11 +8197,6 @@ void TeamMessage::SerializeWithCachedSizes(
       6, this->ballvelocity(), output);
   }
   
-  // optional int32 fallen = 7 [default = -1];
-  if (has_fallen()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->fallen(), output);
-  }
-  
   // optional .naothmessages.BUUserTeamMessage user = 8;
   if (has_user()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
@@ -8188,6 +8207,17 @@ void TeamMessage::SerializeWithCachedSizes(
   if (has_frameinfo()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       9, this->frameinfo(), output);
+  }
+  
+  // optional bool fallen = 10 [default = false];
+  if (has_fallen()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(10, this->fallen(), output);
+  }
+  
+  // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+  if (has_teamcolor()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      11, this->teamcolor(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -8201,11 +8231,6 @@ void TeamMessage::SerializeWithCachedSizes(
   // optional uint32 playerNum = 1 [default = 0];
   if (has_playernum()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->playernum(), target);
-  }
-  
-  // optional uint32 team = 2 [default = 0];
-  if (has_team()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->team(), target);
   }
   
   // optional .naothmessages.Pose2D pose = 3;
@@ -8234,11 +8259,6 @@ void TeamMessage::SerializeWithCachedSizes(
         6, this->ballvelocity(), target);
   }
   
-  // optional int32 fallen = 7 [default = -1];
-  if (has_fallen()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->fallen(), target);
-  }
-  
   // optional .naothmessages.BUUserTeamMessage user = 8;
   if (has_user()) {
     target = ::google::protobuf::internal::WireFormatLite::
@@ -8251,6 +8271,17 @@ void TeamMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         9, this->frameinfo(), target);
+  }
+  
+  // optional bool fallen = 10 [default = false];
+  if (has_fallen()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(10, this->fallen(), target);
+  }
+  
+  // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+  if (has_teamcolor()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      11, this->teamcolor(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -8271,11 +8302,10 @@ int TeamMessage::ByteSize() const {
           this->playernum());
     }
     
-    // optional uint32 team = 2 [default = 0];
-    if (has_team()) {
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    if (has_teamcolor()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
-          this->team());
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->teamcolor());
     }
     
     // optional .naothmessages.Pose2D pose = 3;
@@ -8306,11 +8336,9 @@ int TeamMessage::ByteSize() const {
           this->ballvelocity());
     }
     
-    // optional int32 fallen = 7 [default = -1];
+    // optional bool fallen = 10 [default = false];
     if (has_fallen()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->fallen());
+      total_size += 1 + 1;
     }
     
     // optional .naothmessages.BUUserTeamMessage user = 8;
@@ -8359,8 +8387,8 @@ void TeamMessage::MergeFrom(const TeamMessage& from) {
     if (from.has_playernum()) {
       set_playernum(from.playernum());
     }
-    if (from.has_team()) {
-      set_team(from.team());
+    if (from.has_teamcolor()) {
+      set_teamcolor(from.teamcolor());
     }
     if (from.has_pose()) {
       mutable_pose()->::naothmessages::Pose2D::MergeFrom(from.pose());
@@ -8424,7 +8452,7 @@ bool TeamMessage::IsInitialized() const {
 void TeamMessage::Swap(TeamMessage* other) {
   if (other != this) {
     std::swap(playernum_, other->playernum_);
-    std::swap(team_, other->team_);
+    std::swap(teamcolor_, other->teamcolor_);
     std::swap(pose_, other->pose_);
     std::swap(ballage_, other->ballage_);
     std::swap(ballposition_, other->ballposition_);
@@ -8456,6 +8484,9 @@ const int BUUserTeamMessage::kTimeToBallFieldNumber;
 const int BUUserTeamMessage::kWasStrikerFieldNumber;
 const int BUUserTeamMessage::kIsPenalizedFieldNumber;
 const int BUUserTeamMessage::kOpponentsFieldNumber;
+const int BUUserTeamMessage::kTeamNumberFieldNumber;
+const int BUUserTeamMessage::kBatteryChargeFieldNumber;
+const int BUUserTeamMessage::kTemperatureFieldNumber;
 #endif  // !_MSC_VER
 
 BUUserTeamMessage::BUUserTeamMessage()
@@ -8478,6 +8509,9 @@ void BUUserTeamMessage::SharedCtor() {
   timetoball_ = 0u;
   wasstriker_ = false;
   ispenalized_ = false;
+  teamnumber_ = 0u;
+  batterycharge_ = 1;
+  temperature_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -8523,6 +8557,9 @@ void BUUserTeamMessage::Clear() {
     timetoball_ = 0u;
     wasstriker_ = false;
     ispenalized_ = false;
+    teamnumber_ = 0u;
+    batterycharge_ = 1;
+    temperature_ = 0;
   }
   opponents_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -8610,6 +8647,54 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(42)) goto parse_opponents;
+        if (input->ExpectTag(48)) goto parse_teamNumber;
+        break;
+      }
+      
+      // optional uint32 teamNumber = 6 [default = 0];
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_teamNumber:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &teamnumber_)));
+          set_has_teamnumber();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(61)) goto parse_batteryCharge;
+        break;
+      }
+      
+      // optional float batteryCharge = 7 [default = 1];
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_batteryCharge:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &batterycharge_)));
+          set_has_batterycharge();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(69)) goto parse_temperature;
+        break;
+      }
+      
+      // optional float temperature = 8 [default = 0];
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_temperature:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &temperature_)));
+          set_has_temperature();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -8662,6 +8747,21 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
       5, this->opponents(i), output);
   }
   
+  // optional uint32 teamNumber = 6 [default = 0];
+  if (has_teamnumber()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->teamnumber(), output);
+  }
+  
+  // optional float batteryCharge = 7 [default = 1];
+  if (has_batterycharge()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->batterycharge(), output);
+  }
+  
+  // optional float temperature = 8 [default = 0];
+  if (has_temperature()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->temperature(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -8702,6 +8802,21 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
         5, this->opponents(i), target);
   }
   
+  // optional uint32 teamNumber = 6 [default = 0];
+  if (has_teamnumber()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->teamnumber(), target);
+  }
+  
+  // optional float batteryCharge = 7 [default = 1];
+  if (has_batterycharge()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->batterycharge(), target);
+  }
+  
+  // optional float temperature = 8 [default = 0];
+  if (has_temperature()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->temperature(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -8735,6 +8850,23 @@ int BUUserTeamMessage::ByteSize() const {
     // optional bool isPenalized = 4 [default = false];
     if (has_ispenalized()) {
       total_size += 1 + 1;
+    }
+    
+    // optional uint32 teamNumber = 6 [default = 0];
+    if (has_teamnumber()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->teamnumber());
+    }
+    
+    // optional float batteryCharge = 7 [default = 1];
+    if (has_batterycharge()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float temperature = 8 [default = 0];
+    if (has_temperature()) {
+      total_size += 1 + 4;
     }
     
   }
@@ -8785,6 +8917,15 @@ void BUUserTeamMessage::MergeFrom(const BUUserTeamMessage& from) {
     if (from.has_ispenalized()) {
       set_ispenalized(from.ispenalized());
     }
+    if (from.has_teamnumber()) {
+      set_teamnumber(from.teamnumber());
+    }
+    if (from.has_batterycharge()) {
+      set_batterycharge(from.batterycharge());
+    }
+    if (from.has_temperature()) {
+      set_temperature(from.temperature());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -8816,6 +8957,9 @@ void BUUserTeamMessage::Swap(BUUserTeamMessage* other) {
     std::swap(wasstriker_, other->wasstriker_);
     std::swap(ispenalized_, other->ispenalized_);
     opponents_.Swap(&other->opponents_);
+    std::swap(teamnumber_, other->teamnumber_);
+    std::swap(batterycharge_, other->batterycharge_);
+    std::swap(temperature_, other->temperature_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

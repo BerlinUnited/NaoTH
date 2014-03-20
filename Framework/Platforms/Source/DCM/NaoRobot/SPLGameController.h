@@ -23,8 +23,9 @@ private:
 
 private:
   bool exiting;
+  int port;
   GSocket* socket;
-  GSocketAddress* broadcastAddress;
+  GSocketAddress* gamecontrollerAddress;
   GThread* socketThread;
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;

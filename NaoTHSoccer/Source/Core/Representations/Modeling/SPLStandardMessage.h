@@ -2,17 +2,21 @@
 #define SPLSTANDARDMESSAGE_H
 
 #include <stdint.h>
+#ifdef __cplusplus
+  #include <string>
+#endif
 
-static const int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 1;
-static const int SPL_STANDARD_MESSAGE_DATA_SIZE = 800;
+#define SPL_STANDARD_MESSAGE_STRUCT_HEADER  "SPL "
+#define SPL_STANDARD_MESSAGE_STRUCT_VERSION 4
+#define SPL_STANDARD_MESSAGE_DATA_SIZE      802
 
-
-struct SPLStandardMessage
+struct SPLStandardMessage 
 {
   char header[4];        // "SPL "
   uint8_t version;       // has to be set to SPL_STANDARD_MESSAGE_STRUCT_VERSION
   uint8_t playerNum;     // 1-5
-  uint16_t team;         // 0 is red 1 is blue (second byte is padding byte)
+  uint8_t team;          // 0 is blue, 1 is red 
+  uint8_t fallen;        // 1 means that the robot is fallen, 0 means that the robot can play
 
   // position and orientation of robot
   // coordinates in millimeters
@@ -21,6 +25,16 @@ struct SPLStandardMessage
   // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
   // angle in radians, 0 along the +x axis, increasing counter clockwise
   float pose[3];      // x,y,theta
+  
+  // the robot's target position on the field
+  // the coordinate system is the same as for the pose
+  // if the robot does not have any target, this attribute should be set to the robot's position
+  float walkingTo[2]; 
+  
+  // the target position of the next shot (either pass or goal shot)
+  // the coordinate system is the same as for the pose
+  // if the robot does not intend to shoot, this attribute should be set to the robot's position
+  float shootingTo[2]; 
 
   // Ball information
   int32_t ballAge;        // milliseconds since this robot last saw the ball. -1 if we haven't seen it
@@ -35,36 +49,37 @@ struct SPLStandardMessage
   // velocity of the ball (same coordinate system as above)
   float ballVel[2];
 
-  // milliseconds since the robot has been fallen.  -1 if not fallen
-  int32_t fallen;
-
   // number of bytes that is actually used by the data array
   uint16_t numOfDataBytes;
 
   // buffer for arbitrary data
   uint8_t data[SPL_STANDARD_MESSAGE_DATA_SIZE];
 
+#ifdef __cplusplus
   // constructor
   SPLStandardMessage()
   {
-    header[0] = 'S';
-    header[1] = 'P';
-    header[2] = 'L';
-    header[3] = ' ';
+    std::string headerAsString = SPL_STANDARD_MESSAGE_STRUCT_HEADER;
+    headerAsString.copy(header, 4, 0);
     version = SPL_STANDARD_MESSAGE_STRUCT_VERSION;
     playerNum = 0;
     team = 0;
+    fallen = 0;
     pose[0] = 0.f;
     pose[1] = 0.f;
     pose[2] = 0.f;
+    walkingTo[0] = 0.f;
+    walkingTo[1] = 0.f;
+    shootingTo[0] = 0.f;
+    shootingTo[1] = 0.f;
     ballAge = -1;
     ball[0] = 0.f;
     ball[1] = 0.f;
     ballVel[0] = 0.f;
     ballVel[1] = 0.f;
-    fallen = -1;
     numOfDataBytes = 0;
   }
+#endif
 };
 
 #endif // SPLSTANDARDMESSAGE_H

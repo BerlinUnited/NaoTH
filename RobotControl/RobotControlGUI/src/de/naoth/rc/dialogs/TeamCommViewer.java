@@ -122,7 +122,7 @@ public class TeamCommViewer extends AbstractDialog
       if(this.btListen.isSelected())
       {
         try {
-          this.teamCommListener.connect(-1);
+          this.teamCommListener.connect(10400);
         } catch (Exception ex) {}
         
         this.timerCheckMessages = new Timer();
@@ -178,7 +178,7 @@ public class TeamCommViewer extends AbstractDialog
   
 
   
-
+/*
   private void parseMessage(String address, int port, ByteBuffer buffer)
   {
     SPLMessage splMessage = new SPLMessage(buffer);
@@ -207,12 +207,10 @@ public class TeamCommViewer extends AbstractDialog
     Plugin.teamCommDrawingManager.setCurrenId(address);
 //    Plugin.teamCommDrawingManager.handleResponse(msg.toByteArray(), null);
   }//end parseMessage
-
+*/
  
   class TeamCommListener implements Runnable
   {
-    public final int TEAMCOMM_PORT = 10400;
-
     public class Message
     {
           public Message(long timestamp, SPLMessage message) {
@@ -247,7 +245,7 @@ public class TeamCommViewer extends AbstractDialog
         
         this.channel = DatagramChannel.open();
         this.channel.configureBlocking(true);
-        this.channel.bind(new InetSocketAddress(TEAMCOMM_PORT));
+        this.channel.bind(new InetSocketAddress(port));
 
         this.trigger = new Thread(this);
         this.trigger.start();
@@ -275,11 +273,15 @@ public class TeamCommViewer extends AbstractDialog
             this.readBuffer.clear();
             SocketAddress address = this.channel.receive(this.readBuffer);
             this.readBuffer.flip();
-            SPLMessage msg = new SPLMessage(this.readBuffer);
-            long timestamp = System.currentTimeMillis();
-            
-            if(address instanceof InetSocketAddress) {
-                this.messageMap.put(((InetSocketAddress)address).getHostString(), new Message(timestamp, msg));
+            try {
+                SPLMessage msg = new SPLMessage(this.readBuffer);
+                
+                long timestamp = System.currentTimeMillis();
+                if(address instanceof InetSocketAddress) {
+                    this.messageMap.put(((InetSocketAddress)address).getHostString(), new Message(timestamp, msg));
+                }
+            } catch( Exception ex ) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
             }
             //this.messageMap.put(address.toString(), new Message(timestamp, msg));
           }
