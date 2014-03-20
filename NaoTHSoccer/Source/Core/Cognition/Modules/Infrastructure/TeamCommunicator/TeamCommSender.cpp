@@ -42,6 +42,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const BodyState& bodyState,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
+                                   const BatteryData &batteryData,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
@@ -76,6 +77,9 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
+  out.batteryCharge = (float) batteryData.charge;
+  out.temperature =
+      (float) std::max(bodyState.temperatureLeftLeg, bodyState.temperatureRightLeg);
 
   out.opponents.clear();
   out.opponents.reserve(playersModel.opponents.size());
@@ -92,6 +96,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
     }
   }
 
+
 }
 
 void TeamCommSender::createMessage(SPLStandardMessage &msg)
@@ -99,7 +104,7 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
               getRobotPose(), getBodyState(), getSoccerStrategy(),
-              getPlayersModel(), data);
+              getPlayersModel(), getBatteryData(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
 }
@@ -126,12 +131,15 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
 
   splMsg.fallen = (uint8_t) teamData.fallen;
 
+
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
   userMsg.set_bodyid(teamData.bodyID);
   userMsg.set_timetoball(teamData.timeToBall);
   userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_ispenalized(teamData.isPenalized);
+  userMsg.set_batterycharge(teamData.batteryCharge);
+  userMsg.set_temperature(teamData.temperature);
   for(unsigned int i=0; i < teamData.opponents.size(); i++)
   {
     naothmessages::Opponent* opp = userMsg.add_opponents();

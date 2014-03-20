@@ -2664,6 +2664,20 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 teamnumber() const;
   inline void set_teamnumber(::google::protobuf::uint32 value);
   
+  // optional float batteryCharge = 7 [default = 1];
+  inline bool has_batterycharge() const;
+  inline void clear_batterycharge();
+  static const int kBatteryChargeFieldNumber = 7;
+  inline float batterycharge() const;
+  inline void set_batterycharge(float value);
+  
+  // optional float temperature = 8 [default = 0];
+  inline bool has_temperature() const;
+  inline void clear_temperature();
+  static const int kTemperatureFieldNumber = 8;
+  inline float temperature() const;
+  inline void set_temperature(float value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
  private:
   inline void set_has_bodyid();
@@ -2676,6 +2690,10 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline void clear_has_ispenalized();
   inline void set_has_teamnumber();
   inline void clear_has_teamnumber();
+  inline void set_has_batterycharge();
+  inline void clear_has_batterycharge();
+  inline void set_has_temperature();
+  inline void clear_has_temperature();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2686,9 +2704,11 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   bool ispenalized_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
   ::google::protobuf::uint32 teamnumber_;
+  float batterycharge_;
+  float temperature_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -5606,6 +5626,50 @@ inline ::google::protobuf::uint32 BUUserTeamMessage::teamnumber() const {
 inline void BUUserTeamMessage::set_teamnumber(::google::protobuf::uint32 value) {
   set_has_teamnumber();
   teamnumber_ = value;
+}
+
+// optional float batteryCharge = 7 [default = 1];
+inline bool BUUserTeamMessage::has_batterycharge() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void BUUserTeamMessage::set_has_batterycharge() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void BUUserTeamMessage::clear_has_batterycharge() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void BUUserTeamMessage::clear_batterycharge() {
+  batterycharge_ = 1;
+  clear_has_batterycharge();
+}
+inline float BUUserTeamMessage::batterycharge() const {
+  return batterycharge_;
+}
+inline void BUUserTeamMessage::set_batterycharge(float value) {
+  set_has_batterycharge();
+  batterycharge_ = value;
+}
+
+// optional float temperature = 8 [default = 0];
+inline bool BUUserTeamMessage::has_temperature() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void BUUserTeamMessage::set_has_temperature() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void BUUserTeamMessage::clear_has_temperature() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void BUUserTeamMessage::clear_temperature() {
+  temperature_ = 0;
+  clear_has_temperature();
+}
+inline float BUUserTeamMessage::temperature() const {
+  return temperature_;
+}
+inline void BUUserTeamMessage::set_temperature(float value) {
+  set_has_temperature();
+  temperature_ = value;
 }
 
 // -------------------------------------------------------------------

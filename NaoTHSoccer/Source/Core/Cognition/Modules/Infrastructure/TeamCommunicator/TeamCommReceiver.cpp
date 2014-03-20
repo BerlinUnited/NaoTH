@@ -54,7 +54,9 @@ void TeamCommReceiver::execute()
   TeamMessage::Data ownTeamData;
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
-                              getSoccerStrategy(), getPlayersModel(), ownTeamData);
+                              getSoccerStrategy(), getPlayersModel(),
+                              getBatteryData(),
+                              ownTeamData);
   // we don't have the right player number in the beginning, wait to send
   // one to ourself until we have a valid one
   if(ownTeamData.playerNum > 0)
@@ -70,7 +72,6 @@ void TeamCommReceiver::execute()
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 {
-  // TODO: implement handleMessage
   SPLStandardMessage spl;
   if(data.size() != sizeof(SPLStandardMessage))
   {
@@ -139,6 +140,8 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         data.timeToBall = userData.timetoball();
         data.wasStriker = userData.wasstriker();
         data.isPenalized = userData.ispenalized();
+        data.batteryCharge = userData.batterycharge();
+        data.temperature = userData.temperature();
         data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
         for(unsigned int i=0; i < data.opponents.size(); i++)
         {
