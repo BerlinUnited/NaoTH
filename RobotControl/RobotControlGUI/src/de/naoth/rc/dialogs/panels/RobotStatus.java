@@ -81,7 +81,7 @@ public class RobotStatus extends javax.swing.JPanel {
         this.jlTeamColor.setText("TEAM " + msg.team);
       }
 
-      this.jlFallenTime.setText("FT: " + msg.fallen);
+      this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
       this.jlBallAge.setText("BA: " + msg.ballAge);
       
       jlTemperature.setForeground(Color.black);
