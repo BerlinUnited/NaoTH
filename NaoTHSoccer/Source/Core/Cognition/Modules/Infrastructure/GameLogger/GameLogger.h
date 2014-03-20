@@ -23,7 +23,10 @@ public:
   virtual void execute();
 
 private:
-  LogfileManager < 30 > logfileManager;
+  // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
+  // treshold is reached.
+  // per now assume a maximum of 50KB per log entry and 250MB main memory consumption
+  LogfileManager < 5120 > logfileManager;
 };
 
 #endif // GAMELOGGER_H
