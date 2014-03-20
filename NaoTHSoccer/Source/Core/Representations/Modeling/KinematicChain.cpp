@@ -233,6 +233,7 @@ void KinematicChain::initLinkPositions()
   theLinks[LBicep].setLink(0, 0, 0);
   theLinks[LElbow].setLink(NaoInfo::UpperArmLength,NaoInfo::ElbowOffsetY,0);
   theLinks[LForeArm].setLink(0, 0, 0);
+  theLinks[LHand].setLink(NaoInfo::LowerArmLength, 0, 0);
 
   theLinks[LPelvis].setLink(0, NaoInfo::HipOffsetY, -NaoInfo::HipOffsetZ);
   theLinks[LHip].setLink(0, 0, 0);
@@ -247,6 +248,7 @@ void KinematicChain::initLinkPositions()
   theLinks[RBicep].setLink(0, 0, 0);
   theLinks[RElbow].setLink(NaoInfo::UpperArmLength,-NaoInfo::ElbowOffsetY,0);
   theLinks[RForeArm].setLink(0, 0, 0);
+  theLinks[RHand].setLink(NaoInfo::LowerArmLength, 0, 0);
 
   theLinks[RPelvis].setLink(0,-NaoInfo::HipOffsetY,-NaoInfo::HipOffsetZ);
   theLinks[RHip].setLink(0, 0, 0);
