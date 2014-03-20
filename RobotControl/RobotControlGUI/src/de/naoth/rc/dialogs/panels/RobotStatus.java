@@ -42,9 +42,9 @@ public class RobotStatus extends javax.swing.JPanel {
       
       this.jlTeamNumber.setText("TN: " + msg.team);
       
-      if(msg.team==0) {
+      if(msg.team==1) {
         this.jlTeamColor.setText("TEAM RED");
-      } else if(msg.team==1) {
+      } else if(msg.team==0) {
         this.jlTeamColor.setText("TEAM BLUE");
       } else {
         this.jlTeamColor.setText("TEAM " + msg.team);
