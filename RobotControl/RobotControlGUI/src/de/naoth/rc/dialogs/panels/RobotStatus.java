@@ -29,6 +29,8 @@ public class RobotStatus extends javax.swing.JPanel {
     
     private final static long MAX_TIME_BEFORE_DEAD = 3000; //ms
     private final CircularFifoQueue<Long> timestamps = new CircularFifoQueue<>(5);
+    
+    private final Color darkOrange = new Color(255, 130, 0);
 
     /** Creates new form RobotStatus */
     public RobotStatus(MessageServer messageServer, String ipAddress) {
@@ -94,7 +96,7 @@ public class RobotStatus extends javax.swing.JPanel {
         
         if(user.getTemperature() >= 60.0f)
         {
-          jlTemperature.setForeground(Color.orange);
+          jlTemperature.setForeground(darkOrange);
         }
         if(user.getTemperature() >= 75.0f)
         {
@@ -103,7 +105,7 @@ public class RobotStatus extends javax.swing.JPanel {
         
         if(user.getBatteryCharge() <= 0.3f)
         {
-          jlBatteryCharge.setForeground(Color.orange);
+          jlBatteryCharge.setForeground(darkOrange);
         }
         if(user.getBatteryCharge() <= 0.1f)
         {
