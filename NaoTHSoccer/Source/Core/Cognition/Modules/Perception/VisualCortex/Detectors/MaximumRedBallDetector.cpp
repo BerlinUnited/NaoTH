@@ -535,6 +535,7 @@ bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel)
   return
     !getGoalPostHistograms().isPostColor(pixel) && //not within goal color
     getGoalPostHistograms().colV.y < pixel.v && // at least as red as the goal mean/median red
+      getGoalPostHistograms().colU.y < pixel.u && // not more blue than goal
     !getFieldColorPercept().isFieldColor(pixel) && // check green
     pixel.y < dynamicThresholdY; // check too bright (white etc.)
 }
