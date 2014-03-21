@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JProgressBar;
@@ -73,6 +74,8 @@ public class StopwatchViewer extends AbstractDialog
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     txtWarn = new javax.swing.JFormattedTextField();
+    jLabel3 = new javax.swing.JLabel();
+    lblSum = new javax.swing.JLabel();
 
     panelStopwatches.setLayout(new java.awt.GridLayout(0, 1));
     jScrollPane1.setViewportView(panelStopwatches);
@@ -144,23 +147,32 @@ public class StopwatchViewer extends AbstractDialog
     txtWarn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
     txtWarn.setText("30");
 
+    jLabel3.setText("sum:");
+
+    lblSum.setText("----");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
+      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+            .addContainerGap())
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(3, 3, 3)
             .addComponent(jLabel2)
-            .addGap(0, 345, Short.MAX_VALUE))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE))
-        .addContainerGap())
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel3)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(lblSum)
+            .addGap(11, 11, 11))))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -172,7 +184,9 @@ public class StopwatchViewer extends AbstractDialog
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(jLabel2)
-          .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel3)
+          .addComponent(lblSum)))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -287,8 +301,10 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JLabel lblSum;
   private final javax.swing.JPanel panelStopwatches = new javax.swing.JPanel();
   private javax.swing.JFormattedTextField txtWarn;
   // End of variables declaration//GEN-END:variables
@@ -304,19 +320,21 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     // get maximum value
     int max = 0;
-    for(String key : sw.keySet())
+    int sum = 0;
+    for(Map.Entry<String, Integer> e : sw.entrySet())
     {
-      max = Math.max(max, sw.get(key).intValue());
-      if(stopwatchEntries.containsKey(key))
+      sum += e.getValue();
+      max = Math.max(max, e.getValue());
+      if(stopwatchEntries.containsKey(e.getKey()))
       {
-        max = Math.max(max, stopwatchEntries.get(key).max);
+        max = Math.max(max, stopwatchEntries.get(e.getKey()).max);
       }
     }//end for
 
     // add components to show result
     for(String key: sw.keySet())
     {
-      int valInt = sw.get(key).intValue();
+      int valInt = sw.get(key);
 
       if(!stopwatchEntries.containsKey(key))
       {
@@ -330,6 +348,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }//end for
 
     panelStopwatches.revalidate();
+    lblSum.setText(String.format("%4.2f ms", (double) sum / 1000.0));
   }//end newObjectReceived
 
   
