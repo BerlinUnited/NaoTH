@@ -4,7 +4,9 @@
 
 package de.naoth.rc.manager;
 
+import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
+import java.util.Map;
 
 /**
  *
@@ -12,5 +14,5 @@ import de.naoth.rc.dialogs.drawings.DrawingsContainer;
  */
 public interface TeamCommDrawingManager extends ManagerPlugin<DrawingsContainer>
 {
-    public void setCurrenId(String currenId);
+  public void handleSPLMessages(Map<String, SPLMessage> messages);
 }

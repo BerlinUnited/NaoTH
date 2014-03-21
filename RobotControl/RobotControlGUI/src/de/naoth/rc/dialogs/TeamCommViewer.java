@@ -10,7 +10,6 @@
  */
 
 package de.naoth.rc.dialogs;
-import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.Helper;
@@ -18,7 +17,6 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.panels.RobotStatus;
 import de.naoth.rc.manager.TeamCommDrawingManager;
-import de.naoth.rc.messages.Representations.BUUserTeamMessage;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -139,8 +137,13 @@ public class TeamCommViewer extends AbstractDialog
         this.timerCheckMessages.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                synchronized(teamCommListener.messageMap) {
-                    for(Entry<String,TeamCommListener.Message> msg: teamCommListener.messageMap.entrySet()) {
+                synchronized(teamCommListener.messageMap) 
+                {
+                    Map<String, SPLMessage> splMessageMap = new HashMap<>();
+                    
+                    for(Entry<String,TeamCommListener.Message> msg: teamCommListener.messageMap.entrySet()) 
+                    {
+                        splMessageMap.put(msg.getKey(), msg.getValue().message);
                         
                         String address = msg.getKey();
                         SPLMessage splMessage = msg.getValue().message;
@@ -157,14 +160,11 @@ public class TeamCommViewer extends AbstractDialog
                         {
                           robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
                         }
-                        
-                        try 
-                        {
-                            BUUserTeamMessage bumsg = BUUserTeamMessage.parseFrom(splMessage.data);
-                        } catch (InvalidProtocolBufferException ex) 
-                        {
-                            ex.printStackTrace(System.err);
-                        }                
+                    }
+                    
+                    if(Plugin.teamCommDrawingManager != null)
+                    {
+                      Plugin.teamCommDrawingManager.handleSPLMessages(splMessageMap);
                     }
                 }
             }
@@ -285,11 +285,12 @@ public class TeamCommViewer extends AbstractDialog
             this.readBuffer.flip();
             try {
                 SPLMessage msg = new SPLMessage(this.readBuffer);
-                
+              
                 long timestamp = System.currentTimeMillis();
                 if(address instanceof InetSocketAddress) {
                     this.messageMap.put(((InetSocketAddress)address).getHostString(), new Message(timestamp, msg));
                 }
+                
             } catch( Exception ex ) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
             }
