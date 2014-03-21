@@ -63,4 +63,5 @@ public class DrawingsContainer
       currentCanvas.add(drawing);
     }
   }//end add
+  
 }//end class DrawingsContainer
