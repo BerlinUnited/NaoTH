@@ -114,8 +114,8 @@ option basic_striker_behavior{
   //dash
   state attack {
     decision {
-      else if(state_time > 2000)
-        goto go_to_ball;
+      else if(action_done)
+        goto go_to_ball_for_a_second;
       else
         stay;
     }
@@ -143,7 +143,7 @@ option basic_striker_behavior{
   state do_kick {
     decision {
       else if(action_done)
-        goto go_to_ball;
+        goto go_to_ball_for_a_second;
       else
         stay;
     }
@@ -155,7 +155,7 @@ option basic_striker_behavior{
   state sidekick_with_foot{
     decision{
       else if(action_done)
-        goto go_to_ball;
+        goto go_to_ball_for_a_second;
       else
         stay;
     }
@@ -164,6 +164,21 @@ option basic_striker_behavior{
       
       motion.walk.style = normal;
       //motion.walk.style = stable;
+    }
+  }
+
+  // unsatisfying solution for the second kick problem
+  state go_to_ball_for_a_second{
+    decision {
+      else if (ball.time_since_last_seen>1500)
+        goto decide_search;
+      else if(state_time > 1000)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_USOA(distance=190);
     }
   }
 }
