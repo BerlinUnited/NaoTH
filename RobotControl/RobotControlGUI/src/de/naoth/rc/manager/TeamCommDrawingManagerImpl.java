@@ -12,6 +12,7 @@ import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
 import de.naoth.rc.dialogs.drawings.FillOval;
+import de.naoth.rc.dialogs.drawings.Line;
 import de.naoth.rc.dialogs.drawings.Pen;
 import de.naoth.rc.dialogs.drawings.Robot;
 import de.naoth.rc.dialogs.drawings.Text;
@@ -173,11 +174,10 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
         65,
         65);
       drawingList.add(ball);
-      
-      Pen pen2 = new Pen(1, Color.black);
-      drawingList.add(pen2);
-
       {
+
+        Pen pen2 = new Pen(1, Color.black);
+        drawingList.add(pen2);
         double t = msg.ballAge / 1000.0;
 
         Text text = new Text(
@@ -185,6 +185,15 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
           (int) globalBall.y + 50,
           Math.round(t) + "s");
         drawingList.add(text);
+      }
+      // draw a line between robot and ball
+      {
+        Pen pen2 = new Pen(1, Color.orange);
+        drawingList.add(pen2);
+        Line ballLine = new Line(
+          (int) robotPose.translation.x, (int) robotPose.translation.y, 
+          (int) globalBall.x,(int)  globalBall.y);
+        drawingList.add(ballLine);
       }
     }
 
