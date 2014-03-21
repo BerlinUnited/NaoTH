@@ -21,6 +21,7 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
   commandModulesList = prefix + "modules:list";
   commandModulesSet = prefix + "modules:set";
   commandModulesStore = prefix + "modules:store";
+  commandModulesStopwatch = prefix + "modules:stopwatch";
 
   commandRepresentationList = prefix + "representation:list";
   commandRepresentationGet = prefix + "representation:get";
@@ -33,6 +34,8 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
     "enables or diables the execution of a module. usage: modules:set [moduleName=on|off]+", this);
   REGISTER_DEBUG_COMMAND(commandModulesStore,
     "store te corrent module configuration to the config file listed in the scheme", this);
+  REGISTER_DEBUG_COMMAND(commandModulesStopwatch,
+    "output the stopwatches of all modules", this);
 
 
   REGISTER_DEBUG_COMMAND(commandRepresentationList, 
@@ -58,6 +61,8 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
     modulesStore(outstream);
   } else if (command == commandModulesSet) {
     modulesSet(outstream, arguments);
+  } else if(command == commandModulesStopwatch) {
+    modulesStopwatch(outstream);
   } else if (command == commandRepresentationList) {
     representationList(outstream);
   } else if (command == commandRepresentationGet)
@@ -161,6 +166,23 @@ void ModuleManagerWithDebug::modulesSet(
   }//end for
 }//end modulesSet
 
+void ModuleManagerWithDebug::modulesStopwatch(std::ostream& outstream)
+{
+  naothmessages::Stopwatches all;
+  std::list<AbstractModuleCreator*>::const_iterator iterModule;
+  for (iterModule = getModuleExecutionList().begin();
+       iterModule != getModuleExecutionList().end(); ++iterModule)
+  {
+    AbstractModuleCreator* moduleCreator = *iterModule;
+    const Stopwatch& item = moduleCreator->getStopwatch();
+
+    naothmessages::StopwatchItem* s = all.add_stopwatches();
+    s->set_name(moduleCreator->moduleClassName());
+    s->set_time(item.lastValue);
+  }
+  google::protobuf::io::OstreamOutputStream buf(&outstream);
+  all.SerializeToZeroCopyStream(&buf);
+}
 
 void ModuleManagerWithDebug::printRepresentation(std::ostream &outstream, const std::string& name, bool binary)
 {
