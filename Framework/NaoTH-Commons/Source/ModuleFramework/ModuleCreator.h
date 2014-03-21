@@ -25,6 +25,7 @@ public:
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
   virtual Module* getModule() const = 0;
+  virtual const Stopwatch& getStopwatch() const = 0;
   virtual ~AbstractModuleCreator() {}
 
   virtual const RegistrationInterfaceMap& staticProvided() const = 0;
@@ -162,6 +163,11 @@ public:
       stream << " < " << i->first << std::endl;
     }//end for
   }//end print
+
+  virtual const Stopwatch& getStopwatch() const
+  {
+    return stopwatch;
+  }
 };
 
 #endif //_ModuleCreator_h_

@@ -8,19 +8,18 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author thomas
  */
 @PluginImplementation
-public class StopwatchManagerImpl extends AbstractStopwatchManager
-  implements StopwatchManager
+public class ModuleStopwatchManagerImpl extends AbstractStopwatchManager
+  implements ModuleStopwatchManager
 {
   
-  public StopwatchManagerImpl()
+  public ModuleStopwatchManagerImpl()
   {
   }
-
 
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("stopwatch");
+    return new Command("Cognition:modules:stopwatch");
   }
 
 }//end class StopwatchManagerImpl

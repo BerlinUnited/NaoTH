@@ -24,6 +24,7 @@ private:
   std::string commandModulesList;
   std::string commandModulesSet;
   std::string commandModulesStore;
+  std::string commandModulesStopwatch;
 
   std::string commandRepresentationList;
   std::string commandRepresentationGet;
@@ -35,6 +36,7 @@ private:
   void modulesStore(std::ostream& outstream);
   void modulesSet( std::ostream& outstream,
                    const std::map<std::string,std::string>& arguments);
+  void modulesStopwatch(std::ostream& outstream);
   
   void printRepresentation(std::ostream& outstream, const std::string& name, bool binary);
   void representationList(std::ostream& outstream);
