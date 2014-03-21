@@ -175,10 +175,12 @@ void ModuleManagerWithDebug::modulesStopwatch(std::ostream& outstream)
   {
     AbstractModuleCreator* moduleCreator = *iterModule;
     const Stopwatch& item = moduleCreator->getStopwatch();
-
-    naothmessages::StopwatchItem* s = all.add_stopwatches();
-    s->set_name(moduleCreator->moduleClassName());
-    s->set_time(item.lastValue);
+    if(moduleCreator->isEnabled())
+    {
+      naothmessages::StopwatchItem* s = all.add_stopwatches();
+      s->set_name(moduleCreator->getModule()->getName());
+      s->set_time(item.lastValue);
+    }
   }
   google::protobuf::io::OstreamOutputStream buf(&outstream);
   all.SerializeToZeroCopyStream(&buf);
