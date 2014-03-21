@@ -69,7 +69,7 @@ class ColorClassesHistograms: public naoth::Printable
     Statistics::HistogramX yHistogram[ColorClasses::numOfColors];
 
   private:
-    Vector2i histSizes;  
+    Vector2i histSizes;
 };
 
 class ColorClassesHistogramsTop : public ColorClassesHistograms{};
@@ -77,7 +77,7 @@ class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 
 class ColorChannelHistograms
 {
-public: 
+public:
   static const int VALUE_COUNT = 256;
 
   inline void increaseChannelValue(const Pixel& pixel)
@@ -120,7 +120,7 @@ class ColorChannelHistogramsTop: public ColorChannelHistograms{};
 
 class OverTimeHistogram : public naoth::Printable
 {
-public: 
+public:
   PixelT<double> meanEnv;
   PixelT<double> meanImg;
 
@@ -154,7 +154,7 @@ public:
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
 
-class GoalPostHistograms : public ColorChannelHistograms, public naoth::Printable 
+class GoalPostHistograms : public ColorChannelHistograms, public naoth::Printable
 {
 public:
   Vector2d colU;
@@ -165,7 +165,11 @@ public:
   :
     colU(255, 255),
     valid(false)
-  { }
+  {
+    histogramY.setMaxTotalSum(256000);
+    histogramU.setMaxTotalSum(256000);
+    histogramV.setMaxTotalSum(256000);
+  }
 
   void calculate()
   {
