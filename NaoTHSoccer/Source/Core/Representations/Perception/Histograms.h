@@ -163,6 +163,7 @@ public:
 
   GoalPostHistograms()
   :
+    colU(255, 255),
     valid(false)
   { }
 
@@ -170,7 +171,7 @@ public:
   {
     valid = false;
     ColorChannelHistograms::calculate();
-    setBorders(2.0);
+    setBorders(3.0);
   }
 
   void setBorders(double deviationFactor)
