@@ -33,6 +33,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -124,6 +125,8 @@ public class TeamCommViewer extends AbstractDialog
     private void btListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btListenActionPerformed
       if(this.btListen.isSelected())
       {
+        robotStatusPanel.setVisible(true);
+        
         try {
           int port = Integer.parseInt(portNumber.getText().trim());
           this.teamCommListener.connect(port);
@@ -133,51 +136,82 @@ public class TeamCommViewer extends AbstractDialog
           Helper.handleException("Invalid port number", ex);
         } catch (Exception ex) {}
         
+        
         this.timerCheckMessages = new Timer();
         this.timerCheckMessages.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 synchronized(teamCommListener.messageMap) 
                 {
+                    if(teamCommListener.messageMap.isEmpty())
+                    {
+                      return;
+                    }
+                    long currentTime = System.currentTimeMillis();
                     Map<String, SPLMessage> splMessageMap = new HashMap<>();
                     
                     for(Entry<String,TeamCommListener.Message> msg: teamCommListener.messageMap.entrySet()) 
                     {
-                        splMessageMap.put(msg.getKey(), msg.getValue().message);
-                        
-                        String address = msg.getKey();
-                        SPLMessage splMessage = msg.getValue().message;
-                        long timestamp = msg.getValue().timestamp;
-                        
-                        RobotStatus robotStatus = robotsMap.get(address);
-                        if(robotStatus == null)
+                        if((currentTime - msg.getValue().timestamp) < RobotStatus.MAX_TIME_BEFORE_DEAD)
                         {
-                          robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-                          robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
-                          robotsMap.put(address, robotStatus);
-                          robotStatusPanel.add(robotStatus);
-                        }else
-                        {
-                          robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                          splMessageMap.put(msg.getKey(), msg.getValue().message);
                         }
+                        final String address = msg.getKey();
+                        final SPLMessage splMessage = msg.getValue().message;
+                        final long timestamp = msg.getValue().timestamp;
+                        
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+
+                          @Override
+                          public void run()
+                          {
+                            RobotStatus robotStatus = robotsMap.get(address);
+                            if(robotStatus == null)
+                            {
+                              robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                              robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                              robotsMap.put(address, robotStatus);
+                              robotStatusPanel.add(robotStatus);
+                            }
+                            else
+                            {
+                              robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                            }
+                          }
+                        });
+                        
+                        
                     }
                     
                     if(Plugin.teamCommDrawingManager != null)
                     {
                       Plugin.teamCommDrawingManager.handleSPLMessages(splMessageMap);
                     }
-                }
-            }
+                } // end synchronized
+            } // end run
         }, 100, 33);
         
       }else
       {
+        this.timerCheckMessages.cancel();
+        this.timerCheckMessages.purge();
+        this.timerCheckMessages = null;
+        
         try {
           this.teamCommListener.disconnect();
         } catch (Exception ex) {}
         
-        this.timerCheckMessages.cancel();
-        this.timerCheckMessages = null;
+        synchronized(teamCommListener.messageMap) 
+        {
+          
+
+          teamCommListener.messageMap.clear();
+          robotsMap.clear();
+          robotStatusPanel.removeAll();
+          robotStatusPanel.setVisible(false);
+        }
+        
       }
     }//GEN-LAST:event_btListenActionPerformed
 
@@ -287,8 +321,13 @@ public class TeamCommViewer extends AbstractDialog
                 SPLMessage msg = new SPLMessage(this.readBuffer);
               
                 long timestamp = System.currentTimeMillis();
-                if(address instanceof InetSocketAddress) {
+                if(address instanceof InetSocketAddress) 
+                {
+                  
+                  synchronized(messageMap)
+                  {
                     this.messageMap.put(((InetSocketAddress)address).getHostString(), new Message(timestamp, msg));
+                  }
                 }
                 
             } catch( Exception ex ) {
