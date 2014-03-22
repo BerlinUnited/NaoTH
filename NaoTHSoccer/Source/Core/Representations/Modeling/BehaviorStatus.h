@@ -26,6 +26,11 @@ public:
   virtual void print(std::ostream& stream) const;
 
   naothmessages::BehaviorStatus status;
+  
+  // list of all symbols, options and enumerations of the current behavior
+  naothmessages::XABSLBehavior behavior;
+  //
+
 
 };
 

@@ -123,6 +123,8 @@ private:
 
   void fillActiveOptions(naothmessages::BehaviorStatus &status);
   void fillAction(const xabsl::Action* source, naothmessages::XABSLAction* dest);
+  void fillActionSparse(const xabsl::Action* source, naothmessages::XABSLActionSparse* dest);
+  void fillRegisteredBehavior(naothmessages::XABSLBehavior &status);
   void fillRegisteredSymbols(naothmessages::BehaviorStatus &status);
 
   //symbols
