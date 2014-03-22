@@ -22,7 +22,7 @@ option stand_up
     }
     action
     {
-      // nothing
+      motion.type= dead;
     }
   }
 
@@ -41,7 +41,7 @@ option stand_up
     }
     action
     {
-      //do nothing
+      motion.type= dead;
     }
   }
   
@@ -53,15 +53,14 @@ option stand_up
       if(executed_motion.type == stand_up_from_back ||
          executed_motion.type == stand_up_from_back_arms_back)
       {
-        goto _initial;
+        goto wait_for_standup;
       }
       else
         stay;
     }
     action
-    { 
-      head.control_mode = look_straight_ahead;
-      motion.type = (arm.control_mode != back)?stand_up_from_back:stand_up_from_back_arms_back;   
+    {
+      motion.type = (arm.control_mode_before_fall != back)?stand_up_from_back:stand_up_from_back_arms_back;   
       motion.execute_immediately = true;
     }
   }
@@ -72,16 +71,34 @@ option stand_up
     {
       if(executed_motion.type == stand_up_from_front)
       {
-        goto  _initial;
+        goto wait_for_standup;
       }
       else
         stay;
     }
     action
     {
-      head.control_mode = look_straight_ahead;
       motion.type = stand_up_from_front;
       motion.execute_immediately = true;
+    }
+  }
+
+  state wait_for_standup
+  {
+		decision
+		{
+			if(executed_motion.type == stand_up_from_back ||
+			   executed_motion.type == stand_up_from_back_arms_back ||
+			   executed_motion.type == stand_up_from_front)
+			{
+			  stay;
+			} else {
+	      goto finished;
+      }
+	  }
+    action
+    {
+      motion.type = stand;
     }
   }
 
@@ -97,7 +114,7 @@ option stand_up
     }
     action
     {
-      // nothing
+      motion.type = stand;
     }
   }
 }
