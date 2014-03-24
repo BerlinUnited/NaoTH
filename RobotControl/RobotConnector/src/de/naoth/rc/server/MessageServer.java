@@ -279,7 +279,13 @@ public class MessageServer extends AbstractMessageServer {
             }
 
             // call sender
-            e.listener.handleResponse(data.array(), e.command);
+            try {
+                e.listener.handleResponse(data.array(), e.command);
+            } catch (Exception ex)
+            {
+                Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
+                    "Exception while handling response to " + e.command, ex);
+            }
         }//end while
 
         answerRequestList.clear();
