@@ -64,6 +64,21 @@ const ::google::protobuf::Descriptor* XABSLActionSparse_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   XABSLActionSparse_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* XABSLActionSparse_ActionType_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* SymbolValueList_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  SymbolValueList_reflection_ = NULL;
+const ::google::protobuf::Descriptor* SymbolValueList_DoubleSymbol_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  SymbolValueList_DoubleSymbol_reflection_ = NULL;
+const ::google::protobuf::Descriptor* SymbolValueList_BooleanSymbol_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  SymbolValueList_BooleanSymbol_reflection_ = NULL;
+const ::google::protobuf::Descriptor* SymbolValueList_EnumSymbol_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  SymbolValueList_EnumSymbol_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStatusSparse_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BehaviorStatusSparse_reflection_ = NULL;
 const ::google::protobuf::Descriptor* XABSLBehavior_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   XABSLBehavior_reflection_ = NULL;
@@ -79,6 +94,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* XABSLBehavior_Option_State_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   XABSLBehavior_Option_State_reflection_ = NULL;
+const ::google::protobuf::Descriptor* XABSLBehavior_Agent_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  XABSLBehavior_Agent_reflection_ = NULL;
 const ::google::protobuf::Descriptor* XABSLParameter_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   XABSLParameter_reflection_ = NULL;
@@ -323,8 +341,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLActiveOptionSparse));
   XABSLActionSparse_descriptor_ = file->message_type(11);
-  static const int XABSLActionSparse_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLActionSparse, id_),
+  static const int XABSLActionSparse_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLActionSparse, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLActionSparse, symbol_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLActionSparse, option_),
@@ -341,12 +358,103 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLActionSparse));
   XABSLActionSparse_ActionType_descriptor_ = XABSLActionSparse_descriptor_->enum_type(0);
-  XABSLBehavior_descriptor_ = file->message_type(12);
-  static const int XABSLBehavior_offsets_[4] = {
+  SymbolValueList_descriptor_ = file->message_type(12);
+  static const int SymbolValueList_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList, decimal_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList, boolean_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList, enumerated_),
+  };
+  SymbolValueList_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      SymbolValueList_descriptor_,
+      SymbolValueList::default_instance_,
+      SymbolValueList_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(SymbolValueList));
+  SymbolValueList_DoubleSymbol_descriptor_ = SymbolValueList_descriptor_->nested_type(0);
+  static const int SymbolValueList_DoubleSymbol_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_DoubleSymbol, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_DoubleSymbol, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_DoubleSymbol, value_),
+  };
+  SymbolValueList_DoubleSymbol_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      SymbolValueList_DoubleSymbol_descriptor_,
+      SymbolValueList_DoubleSymbol::default_instance_,
+      SymbolValueList_DoubleSymbol_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_DoubleSymbol, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_DoubleSymbol, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(SymbolValueList_DoubleSymbol));
+  SymbolValueList_BooleanSymbol_descriptor_ = SymbolValueList_descriptor_->nested_type(1);
+  static const int SymbolValueList_BooleanSymbol_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_BooleanSymbol, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_BooleanSymbol, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_BooleanSymbol, value_),
+  };
+  SymbolValueList_BooleanSymbol_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      SymbolValueList_BooleanSymbol_descriptor_,
+      SymbolValueList_BooleanSymbol::default_instance_,
+      SymbolValueList_BooleanSymbol_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_BooleanSymbol, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_BooleanSymbol, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(SymbolValueList_BooleanSymbol));
+  SymbolValueList_EnumSymbol_descriptor_ = SymbolValueList_descriptor_->nested_type(2);
+  static const int SymbolValueList_EnumSymbol_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_EnumSymbol, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_EnumSymbol, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_EnumSymbol, value_),
+  };
+  SymbolValueList_EnumSymbol_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      SymbolValueList_EnumSymbol_descriptor_,
+      SymbolValueList_EnumSymbol::default_instance_,
+      SymbolValueList_EnumSymbol_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_EnumSymbol, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SymbolValueList_EnumSymbol, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(SymbolValueList_EnumSymbol));
+  BehaviorStatusSparse_descriptor_ = file->message_type(13);
+  static const int BehaviorStatusSparse_offsets_[8] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, agent_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, activerootactions_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, inputsymbols_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, outputsymbols_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, inputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, outputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, framenumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, errormessage_),
+  };
+  BehaviorStatusSparse_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BehaviorStatusSparse_descriptor_,
+      BehaviorStatusSparse::default_instance_,
+      BehaviorStatusSparse_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BehaviorStatusSparse));
+  XABSLBehavior_descriptor_ = file->message_type(14);
+  static const int XABSLBehavior_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, enumerations_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, options_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, inputsymbols_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, outputsymbols_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, agents_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, inputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, outputsymbollist_),
   };
   XABSLBehavior_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -424,7 +532,23 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLBehavior_Option_State));
-  XABSLParameter_descriptor_ = file->message_type(13);
+  XABSLBehavior_Agent_descriptor_ = XABSLBehavior_descriptor_->nested_type(2);
+  static const int XABSLBehavior_Agent_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, rootoption_),
+  };
+  XABSLBehavior_Agent_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      XABSLBehavior_Agent_descriptor_,
+      XABSLBehavior_Agent::default_instance_,
+      XABSLBehavior_Agent_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(XABSLBehavior_Agent));
+  XABSLParameter_descriptor_ = file->message_type(15);
   static const int XABSLParameter_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, type_),
@@ -444,7 +568,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLParameter));
   XABSLParameter_ParamType_descriptor_ = XABSLParameter_descriptor_->enum_type(0);
-  XABSLAction_descriptor_ = file->message_type(14);
+  XABSLAction_descriptor_ = file->message_type(16);
   static const int XABSLAction_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, name_),
@@ -469,7 +593,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLAction));
   XABSLAction_ActionType_descriptor_ = XABSLAction_descriptor_->enum_type(0);
-  BehaviorStatus_descriptor_ = file->message_type(15);
+  BehaviorStatus_descriptor_ = file->message_type(17);
   static const int BehaviorStatus_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, agent_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, activerootactions_),
@@ -489,7 +613,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BehaviorStatus));
-  Module_descriptor_ = file->message_type(16);
+  Module_descriptor_ = file->message_type(18);
   static const int Module_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, usedrepresentations_),
@@ -507,7 +631,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Module));
-  ModuleList_descriptor_ = file->message_type(17);
+  ModuleList_descriptor_ = file->message_type(19);
   static const int ModuleList_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ModuleList, modules_),
   };
@@ -522,7 +646,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ModuleList));
-  FeatureKeyPoint_descriptor_ = file->message_type(18);
+  FeatureKeyPoint_descriptor_ = file->message_type(20);
   static const int FeatureKeyPoint_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, pt_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, size_),
@@ -542,7 +666,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureKeyPoint));
-  FeatureDetectionResult_descriptor_ = file->message_type(19);
+  FeatureDetectionResult_descriptor_ = file->message_type(21);
   static const int FeatureDetectionResult_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, grayscaleimage_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, keypoints_),
@@ -561,7 +685,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureDetectionResult));
-  SingleDescriptor_descriptor_ = file->message_type(20);
+  SingleDescriptor_descriptor_ = file->message_type(22);
   static const int SingleDescriptor_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SingleDescriptor, d_),
   };
@@ -576,7 +700,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SingleDescriptor));
-  FeatureClass_descriptor_ = file->message_type(21);
+  FeatureClass_descriptor_ = file->message_type(23);
   static const int FeatureClass_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, samples_),
@@ -593,7 +717,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureClass));
-  FeatureTable_descriptor_ = file->message_type(22);
+  FeatureTable_descriptor_ = file->message_type(24);
   static const int FeatureTable_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, classes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, numberoffeatureelements_),
@@ -646,6 +770,16 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLActionSparse_descriptor_, &XABSLActionSparse::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    SymbolValueList_descriptor_, &SymbolValueList::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    SymbolValueList_DoubleSymbol_descriptor_, &SymbolValueList_DoubleSymbol::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    SymbolValueList_BooleanSymbol_descriptor_, &SymbolValueList_BooleanSymbol::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    SymbolValueList_EnumSymbol_descriptor_, &SymbolValueList_EnumSymbol::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BehaviorStatusSparse_descriptor_, &BehaviorStatusSparse::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLBehavior_descriptor_, &XABSLBehavior::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLBehavior_EnumType_descriptor_, &XABSLBehavior_EnumType::default_instance());
@@ -655,6 +789,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     XABSLBehavior_Option_descriptor_, &XABSLBehavior_Option::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLBehavior_Option_State_descriptor_, &XABSLBehavior_Option_State::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    XABSLBehavior_Agent_descriptor_, &XABSLBehavior_Agent::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLParameter_descriptor_, &XABSLParameter::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -704,6 +840,16 @@ void protobuf_ShutdownFile_Messages_2eproto() {
   delete XABSLActiveOptionSparse_reflection_;
   delete XABSLActionSparse::default_instance_;
   delete XABSLActionSparse_reflection_;
+  delete SymbolValueList::default_instance_;
+  delete SymbolValueList_reflection_;
+  delete SymbolValueList_DoubleSymbol::default_instance_;
+  delete SymbolValueList_DoubleSymbol_reflection_;
+  delete SymbolValueList_BooleanSymbol::default_instance_;
+  delete SymbolValueList_BooleanSymbol_reflection_;
+  delete SymbolValueList_EnumSymbol::default_instance_;
+  delete SymbolValueList_EnumSymbol_reflection_;
+  delete BehaviorStatusSparse::default_instance_;
+  delete BehaviorStatusSparse_reflection_;
   delete XABSLBehavior::default_instance_;
   delete XABSLBehavior_reflection_;
   delete XABSLBehavior_EnumType::default_instance_;
@@ -714,6 +860,8 @@ void protobuf_ShutdownFile_Messages_2eproto() {
   delete XABSLBehavior_Option_reflection_;
   delete XABSLBehavior_Option_State::default_instance_;
   delete XABSLBehavior_Option_State_reflection_;
+  delete XABSLBehavior_Agent::default_instance_;
+  delete XABSLBehavior_Agent_reflection_;
   delete XABSLParameter::default_instance_;
   delete XABSLParameter_reflection_;
   delete XABSLAction::default_instance_;
@@ -780,73 +928,94 @@ void protobuf_AddDesc_Messages_2eproto() {
     "Sparse\022\016\n\002id\030\001 \002(\005:\002-1\022\032\n\017timeOfExecutio"
     "n\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\005\022\021\n\tstate"
     "Time\030\005 \001(\003\022\031\n\021decimalParameters\030\006 \003(\001\022\031\n"
-    "\021booleanParameters\030\007 \003(\001\022\034\n\024enumeratedPa"
+    "\021booleanParameters\030\007 \003(\010\022\034\n\024enumeratedPa"
     "rameters\030\010 \003(\005\022:\n\020activeSubActions\030\t \003(\013"
-    "2 .naothmessages.XABSLActionSparse\"\234\002\n\021X"
-    "ABSLActionSparse\022\016\n\002id\030\001 \002(\005:\002-1\022B\n\004type"
-    "\030\002 \002(\0162+.naothmessages.XABSLActionSparse"
-    ".ActionType:\007Unknown\022*\n\006symbol\030\003 \001(\0132\032.n"
-    "aothmessages.XABSLSymbol\0226\n\006option\030\004 \001(\013"
-    "2&.naothmessages.XABSLActiveOptionSparse"
-    "\"O\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBasicBehav"
-    "ior\020\001\022\025\n\021SymbolAssignement\020\002\022\013\n\007Unknown\020"
-    "\003\"\226\004\n\rXABSLBehavior\022;\n\014enumerations\030\n \003("
-    "\0132%.naothmessages.XABSLBehavior.EnumType"
-    "\0224\n\007options\030\013 \003(\0132#.naothmessages.XABSLB"
-    "ehavior.Option\0220\n\014inputSymbols\030\014 \003(\0132\032.n"
-    "aothmessages.XABSLSymbol\0221\n\routputSymbol"
-    "s\030\r \003(\0132\032.naothmessages.XABSLSymbol\032\201\001\n\010"
+    "2 .naothmessages.XABSLActionSparse\"\214\002\n\021X"
+    "ABSLActionSparse\022B\n\004type\030\002 \002(\0162+.naothme"
+    "ssages.XABSLActionSparse.ActionType:\007Unk"
+    "nown\022*\n\006symbol\030\003 \001(\0132\032.naothmessages.XAB"
+    "SLSymbol\0226\n\006option\030\004 \001(\0132&.naothmessages"
+    ".XABSLActiveOptionSparse\"O\n\nActionType\022\n"
+    "\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\025\n\021SymbolA"
+    "ssignement\020\002\022\013\n\007Unknown\020\003\"\203\003\n\017SymbolValu"
+    "eList\022<\n\007decimal\030\001 \003(\0132+.naothmessages.S"
+    "ymbolValueList.DoubleSymbol\022=\n\007boolean\030\002"
+    " \003(\0132,.naothmessages.SymbolValueList.Boo"
+    "leanSymbol\022=\n\nenumerated\030\003 \003(\0132).naothme"
+    "ssages.SymbolValueList.EnumSymbol\032;\n\014Dou"
+    "bleSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022"
+    "\r\n\005value\030\003 \001(\001\032<\n\rBooleanSymbol\022\016\n\002id\030\001 "
+    "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\0329\n\n"
+    "EnumSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t"
+    "\022\r\n\005value\030\r \001(\005\"\345\002\n\024BehaviorStatusSparse"
+    "\022\r\n\005agent\030\001 \001(\t\022;\n\021activeRootActions\030\002 \003"
+    "(\0132 .naothmessages.XABSLActionSparse\0220\n\014"
+    "inputSymbols\030\003 \003(\0132\032.naothmessages.XABSL"
+    "Symbol\0221\n\routputSymbols\030\004 \003(\0132\032.naothmes"
+    "sages.XABSLSymbol\0227\n\017inputSymbolList\030\n \001"
+    "(\0132\036.naothmessages.SymbolValueList\0228\n\020ou"
+    "tputSymbolList\030\013 \001(\0132\036.naothmessages.Sym"
+    "bolValueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014err"
+    "orMessage\030\006 \001(\t\"\203\005\n\rXABSLBehavior\022;\n\014enu"
+    "merations\030\n \003(\0132%.naothmessages.XABSLBeh"
+    "avior.EnumType\0224\n\007options\030\013 \003(\0132#.naothm"
+    "essages.XABSLBehavior.Option\0222\n\006agents\030\014"
+    " \003(\0132\".naothmessages.XABSLBehavior.Agent"
+    "\0227\n\017inputSymbolList\030\r \001(\0132\036.naothmessage"
+    "s.SymbolValueList\0228\n\020outputSymbolList\030\016 "
+    "\001(\0132\036.naothmessages.SymbolValueList\032\201\001\n\010"
     "EnumType\022\014\n\004name\030\001 \002(\t\022\?\n\010elements\030\002 \003(\013"
     "2-.naothmessages.XABSLBehavior.EnumType."
-    "Element\032&\n\007Element\022\r\n\005value\030\001 \002(\001\022\014\n\004nam"
+    "Element\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004nam"
     "e\030\002 \002(\t\032\250\001\n\006Option\022\014\n\004name\030\001 \002(\t\0229\n\006stat"
     "es\030\003 \003(\0132).naothmessages.XABSLBehavior.O"
     "ption.State\022.\n\nparameters\030\002 \003(\0132\032.naothm"
     "essages.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001 \002"
-    "(\t\022\016\n\006target\030\002 \001(\010\"\341\001\n\016XABSLParameter\022\025\n"
-    "\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.nao"
-    "thmessages.XABSLParameter.ParamType:\007Unk"
-    "nown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolValue\030"
-    "\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType\022\013\n"
-    "\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unk"
-    "nown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162%.n"
-    "aothmessages.XABSLAction.ActionType:\007Unk"
-    "nown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOfExe"
-    "cution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\t"
-    "stateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.na"
-    "othmessages.XABSLParameter\0224\n\020activeSubA"
-    "ctions\030\007 \003(\0132\032.naothmessages.XABSLAction"
-    "\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001("
-    "\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006O"
-    "ption\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023DecimalOut"
-    "putSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020"
-    "EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016Beha"
-    "viorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootA"
-    "ctions\030\002 \003(\0132\032.naothmessages.XABSLAction"
-    "\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessages.X"
-    "ABSLParameter\0224\n\routputSymbols\030\004 \003(\0132\035.n"
-    "aothmessages.XABSLParameter\022\023\n\013frameNumb"
-    "er\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Module"
-    "\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002 "
-    "\003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n\006"
-    "active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007mod"
-    "ules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017Fe"
-    "atureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessage"
-    "s.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 "
-    "\002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n"
-    "\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionResu"
-    "lt\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints\030"
-    "\002 \003(\0132\036.naothmessages.FeatureKeyPoint\0224\n"
-    "\013descriptors\030\003 \003(\0132\037.naothmessages.Singl"
-    "eDescriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#"
-    "\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020S"
-    "ingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureCla"
-    "ss\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naot"
-    "hmessages.SingleDescriptor\022\024\n\014objectHeig"
-    "ht\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003("
-    "\0132\033.naothmessages.FeatureClass\022#\n\027number"
-    "OfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth."
-    "rc.messages", 4091);
+    "(\t\022\016\n\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 \002("
+    "\t\022\022\n\nrootOption\030\002 \002(\t\"\341\001\n\016XABSLParameter"
+    "\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'."
+    "naothmessages.XABSLParameter.ParamType:\007"
+    "Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolVal"
+    "ue\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType"
+    "\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007"
+    "Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162"
+    "%.naothmessages.XABSLAction.ActionType:\007"
+    "Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOf"
+    "Execution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022"
+    "\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035"
+    ".naothmessages.XABSLParameter\0224\n\020activeS"
+    "ubActions\030\007 \003(\0132\032.naothmessages.XABSLAct"
+    "ion\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t"
+    " \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n"
+    "\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Decimal"
+    "OutputSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022"
+    "\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016B"
+    "ehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRo"
+    "otActions\030\002 \003(\0132\032.naothmessages.XABSLAct"
+    "ion\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessage"
+    "s.XABSLParameter\0224\n\routputSymbols\030\004 \003(\0132"
+    "\035.naothmessages.XABSLParameter\022\023\n\013frameN"
+    "umber\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Mod"
+    "ule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations"
+    "\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022"
+    "\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007"
+    "modules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n"
+    "\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmess"
+    "ages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle"
+    "\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005"
+    "\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionR"
+    "esult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoin"
+    "ts\030\002 \003(\0132\036.naothmessages.FeatureKeyPoint"
+    "\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages.Si"
+    "ngleDescriptor\022\031\n\021namesForKeyPoints\030\004 \003("
+    "\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035"
+    "\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Feature"
+    "Class\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.n"
+    "aothmessages.SingleDescriptor\022\024\n\014objectH"
+    "eight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001"
+    " \003(\0132\033.naothmessages.FeatureClass\022#\n\027num"
+    "berOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.nao"
+    "th.rc.messages", 4934);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();
@@ -861,11 +1030,17 @@ void protobuf_AddDesc_Messages_2eproto() {
   XABSLSymbol::default_instance_ = new XABSLSymbol();
   XABSLActiveOptionSparse::default_instance_ = new XABSLActiveOptionSparse();
   XABSLActionSparse::default_instance_ = new XABSLActionSparse();
+  SymbolValueList::default_instance_ = new SymbolValueList();
+  SymbolValueList_DoubleSymbol::default_instance_ = new SymbolValueList_DoubleSymbol();
+  SymbolValueList_BooleanSymbol::default_instance_ = new SymbolValueList_BooleanSymbol();
+  SymbolValueList_EnumSymbol::default_instance_ = new SymbolValueList_EnumSymbol();
+  BehaviorStatusSparse::default_instance_ = new BehaviorStatusSparse();
   XABSLBehavior::default_instance_ = new XABSLBehavior();
   XABSLBehavior_EnumType::default_instance_ = new XABSLBehavior_EnumType();
   XABSLBehavior_EnumType_Element::default_instance_ = new XABSLBehavior_EnumType_Element();
   XABSLBehavior_Option::default_instance_ = new XABSLBehavior_Option();
   XABSLBehavior_Option_State::default_instance_ = new XABSLBehavior_Option_State();
+  XABSLBehavior_Agent::default_instance_ = new XABSLBehavior_Agent();
   XABSLParameter::default_instance_ = new XABSLParameter();
   XABSLAction::default_instance_ = new XABSLAction();
   BehaviorStatus::default_instance_ = new BehaviorStatus();
@@ -888,11 +1063,17 @@ void protobuf_AddDesc_Messages_2eproto() {
   XABSLSymbol::default_instance_->InitAsDefaultInstance();
   XABSLActiveOptionSparse::default_instance_->InitAsDefaultInstance();
   XABSLActionSparse::default_instance_->InitAsDefaultInstance();
+  SymbolValueList::default_instance_->InitAsDefaultInstance();
+  SymbolValueList_DoubleSymbol::default_instance_->InitAsDefaultInstance();
+  SymbolValueList_BooleanSymbol::default_instance_->InitAsDefaultInstance();
+  SymbolValueList_EnumSymbol::default_instance_->InitAsDefaultInstance();
+  BehaviorStatusSparse::default_instance_->InitAsDefaultInstance();
   XABSLBehavior::default_instance_->InitAsDefaultInstance();
   XABSLBehavior_EnumType::default_instance_->InitAsDefaultInstance();
   XABSLBehavior_EnumType_Element::default_instance_->InitAsDefaultInstance();
   XABSLBehavior_Option::default_instance_->InitAsDefaultInstance();
   XABSLBehavior_Option_State::default_instance_->InitAsDefaultInstance();
+  XABSLBehavior_Agent::default_instance_->InitAsDefaultInstance();
   XABSLParameter::default_instance_->InitAsDefaultInstance();
   XABSLAction::default_instance_->InitAsDefaultInstance();
   BehaviorStatus::default_instance_->InitAsDefaultInstance();
@@ -4448,28 +4629,28 @@ bool XABSLActiveOptionSparse::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(49)) goto parse_decimalParameters;
-        if (input->ExpectTag(57)) goto parse_booleanParameters;
+        if (input->ExpectTag(56)) goto parse_booleanParameters;
         break;
       }
       
-      // repeated double booleanParameters = 7;
+      // repeated bool booleanParameters = 7;
       case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_booleanParameters:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 57, input, this->mutable_booleanparameters())));
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 1, 56, input, this->mutable_booleanparameters())));
         } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
                    == ::google::protobuf::internal::WireFormatLite::
                       WIRETYPE_LENGTH_DELIMITED) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, this->mutable_booleanparameters())));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(57)) goto parse_booleanParameters;
+        if (input->ExpectTag(56)) goto parse_booleanParameters;
         if (input->ExpectTag(64)) goto parse_enumeratedParameters;
         break;
       }
@@ -4555,9 +4736,9 @@ void XABSLActiveOptionSparse::SerializeWithCachedSizes(
       6, this->decimalparameters(i), output);
   }
   
-  // repeated double booleanParameters = 7;
+  // repeated bool booleanParameters = 7;
   for (int i = 0; i < this->booleanparameters_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+    ::google::protobuf::internal::WireFormatLite::WriteBool(
       7, this->booleanparameters(i), output);
   }
   
@@ -4607,10 +4788,10 @@ void XABSLActiveOptionSparse::SerializeWithCachedSizes(
       WriteDoubleToArray(6, this->decimalparameters(i), target);
   }
   
-  // repeated double booleanParameters = 7;
+  // repeated bool booleanParameters = 7;
   for (int i = 0; i < this->booleanparameters_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(7, this->booleanparameters(i), target);
+      WriteBoolToArray(7, this->booleanparameters(i), target);
   }
   
   // repeated int32 enumeratedParameters = 8;
@@ -4673,10 +4854,10 @@ int XABSLActiveOptionSparse::ByteSize() const {
     total_size += 1 * this->decimalparameters_size() + data_size;
   }
   
-  // repeated double booleanParameters = 7;
+  // repeated bool booleanParameters = 7;
   {
     int data_size = 0;
-    data_size = 8 * this->booleanparameters_size();
+    data_size = 1 * this->booleanparameters_size();
     total_size += 1 * this->booleanparameters_size() + data_size;
   }
   
@@ -4818,7 +4999,6 @@ const XABSLActionSparse_ActionType XABSLActionSparse::ActionType_MAX;
 const int XABSLActionSparse::ActionType_ARRAYSIZE;
 #endif  // _MSC_VER
 #ifndef _MSC_VER
-const int XABSLActionSparse::kIdFieldNumber;
 const int XABSLActionSparse::kTypeFieldNumber;
 const int XABSLActionSparse::kSymbolFieldNumber;
 const int XABSLActionSparse::kOptionFieldNumber;
@@ -4842,7 +5022,6 @@ XABSLActionSparse::XABSLActionSparse(const XABSLActionSparse& from)
 
 void XABSLActionSparse::SharedCtor() {
   _cached_size_ = 0;
-  id_ = -1;
   type_ = 3;
   symbol_ = NULL;
   option_ = NULL;
@@ -4882,7 +5061,6 @@ XABSLActionSparse* XABSLActionSparse::New() const {
 
 void XABSLActionSparse::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    id_ = -1;
     type_ = 3;
     if (has_symbol()) {
       if (symbol_ != NULL) symbol_->::naothmessages::XABSLSymbol::Clear();
@@ -4901,26 +5079,10 @@ bool XABSLActionSparse::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 id = 1 [default = -1];
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &id_)));
-          set_has_id();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(16)) goto parse_type;
-        break;
-      }
-      
       // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_type:
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
@@ -4983,11 +5145,6 @@ bool XABSLActionSparse::MergePartialFromCodedStream(
 
 void XABSLActionSparse::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 id = 1 [default = -1];
-  if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
-  }
-  
   // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
@@ -5014,11 +5171,6 @@ void XABSLActionSparse::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* XABSLActionSparse::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 id = 1 [default = -1];
-  if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
-  }
-  
   // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
   if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
@@ -5050,13 +5202,6 @@ int XABSLActionSparse::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 id = 1 [default = -1];
-    if (has_id()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->id());
-    }
-    
     // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
     if (has_type()) {
       total_size += 1 +
@@ -5104,9 +5249,6 @@ void XABSLActionSparse::MergeFrom(const ::google::protobuf::Message& from) {
 void XABSLActionSparse::MergeFrom(const XABSLActionSparse& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_id()) {
-      set_id(from.id());
-    }
     if (from.has_type()) {
       set_type(from.type());
     }
@@ -5133,7 +5275,7 @@ void XABSLActionSparse::CopyFrom(const XABSLActionSparse& from) {
 }
 
 bool XABSLActionSparse::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   if (has_symbol()) {
     if (!this->symbol().IsInitialized()) return false;
@@ -5146,7 +5288,6 @@ bool XABSLActionSparse::IsInitialized() const {
 
 void XABSLActionSparse::Swap(XABSLActionSparse* other) {
   if (other != this) {
-    std::swap(id_, other->id_);
     std::swap(type_, other->type_);
     std::swap(symbol_, other->symbol_);
     std::swap(option_, other->option_);
@@ -5161,6 +5302,1754 @@ void XABSLActionSparse::Swap(XABSLActionSparse* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = XABSLActionSparse_descriptor_;
   metadata.reflection = XABSLActionSparse_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int SymbolValueList_DoubleSymbol::kIdFieldNumber;
+const int SymbolValueList_DoubleSymbol::kNameFieldNumber;
+const int SymbolValueList_DoubleSymbol::kValueFieldNumber;
+#endif  // !_MSC_VER
+
+SymbolValueList_DoubleSymbol::SymbolValueList_DoubleSymbol()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void SymbolValueList_DoubleSymbol::InitAsDefaultInstance() {
+}
+
+SymbolValueList_DoubleSymbol::SymbolValueList_DoubleSymbol(const SymbolValueList_DoubleSymbol& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void SymbolValueList_DoubleSymbol::SharedCtor() {
+  _cached_size_ = 0;
+  id_ = -1;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  value_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+SymbolValueList_DoubleSymbol::~SymbolValueList_DoubleSymbol() {
+  SharedDtor();
+}
+
+void SymbolValueList_DoubleSymbol::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void SymbolValueList_DoubleSymbol::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* SymbolValueList_DoubleSymbol::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return SymbolValueList_DoubleSymbol_descriptor_;
+}
+
+const SymbolValueList_DoubleSymbol& SymbolValueList_DoubleSymbol::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+SymbolValueList_DoubleSymbol* SymbolValueList_DoubleSymbol::default_instance_ = NULL;
+
+SymbolValueList_DoubleSymbol* SymbolValueList_DoubleSymbol::New() const {
+  return new SymbolValueList_DoubleSymbol;
+}
+
+void SymbolValueList_DoubleSymbol::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    id_ = -1;
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
+      }
+    }
+    value_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool SymbolValueList_DoubleSymbol::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 id = 1 [default = -1];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_name;
+        break;
+      }
+      
+      // optional string name = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_value;
+        break;
+      }
+      
+      // optional double value = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_value:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &value_)));
+          set_has_value();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void SymbolValueList_DoubleSymbol::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->name(), output);
+  }
+  
+  // optional double value = 3;
+  if (has_value()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->value(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* SymbolValueList_DoubleSymbol::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->name(), target);
+  }
+  
+  // optional double value = 3;
+  if (has_value()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->value(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int SymbolValueList_DoubleSymbol::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 id = 1 [default = -1];
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->id());
+    }
+    
+    // optional string name = 2;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+    
+    // optional double value = 3;
+    if (has_value()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void SymbolValueList_DoubleSymbol::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const SymbolValueList_DoubleSymbol* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const SymbolValueList_DoubleSymbol*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void SymbolValueList_DoubleSymbol::MergeFrom(const SymbolValueList_DoubleSymbol& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_id()) {
+      set_id(from.id());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+    if (from.has_value()) {
+      set_value(from.value());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void SymbolValueList_DoubleSymbol::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SymbolValueList_DoubleSymbol::CopyFrom(const SymbolValueList_DoubleSymbol& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SymbolValueList_DoubleSymbol::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  return true;
+}
+
+void SymbolValueList_DoubleSymbol::Swap(SymbolValueList_DoubleSymbol* other) {
+  if (other != this) {
+    std::swap(id_, other->id_);
+    std::swap(name_, other->name_);
+    std::swap(value_, other->value_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata SymbolValueList_DoubleSymbol::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = SymbolValueList_DoubleSymbol_descriptor_;
+  metadata.reflection = SymbolValueList_DoubleSymbol_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int SymbolValueList_BooleanSymbol::kIdFieldNumber;
+const int SymbolValueList_BooleanSymbol::kNameFieldNumber;
+const int SymbolValueList_BooleanSymbol::kValueFieldNumber;
+#endif  // !_MSC_VER
+
+SymbolValueList_BooleanSymbol::SymbolValueList_BooleanSymbol()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void SymbolValueList_BooleanSymbol::InitAsDefaultInstance() {
+}
+
+SymbolValueList_BooleanSymbol::SymbolValueList_BooleanSymbol(const SymbolValueList_BooleanSymbol& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void SymbolValueList_BooleanSymbol::SharedCtor() {
+  _cached_size_ = 0;
+  id_ = -1;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  value_ = false;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+SymbolValueList_BooleanSymbol::~SymbolValueList_BooleanSymbol() {
+  SharedDtor();
+}
+
+void SymbolValueList_BooleanSymbol::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void SymbolValueList_BooleanSymbol::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* SymbolValueList_BooleanSymbol::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return SymbolValueList_BooleanSymbol_descriptor_;
+}
+
+const SymbolValueList_BooleanSymbol& SymbolValueList_BooleanSymbol::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+SymbolValueList_BooleanSymbol* SymbolValueList_BooleanSymbol::default_instance_ = NULL;
+
+SymbolValueList_BooleanSymbol* SymbolValueList_BooleanSymbol::New() const {
+  return new SymbolValueList_BooleanSymbol;
+}
+
+void SymbolValueList_BooleanSymbol::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    id_ = -1;
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
+      }
+    }
+    value_ = false;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool SymbolValueList_BooleanSymbol::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 id = 1 [default = -1];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_name;
+        break;
+      }
+      
+      // optional string name = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_value;
+        break;
+      }
+      
+      // optional bool value = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_value:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &value_)));
+          set_has_value();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void SymbolValueList_BooleanSymbol::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->name(), output);
+  }
+  
+  // optional bool value = 3;
+  if (has_value()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->value(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* SymbolValueList_BooleanSymbol::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->name(), target);
+  }
+  
+  // optional bool value = 3;
+  if (has_value()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->value(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int SymbolValueList_BooleanSymbol::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 id = 1 [default = -1];
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->id());
+    }
+    
+    // optional string name = 2;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+    
+    // optional bool value = 3;
+    if (has_value()) {
+      total_size += 1 + 1;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void SymbolValueList_BooleanSymbol::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const SymbolValueList_BooleanSymbol* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const SymbolValueList_BooleanSymbol*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void SymbolValueList_BooleanSymbol::MergeFrom(const SymbolValueList_BooleanSymbol& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_id()) {
+      set_id(from.id());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+    if (from.has_value()) {
+      set_value(from.value());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void SymbolValueList_BooleanSymbol::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SymbolValueList_BooleanSymbol::CopyFrom(const SymbolValueList_BooleanSymbol& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SymbolValueList_BooleanSymbol::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  return true;
+}
+
+void SymbolValueList_BooleanSymbol::Swap(SymbolValueList_BooleanSymbol* other) {
+  if (other != this) {
+    std::swap(id_, other->id_);
+    std::swap(name_, other->name_);
+    std::swap(value_, other->value_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata SymbolValueList_BooleanSymbol::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = SymbolValueList_BooleanSymbol_descriptor_;
+  metadata.reflection = SymbolValueList_BooleanSymbol_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int SymbolValueList_EnumSymbol::kIdFieldNumber;
+const int SymbolValueList_EnumSymbol::kNameFieldNumber;
+const int SymbolValueList_EnumSymbol::kValueFieldNumber;
+#endif  // !_MSC_VER
+
+SymbolValueList_EnumSymbol::SymbolValueList_EnumSymbol()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void SymbolValueList_EnumSymbol::InitAsDefaultInstance() {
+}
+
+SymbolValueList_EnumSymbol::SymbolValueList_EnumSymbol(const SymbolValueList_EnumSymbol& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void SymbolValueList_EnumSymbol::SharedCtor() {
+  _cached_size_ = 0;
+  id_ = -1;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  value_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+SymbolValueList_EnumSymbol::~SymbolValueList_EnumSymbol() {
+  SharedDtor();
+}
+
+void SymbolValueList_EnumSymbol::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void SymbolValueList_EnumSymbol::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* SymbolValueList_EnumSymbol::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return SymbolValueList_EnumSymbol_descriptor_;
+}
+
+const SymbolValueList_EnumSymbol& SymbolValueList_EnumSymbol::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+SymbolValueList_EnumSymbol* SymbolValueList_EnumSymbol::default_instance_ = NULL;
+
+SymbolValueList_EnumSymbol* SymbolValueList_EnumSymbol::New() const {
+  return new SymbolValueList_EnumSymbol;
+}
+
+void SymbolValueList_EnumSymbol::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    id_ = -1;
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
+      }
+    }
+    value_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool SymbolValueList_EnumSymbol::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 id = 1 [default = -1];
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_name;
+        break;
+      }
+      
+      // optional string name = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(104)) goto parse_value;
+        break;
+      }
+      
+      // optional int32 value = 13;
+      case 13: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_value:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &value_)));
+          set_has_value();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void SymbolValueList_EnumSymbol::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->name(), output);
+  }
+  
+  // optional int32 value = 13;
+  if (has_value()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(13, this->value(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* SymbolValueList_EnumSymbol::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 id = 1 [default = -1];
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
+  }
+  
+  // optional string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->name(), target);
+  }
+  
+  // optional int32 value = 13;
+  if (has_value()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(13, this->value(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int SymbolValueList_EnumSymbol::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 id = 1 [default = -1];
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->id());
+    }
+    
+    // optional string name = 2;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+    
+    // optional int32 value = 13;
+    if (has_value()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->value());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void SymbolValueList_EnumSymbol::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const SymbolValueList_EnumSymbol* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const SymbolValueList_EnumSymbol*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void SymbolValueList_EnumSymbol::MergeFrom(const SymbolValueList_EnumSymbol& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_id()) {
+      set_id(from.id());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+    if (from.has_value()) {
+      set_value(from.value());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void SymbolValueList_EnumSymbol::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SymbolValueList_EnumSymbol::CopyFrom(const SymbolValueList_EnumSymbol& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SymbolValueList_EnumSymbol::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  return true;
+}
+
+void SymbolValueList_EnumSymbol::Swap(SymbolValueList_EnumSymbol* other) {
+  if (other != this) {
+    std::swap(id_, other->id_);
+    std::swap(name_, other->name_);
+    std::swap(value_, other->value_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata SymbolValueList_EnumSymbol::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = SymbolValueList_EnumSymbol_descriptor_;
+  metadata.reflection = SymbolValueList_EnumSymbol_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int SymbolValueList::kDecimalFieldNumber;
+const int SymbolValueList::kBooleanFieldNumber;
+const int SymbolValueList::kEnumeratedFieldNumber;
+#endif  // !_MSC_VER
+
+SymbolValueList::SymbolValueList()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void SymbolValueList::InitAsDefaultInstance() {
+}
+
+SymbolValueList::SymbolValueList(const SymbolValueList& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void SymbolValueList::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+SymbolValueList::~SymbolValueList() {
+  SharedDtor();
+}
+
+void SymbolValueList::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void SymbolValueList::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* SymbolValueList::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return SymbolValueList_descriptor_;
+}
+
+const SymbolValueList& SymbolValueList::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+SymbolValueList* SymbolValueList::default_instance_ = NULL;
+
+SymbolValueList* SymbolValueList::New() const {
+  return new SymbolValueList;
+}
+
+void SymbolValueList::Clear() {
+  decimal_.Clear();
+  boolean_.Clear();
+  enumerated_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool SymbolValueList::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_decimal:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_decimal()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_decimal;
+        if (input->ExpectTag(18)) goto parse_boolean;
+        break;
+      }
+      
+      // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_boolean:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_boolean()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_boolean;
+        if (input->ExpectTag(26)) goto parse_enumerated;
+        break;
+      }
+      
+      // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_enumerated:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_enumerated()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_enumerated;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void SymbolValueList::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+  for (int i = 0; i < this->decimal_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->decimal(i), output);
+  }
+  
+  // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+  for (int i = 0; i < this->boolean_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->boolean(i), output);
+  }
+  
+  // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+  for (int i = 0; i < this->enumerated_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->enumerated(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* SymbolValueList::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+  for (int i = 0; i < this->decimal_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->decimal(i), target);
+  }
+  
+  // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+  for (int i = 0; i < this->boolean_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->boolean(i), target);
+  }
+  
+  // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+  for (int i = 0; i < this->enumerated_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->enumerated(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int SymbolValueList::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+  total_size += 1 * this->decimal_size();
+  for (int i = 0; i < this->decimal_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->decimal(i));
+  }
+  
+  // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+  total_size += 1 * this->boolean_size();
+  for (int i = 0; i < this->boolean_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->boolean(i));
+  }
+  
+  // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+  total_size += 1 * this->enumerated_size();
+  for (int i = 0; i < this->enumerated_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->enumerated(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void SymbolValueList::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const SymbolValueList* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const SymbolValueList*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void SymbolValueList::MergeFrom(const SymbolValueList& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  decimal_.MergeFrom(from.decimal_);
+  boolean_.MergeFrom(from.boolean_);
+  enumerated_.MergeFrom(from.enumerated_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void SymbolValueList::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SymbolValueList::CopyFrom(const SymbolValueList& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SymbolValueList::IsInitialized() const {
+  
+  for (int i = 0; i < decimal_size(); i++) {
+    if (!this->decimal(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < boolean_size(); i++) {
+    if (!this->boolean(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < enumerated_size(); i++) {
+    if (!this->enumerated(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void SymbolValueList::Swap(SymbolValueList* other) {
+  if (other != this) {
+    decimal_.Swap(&other->decimal_);
+    boolean_.Swap(&other->boolean_);
+    enumerated_.Swap(&other->enumerated_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata SymbolValueList::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = SymbolValueList_descriptor_;
+  metadata.reflection = SymbolValueList_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int BehaviorStatusSparse::kAgentFieldNumber;
+const int BehaviorStatusSparse::kActiveRootActionsFieldNumber;
+const int BehaviorStatusSparse::kInputSymbolsFieldNumber;
+const int BehaviorStatusSparse::kOutputSymbolsFieldNumber;
+const int BehaviorStatusSparse::kInputSymbolListFieldNumber;
+const int BehaviorStatusSparse::kOutputSymbolListFieldNumber;
+const int BehaviorStatusSparse::kFrameNumberFieldNumber;
+const int BehaviorStatusSparse::kErrorMessageFieldNumber;
+#endif  // !_MSC_VER
+
+BehaviorStatusSparse::BehaviorStatusSparse()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BehaviorStatusSparse::InitAsDefaultInstance() {
+  inputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
+  outputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
+}
+
+BehaviorStatusSparse::BehaviorStatusSparse(const BehaviorStatusSparse& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BehaviorStatusSparse::SharedCtor() {
+  _cached_size_ = 0;
+  agent_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  inputsymbollist_ = NULL;
+  outputsymbollist_ = NULL;
+  framenumber_ = 0u;
+  errormessage_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BehaviorStatusSparse::~BehaviorStatusSparse() {
+  SharedDtor();
+}
+
+void BehaviorStatusSparse::SharedDtor() {
+  if (agent_ != &::google::protobuf::internal::kEmptyString) {
+    delete agent_;
+  }
+  if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
+    delete errormessage_;
+  }
+  if (this != default_instance_) {
+    delete inputsymbollist_;
+    delete outputsymbollist_;
+  }
+}
+
+void BehaviorStatusSparse::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BehaviorStatusSparse::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BehaviorStatusSparse_descriptor_;
+}
+
+const BehaviorStatusSparse& BehaviorStatusSparse::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+BehaviorStatusSparse* BehaviorStatusSparse::default_instance_ = NULL;
+
+BehaviorStatusSparse* BehaviorStatusSparse::New() const {
+  return new BehaviorStatusSparse;
+}
+
+void BehaviorStatusSparse::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_agent()) {
+      if (agent_ != &::google::protobuf::internal::kEmptyString) {
+        agent_->clear();
+      }
+    }
+    if (has_inputsymbollist()) {
+      if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
+    }
+    if (has_outputsymbollist()) {
+      if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
+    }
+    framenumber_ = 0u;
+    if (has_errormessage()) {
+      if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
+        errormessage_->clear();
+      }
+    }
+  }
+  activerootactions_.Clear();
+  inputsymbols_.Clear();
+  outputsymbols_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BehaviorStatusSparse::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string agent = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_agent()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->agent().data(), this->agent().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_activeRootActions;
+        break;
+      }
+      
+      // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_activeRootActions:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_activerootactions()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_activeRootActions;
+        if (input->ExpectTag(26)) goto parse_inputSymbols;
+        break;
+      }
+      
+      // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_inputSymbols:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_inputsymbols()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_inputSymbols;
+        if (input->ExpectTag(34)) goto parse_outputSymbols;
+        break;
+      }
+      
+      // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_outputSymbols:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_outputsymbols()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_outputSymbols;
+        if (input->ExpectTag(40)) goto parse_frameNumber;
+        break;
+      }
+      
+      // optional uint32 frameNumber = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_frameNumber:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &framenumber_)));
+          set_has_framenumber();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(50)) goto parse_errorMessage;
+        break;
+      }
+      
+      // optional string errorMessage = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_errorMessage:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_errormessage()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->errormessage().data(), this->errormessage().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(82)) goto parse_inputSymbolList;
+        break;
+      }
+      
+      // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+      case 10: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_inputSymbolList:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_inputsymbollist()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(90)) goto parse_outputSymbolList;
+        break;
+      }
+      
+      // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+      case 11: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_outputSymbolList:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_outputsymbollist()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void BehaviorStatusSparse::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional string agent = 1;
+  if (has_agent()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->agent().data(), this->agent().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->agent(), output);
+  }
+  
+  // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+  for (int i = 0; i < this->activerootactions_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->activerootactions(i), output);
+  }
+  
+  // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
+  for (int i = 0; i < this->inputsymbols_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->inputsymbols(i), output);
+  }
+  
+  // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
+  for (int i = 0; i < this->outputsymbols_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->outputsymbols(i), output);
+  }
+  
+  // optional uint32 frameNumber = 5;
+  if (has_framenumber()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->framenumber(), output);
+  }
+  
+  // optional string errorMessage = 6;
+  if (has_errormessage()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->errormessage().data(), this->errormessage().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->errormessage(), output);
+  }
+  
+  // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+  if (has_inputsymbollist()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      10, this->inputsymbollist(), output);
+  }
+  
+  // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+  if (has_outputsymbollist()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      11, this->outputsymbollist(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BehaviorStatusSparse::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional string agent = 1;
+  if (has_agent()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->agent().data(), this->agent().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->agent(), target);
+  }
+  
+  // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+  for (int i = 0; i < this->activerootactions_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->activerootactions(i), target);
+  }
+  
+  // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
+  for (int i = 0; i < this->inputsymbols_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->inputsymbols(i), target);
+  }
+  
+  // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
+  for (int i = 0; i < this->outputsymbols_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->outputsymbols(i), target);
+  }
+  
+  // optional uint32 frameNumber = 5;
+  if (has_framenumber()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->framenumber(), target);
+  }
+  
+  // optional string errorMessage = 6;
+  if (has_errormessage()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->errormessage().data(), this->errormessage().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->errormessage(), target);
+  }
+  
+  // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+  if (has_inputsymbollist()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        10, this->inputsymbollist(), target);
+  }
+  
+  // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+  if (has_outputsymbollist()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        11, this->outputsymbollist(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BehaviorStatusSparse::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional string agent = 1;
+    if (has_agent()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->agent());
+    }
+    
+    // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+    if (has_inputsymbollist()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->inputsymbollist());
+    }
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+    if (has_outputsymbollist()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->outputsymbollist());
+    }
+    
+    // optional uint32 frameNumber = 5;
+    if (has_framenumber()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->framenumber());
+    }
+    
+    // optional string errorMessage = 6;
+    if (has_errormessage()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->errormessage());
+    }
+    
+  }
+  // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+  total_size += 1 * this->activerootactions_size();
+  for (int i = 0; i < this->activerootactions_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->activerootactions(i));
+  }
+  
+  // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
+  total_size += 1 * this->inputsymbols_size();
+  for (int i = 0; i < this->inputsymbols_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->inputsymbols(i));
+  }
+  
+  // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
+  total_size += 1 * this->outputsymbols_size();
+  for (int i = 0; i < this->outputsymbols_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->outputsymbols(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BehaviorStatusSparse::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BehaviorStatusSparse* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStatusSparse*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BehaviorStatusSparse::MergeFrom(const BehaviorStatusSparse& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  activerootactions_.MergeFrom(from.activerootactions_);
+  inputsymbols_.MergeFrom(from.inputsymbols_);
+  outputsymbols_.MergeFrom(from.outputsymbols_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_agent()) {
+      set_agent(from.agent());
+    }
+    if (from.has_inputsymbollist()) {
+      mutable_inputsymbollist()->::naothmessages::SymbolValueList::MergeFrom(from.inputsymbollist());
+    }
+    if (from.has_outputsymbollist()) {
+      mutable_outputsymbollist()->::naothmessages::SymbolValueList::MergeFrom(from.outputsymbollist());
+    }
+    if (from.has_framenumber()) {
+      set_framenumber(from.framenumber());
+    }
+    if (from.has_errormessage()) {
+      set_errormessage(from.errormessage());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BehaviorStatusSparse::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BehaviorStatusSparse::CopyFrom(const BehaviorStatusSparse& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BehaviorStatusSparse::IsInitialized() const {
+  
+  for (int i = 0; i < activerootactions_size(); i++) {
+    if (!this->activerootactions(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < inputsymbols_size(); i++) {
+    if (!this->inputsymbols(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < outputsymbols_size(); i++) {
+    if (!this->outputsymbols(i).IsInitialized()) return false;
+  }
+  if (has_inputsymbollist()) {
+    if (!this->inputsymbollist().IsInitialized()) return false;
+  }
+  if (has_outputsymbollist()) {
+    if (!this->outputsymbollist().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void BehaviorStatusSparse::Swap(BehaviorStatusSparse* other) {
+  if (other != this) {
+    std::swap(agent_, other->agent_);
+    activerootactions_.Swap(&other->activerootactions_);
+    inputsymbols_.Swap(&other->inputsymbols_);
+    outputsymbols_.Swap(&other->outputsymbols_);
+    std::swap(inputsymbollist_, other->inputsymbollist_);
+    std::swap(outputsymbollist_, other->outputsymbollist_);
+    std::swap(framenumber_, other->framenumber_);
+    std::swap(errormessage_, other->errormessage_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BehaviorStatusSparse::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BehaviorStatusSparse_descriptor_;
+  metadata.reflection = BehaviorStatusSparse_reflection_;
   return metadata;
 }
 
@@ -5244,12 +7133,12 @@ bool XABSLBehavior_EnumType_Element::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required double value = 1;
+      // required int32 value = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &value_)));
           set_has_value();
         } else {
@@ -5294,9 +7183,9 @@ bool XABSLBehavior_EnumType_Element::MergePartialFromCodedStream(
 
 void XABSLBehavior_EnumType_Element::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required double value = 1;
+  // required int32 value = 1;
   if (has_value()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->value(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->value(), output);
   }
   
   // required string name = 2;
@@ -5316,9 +7205,9 @@ void XABSLBehavior_EnumType_Element::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* XABSLBehavior_EnumType_Element::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required double value = 1;
+  // required int32 value = 1;
   if (has_value()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->value(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->value(), target);
   }
   
   // required string name = 2;
@@ -5342,9 +7231,11 @@ int XABSLBehavior_EnumType_Element::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required double value = 1;
+    // required int32 value = 1;
     if (has_value()) {
-      total_size += 1 + 8;
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->value());
     }
     
     // required string name = 2;
@@ -6273,10 +8164,293 @@ void XABSLBehavior_Option::Swap(XABSLBehavior_Option* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int XABSLBehavior_Agent::kNameFieldNumber;
+const int XABSLBehavior_Agent::kRootOptionFieldNumber;
+#endif  // !_MSC_VER
+
+XABSLBehavior_Agent::XABSLBehavior_Agent()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void XABSLBehavior_Agent::InitAsDefaultInstance() {
+}
+
+XABSLBehavior_Agent::XABSLBehavior_Agent(const XABSLBehavior_Agent& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void XABSLBehavior_Agent::SharedCtor() {
+  _cached_size_ = 0;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  rootoption_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+XABSLBehavior_Agent::~XABSLBehavior_Agent() {
+  SharedDtor();
+}
+
+void XABSLBehavior_Agent::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
+  }
+  if (rootoption_ != &::google::protobuf::internal::kEmptyString) {
+    delete rootoption_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void XABSLBehavior_Agent::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* XABSLBehavior_Agent::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return XABSLBehavior_Agent_descriptor_;
+}
+
+const XABSLBehavior_Agent& XABSLBehavior_Agent::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+XABSLBehavior_Agent* XABSLBehavior_Agent::default_instance_ = NULL;
+
+XABSLBehavior_Agent* XABSLBehavior_Agent::New() const {
+  return new XABSLBehavior_Agent;
+}
+
+void XABSLBehavior_Agent::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
+      }
+    }
+    if (has_rootoption()) {
+      if (rootoption_ != &::google::protobuf::internal::kEmptyString) {
+        rootoption_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool XABSLBehavior_Agent::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string name = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_rootOption;
+        break;
+      }
+      
+      // required string rootOption = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_rootOption:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_rootoption()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->rootoption().data(), this->rootoption().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void XABSLBehavior_Agent::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string name = 1;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->name(), output);
+  }
+  
+  // required string rootOption = 2;
+  if (has_rootoption()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->rootoption().data(), this->rootoption().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->rootoption(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* XABSLBehavior_Agent::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required string name = 1;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->name(), target);
+  }
+  
+  // required string rootOption = 2;
+  if (has_rootoption()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->rootoption().data(), this->rootoption().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->rootoption(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int XABSLBehavior_Agent::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string name = 1;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+    
+    // required string rootOption = 2;
+    if (has_rootoption()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->rootoption());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void XABSLBehavior_Agent::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const XABSLBehavior_Agent* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_Agent*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void XABSLBehavior_Agent::MergeFrom(const XABSLBehavior_Agent& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+    if (from.has_rootoption()) {
+      set_rootoption(from.rootoption());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void XABSLBehavior_Agent::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void XABSLBehavior_Agent::CopyFrom(const XABSLBehavior_Agent& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool XABSLBehavior_Agent::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void XABSLBehavior_Agent::Swap(XABSLBehavior_Agent* other) {
+  if (other != this) {
+    std::swap(name_, other->name_);
+    std::swap(rootoption_, other->rootoption_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata XABSLBehavior_Agent::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = XABSLBehavior_Agent_descriptor_;
+  metadata.reflection = XABSLBehavior_Agent_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
 const int XABSLBehavior::kEnumerationsFieldNumber;
 const int XABSLBehavior::kOptionsFieldNumber;
-const int XABSLBehavior::kInputSymbolsFieldNumber;
-const int XABSLBehavior::kOutputSymbolsFieldNumber;
+const int XABSLBehavior::kAgentsFieldNumber;
+const int XABSLBehavior::kInputSymbolListFieldNumber;
+const int XABSLBehavior::kOutputSymbolListFieldNumber;
 #endif  // !_MSC_VER
 
 XABSLBehavior::XABSLBehavior()
@@ -6285,6 +8459,8 @@ XABSLBehavior::XABSLBehavior()
 }
 
 void XABSLBehavior::InitAsDefaultInstance() {
+  inputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
+  outputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
 }
 
 XABSLBehavior::XABSLBehavior(const XABSLBehavior& from)
@@ -6295,6 +8471,8 @@ XABSLBehavior::XABSLBehavior(const XABSLBehavior& from)
 
 void XABSLBehavior::SharedCtor() {
   _cached_size_ = 0;
+  inputsymbollist_ = NULL;
+  outputsymbollist_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -6304,6 +8482,8 @@ XABSLBehavior::~XABSLBehavior() {
 
 void XABSLBehavior::SharedDtor() {
   if (this != default_instance_) {
+    delete inputsymbollist_;
+    delete outputsymbollist_;
   }
 }
 
@@ -6328,10 +8508,17 @@ XABSLBehavior* XABSLBehavior::New() const {
 }
 
 void XABSLBehavior::Clear() {
+  if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+    if (has_inputsymbollist()) {
+      if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
+    }
+    if (has_outputsymbollist()) {
+      if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
+    }
+  }
   enumerations_.Clear();
   options_.Clear();
-  inputsymbols_.Clear();
-  outputsymbols_.Clear();
+  agents_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -6368,36 +8555,49 @@ bool XABSLBehavior::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(90)) goto parse_options;
-        if (input->ExpectTag(98)) goto parse_inputSymbols;
+        if (input->ExpectTag(98)) goto parse_agents;
         break;
       }
       
-      // repeated .naothmessages.XABSLSymbol inputSymbols = 12;
+      // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
       case 12: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_inputSymbols:
+         parse_agents:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_inputsymbols()));
+                input, add_agents()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(98)) goto parse_inputSymbols;
-        if (input->ExpectTag(106)) goto parse_outputSymbols;
+        if (input->ExpectTag(98)) goto parse_agents;
+        if (input->ExpectTag(106)) goto parse_inputSymbolList;
         break;
       }
       
-      // repeated .naothmessages.XABSLSymbol outputSymbols = 13;
+      // optional .naothmessages.SymbolValueList inputSymbolList = 13;
       case 13: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_outputSymbols:
+         parse_inputSymbolList:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_outputsymbols()));
+               input, mutable_inputsymbollist()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(106)) goto parse_outputSymbols;
+        if (input->ExpectTag(114)) goto parse_outputSymbolList;
+        break;
+      }
+      
+      // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+      case 14: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_outputSymbolList:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_outputsymbollist()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -6432,16 +8632,22 @@ void XABSLBehavior::SerializeWithCachedSizes(
       11, this->options(i), output);
   }
   
-  // repeated .naothmessages.XABSLSymbol inputSymbols = 12;
-  for (int i = 0; i < this->inputsymbols_size(); i++) {
+  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  for (int i = 0; i < this->agents_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      12, this->inputsymbols(i), output);
+      12, this->agents(i), output);
   }
   
-  // repeated .naothmessages.XABSLSymbol outputSymbols = 13;
-  for (int i = 0; i < this->outputsymbols_size(); i++) {
+  // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+  if (has_inputsymbollist()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      13, this->outputsymbols(i), output);
+      13, this->inputsymbollist(), output);
+  }
+  
+  // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+  if (has_outputsymbollist()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      14, this->outputsymbollist(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -6466,18 +8672,25 @@ void XABSLBehavior::SerializeWithCachedSizes(
         11, this->options(i), target);
   }
   
-  // repeated .naothmessages.XABSLSymbol inputSymbols = 12;
-  for (int i = 0; i < this->inputsymbols_size(); i++) {
+  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  for (int i = 0; i < this->agents_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        12, this->inputsymbols(i), target);
+        12, this->agents(i), target);
   }
   
-  // repeated .naothmessages.XABSLSymbol outputSymbols = 13;
-  for (int i = 0; i < this->outputsymbols_size(); i++) {
+  // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+  if (has_inputsymbollist()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        13, this->outputsymbols(i), target);
+        13, this->inputsymbollist(), target);
+  }
+  
+  // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+  if (has_outputsymbollist()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        14, this->outputsymbollist(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -6490,6 +8703,22 @@ void XABSLBehavior::SerializeWithCachedSizes(
 int XABSLBehavior::ByteSize() const {
   int total_size = 0;
   
+  if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+    // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+    if (has_inputsymbollist()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->inputsymbollist());
+    }
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+    if (has_outputsymbollist()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->outputsymbollist());
+    }
+    
+  }
   // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
   total_size += 1 * this->enumerations_size();
   for (int i = 0; i < this->enumerations_size(); i++) {
@@ -6506,20 +8735,12 @@ int XABSLBehavior::ByteSize() const {
         this->options(i));
   }
   
-  // repeated .naothmessages.XABSLSymbol inputSymbols = 12;
-  total_size += 1 * this->inputsymbols_size();
-  for (int i = 0; i < this->inputsymbols_size(); i++) {
+  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  total_size += 1 * this->agents_size();
+  for (int i = 0; i < this->agents_size(); i++) {
     total_size +=
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->inputsymbols(i));
-  }
-  
-  // repeated .naothmessages.XABSLSymbol outputSymbols = 13;
-  total_size += 1 * this->outputsymbols_size();
-  for (int i = 0; i < this->outputsymbols_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->outputsymbols(i));
+        this->agents(i));
   }
   
   if (!unknown_fields().empty()) {
@@ -6549,8 +8770,15 @@ void XABSLBehavior::MergeFrom(const XABSLBehavior& from) {
   GOOGLE_CHECK_NE(&from, this);
   enumerations_.MergeFrom(from.enumerations_);
   options_.MergeFrom(from.options_);
-  inputsymbols_.MergeFrom(from.inputsymbols_);
-  outputsymbols_.MergeFrom(from.outputsymbols_);
+  agents_.MergeFrom(from.agents_);
+  if (from._has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+    if (from.has_inputsymbollist()) {
+      mutable_inputsymbollist()->::naothmessages::SymbolValueList::MergeFrom(from.inputsymbollist());
+    }
+    if (from.has_outputsymbollist()) {
+      mutable_outputsymbollist()->::naothmessages::SymbolValueList::MergeFrom(from.outputsymbollist());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -6574,11 +8802,14 @@ bool XABSLBehavior::IsInitialized() const {
   for (int i = 0; i < options_size(); i++) {
     if (!this->options(i).IsInitialized()) return false;
   }
-  for (int i = 0; i < inputsymbols_size(); i++) {
-    if (!this->inputsymbols(i).IsInitialized()) return false;
+  for (int i = 0; i < agents_size(); i++) {
+    if (!this->agents(i).IsInitialized()) return false;
   }
-  for (int i = 0; i < outputsymbols_size(); i++) {
-    if (!this->outputsymbols(i).IsInitialized()) return false;
+  if (has_inputsymbollist()) {
+    if (!this->inputsymbollist().IsInitialized()) return false;
+  }
+  if (has_outputsymbollist()) {
+    if (!this->outputsymbollist().IsInitialized()) return false;
   }
   return true;
 }
@@ -6587,8 +8818,9 @@ void XABSLBehavior::Swap(XABSLBehavior* other) {
   if (other != this) {
     enumerations_.Swap(&other->enumerations_);
     options_.Swap(&other->options_);
-    inputsymbols_.Swap(&other->inputsymbols_);
-    outputsymbols_.Swap(&other->outputsymbols_);
+    agents_.Swap(&other->agents_);
+    std::swap(inputsymbollist_, other->inputsymbollist_);
+    std::swap(outputsymbollist_, other->outputsymbollist_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

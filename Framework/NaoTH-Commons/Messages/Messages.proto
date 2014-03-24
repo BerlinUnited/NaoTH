@@ -100,7 +100,7 @@ message XABSLActiveOptionSparse {
 	optional int64 stateTime = 5;
 	
 	repeated double decimalParameters = 6;
-	repeated double booleanParameters = 7;
+	repeated bool booleanParameters = 7;
 	repeated int32 enumeratedParameters = 8;
 	  
 	repeated XABSLActionSparse activeSubActions = 9;
@@ -114,11 +114,46 @@ message XABSLActionSparse {
    Unknown = 3;
   }
   
-  required int32 id = 1 [default=-1];
   required ActionType type = 2 [default=Unknown];
   
   optional XABSLSymbol symbol = 3;
   optional XABSLActiveOptionSparse option = 4;
+}
+
+message SymbolValueList {
+	message DoubleSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional double value = 3;
+	}
+	message BooleanSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional bool value = 3;
+	}
+	
+	message EnumSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional int32 value = 13;
+	}
+	
+	repeated DoubleSymbol decimal = 1;
+	repeated BooleanSymbol boolean = 2;
+	repeated EnumSymbol enumerated = 3;
+}
+
+message BehaviorStatusSparse {  
+  optional string agent = 1;
+  repeated XABSLActionSparse activeRootActions = 2;
+  repeated XABSLSymbol inputSymbols = 3;
+  repeated XABSLSymbol outputSymbols = 4;
+  
+  optional SymbolValueList inputSymbolList = 10;
+  optional SymbolValueList outputSymbolList = 11;
+  
+  optional uint32 frameNumber = 5;
+  optional string errorMessage = 6;
 }
 
 
@@ -126,7 +161,7 @@ message XABSLBehavior {
   
   message EnumType {
 	message Element {
-		required double value = 1;
+		required int32 value = 1;
 		required string name = 2;
 	}
 	required string name = 1;
@@ -144,10 +179,17 @@ message XABSLBehavior {
 	repeated XABSLSymbol parameters = 2;
   }
   
+  message Agent {
+	required string name = 1;
+	required string rootOption = 2;
+  }
+  
   repeated EnumType enumerations = 10;
   repeated Option options = 11;
-  repeated XABSLSymbol inputSymbols = 12;
-  repeated XABSLSymbol outputSymbols = 13;
+  repeated Agent agents = 12;
+  
+  optional SymbolValueList inputSymbolList = 13;
+  optional SymbolValueList outputSymbolList = 14;
 }
 
 

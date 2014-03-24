@@ -29,8 +29,8 @@ public:
   
   // list of all symbols, options and enumerations of the current behavior
   naothmessages::XABSLBehavior behavior;
-  //
-
+  // sparse status update dased on the behavior
+  naothmessages::BehaviorStatusSparse status_sparse;
 
 };
 
