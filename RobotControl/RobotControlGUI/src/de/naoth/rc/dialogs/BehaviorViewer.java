@@ -10,11 +10,17 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLFrame;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLFramePrototype;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLFramePrototype.SymbolId;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.manager.SwingCommandExecutor;
 import de.naoth.rc.messages.Messages;
-import de.naoth.rc.messages.Messages.XABSLAction;
 import de.naoth.rc.messages.Messages.XABSLParameter;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
@@ -28,9 +34,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -41,21 +44,11 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -67,8 +60,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class BehaviorViewer extends AbstractDialog
   implements
   ObjectListener<byte[]>,
-  Dialog,
-  TreeExpansionListener
+  Dialog
 {
 
   @PluginImplementation
@@ -80,6 +72,8 @@ public class BehaviorViewer extends AbstractDialog
       public static GenericManagerFactory genericManagerFactory;
       @InjectPlugin
       public static DebugDrawingManager debugDrawingManager;
+      @InjectPlugin
+      public static SwingCommandExecutor commandExecutor;
   }//end Plugin
   
 
@@ -91,6 +85,11 @@ public class BehaviorViewer extends AbstractDialog
   private final Command reloadBehaviorCommand = new Command("behavior:reload");
   private final Command getAgentCommand = new Command("behavior:get_agent");
   private final Command getExecutedBehaviorCommand = new Command("behavior:status");
+  
+  private final Command getCurrentBehavior = new Command("behavior:behavior");
+  private final Command getBehaviorStatusSparse = new Command("behavior:status_sparse");
+  
+  
   private final Command enableUpdateBehaviorStatusCommand =
           new Command("XABSL:update_status").addArg("on");
   private final Command disableUpdateBehaviorStatusCommand =
@@ -99,7 +98,6 @@ public class BehaviorViewer extends AbstractDialog
   private final Command getListOfAgents = new Command("behavior:list_agents");
 
   ArrayList<XABSLFrame> behaviorBuffer;
-  private HashMap<String, Boolean> actionExpanded;
   public static final Color DARK_GREEN = new Color(0, 128, 0);
   public static final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, 11);
   public static final Font BOLD_FONT = new Font("Sans Serif", Font.BOLD, 11);
@@ -108,7 +106,8 @@ public class BehaviorViewer extends AbstractDialog
   final private String defaultBehavior = "../NaoController/Config/behavior/behavior-ic.dat";
 
   private XABSLFramePrototype framePrototype = null;
-
+  private XABSLProtoParser behaviorParser = null;
+  
   private boolean vetoSetAgent = false;
   //private String currentAgent = "";
 
@@ -118,11 +117,12 @@ public class BehaviorViewer extends AbstractDialog
   
   private BehaviorFrameListener behaviorFrameListener = new BehaviorFrameListener();
 
+  private BehaviorListener behaviorListener = new BehaviorListener();
+  private BehaviorUpdateListener behaviorUpdateListener = new BehaviorUpdateListener();
+  
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
   {
-    actionExpanded = new HashMap<String, Boolean>();
-
     initComponents();
 
     this.frameList.setModel(new BehaviorFrameListModel()); // new DefaultListModel());
@@ -155,84 +155,7 @@ public class BehaviorViewer extends AbstractDialog
 
 
     this.behaviorBuffer = new ArrayList<XABSLFrame>();
-    
-    createNewTree(null);
   }
-
-
-  private void createNewTree(DefaultMutableTreeNode root)
-  {
-    if(root == null)
-    {
-      root = new DefaultMutableTreeNode("Behavior");
-    }
-
-    DefaultTreeModel model = new DefaultTreeModel(root);
-
-    JTree newTree = new JTree();
-    newTree.setModel(model);
-    
-    // expand all by default
-    for(int i=0; i < newTree.getRowCount(); i++)
-    {
-      newTree.expandRow(i);
-    }
-    // collapse all requested
-    Enumeration e = root.depthFirstEnumeration();
-    while(e.hasMoreElements())
-    {
-      Object o = e.nextElement();
-      if(o instanceof DefaultMutableTreeNode)
-      {
-        DefaultMutableTreeNode n = (DefaultMutableTreeNode) o;
-        if(n.getUserObject() instanceof Messages.XABSLAction)
-        {
-          Messages.XABSLAction a = (XABSLAction) n.getUserObject();
-          if(Boolean.FALSE.equals(actionExpanded.get(a.getName())))
-          {
-            newTree.collapsePath(new TreePath(n.getPath()));
-          }
-        }
-      }
-    }//end while
-
-    newTree.setVisible(true);
-    newTree.addTreeExpansionListener(this);
-    newTree.setDoubleBuffered(false);
-    newTree.setCellRenderer(new XABSLTreeRenderer());
-
-    //TODO: this are preparation for jumping to the sourse, when an option is clicked
-    newTree.addTreeSelectionListener(new TreeSelectionListener() {
-      @Override
-      public void valueChanged(TreeSelectionEvent e) {
-        Object[] path = e.getPath().getPath();
-
-        // get the leafe
-        Object userObject = ((DefaultMutableTreeNode)path[path.length-1]).getUserObject();
-        if(userObject instanceof Messages.XABSLAction)
-        {
-          Messages.XABSLAction action = (Messages.XABSLAction)userObject;
-                    
-          StringBuilder sb = new StringBuilder();
-          sb.append(action.getName())
-            .append(':')
-            .append(action.getActiveState());
-          
-          System.out.println(sb.toString());
-          
-          if(!action.hasActiveState()) {
-              symbolsToWatch.add(action.getName());
-          }
-        }
-      }
-    });
-
-
-    //scrollTree.setViewportView(newTree);
-    this.scrollTreePanel.removeAll();
-    this.scrollTreePanel.add(newTree);
-    this.scrollTreePanel.validate();
-  }//end createNewTree
 
   @Override
   public void errorOccured(String cause)
@@ -258,6 +181,64 @@ public class BehaviorViewer extends AbstractDialog
     }
   }//end SymbolComperator
 
+  
+  class BehaviorListener implements ObjectListener<byte[]>
+  {
+        @Override
+        public void newObjectReceived(byte[] object) {
+            try
+            {
+              Messages.XABSLBehavior behavior_msg = Messages.XABSLBehavior.parseFrom(object);
+              
+              behaviorParser = new XABSLProtoParser();
+              behaviorParser.parse(behavior_msg);
+            }
+            catch(InvalidProtocolBufferException ex)
+            {
+              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public void errorOccured(String cause) {
+            
+        }
+  }
+  
+  class BehaviorUpdateListener implements ObjectListener<byte[]>
+  {
+        @Override
+        public void newObjectReceived(byte[] object) {
+            if(behaviorParser == null) {
+                return;
+            }
+            
+            try
+            {
+              Messages.BehaviorStatusSparse status = Messages.BehaviorStatusSparse.parseFrom(object);
+              final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+              
+              SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                      behaviorTreePanel.setFrame(frame);
+                  }
+              });
+              
+            }
+            catch(InvalidProtocolBufferException ex)
+            {
+              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public void errorOccured(String cause) {
+            
+        }
+  }
+  
+  
   @Override
   public void newObjectReceived(byte[] object)
   {
@@ -384,14 +365,8 @@ public class BehaviorViewer extends AbstractDialog
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options
-      DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode("Behavior (" + frame.agent + ")");
-      for(Messages.XABSLAction a : frame.activeActions)
-      {
-        treeRoot.add(actionToNode(a));
-      }
-
-      createNewTree(treeRoot);
-
+      this.behaviorTreePanel.setFrame(frame);
+      
       // some global visualizations
       drawFrameOnFieldGlobal(frame);
       
@@ -479,7 +454,6 @@ public class BehaviorViewer extends AbstractDialog
     }catch(Exception ex)
     {
         Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-        //ex.printStackTrace();
     }
   }//end drawFrameOnField
 
@@ -493,162 +467,6 @@ public class BehaviorViewer extends AbstractDialog
     return frame.getStringValue(id);
   }//end getDoubleSymbolValue
 
-  
-  private static class SymbolId
-  {
-    public enum IOType{input, output}
-    public enum DataType{Decimal, Boolean, Enum}
-
-    public SymbolId(int idx, DataType data_type, IOType io_type) {
-      this.idx = idx;
-      this.data_type = data_type;
-      this.io_type = io_type;
-    }
-
-    public final int idx;
-    public final DataType data_type;
-    public final IOType io_type;
-  }//end class SymbolId
-
-  
-  private class XABSLFramePrototype
-  {
-    public int numberOfInputSymbolsDecimal = 0;
-    public int numberOfInputSymbolsBoolean = 0;
-    public int numberOfInputSymbolsEnum = 0;
-
-    public int numberOfOutputSymbolsDecimal = 0;
-    public int numberOfOutputSymbolsBoolean = 0;
-    public int numberOfOutputSymbolsEnum = 0;
-
-    HashMap<String, SymbolId> symbolRegistry = new HashMap<String, SymbolId>();
-  }//end class XABSLFramePrototype
-
-  
-  private class XABSLFrame
-  {
-    public XABSLFrame(XABSLFramePrototype proto, Messages.BehaviorStatus status) throws Exception
-    {
-      this.inputSymbolValuesDecimal = new double[proto.numberOfInputSymbolsDecimal];
-      this.inputSymbolValuesBoolean = new boolean[proto.numberOfInputSymbolsBoolean];
-      this.inputSymbolValuesEnum = new String[proto.numberOfInputSymbolsEnum];
-
-      this.outputSymbolValuesDecimal = new double[proto.numberOfOutputSymbolsDecimal];
-      this.outputSymbolValuesBoolean = new boolean[proto.numberOfOutputSymbolsBoolean];
-      this.outputSymbolValuesEnum = new String[proto.numberOfOutputSymbolsEnum];
-
-      this.activeActions = new ArrayList<Messages.XABSLAction>();
-
-      this.frameNumber = status.getFrameNumber();
-      
-      for(Messages.XABSLParameter p : status.getInputSymbolsList())
-      {
-        int idx = proto.symbolRegistry.get(p.getName()).idx;
-        if(idx == -1) throw new Exception("wrong idx for symbol " + p.getName());
-
-        if(p.getType() == Messages.XABSLParameter.ParamType.Decimal && p.hasDecimalValue())
-          inputSymbolValuesDecimal[idx] = p.getDecimalValue();
-        else if(p.getType() == Messages.XABSLParameter.ParamType.Boolean && p.hasBoolValue())
-          inputSymbolValuesBoolean[idx] = p.getBoolValue();
-        else if(p.getType() == Messages.XABSLParameter.ParamType.Enum && p.hasEnumValue())
-          inputSymbolValuesEnum[idx] = p.getEnumValue();
-      }//end for
-
-      for(Messages.XABSLParameter p : status.getOutputSymbolsList())
-      {
-        int idx = proto.symbolRegistry.get(p.getName()).idx;
-        if(idx == -1) throw new Exception("wrong idx for symbol " + p.getName());
-
-        if(p.getType() == Messages.XABSLParameter.ParamType.Decimal && p.hasDecimalValue())
-          outputSymbolValuesDecimal[idx] = p.getDecimalValue();
-        else if(p.getType() == Messages.XABSLParameter.ParamType.Boolean && p.hasBoolValue())
-          outputSymbolValuesBoolean[idx] = p.getBoolValue();
-        else if(p.getType() == Messages.XABSLParameter.ParamType.Enum && p.hasEnumValue())
-          outputSymbolValuesEnum[idx] = p.getEnumValue();
-      }//end for
-
-      for(Messages.XABSLAction a : status.getActiveRootActionsList())
-      {
-        this.activeActions.add(a);
-      }
-
-      this.agent = status.getAgent();
-    }//end constructor
-    
-    public final double[] inputSymbolValuesDecimal;
-    public final boolean[] inputSymbolValuesBoolean;
-    public final String[] inputSymbolValuesEnum;
-
-    public final double[] outputSymbolValuesDecimal;
-    public final boolean[] outputSymbolValuesBoolean;
-    public final String[] outputSymbolValuesEnum;
-
-    public final ArrayList<Messages.XABSLAction> activeActions;
-    public final String agent;
-
-    public final int frameNumber;
-    
-    public String getStringValue(SymbolId id)
-    {
-      if(id.io_type == SymbolId.IOType.input)
-      {
-        switch(id.data_type)
-        {
-          case Decimal: return "" + inputSymbolValuesDecimal[id.idx];
-          case Boolean: return "" + inputSymbolValuesBoolean[id.idx];
-          case Enum: return "" + inputSymbolValuesEnum[id.idx];
-          default: return "";
-        }//end switch
-      }
-      else
-      {
-        switch(id.data_type)
-        {
-          case Decimal: return "" + outputSymbolValuesDecimal[id.idx];
-          case Boolean: return "" + outputSymbolValuesBoolean[id.idx];
-          case Enum: return "" + outputSymbolValuesEnum[id.idx];
-          default: return "";
-        }//end switch
-      }
-    }//end getStringValue
-  }//end class XABSLFrame
-
-  public DefaultMutableTreeNode actionToNode(Messages.XABSLAction a)
-  {
-    DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
-
-    if(!cbOnlyOptions.isSelected())
-    {
-      // add parameters
-      for(Messages.XABSLParameter p : a.getParametersList())
-      {
-        result.add(new DefaultMutableTreeNode(p));
-      }
-    }
-
-    List<Messages.XABSLAction> subOptions = a.getActiveSubActionsList();
-    if(subOptions.size() > 0)
-    {
-
-      // 1. add sub options
-      for(Messages.XABSLAction sub : subOptions)
-      {
-        if(!cbOnlyOptions.isSelected() || sub.getType() == XABSLAction.ActionType.Option)
-        {
-          result.add(actionToNode(sub));
-        }
-      }
-    }//end if
-
-    return result;
-  }//end actionToNode
-
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
-  }
 
   private XABSLFramePrototype createPrototype(Messages.BehaviorStatus status)
   {
@@ -716,43 +534,58 @@ public class BehaviorViewer extends AbstractDialog
       }
   }//end class BehaviorFrameListModel
   
-  
-  
-  
-  private void addFrame(Messages.BehaviorStatus status)
+  private void addFrame(Messages.XABSLActionSparse status)
   {
-    //DefaultListModel listModel = ((DefaultListModel) this.frameList.getModel());
+    if(framePrototype == null)
+    {
+      return;
+    }
     
     if(this.behaviorBuffer.size() >= maxNumberOfFrames)
     {
       this.behaviorBuffer.remove(0);
-      //listModel.remove(0);
+    }
+    
+    try{
+      //this.behaviorBuffer.add(new XABSLFrame(status));
+    }catch(Exception ex)
+    {
+      Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+      return;
+    }
+   
+    //Select the new item and make it visible.
+    BehaviorFrameListModel listModel = ((BehaviorFrameListModel) this.frameList.getModel());
+    
+    listModel.refresh();
+    this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
+    this.frameList.setSelectedIndex(listModel.getSize()-1);
+  }//end addFrame
+  
+  
+  private void addFrame(Messages.BehaviorStatus status)
+  {
+    if(this.behaviorBuffer.size() >= maxNumberOfFrames)
+    {
+      this.behaviorBuffer.remove(0);
     }
 
     // create the prototype
     if(framePrototype == null)
     {
       framePrototype = createPrototype(status);
-    }//end if
-
+    }
+    
     try{
       this.behaviorBuffer.add(new XABSLFrame(framePrototype, status));
     }catch(Exception ex)
     {
       Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-      //e.printStackTrace();
       return;
     }
-   /*
-    listModel.addElement(new Integer(status.getFrameNumber()));
-    this.frameList.setSelectedIndex(listModel.getSize()-1);
-    this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
-    */
-    
+ 
     //Select the new item and make it visible.
     BehaviorFrameListModel listModel = ((BehaviorFrameListModel) this.frameList.getModel());
-    //this.frameList.setSelectedIndex(0);
-    
     
     listModel.refresh();
     this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
@@ -787,8 +620,7 @@ public class BehaviorViewer extends AbstractDialog
         symbolsWatchTextPanel = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         btAddWatch = new javax.swing.JButton();
-        scrollTree = new javax.swing.JScrollPane();
-        scrollTreePanel = new javax.swing.JPanel();
+        behaviorTreePanel = new de.naoth.rc.dialogs.behaviorviewer.BehaviorTreePanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         frameList = new javax.swing.JList();
 
@@ -914,14 +746,7 @@ public class BehaviorViewer extends AbstractDialog
         symbolsPanel.add(jToolBar2, java.awt.BorderLayout.PAGE_END);
 
         jSplitPane.setRightComponent(symbolsPanel);
-
-        scrollTree.setBorder(null);
-        scrollTree.setDoubleBuffered(true);
-
-        scrollTreePanel.setLayout(new java.awt.BorderLayout());
-        scrollTree.setViewportView(scrollTreePanel);
-
-        jSplitPane.setLeftComponent(scrollTree);
+        jSplitPane.setLeftComponent(behaviorTreePanel);
 
         drawingPanel.add(jSplitPane, java.awt.BorderLayout.CENTER);
 
@@ -945,8 +770,11 @@ public class BehaviorViewer extends AbstractDialog
         sendCommand(enableUpdateBehaviorStatusCommand);
         sendCommand(getListOfAgents);
         sendCommand(getAgentCommand);
-        Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
-        //parent.getGenericManager(getExecutedBehaviorCommand).addListener(this);
+        //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
+        
+        // TEST (Heinrich)
+        Plugin.commandExecutor.executeCommand(this.behaviorListener, getCurrentBehavior);
+        Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).addListener(this.behaviorUpdateListener);
         
         // make the list of frames not clickable
         this.frameList.removeListSelectionListener(behaviorFrameListener);
@@ -960,8 +788,8 @@ public class BehaviorViewer extends AbstractDialog
     {
       this.frameList.addListSelectionListener(behaviorFrameListener);
       sendCommand(disableUpdateBehaviorStatusCommand);
-      Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
-      //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
+      //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
+      Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).removeListener(this.behaviorUpdateListener);
     }
 
 }//GEN-LAST:event_btReceiveExecutionPathActionPerformed
@@ -1186,34 +1014,6 @@ public class BehaviorViewer extends AbstractDialog
     }
   }//end handleCommandResponse
   
-  
-  @Override
-  public void treeExpanded(TreeExpansionEvent event)
-  {
-    if(event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode)
-    {
-      DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-      if(n.getUserObject() instanceof Messages.XABSLAction)
-      {
-        actionExpanded.put(((Messages.XABSLAction) n.getUserObject()).getName(),
-          Boolean.TRUE);
-      }
-    }
-  }//end treeExpanded
-
-  @Override
-  public void treeCollapsed(TreeExpansionEvent event)
-  {
-    if(event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode)
-    {
-      DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-      if(n.getUserObject() instanceof Messages.XABSLAction)
-      {
-        actionExpanded.put(((Messages.XABSLAction) n.getUserObject()).getName(),
-          Boolean.FALSE);
-      }
-    }
-  }//end treeCollapsed
 
   class BehaviorFrameListener implements ListSelectionListener
   {
@@ -1223,110 +1023,9 @@ public class BehaviorViewer extends AbstractDialog
       if(!e.getValueIsAdjusting() && behaviorBuffer.size() > 0 && frameList.getSelectedIndex() >= 0)
       {
         showFrame(behaviorBuffer.get(frameList.getSelectedIndex()));
-      }//end if
-    }//end valueChanged
-  }//end class BehaviorFrameListener
-
-  class XABSLTreeRenderer implements TreeCellRenderer
-  {
-
-    @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
-    {
-      if(value != null)
-      {
-        DefaultMutableTreeNode n = (DefaultMutableTreeNode) value;
-
-        // default values for color and font
-        Color color = Color.black;
-        Font font = PLAIN_FONT;
-        StringBuilder text = new StringBuilder();
-
-        if(n.getUserObject() instanceof Messages.XABSLAction)
-        {
-          Messages.XABSLAction a = (Messages.XABSLAction) n.getUserObject();
-
-
-          if(a.getType() == Messages.XABSLAction.ActionType.Option)
-          {
-            color = DARK_GREEN;
-            font = BOLD_FONT;
-            text.append(a.getName());
-            text.append(" [");
-            text.append(a.getTimeOfExecution());
-            text.append(" ms] - ");
-            text.append(a.getActiveState());
-            text.append(" [");
-            text.append(a.getStateTime());
-            text.append(" ms]");
-          }
-          else if(a.getType() == Messages.XABSLAction.ActionType.BasicBehavior)
-          {
-            text.append(a.getName());
-          }
-          else if(a.getType() == Messages.XABSLAction.ActionType.BooleanOutputSymbol)
-          {
-            text.append(a.getName());
-            text.append("=");
-            text.append(a.getBoolValue());
-          }
-          else if(a.getType() == Messages.XABSLAction.ActionType.DecimalOutputSymbol)
-          {
-            text.append(a.getName());
-            text.append("=");
-            text.append(a.getDecimalValue());
-          }
-          else if(a.getType() == Messages.XABSLAction.ActionType.EnumOutputSymbol)
-          {
-            text.append(a.getName());
-            text.append("=");
-            String tmp_value = a.getEnumValue().replace(a.getName()+".", "");
-            text.append(tmp_value);
-          }
-          
-        }
-        else if(n.getUserObject() instanceof Messages.XABSLParameter)
-        {
-          Messages.XABSLParameter p = (XABSLParameter) n.getUserObject();
-          color = Color.DARK_GRAY;
-          font = ITALIC_FONT;
-
-          text.append("@");
-          text.append(p.getName());
-          if(p.getType() == XABSLParameter.ParamType.Boolean)
-          {
-            text.append("=");
-            text.append(p.getBoolValue());
-          }
-          else if(p.getType() == XABSLParameter.ParamType.Decimal)
-          {
-            text.append("=");
-            text.append(p.getDecimalValue());
-          }
-          if(p.getType() == XABSLParameter.ParamType.Enum)
-          {
-            text.append("=");
-            String tmp_value = p.getEnumValue().replace(p.getName()+".", "");
-            text.append(tmp_value);
-          }
-        }
-        else
-        {
-          text.append(n.getUserObject().toString());
-        }
-
-        JLabel label = new JLabel(text.toString());
-        label.setForeground(color);
-        label.setFont(font);
-        return label;
       }
-      else
-      {
-        return new JLabel("null");
-      }
-
     }
-  }//end class XABSLTreeRenderer
+  }//end class BehaviorFrameListener
 
   private class ICDATFileFilter extends javax.swing.filechooser.FileFilter
   {
@@ -1358,10 +1057,12 @@ public class BehaviorViewer extends AbstractDialog
   @Override
   public void dispose()
   {
-    Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
-  }//end dispose
+    //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
+    Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).removeListener(this.behaviorUpdateListener);
+  }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private de.naoth.rc.dialogs.behaviorviewer.BehaviorTreePanel behaviorTreePanel;
     private javax.swing.JButton btAddWatch;
     private javax.swing.JToggleButton btReceiveExecutionPath;
     private javax.swing.JButton btSend;
@@ -1379,8 +1080,6 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JPanel outputSymbolsBoxPanel;
-    private javax.swing.JScrollPane scrollTree;
-    private javax.swing.JPanel scrollTreePanel;
     private javax.swing.JTextField sortSymbolsTextInput;
     private javax.swing.JDialog symbolChooser;
     private javax.swing.JPanel symbolsPanel;
