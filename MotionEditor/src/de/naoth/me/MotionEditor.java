@@ -11,6 +11,8 @@ import de.naoth.me.core.JointPrototypeConfiguration;
 import de.naoth.me.core.MotionNet;
 import de.naoth.me.core.MotionNetLoader;
 import de.naoth.rc.server.ConnectionDialog;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -105,7 +107,23 @@ public class MotionEditor extends javax.swing.JFrame
     this.jointDefaultConfiguration = new JointDefaultConfiguration();
 
     this.messageServer = new MessageServer();
-    connectionDialog = new ConnectionDialog(this, this.messageServer);
+    this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() 
+    {
+        @Override
+        public void connected(ConnectionStatusEvent event) {
+            showConnected(true);
+        }
+
+        @Override
+        public void disconnected(ConnectionStatusEvent event) {
+            showConnected(false);
+            if(event.getMessage() != null) {
+                JOptionPane.showMessageDialog(MotionEditor.this,
+                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    });
+    this.connectionDialog = new ConnectionDialog(this, this.messageServer);
 
 
     this.motionPlayer1.setMessageServer(this.messageServer);
@@ -704,24 +722,7 @@ public class MotionEditor extends javax.swing.JFrame
     }//GEN-LAST:event_connectMenuItemActionPerformed
 
     private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectMenuItemActionPerformed
-//      try
-//      {
-//        messageServer.disconnect();
-//      }
-//      catch(IOException ex)
-//      {
-//        ex.printStackTrace();
-//        //Helper.handleException(ex);
-//      }
-      //try
-      //{
-        messageServer.disconnect();
-      //}
-      //catch(IOException ex)
-      //{
-        //ex.printStackTrace();
-        //Helper.handleException(ex);
-      //}
+      messageServer.disconnect();
     }//GEN-LAST:event_disconnectMenuItemActionPerformed
 
     private void motionNetEditorPanelPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_motionNetEditorPanelPropertyChange
@@ -760,7 +761,7 @@ public class MotionEditor extends javax.swing.JFrame
     if(config == null)
     {
       config = new Properties();
-    }//end if
+    }
     
     return config;
   }//end getConfig

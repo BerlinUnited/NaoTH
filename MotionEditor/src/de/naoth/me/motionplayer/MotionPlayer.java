@@ -48,10 +48,10 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
   private Double time;
   private KeyFrame currentKeyFrame = null;
   public MotionNetEditorPanel motionNetEditorPanel;
-  private final String getRepresentationBase = "representation:getbinary";
+  private final String getRepresentationBase = "Cognition:representation:getbinary";
   private final String representationName = "SensorJointData";
   private final String sendMotionNetToRobotCommandBase = "file::write";
-  private final String motionNetPath = "Config/motionnet/play_editor_motionnet.mef";
+  private final String motionNetPath = "Config/play_editor_motionnet.mef";
   private Timer getJointsTimer;
   /** Creates new form MotionPlayer */
 
@@ -427,12 +427,12 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
       //play();
 
       // enable or disable the knead mode
-      Command cmdKneadModeOff = new Command("MotionBehaviorControl:motion:knead_mode").addArg("off");
-      sendCommand(cmdKneadModeOff);
+      //Command cmdKneadModeOff = new Command("MotionBehaviorControl:motion:knead_mode").addArg("off");
+      //sendCommand(cmdKneadModeOff);
 
       // enable or disable force joints mode
-      Command cmdForceJointsOff = new Command("MotionBehaviorControl:motion:force_joints").addArg("off");
-      sendCommand(cmdForceJointsOff);
+      //Command cmdForceJointsOff = new Command("MotionBehaviorControl:motion:force_joints").addArg("off");
+      //sendCommand(cmdForceJointsOff);
 
       // send the motionnet to the robot
       Command cmdSendMotionNet = new Command(sendMotionNetToRobotCommandBase);
@@ -441,12 +441,12 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
       sendCommand(cmdSendMotionNet);
 
       // reload the motion-net which has been sent before
-      Command cmdLoadEditor = new Command("motion:load_editor_motionnet").addArg("condition", currentCondition);
-      sendCommand(cmdLoadEditor);
+      //Command cmdLoadEditor = new Command("motion:load_editor_motionnet").addArg("condition", currentCondition);
+      //sendCommand(cmdLoadEditor);
 
       // play the motion
-      Command cmdPlayOn = new Command("MotionBehaviorControl:motion:play_editor_motionnet").addArg("on");
-      sendCommand(cmdPlayOn);
+      //Command cmdPlayOn = new Command("MotionBehaviorControl:motion:play_editor_motionnet").addArg("on");
+      //sendCommand(cmdPlayOn);
       
       //TODO: rueckmeldung behandeln
     }//GEN-LAST:event_jButtonPlayActionPerformed
@@ -543,29 +543,24 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
       }
     }//GEN-LAST:event_jCheckBoxEnableKneadModeSensorUpdateActionPerformed
 
-  final MotionPlayer thisFinal = this;
-  private void sendCommand(Command command)
+  private void sendCommand(final Command command)
   {
     if(this.messageServer == null)
     {
       return;
     }
 
-    final Command commandToExecute = command;
-    this.messageServer.executeSingleCommand(new CommandSender()
+    this.messageServer.executeCommand(new CommandSender()
     {
 
       public void handleResponse(byte[] result, Command originalCommand)
       {
-
-        if(commandToExecute.getName().compareTo(getRepresentationBase) != 0 || currentKeyFrame == null)
+        if(command.getName().compareTo(getRepresentationBase) != 0 || currentKeyFrame == null)
         {
           String msg = new String(result);
-          /*
-          JOptionPane.showMessageDialog(thisFinal,
-            msg, originalCommand.getName(), JOptionPane.ERROR_MESSAGE);
-           * */
           outStream.println(originalCommand.getName() + " : " + msg);
+          JOptionPane.showMessageDialog(MotionPlayer.this,
+              msg, originalCommand.getName(), JOptionPane.INFORMATION_MESSAGE);
           return;
         }
 
@@ -577,16 +572,19 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
 
           for(int i=0; i < joints.getPositionCount(); i++)
           {
+            if(JointID.valueOf(i) == null) {
+                Logger.getLogger(MotionPlayer.class.getName()).log(Level.WARNING, "Unknown Joint: " + i);
+                continue;
+            }
+            
             String jointName = JointID.valueOf(i).name();
+            
             double minValue = currentKeyFrame.getJointValue(jointName).getMinValue();
             double maxValue = currentKeyFrame.getJointValue(jointName).getMaxValue();
             double currentValue = joints.getPosition(i);
 
             if(!(minValue <= currentValue && currentValue <= maxValue))
             {
-//              JOptionPane.showMessageDialog(null,
-//                "Error : Wert ausserhalb der Grenzen: " + jointName + " " + minValue + " <= " + currentValue + " <= " + maxValue,
-//                "Error", JOptionPane.ERROR_MESSAGE);
               if(currentValue < minValue)
               {
                 currentValue = minValue;
@@ -607,14 +605,14 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
 
       public void handleError(int code)
       {
-        JOptionPane.showMessageDialog(thisFinal,
+        JOptionPane.showMessageDialog(MotionPlayer.this,
               "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
         outStream.println("Error occured, code " + code);
       }
 
       public Command getCurrentCommand()
       {
-        return commandToExecute;
+        return command;
       }
     }, command);
   }
