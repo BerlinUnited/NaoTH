@@ -143,6 +143,7 @@ public:
   ~DCMHandler();
   void init(boost::shared_ptr<AL::ALBroker> pB);
 
+  void getJointPositionLimits(JointData& jointData);
   std::string getBodyID();
   std::string getBodyNickName();
   int getTime(unsigned int time_delay);

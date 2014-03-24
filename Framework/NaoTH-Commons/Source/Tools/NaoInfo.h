@@ -73,7 +73,6 @@ public:
   static const double FootHeight;
   static const double HandOffsetZ;
   static const double ElbowOffsetY;
-  static const double LegJointToHeadPan;
 
   static const double FSRMinForce;
   static const double FSRMaxForce;
