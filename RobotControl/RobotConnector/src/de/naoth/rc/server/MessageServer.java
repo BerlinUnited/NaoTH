@@ -54,14 +54,16 @@ public class MessageServer extends AbstractMessageServer {
     // list of commands which have been sent and are waiting for the response
     private final List<SingleExecEntry> answerRequestList = new LinkedList<SingleExecEntry>();
 
-    
+    // just for statistics
     private long receivedBytes;
     private long sentBytes;
+    private long loopCount;
 
     public MessageServer() {
         this.socketChannel = null;
         this.receivedBytes = 0;
         this.sentBytes = 0;
+        this.loopCount = 0;
     }
 
     public void connect(String host, int port) throws IOException {
@@ -151,6 +153,10 @@ public class MessageServer extends AbstractMessageServer {
     public long getSentBytes() {
         return sentBytes;
     }
+    
+    public long getLoopCount() {
+        return loopCount;
+    }
 
     /**
    * Add a {@link CommandSender} to the repeating schedule.
@@ -225,6 +231,8 @@ public class MessageServer extends AbstractMessageServer {
 
                 // read the answers for all the requests in answerRequestQueue
                 pollAnswers();
+                
+                this.loopCount++;
             }
         } catch (AsynchronousCloseException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.INFO, "Connection was closed while trying to read.", ex);

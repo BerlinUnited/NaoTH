@@ -139,7 +139,9 @@
                   <Component id="lblReceivedBytesS" min="-2" pref="173" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblSentBytesS" min="-2" pref="164" max="-2" attributes="0"/>
-                  <EmptySpace pref="410" max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="lblFramesS" min="-2" pref="173" max="-2" attributes="0"/>
+                  <EmptySpace pref="235" max="32767" attributes="0"/>
                   <Component id="lblConnect" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -152,6 +154,7 @@
                   <Component id="lblConnect" alignment="3" max="32767" attributes="0"/>
                   <Component id="lblReceivedBytesS" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lblSentBytesS" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblFramesS" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -183,6 +186,11 @@
         <Component class="javax.swing.JLabel" name="lblSentBytesS">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sent byte/s: "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblFramesS">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Frames/s: "/>
           </Properties>
         </Component>
       </SubComponents>
