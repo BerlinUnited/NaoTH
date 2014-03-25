@@ -578,22 +578,7 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
             }
             
             String jointName = JointID.valueOf(i).name();
-            
-            double minValue = currentKeyFrame.getJointValue(jointName).getMinValue();
-            double maxValue = currentKeyFrame.getJointValue(jointName).getMaxValue();
             double currentValue = joints.getPosition(i);
-
-            if(!(minValue <= currentValue && currentValue <= maxValue))
-            {
-              if(currentValue < minValue)
-              {
-                currentValue = minValue;
-              }
-              if(currentValue > maxValue)
-              {
-                currentValue = maxValue;
-              }
-            }
             currentKeyFrame.getJointValue(jointName).setRadiant(currentValue);
           }
         }
