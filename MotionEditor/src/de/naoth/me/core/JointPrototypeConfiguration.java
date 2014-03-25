@@ -9,11 +9,11 @@ import java.util.List;
  */
 public class JointPrototypeConfiguration 
 {
-    protected List<JointPrototype> jointValuePrototypeList;
+    public final ArrayList<JointPrototype> jointValuePrototypeList = new ArrayList<JointPrototype>();
     
     public JointPrototypeConfiguration()
     {
-        this.jointValuePrototypeList = new ArrayList<JointPrototype>();
+    
     }
 
     protected void addJointValuePrototype(JointPrototype prototype)
@@ -34,4 +34,5 @@ public class JointPrototypeConfiguration
       }
       return result;
     }//end toString
+    
 }//end class JointPrototypeConfiguration
