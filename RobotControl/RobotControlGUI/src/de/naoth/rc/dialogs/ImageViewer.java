@@ -4,6 +4,7 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.ExtendedFileChooser;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
+import de.naoth.rc.dialogs.Tools.PNGImageFileFilter;
 import de.naoth.rc.dialogs.drawings.Canvas;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnImage;
@@ -12,14 +13,6 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.SecondaryImageManager;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
@@ -43,7 +36,7 @@ public class ImageViewer extends AbstractDialog
   public DebugDrawingManager debugDrawingManager;
   //private ImagePanel imageCanvas;
   private long timestampOfTheLastImage;
-  private ExtendedFileChooser fileChooser;
+
   // listeners
   ImageListener imageListener;
   SecondaryImageListener secondaryListener;
@@ -69,9 +62,6 @@ public class ImageViewer extends AbstractDialog
     this.drawingsListener = new DrawingsListener();
     this.imageListener = new ImageListener();
     this.secondaryListener = new SecondaryImageListener();
-
-    fileChooser = new ExtendedFileChooser();
-    fileChooser.setFileFilter(new PNGImageFileFilter());
   }//end init
 
   @Override
@@ -88,8 +78,6 @@ public class ImageViewer extends AbstractDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPopupMenuImagePanel = new javax.swing.JPopupMenu();
-        jMenuItemSaveAs = new javax.swing.JMenuItem();
         imagePanel = new javax.swing.JPanel();
         secondaryImageCanvas = new de.naoth.rc.dialogs.panels.ImagePanel();
         imageCanvas = new de.naoth.rc.dialogs.panels.ImagePanel();
@@ -102,14 +90,6 @@ public class ImageViewer extends AbstractDialog
         jLabelFPS = new javax.swing.JLabel();
         jLabelResolution = new javax.swing.JLabel();
 
-        jMenuItemSaveAs.setText("Save As...");
-        jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSaveAsActionPerformed(evt);
-            }
-        });
-        jPopupMenuImagePanel.add(jMenuItemSaveAs);
-
         imagePanel.setBackground(java.awt.Color.gray);
         imagePanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
         imagePanel.setPreferredSize(new java.awt.Dimension(320, 240));
@@ -117,7 +97,6 @@ public class ImageViewer extends AbstractDialog
 
         secondaryImageCanvas.setBackground(java.awt.Color.gray);
         secondaryImageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        secondaryImageCanvas.setComponentPopupMenu(jPopupMenuImagePanel);
         secondaryImageCanvas.setOpaque(false);
 
         javax.swing.GroupLayout secondaryImageCanvasLayout = new javax.swing.GroupLayout(secondaryImageCanvas);
@@ -135,7 +114,6 @@ public class ImageViewer extends AbstractDialog
 
         imageCanvas.setBackground(java.awt.Color.gray);
         imageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        imageCanvas.setComponentPopupMenu(jPopupMenuImagePanel);
         imageCanvas.setOpaque(false);
 
         javax.swing.GroupLayout imageCanvasLayout = new javax.swing.GroupLayout(imageCanvas);
@@ -257,44 +235,6 @@ public class ImageViewer extends AbstractDialog
 
   }//GEN-LAST:event_btReceiveImagesActionPerformed
 
-  private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAsActionPerformed
-    fileChooser.setSelectedFile(new File(this.timestampOfTheLastImage + ".png"));
-    fileChooser.showSaveDialog(this);
-    File selectedFile = fileChooser.getSelectedFile();
-    if (selectedFile == null)
-    {
-      return;
-    }
-    try
-    {
-      Image image = imageCanvas.getImage();
-      if (image == null)
-      {
-        throw new Exception("There is no Image to save");
-      }
-      int height = image.getHeight(this);
-      int width = image.getWidth(this);
-
-      BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-      Graphics2D g2d = bi.createGraphics();
-      g2d.drawImage(image, 0, 0, width, height, this);
-
-      ImageIO.write(bi, "PNG", selectedFile);
-
-      /*
-      ImageIO.write(bi, "JPEG", selectedFile);
-      ImageIO.write(bi, "gif", selectedFile);
-      ImageIO.write(bi, "BMP", selectedFile);
-       */
-    }
-    catch (Exception e)
-    {
-      JOptionPane.showMessageDialog(this,
-        e.toString(), "The image could not be written.", JOptionPane.ERROR_MESSAGE);
-    }//end catch
-  }//GEN-LAST:event_jMenuItemSaveAsActionPerformed
-
   private void cbPreserveAspectRatioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPreserveAspectRatioActionPerformed
     this.imageCanvas.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
   }//GEN-LAST:event_cbPreserveAspectRatioActionPerformed
@@ -348,8 +288,6 @@ public class ImageViewer extends AbstractDialog
     private javax.swing.JPanel imagePanel;
     private javax.swing.JLabel jLabelFPS;
     private javax.swing.JLabel jLabelResolution;
-    private javax.swing.JMenuItem jMenuItemSaveAs;
-    private javax.swing.JPopupMenu jPopupMenuImagePanel;
     private javax.swing.JToolBar jToolBar1;
     private de.naoth.rc.dialogs.panels.ImagePanel secondaryImageCanvas;
     // End of variables declaration//GEN-END:variables
@@ -452,33 +390,6 @@ public class ImageViewer extends AbstractDialog
       secondaryImageCanvas.setVisible(false);
     }//end errorOccured
   }//end ImageListener
-
-  private class PNGImageFileFilter extends javax.swing.filechooser.FileFilter
-  {
-
-    final private String fileExtension = "png";
-    final private String description = "Portable Network Graphics (*.png)";
-
-    @Override
-    public boolean accept(File file)
-    {
-	  if(file.isDirectory()) return true;
-      String filename = file.getName();
-      return filename.toLowerCase().endsWith("." + this.fileExtension);
-    }
-
-    @Override
-    public String getDescription()
-    {
-      return this.description;
-    }
-
-    @Override
-    public String toString()
-    {
-      return fileExtension;
-    }
-  }//end class PNGImageFileFilter
 
   @Override
   public void dispose()

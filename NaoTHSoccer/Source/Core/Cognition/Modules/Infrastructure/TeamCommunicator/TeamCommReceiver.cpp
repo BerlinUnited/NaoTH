@@ -54,7 +54,9 @@ void TeamCommReceiver::execute()
   TeamMessage::Data ownTeamData;
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
-                              getSoccerStrategy(), getPlayersModel(), ownTeamData);
+                              getSoccerStrategy(), getPlayersModel(),
+                              getBatteryData(),
+                              ownTeamData);
   // we don't have the right player number in the beginning, wait to send
   // one to ourself until we have a valid one
   if(ownTeamData.playerNum > 0)
@@ -70,7 +72,6 @@ void TeamCommReceiver::execute()
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 {
-  // TODO: implement handleMessage
   SPLStandardMessage spl;
   if(data.size() != sizeof(SPLStandardMessage))
   {
@@ -95,9 +96,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
   }
 
   unsigned int num = spl.playerNum;
-  unsigned int teamnum = spl.team;
+  GameData::TeamColor teamColor = (GameData::TeamColor) spl.team;
 
-  if ( teamnum == getPlayerInfo().gameData.teamNumber
+  if ( teamColor == getPlayerInfo().gameData.teamColor
        // ignore our own messages, we are adding it artficially later
        && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
      )
@@ -106,7 +107,10 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.frameInfo = getFrameInfo();
 
     data.playerNum = spl.playerNum;
-    data.team = spl.team;
+    if(spl.team < GameData::numOfTeamColor)
+    {
+      data.teamColor = (GameData::TeamColor) spl.team;
+    }
 
     data.pose.translation.x = spl.pose[0];
     data.pose.translation.y = spl.pose[1];
@@ -120,7 +124,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.ballVelocity.x = spl.ballVel[0];
     data.ballVelocity.y = spl.ballVel[1];
 
-    data.fallen = spl.fallen;
+    data.fallen = (spl.fallen == 1);
+
+    // TODO: use walkingTo and shootTo
 
     // check if we can deserialize the user defined data
     if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
@@ -134,6 +140,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         data.timeToBall = userData.timetoball();
         data.wasStriker = userData.wasstriker();
         data.isPenalized = userData.ispenalized();
+        data.batteryCharge = userData.batterycharge();
+        data.temperature = userData.temperature();
+        data.teamNumber = userData.teamnumber();
         data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
         for(unsigned int i=0; i < data.opponents.size(); i++)
         {

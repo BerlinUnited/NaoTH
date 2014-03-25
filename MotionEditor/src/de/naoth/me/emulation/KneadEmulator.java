@@ -156,6 +156,15 @@ public class KneadEmulator extends JPanel implements PropertyChangeListener
 
     private void createSceneGraphic()
     {
+      // make background
+      BoundingSphere sphere = new BoundingSphere(new Point3d(0,0,0), 100000);
+      Background background = new Background(new Color3f(0.3f,0.6f,0.9f));
+      background.setApplicationBounds(sphere);
+      BranchGroup sky = new BranchGroup();
+      sky.addChild(background);
+      locale.addBranchGraph(sky);
+      
+        
       namedObjects = new HashMap<String, TransformGroup>();
       namedGroupObjects = new HashMap<String, BranchGroup>();
       Loader ldr = new VrmlLoader(Loader.LOAD_ALL);
@@ -281,14 +290,40 @@ public class KneadEmulator extends JPanel implements PropertyChangeListener
 
       nao.addChild(tg);
 
+      Color3f white = new Color3f(0.3f, 0.3f, 0.3f);
+      AmbientLight lightA = new AmbientLight();
+      lightA.setInfluencingBounds(sphere);
+      nao.addChild(lightA);
 
-      DirectionalLight lightD1 = new DirectionalLight();
-      lightD1.setInfluencingBounds(new BoundingSphere());
-      nao.addChild(lightD1);
+      DirectionalLight lightDX1 = new DirectionalLight(white, new Vector3f(1.0f, 0.0f, 0.0f));
+      lightDX1.setInfluencingBounds(sphere);
+      nao.addChild(lightDX1);
+      
+      DirectionalLight lightDX2 = new DirectionalLight(white, new Vector3f(-1.0f, 0.0f, 0.0f));
+      lightDX2.setInfluencingBounds(sphere);
+      nao.addChild(lightDX2);
+      
+      DirectionalLight lightDY1 = new DirectionalLight(white, new Vector3f(0.0f, 1.0f, 0.0f));
+      lightDY1.setInfluencingBounds(sphere);
+      nao.addChild(lightDY1);
+      
+      DirectionalLight lightDY2 = new DirectionalLight(white, new Vector3f(0.0f, -1.0f, 0.0f));
+      lightDY2.setInfluencingBounds(sphere);
+      nao.addChild(lightDY2);
+      
+      DirectionalLight lightDZ1 = new DirectionalLight(white, new Vector3f(0.0f, 0.0f, 1.0f));
+      lightDZ1.setInfluencingBounds(sphere);
+      nao.addChild(lightDZ1);
+      
+      DirectionalLight lightDZ2 = new DirectionalLight(white, new Vector3f(0.0f, 0.0f, -1.0f));
+      lightDZ2.setInfluencingBounds(sphere);
+      nao.addChild(lightDZ2);
+      
+      
       coordinationTG.addChild(nao);
 
-      BranchGroup light = load(modelPath + "/env/Light.wrl", ldr);
-      locale.addBranchGraph(light);
+      //BranchGroup light = load(modelPath + "/env/Light.wrl", ldr);
+      //locale.addBranchGraph(light);
 
       setConfig(null);
       initJoints();

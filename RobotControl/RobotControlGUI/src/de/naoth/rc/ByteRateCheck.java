@@ -27,7 +27,7 @@ public class ByteRateCheck implements Plugin
 
   long oldRecivedSize = 0;
   long oldSentSize = 0;
-
+  long oldLoopCount = 0;
 
   @Timer(period=1000)
   public void updateByteRateLabels()
@@ -38,12 +38,15 @@ public class ByteRateCheck implements Plugin
 
       double receivedKB = ((double)(server.getReceivedBytes()-oldRecivedSize))/1024.0;
       double sentKB = ((double)(server.getSentBytes()-oldSentSize))/1024.0;
-
+      double fps = ((double)(server.getLoopCount()-oldLoopCount));
+      
       oldRecivedSize = server.getReceivedBytes();
       oldSentSize = server.getSentBytes();
-
+      oldLoopCount = server.getLoopCount();
+      
       updateHandler.setReceiveByteRate(receivedKB);
       updateHandler.setSentByteRate(sentKB);
+      updateHandler.setServerLoopFPS(fps);
     }
   }
 

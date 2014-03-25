@@ -25,6 +25,20 @@ namespace naoth
       LeftFootRight,
       RightFootLeft,
       RightFootRight,
+
+      // touch sensors (only in academics)
+      HeadFront,
+      HeadMiddle,
+      HeadRear,
+
+      LeftHandBack,
+      LeftHandLeft,
+      LeftHandRight,
+
+      RightHandBack,
+      RightHandLeft,
+      RightHandRight,
+
       numOfButtons
     };
 

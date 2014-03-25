@@ -5,6 +5,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/BatteryData.h>
 #include "Representations/Modeling/PlayerInfo.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/RobotPose.h"
@@ -27,6 +28,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   REQUIRE(TeamMessage)
+  REQUIRE(BatteryData)
 
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
@@ -46,6 +48,7 @@ public:
                             const BodyState &bodyState,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
+                            const BatteryData &batteryData,
                             TeamMessage::Data &out);
 
  static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);

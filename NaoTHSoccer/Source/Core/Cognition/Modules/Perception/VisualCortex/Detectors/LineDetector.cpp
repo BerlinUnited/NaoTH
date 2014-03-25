@@ -870,7 +870,7 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
   
 
   vector<ClusteredLine> lineClusters;
-  lineClusters.reserve(20);
+  lineClusters.reserve(200);
 
   lineClusters.push_back(ClusteredLine(edgelList[0],0));
 
@@ -953,6 +953,5 @@ void LineDetector::clusterEdgels(const vector<DoubleEdgel>& edgelList)
       lineSegments.push_back(lineSegment);
     }
   }//end for
-
 }//end clusterEdgels
 

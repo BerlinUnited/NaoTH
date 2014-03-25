@@ -24,6 +24,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_straight_ahead", "look straight ahead", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_attention_point", "look at attention point", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_player", "look at a seen player", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:goto_angle", "look at specific angle given as Modify", false);
 
   // test motion control
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:standard_stand", "stand as standard or not", true);
@@ -61,6 +62,8 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
 
+  // needed by the motion editor
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:play_editor_motionnet", "play the motion editor motion", false);
 
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:sound:test", "it is what it is...", false);
 
@@ -146,6 +149,20 @@ void SimpleMotionBehaviorControl::testHead()
   DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_straight_ahead",
     getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
   );
+
+
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:head:goto_angle",
+    getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
+
+    double yaw  = -14;
+    MODIFY("SimpleMotionBehaviorControl:head:headYaw_deg",yaw);
+    double pitch = 0;
+    MODIFY("SimpleMotionBehaviorControl:head:headPitch_deg",pitch);
+    getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(yaw);
+    getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(pitch);
+  );
+
   
   DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_attention_point",
     getHeadMotionRequest().id = HeadMotionRequest::look_at_point_on_the_ground;
@@ -340,6 +357,10 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("ParallelKinematicMotionEngine:motion:parallel_stepper",
     getMotionRequest().id = motion::parallel_stepper;
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:play_editor_motionnet",
+    getMotionRequest().id = motion::play_editor_motionnet;
   );
           
 }//end testMotion

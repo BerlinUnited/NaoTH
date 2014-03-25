@@ -95,8 +95,6 @@ private:
 private:
   void debugPlots();
   void updateCameraMatrix();
-  void guard_cognition();
-
 private:
 
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;

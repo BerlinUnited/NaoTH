@@ -87,7 +87,7 @@ bool TeamSymbols::calculateIfStriker()
     double time_bonus = messageData.wasStriker?4000.0:0.0;
 
     if(
-           messageData.fallen == -1
+        !messageData.fallen
         && !messageData.isPenalized
         && number != 1 // goalie is not considered
         && theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh

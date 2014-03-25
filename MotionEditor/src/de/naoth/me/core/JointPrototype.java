@@ -4,9 +4,6 @@
 
 package de.naoth.me.core;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 /**
  *
  * @author Heinrich Mellmann
@@ -14,9 +11,9 @@ import java.beans.PropertyChangeListener;
 public class JointPrototype
 {
     private final String id;
-    private int minValue;
-    private int maxValue;
-    private int defaultValue;
+    private final int minValue;
+    private final int maxValue;
+    private final int defaultValue;
     private boolean valid;
 
     public JointPrototype (String id, double minValue, double maxValue, double defaultValue)
@@ -26,7 +23,7 @@ public class JointPrototype
         this.maxValue = (int)maxValue;
         this.defaultValue = (int)defaultValue;
         this.valid = false;
-    }//end JointValue
+    }
 
     public String getId()
     {

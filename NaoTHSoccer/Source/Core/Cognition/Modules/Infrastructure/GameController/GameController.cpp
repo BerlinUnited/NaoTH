@@ -55,8 +55,17 @@ void GameController::execute()
 
 void GameController::readButtons()
 {
-  // default return message
-  getGameReturnData().message = GameReturnData::alive;
+  // default return message if old message was accepted
+  if(getGameReturnData().message == GameReturnData::manual_penalise
+     && getGameData().penaltyState != GameData::none)
+  {
+    getGameReturnData().message = GameReturnData::alive;
+  }
+  else if(getGameReturnData().message == GameReturnData::manual_unpenalise
+          && getGameData().penaltyState == GameData::none)
+  {
+    getGameReturnData().message = GameReturnData::alive;
+  }
 
   // state change?
   
