@@ -61,6 +61,12 @@ string JointData::getJointName(JointID joint)
     case LElbowRoll: return string("LElbowRoll");
     case RElbowYaw: return string("RElbowYaw");
     case LElbowYaw: return string("LElbowYaw");
+    
+    case LWristYaw: return string("LWristYaw");
+    case RWristYaw: return string("RWristYaw");
+    case LHand: return string("LHand");
+    case RHand: return string("RHand");
+    
     case LHipYawPitch: return string("LHipYawPitch");
     case RHipYawPitch: return string("RHipYawPitch");
     case RHipPitch: return string("RHipPitch");
@@ -277,23 +283,41 @@ void Serializer<SensorJointData>::deserialize(std::istream& stream, SensorJointD
   message.ParseFromZeroCopyStream(&buf);
 
   // assure the integrity of the message
-  ASSERT(message.electriccurrent().size() == JointData::numOfJoint);
-  ASSERT(message.temperature().size() == JointData::numOfJoint);
-
-  ASSERT(message.jointdata().position().size() == JointData::numOfJoint);
-  ASSERT(message.jointdata().stiffness().size() == JointData::numOfJoint);
-  ASSERT(message.jointdata().dp().size() == JointData::numOfJoint);
-  ASSERT(message.jointdata().ddp().size() == JointData::numOfJoint);
+  ASSERT( message.electriccurrent().size() == JointData::numOfJoint || 
+          message.electriccurrent().size() == JointData::numOfJoint - 4);
+  ASSERT( message.temperature().size() == JointData::numOfJoint || 
+          message.temperature().size() == JointData::numOfJoint - 4);
+  ASSERT( message.jointdata().position().size() == JointData::numOfJoint || 
+          message.jointdata().position().size() == JointData::numOfJoint - 4);
+  ASSERT( message.jointdata().stiffness().size() == JointData::numOfJoint || 
+          message.jointdata().stiffness().size() == JointData::numOfJoint - 4);
+  ASSERT( message.jointdata().dp().size() == JointData::numOfJoint || 
+          message.jointdata().dp().size() == JointData::numOfJoint - 4);
+  ASSERT( message.jointdata().ddp().size() == JointData::numOfJoint || 
+          message.jointdata().ddp().size() == JointData::numOfJoint - 4);
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    representation.electricCurrent[i] = message.electriccurrent(i);
-    representation.temperature[i] = message.temperature(i);
-    // joint data
-    representation.position[i] = message.jointdata().position(i);
-    representation.stiffness[i] = message.jointdata().stiffness(i);
-    representation.dp[i] = message.jointdata().dp(i);
-    representation.ddp[i] = message.jointdata().ddp(i);
+    if(i < message.jointdata().position().size())
+    {
+      representation.electricCurrent[i] = message.electriccurrent(i);
+      representation.temperature[i] = message.temperature(i);
+      // joint data
+      representation.position[i] = message.jointdata().position(i);
+      representation.stiffness[i] = message.jointdata().stiffness(i);
+      representation.dp[i] = message.jointdata().dp(i);
+      representation.ddp[i] = message.jointdata().ddp(i);
+    }
+    else // LWristYaw, RWristYaw, LHand, RHand don't exist in old messages
+    {
+      representation.electricCurrent[i] = 0;
+      representation.temperature[i] = 0;
+      // joint data
+      representation.position[i] = 0;
+      representation.stiffness[i] = 0;
+      representation.dp[i] = 0;
+      representation.ddp[i] = 0;
+    }
   }
 }
 

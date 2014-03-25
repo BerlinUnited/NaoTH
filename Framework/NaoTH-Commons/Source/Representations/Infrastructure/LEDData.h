@@ -39,6 +39,20 @@ namespace naoth
       EarLeft252,
       EarLeft288,
       EarLeft324,
+
+      HeadFrontLeft0,
+      HeadFrontLeft1,
+      HeadFrontRight0,
+      HeadFrontRight1,
+      HeadMiddleLeft0,
+      HeadMiddleRight0,
+      HeadRearLeft0,
+      HeadRearLeft1,
+      HeadRearLeft2,
+      HeadRearRight0,
+      HeadRearRight1,
+      HeadRearRight2,
+
       numOfMonoLED
     };
 

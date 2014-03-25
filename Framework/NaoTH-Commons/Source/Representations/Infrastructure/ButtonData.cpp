@@ -30,12 +30,25 @@ string ButtonData::getButtonName(ButtonID id)
 {
   switch(id)
   {
-    case Chest: return ("Chest"); break;
-    case LeftFootLeft: return("LeftFootLeft"); break;
-    case LeftFootRight: return("LeftFootRight"); break;
-    case RightFootLeft: return("RightFootLeft"); break;
-    case RightFootRight: return("RightFootRight"); break;
-    default: return("Unknown Button"); break;
+    case Chest: return "Chest";
+    case LeftFootLeft: return "LeftFootLeft";
+    case LeftFootRight: return "LeftFootRight";
+    case RightFootLeft: return "RightFootLeft";
+    case RightFootRight: return "RightFootRight";
+
+    case HeadFront: return "HeadFront";
+    case HeadMiddle: return "HeadMiddle";
+    case HeadRear: return "HeadRear";
+
+    case LeftHandBack: return "LeftHandBack";
+    case LeftHandLeft: return "LeftHandLeft";
+    case LeftHandRight: return "LeftHandRight";
+
+    case RightHandBack: return "RightHandBack";
+    case RightHandLeft: return "RightHandLeft";
+    case RightHandRight: return "RightHandRight";
+
+    default: return "Unknown Button";
   }//end switch
 }//end getBumperName
 
