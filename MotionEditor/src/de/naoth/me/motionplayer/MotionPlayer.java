@@ -566,8 +566,8 @@ public class MotionPlayer extends javax.swing.JPanel implements PropertyChangeLi
         {
           String msg = new String(result);
           outStream.println(originalCommand.getName() + " : " + msg);
-          JOptionPane.showMessageDialog(MotionPlayer.this,
-              msg, originalCommand.getName(), JOptionPane.INFORMATION_MESSAGE);
+          //JOptionPane.showMessageDialog(MotionPlayer.this,
+          //    msg, originalCommand.getName(), JOptionPane.INFORMATION_MESSAGE);
           return;
         }
 
