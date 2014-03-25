@@ -17,6 +17,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/GoalPercept.h"
+#include "Representations/Perception/Histograms.h"
 
 // tools
 #include "Tools/Math/Matrix_nxn.h"
@@ -41,14 +42,13 @@ BEGIN_DECLARE_MODULE(GradientGoalDetector)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
 
-  //REQUIRE(FieldPercept)
-  //REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(FrameInfo)
 
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
+  PROVIDE(GoalPostHistograms)
 END_DECLARE_MODULE(GradientGoalDetector)
 
 
@@ -60,19 +60,24 @@ public:
   virtual ~GradientGoalDetector(){};
 
   // override the Module execute method
-  virtual void execute(CameraInfo::CameraID id, bool horizon = true);
+  virtual bool execute(CameraInfo::CameraID id, bool horizon = true);
 
   void execute()
   {
-    execute(CameraInfo::Top);
-    if( getGoalPercept().getNumberOfSeenPosts() == 0) {
+    if( !execute(CameraInfo::Top)) {
       execute(CameraInfo::Top, false);
     }
-    execute(CameraInfo::Bottom);
+    debugStuff(CameraInfo::Top);
+    if( getGoalPercept().getNumberOfSeenPosts() == 0) {
+      if( !execute(CameraInfo::Bottom)) {
+        execute(CameraInfo::Bottom, false);
+      }
+    }
+    debugStuff(CameraInfo::Bottom);
   }
  
 private:
-  static const int imageBorderOffset = 25;
+  static const int imageBorderOffset = 5;
   CameraInfo::CameraID cameraID;
   
   RingBuffer<Vector2i, 5> pointBuffer;
@@ -152,6 +157,7 @@ private:
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
+  void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;
 

@@ -37,10 +37,11 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:showColorByHisogram","..", false);
 }
 
 
-void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
+bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
@@ -51,6 +52,17 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
   Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
   Vector2d horizonDirection(1,0);
+
+  if(!horizon && cameraID == CameraInfo::Bottom)
+  {
+    if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(10)) return false;
+
+    int offsetY = (params.numberOfScanlines * params.scanlinesDistance) / 2 + imageBorderOffset;
+
+    p1.y = offsetY;
+    p2.y = offsetY;
+  }
+
 
   if(horizon) {
     p1 = getArtificialHorizon().begin();
@@ -69,21 +81,21 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       p2.y < imageBorderOffset || p2.y > getImage().height() - imageBorderOffset
       ) 
   {
-    return;
+    return false;
   }
   
   int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
   if(heightOfHorizon > (int) getImage().height() - 10) 
   { 
-    return;
+    return false;
   }
 
 
   // correct parameters
   //minimal 2  or more at all points have to be found
   if(params.minGoodPoints < 2 || params.numberOfScanlines < 2) {
-    return;
+    return false;
   }
   if(params.minGoodPoints > params.numberOfScanlines) {
     params.minGoodPoints = params.numberOfScanlines;
@@ -142,6 +154,11 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
   GT_TRACE("GradientGoalDetector:setGoalPostPercept");
 
+  if(getGoalPercept().getNumberOfSeenPosts() > 0) 
+  {
+    //calculate histogram only, if a goalpost was found
+    getGoalPostHistograms().calculate();
+  }
 
   // exactly two posts are seen => assign site labels
   if(getGoalPercept().getNumberOfSeenPosts() == 2) 
@@ -161,7 +178,27 @@ void GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
 
   getGoalPercept().horizonScan = horizon;
+  return true;
 }//end execute
+
+void GradientGoalDetector::debugStuff(CameraInfo::CameraID camID)
+{
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHisogram",
+    CANVAS_PX(camID);
+    cameraID = camID;
+    for(unsigned int x = 0; x < getImage().width(); x++)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y++)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if(getGoalPostHistograms().isPostColor(pixel))
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
+}
 
 
 void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
@@ -317,6 +354,8 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
 
   Vector2d last(pos);
   BresenhamLineScan goodFeatureScanner(pos, scanDirection, getImage().cameraInfo);
+  Statistics::Histogram<256> histU;
+  Statistics::Histogram<256> histV;
 
   double sumSquareError = 0.0;
 
@@ -337,6 +376,9 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
       int diffVU = (int) pixel.v - (int) pixel.u;
       valueBuffer.add(diffVU);
       valueBufferY.add(pixel.y);
+
+      histU.add(pixel.u);
+      histV.add(pixel.v);
 
       response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
       responseY = valueBufferY[2];
@@ -392,6 +434,15 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
       }
     }
   }//end for
+
+  if(goodFeatures.size() >= (size_t) params.minGoodPoints)
+  {
+    for(int i = 0; i < getGoalPostHistograms().VALUE_COUNT; i++) 
+    {
+      getGoalPostHistograms().histogramU.add(i, histU.rawData[i]);
+      getGoalPostHistograms().histogramV.add(i, histV.rawData[i]);
+    }
+  }
   STOPWATCH_STOP("GradientGoalDetector:checkForGoodFeatures");
 }
 
@@ -440,6 +491,9 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     valueBuffer.add(diffVU);
     valueBufferY.add(pixel.y);
 
+    //collect some values for statisics of colors
+    getGoalPostHistograms().increaseChannelValue(pixel);
+
     if(pointBuffer.isFull())
     {
       response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
@@ -464,8 +518,6 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       lastResponse = response;
     }
   }//end while
-
-  
 
   // create a new goal post
   GoalPercept::GoalPost post;
