@@ -43,8 +43,6 @@ private:
   boost::shared_ptr<AL::ALBroker> pBroker;
   boost::shared_ptr<AL::ALMemoryProxy> al_memory;
   boost::shared_ptr<AL::DCMProxy> al_dcmproxy;
-  // a tool for fast access in Read/Write to some variables of ALMemory
-  AL::ALMemoryFastAccess al_memoryfast;
 
   //Joints
   std::string DCMPath_MotorJointHardness[JointData::numOfJoint];

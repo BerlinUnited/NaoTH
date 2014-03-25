@@ -398,11 +398,16 @@ void DCMHandler::initAllSensorData()
   assert(currentIndex == numOfSensors);
 
   //connect variables
-  //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
-  for(unsigned int i=0; i<numOfSensors; i++)
+  try {
+    for(unsigned int i=0; i<numOfSensors; i++)
+    {
+      sensorPtrs[i] = (float*)al_memory->getDataPtr(allSensorsList[i]);
+    }
+  } catch(AL::ALError& e)
   {
-    sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
+    std::cerr << "[NaoSMAL] " << e.toString() << std::endl;
   }
+
 }//end initAllSensorData
 
 
@@ -493,7 +498,7 @@ void DCMHandler::initMotorJoint()
 
   }
   catch(ALError e) {
-    std::cerr << "Failed to init MotorJointAlias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to init MotorJointAlias: " << e.toString() << endl;
   }
 }//end initMotorJoint
 
@@ -524,7 +529,7 @@ void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
     al_dcmproxy->setAlias(allMotorPositionCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set AllPositionData: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set AllPositionData: " << e.toString() << endl;
   }
 }//end setAllPositionData
 
@@ -567,7 +572,7 @@ void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
     al_dcmproxy->setAlias(allMotorHardnessCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set AllHardnessData: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.toString() << endl;
   }
 }//end setAllHardnessData
 
@@ -591,7 +596,7 @@ void DCMHandler::setAllHardnessData(double value, int dcmTime)
     al_dcmproxy->setAlias(allMotorHardnessCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set AllHardnessData: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.toString() << endl;
   }
 }//end setAllHardnessData
 
@@ -720,7 +725,7 @@ void DCMHandler::initLED()
   }
   catch(ALError e)
   {
-    std::cerr << "Failed to create LED-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create LED-Alias: " << e.toString() << endl;
   }
 
   ledCommands.arraySetSize(6);
@@ -839,7 +844,7 @@ bool DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
 
   }
   catch(ALError e) {
-    std::cerr << "Failed to set LEDs: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.toString() << endl;
   }
   return result;
 }//end setSingleLED
@@ -864,7 +869,7 @@ void DCMHandler::setLED(const LEDData& data, int dcmTime)
     al_dcmproxy->setAlias(ledCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set LEDs: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.toString() << endl;
   }
 }//end setLED
 
@@ -896,7 +901,7 @@ void DCMHandler::initIRSend()
   }
   catch(ALError e)
   {
-    std::cerr << "Failed to create IR-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create IR-Alias: " << e.toString() << endl;
   }
 
   irCommands.arraySetSize(6);
@@ -929,7 +934,7 @@ void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
     al_dcmproxy->setAlias(irCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set IR: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set IR: " << e.toString() << endl;
   }
 }//end setIRSend
 
@@ -965,7 +970,7 @@ void DCMHandler::initUltraSoundSend()
   }
   catch(ALError e)
   {
-    std::cerr << "Failed to create UltraSound-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create UltraSound-Alias: " << e.toString() << endl;
   }
 }//end initUltraSoundSend
 
@@ -979,7 +984,7 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
     al_dcmproxy->setAlias(usSendCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set UltraSound: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to set UltraSound: " << e.toString() << endl;
   }
 }//end setUltraSoundSend
 
