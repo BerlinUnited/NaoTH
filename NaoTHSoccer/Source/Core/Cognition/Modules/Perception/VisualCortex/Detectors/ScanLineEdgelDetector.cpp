@@ -136,6 +136,12 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
   const int step = 2;
 
+  if(end.y + step > start.y || end.y + step >= (int)getImage().height()) {
+    endPoint.posInImage.y = end.y;
+    return endPoint;
+  }
+
+
   // no scan if the start is at the top of the image
   if(start.y <= step) {
     return endPoint;
