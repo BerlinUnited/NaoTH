@@ -19,7 +19,6 @@ void StrategyTools::arrangeRobots(
   size_t numberOfRobots = robots.size();
   size_t numberOfPlaces = places.size();
 
-  double fakeDistance = 0;
 
   // inverse assignement
   std::vector<int> robotsToPlaces(numberOfRobots,-1); // init with invalid places -1
@@ -57,20 +56,22 @@ void StrategyTools::arrangeRobots(
 
     // current distance
     double distOne = (robots[robotIndexOne] - places[placeIndexOne]).abs();
-    double distTwo = fakeDistance;
+    double distTwo = 0;
     if(placeIndexTwo != -1) {
       distTwo = (robots[robotIndexTwo] - places[placeIndexTwo]).abs();
     }
     double currentDistance = distOne + distTwo;
   
     // alternative distance
-    double alternativeDistOne = fakeDistance;
+    double alternativeDistOne = 0;
     if(placeIndexTwo != -1) {
       alternativeDistOne = (robots[robotIndexOne] - places[placeIndexTwo]).abs();
     }
 
     double alternativeDistTwo = (robots[robotIndexTwo] - places[placeIndexOne]).abs();
     double alternativeDistance = alternativeDistOne + alternativeDistTwo;
+
+	//current use the minimum sum, maybe better to use the minimum distance of longest way
 
     // switch
     if(alternativeDistance < currentDistance)
