@@ -56,23 +56,24 @@ void Serializer<ScanLineEdgelPercept>::serialize(const ScanLineEdgelPercept& rep
 
 void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLineEdgelPercept& representation)
 {
+  representation.reset();
+
   // deserialize the message
   naothmessages::ScanLineEdgelPercept percept_msg;
   google::protobuf::io::IstreamInputStream buf(&stream);
   percept_msg.ParseFromZeroCopyStream(&buf);
 
+  representation.endPoints.resize(percept_msg.endpoints_size());
   for(int i = 0; i < percept_msg.endpoints_size(); i++)
   {
-    ScanLineEdgelPercept::EndPoint point;
+    ScanLineEdgelPercept::EndPoint& point = representation.endPoints[i];
     const naothmessages::ScanLineEndPoint& point_msg = percept_msg.endpoints(i);
 
     DataConversion::fromMessage(point_msg.posinimage(), point.posInImage);
     DataConversion::fromMessage(point_msg.posonfield(), point.posOnField);
     point.color = (ColorClasses::Color) point_msg.color();
     point.ScanLineID = point_msg.scanlineid();
-
-    representation.endPoints.push_back(point);
-  }//end for
+  }
 
   representation.edgels.resize(percept_msg.edgels_size());
   for(int i = 0; i < percept_msg.edgels_size(); i++)
@@ -93,5 +94,12 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
     pair.begin = pair_msg.begin();
     pair.end = pair_msg.end();
     pair.id = pair_msg.id();
+
+    // TODO: is it ok here?
+    // recalculate the values for the center edgel like in ScanLineEdgelDetector.h
+    const Edgel& end = representation.edgels[pair.end];
+    const Edgel& begin = representation.edgels[pair.begin];
+    pair.point = Vector2d(begin.point + end.point)*0.5;
+    pair.direction = (begin.direction - end.direction).normalize();
   }
 }//end deserialize
