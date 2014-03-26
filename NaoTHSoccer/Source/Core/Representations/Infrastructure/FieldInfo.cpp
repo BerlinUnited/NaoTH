@@ -69,6 +69,8 @@ void FieldInfo::calculateCrossings()
   yPosLeftSideline =         yLength / 2.0; 
   yPosRightSideline =       -yPosLeftSideline;
 
+  carpetSizeHalf.x = xFieldLength*0.5;
+  carpetSizeHalf.y = yFieldLength*0.5;
 
   
   // L crossings

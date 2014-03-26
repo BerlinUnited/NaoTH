@@ -7,8 +7,8 @@
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 */ 
 
-#ifndef __FieldInfo_h_
-#define __FieldInfo_h_
+#ifndef _FieldInfo_h_
+#define _FieldInfo_h_
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/ColorClasses.h>
@@ -34,6 +34,11 @@ public:
 
   virtual void print(std::ostream& stream) const;
 
+  // some tools
+  inline bool insideCarpet(const Vector2d& p) {
+    return carpetSizeHalf.x >= p.x && p.x <= -carpetSizeHalf.x &&
+           carpetSizeHalf.y >= p.y && p.y <= -carpetSizeHalf.y;
+  }
 
   //colors
   ColorClasses::Color ballColor;
@@ -83,6 +88,7 @@ public:
   double yPosRightGoalpost;
   double yPosLeftGoalpost;
 
+  Vector2d carpetSizeHalf;
 
   enum LineCrossingsId
   {
