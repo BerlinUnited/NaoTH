@@ -54,6 +54,8 @@ class ArmMotionRequest;
 class MotionRequest;
 class LinePercept;
 class ScanLineEndPoint;
+class Edgel;
+class EdgelPair;
 class ScanLineEdgelPercept;
 class StepControlStatus;
 class MotionStatus;
@@ -1683,6 +1685,202 @@ class ScanLineEndPoint : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class Edgel : public ::google::protobuf::Message {
+ public:
+  Edgel();
+  virtual ~Edgel();
+  
+  Edgel(const Edgel& from);
+  
+  inline Edgel& operator=(const Edgel& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Edgel& default_instance();
+  
+  void Swap(Edgel* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Edgel* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Edgel& from);
+  void MergeFrom(const Edgel& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.IntVector2 point = 1;
+  inline bool has_point() const;
+  inline void clear_point();
+  static const int kPointFieldNumber = 1;
+  inline const ::naothmessages::IntVector2& point() const;
+  inline ::naothmessages::IntVector2* mutable_point();
+  inline ::naothmessages::IntVector2* release_point();
+  
+  // required .naothmessages.DoubleVector2 direction = 2;
+  inline bool has_direction() const;
+  inline void clear_direction();
+  static const int kDirectionFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& direction() const;
+  inline ::naothmessages::DoubleVector2* mutable_direction();
+  inline ::naothmessages::DoubleVector2* release_direction();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Edgel)
+ private:
+  inline void set_has_point();
+  inline void clear_has_point();
+  inline void set_has_direction();
+  inline void clear_has_direction();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::IntVector2* point_;
+  ::naothmessages::DoubleVector2* direction_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static Edgel* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class EdgelPair : public ::google::protobuf::Message {
+ public:
+  EdgelPair();
+  virtual ~EdgelPair();
+  
+  EdgelPair(const EdgelPair& from);
+  
+  inline EdgelPair& operator=(const EdgelPair& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const EdgelPair& default_instance();
+  
+  void Swap(EdgelPair* other);
+  
+  // implements Message ----------------------------------------------
+  
+  EdgelPair* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const EdgelPair& from);
+  void MergeFrom(const EdgelPair& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required int32 begin = 1;
+  inline bool has_begin() const;
+  inline void clear_begin();
+  static const int kBeginFieldNumber = 1;
+  inline ::google::protobuf::int32 begin() const;
+  inline void set_begin(::google::protobuf::int32 value);
+  
+  // required int32 end = 2;
+  inline bool has_end() const;
+  inline void clear_end();
+  static const int kEndFieldNumber = 2;
+  inline ::google::protobuf::int32 end() const;
+  inline void set_end(::google::protobuf::int32 value);
+  
+  // required int32 id = 3;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 3;
+  inline ::google::protobuf::int32 id() const;
+  inline void set_id(::google::protobuf::int32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.EdgelPair)
+ private:
+  inline void set_has_begin();
+  inline void clear_has_begin();
+  inline void set_has_end();
+  inline void clear_has_end();
+  inline void set_has_id();
+  inline void clear_has_id();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::int32 begin_;
+  ::google::protobuf::int32 end_;
+  ::google::protobuf::int32 id_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static EdgelPair* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class ScanLineEdgelPercept : public ::google::protobuf::Message {
  public:
   ScanLineEdgelPercept();
@@ -1737,6 +1935,30 @@ class ScanLineEdgelPercept : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
+  // repeated .naothmessages.Edgel edgels = 1;
+  inline int edgels_size() const;
+  inline void clear_edgels();
+  static const int kEdgelsFieldNumber = 1;
+  inline const ::naothmessages::Edgel& edgels(int index) const;
+  inline ::naothmessages::Edgel* mutable_edgels(int index);
+  inline ::naothmessages::Edgel* add_edgels();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >&
+      edgels() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >*
+      mutable_edgels();
+  
+  // repeated .naothmessages.EdgelPair pairs = 3;
+  inline int pairs_size() const;
+  inline void clear_pairs();
+  static const int kPairsFieldNumber = 3;
+  inline const ::naothmessages::EdgelPair& pairs(int index) const;
+  inline ::naothmessages::EdgelPair* mutable_pairs(int index);
+  inline ::naothmessages::EdgelPair* add_pairs();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >&
+      pairs() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >*
+      mutable_pairs();
+  
   // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
   inline int endpoints_size() const;
   inline void clear_endpoints();
@@ -1754,10 +1976,12 @@ class ScanLineEdgelPercept : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel > edgels_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair > pairs_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint > endpoints_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -4702,7 +4926,189 @@ inline void ScanLineEndPoint::set_scanlineid(::google::protobuf::uint32 value) {
 
 // -------------------------------------------------------------------
 
+// Edgel
+
+// required .naothmessages.IntVector2 point = 1;
+inline bool Edgel::has_point() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Edgel::set_has_point() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Edgel::clear_has_point() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Edgel::clear_point() {
+  if (point_ != NULL) point_->::naothmessages::IntVector2::Clear();
+  clear_has_point();
+}
+inline const ::naothmessages::IntVector2& Edgel::point() const {
+  return point_ != NULL ? *point_ : *default_instance_->point_;
+}
+inline ::naothmessages::IntVector2* Edgel::mutable_point() {
+  set_has_point();
+  if (point_ == NULL) point_ = new ::naothmessages::IntVector2;
+  return point_;
+}
+inline ::naothmessages::IntVector2* Edgel::release_point() {
+  clear_has_point();
+  ::naothmessages::IntVector2* temp = point_;
+  point_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.DoubleVector2 direction = 2;
+inline bool Edgel::has_direction() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Edgel::set_has_direction() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Edgel::clear_has_direction() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Edgel::clear_direction() {
+  if (direction_ != NULL) direction_->::naothmessages::DoubleVector2::Clear();
+  clear_has_direction();
+}
+inline const ::naothmessages::DoubleVector2& Edgel::direction() const {
+  return direction_ != NULL ? *direction_ : *default_instance_->direction_;
+}
+inline ::naothmessages::DoubleVector2* Edgel::mutable_direction() {
+  set_has_direction();
+  if (direction_ == NULL) direction_ = new ::naothmessages::DoubleVector2;
+  return direction_;
+}
+inline ::naothmessages::DoubleVector2* Edgel::release_direction() {
+  clear_has_direction();
+  ::naothmessages::DoubleVector2* temp = direction_;
+  direction_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// EdgelPair
+
+// required int32 begin = 1;
+inline bool EdgelPair::has_begin() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void EdgelPair::set_has_begin() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void EdgelPair::clear_has_begin() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void EdgelPair::clear_begin() {
+  begin_ = 0;
+  clear_has_begin();
+}
+inline ::google::protobuf::int32 EdgelPair::begin() const {
+  return begin_;
+}
+inline void EdgelPair::set_begin(::google::protobuf::int32 value) {
+  set_has_begin();
+  begin_ = value;
+}
+
+// required int32 end = 2;
+inline bool EdgelPair::has_end() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void EdgelPair::set_has_end() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void EdgelPair::clear_has_end() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void EdgelPair::clear_end() {
+  end_ = 0;
+  clear_has_end();
+}
+inline ::google::protobuf::int32 EdgelPair::end() const {
+  return end_;
+}
+inline void EdgelPair::set_end(::google::protobuf::int32 value) {
+  set_has_end();
+  end_ = value;
+}
+
+// required int32 id = 3;
+inline bool EdgelPair::has_id() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void EdgelPair::set_has_id() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void EdgelPair::clear_has_id() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void EdgelPair::clear_id() {
+  id_ = 0;
+  clear_has_id();
+}
+inline ::google::protobuf::int32 EdgelPair::id() const {
+  return id_;
+}
+inline void EdgelPair::set_id(::google::protobuf::int32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // ScanLineEdgelPercept
+
+// repeated .naothmessages.Edgel edgels = 1;
+inline int ScanLineEdgelPercept::edgels_size() const {
+  return edgels_.size();
+}
+inline void ScanLineEdgelPercept::clear_edgels() {
+  edgels_.Clear();
+}
+inline const ::naothmessages::Edgel& ScanLineEdgelPercept::edgels(int index) const {
+  return edgels_.Get(index);
+}
+inline ::naothmessages::Edgel* ScanLineEdgelPercept::mutable_edgels(int index) {
+  return edgels_.Mutable(index);
+}
+inline ::naothmessages::Edgel* ScanLineEdgelPercept::add_edgels() {
+  return edgels_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >&
+ScanLineEdgelPercept::edgels() const {
+  return edgels_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >*
+ScanLineEdgelPercept::mutable_edgels() {
+  return &edgels_;
+}
+
+// repeated .naothmessages.EdgelPair pairs = 3;
+inline int ScanLineEdgelPercept::pairs_size() const {
+  return pairs_.size();
+}
+inline void ScanLineEdgelPercept::clear_pairs() {
+  pairs_.Clear();
+}
+inline const ::naothmessages::EdgelPair& ScanLineEdgelPercept::pairs(int index) const {
+  return pairs_.Get(index);
+}
+inline ::naothmessages::EdgelPair* ScanLineEdgelPercept::mutable_pairs(int index) {
+  return pairs_.Mutable(index);
+}
+inline ::naothmessages::EdgelPair* ScanLineEdgelPercept::add_pairs() {
+  return pairs_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >&
+ScanLineEdgelPercept::pairs() const {
+  return pairs_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >*
+ScanLineEdgelPercept::mutable_pairs() {
+  return &pairs_;
+}
 
 // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
 inline int ScanLineEdgelPercept::endpoints_size() const {

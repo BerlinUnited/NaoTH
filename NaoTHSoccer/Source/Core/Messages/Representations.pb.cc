@@ -61,6 +61,12 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ScanLineEndPoint_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ScanLineEndPoint_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Edgel_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Edgel_reflection_ = NULL;
+const ::google::protobuf::Descriptor* EdgelPair_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  EdgelPair_reflection_ = NULL;
 const ::google::protobuf::Descriptor* ScanLineEdgelPercept_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ScanLineEdgelPercept_reflection_ = NULL;
@@ -342,8 +348,43 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ScanLineEndPoint));
-  ScanLineEdgelPercept_descriptor_ = file->message_type(12);
-  static const int ScanLineEdgelPercept_offsets_[1] = {
+  Edgel_descriptor_ = file->message_type(12);
+  static const int Edgel_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Edgel, point_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Edgel, direction_),
+  };
+  Edgel_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Edgel_descriptor_,
+      Edgel::default_instance_,
+      Edgel_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Edgel, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Edgel, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Edgel));
+  EdgelPair_descriptor_ = file->message_type(13);
+  static const int EdgelPair_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EdgelPair, begin_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EdgelPair, end_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EdgelPair, id_),
+  };
+  EdgelPair_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      EdgelPair_descriptor_,
+      EdgelPair::default_instance_,
+      EdgelPair_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EdgelPair, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(EdgelPair, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(EdgelPair));
+  ScanLineEdgelPercept_descriptor_ = file->message_type(14);
+  static const int ScanLineEdgelPercept_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, edgels_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, pairs_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, endpoints_),
   };
   ScanLineEdgelPercept_reflection_ =
@@ -357,7 +398,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ScanLineEdgelPercept));
-  StepControlStatus_descriptor_ = file->message_type(13);
+  StepControlStatus_descriptor_ = file->message_type(15);
   static const int StepControlStatus_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, moveablefoot_),
@@ -373,7 +414,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlStatus));
-  MotionStatus_descriptor_ = file->message_type(14);
+  MotionStatus_descriptor_ = file->message_type(16);
   static const int MotionStatus_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
@@ -396,7 +437,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(15);
+  OdometryData_descriptor_ = file->message_type(17);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -411,7 +452,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
-  CalibrationData_descriptor_ = file->message_type(16);
+  CalibrationData_descriptor_ = file->message_type(18);
   static const int CalibrationData_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, gyrosensoroffset_),
@@ -429,7 +470,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CalibrationData));
-  InertialModel_descriptor_ = file->message_type(17);
+  InertialModel_descriptor_ = file->message_type(19);
   static const int InertialModel_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialModel, orientation_),
   };
@@ -444,7 +485,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(InertialModel));
-  TeamMessageCollection_descriptor_ = file->message_type(18);
+  TeamMessageCollection_descriptor_ = file->message_type(20);
   static const int TeamMessageCollection_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessageCollection, data_),
   };
@@ -459,7 +500,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamMessageCollection));
-  TeamMessage_descriptor_ = file->message_type(19);
+  TeamMessage_descriptor_ = file->message_type(21);
   static const int TeamMessage_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, playernum_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamMessage, teamcolor_),
@@ -482,7 +523,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamMessage));
-  BUUserTeamMessage_descriptor_ = file->message_type(20);
+  BUUserTeamMessage_descriptor_ = file->message_type(22);
   static const int BUUserTeamMessage_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, bodyid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BUUserTeamMessage, timetoball_),
@@ -504,7 +545,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BUUserTeamMessage));
-  Opponent_descriptor_ = file->message_type(21);
+  Opponent_descriptor_ = file->message_type(23);
   static const int Opponent_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, playernum_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Opponent, poseonfield_),
@@ -520,7 +561,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Opponent));
-  CameraMatrixCalibration_descriptor_ = file->message_type(22);
+  CameraMatrixCalibration_descriptor_ = file->message_type(24);
   static const int CameraMatrixCalibration_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrixCalibration, correctionoffset_),
   };
@@ -573,6 +614,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ScanLineEndPoint_descriptor_, &ScanLineEndPoint::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Edgel_descriptor_, &Edgel::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    EdgelPair_descriptor_, &EdgelPair::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ScanLineEdgelPercept_descriptor_, &ScanLineEdgelPercept::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     StepControlStatus_descriptor_, &StepControlStatus::default_instance());
@@ -623,6 +668,10 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete LinePercept_reflection_;
   delete ScanLineEndPoint::default_instance_;
   delete ScanLineEndPoint_reflection_;
+  delete Edgel::default_instance_;
+  delete Edgel_reflection_;
+  delete EdgelPair::default_instance_;
+  delete EdgelPair_reflection_;
   delete ScanLineEdgelPercept::default_instance_;
   delete ScanLineEdgelPercept_reflection_;
   delete StepControlStatus::default_instance_;
@@ -728,50 +777,56 @@ void protobuf_AddDesc_Representations_2eproto() {
     "osInImage\030\001 \002(\0132\031.naothmessages.IntVecto"
     "r2\0220\n\nposOnField\030\002 \002(\0132\034.naothmessages.D"
     "oubleVector2\022#\n\005color\030\003 \002(\0162\024.naothmessa"
-    "ges.Color\022\022\n\nScanLineID\030\004 \002(\r\"J\n\024ScanLin"
-    "eEdgelPercept\0222\n\tendPoints\030\002 \003(\0132\037.naoth"
-    "messages.ScanLineEndPoint\"9\n\021StepControl"
-    "Status\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002"
-    " \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nl"
-    "astMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022"
-    "\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionState"
-    "\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025."
-    "naothmessages.Pose2D\0225\n\026plannedMotionRig"
-    "htFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020p"
-    "lannedMotionHip\030\010 \002(\0132\025.naothmessages.Po"
-    "se2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothm"
-    "essages.StepControlStatus\"3\n\014OdometryDat"
-    "a\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"\320"
-    "\001\n\017CalibrationData\022:\n\024inertialSensorOffs"
-    "et\030\001 \001(\0132\034.naothmessages.DoubleVector2\0226"
-    "\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessages"
-    ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132"
-    "\034.naothmessages.DoubleVector3\022\022\n\ncalibra"
-    "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio"
-    "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n"
-    "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n"
-    "aothmessages.TeamMessage\"\360\002\n\013TeamMessage"
-    "\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\013 \001("
-    "\0162\030.naothmessages.TeamColor:\010blueTeam\022#\n"
-    "\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007ba"
-    "llAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132\034."
-    "naothmessages.DoubleVector2\0222\n\014ballVeloc"
-    "ity\030\006 \001(\0132\034.naothmessages.DoubleVector2\022"
-    "\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .n"
-    "aothmessages.BUUserTeamMessage\022+\n\tframeI"
-    "nfo\030\t \001(\0132\030.naothmessages.FrameInfo\"\354\001\n\021"
-    "BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unkno"
-    "wn\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001"
-    "(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n"
-    "\topponents\030\005 \003(\0132\027.naothmessages.Opponen"
-    "t\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatteryCharg"
-    "e\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:\0010\"L\n\010Op"
-    "ponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnFi"
-    "eld\030\002 \001(\0132\025.naothmessages.Pose2D\"Q\n\027Came"
-    "raMatrixCalibration\0226\n\020correctionOffset\030"
-    "\001 \003(\0132\034.naothmessages.DoubleVector2*7\n\tT"
-    "eamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013i"
-    "nvalidTeam\020\002B\026\n\024de.naoth.rc.messages", 4636);
+    "ges.Color\022\022\n\nScanLineID\030\004 \002(\r\"b\n\005Edgel\022("
+    "\n\005point\030\001 \002(\0132\031.naothmessages.IntVector2"
+    "\022/\n\tdirection\030\002 \002(\0132\034.naothmessages.Doub"
+    "leVector2\"3\n\tEdgelPair\022\r\n\005begin\030\001 \002(\005\022\013\n"
+    "\003end\030\002 \002(\005\022\n\n\002id\030\003 \002(\005\"\231\001\n\024ScanLineEdgel"
+    "Percept\022$\n\006edgels\030\001 \003(\0132\024.naothmessages."
+    "Edgel\022\'\n\005pairs\030\003 \003(\0132\030.naothmessages.Edg"
+    "elPair\0222\n\tendPoints\030\002 \003(\0132\037.naothmessage"
+    "s.ScanLineEndPoint\"9\n\021StepControlStatus\022"
+    "\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002"
+    "\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMoti"
+    "on\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadM"
+    "otion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\022"
+    "4\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naothme"
+    "ssages.Pose2D\0225\n\026plannedMotionRightFoot\030"
+    "\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020plannedM"
+    "otionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n"
+    "\021stepControlStatus\030\t \001(\0132 .naothmessages"
+    ".StepControlStatus\"3\n\014OdometryData\022#\n\004po"
+    "se\030\001 \002(\0132\025.naothmessages.Pose2D\"\320\001\n\017Cali"
+    "brationData\022:\n\024inertialSensorOffset\030\001 \001("
+    "\0132\034.naothmessages.DoubleVector2\0226\n\020gyroS"
+    "ensorOffset\030\002 \001(\0132\034.naothmessages.Double"
+    "Vector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naoth"
+    "messages.DoubleVector3\022\022\n\ncalibrated\030\004 \002"
+    "(\010\"B\n\rInertialModel\0221\n\013orientation\030\001 \001(\013"
+    "2\034.naothmessages.DoubleVector2\"A\n\025TeamMe"
+    "ssageCollection\022(\n\004data\030\001 \003(\0132\032.naothmes"
+    "sages.TeamMessage\"\360\002\n\013TeamMessage\022\024\n\tpla"
+    "yerNum\030\001 \001(\r:\0010\0225\n\tteamColor\030\013 \001(\0162\030.nao"
+    "thmessages.TeamColor:\010blueTeam\022#\n\004pose\030\003"
+    " \001(\0132\025.naothmessages.Pose2D\022\023\n\007ballAge\030\004"
+    " \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132\034.naothme"
+    "ssages.DoubleVector2\0222\n\014ballVelocity\030\006 \001"
+    "(\0132\034.naothmessages.DoubleVector2\022\025\n\006fall"
+    "en\030\n \001(\010:\005false\022.\n\004user\030\010 \001(\0132 .naothmes"
+    "sages.BUUserTeamMessage\022+\n\tframeInfo\030\t \001"
+    "(\0132\030.naothmessages.FrameInfo\"\354\001\n\021BUUserT"
+    "eamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknown\022\022\n\nt"
+    "imeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(\010:\005fal"
+    "se\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\toppone"
+    "nts\030\005 \003(\0132\027.naothmessages.Opponent\022\025\n\nte"
+    "amNumber\030\006 \001(\r:\0010\022\030\n\rbatteryCharge\030\007 \001(\002"
+    ":\0011\022\026\n\013temperature\030\010 \001(\002:\0010\"L\n\010Opponent\022"
+    "\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001"
+    "(\0132\025.naothmessages.Pose2D\"Q\n\027CameraMatri"
+    "xCalibration\0226\n\020correctionOffset\030\001 \003(\0132\034"
+    ".naothmessages.DoubleVector2*7\n\tTeamColo"
+    "r\022\014\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidT"
+    "eam\020\002B\026\n\024de.naoth.rc.messages", 4869);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();
@@ -786,6 +841,8 @@ void protobuf_AddDesc_Representations_2eproto() {
   MotionRequest::default_instance_ = new MotionRequest();
   LinePercept::default_instance_ = new LinePercept();
   ScanLineEndPoint::default_instance_ = new ScanLineEndPoint();
+  Edgel::default_instance_ = new Edgel();
+  EdgelPair::default_instance_ = new EdgelPair();
   ScanLineEdgelPercept::default_instance_ = new ScanLineEdgelPercept();
   StepControlStatus::default_instance_ = new StepControlStatus();
   MotionStatus::default_instance_ = new MotionStatus();
@@ -809,6 +866,8 @@ void protobuf_AddDesc_Representations_2eproto() {
   MotionRequest::default_instance_->InitAsDefaultInstance();
   LinePercept::default_instance_->InitAsDefaultInstance();
   ScanLineEndPoint::default_instance_->InitAsDefaultInstance();
+  Edgel::default_instance_->InitAsDefaultInstance();
+  EdgelPair::default_instance_->InitAsDefaultInstance();
   ScanLineEdgelPercept::default_instance_->InitAsDefaultInstance();
   StepControlStatus::default_instance_->InitAsDefaultInstance();
   MotionStatus::default_instance_->InitAsDefaultInstance();
@@ -5896,6 +5955,560 @@ void ScanLineEndPoint::Swap(ScanLineEndPoint* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int Edgel::kPointFieldNumber;
+const int Edgel::kDirectionFieldNumber;
+#endif  // !_MSC_VER
+
+Edgel::Edgel()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Edgel::InitAsDefaultInstance() {
+  point_ = const_cast< ::naothmessages::IntVector2*>(&::naothmessages::IntVector2::default_instance());
+  direction_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+}
+
+Edgel::Edgel(const Edgel& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Edgel::SharedCtor() {
+  _cached_size_ = 0;
+  point_ = NULL;
+  direction_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Edgel::~Edgel() {
+  SharedDtor();
+}
+
+void Edgel::SharedDtor() {
+  if (this != default_instance_) {
+    delete point_;
+    delete direction_;
+  }
+}
+
+void Edgel::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Edgel::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Edgel_descriptor_;
+}
+
+const Edgel& Edgel::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+Edgel* Edgel::default_instance_ = NULL;
+
+Edgel* Edgel::New() const {
+  return new Edgel;
+}
+
+void Edgel::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_point()) {
+      if (point_ != NULL) point_->::naothmessages::IntVector2::Clear();
+    }
+    if (has_direction()) {
+      if (direction_ != NULL) direction_->::naothmessages::DoubleVector2::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Edgel::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.IntVector2 point = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_point()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_direction;
+        break;
+      }
+      
+      // required .naothmessages.DoubleVector2 direction = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_direction:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_direction()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Edgel::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .naothmessages.IntVector2 point = 1;
+  if (has_point()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->point(), output);
+  }
+  
+  // required .naothmessages.DoubleVector2 direction = 2;
+  if (has_direction()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->direction(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Edgel::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .naothmessages.IntVector2 point = 1;
+  if (has_point()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->point(), target);
+  }
+  
+  // required .naothmessages.DoubleVector2 direction = 2;
+  if (has_direction()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->direction(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Edgel::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .naothmessages.IntVector2 point = 1;
+    if (has_point()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->point());
+    }
+    
+    // required .naothmessages.DoubleVector2 direction = 2;
+    if (has_direction()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->direction());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Edgel::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Edgel* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Edgel*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Edgel::MergeFrom(const Edgel& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_point()) {
+      mutable_point()->::naothmessages::IntVector2::MergeFrom(from.point());
+    }
+    if (from.has_direction()) {
+      mutable_direction()->::naothmessages::DoubleVector2::MergeFrom(from.direction());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Edgel::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Edgel::CopyFrom(const Edgel& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Edgel::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  if (has_point()) {
+    if (!this->point().IsInitialized()) return false;
+  }
+  if (has_direction()) {
+    if (!this->direction().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void Edgel::Swap(Edgel* other) {
+  if (other != this) {
+    std::swap(point_, other->point_);
+    std::swap(direction_, other->direction_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Edgel::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Edgel_descriptor_;
+  metadata.reflection = Edgel_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int EdgelPair::kBeginFieldNumber;
+const int EdgelPair::kEndFieldNumber;
+const int EdgelPair::kIdFieldNumber;
+#endif  // !_MSC_VER
+
+EdgelPair::EdgelPair()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void EdgelPair::InitAsDefaultInstance() {
+}
+
+EdgelPair::EdgelPair(const EdgelPair& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void EdgelPair::SharedCtor() {
+  _cached_size_ = 0;
+  begin_ = 0;
+  end_ = 0;
+  id_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+EdgelPair::~EdgelPair() {
+  SharedDtor();
+}
+
+void EdgelPair::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void EdgelPair::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* EdgelPair::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return EdgelPair_descriptor_;
+}
+
+const EdgelPair& EdgelPair::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+EdgelPair* EdgelPair::default_instance_ = NULL;
+
+EdgelPair* EdgelPair::New() const {
+  return new EdgelPair;
+}
+
+void EdgelPair::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    begin_ = 0;
+    end_ = 0;
+    id_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool EdgelPair::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 begin = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &begin_)));
+          set_has_begin();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_end;
+        break;
+      }
+      
+      // required int32 end = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_end:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &end_)));
+          set_has_end();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_id;
+        break;
+      }
+      
+      // required int32 id = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_id:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void EdgelPair::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 begin = 1;
+  if (has_begin()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->begin(), output);
+  }
+  
+  // required int32 end = 2;
+  if (has_end()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->end(), output);
+  }
+  
+  // required int32 id = 3;
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->id(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* EdgelPair::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 begin = 1;
+  if (has_begin()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->begin(), target);
+  }
+  
+  // required int32 end = 2;
+  if (has_end()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->end(), target);
+  }
+  
+  // required int32 id = 3;
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->id(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int EdgelPair::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 begin = 1;
+    if (has_begin()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->begin());
+    }
+    
+    // required int32 end = 2;
+    if (has_end()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->end());
+    }
+    
+    // required int32 id = 3;
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->id());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void EdgelPair::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const EdgelPair* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const EdgelPair*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void EdgelPair::MergeFrom(const EdgelPair& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_begin()) {
+      set_begin(from.begin());
+    }
+    if (from.has_end()) {
+      set_end(from.end());
+    }
+    if (from.has_id()) {
+      set_id(from.id());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void EdgelPair::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void EdgelPair::CopyFrom(const EdgelPair& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool EdgelPair::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  
+  return true;
+}
+
+void EdgelPair::Swap(EdgelPair* other) {
+  if (other != this) {
+    std::swap(begin_, other->begin_);
+    std::swap(end_, other->end_);
+    std::swap(id_, other->id_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata EdgelPair::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = EdgelPair_descriptor_;
+  metadata.reflection = EdgelPair_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ScanLineEdgelPercept::kEdgelsFieldNumber;
+const int ScanLineEdgelPercept::kPairsFieldNumber;
 const int ScanLineEdgelPercept::kEndPointsFieldNumber;
 #endif  // !_MSC_VER
 
@@ -5948,6 +6561,8 @@ ScanLineEdgelPercept* ScanLineEdgelPercept::New() const {
 }
 
 void ScanLineEdgelPercept::Clear() {
+  edgels_.Clear();
+  pairs_.Clear();
   endpoints_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -5959,6 +6574,21 @@ bool ScanLineEdgelPercept::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.Edgel edgels = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_edgels:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_edgels()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_edgels;
+        if (input->ExpectTag(18)) goto parse_endPoints;
+        break;
+      }
+      
       // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
@@ -5970,6 +6600,21 @@ bool ScanLineEdgelPercept::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(18)) goto parse_endPoints;
+        if (input->ExpectTag(26)) goto parse_pairs;
+        break;
+      }
+      
+      // repeated .naothmessages.EdgelPair pairs = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_pairs:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_pairs()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_pairs;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -5992,10 +6637,22 @@ bool ScanLineEdgelPercept::MergePartialFromCodedStream(
 
 void ScanLineEdgelPercept::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.Edgel edgels = 1;
+  for (int i = 0; i < this->edgels_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->edgels(i), output);
+  }
+  
   // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
   for (int i = 0; i < this->endpoints_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->endpoints(i), output);
+  }
+  
+  // repeated .naothmessages.EdgelPair pairs = 3;
+  for (int i = 0; i < this->pairs_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->pairs(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -6006,11 +6663,25 @@ void ScanLineEdgelPercept::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ScanLineEdgelPercept::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.Edgel edgels = 1;
+  for (int i = 0; i < this->edgels_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->edgels(i), target);
+  }
+  
   // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
   for (int i = 0; i < this->endpoints_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->endpoints(i), target);
+  }
+  
+  // repeated .naothmessages.EdgelPair pairs = 3;
+  for (int i = 0; i < this->pairs_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->pairs(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -6022,6 +6693,22 @@ void ScanLineEdgelPercept::SerializeWithCachedSizes(
 
 int ScanLineEdgelPercept::ByteSize() const {
   int total_size = 0;
+  
+  // repeated .naothmessages.Edgel edgels = 1;
+  total_size += 1 * this->edgels_size();
+  for (int i = 0; i < this->edgels_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->edgels(i));
+  }
+  
+  // repeated .naothmessages.EdgelPair pairs = 3;
+  total_size += 1 * this->pairs_size();
+  for (int i = 0; i < this->pairs_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->pairs(i));
+  }
   
   // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
   total_size += 1 * this->endpoints_size();
@@ -6056,6 +6743,8 @@ void ScanLineEdgelPercept::MergeFrom(const ::google::protobuf::Message& from) {
 
 void ScanLineEdgelPercept::MergeFrom(const ScanLineEdgelPercept& from) {
   GOOGLE_CHECK_NE(&from, this);
+  edgels_.MergeFrom(from.edgels_);
+  pairs_.MergeFrom(from.pairs_);
   endpoints_.MergeFrom(from.endpoints_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -6074,6 +6763,12 @@ void ScanLineEdgelPercept::CopyFrom(const ScanLineEdgelPercept& from) {
 
 bool ScanLineEdgelPercept::IsInitialized() const {
   
+  for (int i = 0; i < edgels_size(); i++) {
+    if (!this->edgels(i).IsInitialized()) return false;
+  }
+  for (int i = 0; i < pairs_size(); i++) {
+    if (!this->pairs(i).IsInitialized()) return false;
+  }
   for (int i = 0; i < endpoints_size(); i++) {
     if (!this->endpoints(i).IsInitialized()) return false;
   }
@@ -6082,6 +6777,8 @@ bool ScanLineEdgelPercept::IsInitialized() const {
 
 void ScanLineEdgelPercept::Swap(ScanLineEdgelPercept* other) {
   if (other != this) {
+    edgels_.Swap(&other->edgels_);
+    pairs_.Swap(&other->pairs_);
     endpoints_.Swap(&other->endpoints_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
