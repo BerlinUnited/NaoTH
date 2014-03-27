@@ -63,6 +63,7 @@ option basic_play
       motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
+      motion.walk.step_control.scale = 1;
 
       // why was this put here? Steffen?
       //arm.control_mode = normal;

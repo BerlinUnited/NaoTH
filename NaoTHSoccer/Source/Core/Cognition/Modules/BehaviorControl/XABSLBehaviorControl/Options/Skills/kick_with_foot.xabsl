@@ -54,7 +54,6 @@ option kick_with_foot
       motion.walk.step_control.speed_direction = 0;
       motion.walk.step_control.time = 300;
       motion.walk.stop_with_stand = false;
-      motion.walk.step_control.scale = 1;
 
       //look at percept
       head.control_mode = none;
@@ -87,7 +86,6 @@ option kick_with_foot
       motion.walk.step_control.speed_direction = 0;
       motion.walk.step_control.time = 300;
       motion.walk.stop_with_stand = false;
-      motion.walk.step_control.scale = 1;
 
       //look at percept
       head.control_mode = none;
