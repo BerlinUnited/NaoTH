@@ -21,46 +21,27 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 
-#include "Tools/ImageProcessing/ColorCalibrator.h"
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
+
+#include "Tools/DoubleCamHelpers.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
   REQUIRE(ColorChannelHistograms)
+  REQUIRE(ColorChannelHistogramsTop)
   REQUIRE(ColoredGrid)
+  REQUIRE(ColoredGridTop)
   REQUIRE(Image)
+  REQUIRE(ImageTop)
   REQUIRE(FrameInfo)
 
   PROVIDE(FieldColorPercept)
+  PROVIDE(FieldColorPerceptTop)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
-
-class FieldColorParameters : public ParameterList
-{
-public:
-
-  double CromaRedChannelDistance;
-  int MaxCromaBlueChannelValue;
-  int MaxBrightnessChannelValue;
-
-  FieldColorParameters() : ParameterList("FieldColorParameters")
-  {
-    PARAMETER_REGISTER(MaxBrightnessChannelValue) = 120;
-    PARAMETER_REGISTER(MaxCromaBlueChannelValue) = 120;
-    PARAMETER_REGISTER(CromaRedChannelDistance) = 10;
-
-    syncWithConfig();
-    DebugParameterList::getInstance().add(this);
-  }
-
-  ~FieldColorParameters() {
-    DebugParameterList::getInstance().remove(this);
-  }
-};
-
 
 class FieldColorClassifier : public  FieldColorClassifierBase
 {
@@ -68,33 +49,68 @@ public:
   FieldColorClassifier();
   virtual ~FieldColorClassifier(){}
 
-  /** executes the module */
-  void execute();
+  // override the Module execute method
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+     execute(CameraInfo::Top);
+     execute(CameraInfo::Bottom);
+  };
 
 private:
-  bool justStarted;
+  CameraInfo::CameraID cameraID;
 
-  FieldColorParameters fieldParams;
-  CalibrationRect fieldCalibRect;
-  ColorCalibrator fieldColorCalibrator;
-
-  double maxWeightedV;
-  int indexV;
+  Statistics::Histogram<256> histY_1;
+  Statistics::Histogram<256> histY;
+  Statistics::Histogram<256> histU;
+  Statistics::Histogram<256> histV_1;
+  Statistics::Histogram<256> histV_2;
   
-  double weightedHistV[ColorChannelHistograms::VALUE_COUNT];
-  int colorChannelHistogram[ColorChannelHistograms::VALUE_COUNT];
+  class Parameters: public ParameterList
+  {
+  public:
 
-  double histU[ColorChannelHistograms::VALUE_COUNT];
-  double histNormU[ColorChannelHistograms::VALUE_COUNT];
+    Parameters() : ParameterList("FieldColorParameters")
+    {
+      PARAMETER_REGISTER(deviationFactor) = 2.0;
+      PARAMETER_REGISTER(fV1) = 2.0;
+      PARAMETER_REGISTER(fV2) = 1.0;
+      PARAMETER_REGISTER(fU) = 1.0;
+      PARAMETER_REGISTER(fY) = 1.0;
 
-  int sampleCount;
-  int maxSampleCount;
+      syncWithConfig();
 
-  double distCalib;
+      DebugParameterList::getInstance().add(this);
+    }
 
-  void classify();
-  void calibrate();
+    ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    double deviationFactor;
+    double fV1;
+    double fV2;
+    double fU;
+    double fY;
+  };
+
+  Parameters params;
+
+
+  double gauss(double sigma, double mean, double x);
+
   void runDebugRequests();
+
+
+
+  DOUBLE_CAM_REQUIRE(FieldColorClassifier, Image);
+  DOUBLE_CAM_REQUIRE(FieldColorClassifier, ColoredGrid);
+  DOUBLE_CAM_REQUIRE(FieldColorClassifier, ColorChannelHistograms);
+  
+  DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
+
 };
 
 #endif  /* FIELDCOLORCLASSIFIER_H */
