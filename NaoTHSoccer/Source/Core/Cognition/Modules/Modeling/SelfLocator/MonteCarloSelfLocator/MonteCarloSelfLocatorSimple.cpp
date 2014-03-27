@@ -30,6 +30,8 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
 
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_resample_simple", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_resample_gt", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
 }
@@ -53,7 +55,14 @@ void MonteCarloSelfLocatorSimple::execute()
   theSampleSet.resetLikelihood();
   updateBySensors(theSampleSet);
   //resampleSimple(theSampleSet);
-  resampleGT07(theSampleSet, true);
+
+  DEBUG_REQUEST("MCSLS:draw_resample_gt", 
+    resampleGT07(theSampleSet, true);
+  );
+  
+  DEBUG_REQUEST("MCSLS:draw_resample_simple", 
+    resampleSimple(theSampleSet, 0);
+  );
 
   DEBUG_REQUEST("MCSLS:draw_Samples", 
     theSampleSet.drawImportance();
@@ -177,10 +186,11 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
 
 void MonteCarloSelfLocatorSimple::resampleSimple(SampleSet& sampleSet, int number) const
 {
-  //sampleSet.normalize();
-  sampleSet.sort();
-  for(int i = 0; i < number; i++) {
-    createRandomSample(getFieldInfo().carpetRect, sampleSet[i]);
+  sampleSet.normalize();
+  for(unsigned int i = 0; i < sampleSet.size(); i++) {
+    if(sampleSet[i].likelihood < 0.01) {
+      createRandomSample(getFieldInfo().carpetRect, sampleSet[i]);
+    }
   }
 }
 
