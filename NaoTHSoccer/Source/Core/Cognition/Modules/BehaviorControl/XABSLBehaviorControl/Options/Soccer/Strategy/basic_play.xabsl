@@ -80,7 +80,7 @@ option basic_play
 
       // it has to be after the decide_game_state because the getup motion uses it
       // to decide whether the arms are back or not
-      arm.control_mode = normal;
+      //arm.control_mode = normal;
 
       //set LED stuff
       // make here some initializations

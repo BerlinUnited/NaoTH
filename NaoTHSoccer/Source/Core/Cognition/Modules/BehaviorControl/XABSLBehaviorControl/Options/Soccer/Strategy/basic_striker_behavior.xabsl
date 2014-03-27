@@ -99,11 +99,15 @@ option basic_striker_behavior{
         goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
-      else if (random < 0.3)
-        goto approach_for_kick;
-      else
-        goto attack;
-
+      else if (action_done) 
+      {
+	      if(random < 0.3)
+	        goto do_kick;
+	      else
+	        goto attack;
+      }
+      else 
+        stay;
     }
     action{
       go_to_ball_with_foot(right=true, distance=190);
