@@ -28,7 +28,7 @@ MaximumRedBallDetector::MaximumRedBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:markPeakScan", "mark the scanned points in image", false);
   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_scanlines","..", false);  
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", true);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_points","",false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points","",false);
 
@@ -83,7 +83,16 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
   poly = getFieldPercept().getValidField();
   Vector2i point;
 
-  int stepSize = cameraID == CameraInfo::Bottom ? params.stepSize * 3 : params.stepSize;
+  int stepSize = params.stepSize;
+    
+  if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(40))
+  {
+    stepSize *= 3;
+  }
+  else if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(10))
+  {
+    stepSize *= 2;
+  }
 
   for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += stepSize) {
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSize)
@@ -97,6 +106,10 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
         && !getBodyContour().isOccupied(point)
       )
       {
+        DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
+          LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
+          LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
+        );
         maxRedPeak = pixel.v;
         peakPos = point;
       }
@@ -164,9 +177,15 @@ bool MaximumRedBallDetector::findBall ()
   spiderSearch.setImageColorChannelNumber(2); // scan in the V channel
 	spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
-	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
-
+  if(getGoalPostHistograms().valid)
+  {
+    spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
+  }
+  else
+  {
+    spiderSearch.setMinChannelValue(0);
+  }
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
   );
@@ -514,8 +533,9 @@ Vector2i MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList)
 bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel) 
 {
   return
-    pixel.v > pixel.u + params.maxBlueValue && // check the UV-difference
-    pixel.v > params.maxRedValue &&
+    !getGoalPostHistograms().isPostColor(pixel) && //not within goal color
+    getGoalPostHistograms().colV.y < pixel.v && // at least as red as the goal mean/median red
+    pixel.u < getGoalPostHistograms().colU.y + params.offsetU && // not more blue than goal
     !getFieldColorPercept().isFieldColor(pixel) && // check green
     pixel.y < dynamicThresholdY; // check too bright (white etc.)
 }

@@ -26,11 +26,6 @@ void GradientSpiderScan::setCurrentGradientThreshold(double threshold)
   currentGradientThreshold = threshold;
 }
 
-void GradientSpiderScan::setCurrentMeanThreshold(double threshold)
-{
-  currentMeanThreshold = threshold;
-}
-
 void GradientSpiderScan::setDynamicThresholdY(double threshold)
 {
   dynamicThresholdY = threshold;
@@ -52,12 +47,16 @@ void GradientSpiderScan::setUseVUdifference(bool value)
   useVUdifference = value;
 }
 
+void GradientSpiderScan::setMinChannelValue(double value)
+{
+  minChannelValue = value;
+}
+
 void GradientSpiderScan::init()
 {
   drawScanLines = false;
   max_length_of_beam = 30; //maximum length of the scan line
   currentGradientThreshold = 30; //...
-  currentMeanThreshold = 30; //...
   dynamicThresholdY = 0;
   useDynamicThresholdY = false;
   imageChannelNumber = 2;
@@ -65,6 +64,7 @@ void GradientSpiderScan::init()
   maxNumberOfScans = 15; //maximum number of scanlines ...
   CANVAS_PX(cameraID);
   maxChannelDif = 0.5;
+  minChannelValue = 0.0;
 }
 
 void GradientSpiderScan::setDrawScanLines(bool draw)
@@ -87,6 +87,16 @@ void GradientSpiderScan::scan(const Vector2i& start, ScanPointList& goodPoints, 
   scans.add(start, Vector2i( 2, 2));// to the upper right
   scans.add(start, Vector2i( 2,-2));// to the lower right
   scans.add(start, Vector2i( 0, 2));// up
+  
+  //add more scan lines
+  scans.add(start, Vector2i( 1,-2));
+  scans.add(start, Vector2i( 2,-1));
+  scans.add(start, Vector2i( 2, 1));
+  scans.add(start, Vector2i( 1, 2));
+  scans.add(start, Vector2i(-1, 2));
+  scans.add(start, Vector2i(-2, 1));
+  scans.add(start, Vector2i(-2,-1));
+  scans.add(start, Vector2i(-1,-2));
   
   startPixel = theImage.get(start.x, start.y);
   scan(goodPoints, badPoints, scans);
@@ -232,8 +242,9 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       }
 
   //      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
-		  jumpFound = newJump > currentGradientThreshold  || 
-                  meanJump > currentMeanThreshold;
+		  jumpFound = newJump > currentGradientThreshold  ||
+                  //if below a minimum, handle it as if jump
+                  minChannelValue >= pixel.channels[imageChannelNumber];
       
       maxJump = newJump;
       borderPoint = currentPoint - direction/2;
@@ -244,7 +255,7 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       //borderPoint = currentPoint;
       borderPointFound = true;
     }
-    else if(! borderPointFound)
+    else if(!borderPointFound)
     {
       if(useVUdifference)
       {

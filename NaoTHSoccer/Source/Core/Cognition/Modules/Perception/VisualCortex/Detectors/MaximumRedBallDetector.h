@@ -58,6 +58,7 @@ BEGIN_DECLARE_MODULE(MaximumRedBallDetector)
   REQUIRE(FrameInfo)
   REQUIRE(OverTimeHistogram)
   REQUIRE(OverTimeHistogramTop)
+  REQUIRE(GoalPostHistograms)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
@@ -113,16 +114,14 @@ private:
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
       PARAMETER_REGISTER(gradientThreshold) = 20;
-      PARAMETER_REGISTER(meanThreshold) = 60;
       PARAMETER_REGISTER(stepSize) = 4;
       PARAMETER_REGISTER(percentOfRadius) = 0.8;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
-	    PARAMETER_REGISTER(maxBlueValue) = 60;
-      PARAMETER_REGISTER(maxRedValue) = 100;
       PARAMETER_REGISTER(minSizeInImage) = 3;
       PARAMETER_REGISTER(maxSizeInImage) = 130;
       PARAMETER_REGISTER(maxRansacTries) = 40;
       PARAMETER_REGISTER(maxScanlineSteps) = 50;
+      PARAMETER_REGISTER(offsetU) = 5;
 
       syncWithConfig();
 
@@ -134,17 +133,15 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    int meanThreshold;
     int gradientThreshold;
     int stepSize;
     double percentOfRadius;
     double ransacPercentValid;
-	  int maxBlueValue;
-    int maxRedValue;
     int minSizeInImage;
     int maxSizeInImage;
     int maxRansacTries;
-    int maxScanlineSteps;    
+    int maxScanlineSteps;
+    int offsetU;
   };
 
   Parameters params;
@@ -157,7 +154,7 @@ private:
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, FieldPercept);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(MaximumRedBallDetector, OverTimeHistogram);
-
+ 
   DOUBLE_CAM_PROVIDE(MaximumRedBallDetector, BallPercept);
           
 };//end class MaximumRedBallDetector

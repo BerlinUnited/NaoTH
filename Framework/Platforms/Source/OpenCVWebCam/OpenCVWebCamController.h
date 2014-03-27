@@ -78,9 +78,12 @@ public:
   virtual void get(Image& data);
   void get(FrameInfo& data);
   void get(GameData& data){ data = theGameData; }
+  void get(SensorJointData& data);
 
 
   /////////////////////// set ///////////////////////
+  void set(const MotorJointData& data);
+
 
 protected:
   unsigned long frameNumber;
@@ -88,13 +91,14 @@ protected:
 
 
 private:
-  void copyImage(Image& image, Mat& capturedImage);
+  void copyImage(Image& image);
   void executeFrame();
   void makeStep();
 
   unsigned int time;
 
   GameData theGameData;
+  MotorJointData motorJointData;
 
   string windowName;
 
