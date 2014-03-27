@@ -1,14 +1,17 @@
-/** The root option of the walk testing behavior */
-option test_walk_lv1_agent {
+/** fast forward kick tester */
+option fast_forward_kick_test_agent {
 
   initial state test {    
     action {
+    
       // react to the game controller and handle fall down
       basic_play();
 
-      test_walk_lv1();
+      fast_forward_kick_test();
       
+      // control the arms
       arms_control();
+
       // control head movement according to value of head.control_mode
       head_control();
     }

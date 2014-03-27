@@ -9,21 +9,21 @@
 
 void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  engine.registerDecimalInputSymbol("sensor.gyro.x", &gyrometerData.data.x);
-  engine.registerDecimalInputSymbol("sensor.gyro.y", &gyrometerData.data.y);
+  engine.registerDecimalInputSymbol("sensor.gyro.x", &getGyrometerData().data.x);
+  engine.registerDecimalInputSymbol("sensor.gyro.y", &getGyrometerData().data.y);
 
   engine.registerDecimalInputSymbol("sensor.inertial.x", &getInertialSensorX);
   engine.registerDecimalInputSymbol("sensor.inertial.y", &getInertialSensorY);
 
   engine.registerBooleanInputSymbol("sensor.inertial.calibrated", &getCalibrationData().calibrated);
 
-  engine.registerDecimalInputSymbol("sensor.ultrasound", &ultraSoundReceiveData.rawdata);
+  engine.registerDecimalInputSymbol("sensor.ultrasound", &getUltraSoundReceiveData().rawdata);
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
   engine.registerDecimalInputSymbol("button.remote", &getIRButtonNumber);
 
-  engine.registerDecimalInputSymbol("platform.battery", &batteryData.charge);
+  engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
 
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
   engine.registerEnumElement("fall_down_state", "fall_down_state.upright", BodyState::upright);
@@ -46,11 +46,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("collision.colliding", &collisionModel.isColliding);
+  engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
 
   // integrated obstacle model
-  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
-  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
   engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
 
   // target to control the path
@@ -80,18 +80,18 @@ bool SensorSymbols::getBumberLeftPressed()
 
 double SensorSymbols::getIRButtonNumber()
 {
-    return (double)(theInstance->irreceiveData.data[IRReceiveData::RightRCByte2]);
+  return (double)(theInstance->getIRReceiveData().data[IRReceiveData::RightRCByte2]);
 }
 
 double SensorSymbols::getFrameNumber()
 {
-  return (double) (theInstance->frameInfo.getFrameNumber());
+  return (double) (theInstance->getFrameInfo().getFrameNumber());
 }
 
 
 int SensorSymbols::getFallDownState()
 {
-  return (int)(theInstance->bodyState.fall_down_state);
+  return (int)(theInstance->getBodyState().fall_down_state);
 }
 
 // returns whether some data is received or not
@@ -101,9 +101,9 @@ double SensorSymbols::simplePassLeftSensor()
   // return minimum measurement = closest object
   for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
-    if((theInstance->ultraSoundReceiveData.dataLeft[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataLeft[i] > 0.2)
+    if((theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataLeft[i] > 0.2)
     {
-      r = theInstance->ultraSoundReceiveData.dataLeft[i] * 1000;
+      r = theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000;
     }
   }
   return r;
@@ -115,9 +115,9 @@ double SensorSymbols::simplePassRightSensor()
   // return minimum measurement = closest object
   for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
-    if((theInstance->ultraSoundReceiveData.dataRight[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataRight[i] > 0.2)
+    if((theInstance->getUltraSoundReceiveData().dataRight[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataRight[i] > 0.2)
     {
-      r = theInstance->ultraSoundReceiveData.dataRight[i] * 1000;
+      r = theInstance->getUltraSoundReceiveData().dataRight[i] * 1000;
     }
   }
   return r;
@@ -126,55 +126,55 @@ double SensorSymbols::simplePassRightSensor()
 
 double SensorSymbols::getObstacleDistance()
 {
-  return theInstance->obstacleModel.frontDistance;
+  return theInstance->getObstacleModel().frontDistance;
 }
 
 double SensorSymbols::getObstacleDistanceLeft()
 {
-  return theInstance->obstacleModel.leftDistance;
+  return theInstance->getObstacleModel().leftDistance;
 }
 
 double SensorSymbols::getObstacleDistanceRight()
 {
-  return theInstance->obstacleModel.rightDistance;
+  return theInstance->getObstacleModel().rightDistance;
 }
 
 double SensorSymbols::getBlockedTime()
 {
-  return theInstance->obstacleModel.blockedTime;
+  return theInstance->getObstacleModel().blockedTime;
 }
 
 double SensorSymbols::getInertialSensorX()
 {
-  return Math::toDegrees(theInstance->inertialSensorData.data.x);
+  return Math::toDegrees(theInstance->getInertialSensorData().data.x);
 }
 
 double SensorSymbols::getInertialSensorY()
 {
-  return Math::toDegrees(theInstance->inertialSensorData.data.y);
+  return Math::toDegrees(theInstance->getInertialSensorData().data.y);
 }
 
 double SensorSymbols::getTargetPointX()
 {
-  return theInstance->path.targetPoint.x;
+  return theInstance->getPath().targetPoint.x;
 }
 
 double SensorSymbols::getTargetPointY()
 {
-  return theInstance->path.targetPoint.y;
+  return theInstance->getPath().targetPoint.y;
 }
 
 double SensorSymbols::getTimeNoNodeExpandable()
 {
-  return theInstance->path.getTimeNoNodeExpandable();
+  return theInstance->getPath().getTimeNoNodeExpandable();
 }
 
 void SensorSymbols::setTargetpointX(double targetX)
 {
-  theInstance->path.targetPoint.x = targetX;
+  theInstance->getPath().targetPoint.x = targetX;
 }
 
 void SensorSymbols::setTargetpointY(double targetY)
 {
-  theInstance->path.targetPoint.y = targetY;
+  theInstance->getPath().targetPoint.y = targetY;
 }

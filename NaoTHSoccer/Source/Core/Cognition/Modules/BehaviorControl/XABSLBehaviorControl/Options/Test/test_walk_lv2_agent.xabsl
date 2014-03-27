@@ -9,6 +9,7 @@ option test_walk_lv2_agent {
 
       test_walk_lv2();
       
+      arms_control();
       // control head movement according to value of head.control_mode
       head_control();
     }

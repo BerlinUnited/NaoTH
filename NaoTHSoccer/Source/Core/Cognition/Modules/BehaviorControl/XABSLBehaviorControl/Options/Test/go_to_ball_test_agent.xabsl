@@ -9,6 +9,8 @@ option go_to_ball_test_agent {
 
       go_to_ball_test();
       
+      arms_control();
+      
       // control head movement according to value of head.control_mode
       head_control();
     }

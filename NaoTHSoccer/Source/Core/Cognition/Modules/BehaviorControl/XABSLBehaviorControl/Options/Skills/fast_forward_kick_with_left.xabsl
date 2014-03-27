@@ -1,16 +1,13 @@
-/** Side kick the ball to the left (with the right foot) in a 90 degree angle
-    assumes ball is infront of hip instead of foot **/
-
-option sidekick_to_left
+option fast_forward_kick_with_left
 {
   
-  initial state sidestep_left
+  initial state wait
   {
     decision
     {
-      if(state_time > 500 && executed_motion.step_control.right_movable)
+      if(executed_motion.step_control.left_movable)
       {
-        goto sidekick_right_foot;
+        goto kick_with_left_foot;
       }
       else
         stay;
@@ -20,17 +17,17 @@ option sidekick_to_left
       head.control_mode = search_for_ball;
       motion.type = walk;
 
-      motion.walk_speed.x = ball.preview.right_foot.x - ball.radius - 130;
-      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
     }
   }
 
-  state sidekick_right_foot
+  state kick_with_left_foot
   {
     decision
     {
-      if(state_time > 300 && executed_motion.step_control.left_movable)
+      if(state_time > 300 && executed_motion.step_control.right_movable)
         goto short_freeze;
       else
         stay;
@@ -39,18 +36,18 @@ option sidekick_to_left
     {
       motion.type = walk;
       
-      motion.walk.coordinate = right_foot;
+      motion.walk.coordinate = left_foot;
       motion.walk.style = normal;
 
-      motion.walk.step_control.foot = right;
-      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
-      motion.walk.step_control.target.y = ball.preview.right_foot.y + 100;
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = 0;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = 90;
+      motion.walk.step_control.speed_direction = 0;
       motion.walk.step_control.time = 300;
-      motion.walk.step_control.scale = 1;
+      motion.walk.step_control.scale = 0.7;
 
-      //look at percept
+      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -77,19 +74,19 @@ option sidekick_to_left
 
   target state finished
   {
-	  decision
-	  {
+    decision
+    {
       stay;
-	  }
-	  action
-	  {
-	    motion.type = stand;
+    }
+    action
+    {
+      motion.type = stand;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
-	  }
+    }
   }
 }

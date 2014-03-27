@@ -50,6 +50,8 @@ namespace internal_symbols("Internal Symbols") {
   };
 
   enum arm.control_mode internal arm.control_mode;
+  // needed by the get up motion
+  enum arm.control_mode internal arm.control_mode_before_fall;
   
 
   bool internal body.ready_to_walk;
