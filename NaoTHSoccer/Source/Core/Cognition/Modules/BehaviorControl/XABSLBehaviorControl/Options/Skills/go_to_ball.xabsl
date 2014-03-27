@@ -26,7 +26,7 @@ option go_to_ball
       
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-      motion.walk_speed.x = clip(value=(0.7*(ball.preview.x - @distance - ball.radius)), min=0, max=1000);
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance - ball.radius)), value1=0);
       motion.walk_speed.y = ball.preview.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
