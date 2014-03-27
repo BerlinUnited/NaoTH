@@ -61,11 +61,9 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  Statistics::Histogram<256> histY_1;
   Statistics::Histogram<256> histY;
   Statistics::Histogram<256> histU;
-  Statistics::Histogram<256> histV_1;
-  Statistics::Histogram<256> histV_2;
+  Statistics::Histogram<256> histV;
   
   class Parameters: public ParameterList
   {
@@ -74,10 +72,6 @@ private:
     Parameters() : ParameterList("FieldColorParameters")
     {
       PARAMETER_REGISTER(deviationFactor) = 2.0;
-      PARAMETER_REGISTER(fV1) = 2.0;
-      PARAMETER_REGISTER(fV2) = 1.0;
-      PARAMETER_REGISTER(fU) = 1.0;
-      PARAMETER_REGISTER(fY) = 1.0;
 
       syncWithConfig();
 
@@ -90,10 +84,6 @@ private:
     }
 
     double deviationFactor;
-    double fV1;
-    double fV2;
-    double fU;
-    double fY;
   };
 
   Parameters params;
