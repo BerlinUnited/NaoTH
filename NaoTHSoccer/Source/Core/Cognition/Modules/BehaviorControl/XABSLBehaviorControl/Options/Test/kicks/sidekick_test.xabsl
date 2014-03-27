@@ -26,6 +26,21 @@ option sidekick_test
     }
   }
 
+  state go_to_ball0
+  {
+    decision
+    {
+      else if(action_done && state_time > 1000)
+        goto sidekick_to_left;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball(distance = 130);
+    }
+  }
+
   state sidekick_to_left
   {
     decision
@@ -37,7 +52,22 @@ option sidekick_test
     }
     action 
     {
-      sidekick_to_left();
+      sidekick(to_right = false);
+    }
+  }
+
+  state go_to_ball1
+  {
+    decision
+    {
+      else if(action_done && state_time > 1000)
+        goto sidekick_to_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball(distance = 130);
     }
   }
 
@@ -52,37 +82,7 @@ option sidekick_test
     }
     action 
     {
-      sidekick_to_right();
-    }
-  }
-
-  state go_to_ball0
-  {
-    decision
-    {
-      else if(action_done)
-        goto sidekick_to_left;
-      else
-        stay;
-    }
-    action 
-    {
-      go_to_ball(distance = 130);
-    }
-  }
-
-  state go_to_ball1
-  {
-    decision
-    {
-      else if(action_done)
-        goto sidekick_to_right;
-      else
-        stay;
-    }
-    action 
-    {
-      go_to_ball(distance = 130);
+      sidekick(to_right = true);
     }
   }
 
