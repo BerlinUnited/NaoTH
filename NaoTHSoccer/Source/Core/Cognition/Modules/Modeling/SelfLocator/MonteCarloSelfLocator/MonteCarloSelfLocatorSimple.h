@@ -86,6 +86,18 @@ private:
     Parameters(): ParameterList("MCSLSParameters")
     {
       PARAMETER_REGISTER(thresholdCanopy) = 900;
+      PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
+
+      PARAMETER_REGISTER(processNoiseDistance) = 70;
+      PARAMETER_REGISTER(processNoiseAngle) = 0.1;
+
+      PARAMETER_REGISTER(motionNoise) = false;
+      PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
+      PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
+
+      PARAMETER_REGISTER(updateByGoalPost) = true;
+      PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -93,12 +105,37 @@ private:
     }
 
     double thresholdCanopy;
+    double resamplingThreshhold;
 
+    double processNoiseDistance;
+    double processNoiseAngle;
+
+    bool motionNoise;
+    double motionNoiseDistance;
+    double motionNoiseAngle;
+
+    bool updateByGoalPost;
+    double goalPostSigmaDistance;
+    double goalPostSigmaAngle;
+    
     virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
   } parameters;
 
+
+private:
+  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+
+  bool updateBySensors(SampleSet& sampleSet) const;
+  void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
+  void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
+
+  void resampleSimple(SampleSet& sampleSet, int number) const;
+  void resampleGT07(SampleSet& sampleSet, bool noise) const;
+
+private: //debug
+  void draw_sensor_belief() const;
 };
 
 #endif //_MonteCarloSelfLocatorSimple_h_

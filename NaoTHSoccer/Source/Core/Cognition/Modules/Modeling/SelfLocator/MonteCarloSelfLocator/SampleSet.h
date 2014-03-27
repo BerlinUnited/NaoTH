@@ -36,7 +36,7 @@ public:
   /** 
    * normalize the likelihoods of patricle so thay sum up to 1
    */
-  void normalize();
+  void normalize(double offset = 0.0);
 
   /** 
    * reset the likelihoods of patricle to 1/numberOfParticles
@@ -57,9 +57,12 @@ public:
    */
   inline const Sample& operator[](int index) const {return samples[index];}
 
-  Sample meanOfLargestCluster(Moments2<2>& moments);
+  const Sample& SampleSet::getMostLikelySample() const;
+  Sample meanOfLargestCluster(Moments2<2>& moments) const;
 
-  void drawCluster(unsigned int clusterId);
+  // TODO: move it out of here
+  void drawCluster(unsigned int clusterId) const;
+  void drawImportance(bool arrows = true) const;
 
 private:
   void quicksort(int low, int high);

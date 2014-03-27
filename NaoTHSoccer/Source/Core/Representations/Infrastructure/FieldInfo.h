@@ -11,6 +11,7 @@
 #define _FieldInfo_h_
 
 #include <Tools/Math/Vector2.h>
+#include <Tools/Math/Geometry.h>
 #include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Printable.h>
@@ -36,8 +37,7 @@ public:
 
   // some tools
   inline bool insideCarpet(const Vector2d& p) {
-    return carpetSizeHalf.x >= p.x && p.x <= -carpetSizeHalf.x &&
-           carpetSizeHalf.y >= p.y && p.y <= -carpetSizeHalf.y;
+    return carpetRect.inside(p);
   }
 
   //colors
@@ -88,7 +88,7 @@ public:
   double yPosRightGoalpost;
   double yPosLeftGoalpost;
 
-  Vector2d carpetSizeHalf;
+  Geometry::Rect2d carpetRect;
 
   enum LineCrossingsId
   {
