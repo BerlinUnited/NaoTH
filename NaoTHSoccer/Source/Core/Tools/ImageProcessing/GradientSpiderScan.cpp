@@ -194,17 +194,17 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
     Pixel pixel = theImage.get(currentPoint.x, currentPoint.y);
 
     int newJump = 0;
-    int meanJump = 0;
+    //int meanJump = 0;
 
     if(useVUdifference)
     {
       newJump = abs(static_cast<int>(pixel.v - pixel.u - (lastPixel.v - lastPixel.u)));
-      meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v - lastPixel.u));
+      //meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v - lastPixel.u));
     }
     else
     {
       newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
-      abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
+      //abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
   	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
     }
 
