@@ -57,7 +57,7 @@ public:
    */
   inline const Sample& operator[](int index) const {return samples[index];}
 
-  const Sample& SampleSet::getMostLikelySample() const;
+  const Sample& getMostLikelySample() const;
   Sample meanOfLargestCluster(Moments2<2>& moments) const;
 
   // TODO: move it out of here
