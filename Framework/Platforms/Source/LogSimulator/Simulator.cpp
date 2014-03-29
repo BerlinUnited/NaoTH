@@ -28,7 +28,8 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   realTime(realTime),
   logFileScanner(filePath),
   lastFrameTime(0),
-  simulatedTime(0)
+  simulatedTime(0),
+  simulatedFrameNumber(0)
 {
   // TODO: we need a better solution for it, but now it's the 
   // fastest way to provide stuff for motion
