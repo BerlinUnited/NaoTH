@@ -19,6 +19,7 @@
 // basic info
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
 
 // motion / kinematics
 #include "Representations/Modeling/OdometryData.h"
@@ -31,6 +32,9 @@
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
+
+// local models
+#include "Representations/Modeling/ProbabilisticQuadCompas.h"
 
 // this are the results :)
 #include "Representations/Modeling/RobotPose.h"
@@ -46,6 +50,7 @@
 BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo) // only for visualization of the pose
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
@@ -57,6 +62,9 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
 
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
+
+  REQUIRE(SensingGoalModel)
+  REQUIRE(ProbabilisticQuadCompas)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -73,12 +81,12 @@ public:
 
   void execute();
 
-private:
-  OdometryData lastRobotOdometry;
-  SampleSet theSampleSet;
-  SampleSet setBeforeResampling; // sort of 'double buffering'
-  CanopyClustering<SampleSet> canopyClustering;
- 
+private: // local types
+
+  enum State {
+    LOCALIZE,
+    TRACKING
+  } state;
 
   class Parameters: public ParameterList
   {
@@ -99,6 +107,8 @@ private:
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
+      PARAMETER_REGISTER(updateByCompas) = true;
+
       // load from the file after registering all parameters
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -117,25 +127,39 @@ private:
     bool updateByGoalPost;
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
+
+    bool updateByCompas;
     
     virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
   } parameters;
 
+private: // data members
+  OdometryData lastRobotOdometry;
+  SampleSet theSampleSet;
+  SampleSet setBeforeResampling; // sort of 'double buffering'
+  CanopyClustering<SampleSet> canopyClustering;
 
-private:
+private: // workers
   void updateByOdometry(SampleSet& sampleSet, bool noise) const;
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
+  void updateByCompas(SampleSet& sampleSet) const;
 
   void resampleSimple(SampleSet& sampleSet, int number) const;
   void resampleGT07(SampleSet& sampleSet, bool noise) const;
+  void resampleCool(SampleSet& sampleSet, int n) const;
+
+  int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+
+  void calculatePose(SampleSet& sampleSet);
 
 private: //debug
   void draw_sensor_belief() const;
+  void drawPosition() const;
 };
 
 #endif //_MonteCarloSelfLocatorSimple_h_

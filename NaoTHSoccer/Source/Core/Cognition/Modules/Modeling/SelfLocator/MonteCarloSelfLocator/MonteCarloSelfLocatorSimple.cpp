@@ -10,9 +10,11 @@
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
 
 // tools
 #include "Tools/Math/Probabilistics.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools.h"
 
 using namespace std;
@@ -20,7 +22,8 @@ using namespace mcsl;
 
 MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple() 
   :
-  canopyClustering(parameters.thresholdCanopy)
+  canopyClustering(parameters.thresholdCanopy),
+  state(LOCALIZE)
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
@@ -29,9 +32,16 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
 
-  DEBUG_REQUEST_REGISTER("MCSLS:draw_resample_simple", "", false);
-  DEBUG_REQUEST_REGISTER("MCSLS:draw_resample_gt", "", false);
+  // resampling
+  DEBUG_REQUEST_REGISTER("MCSLS:resample_simple", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:resample_gt", "", false);
+
+  // resulting position
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_Cluster", "draw the clustered particle set", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_position","draw robots position (self locator)", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_deviation", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
 }
@@ -56,15 +66,62 @@ void MonteCarloSelfLocatorSimple::execute()
   updateBySensors(theSampleSet);
   //resampleSimple(theSampleSet);
 
-  DEBUG_REQUEST("MCSLS:draw_resample_gt", 
+  double avg = 0.0;
+  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
+    avg += theSampleSet[i].likelihood;
+  }
+  avg /= theSampleSet.size();
+  PLOT("average",avg);
+
+  theSampleSet.normalize();
+  // effective paricle number
+  double sum2 = 0.0;
+  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
+    sum2 += Math::sqr(theSampleSet[i].likelihood);
+  }
+  double effective_number_of_samples = 1.0/sum2;
+  PLOT("effective_number_of_samples",effective_number_of_samples);
+
+  static double slowWeighting = 0.0;
+  static double fastWeighting = 0.0;
+
+  //1.0f - fastWeighting / slowWeighting
+  double alphaSlow = 0.0059; //0.0059 0.006
+  double alphaFast = 0.006;
+  MODIFY("alphaSlow", alphaSlow);
+  MODIFY("alphaFast", alphaFast);
+  slowWeighting = slowWeighting + alphaSlow * (avg - slowWeighting);
+  fastWeighting = fastWeighting + alphaFast * (avg - fastWeighting);
+  PLOT("slowWeighting", slowWeighting);
+  PLOT("fastWeighting", fastWeighting);
+
+  const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
+  const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
+  PLOT("numberOfResampledSamples", numberOfResampledSamples);
+
+  resampleCool(theSampleSet, (int)(numberOfResampledSamples+0.5));
+
+  //if((unsigned int)(numberOfResampledSamples+0.5)+1 < theSampleSet.size()) {
+    sensorResetBySensingGoalModel(theSampleSet,7);
+  //}
+
+  
+  calculatePose(theSampleSet);
+
+
+  /************************************
+   * STEP VII: execude some debug requests (drawings)
+   ************************************/
+
+  DEBUG_REQUEST("MCSLS:resample_gt", 
     resampleGT07(theSampleSet, true);
   );
   
-  DEBUG_REQUEST("MCSLS:draw_resample_simple", 
-    resampleSimple(theSampleSet, 0);
+  DEBUG_REQUEST("MCSLS:resample_simple", 
+    resampleSimple(theSampleSet, (int)(numberOfResampledSamples+0.5));
   );
 
-  DEBUG_REQUEST("MCSLS:draw_Samples", 
+  DEBUG_REQUEST("MCSLS:draw_Samples",
     theSampleSet.drawImportance();
   );
 
@@ -78,12 +135,15 @@ void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool no
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
   for (unsigned int i = 0; i < sampleSet.size(); i++)
-  {      
-    sampleSet[i] += odometryDelta;
+  {
+    Pose2D odometryModel(odometryDelta);
 
     if(noise) {
-      applySimpleNoise(sampleSet[i], parameters.motionNoiseDistance, parameters.motionNoiseAngle);
+      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistance;
+      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngle;
     }
+
+    sampleSet[i] += odometryModel;
   }
 }//end updateByOdometry
 
@@ -98,7 +158,11 @@ bool MonteCarloSelfLocatorSimple::updateBySensors(SampleSet& sampleSet) const
     if(getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
       updateByGoalPosts(getGoalPerceptTop(), sampleSet);
     }
-  }//end update by goal posts
+  }
+
+  if(parameters.updateByCompas) {
+    updateByCompas(sampleSet);
+  }
 
   return true;
 }
@@ -172,7 +236,13 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
     double expectedAngle = relPost.angle();
 
     DEBUG_REQUEST("MCSLS:draw_post_choice",
-      PEN("00000099",1);
+      if(seenPost.type == GoalPercept::GoalPost::rightPost) {
+        PEN("FF000099",1);
+      } else if(seenPost.type == GoalPercept::GoalPost::leftPost) {
+        PEN("0000FF99",1);
+      } else {
+        PEN("00000099",1);
+      }
       LINE(sample.translation.x, sample.translation.y, expectedPostPosition.x, expectedPostPosition.y);
     );
 
@@ -182,14 +252,51 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
     sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
 
   } //end for j (samples)
+}//end updateBySingleGoalPost
+
+void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
+{
+  for(unsigned int i = 0; i < sampleSet.size(); i++) {
+    Sample& sample = sampleSet[i];
+    sample.likelihood *= getProbabilisticQuadCompas().probability(-sample.rotation);
+  }
 }
 
 void MonteCarloSelfLocatorSimple::resampleSimple(SampleSet& sampleSet, int number) const
 {
+  double threshold = 1.0/number;
+
   sampleSet.normalize();
   for(unsigned int i = 0; i < sampleSet.size(); i++) {
-    if(sampleSet[i].likelihood < 0.01) {
+    if(sampleSet[i].likelihood < threshold) {
       createRandomSample(getFieldInfo().carpetRect, sampleSet[i]);
+    }
+  }
+}
+
+void MonteCarloSelfLocatorSimple::resampleCool(SampleSet& sampleSet, int n) const
+{
+  SampleSet oldSampleSet = sampleSet;
+  oldSampleSet.normalize(parameters.resamplingThreshhold);
+
+  //int n = 100; // number of samples to copy
+  double likelihood_step = 1.0/n; // the step in the weighting so we get exactly n particles
+
+  double targetSum = Math::random()*likelihood_step;
+  double currentSum = 0;
+
+  // i - count over the old sample set
+  // j - over the new one :)
+  unsigned int j = 0;
+  for(unsigned int i = 0; i < oldSampleSet.size(); i++)
+  {
+    currentSum += oldSampleSet[i].likelihood;
+
+    // select the particle to copy
+    while(targetSum < currentSum && j < oldSampleSet.size())
+    {
+      sampleSet[j++] = oldSampleSet[i];
+      targetSum += likelihood_step;
     }
   }
 }
@@ -200,6 +307,7 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
 
   SampleSet oldSampleSet = sampleSet;
   oldSampleSet.normalize(parameters.resamplingThreshhold);
+  
   //oldSampleSet.sort();
 
   double sum = -Math::random();
@@ -219,8 +327,10 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
       
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
-      if(noise) {
+      if(noise && (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)) {
         applySimpleNoise(sampleSet[n], parameters.processNoiseDistance, parameters.processNoiseAngle);
+      } else {
+        applySimpleNoise(sampleSet[n], 0.0, parameters.processNoiseAngle);
       }
       
       n++;
@@ -243,6 +353,180 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
   }
 }
 
+
+int MonteCarloSelfLocatorSimple::sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const
+{
+  // sensor resetting by whole goal
+  if(!getSensingGoalModel().someGoalWasSeen || 
+//     !getSensingGoalModel().horizonScan ||
+      getSensingGoalModel().goal.calculateCenter().angle() > Math::fromDegrees(60))
+  {
+    return n;
+  }
+    
+  Pose2D pose = getSensingGoalModel().calculatePose(sampleSet[0].rotation, getFieldInfo());
+
+  if(getFieldInfo().carpetRect.inside(pose.translation))
+  {
+    sampleSet[n].translation = pose.translation;
+    sampleSet[n].rotation = pose.rotation;
+    n++;
+
+    DEBUG_REQUEST("MCSLS:draw_sensorResetBySensingGoalModel",
+      FIELD_DRAWING_CONTEXT;
+      PEN("0000FF", 20);
+      ARROW(pose.translation.x, pose.translation.y, 
+            pose.translation.x + 100*cos(pose.rotation), 
+            pose.translation.y + 100*sin(pose.rotation));
+    );
+  } else {
+    Pose2D poseMirrored(pose);
+    poseMirrored.translation *= -1;
+    poseMirrored.rotate(Math::pi);
+
+    // HACK: try the mirrored pose
+    if(getFieldInfo().carpetRect.inside(poseMirrored.translation))
+    {
+      sampleSet[n].translation = pose.translation;
+      sampleSet[n].rotation = pose.rotation;
+      n++;
+
+      DEBUG_REQUEST("MCSLS:draw_sensorResetBySensingGoalModel",
+        FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 20);
+        ARROW(poseMirrored.translation.x, poseMirrored.translation.y, 
+              poseMirrored.translation.x + 100*cos(poseMirrored.rotation), 
+              poseMirrored.translation.y + 100*sin(poseMirrored.rotation));
+      );
+    }
+  }
+
+  return n;
+}//end sensorResetBySensingGoalModel
+
+
+void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
+{
+  /************************************
+   * STEP V: clustering
+   ************************************/
+
+  // try to track the hypothesis
+  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+  
+  // a heap could collect more than 90% of all particles
+  if(state == LOCALIZE && clusterSize > 0.9*(double)theSampleSet.size()) {
+    state = TRACKING;
+  }
+
+  // Hypothesis tracking:
+  // the idea is to keep the cluster until it has at lest 1/3 of all particles
+  // if not, then jump only if there is anoter cluster having more then 2/3 particles
+
+  // if the hypothesis is to small...
+  if(clusterSize < 0.3*(double)theSampleSet.size())
+  {
+    // make new cluseter
+    canopyClustering.cluster(theSampleSet);
+
+    // find the largest cluster
+    Moments2<2> tmpMoments;
+    Sample tmpPose = theSampleSet.meanOfLargestCluster(tmpMoments);
+
+    // TODO: make it more efficient
+    // if it is not suficiently bigger revert the old clustering
+    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
+      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+    } else { // jump => change the state
+      state = LOCALIZE;
+    }
+  }//end if
+
+  /************************************
+   * STEP VI: estimate new position and update the model
+   ************************************/
+
+  // estimate the deviation of the pose
+  Moments2<2> moments;
+  Sample newPose = theSampleSet.meanOfLargestCluster(moments);
+
+  getRobotPose() = newPose;
+
+  moments.getAxes(
+    getRobotPose().principleAxisMajor, 
+    getRobotPose().principleAxisMinor);
+
+  // TODO: find a beter place for it
+  getRobotPose().isValid = (state == TRACKING);
+
+  // update the goal model based on the robot pose
+  getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
+
+  DEBUG_REQUEST("MCSLS:draw_Cluster",
+    theSampleSet.drawCluster(newPose.cluster);
+  );
+
+  DEBUG_REQUEST("MCSLS:draw_position",
+    drawPosition();
+  );
+}//end calculate pose
+
+
+void MonteCarloSelfLocatorSimple::drawPosition() const
+{
+  FIELD_DRAWING_CONTEXT;
+  if(getRobotPose().isValid)
+  {
+    switch( getPlayerInfo().gameData.teamColor )
+    {
+    case GameData::red:
+      PEN("FF0000", 20);
+      break;
+    case GameData::blue:
+      PEN("0000FF", 20);
+      break;
+    default:
+      PEN("AAAAAA", 20);
+      break;
+    }
+  }
+  else
+  {
+    PEN("AAAAAA", 20);
+  }
+
+  ROBOT(getRobotPose().translation.x,
+        getRobotPose().translation.y,
+        getRobotPose().rotation);
+
+
+  DEBUG_REQUEST("MCSLS:draw_deviation",
+    PEN("000000", 20);
+
+    LINE(getRobotPose().translation.x - getRobotPose().principleAxisMajor.x, 
+         getRobotPose().translation.y - getRobotPose().principleAxisMajor.y,
+         getRobotPose().translation.x + getRobotPose().principleAxisMajor.x, 
+         getRobotPose().translation.y + getRobotPose().principleAxisMajor.y);
+
+    LINE(getRobotPose().translation.x - getRobotPose().principleAxisMinor.x, 
+         getRobotPose().translation.y - getRobotPose().principleAxisMinor.y,
+         getRobotPose().translation.x + getRobotPose().principleAxisMinor.x, 
+         getRobotPose().translation.y + getRobotPose().principleAxisMinor.y);
+
+    OVAL_ROTATED(getRobotPose().translation.x, 
+                 getRobotPose().translation.y, 
+                 getRobotPose().principleAxisMinor.abs()*2.0,
+                 getRobotPose().principleAxisMajor.abs()*2.0,
+                 getRobotPose().principleAxisMinor.angle());
+  );
+
+  static Vector2<double> oldPose = getRobotPose().translation;
+  if((oldPose - getRobotPose().translation).abs() > 100)
+  {
+    PLOT2D("MCSL:position_trace",getRobotPose().translation.x, getRobotPose().translation.y);
+    oldPose = getRobotPose().translation;
+  }
+}//end drawPosition
 
 void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
 {
