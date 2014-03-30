@@ -157,6 +157,7 @@ private:
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
+  void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
   void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;

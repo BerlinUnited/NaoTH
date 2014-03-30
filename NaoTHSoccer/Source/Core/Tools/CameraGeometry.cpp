@@ -199,18 +199,18 @@ Vector2<double> CameraGeometry::lookAtPoint(const Vector3<double>& point, double
 
 Pose3D CameraGeometry::calculateCameraMatrix(
     const KinematicChain& theKinematicChain,
-    const Pose3D& theCameraOffset,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset
   )
 {
   // get the pose of the head
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
 
-  // transformation from the head to the camera
-  pose.conc(theCameraOffset);
+  // transformation from the head to the camera with correction offset
+  pose.translate(translationOffset);
   
-  // apply the correction
-  pose.rotateY(theCameraCorrectionOffset.y) // tilt
+  pose.rotateY(theCameraCorrectionOffset.y + rotationOffsetY) // tilt
       .rotateX(theCameraCorrectionOffset.x); // roll
 
   return pose;
