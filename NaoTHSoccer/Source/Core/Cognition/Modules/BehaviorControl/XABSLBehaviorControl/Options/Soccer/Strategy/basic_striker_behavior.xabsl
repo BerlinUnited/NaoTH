@@ -152,7 +152,7 @@ option basic_striker_behavior{
         stay;
     }
     action {
-      kick_with_foot(right = true);
+      kick_with_foot(side = right);
     }
   }
 
@@ -164,7 +164,7 @@ option basic_striker_behavior{
         stay;
     }
     action{
-      sidekick(to_right=attack.direction.preview<0);
+      sidekick(side=attack.direction.preview<0?right:left);
       
       motion.walk.style = normal;
       //motion.walk.style = stable;

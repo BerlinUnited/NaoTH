@@ -37,7 +37,7 @@ option fast_forward_kick_test
     }
     action 
     {
-      kick_with_foot(right = false);
+      kick_with_foot(side = left);
       //fast_forward_kick_with_left();
     }
   }
@@ -53,7 +53,7 @@ option fast_forward_kick_test
     }
     action 
     {
-      kick_with_foot(right = true);
+      kick_with_foot(side = right);
       //fast_forward_kick_with_right();
     }
   }

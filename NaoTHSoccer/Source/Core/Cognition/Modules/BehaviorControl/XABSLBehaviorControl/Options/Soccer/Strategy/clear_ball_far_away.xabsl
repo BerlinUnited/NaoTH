@@ -48,7 +48,7 @@ option clear_ball_far_away{
     }
     action
     {
-       kick_with_foot(right=true);
+       kick_with_foot(side=right);
        head.control_mode = search_for_ball;
     }
   }
