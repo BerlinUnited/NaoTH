@@ -22,8 +22,8 @@ using namespace mcsl;
 
 MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple() 
   :
-  canopyClustering(parameters.thresholdCanopy),
-  state(LOCALIZE)
+  state(LOCALIZE),
+  canopyClustering(parameters.thresholdCanopy)
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
@@ -35,6 +35,7 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
 
   // resampling
+  DEBUG_REQUEST_REGISTER("MCSLS:resample_cool", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:resample_simple", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:resample_gt", "", false);
 
@@ -64,45 +65,23 @@ void MonteCarloSelfLocatorSimple::execute()
 
   theSampleSet.resetLikelihood();
   updateBySensors(theSampleSet);
-  //resampleSimple(theSampleSet);
 
-  double avg = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    avg += theSampleSet[i].likelihood;
-  }
-  avg /= theSampleSet.size();
-  PLOT("average",avg);
+  updateStatistics(theSampleSet);
 
-  theSampleSet.normalize();
-  // effective paricle number
-  double sum2 = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    sum2 += Math::sqr(theSampleSet[i].likelihood);
-  }
-  double effective_number_of_samples = 1.0/sum2;
-  PLOT("effective_number_of_samples",effective_number_of_samples);
-
-  static double slowWeighting = 0.0;
-  static double fastWeighting = 0.0;
-
-  //1.0f - fastWeighting / slowWeighting
-  double alphaSlow = 0.0059; //0.0059 0.006
-  double alphaFast = 0.006;
-  MODIFY("alphaSlow", alphaSlow);
-  MODIFY("alphaFast", alphaFast);
-  slowWeighting = slowWeighting + alphaSlow * (avg - slowWeighting);
-  fastWeighting = fastWeighting + alphaFast * (avg - fastWeighting);
-  PLOT("slowWeighting", slowWeighting);
-  PLOT("fastWeighting", fastWeighting);
 
   const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
-  const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
-  PLOT("numberOfResampledSamples", numberOfResampledSamples);
-
-  resampleCool(theSampleSet, (int)(numberOfResampledSamples+0.5));
+  //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
+  PLOT("resamplingPercentage", resamplingPercentage);
+  
+  DEBUG_REQUEST("MCSLS:resample_cool",
+    /*nt n = */ resampleCool(theSampleSet, (int)(effective_number_of_samples+0.5));
+    //if(n < (int)theSampleSet.size()) {
+      sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+    //}
+  );
 
   //if((unsigned int)(numberOfResampledSamples+0.5)+1 < theSampleSet.size()) {
-    sensorResetBySensingGoalModel(theSampleSet,7);
+    
   //}
 
   
@@ -118,7 +97,7 @@ void MonteCarloSelfLocatorSimple::execute()
   );
   
   DEBUG_REQUEST("MCSLS:resample_simple", 
-    resampleSimple(theSampleSet, (int)(numberOfResampledSamples+0.5));
+    resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
   );
 
   DEBUG_REQUEST("MCSLS:draw_Samples",
@@ -160,9 +139,13 @@ bool MonteCarloSelfLocatorSimple::updateBySensors(SampleSet& sampleSet) const
     }
   }
 
-  if(parameters.updateByCompas) {
+  if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
+
+  //if(parameters.updateByLinePoints) {
+    //updateByLinePoints(sampleSet);
+  //}
 
   return true;
 }
@@ -262,26 +245,66 @@ void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
   }
 }
 
+void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
+{
+  double cross_entropy = 0.0;
+  double avg = 0.0;
+  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
+    avg += theSampleSet[i].likelihood;
+
+    cross_entropy -= log(theSampleSet[i].likelihood);
+  }
+  avg /= theSampleSet.size();
+  cross_entropy /= theSampleSet.size();
+  PLOT("MonteCarloSelfLocatorSimple:w_average",avg);
+  PLOT("MonteCarloSelfLocatorSimple:cross_entropy",avg);
+
+  theSampleSet.normalize();
+
+  // effective number of particles
+  double sum2 = 0.0;
+  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
+    sum2 += Math::sqr(theSampleSet[i].likelihood);
+  }
+  effective_number_of_samples = 1.0/sum2;
+  PLOT("effective_number_of_samples",effective_number_of_samples);
+
+  //1.0f - fastWeighting / slowWeighting
+  double alphaSlow = 0.0059; //0.0059 0.006
+  double alphaFast = 0.006;
+  MODIFY("alphaSlow", alphaSlow);
+  MODIFY("alphaFast", alphaFast);
+  slowWeighting = slowWeighting + alphaSlow * (avg - slowWeighting);
+  fastWeighting = fastWeighting + alphaFast * (avg - fastWeighting);
+  PLOT("slowWeighting", slowWeighting);
+  PLOT("fastWeighting", fastWeighting);
+}
+
+
 void MonteCarloSelfLocatorSimple::resampleSimple(SampleSet& sampleSet, int number) const
 {
   double threshold = 1.0/number;
 
   sampleSet.normalize();
+  sampleSet.sort(false); // sort in the asscending order - worst are first ;)
+
+  int k = 0;
   for(unsigned int i = 0; i < sampleSet.size(); i++) {
-    if(sampleSet[i].likelihood < threshold) {
+    if(sampleSet[i].likelihood < threshold && k + number < (int)sampleSet.size()) {
       createRandomSample(getFieldInfo().carpetRect, sampleSet[i]);
+      k++;
     }
   }
 }
 
-void MonteCarloSelfLocatorSimple::resampleCool(SampleSet& sampleSet, int n) const
+int MonteCarloSelfLocatorSimple::resampleCool(SampleSet& sampleSet, int n) const
 {
   SampleSet oldSampleSet = sampleSet;
   oldSampleSet.normalize(parameters.resamplingThreshhold);
 
   //int n = 100; // number of samples to copy
   double likelihood_step = 1.0/n; // the step in the weighting so we get exactly n particles
-
+  
   double targetSum = Math::random()*likelihood_step;
   double currentSum = 0;
 
@@ -295,10 +318,20 @@ void MonteCarloSelfLocatorSimple::resampleCool(SampleSet& sampleSet, int n) cons
     // select the particle to copy
     while(targetSum < currentSum && j < oldSampleSet.size())
     {
-      sampleSet[j++] = oldSampleSet[i];
+      sampleSet[j] = oldSampleSet[i];
       targetSum += likelihood_step;
+
+      if((getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)) {
+        applySimpleNoise(sampleSet[j], parameters.processNoiseDistance, parameters.processNoiseAngle);
+      } else {
+        applySimpleNoise(sampleSet[j], 0.0, parameters.processNoiseAngle);
+      }
+
+      j++;
     }
   }
+
+  return j;
 }
 
 void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise) const

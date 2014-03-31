@@ -31,7 +31,7 @@ public:
    * sort the particles according to their likelihood
    * with quicksort
    */
-  void sort();
+  void sort(bool descending = true);
 
   /** 
    * normalize the likelihoods of patricle so thay sum up to 1
@@ -65,7 +65,7 @@ public:
   void drawImportance(bool arrows = true) const;
 
 private:
-  void quicksort(int low, int high);
+  void quicksort(int d, int low, int high);
 
   unsigned int numberOfParticles;
 };

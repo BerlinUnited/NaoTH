@@ -23,6 +23,8 @@ NeoLineDetector::NeoLineDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:Detectors:NeoLineDetector:edgel_cluster", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:NeoLineDetector:draw_lines", "draw the esimated lines in the image", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:NeoLineDetector:draw_compas", "draw compas direcion based on the edgel directions", false);
 }
 
 
@@ -174,7 +176,8 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   }
   */
 
-  PEN("000000",1);
+
+  // calculate the projection for all edgels
   edgelProjections.resize(getScanLineEdgelPercept().pairs.size());
   for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
   {  
@@ -186,16 +189,6 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       edgelOne.point.y,
       0.0,
       edgelProjections[i]);
-
-    if((edgelNeighbors[i].left != -1 && edgelNeighbors[i].w_left > threshold) || 
-       (edgelNeighbors[i].right != -1 && edgelNeighbors[i].w_right > threshold)) {
-      CIRCLE( edgelProjections[i].x, edgelProjections[i].y, 25);
-    }
-  }
-
-
-  if(cameraID == CameraInfo::Bottom) {
-    getProbabilisticQuadCompas().reset();
   }
 
   for(size_t j = 0; j < edgelPairs.size(); j++)
@@ -208,55 +201,35 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     getProbabilisticQuadCompas().add(r, edgelPair.sim);
   }
 
-  if(cameraID == CameraInfo::Top) {
-    getProbabilisticQuadCompas().normalize();
+  DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:draw_compas",
+    if(cameraID == CameraInfo::Top) {
+      getProbabilisticQuadCompas().normalize();
 
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000",10);
-    Vector2d last;
-    double last_v = 0;
+      Vector2d last;
+      double last_v = 0;
 
-    double scale = 5000;
-    double offset = 150;
+      double scale = 5000;
+      double offset = 150;
 
-    //CIRCLE(0,0, offset+scale);
-    double threshold = 0.03;
-    //CIRCLE(0,0, offset+threshold*scale);
+      FIELD_DRAWING_CONTEXT;
+      for(size_t x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++) 
+      {
+        double v = getProbabilisticQuadCompas()[x];
+        Vector2d a(offset + v*scale, 0.0);
+        a.rotate(Math::fromDegrees(x*5));
+        if(x > 0) {
 
-    for(size_t x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++) {
-      double v = getProbabilisticQuadCompas()[x];
-      Vector2d a(offset + v*scale, 0.0);
-      a.rotate(Math::fromDegrees(x*5));
-      if(x > 0) {
+          double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
+          DebugDrawings::Color c(d, 0.0, 1-d);
+          PEN(c, 10);
 
-        double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
-        DebugDrawings::Color c(d, 0.0, 1-d);
-        PEN(c, 10);
-
-        LINE(last.x,last.y,a.x,a.y);
+          LINE(last.x,last.y,a.x,a.y);
+        }
+        last = a;
+        last_v = v;
       }
-      last = a;
-      last_v = v;
     }
-
-    /*
-    for(double x = -Math::pi; x < Math::pi + 0.01; x += 0.01) {
-      double v = getProbabilisticQuadCompas().probability(x);
-      Vector2d a(offset + v*scale, 0.0);
-      a.rotate(x);
-      if(x > -Math::pi) {
-
-        double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
-        DebugDrawings::Color c(d, 0.0, 1-d);
-        PEN(c, 10);
-
-        LINE(last.x,last.y,a.x,a.y);
-      }
-      last = a;
-      last_v = v;
-    }
-    */
-  }
+  );
 
 
   std::vector<int> cluster(getScanLineEdgelPercept().pairs.size(),-1);

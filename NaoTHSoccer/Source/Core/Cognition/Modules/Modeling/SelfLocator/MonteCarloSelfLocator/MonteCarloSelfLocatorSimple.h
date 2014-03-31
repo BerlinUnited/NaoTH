@@ -141,6 +141,13 @@ private: // data members
   SampleSet setBeforeResampling; // sort of 'double buffering'
   CanopyClustering<SampleSet> canopyClustering;
 
+  // statistics:
+  // augmentation trends
+  double slowWeighting;
+  double fastWeighting;
+  //
+  double effective_number_of_samples;
+
 private: // workers
   void updateByOdometry(SampleSet& sampleSet, bool noise) const;
 
@@ -149,9 +156,11 @@ private: // workers
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
 
+  void updateStatistics(SampleSet& sampleSet);
+
   void resampleSimple(SampleSet& sampleSet, int number) const;
   void resampleGT07(SampleSet& sampleSet, bool noise) const;
-  void resampleCool(SampleSet& sampleSet, int n) const;
+  int resampleCool(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
 

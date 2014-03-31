@@ -28,8 +28,9 @@
 
 #include "Representations/Modeling/OdometryData.h"
 
-#include "Representations/Modeling/ProbabilisticQuadCompas.h"
 
+#include "Representations/Modeling/ProbabilisticQuadCompas.h"
+#include "Representations/Perception/LineGraphPercept.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include <Tools/DataStructures/ParameterList.h>
@@ -51,6 +52,7 @@ BEGIN_DECLARE_MODULE(NeoLineDetector)
   REQUIRE(CameraMatrixTop)
 
   PROVIDE(ProbabilisticQuadCompas);
+  PROVIDE(LineGraphPercept);
 END_DECLARE_MODULE(NeoLineDetector)
 
 
@@ -64,8 +66,12 @@ public:
 
   void execute()
   {
+    getProbabilisticQuadCompas().reset();
+
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
+    
+    getProbabilisticQuadCompas().normalize();
   }
 
   class Parameters: public ParameterList

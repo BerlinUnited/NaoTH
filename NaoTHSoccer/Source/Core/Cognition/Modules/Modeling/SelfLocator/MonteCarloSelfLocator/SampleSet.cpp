@@ -10,12 +10,12 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Common.h"
 
-void SampleSet::sort() 
+void SampleSet::sort(bool descending) 
 {
-  quicksort(0, numberOfParticles-1);
+  quicksort(descending?1:-1, 0, numberOfParticles-1);
 }
 
-void SampleSet::quicksort(int low, int high) 
+void SampleSet::quicksort(int d, int low, int high) 
 {
   int i = low;
   int j = high;
@@ -23,15 +23,15 @@ void SampleSet::quicksort(int low, int high)
   Sample help;
 
   /* compare value */
-  double z = samples[(low + high) / 2].likelihood;
+  double z = samples[(low + high) / 2].likelihood*d;
 
   /* partition */
   do {
     /* find member above ... */
-    while(samples[i].likelihood > z) i++;
+    while(samples[i].likelihood*d > z) i++;
 
     /* find element below ... */
-    while(samples[j].likelihood < z) j--;
+    while(samples[j].likelihood*d < z) j--;
 
     if(i <= j) 
     {
@@ -47,10 +47,10 @@ void SampleSet::quicksort(int low, int high)
 
   /* recurse */
   if(low < j) 
-   quicksort(low, j);
+   quicksort(d, low, j);
 
   if(i < high) 
-    quicksort(i, high); 
+    quicksort(d, i, high); 
 }//end quicksort
 
 

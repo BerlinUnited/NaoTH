@@ -13,10 +13,15 @@
 
 GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
+  return getOwnGoal(compassDirection.angle, fieldInfo);
+}
+
+GoalModel::Goal GoalModel::getOwnGoal(double angle, const FieldInfo& fieldInfo) const
+{
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
     //if (fabs(compassDirection.angle) > Math::pi_2 && fabs(goal.calculateCenter().angle()) < Math::pi_2) {
-    if(fabs(compassDirection.angle + goal.calculateCenter().angle()) > Math::pi_2){
+    if(fabs(angle + goal.calculateCenter().angle()) > Math::pi_2){
       return goal;
     } else {
       return calculateAnotherGoal(goal, fieldInfo.xLength);
@@ -25,10 +30,15 @@ GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, 
 
 GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
-    //TODO check this decision, compare with robotPose.rotation
-    //18.02.2012
-    //if(fabs(goal.calculateCenter().rotate(compassDirection.angle).angle()) < Math::pi_2)
-  if(fabs(Math::normalize(compassDirection.angle + goal.calculateCenter().angle())) < Math::pi_2)
+  return getOppGoal(compassDirection.angle, fieldInfo);
+}
+
+GoalModel::Goal GoalModel::getOppGoal(double angle, const FieldInfo& fieldInfo) const
+{
+  //TODO check this decision, compare with robotPose.rotation
+  //18.02.2012
+  //if(fabs(goal.calculateCenter().rotate(compassDirection.angle).angle()) < Math::pi_2)
+  if(fabs(Math::normalize(angle + goal.calculateCenter().angle())) < Math::pi_2)
   {
     return goal;
   } else {
@@ -123,10 +133,15 @@ GoalModel::Goal GoalModel::calculateAnotherGoal(const GoalModel::Goal& goal, dou
 
 Pose2D GoalModel::calculatePose(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
+  return calculatePose(compassDirection.angle, fieldInfo);
+}
+
+Pose2D GoalModel::calculatePose(double angle, const FieldInfo& fieldInfo) const
+{
   const Vector2<double>& leftOpponentGoalPosition = fieldInfo.opponentGoalPostLeft;
   const Vector2<double>& rightOpponentGoalPosition = fieldInfo.opponentGoalPostRight;
 
-  Goal modeledOpponentGoal = getOppGoal(compassDirection, fieldInfo);
+  Goal modeledOpponentGoal = getOppGoal(angle, fieldInfo);
 
   // TODO: make it nicer with Vector2 operations
   double rotation = (modeledOpponentGoal.leftPost-modeledOpponentGoal.rightPost).angle() - Math::pi_2;
@@ -142,6 +157,7 @@ Pose2D GoalModel::calculatePose(const CompassDirection& compassDirection, const 
 
   return pose;
 }//end calculatePosition
+
 
 
 void LocalGoalModel::print(std::ostream& stream) const
