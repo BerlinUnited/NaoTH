@@ -1311,7 +1311,7 @@ public class NaoScp extends NaoScpMainFrame
             bodyIdToPlayerNumber.put(name, number);
             
             final MaskFormatter formatter = new MaskFormatter(name+": *");
-            formatter.setValidCharacters("12345");
+            formatter.setValidCharacters("123456790");
             formatter.setPlaceholderCharacter(Character.forDigit(number, 10));
             
             final JFormattedTextField input = new JFormattedTextField(formatter);
