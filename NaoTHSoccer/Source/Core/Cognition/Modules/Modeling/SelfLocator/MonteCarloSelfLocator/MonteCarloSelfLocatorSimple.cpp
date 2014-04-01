@@ -53,6 +53,7 @@ void MonteCarloSelfLocatorSimple::execute()
 {
 
   DEBUG_REQUEST("MCSLS:reset_samples",
+    
     initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
     mhBackendSet = theSampleSet;
     state = LOCALIZE;
@@ -62,6 +63,41 @@ void MonteCarloSelfLocatorSimple::execute()
     );
     return;
   );
+
+
+  // (III) treat the situation when the robot has been lifted from the ground
+  // (keednapped)
+  bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
+                   getMotionStatus().currentMotion == motion::init;
+
+  if( motion_ok && // only in stand or init(!)
+      getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
+     !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
+      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
+  {
+    
+    initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+    mhBackendSet = theSampleSet;
+    state = LOCALIZE;
+
+    DEBUG_REQUEST("MCSLS:draw_Samples", 
+      theSampleSet.drawImportance();
+    );
+    DEBUG_REQUEST("MCSLS:draw_position",
+      drawPosition();
+    );
+    return;
+  }//end if
+
+  if(getMotionStatus().currentMotion == motion::init) {
+    DEBUG_REQUEST("MCSLS:draw_Samples", 
+      theSampleSet.drawImportance();
+    );
+    DEBUG_REQUEST("MCSLS:draw_position",
+      drawPosition();
+    );
+    return;
+  }
 
   updateByOdometry(theSampleSet, parameters.motionNoise);
   lastRobotOdometry = getOdometryData();
@@ -90,7 +126,8 @@ void MonteCarloSelfLocatorSimple::execute()
   }
   else if(state == TRACKING)
   {
-    resampleSUS(theSampleSet, theSampleSet.size());
+    //resampleSUS(theSampleSet, theSampleSet.size());
+    resampleGT07(theSampleSet, true);
 
     FIELD_DRAWING_CONTEXT;
     TEXT_DRAWING(0,0, "TRACKING");
@@ -176,6 +213,13 @@ bool MonteCarloSelfLocatorSimple::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
+  }
+
+  if(parameters.updateByLinePoints)
+  {
+    if(getLineGraphPercept().edgels.size() > 0) {
+      updateByLinePoints(getLineGraphPercept(), sampleSet);
+    }
   }
 
   //if(parameters.updateByLinePoints) {
@@ -279,6 +323,38 @@ void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
     sample.likelihood *= getProbabilisticQuadCompas().probability(-sample.rotation);
   }
 }
+
+void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const
+{
+  const double sigmaDistance = parameters.goalPostSigmaDistance;
+  //const double sigmaAngle    = parameters.goalPostSigmaAngle;
+  const double cameraHeight  = getCameraMatrix().translation.z;
+
+  for(size_t i = 0; i < getLineGraphPercept().edgels.size(); i++) {
+    const Vector2d& seen_point_relative = getLineGraphPercept().edgels[i].point;
+
+    for(unsigned int s=0; s < sampleSet.size(); s++)
+    {
+      Sample& sample = sampleSet[s];
+
+      Vector2d seen_point_global = sample*seen_point_relative;
+      LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+     
+      // there is no such line
+      if(line_point_global.id == -1) {
+        continue;
+      }
+
+      // get the line
+      //const Math::LineSegment& ref_line = getFieldInfo().fieldLinesTable.getLines()[p.id];
+
+      Vector2d line_point_relative(sample/line_point_global.position);
+
+      sample.likelihood *= computeDistanceWeight(seen_point_relative.abs(), line_point_relative.abs(), cameraHeight, sigmaDistance);
+    }
+  }
+}//end updateByLinePoints
+
 
 void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) const
 {
@@ -462,11 +538,6 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
 
     if (n >= oldSampleSet.size()-numberOfPartiklesToResample) break;
   }//end for
-
-  // generate some random samples
-  for(; n < oldSampleSet.size(); n++) {
-    createRandomSample(getFieldInfo().carpetRect, sampleSet[n]);
-  }
 
   // fill up by copying random samples (shouldn't happen)
   while (n < sampleSet.size()) 

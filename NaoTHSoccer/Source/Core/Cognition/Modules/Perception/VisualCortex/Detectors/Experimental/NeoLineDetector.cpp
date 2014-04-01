@@ -191,6 +191,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       edgelProjections[i]);
   }
 
+  // fill the compas
   for(size_t j = 0; j < edgelPairs.size(); j++)
   {
     const EdgelPair& edgelPair = edgelPairs[j];
@@ -232,8 +233,21 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   );
 
 
-  std::vector<int> cluster(getScanLineEdgelPercept().pairs.size(),-1);
-  std::vector<EdgelCluster> lines;
+  for(size_t j = 0; j < edgelPairs.size(); j++)
+  {
+    const EdgelPair& edgelPair = edgelPairs[j];
+    const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
+    const Vector2d& edgelRight = edgelProjections[edgelPair.right];
+
+    Edgel edgel;
+    edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
+    edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
+
+    getLineGraphPercept().edgels.push_back(edgel);
+  }
+
+  //std::vector<int> cluster(getScanLineEdgelPercept().pairs.size(),-1);
+  //std::vector<EdgelCluster> lines;
 
 
   /*
@@ -295,6 +309,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   }
   */
   
+  /*
   // test: cluster the pairs
   double max_cluster_dist = 3.0;
   MODIFY("NeoLineDetector:max_cluster_dist",max_cluster_dist);
@@ -360,7 +375,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       }
     }
   }
-
+  */
 
   /*
   // test: extract chains from edgel pairs by exploring the neighbors
@@ -439,7 +454,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   }
   */
 
-
+/*
   std::vector<bool> line_deleted(lines.size(), false);
 
   double segmentSimThreshold = 0;
@@ -507,7 +522,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       LINE_PX((ColorClasses::Color) (idx), p0.x,p0.y, p1.x, p1.y);
     }
   );
-
+  */
 }//end execute
 
 double NeoLineDetector::edgelSim(const Vector2d& p1, double a1, const Vector2d& p2, double a2)

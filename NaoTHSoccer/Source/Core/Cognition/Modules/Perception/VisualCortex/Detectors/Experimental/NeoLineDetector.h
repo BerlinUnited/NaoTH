@@ -51,8 +51,8 @@ BEGIN_DECLARE_MODULE(NeoLineDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
-  PROVIDE(ProbabilisticQuadCompas);
-  PROVIDE(LineGraphPercept);
+  PROVIDE(ProbabilisticQuadCompas)
+  PROVIDE(LineGraphPercept)
 END_DECLARE_MODULE(NeoLineDetector)
 
 
@@ -67,6 +67,7 @@ public:
   void execute()
   {
     getProbabilisticQuadCompas().reset();
+    getLineGraphPercept().edgels.clear();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);

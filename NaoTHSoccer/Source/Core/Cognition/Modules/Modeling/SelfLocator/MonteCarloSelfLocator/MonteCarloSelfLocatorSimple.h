@@ -36,6 +36,7 @@
 
 // local models
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
+#include "Representations/Perception/LineGraphPercept.h"
 
 // this are the results :)
 #include "Representations/Modeling/RobotPose.h"
@@ -66,6 +67,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
 
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
+  REQUIRE(LineGraphPercept)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -108,7 +110,13 @@ private: // local types
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
+      PARAMETER_REGISTER(updateByLinePoints) = true;
+      PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
+
       PARAMETER_REGISTER(updateByCompas) = true;
+
+      PARAMETER_REGISTER(treatLiftUp) = true;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -129,8 +137,13 @@ private: // local types
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
 
+    bool updateByLinePoints;
+    double linePointsSigmaDistance;
+    double linePointsSigmaAngle;
+
     bool updateByCompas;
-    
+    bool treatLiftUp;
+
     virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
@@ -194,6 +207,7 @@ private: // workers
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
+  void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   void updateByStartPositions(SampleSet& sampleSet) const;
 
