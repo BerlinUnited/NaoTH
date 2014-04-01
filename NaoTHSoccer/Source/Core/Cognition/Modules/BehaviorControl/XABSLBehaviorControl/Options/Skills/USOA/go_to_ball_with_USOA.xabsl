@@ -28,7 +28,7 @@ option go_to_ball_with_USOA
   state avoid_left
   {
     decision
-    { if (//(vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)&&
+    { if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)&&
             (obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 200))
         goto approach_carefully;
       else if(state_time > 3000)
