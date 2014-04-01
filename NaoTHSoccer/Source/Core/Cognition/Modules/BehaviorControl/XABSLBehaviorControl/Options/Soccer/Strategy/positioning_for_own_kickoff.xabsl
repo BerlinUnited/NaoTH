@@ -40,6 +40,23 @@ option positioning_for_own_kickoff
       motion.walk.style = stable;
     }
   }
+
+  state goto_own_kickoff_position_supporter2
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      
+//go_to_point_with_USOA(x=-2500, y=-900, rot=0);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
   
   state goto_own_kickoff_position_striker
   {
@@ -58,38 +75,6 @@ option positioning_for_own_kickoff
     }
   }
 
-  state goto_own_kickoff_position_supporter
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-2500, y=900, rot=0);
-       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank, rot=10);
-      head.control_mode = search_for_goal;
-    }
-  }
-
-  state goto_own_kickoff_position_supporter2
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
-      head.control_mode = search_for_goal;
-    }
-  }
-
   state goto_own_kickoff_position_defender
   {
     decision {
@@ -104,6 +89,22 @@ option positioning_for_own_kickoff
       go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=00);
       head.control_mode = search_for_goal;
 
+    }
+  }
+
+  state goto_own_kickoff_position_supporter
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_USOA(x=-2500, y=900, rot=0);
+       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank, rot=10);
+      head.control_mode = search_for_goal;
     }
   }
   

@@ -25,9 +25,6 @@ class OdometrySymbols: public OdometrySymbolsBase
 
 public:
   OdometrySymbols()
-    :
-    odometryData(getOdometryData()),
-    motionStatus(getMotionStatus())
   {
     theInstance = this;
   };
@@ -41,11 +38,6 @@ public:
 private:
 
   static OdometrySymbols* theInstance;
-
-  // representations
-  OdometryData const& odometryData;
-  MotionStatus const& motionStatus;
-
 
   // seter and getter
   static double getOdometry_x();

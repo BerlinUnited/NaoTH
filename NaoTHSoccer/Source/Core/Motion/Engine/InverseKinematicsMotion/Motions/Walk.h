@@ -72,7 +72,8 @@ private:
       extendDoubleSupport(0),
       numberOfCyclePerFootStep(0),
       stepControlling(false),
-      speedDirection(0)
+      speedDirection(0),
+      scale(1.0)
     {}
 
     int planningCycle;
@@ -92,6 +93,7 @@ private:
     // only for step control
     bool stepControlling;
     double speedDirection;
+    double scale;
   };
 
   /** */

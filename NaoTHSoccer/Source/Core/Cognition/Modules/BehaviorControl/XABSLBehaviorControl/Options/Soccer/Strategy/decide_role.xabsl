@@ -50,7 +50,6 @@ option decide_role
 
   state striker
   {
-    
     action
     {
       team.is_playing_as_striker = true;

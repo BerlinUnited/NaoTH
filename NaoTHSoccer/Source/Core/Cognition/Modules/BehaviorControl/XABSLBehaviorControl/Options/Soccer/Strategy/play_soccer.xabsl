@@ -76,7 +76,6 @@ option play_soccer
     }
     action 
     {
-      arm.control_mode = back;
       last_state_was_penalized = false; // important!!!
       decide_role();
     }
@@ -94,7 +93,6 @@ option play_soccer
     }
     action 
     {
-      arm.control_mode = back;
       decide_and_go_to_ready_position();
       
       //only the first we know that we are in our own half
