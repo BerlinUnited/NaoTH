@@ -40,12 +40,14 @@ include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
+include "Options/Skills/fast_forward_kick.xabsl";
 include "Options/Skills/fast_forward_kick_with_right.xabsl";
 include "Options/Skills/fast_forward_kick_with_left.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
+include "Options/Skills/USOA/go_to_ball_with_foot_and_USOA.xabsl";
 include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
 include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
@@ -57,8 +59,7 @@ include "Options/Skills/move_around_ball.xabsl";
 // Debug
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
-
-
+
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
@@ -105,6 +106,7 @@ include "Options/Test/test_walk_lv2_agent.xabsl";
 include "Options/Test/follow_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_test_agent.xabsl";
 include "Options/Test/go_to_ball_with_foot_test_agent.xabsl";
+include "Options/Test/go_to_ball_with_foot_and_USOA_test_agent.xabsl";
 include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/go_to_point_with_USOA_test_agent.xabsl";
 include "Options/Test/turn_around_ball_test_agent.xabsl";
@@ -117,6 +119,8 @@ include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";
 include "Options/Test/ball_search/only_ball_looking.xabsl";
 include "Options/Test/ball_search/only_goal_looking.xabsl";
+
+include "Options/Test/change_state_input_test_agent.xabsl";
 
 // Test options
 // Test options Kicks
@@ -137,6 +141,7 @@ include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_foot_test.xabsl";
+include "Options/Test/walk/go_to_ball_with_foot_and_USOA_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
@@ -162,6 +167,8 @@ include "Options/Test/passive_behavior_test_agent.xabsl";
 //Benji Test
 include "Options/Test/test_benji_agent.xabsl";
 include "Options/Test/test_benji_lv1.xabsl";
+
+include "Options/Test/change_state_input_test.xabsl";
 
 
 
@@ -200,6 +207,7 @@ agent goto_clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
 agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
 agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
 agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
+agent goto_ball_with_foot_and_USOA_test_agent("go_to_ball_with_foot_and_USOA_test_agent", go_to_ball_with_foot_and_USOA_test_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
 
@@ -208,4 +216,6 @@ agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
 agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
+
+agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
 

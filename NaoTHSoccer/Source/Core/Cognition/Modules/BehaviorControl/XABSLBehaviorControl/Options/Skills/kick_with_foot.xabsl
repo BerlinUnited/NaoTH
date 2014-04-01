@@ -3,7 +3,7 @@
 
 option kick_with_foot
 {
-  enum direction @side;
+  enum direction @foot;
 
   initial state decide_foot
   {
@@ -11,9 +11,9 @@ option kick_with_foot
     {
       if (state_time > 500)
       {
-	      if (@side == right && executed_motion.step_control.left_movable)
+	      if (@foot == right && executed_motion.step_control.left_movable)
 	        goto prepare_right_kick;
-	      else if(@side == left && executed_motion.step_control.right_movable)
+	      else if(@foot == left && executed_motion.step_control.right_movable)
 	        goto prepare_left_kick;
         else
           stay;
