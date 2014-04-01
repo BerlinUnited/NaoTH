@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -276,7 +277,7 @@ public class TeamCommViewer extends AbstractDialog
     {
       this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
       this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-      this.messageMap = Collections.synchronizedMap(new HashMap<String,Message>());
+      this.messageMap = Collections.synchronizedMap(new TreeMap<String,Message>());
     }
     
     boolean isConnected() {
