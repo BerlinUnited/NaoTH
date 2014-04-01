@@ -24,72 +24,49 @@ void SoundSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedOutputSymbol("sound.request", "sound", &setSoundRequest, &getSoundRequest);
 }//end registerSymbols
 
-
-
 SoundSymbols* SoundSymbols::theInstance = NULL;
 
 void SoundSymbols::execute()
 {
 }
 
-
 void SoundSymbols::setSoundRequest(int value)
 {
   if(value == 0)
   {
-    theInstance->soundData.mute = true;
-    theInstance->soundData.soundFile = "";
+    theInstance->getSoundPlayData().mute = true;
+    theInstance->getSoundPlayData().soundFile = "";
   }
   else
   {
-    theInstance->soundData.mute = false;
-    if(value == 1)
-    {
-      theInstance->soundData.soundFile = "victory.wav";
-    }
-    else if(value == 2)
-    {
-      theInstance->soundData.soundFile = "asta_la_vista.wav";
-    }
-    else if(value == 3)
-    {
-      theInstance->soundData.soundFile = "penalized.wav";
-    }
-    else if(value == 4)
-    {
-      theInstance->soundData.soundFile = "play.wav";
-    }
-    else if(value == 5)
-    {
-      theInstance->soundData.soundFile = "battery_low.wav";
+    theInstance->getSoundPlayData().mute = false;
+    if(value == 1) {
+      theInstance->getSoundPlayData().soundFile = "victory.wav";
+    } else if(value == 2) {
+      theInstance->getSoundPlayData().soundFile = "asta_la_vista.wav";
+    } else if(value == 3) {
+      theInstance->getSoundPlayData().soundFile = "penalized.wav";
+    } else if(value == 4) {
+      theInstance->getSoundPlayData().soundFile = "play.wav";
+    } else if(value == 5) {
+      theInstance->getSoundPlayData().soundFile = "battery_low.wav";
     }
   }
 }
 
 int SoundSymbols::getSoundRequest()
 {
-  if(theInstance->soundData.soundFile == "")
-  {
+  if(theInstance->getSoundPlayData().soundFile == "") {
     return 0;
-  }
-  else if(theInstance->soundData.soundFile == "victory.wav")
-  {
+  } else if(theInstance->getSoundPlayData().soundFile == "victory.wav") {
     return 1;
-  }
-  else if(theInstance->soundData.soundFile == "asta_la_vista.wav")
-  {
+  } else if(theInstance->getSoundPlayData().soundFile == "asta_la_vista.wav") {
     return 2;
-  }
-  else if(theInstance->soundData.soundFile == "penalized.wav")
-  {
+  } else if(theInstance->getSoundPlayData().soundFile == "penalized.wav") {
     return 3;
-  }
-  else if(theInstance->soundData.soundFile == "play.wav")
-  {
+  } else if(theInstance->getSoundPlayData().soundFile == "play.wav") {
     return 4;
-  }
-  else if(theInstance->soundData.soundFile == "battery_low.wav")
-  {
+  } else if(theInstance->getSoundPlayData().soundFile == "battery_low.wav") {
     return 5;
   }
 

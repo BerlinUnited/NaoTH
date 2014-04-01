@@ -69,6 +69,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
     this.cbRepresentationsSearch = new S20BinaryLookup(this.cbRepresentations);
     // only the leafe nodes can be modified
     this.moduleConfigTree.setNonLeafNodesEditable(false);
+    
+    this.modulePanel.setTree(moduleConfigTree);
+    this.modulePanel.setProcessName((String)cbProcess.getSelectedItem());
+    
   }
   
   @Init
@@ -262,9 +266,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
     private void cbProcessActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbProcessActionPerformed
     {//GEN-HEADEREND:event_cbProcessActionPerformed
-        Plugin.moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
-        this.moduleConfigTree.clear();
-        this.modulePanel.setNode(null);
+      String process = (String)cbProcess.getSelectedItem();  
+      Plugin.moduleConfigurationManager.setModuleOwner(process);
+      this.moduleConfigTree.clear();
+      
+      this.modulePanel.setProcessName(process);
+      this.modulePanel.setNode(null);
     }//GEN-LAST:event_cbProcessActionPerformed
 
     private void cbModulesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbModulesActionPerformed
@@ -322,23 +329,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
     {
       if(n.getType() == ModuleConfiguration.NodeType.Module)
       {
-        String path = n.getPath();
-        
-        // treatement for the modules which are located outside of the process
-        int k = path.toLowerCase().indexOf(processName.toLowerCase());
-        if(k == -1) {
-            int i = path.lastIndexOf(':');
-            path = processName.toLowerCase() + path.substring(i);
-        } else {
-            path = processName + path.substring(k + processName.length());
-        }
-        
+        String path = n.getCleanPathForProcess(processName);
+       
         SelectableTreeNode node = moduleConfigTree.insertPath(path, ':');
         node.setSelected(n.isEnabled());
         node.setTooltip(n.getName());
         node.getComponent().addActionListener(
                 new ModuleCheckBoxListener(node.getComponent(), 
-                    processName + ":" + commandStringSetModules));
+                    processName + ":" + commandStringSetModules, n));
         
         modules.add(n);
       }
@@ -360,7 +358,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
     moduleConfigTree.expandPath(processName, ':');
     moduleConfigTree.repaint();
   }//end newObjectReceived
-
+  
+  
   public class CormpareIgnoreCase implements Comparator<Object> {
     public int compare(Object o1, Object o2) {
         String s1 = o1.toString().toLowerCase();
@@ -431,12 +430,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
     JCheckBox checkBox;
     Command currentCommand;
     String commandString;
+    Node node;
             
-    public ModuleCheckBoxListener(JCheckBox checkBox, String commandString)
+    public ModuleCheckBoxListener(JCheckBox checkBox, String commandString, Node node)
     {
       this.checkBox = checkBox;
       this.currentCommand = null;
       this.commandString = commandString;
+      this.node = node;
     }
 
     @Override
@@ -450,6 +451,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
       currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
 
       Plugin.genericManagerFactory.getManager(currentCommand).addListener(this);
+      
+      // update the module panel
+      modulePanel.setNode(node);
     }//end actionPerformed
 
     @Override

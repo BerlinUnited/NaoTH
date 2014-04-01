@@ -6,7 +6,7 @@ using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
-    send_interval(500)
+    send_interval(400)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   if ( config.hasKey("teamcomm", "send_interval") )

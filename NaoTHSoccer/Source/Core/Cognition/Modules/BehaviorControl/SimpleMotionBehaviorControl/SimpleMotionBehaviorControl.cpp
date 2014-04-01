@@ -62,6 +62,8 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
 
+  // needed by the motion editor
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:play_editor_motionnet", "play the motion editor motion", false);
 
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:sound:test", "it is what it is...", false);
 
@@ -355,6 +357,10 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("ParallelKinematicMotionEngine:motion:parallel_stepper",
     getMotionRequest().id = motion::parallel_stepper;
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:play_editor_motionnet",
+    getMotionRequest().id = motion::play_editor_motionnet;
   );
           
 }//end testMotion

@@ -18,7 +18,7 @@ public class SPLMessage
   //public byte header[4]; // 4
   //public byte version; // 1
   public byte playerNum; // 1
-  public byte team; // 1 // 0 is red 1 is blue
+  public byte team; // 1 // 0 is blue, 1 is red 
   public byte fallen; // 1
   public float pose_x; // 4
   public float pose_y; // 4

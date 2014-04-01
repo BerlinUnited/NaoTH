@@ -209,6 +209,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         btManager = new javax.swing.JButton();
         lblReceivedBytesS = new javax.swing.JLabel();
         lblSentBytesS = new javax.swing.JLabel();
+        lblFramesS = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
@@ -247,6 +248,8 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         lblSentBytesS.setText("Sent byte/s: ");
 
+        lblFramesS.setText("Frames/s: ");
+
         javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
@@ -257,7 +260,9 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
                 .addComponent(lblConnect)
                 .addContainerGap())
         );
@@ -267,7 +272,8 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblReceivedBytesS)
-                .addComponent(lblSentBytesS))
+                .addComponent(lblSentBytesS)
+                .addComponent(lblFramesS))
         );
 
         getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
@@ -475,6 +481,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblConnect;
+    private javax.swing.JLabel lblFramesS;
     private javax.swing.JLabel lblReceivedBytesS;
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
@@ -556,5 +563,11 @@ public class RobotControlImpl extends javax.swing.JFrame
   public void setSentByteRate(double rate)
   {
     lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
+  }
+  
+  @Override
+  public void setServerLoopFPS(double fps)
+  {
+    lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
   }
 }

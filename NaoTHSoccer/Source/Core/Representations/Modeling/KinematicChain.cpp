@@ -37,6 +37,7 @@ string KinematicChain::getLinkName(LinkID j)
     FROM_ID_TO_NAME(LBicep);
     FROM_ID_TO_NAME(LElbow);
     FROM_ID_TO_NAME(LForeArm);
+    FROM_ID_TO_NAME(LHand);
     FROM_ID_TO_NAME(LPelvis);
     FROM_ID_TO_NAME(LHip);
     FROM_ID_TO_NAME(LThigh);
@@ -47,6 +48,7 @@ string KinematicChain::getLinkName(LinkID j)
     FROM_ID_TO_NAME(RBicep);
     FROM_ID_TO_NAME(RElbow);
     FROM_ID_TO_NAME(RForeArm);
+    FROM_ID_TO_NAME(RHand);
     FROM_ID_TO_NAME(RPelvis);
     FROM_ID_TO_NAME(RHip);
     FROM_ID_TO_NAME(RThigh);
@@ -74,17 +76,19 @@ void KinematicChain::buildLinkChains()
   theLinks[Torso].connect(theLinks[Neck])
                  .connect(theLinks[Head]);
 
-  // Torso -- Shoulder -- Bicep -- Elbow -- ForeArm
+  // Torso -- Shoulder -- Bicep -- Elbow -- ForeArm -- Hand
   // Left
   theLinks[Torso].connect(theLinks[LShoulder])
                  .connect(theLinks[LBicep])
                  .connect(theLinks[LElbow])
-                 .connect(theLinks[LForeArm]);
+                 .connect(theLinks[LForeArm])
+                 .connect(theLinks[LHand]);
   // Right
   theLinks[Torso].connect(theLinks[RShoulder])
                  .connect(theLinks[RBicep])
                  .connect(theLinks[RElbow])
-                 .connect(theLinks[RForeArm]);
+                 .connect(theLinks[RForeArm])
+                 .connect(theLinks[RHand]);
 
   // Torso -- Pelvis -- Hip -- Thigh -- Tibia -- Ankle -- Foot
   // Left
@@ -180,6 +184,7 @@ void KinematicChain::initJointsAxes()
   theLinks[LBicep   ].setJoint(z,   JointData::LShoulderRoll);
   theLinks[LElbow   ].setJoint(x,   JointData::LElbowYaw);
   theLinks[LForeArm ].setJoint(z,   JointData::LElbowRoll);
+  theLinks[LHand    ].setJoint(x,   JointData::LWristYaw);
   // left leg
   theLinks[LPelvis  ].setJoint(lyz, JointData::LHipYawPitch);
   theLinks[LHip     ].setJoint(x,   JointData::LHipRoll);
@@ -192,6 +197,7 @@ void KinematicChain::initJointsAxes()
   theLinks[RBicep   ].setJoint(z,   JointData::RShoulderRoll);
   theLinks[RElbow   ].setJoint(x,   JointData::RElbowYaw);
   theLinks[RForeArm ].setJoint(z,   JointData::RElbowRoll);
+  theLinks[RHand    ].setJoint(x,   JointData::RWristYaw);
   // right leg
   theLinks[RPelvis  ].setJoint(ryz, JointData::RHipYawPitch);
   theLinks[RHip     ].setJoint(x,   JointData::RHipRoll);
@@ -227,6 +233,7 @@ void KinematicChain::initLinkPositions()
   theLinks[LBicep].setLink(0, 0, 0);
   theLinks[LElbow].setLink(NaoInfo::UpperArmLength,NaoInfo::ElbowOffsetY,0);
   theLinks[LForeArm].setLink(0, 0, 0);
+  theLinks[LHand].setLink(NaoInfo::LowerArmLength, 0, 0);
 
   theLinks[LPelvis].setLink(0, NaoInfo::HipOffsetY, -NaoInfo::HipOffsetZ);
   theLinks[LHip].setLink(0, 0, 0);
@@ -241,6 +248,7 @@ void KinematicChain::initLinkPositions()
   theLinks[RBicep].setLink(0, 0, 0);
   theLinks[RElbow].setLink(NaoInfo::UpperArmLength,-NaoInfo::ElbowOffsetY,0);
   theLinks[RForeArm].setLink(0, 0, 0);
+  theLinks[RHand].setLink(NaoInfo::LowerArmLength, 0, 0);
 
   theLinks[RPelvis].setLink(0,-NaoInfo::HipOffsetY,-NaoInfo::HipOffsetZ);
   theLinks[RHip].setLink(0, 0, 0);

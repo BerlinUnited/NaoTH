@@ -49,6 +49,7 @@ message StepControlRequest
   required Pose2D target = 3;
   required uint32 time = 4;
   required double speedDirection = 5;
+  required double scale = 6;
 }
 
 message WalkRequest {

@@ -117,9 +117,6 @@ void Motion::call()
 {
 
   STOPWATCH_START("MotionExecute");
-  
-  //TODO: move it to platform
-  guard_cognition();
 
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");
@@ -334,39 +331,5 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
 
-
-//TODO: move that to the DCM platform
-void Motion::guard_cognition()
-{
-  static unsigned int frameNumSinceLastMotionRequest(0);
-  static unsigned int lastCognitionFrameNumber(0);
-
-  // TODO: put this in the platform
-  // check if cognition is still alive
-  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber) {
-    frameNumSinceLastMotionRequest++;
-  } else {
-    lastCognitionFrameNumber = getMotionRequest().cognitionFrameNumber;
-    frameNumSinceLastMotionRequest = 0;
-  }
-
-  if(frameNumSinceLastMotionRequest > 4000)
-  {
-    std::cerr << "+==================================+" << std::endl;
-    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
-    std::cerr << "+==================================+" << std::endl;
-    std::cerr << "dumping traces" << std::endl;
-    Trace::getInstance().dump();
-    StopwatchManager::getInstance().dump("cognition");
-
-    #ifndef WIN32
-    std::cerr << "syncing file system..." ;
-    sync();
-    std::cerr << " finished." << std::endl;
-    #endif
-
-    ASSERT(false && "frameNumSinceLastMotionRequest check failed");
-  }//end if
-}//end guard_cognition
 
 

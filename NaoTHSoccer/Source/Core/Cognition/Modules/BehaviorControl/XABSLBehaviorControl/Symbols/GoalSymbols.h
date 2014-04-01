@@ -32,37 +32,20 @@ class GoalSymbols: public GoalSymbolsBase
 
 public:
   GoalSymbols()
-    :
-    localGoalModel(getLocalGoalModel()),
-    goalPercept(getGoalPercept()),
-    playerInfo(getPlayerInfo()),
-    frameInfo(getFrameInfo()),
-    compassDirection(getCompassDirection()),
-    fieldInfo(getFieldInfo())
   {
     theInstance = this;
-    };
+  }
   virtual ~GoalSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
 
   virtual void execute();
+
 private:
-
-  // representations
-  LocalGoalModel const& localGoalModel;
-  GoalPercept const& goalPercept;
-  PlayerInfo const& playerInfo;
-  FrameInfo const& frameInfo;
-  CompassDirection const& compassDirection;
-  FieldInfo const& fieldInfo;
-
   static GoalSymbols* theInstance;
 
-
   //get-method
-
   static double getTimeSinceWholeOwnGoalSeen();
   static double getTimeSinceWholeOppGoalSeen();
 

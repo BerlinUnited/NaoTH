@@ -27,7 +27,7 @@ public class RobotStatus extends javax.swing.JPanel {
     private final MessageServer messageServer;
     private String ipAddress = "";
     
-    private final static long MAX_TIME_BEFORE_DEAD = 3000; //ms
+    public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     private final CircularFifoQueue<Long> timestamps = new CircularFifoQueue<>(5);
     
     private final Color darkOrange = new Color(255, 130, 0);
