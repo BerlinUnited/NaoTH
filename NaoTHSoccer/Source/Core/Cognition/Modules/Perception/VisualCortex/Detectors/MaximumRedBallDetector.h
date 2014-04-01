@@ -121,7 +121,7 @@ private:
       PARAMETER_REGISTER(maxSizeInImage) = 130;
       PARAMETER_REGISTER(maxRansacTries) = 40;
       PARAMETER_REGISTER(maxScanlineSteps) = 50;
-      PARAMETER_REGISTER(offsetU) = 5;
+      PARAMETER_REGISTER(maxU) = 128;
 
       syncWithConfig();
 
@@ -141,7 +141,7 @@ private:
     int maxSizeInImage;
     int maxRansacTries;
     int maxScanlineSteps;
-    int offsetU;
+    int maxU;
   };
 
   Parameters params;
