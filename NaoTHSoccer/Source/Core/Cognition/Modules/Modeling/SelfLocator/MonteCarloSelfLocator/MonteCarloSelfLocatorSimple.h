@@ -14,6 +14,7 @@
 #include "Tools/CameraGeometry.h"
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Math/Probabilistics.h"
 
 // representations
 // basic info
@@ -135,10 +136,48 @@ private: // local types
     }
   } parameters;
 
+  class LineDensity {
+  private:
+    Math::LineSegment segment;
+    double angle; 
+    double distDeviation; 
+    double angleDeviation;
+
+  public:
+    LineDensity(
+      const Vector2d& start, const Vector2d& end, 
+      double angle, double distDeviation, double angleDeviation)
+      :
+      segment(start, end), angle(angle), distDeviation(distDeviation), angleDeviation(angleDeviation)
+    {
+    }
+
+    void update(Sample& sample) {
+      double distDiff = segment.minDistance(sample.translation);
+      double angleDiff = Math::normalize(angle - sample.rotation);
+      sample.likelihood *= Math::gaussianProbability(distDiff, distDeviation);
+      sample.likelihood *= Math::gaussianProbability(angleDiff, angleDeviation);
+    }
+
+    void draw()
+    {
+      PEN("000000", 10);
+      LINE(segment.begin().x, segment.begin().y, segment.end().x, segment.end().y);
+      ARROW(segment.begin().x, segment.begin().y, 
+            segment.begin().x + 100*cos(angle), 
+            segment.begin().y + 100*sin(angle));
+      ARROW(segment.end().x, segment.end().y, 
+            segment.end().x + 100*cos(angle), 
+            segment.end().y + 100*sin(angle));
+    }
+  };
+
+
 private: // data members
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
-  SampleSet setBeforeResampling; // sort of 'double buffering'
+  SampleSet mhBackendSet; // used ONLY by resampleMH
+  //SampleSet setBeforeResampling; // sort of 'double buffering'
   CanopyClustering<SampleSet> canopyClustering;
 
   // statistics:
@@ -156,11 +195,14 @@ private: // workers
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
 
+  void updateByStartPositions(SampleSet& sampleSet) const;
+
   void updateStatistics(SampleSet& sampleSet);
 
   void resampleSimple(SampleSet& sampleSet, int number) const;
+  void resampleMH(SampleSet& sampleSet);
   void resampleGT07(SampleSet& sampleSet, bool noise) const;
-  int resampleCool(SampleSet& sampleSet, int n) const;
+  int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
 

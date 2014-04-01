@@ -78,6 +78,8 @@ public:
   inline size_t size() { return angles.size(); }
 
   inline void setSmoothing(double s) { smoothing = s; }
+
+  inline bool isValid() const { return normalized; }
 };
 
 #endif // _ProbabilisticQuadCompas_h_
