@@ -76,10 +76,6 @@ IKParameters::IKParameters()
 
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsize) = true;
 
-  
-
-
-
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
   PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
@@ -118,11 +114,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.extendedXRotationOffset) = 7;
   PARAMETER_REGISTER(kick.rotationTime) = 300;
 
-  PARAMETER_REGISTER(kick.knee_pitch_offset);
-  PARAMETER_REGISTER(kick.ankle_roll_offset);
+  PARAMETER_REGISTER(kick.knee_pitch_offset) = 0;
+  PARAMETER_REGISTER(kick.ankle_roll_offset) = 0;
 
-  PARAMETER_REGISTER(kick.shiftOffsetYLeft);
-  PARAMETER_REGISTER(kick.shiftOffsetYRight);
+  PARAMETER_REGISTER(kick.shiftOffsetYLeft) = 0;
+  PARAMETER_REGISTER(kick.shiftOffsetYRight) = 0;
 
   PARAMETER_REGISTER(balanceCoM.kP) = 0;
   PARAMETER_REGISTER(balanceCoM.kI) = 0;

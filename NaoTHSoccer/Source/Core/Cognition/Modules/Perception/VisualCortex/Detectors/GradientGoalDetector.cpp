@@ -34,6 +34,7 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_response","..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:draw_difference","..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScans","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markTopScans", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
@@ -148,6 +149,9 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
           //scan along the post to find the foot point of it to be sure its on the field
           scanForFootPoints(postScanDirection, goodFeatures.back().center, params.thresholdUV, params.thresholdY);
+
+          scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1),
+            goodFeatures.front().center, params.thresholdUV, params.thresholdY);
         }
       }
     }//end for features[0].size()
@@ -577,6 +581,56 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans",
     ColorClasses::Color c = post.positionReliable?ColorClasses::yellowOrange:ColorClasses::red;
     CIRCLE_PX(c, (int) post.basePoint.x, (int) post.basePoint.y, 10);
+  );
+}
+
+void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY)
+{
+  double response = 0.0;
+  double responseY = 0.0;
+  Pixel pixel;
+  BresenhamLineScan footPointScanner(pos, -Vector2d(post.directionInImage), getImage().cameraInfo);
+
+  // clear everything
+  pointBuffer.clear();
+  valueBuffer.init();
+  valueBufferY.init();
+
+  while(footPointScanner.getNextWithCheck(pos))
+  {
+    IMG_GET(pos.x, pos.y, pixel);
+    int diffVU = (int) pixel.v - (int) pixel.u;
+
+    pointBuffer.add(pos);
+    valueBuffer.add(diffVU);
+    valueBufferY.add(pixel.y);
+
+    //collect some values for statisics of colors
+    getGoalPostHistograms().increaseChannelValue(pixel);
+
+    if(pointBuffer.isFull())
+    {
+      response = valueBuffer[4] + 2 * valueBuffer[3]  + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
+      responseY = valueBufferY[2];
+      response /= 10;
+
+      // end of the post found
+      if(response < threshold || fabs(responseY) < thresholdY) {
+        pos = pointBuffer[2];
+        break;
+      }
+
+      DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markTopScans",
+        POINT_PX(ColorClasses::pink, pointBuffer[2].x, pointBuffer[2].y);
+      );
+
+    }
+  }//end while
+
+  post.topPoint = pos;
+
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markTopScans",
+    CIRCLE_PX(ColorClasses::blue, (int) pos.x, (int) pos.y, 10);
   );
 }
 

@@ -11,6 +11,7 @@
 GradientSpiderScan::GradientSpiderScan(const Image& theImage, CameraInfo::CameraID camID)
 :
   theImage(theImage),
+  useVUdifference(false),
   cameraID(camID)
 {
   init();

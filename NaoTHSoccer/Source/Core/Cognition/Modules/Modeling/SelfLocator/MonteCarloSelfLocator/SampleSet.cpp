@@ -7,14 +7,15 @@
 
 #include "SampleSet.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Math/Common.h"
 
-
-void SampleSet::sort() 
+void SampleSet::sort(bool descending) 
 {
-  quicksort(0, numberOfParticles-1);
-}//end sort
+  quicksort(descending?1:-1, 0, numberOfParticles-1);
+}
 
-void SampleSet::quicksort(int low, int high) 
+void SampleSet::quicksort(int d, int low, int high) 
 {
   int i = low;
   int j = high;
@@ -22,15 +23,15 @@ void SampleSet::quicksort(int low, int high)
   Sample help;
 
   /* compare value */
-  double z = samples[(low + high) / 2].likelihood;
+  double z = samples[(low + high) / 2].likelihood*d;
 
   /* partition */
   do {
     /* find member above ... */
-    while(samples[i].likelihood < z) i++;
+    while(samples[i].likelihood*d > z) i++;
 
     /* find element below ... */
-    while(samples[j].likelihood > z) j--;
+    while(samples[j].likelihood*d < z) j--;
 
     if(i <= j) 
     {
@@ -46,27 +47,29 @@ void SampleSet::quicksort(int low, int high)
 
   /* recurse */
   if(low < j) 
-   quicksort(low, j);
+   quicksort(d, low, j);
 
   if(i < high) 
-    quicksort(i, high); 
+    quicksort(d, i, high); 
 }//end quicksort
 
 
-// TODO: optimize?!
-void SampleSet::normalize()
+void SampleSet::normalize(double offset)
 {
-  double sum = 0;
+  double sum = 0.0;
   for(unsigned int i = 0; i < numberOfParticles; i++)
   {
+    samples[i].likelihood = samples[i].likelihood;
     sum += samples[i].likelihood;
   }
 
   if(sum == 0) return;
 
+  double offset_sum = 1.0+offset*numberOfParticles;
+
   for(unsigned int i = 0; i < numberOfParticles; i++)
   {
-    samples[i].likelihood /= sum;
+    samples[i].likelihood = ((samples[i].likelihood/sum) + offset)/offset_sum;
   }
 }//end normalize
 
@@ -82,8 +85,10 @@ void SampleSet::resetLikelihood()
 
 
 // TODO: make it more efficient (!!!)
-Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
+Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments) const
 {
+  ASSERT(samples.size() > 0);
+
   // TODO: make it better
   std::vector<int> cluster(numberOfParticles);
   std::vector<Vector2<double> > averageTranslation(numberOfParticles);
@@ -128,19 +133,69 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
   return result;
 }//end meanOfLargestCluster
 
-void SampleSet::drawCluster(unsigned int clusterId)
+const Sample& SampleSet::getMostLikelySample() const
 {
-  FIELD_DRAWING_CONTEXT;
-  for (unsigned int i = 0; i < numberOfParticles; i++)
+  ASSERT(samples.size() > 0);
+
+  double maxLikelihood = samples[0].likelihood;
+  int maxIdx = 0;
+
+  for(unsigned int i = 1; i < numberOfParticles; i++)
   {
-    if (samples[i].cluster == (int)clusterId)
+    if(maxLikelihood < samples[i].likelihood) {
+      maxLikelihood = samples[i].likelihood;
+      maxIdx = i;
+    }
+  }
+
+  return samples[maxIdx];
+}
+
+void SampleSet::drawCluster(unsigned int clusterId) const
+{
+  ASSERT(samples.size() > 0);
+  FIELD_DRAWING_CONTEXT;
+  for (size_t i = 0; i < samples.size(); i++)
+  {
+    if (samples[i].cluster == (int)clusterId) {
       PEN("FFFFFF", 20);
-    else 
+    } else { 
       PEN("000000", 20);
+    }
+
+    ARROW(samples[i].translation.x, samples[i].translation.y, 
+          samples[i].translation.x + 100*cos(samples[i].rotation), 
+          samples[i].translation.y + 100*sin(samples[i].rotation));
+  }
+}
+
+void SampleSet::drawImportance(bool arrows) const
+{
+  ASSERT(samples.size() > 0);
+  FIELD_DRAWING_CONTEXT;
+
+  // normalize the colors (black: less importent, red more importent)
+  double minValue = samples[0].likelihood;
+  double maxValue = samples[0].likelihood;
+  for (unsigned int i = 1; i < samples.size(); i++)
+  {
+    maxValue = std::max(samples[i].likelihood, maxValue);
+    minValue = std::min(samples[i].likelihood, minValue);
+  }
+  double colorDiff = log(maxValue) - log(minValue);
+
+  for (size_t i = 0; i < samples.size(); i++)
+  {
+    DebugDrawings::Color color;
+    if(colorDiff > 0) {
+      color[0] = Math::clamp((log(samples[i].likelihood) - log(minValue))/colorDiff,0.0,1.0);
+    }
+    
+    PEN(color, 20);
 
     ARROW(samples[i].translation.x, samples[i].translation.y, 
           samples[i].translation.x + 100*cos(samples[i].rotation), 
           samples[i].translation.y + 100*sin(samples[i].rotation));
   }//end for
-}//end drawSamples
+}
 

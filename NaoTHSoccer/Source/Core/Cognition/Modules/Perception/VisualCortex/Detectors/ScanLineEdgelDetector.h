@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ScanLineEdgelDetector.h
  * Author: Heinrich Mellmann
  *
@@ -48,6 +48,50 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
 
 
+template<typename T, typename V>
+class MaximumScan
+{
+private:
+  V threshhold;
+  V value_max;
+
+  // results of the scan
+  T& peakMax;
+  bool maximum;
+
+public:
+
+  MaximumScan(T& peakMax, V threshhold)
+    : threshhold(threshhold),
+      value_max(threshhold),
+      peakMax(peakMax),
+      maximum(false)
+  {
+  }
+
+  inline bool addValue(const T& point, V value)
+  {
+    if(maximum) {
+      value_max = threshhold;
+      maximum = false;
+    }
+
+    if(value > value_max)
+    {
+      value_max = value;
+      peakMax = point;
+    } else if(value_max > threshhold && value < threshhold) {
+      maximum = true;
+    }
+
+    return maximum;
+  }
+
+  inline bool isMax() { return maximum; }
+  inline V maxValue() { return value_max; }
+};
+
+
 class ScanLineEdgelDetector : private ScanLineEdgelDetectorBase
 {
 public:
@@ -70,6 +114,7 @@ public:
       PARAMETER_REGISTER(brightness_threshold) = 6;
       PARAMETER_REGISTER(scanline_count) = 31;
       PARAMETER_REGISTER(pixel_border_y) = 3;
+      PARAMETER_REGISTER(green_sampling_points) = 3;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
       syncWithConfig();
@@ -83,6 +128,7 @@ public:
     int brightness_threshold; // threshold for detection of the jumps in the Y channel
     int scanline_count; // number of scanlines
     int pixel_border_y; // don't scan the lower lines in the image
+    int green_sampling_points; // number of the random samples to determine whether a segment is green
 
     double double_edgel_angle_threshold;
   } theParameters;
@@ -90,37 +136,34 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  void add_edgel(int x, int y) {
+  void add_edgel(const Vector2i& point) {
     Edgel edgel;
-    edgel.point.x = x;
-    edgel.point.y = y;
-    edgel.angle = calculateGradient(edgel.point).angle();
+    edgel.point = point;
+    edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
+  void add_double_edgel(const Vector2i& point, int id) {
+    add_edgel(point);
+    ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
+    int i_end = (int) getScanLineEdgelPercept().edgels.size()-1;
+    int i_begin = i_end - 1;
+    const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
+    const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-  void add_edgel(int x0, int y0, int x1, int y1, int id) {
-    DoubleEdgel double_edgel;
-    double_edgel.begin.x = x0;
-    double_edgel.begin.y = y0;
-    double_edgel.begin_angle = calculateGradient(double_edgel.begin).angle();
-
-    double_edgel.end.x = x1;
-    double_edgel.end.y = y1;
-    double_edgel.end_angle = Math::normalizeAngle(calculateGradient(double_edgel.end).angle() + Math::pi);
-
-    double_edgel.center = (double_edgel.end + double_edgel.begin) / 2;
-    double_edgel.center_angle = calculateMeanAngle(double_edgel.begin_angle, double_edgel.end_angle);
-
-    double_edgel.ScanLineID = id;
-
-    if(fabs(Math::normalizeAngle(double_edgel.begin_angle - double_edgel.end_angle)) <= theParameters.double_edgel_angle_threshold)
-    {
-      double_edgel.valid = true;
-      getScanLineEdgelPercept().scanLineEdgels.push_back(double_edgel);
+    if(1.0-fabs(begin.direction*end.direction) > theParameters.double_edgel_angle_threshold) {
+      return; // false
     }
-  }
 
+    ScanLineEdgelPercept::EdgelPair pair;
+    pair.begin = i_begin;
+    pair.end = i_end;
+    pair.id = id;
+
+    pair.point = Vector2d(begin.point + end.point)*0.5;
+    pair.direction = (begin.direction - end.direction).normalize();
+    getScanLineEdgelPercept().pairs.push_back(pair);
+  }
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end) ;
@@ -131,7 +174,6 @@ private:
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
 
-  /** */
   inline double calculateMeanAngle(double a, double b) const {
     return atan2( sin(a)+sin(b), cos(a)+cos(b) );
   }
@@ -142,7 +184,7 @@ private:
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, BodyContour);
-  
+
   DOUBLE_CAM_PROVIDE(ScanLineEdgelDetector, ScanLineEdgelPercept);
 };
 
