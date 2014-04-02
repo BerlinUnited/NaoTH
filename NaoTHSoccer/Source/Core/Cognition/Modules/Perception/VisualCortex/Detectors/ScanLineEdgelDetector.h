@@ -1,4 +1,4 @@
-/*
+/* 
  * File:   ScanLineEdgelDetector.h
  * Author: Heinrich Mellmann
  *
@@ -128,7 +128,7 @@ public:
     int brightness_threshold; // threshold for detection of the jumps in the Y channel
     int scanline_count; // number of scanlines
     int pixel_border_y; // don't scan the lower lines in the image
-    int green_sampling_points; // number of the random samples to determine whether a segment is green
+    int green_sampling_points; // number of the random samples to determine whether a segment is green 
 
     double double_edgel_angle_threshold;
   } theParameters;
@@ -146,7 +146,7 @@ private:
   void add_double_edgel(const Vector2i& point, int id) {
     add_edgel(point);
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
-    int i_end = (int) getScanLineEdgelPercept().edgels.size()-1;
+    int i_end = getScanLineEdgelPercept().edgels.size()-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
@@ -184,7 +184,7 @@ private:
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, BodyContour);
-
+  
   DOUBLE_CAM_PROVIDE(ScanLineEdgelDetector, ScanLineEdgelPercept);
 };
 

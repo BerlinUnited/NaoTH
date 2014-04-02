@@ -52,7 +52,7 @@ option sidekick_test
     }
     action 
     {
-      sidekick(to_right = false);
+      sidekick(side = left);
     }
   }
 
@@ -82,7 +82,7 @@ option sidekick_test
     }
     action 
     {
-      sidekick(to_right = true);
+      sidekick(side = right);
     }
   }
 

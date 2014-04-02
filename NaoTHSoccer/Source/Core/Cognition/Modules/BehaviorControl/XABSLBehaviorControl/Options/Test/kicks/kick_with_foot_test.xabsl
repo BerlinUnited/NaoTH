@@ -35,7 +35,7 @@ option kick_with_foot_test
     }
     action 
     {
-      kick_with_foot(right = true);
+      kick_with_foot(foot = right);
     }
   }
 
@@ -50,7 +50,7 @@ option kick_with_foot_test
     }
     action 
     {
-      kick_with_foot(right = false);
+      kick_with_foot(foot = left);
     }
   }
 

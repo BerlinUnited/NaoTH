@@ -21,8 +21,8 @@ private:
   bool normalized;
 
 public:
-  ProbabilisticQuadCompas(double smoothing = 0.4, int bins = 18)
-    :
+  ProbabilisticQuadCompas(double smoothing = 0.4, int bins = 18) 
+    : 
     normal_value(1.0/(double)bins),
     angles(bins, 0.0),
     bin_size(Math::pi_2/bins), // size of a bin in rad
@@ -34,7 +34,7 @@ public:
 
   inline void add(double angle, double wight = 1.0) {
     for(size_t i = 0; i < angles.size(); i++) {
-      double x = (double) i * bin_size;
+      double x = i*bin_size;
       angles[i] += exp(-Math::sqr(sin(2.0*(angle - x)) / smoothing))*wight;
     }
     normalized = false;
@@ -51,7 +51,7 @@ public:
         angles[i] /= sum;
       }
     } else {
-      double n = 1.0 / (double) angles.size();
+      double n = 1.0/angles.size();
       for(size_t i = 0; i < angles.size(); i++) {
         angles[i] = n;
       }

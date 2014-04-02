@@ -1,8 +1,8 @@
-/*
+/* 
  * File:   NeoLineDetector.cpp
  * Author: claas
  * Author: Heinrich Mellmann
- *
+ * 
  * Created on 14. march 2011, 14:22
  */
 
@@ -38,14 +38,14 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
 
   double threshold = 0.8;
   MODIFY("NeoLineDetector:threshold",threshold);
-
+  
   //calculateNeigbors(getScanLineEdgelPercept().pairs, edgelNeighbors, threshold);
   //calculatePairs(getScanLineEdgelPercept().pairs, edgelPairs, threshold);
   calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, threshold);
 
   DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:edgel_pairs",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-    for(size_t i = 0; i < edgelPairs.size(); i++)
+    for(size_t i = 0; i < edgelPairs.size(); i++) 
     {
       const EdgelPair& pair = edgelPairs[i];
       const ScanLineEdgelPercept::EdgelPair& edgelOne = getScanLineEdgelPercept().pairs[pair.left];
@@ -93,12 +93,12 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     {
       const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
       bool draw_node = false;
-
+      
       Vector2d pointOnFieldEdgel;
       if(!CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), getCameraInfo(),
-          edgel.point,
-          0.0,
+          getCameraMatrix(), getCameraInfo(), 
+          edgel.point, 
+          0.0, 
           pointOnFieldEdgel))
       {
         continue;
@@ -110,8 +110,8 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         Vector2d pointOnField;
         if(CameraGeometry::imagePixelToFieldCoord(
             getCameraMatrix(), getCameraInfo(),
-            edgel_s.point,
-            0.0,
+            edgel_s.point, 
+            0.0, 
             pointOnField))
         {
           PEN("000000",1);
@@ -124,9 +124,9 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         const ScanLineEdgelPercept::EdgelPair& edgel_s = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
         Vector2d pointOnField;
         if(CameraGeometry::imagePixelToFieldCoord(
-            getCameraMatrix(), getCameraInfo(),
-            edgel_s.point,
-            0.0,
+            getCameraMatrix(), getCameraInfo(), 
+            edgel_s.point, 
+            0.0, 
             pointOnField))
         {
           PEN("000000",1);
@@ -179,10 +179,10 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
 
   // calculate the projection for all edgels
   edgelProjections.resize(getScanLineEdgelPercept().pairs.size());
-  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
-  {
+  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
+  {  
     const EdgelT<double>& edgelOne = getScanLineEdgelPercept().pairs[i];
-
+    
     CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), getCameraInfo(),
       edgelOne.point.x,
@@ -213,11 +213,11 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       double offset = 150;
 
       FIELD_DRAWING_CONTEXT;
-      for(int x = 0; x < (int) getProbabilisticQuadCompas().size()*4+1; x++)
+      for(size_t x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++) 
       {
         double v = getProbabilisticQuadCompas()[x];
         Vector2d a(offset + v*scale, 0.0);
-        a.rotate(Math::fromDegrees((double) x * 5));
+        a.rotate(Math::fromDegrees(x*5));
         if(x > 0) {
 
           double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
@@ -254,7 +254,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   // test: extract chains from neighbors
   CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   size_t k = 0;
-  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
 
@@ -308,7 +308,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     }
   }
   */
-
+  
   /*
   // test: cluster the pairs
   double max_cluster_dist = 3.0;
@@ -360,7 +360,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i_next];
 
         const Math::Line& line = lines[k].getLine();
-        if(cluster[i_next] != -1 || line.minDistance(edgel.point) > max_cluster_dist)
+        if(cluster[i_next] != -1 || line.minDistance(edgel.point) > max_cluster_dist) 
         {
           if(i_left == i_next) {
             i_left = -1;
@@ -433,12 +433,12 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   for(size_t i = 0; i < lines.size(); i++) {
     EdgelCluster& line = lines[i];
     if(line.getEdgels().size() < 3) { continue; }
-
+    
     Vector2d p0 = line.getEdgels()[0].point;
     Vector2d p1 = line.getEdgels()[1].point;
 
     double eta = 0;
-    for(size_t j = 2; j < line.getEdgels().size(); j++)
+    for(size_t j = 2; j < line.getEdgels().size(); j++) 
     {
       Vector2d p2 = line.getEdgels()[j].point;
 
@@ -462,7 +462,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   for(size_t i = 0; i < lines.size(); i++) {
     if(line_deleted[i] || lines[i].size() == 0) { continue; }
     //Math::Line line = lines[i].getLine();
-    for(size_t j = i+1; j < lines.size(); j++)
+    for(size_t j = i+1; j < lines.size(); j++) 
     {
       if(line_deleted[j] || lines[j].size() == 0) { continue; }
       const EdgelCluster& clusterTwo = lines[j];
@@ -473,12 +473,12 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
         Vector2d v = (lines[j].back() - lines[i].front()).normalize().rotateLeft();
         Vector2d vi = (lines[i].back() - lines[i].front());
         Vector2d vj = (lines[j].back() - lines[j].front());
-
+        
         const ScanLineEdgelPercept::EdgelPair& pair = *lines[j].getEdgels().begin();
         const Edgel& begin = getScanLineEdgelPercept().edgels[pair.begin];
         const Edgel& end = getScanLineEdgelPercept().edgels[pair.end];
         double lineWidth = fabs(((double)(begin.point - end.point).y) * sin(Math::pi_2 - pair.direction.angle()));
-
+        
         if(0.5*(fabs(v*vi) + fabs(v*vj)) < lineWidth*segmentSimThreshold) {
           lines[i].add(clusterTwo);
           line_deleted[j] = true;
@@ -511,7 +511,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   );
 
   DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:draw_lines",
-    for(size_t i = 0; i < lines.size(); i++)
+    for(size_t i = 0; i < lines.size(); i++) 
     {
       Math::Line line = lines[i].getLine();
       int idx = lines[i].id() % (unsigned int)ColorClasses::numOfColors;
@@ -567,12 +567,12 @@ double NeoLineDetector::segmentSim(const Vector2d& p0, const Vector2d& p1, const
 void NeoLineDetector::calculatePairs(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<EdgelPair>& edgelPairs, double threshold) const
 {
   edgelPairs.clear();
-  for(size_t i = 0; i < edgels.size(); i++)
+  for(size_t i = 0; i < edgels.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
     int j_max = -1;
     double s_max = 0.0;
-    for(size_t j = i+1; j < edgels.size(); j++)
+    for(size_t j = i+1; j < edgels.size(); j++) 
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
@@ -590,9 +590,9 @@ void NeoLineDetector::calculatePairs(const std::vector<ScanLineEdgelPercept::Edg
     if(j_max > -1 && s_max > threshold) {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j_max];
       if(edgelOne.id < edgelTwo.id) {
-        edgelPairs.push_back(EdgelPair((int) i,j_max,s_max));
+        edgelPairs.push_back(EdgelPair(i,j_max,s_max));
       } else {
-        edgelPairs.push_back(EdgelPair(j_max,(int) i,s_max));
+        edgelPairs.push_back(EdgelPair(j_max,i,s_max));
       }
     }
   }//end for i
@@ -602,12 +602,12 @@ void NeoLineDetector::calculatePairs(const std::vector<ScanLineEdgelPercept::Edg
 void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<Neighbors>& neighbors, double threshold) const
 {
   neighbors.resize(edgels.size());
-  for(size_t i = 0; i < edgels.size(); i++)
+  for(size_t i = 0; i < edgels.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
-//    int j_max = -1;
+    int j_max = -1;
     double s_max = 0.0;
-    for(size_t j = i+1; j < edgels.size(); j++)
+    for(size_t j = i+1; j < edgels.size(); j++) 
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
@@ -617,31 +617,31 @@ void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::
 
         if(s > s_max) {
           s_max = s;
-//          j_max = (int)j;
+          j_max = (int)j;
         }
 
         // update neigbors
         if(edgelTwo.id < edgelOne.id) { // edgelTwo (j_max) is left of edgelOne (i)
-
+        
           if(neighbors[i].left == -1 || neighbors[i].w_left < s) { // set the left neighbor for i
-            neighbors[i].left = (int) j;
+            neighbors[i].left = j;
             neighbors[i].w_left = s;
           }
 
           if(neighbors[j].right == -1 || neighbors[j].w_right < s) { // set the right neighbor for j_max
-            neighbors[j].right = (int) i;
+            neighbors[j].right = i;
             neighbors[j].w_right = s;
           }
 
         } else { // edgelTwo (j_max) is right of edgelOne (i)
-
+        
           if(neighbors[i].right == -1 || neighbors[i].w_right < s) { // set the right neighbor for i
-            neighbors[i].right = (int) j;
+            neighbors[i].right = j;
             neighbors[i].w_right = s;
           }
 
           if(neighbors[j].left == -1 || neighbors[j].w_left < s) { // set the left neighbor for j_max
-            neighbors[j].left = (int) i;
+            neighbors[j].left = i;
             neighbors[j].w_left = s;
           }
         }
@@ -652,14 +652,14 @@ void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::
 
 
 void NeoLineDetector::calculatePairsAndNeigbors(
-  const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels,
-  std::vector<EdgelPair>& edgelPairs,
+  const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, 
+  std::vector<EdgelPair>& edgelPairs, 
   std::vector<Neighbors>& neighbors, double threshold) const
 {
   neighbors.resize(edgels.size());
   edgelPairs.clear();
 
-  for(size_t i = 0; i < edgels.size(); i++)
+  for(size_t i = 0; i < edgels.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
     int j_max = -1;
@@ -667,7 +667,7 @@ void NeoLineDetector::calculatePairsAndNeigbors(
 
     neighbors[i].reset();
 
-    for(size_t j = i+1; j < edgels.size(); j++)
+    for(size_t j = i+1; j < edgels.size(); j++) 
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
@@ -682,26 +682,26 @@ void NeoLineDetector::calculatePairsAndNeigbors(
 
         // update neigbors
         if(edgelTwo.id < edgelOne.id) { // edgelTwo (j_max) is left of edgelOne (i)
-
+        
           if(neighbors[i].left == -1 || neighbors[i].w_left < s) { // set the left neighbor for i
-            neighbors[i].left = (int) j;
+            neighbors[i].left = j;
             neighbors[i].w_left = s;
           }
 
           if(neighbors[j].right == -1 || neighbors[j].w_right < s) { // set the right neighbor for j_max
-            neighbors[j].right = (int) i;
+            neighbors[j].right = i;
             neighbors[j].w_right = s;
           }
 
         } else { // edgelTwo (j_max) is right of edgelOne (i)
-
+        
           if(neighbors[i].right == -1 || neighbors[i].w_right < s) { // set the right neighbor for i
-            neighbors[i].right = (int) j;
+            neighbors[i].right = j;
             neighbors[i].w_right = s;
           }
 
           if(neighbors[j].left == -1 || neighbors[j].w_left < s) { // set the left neighbor for j_max
-            neighbors[j].left = (int) i;
+            neighbors[j].left = i;
             neighbors[j].w_left = s;
           }
         }
@@ -711,9 +711,9 @@ void NeoLineDetector::calculatePairsAndNeigbors(
     if(j_max > -1 && s_max > threshold) {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j_max];
       if(edgelOne.id < edgelTwo.id) {
-        edgelPairs.push_back(EdgelPair((int) i,j_max,s_max));
+        edgelPairs.push_back(EdgelPair(i,j_max,s_max));
       } else {
-        edgelPairs.push_back(EdgelPair(j_max,(int) i,s_max));
+        edgelPairs.push_back(EdgelPair(j_max,i,s_max));
       }
     }
   }//end for i

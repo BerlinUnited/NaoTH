@@ -113,10 +113,17 @@ private: // local types
       PARAMETER_REGISTER(updateByLinePoints) = true;
       PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
+      PARAMETER_REGISTER(linePointsMaxNumber) = 10;
+
+      PARAMETER_REGISTER(updateByOldPose) = false;
+      PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
 
       PARAMETER_REGISTER(updateByCompas) = true;
 
       PARAMETER_REGISTER(treatLiftUp) = true;
+
+      PARAMETER_REGISTER(resampleSUS) = false;
+      PARAMETER_REGISTER(resampleGT07) = true;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -140,9 +147,16 @@ private: // local types
     bool updateByLinePoints;
     double linePointsSigmaDistance;
     double linePointsSigmaAngle;
+    int linePointsMaxNumber;
+
+    bool updateByOldPose;
+    double oldPoseSigmaDistance;
 
     bool updateByCompas;
     bool treatLiftUp;
+
+    bool resampleSUS;
+    bool resampleGT07;
 
     virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
@@ -165,11 +179,11 @@ private: // local types
     {
     }
 
-    void update(Sample& sample) {
+    double update(const Sample& sample) const {
       double distDiff = segment.minDistance(sample.translation);
       double angleDiff = Math::normalize(angle - sample.rotation);
-      sample.likelihood *= Math::gaussianProbability(distDiff, distDeviation);
-      sample.likelihood *= Math::gaussianProbability(angleDiff, angleDeviation);
+      return Math::gaussianProbability(distDiff, distDeviation) * 
+             Math::gaussianProbability(angleDiff, angleDeviation);
     }
 
     void draw()
@@ -210,6 +224,8 @@ private: // workers
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   void updateByStartPositions(SampleSet& sampleSet) const;
+  void updateByOldPose(SampleSet& sampleSet) const;
+  void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 
   void updateStatistics(SampleSet& sampleSet);
 
