@@ -15,7 +15,7 @@ class CompassDirection : public naoth::Printable
 {
 
 public:
-    CompassDirection(){}
+    CompassDirection() : angle(0.0) {}
     virtual ~CompassDirection(){}
 
     double angle;
