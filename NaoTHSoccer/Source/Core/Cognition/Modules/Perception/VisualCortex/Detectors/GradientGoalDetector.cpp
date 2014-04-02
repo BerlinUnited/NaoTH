@@ -358,6 +358,8 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
   Statistics::Histogram<256> histV;
 
   double sumSquareError = 0.0;
+  double meanSquareFeatureWidth = (candidate.end - candidate.begin).abs2();
+  double sumSquareFeatureWidth = meanSquareFeatureWidth;
 
   //scan 5 times (because 5 scanlines) 5 steps (because 5 pixel between 2 scanlines) along a normal
   //of the horizon, to be able to validate features near that normal as good ones
@@ -405,36 +407,53 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
           Vector2d projection = line.projection(pos);
           double squareError = (Vector2d(pos) - projection).abs2();
 
-          //if error does not raise leave the point to the good points list else drop it out
-          if(squareError <= params.maxFootScanSquareError || sumSquareError == 0.0)
+          double featureWidth = (features[y][j].end - features[y][j].begin).abs2();
+          double squareFeatureWidthError = fabs(featureWidth - meanSquareFeatureWidth);
+
+          //if error in width is to big, drop the point of the good points list
+          if(squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
           {
-            scanDirection = line.getDirection(); //
-            sumSquareError += squareError;
-            lastTestFeatureIdx[y] = j;
-            Vector2i newPos(projection); // cast Vector2d to Vector2i
+            sumSquareFeatureWidth += featureWidth;
+            meanSquareFeatureWidth = sumSquareFeatureWidth / (double) goodFeatures.size();
 
-            if(!getImage().isInside(newPos.x, newPos.y))
+            //if error does not raise leave the point to the good points list else drop it out
+            if(squareError <= params.maxFootScanSquareError || sumSquareError == 0.0)
             {
-              newPos = features[y][j].center;
-            }
-            goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
-            pos = newPos;
+              scanDirection = line.getDirection(); //
+              sumSquareError += squareError;
+              lastTestFeatureIdx[y] = j;
+              Vector2i newPos(projection); // cast Vector2d to Vector2i
 
-            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints",
-              CIRCLE_PX(ColorClasses::black, features[y][j].center.x, features[y][j].center.y, 3);
-              POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
-            );
+              if(!getImage().isInside(newPos.x, newPos.y))
+              {
+                newPos = features[y][j].center;
+              }
+              goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
+              pos = newPos;
+
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints",
+                CIRCLE_PX(ColorClasses::black, features[y][j].center.x, features[y][j].center.y, 3);
+                POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
+              );
+            }
+            else
+            {
+              goodFeatures.pop_back();
+            }//end if
           }
           else
           {
+            features[y][j].used = false;
             goodFeatures.pop_back();
-          }
+          }//end if
+
           stop = true;
-        }
-      }
-    }
+        }//end if
+      }//end if
+    }//end for
   }//end for
 
+  //if we found enought good points, add the histogram values to goal post histogram
   if(goodFeatures.size() >= (size_t) params.minGoodPoints)
   {
     for(int i = 0; i < getGoalPostHistograms().VALUE_COUNT; i++)
