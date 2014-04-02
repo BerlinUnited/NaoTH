@@ -18,8 +18,8 @@ using namespace std;
 
 SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 : 
-  uniformGrid(getImage().width(), getImage().height(), 60, 40),
-  cameraID(CameraInfo::Bottom)
+  cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
