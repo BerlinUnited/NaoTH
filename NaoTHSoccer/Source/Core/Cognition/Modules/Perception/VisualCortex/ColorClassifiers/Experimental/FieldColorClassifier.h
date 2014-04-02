@@ -81,10 +81,10 @@ private:
 
     Parameters() : ParameterList("FieldColorParameters")
     {
-      PARAMETER_REGISTER(deviationFactorY) = 3.0;
-      PARAMETER_REGISTER(deviationFactorU) = 3.0;
-      PARAMETER_REGISTER(deviationFactorV) = 3.0;
-      PARAMETER_REGISTER(PostDeviationFactor) = 1.0;
+      PARAMETER_REGISTER(deviationFactorY) = 2.0;
+      PARAMETER_REGISTER(deviationFactorU) = 2.0;
+      PARAMETER_REGISTER(deviationFactorV) = 2.0;
+      PARAMETER_REGISTER(PostDeviationFactor) = 2.5;
 
 
       syncWithConfig();
