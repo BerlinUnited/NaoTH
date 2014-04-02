@@ -55,7 +55,7 @@ option initial_striker{
     action
     {
        arm.control_mode = normal;
-       kick_with_foot(right = true);
+       kick_with_foot(foot = right);
        head.control_mode = search_for_ball;
     }
   }

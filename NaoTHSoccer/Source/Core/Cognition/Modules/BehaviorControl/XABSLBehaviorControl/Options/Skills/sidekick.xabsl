@@ -3,13 +3,13 @@
 
 option sidekick
 {
-  bool @to_right;
+  enum direction @side;
   
   initial state direction
   {
     decision
     {
-		  if(@to_right)
+		  if(@side == right)
 		    goto sidestep_right;
 		  else
 		    goto sidestep_left;
