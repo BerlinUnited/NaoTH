@@ -39,6 +39,7 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:resample_simple", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:resample_gt", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:resample_hm", "", false);
 
   // resulting position
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Cluster", "draw the clustered particle set", false);
@@ -144,7 +145,7 @@ void MonteCarloSelfLocatorSimple::execute()
     resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
 
     FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0,0, "LOCALIZE");
+    TEXT_DRAWING(0, 0, "LOCALIZE");
   }
   else if(state == TRACKING)
   {
@@ -156,7 +157,7 @@ void MonteCarloSelfLocatorSimple::execute()
     }
 
     FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0,0, "TRACKING");
+    TEXT_DRAWING(0, 0, "TRACKING");
   }
 
   calculatePose(theSampleSet);
@@ -175,21 +176,20 @@ void MonteCarloSelfLocatorSimple::execute()
   //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
   PLOT("resamplingPercentage", resamplingPercentage);
   
+
   DEBUG_REQUEST("MCSLS:resample_sus",
-    //if(getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
-      /*nt n = */ resampleSUS(theSampleSet, theSampleSet.size()); //  (int)(effective_number_of_samples+0.5)
-    //if(n < (int)theSampleSet.size()) {
-      sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
-    //}
-    //}
+    /*nt n = */ resampleSUS(theSampleSet, theSampleSet.size()); //  (int)(effective_number_of_samples+0.5)
+    sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
   );
 
   /************************************
    * STEP VII: execude some debug requests (drawings)
    ************************************/
-
   DEBUG_REQUEST("MCSLS:resample_gt", 
-    //resampleGT07(theSampleSet, true);
+    resampleGT07(theSampleSet, true);
+  );
+
+  DEBUG_REQUEST("MCSLS:resample_hm", 
     resampleMH(theSampleSet);
   );
   
@@ -357,7 +357,7 @@ void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lin
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  for(size_t i = 0; i < getLineGraphPercept().edgels.size(); i++) {
+  for(size_t i = 0; i < getLineGraphPercept().edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) {
     const Vector2d& seen_point_relative = getLineGraphPercept().edgels[i].point;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)

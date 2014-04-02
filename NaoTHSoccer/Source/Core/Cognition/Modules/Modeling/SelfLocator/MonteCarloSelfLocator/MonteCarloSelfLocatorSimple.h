@@ -113,6 +113,7 @@ private: // local types
       PARAMETER_REGISTER(updateByLinePoints) = true;
       PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
+      PARAMETER_REGISTER(linePointsMaxNumber) = 10;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
@@ -146,6 +147,7 @@ private: // local types
     bool updateByLinePoints;
     double linePointsSigmaDistance;
     double linePointsSigmaAngle;
+    int linePointsMaxNumber;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
