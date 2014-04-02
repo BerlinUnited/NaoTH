@@ -113,9 +113,20 @@ message ScanLineEndPoint {
   required uint32 ScanLineID = 4;
 }
 
+message Edgel {
+  required IntVector2 point = 1;
+  required DoubleVector2 direction = 2;
+}
+
+message EdgelPair {
+  required int32 begin = 1;
+  required int32 end = 2;
+  required int32 id = 3;
+}
+
 message ScanLineEdgelPercept {
-// TODO
-//  repeated Edgel scanLineEdgels = 1;
+  repeated Edgel edgels = 1;
+  repeated EdgelPair pairs = 3;
   repeated ScanLineEndPoint endPoints = 2;
 }
 

@@ -81,13 +81,13 @@ public:
     }
   }
 
-  int gridWidth() {
+  inline int gridWidth() const {
     return xDensity;
   }
-  int gridHeight() {
+  inline int gridHeight() const {
     return yDensity;
   }
-  int cellSize() {
+  inline int cellSize() const {
     return stepSize;
   }
 
@@ -131,11 +131,20 @@ public:
   Vector2i getFirstFreeCell(const Vector2i& start) const
   {
     ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
-    Vector2i point(start);
-    while (isOccupied(point) && (point.y - stepSize) >= 0) {
-      point.y -= stepSize;
+    Vector2i cell_coord = getCellCoord(start);
+    
+    // do nothing if the cell is free
+    if(!grid[cell_coord.x][cell_coord.y].occupied) {
+      return start;
     }
-    return point;
+
+    for(; cell_coord.y >= 0; cell_coord.y--) {
+      if(!grid[cell_coord.x][cell_coord.y].occupied) {
+        return Vector2i(start.x, (cell_coord.y+1)*cellSize()); // lower border of the cell
+      }
+    }
+
+    return Vector2i(start.x, 0);
   }
 
   void reset()

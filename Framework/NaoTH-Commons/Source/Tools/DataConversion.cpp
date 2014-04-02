@@ -21,7 +21,19 @@ void toMessage(const Vector2d &data, naothmessages::DoubleVector2& msg)
   msg.set_y(data.y);
 }
 
-void fromMessage(const naothmessages::DoubleVector2& msg, Vector2<double>& data)
+void fromMessage(const naothmessages::DoubleVector2& msg, Vector2d& data)
+{
+  data.x = msg.x();
+  data.y = msg.y();
+}
+
+void toMessage(const Vector2i &data, naothmessages::IntVector2& msg)
+{
+  msg.set_x(data.x);
+  msg.set_y(data.y);
+}
+
+void fromMessage(const naothmessages::IntVector2& msg, Vector2i& data)
 {
   data.x = msg.x();
   data.y = msg.y();

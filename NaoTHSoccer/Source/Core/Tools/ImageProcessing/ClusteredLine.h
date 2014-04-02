@@ -79,7 +79,8 @@ public:
       (
         //edgels[count - 1].runID != edgel.runID
         //  ||
-        abs((int) (edgels[count - 1].ScanLineID - edgel.ScanLineID)) > 1
+        //abs((int) (edgels[count - 1].ScanLineID - edgel.ScanLineID)) > 1
+        edgels[count - 1].ScanLineID != edgel.ScanLineID + 1 && edgel.ScanLineID != edgels[count - 1].ScanLineID + 1
       )
       {
         return false;
@@ -90,7 +91,7 @@ public:
     double distance = lineNormal*Vector2d(edgel.center);
 
     // vector in the line direction
-    Vector2d lineDirection(Vector2d(lineNormal).rotateRight());
+    Vector2d lineDirection(Vector2d(lineNormal).rotateLeft());
 
 
     return
@@ -101,7 +102,7 @@ public:
       fabs(Math::normalize(lineDirection.angle() - edgel.center_angle)) < MAX_LINE_ANGLE_DIFF
         &&
       // compare the distance to the line
-      fabs(distance - d) < 2.0
+      fabs(distance - d) < thickness
         &&
       fabs(thickness - edgelThickness) / thickness < 0.4
     );
