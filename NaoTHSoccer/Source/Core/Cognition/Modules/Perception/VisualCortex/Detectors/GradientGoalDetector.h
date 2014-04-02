@@ -75,11 +75,11 @@ public:
     }
     debugStuff(CameraInfo::Bottom);
   }
- 
+
 private:
   static const int imageBorderOffset = 5;
   CameraInfo::CameraID cameraID;
-  
+
   RingBuffer<Vector2i, 5> pointBuffer;
   RingBufferWithSum<double, 5> valueBuffer;
   RingBufferWithSum<double, 5> valueBufferY;
@@ -94,11 +94,12 @@ private:
       PARAMETER_REGISTER(scanlinesDistance) = 6;
       PARAMETER_REGISTER(thresholdUV) = 60;
       PARAMETER_REGISTER(thresholdY) = 140;
-      
+
       PARAMETER_REGISTER(maxFeatureDeviation) = 5;
       PARAMETER_REGISTER(maxFootScanSquareError) = 4.0;
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(footGreenScanSize) = 10;
+      PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -117,6 +118,7 @@ private:
     double maxFootScanSquareError;
     int minGoodPoints;
     double footGreenScanSize; // number of pixels to scan for green below the footpoint
+    double maxFeatureWidthError;
   };
 
   Parameters params;
@@ -169,7 +171,7 @@ private:
   DOUBLE_CAM_REQUIRE(GradientGoalDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(GradientGoalDetector, GoalPercept);
-          
+
 };//end class GradientGoalDetector
 
 #endif // _GradientGoalDetector_H_
