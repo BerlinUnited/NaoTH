@@ -129,27 +129,28 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     // TODO: use walkingTo and shootTo
 
     // check if we can deserialize the user defined data
-    if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+    if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
     {
       naothmessages::BUUserTeamMessage userData;
       try
       {
-        userData.ParseFromArray(spl.data, spl.numOfDataBytes);
-
-        data.bodyID = userData.bodyid();
-        data.timeToBall = userData.timetoball();
-        data.wasStriker = userData.wasstriker();
-        data.isPenalized = userData.ispenalized();
-        data.batteryCharge = userData.batterycharge();
-        data.temperature = userData.temperature();
-        data.teamNumber = userData.teamnumber();
-        data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
-        for(unsigned int i=0; i < data.opponents.size(); i++)
+        if(userData.ParseFromArray(spl.data, spl.numOfDataBytes))
         {
-          const naothmessages::Opponent& oppMsg = userData.opponents(i);
-          TeamMessage::Opponent& opp = data.opponents[i];
-          opp.playerNum = oppMsg.playernum();
-          DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
+          data.bodyID = userData.bodyid();
+          data.timeToBall = userData.timetoball();
+          data.wasStriker = userData.wasstriker();
+          data.isPenalized = userData.ispenalized();
+          data.batteryCharge = userData.batterycharge();
+          data.temperature = userData.temperature();
+          data.teamNumber = userData.teamnumber();
+          data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
+          for(unsigned int i=0; i < data.opponents.size(); i++)
+          {
+            const naothmessages::Opponent& oppMsg = userData.opponents(i);
+            TeamMessage::Opponent& opp = data.opponents[i];
+            opp.playerNum = oppMsg.playernum();
+            DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
+          }
         }
       }
       catch(...)
