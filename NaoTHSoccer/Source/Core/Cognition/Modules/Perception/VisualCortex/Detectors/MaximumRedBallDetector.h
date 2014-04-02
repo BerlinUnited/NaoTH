@@ -106,6 +106,8 @@ private:
   bool getBestBallBruteForce(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest);
   bool getBestBallRansac(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest);
   void drawUsedPoints(const BallPointList& pointList);
+  bool checkBallForGreen (Vector2d center, double radius);
+  void setToLastPointInImage(Vector2i& point);
   
   class Parameters: public ParameterList
   {
@@ -113,12 +115,14 @@ private:
 
     Parameters() : ParameterList("MaximumRedBallDetectorParameters")
     {
-      PARAMETER_REGISTER(gradientThreshold) = 20;
+      PARAMETER_REGISTER(checkBallForGreen) = 0.9;      
+	    PARAMETER_REGISTER(gradientThreshold) = 20;
+      PARAMETER_REGISTER(minPercentOfPointsUsed) = 0.6;
       PARAMETER_REGISTER(stepSize) = 4;
-      PARAMETER_REGISTER(percentOfRadius) = 0.8;
+   //   PARAMETER_REGISTER(percentOfRadius) = 0.9;
       PARAMETER_REGISTER(ransacPercentValid) = 0.05;	  
-      PARAMETER_REGISTER(minSizeInImage) = 3;
-      PARAMETER_REGISTER(maxSizeInImage) = 130;
+      PARAMETER_REGISTER(minRadiusInImage) = 3;
+      PARAMETER_REGISTER(maxRadiusInImage) = 60;
       PARAMETER_REGISTER(maxRansacTries) = 40;
       PARAMETER_REGISTER(maxScanlineSteps) = 50;
       PARAMETER_REGISTER(maxU) = 128;
@@ -132,13 +136,14 @@ private:
     {
       DebugParameterList::getInstance().remove(this);
     }
-
+	  double checkBallForGreen;
+    double minPercentOfPointsUsed;
     int gradientThreshold;
     int stepSize;
-    double percentOfRadius;
+  //  double percentOfRadius;
     double ransacPercentValid;
-    int minSizeInImage;
-    int maxSizeInImage;
+    int minRadiusInImage;
+    int maxRadiusInImage;
     int maxRansacTries;
     int maxScanlineSteps;
     int maxU;
