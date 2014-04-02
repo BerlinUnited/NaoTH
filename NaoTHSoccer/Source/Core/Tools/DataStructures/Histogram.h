@@ -108,7 +108,7 @@ namespace Statistics
       //set maximal total sum for recalulation of bins
       void setMaxTotalSum(int maxSum)
       {
-        maxTotalSum = maxSum > 10 * size ? maxSum : 10 * size;
+        maxTotalSum = maxSum < maxInt / 2 ? maxSum * 2 : maxInt;// > 10 * size ? maxSum : 10 * size;
       }
 
       //reset maximal total sum for recalulation of bins to max integer value
@@ -141,7 +141,7 @@ namespace Statistics
         skewness = 0.0;
         kurtosis = 0.0;
         //can only be true if accumulation behaviour is used and total sum is about to reach max value of int
-        bool reachingMaxSum = sum + 10 * size >= maxTotalSum;
+        bool reachingMaxSum = sum >= maxTotalSum;
         double newSum = 0.0;
         int maxRate = 0;
         for(int i = 0; i < size; i++)
@@ -151,7 +151,7 @@ namespace Statistics
           //recalculate bin values by use of normalized bin value and the total sum of first run
           //we do loose some accuracy here and total sum of bins is not equal to the one from first run because of rounding doubles to ints
           if(reachingMaxSum) 
-            rawData[i] = (int) Math::round(normalizedData[i] * 10 * size); 
+            rawData[i] = (int) Math::round(normalizedData[i] *maxTotalSum * 0.5); 
           newSum += rawData[i];
           
           if(maxRate < rawData[i])

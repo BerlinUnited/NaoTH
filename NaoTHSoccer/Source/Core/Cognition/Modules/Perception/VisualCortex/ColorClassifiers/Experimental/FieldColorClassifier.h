@@ -65,6 +65,15 @@ private:
   Statistics::Histogram<256> histY;
   Statistics::Histogram<256> histU;
   Statistics::Histogram<256> histV;
+
+  Statistics::Histogram<256> histCommonY;
+  Statistics::Histogram<256> histCommonV;
+  Statistics::Histogram<256> histCommonU;
+
+  Statistics::Histogram<256> histSigmaY;
+  Statistics::Histogram<256> histSigmaV;
+  Statistics::Histogram<256> histSigmaU;
+
   
   class Parameters: public ParameterList
   {
@@ -72,7 +81,11 @@ private:
 
     Parameters() : ParameterList("FieldColorParameters")
     {
-      PARAMETER_REGISTER(deviationFactor) = 2.0;
+      PARAMETER_REGISTER(deviationFactorY) = 3.0;
+      PARAMETER_REGISTER(deviationFactorU) = 3.0;
+      PARAMETER_REGISTER(deviationFactorV) = 3.0;
+      PARAMETER_REGISTER(PostDeviationFactor) = 1.0;
+
 
       syncWithConfig();
 
@@ -84,7 +97,10 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    double deviationFactor;
+    double deviationFactorY;
+    double deviationFactorU;
+    double deviationFactorV;
+    double PostDeviationFactor;
   };
 
   Parameters params;
