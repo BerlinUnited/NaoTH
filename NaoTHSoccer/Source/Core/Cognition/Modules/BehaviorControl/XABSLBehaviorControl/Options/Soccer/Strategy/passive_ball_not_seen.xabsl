@@ -1,5 +1,6 @@
 option passive_ball_not_seen
 {
+
   common decision 
   {
     if(ball.was_seen)
@@ -9,8 +10,8 @@ option passive_ball_not_seen
   initial state look_around
   {
     decision {
-      else if(state_time > 3000)
-        goto search_far;
+      else if(state_time > 10000)
+          goto turn_to_opponent_direction;
       else
         stay;
     }
@@ -20,22 +21,10 @@ option passive_ball_not_seen
     }
   }
 
-  state search_far {
-    decision {
-      else if(state_time>10000)
-        goto turn_to_opponent_direction;
-      else
-        stay;
-    }
-    action {
-      simple_search_ball();
-    }
-  }
-
   state turn_to_opponent_direction {
     decision {
       else if(abs(value=(0-robot_pose.planned.rotation))<10)
-        goto look_around;
+        goto look_around_2;
       else
         stay;
     }
@@ -44,6 +33,63 @@ option passive_ball_not_seen
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
       motion.walk_speed.rot= abs(value=(0-robot_pose.planned.rotation))>10?(0-robot_pose.planned.rotation):0;
+      head.control_mode = search_for_ball;      
+    }
+  }
+
+  state look_around_2{
+    decision {
+      else if(state_time > 10000)
+        //goto search_far;
+          goto decide_turn_direction;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state decide_turn_direction{
+    decision{
+      else if(robot_pose.planned.rotation < 0)
+        goto turn_right_to_own_direction;
+      else
+        goto turn_left_to_own_direction;
+    }
+    action{
+    }
+  }
+
+  state turn_left_to_own_direction {
+    decision {
+      else if(abs(value=(180-robot_pose.planned.rotation))<10 )
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot= abs(value=(180-robot_pose.planned.rotation))>10?(180-robot_pose.planned.rotation):0;
+      head.control_mode = search_for_ball;      
+    }
+  }
+
+   state turn_right_to_own_direction {
+    decision {
+      else if(abs(value=(-180-robot_pose.planned.rotation))<10 )
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot= abs(value=(-180-robot_pose.planned.rotation))>10?(-180-robot_pose.planned.rotation):0;
       head.control_mode = search_for_ball;      
     }
   }
