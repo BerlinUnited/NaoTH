@@ -13,8 +13,8 @@
 
 HistogramProvider::HistogramProvider()
 :
-  uniformGrid(getImage().width(), getImage().height(), 60, 40),
-  cameraID(CameraInfo::Bottom)
+  cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {}
 
 void HistogramProvider::execute(CameraInfo::CameraID id)

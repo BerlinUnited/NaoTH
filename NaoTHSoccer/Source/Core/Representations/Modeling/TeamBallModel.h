@@ -12,6 +12,9 @@ class TeamBallModel
 {
 public:
   TeamBallModel()
+      : time(0),
+        goalieTime(0),
+        strikerTime(0)
   {
   }
 
