@@ -54,8 +54,9 @@ public:
 
   void execute()
   {
-     execute(CameraInfo::Top);
-     execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
+    setPercept();
   };
 
 private:
@@ -88,7 +89,7 @@ private:
 
   Parameters params;
 
-
+  void setPercept();
   double gauss(double sigma, double mean, double x);
 
   void runDebugRequests();

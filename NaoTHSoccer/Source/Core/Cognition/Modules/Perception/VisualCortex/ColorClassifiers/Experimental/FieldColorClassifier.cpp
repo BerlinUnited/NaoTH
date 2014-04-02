@@ -61,11 +61,11 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
         double s = 0.0;
         if(i <= histY.common)
         {
-          s = (histY.common - start) / 4.0;
+          s = (histY.common - start) / 8.0;
         }
         else if(i > histY.common)
         {
-          s = (end - histY.common) / 4.0;
+          s = (end - histY.common) / 8.0;
         }
         f = gauss(s, histY.common, i);
       }
@@ -161,6 +161,21 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
   );
 
   runDebugRequests();
+}
+
+void FieldColorClassifier::setPercept()
+{
+  int lowBorderV = (int) (histV.median - params.deviationFactor * histV.sigma);
+  int highBorderV = (int) (histV.median + params.deviationFactor * histV.sigma);
+  int lowBorderU = (int) (histU.median - params.deviationFactor * histU.sigma);
+  int highBorderU = (int) (histU.median + params.deviationFactor * histU.sigma);
+  int lowBorderY = (int) (histY.median - params.deviationFactor * histY.sigma);
+  int highBorderY = (int) (histY.median + params.deviationFactor * histY.sigma);
+
+  getFieldColorPercept().range.set(lowBorderY, lowBorderU, lowBorderV, highBorderY, highBorderU, highBorderV);
+  getFieldColorPercept().lastUpdated = getFrameInfo();
+  getFieldColorPerceptTop().range.set(lowBorderY, lowBorderU, lowBorderV, highBorderY, highBorderU, highBorderV);
+  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
 }
 
 double FieldColorClassifier::gauss(double sigma, double mean, double x)
