@@ -220,8 +220,8 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
     histCommonV.calculate();
     histSigmaV.calculate();
 
-    double lowBorderV = histCommonV.common - params.PostDeviationFactor * histV.sigma;
-    double highBorderV = histCommonV.common + params.PostDeviationFactor * histV.sigma;
+    //double lowBorderV = histCommonV.common - params.PostDeviationFactor * histV.sigma;
+    //double highBorderV = histCommonV.common + params.PostDeviationFactor * histV.sigma;
 
     for(unsigned int i = 0; i < getColoredGrid().uniformGrid.size(); i++)
     {
