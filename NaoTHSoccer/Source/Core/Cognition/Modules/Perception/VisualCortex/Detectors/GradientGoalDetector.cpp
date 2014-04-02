@@ -150,8 +150,9 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
           //scan along the post to find the foot point of it to be sure its on the field
           scanForFootPoints(postScanDirection, goodFeatures.back().center, params.thresholdUV, params.thresholdY);
 
-          scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1),
-            goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+          if(getGoalPercept().getNumberOfSeenPosts() > 0)
+            scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1),
+              goodFeatures.front().center, params.thresholdUV, params.thresholdY);
         }
       }
     }//end for features[0].size()
