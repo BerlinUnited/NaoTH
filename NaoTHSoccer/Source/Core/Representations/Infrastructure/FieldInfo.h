@@ -89,6 +89,7 @@ public:
   double yPosLeftGoalpost;
 
   Geometry::Rect2d carpetRect;
+  Geometry::Rect2d ownHalfRect;
 
   enum LineCrossingsId
   {

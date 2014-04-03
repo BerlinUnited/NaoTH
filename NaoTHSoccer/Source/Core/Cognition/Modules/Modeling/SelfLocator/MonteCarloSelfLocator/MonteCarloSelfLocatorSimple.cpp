@@ -55,7 +55,12 @@ void MonteCarloSelfLocatorSimple::execute()
 
   DEBUG_REQUEST("MCSLS:reset_samples",
     
-    initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+    if(parameters.resetOwnHalf) {
+      initializeSampleSet(getFieldInfo().ownHalfRect, theSampleSet);
+    } else {
+      initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+    }
+    
     mhBackendSet = theSampleSet;
     state = LOCALIZE;
 
@@ -74,10 +79,15 @@ void MonteCarloSelfLocatorSimple::execute()
   if( motion_ok && // only in stand or init(!)
       getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
-      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
+      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp )) // we lose the ground contact for more then 1s
   {
     
-    initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+    if(parameters.resetOwnHalf) {
+      initializeSampleSet(getFieldInfo().ownHalfRect, theSampleSet);
+    } else {
+      initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+    }
+
     mhBackendSet = theSampleSet;
     state = LOCALIZE;
 
@@ -90,7 +100,7 @@ void MonteCarloSelfLocatorSimple::execute()
     return;
   }//end if
 
-  if(false && getMotionStatus().currentMotion == motion::init) {
+  if(getMotionStatus().currentMotion == motion::init) {
     DEBUG_REQUEST("MCSLS:draw_Samples", 
       theSampleSet.drawImportance();
     );
@@ -108,7 +118,11 @@ void MonteCarloSelfLocatorSimple::execute()
   updateBySensors(theSampleSet);
   
   if(state == LOCALIZE) {
-    updateByStartPositions(theSampleSet);
+    if(getGameData().gameState == GameData::set) {
+      updateByOwnHalf(theSampleSet);
+    } else {
+      updateByStartPositions(theSampleSet);
+    }
   }
 
   if(state == TRACKING) {
@@ -133,8 +147,6 @@ void MonteCarloSelfLocatorSimple::execute()
   
   if(state == LOCALIZE) 
   {
-    updateByStartPositions(theSampleSet);
-
     // sensor resetting
     sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
 
@@ -159,6 +171,7 @@ void MonteCarloSelfLocatorSimple::execute()
     FIELD_DRAWING_CONTEXT;
     TEXT_DRAWING(0, 0, "TRACKING");
   }
+
 
   calculatePose(theSampleSet);
 
@@ -406,6 +419,21 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
   FIELD_DRAWING_CONTEXT;
   leftStartingLine.draw();
   rightStartingLine.draw();
+}
+
+void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
+{
+  for(unsigned int s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+
+    double angleDiff = Math::normalize(sample.rotation - 0);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, 0.2);
+  }
 }
 
 

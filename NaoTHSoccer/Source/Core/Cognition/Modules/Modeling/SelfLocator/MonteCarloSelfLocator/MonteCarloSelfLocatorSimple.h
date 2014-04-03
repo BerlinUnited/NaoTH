@@ -20,6 +20,7 @@
 // basic info
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 // motion / kinematics
@@ -53,6 +54,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo) // only for visualization of the pose
+  REQUIRE(GameData)
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
@@ -121,6 +123,9 @@ private: // local types
       PARAMETER_REGISTER(updateByCompas) = true;
 
       PARAMETER_REGISTER(treatLiftUp) = true;
+      PARAMETER_REGISTER(resetOwnHalf) = false;
+      PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
+      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
@@ -154,6 +159,9 @@ private: // local types
 
     bool updateByCompas;
     bool treatLiftUp;
+    bool resetOwnHalf;
+    double downWeightFactorOwnHalf;
+    double maxTimeForLiftUp;
 
     bool resampleSUS;
     bool resampleGT07;
@@ -224,6 +232,7 @@ private: // workers
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   void updateByStartPositions(SampleSet& sampleSet) const;
+  void updateByOwnHalf(SampleSet& sampleSet) const;
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 
