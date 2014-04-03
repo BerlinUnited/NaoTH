@@ -1,0 +1,106 @@
+option decide_and_go_to_passive_pos_b
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+	  decision {
+      else 
+        goto check_player_number;
+	  }
+	  action {
+	  }
+	}  
+  
+  state check_player_number
+  {
+    decision{
+      else if(game.player_number == 2)
+          goto goto_passive_position_supporter2;
+      else if(game.player_number == 3)
+          goto goto_passive_position_striker;
+      else if(game.player_number == 4)
+          goto goto_passive_position_defender;          
+      else if(game.player_number == 5)
+          goto goto_passive_position_supporter;
+      else
+          stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state goto_passive_position_striker {
+    decision {
+      else if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+      go_to_and_keep_passive_position(
+      x=-field.centerCircleRadius-300,
+      y=0,
+      rot=0);
+    }
+  }
+
+  state goto_passive_position_supporter {
+    decision {
+      else if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+    //go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
+      go_to_and_keep_passive_position(
+        x = (-field.centerCircleRadius+field.xPosOwnPenaltyMark)/2, 
+        y = 0, 
+        rot = 0);
+    }
+  }
+
+  state goto_passive_position_defender {
+    decision {
+      else if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+      go_to_and_keep_passive_position(
+      x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2,
+      y=field.yPosRightGoal,
+      rot=0);
+
+    }
+  }
+
+  state goto_passive_position_supporter2{
+    decision {
+      else if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+    //go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
+      go_to_and_keep_passive_position(
+        x = (field.xPosOwnPenaltyMark + field.xPosOwnPenaltyArea)/2,
+        y = field.yPosLeftGoal, 
+        rot=-15);
+    }
+  }
+
+  target state arrived{
+    action {
+      passive_behavior();
+    }
+  }
+}

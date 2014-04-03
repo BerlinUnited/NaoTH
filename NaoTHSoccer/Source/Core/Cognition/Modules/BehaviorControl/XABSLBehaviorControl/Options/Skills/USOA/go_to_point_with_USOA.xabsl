@@ -9,18 +9,21 @@ option go_to_point_with_USOA
  /** absolute rotation on field */
  float @rot; // -180...180 "deg";
 
- initial state go
+  initial state go
   {
-  
     decision
     {
-      if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
-            &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
-          goto approach_carefully;
-      else if(obstacle.ultrasound.left.distance < 400 && (obstacle.ultrasound.blockedtime > 100))
-          goto avoid_left;
-      else if(obstacle.ultrasound.right.distance < 400 && (obstacle.ultrasound.blockedtime > 100))
-          goto avoid_right;
+      if(obstacle.ultrasound.blockedtime > 100){
+	      if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
+	            &&(obstacle.ultrasound.distance<400))
+	          goto approach_carefully;
+	      else if(obstacle.ultrasound.left.distance < 400)
+	          goto avoid_left;
+	      else if(obstacle.ultrasound.right.distance < 400)
+	          goto avoid_right;
+        else
+          stay;
+      }
       else if(action_done)
         goto finish;
       else
@@ -98,6 +101,13 @@ option go_to_point_with_USOA
         goto finish;
       else if (obstacle.ultrasound.distance>400)
         goto go;
+      else if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) > obstacle.ultrasound.distance)
+              && obstacle.ultrasound.blockedtime > 100){
+        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+           goto avoid_left;
+        else
+           goto avoid_right;
+      }
       else
         stay;
     }
