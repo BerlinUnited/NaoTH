@@ -171,6 +171,8 @@ private:
   /** */
   ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
 
+  bool validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const;
+
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
 
