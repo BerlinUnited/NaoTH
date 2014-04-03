@@ -171,20 +171,22 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
     );
 
-  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
+  getFieldColorPercept().lastUpdated = getFrameInfo();
 
-  getFieldColorPerceptTop().range.set(
-    maxWeightedIndexY - (int)getParameters().fieldColorMin.y,
-    (int)maxWeightedIndexCb - (int)getParameters().fieldColorMax.u,
-    (int)maxWeightedIndexCr - (int)getParameters().fieldColorMax.v,
+  if(parameters.classifyInBothImages < 1)
+  {
+    getFieldColorPerceptTop().range.set(
+      maxWeightedIndexY - (int)getParameters().fieldColorMin.y,
+      (int)maxWeightedIndexCb - (int)getParameters().fieldColorMax.u,
+      (int)maxWeightedIndexCr - (int)getParameters().fieldColorMax.v,
 
-    maxWeightedIndexY + (int)getParameters().fieldColorMax.y,
-    (int)maxWeightedIndexCb + (int)getParameters().fieldColorMax.u,
-    (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
-    );
+      maxWeightedIndexY + (int)getParameters().fieldColorMax.y,
+      (int)maxWeightedIndexCb + (int)getParameters().fieldColorMax.u,
+      (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
+      );
 
-  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
-
+    getFieldColorPerceptTop().lastUpdated = getFrameInfo();
+  }
   
 
 }//end execute
