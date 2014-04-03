@@ -10,8 +10,12 @@ option passive_ball_not_seen
   initial state look_around
   {
     decision {
-      else if(state_time > 10000)
-          goto turn_to_opponent_direction;
+      else if(state_time > 1000){
+          if(atan2(y=ball.preview.y,x=ball.preview.x) < 0)
+            goto turn_to_right;
+          else
+            goto turn_to_left;
+      }
       else
         stay;
     }
@@ -21,10 +25,10 @@ option passive_ball_not_seen
     }
   }
 
-  state turn_to_opponent_direction {
+  state turn_to_left {
     decision {
-      else if(abs(value=(0-robot_pose.planned.rotation))<10)
-        goto look_around_2;
+      else if(state_time > 2500)
+        goto look_around_left;
       else
         stay;
     }
@@ -32,16 +36,32 @@ option passive_ball_not_seen
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= abs(value=(0-robot_pose.planned.rotation))>10?(0-robot_pose.planned.rotation):0;
+      motion.walk_speed.rot= 90;
       head.control_mode = search_for_ball;      
     }
   }
 
-  state look_around_2{
+  state turn_to_right {
     decision {
-      else if(state_time > 10000)
-        //goto search_far;
-          goto decide_turn_direction;
+      else if(state_time > 2500)
+        goto look_around_right;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot= -90;
+      head.control_mode = search_for_ball;      
+    }
+  }
+
+  state look_around_left {
+    decision {
+      else if(state_time > 5000){
+          goto turn_to_left;
+      }
       else
         stay;
     }
@@ -51,46 +71,17 @@ option passive_ball_not_seen
     }
   }
 
-  state decide_turn_direction{
-    decision{
-      else if(robot_pose.planned.rotation < 0)
-        goto turn_right_to_own_direction;
-      else
-        goto turn_left_to_own_direction;
-    }
-    action{
-    }
-  }
-
-  state turn_left_to_own_direction {
+  state look_around_right {
     decision {
-      else if(abs(value=(180-robot_pose.planned.rotation))<10 )
-        goto look_around;
+      else if(state_time > 5000){
+          goto turn_to_right;
+      }
       else
         stay;
     }
     action {
-      motion.type=walk;
-      motion.walk_speed.x=0;
-      motion.walk_speed.y=0;
-      motion.walk_speed.rot= abs(value=(180-robot_pose.planned.rotation))>10?(180-robot_pose.planned.rotation):0;
-      head.control_mode = search_for_ball;      
-    }
-  }
-
-   state turn_right_to_own_direction {
-    decision {
-      else if(abs(value=(-180-robot_pose.planned.rotation))<10 )
-        goto look_around;
-      else
-        stay;
-    }
-    action {
-      motion.type=walk;
-      motion.walk_speed.x=0;
-      motion.walk_speed.y=0;
-      motion.walk_speed.rot= abs(value=(-180-robot_pose.planned.rotation))>10?(-180-robot_pose.planned.rotation):0;
-      head.control_mode = search_for_ball;      
+      head.control_mode = search_for_ball;
+      motion.type = stand;
     }
   }
 

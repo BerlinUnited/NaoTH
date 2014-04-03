@@ -37,7 +37,8 @@ option positioning_for_opp_kickoff
       //der genau auf der Linie ist
       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200, y=0, rot=0);
       motion.walk.style = stable;
-      head.control_mode = search_for_goal;
+      //head.control_mode = search_for_goal;
+      head.control_mode = search_for_goal_opp;
       // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100) alt;
     }
   }
