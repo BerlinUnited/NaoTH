@@ -98,12 +98,19 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSize)
     {
       getImage().get(point.x, point.y, pixel);
+      double u = (double) pixel.u/0.493;      
+   //  int blue = (int) (1.164* (pixel.y-16) + 0.5);
+      int blue = (int) (pixel.y + 1.765*(pixel.u-128)+0.5);
+     int red =  (int) (pixel.y + 1.400 * (pixel.v -128) + 0.5);
+      int green = (int) ((pixel.y - 0.343 * (pixel.u-128) - 0.711 * (pixel.v-128)) + 0.5);
       if
       (
+        blue < params.maxBlue && green < params.maxGreen && red > params.minRed &&
         maxRedPeak < pixel.v && 
         poly.isInside_inline(point) && 
         checkIfPixelIsOrange(pixel)
-        && !getBodyContour().isOccupied(point)
+        && !getBodyContour().isOccupied(point) 
+        
       )
       {
         DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
