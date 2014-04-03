@@ -106,14 +106,14 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
 
     Pose2D robotPose = new Pose2D();
 
-    {
-      Pen pen = new Pen(30, Color.gray);
-      drawingList.add(pen);
-    }
+    drawingList.add(new Pen(30, Color.gray));
+    
     robotPose = new Pose2D(msg.pose_x,
             msg.pose_y,
             msg.pose_a);
 
+    
+    drawingList.add(new Pen(1, msg.team == 0 ? Color.BLUE : Color.RED));
     Robot robot = new Robot(
             robotPose.translation.x,
             robotPose.translation.y,
@@ -121,14 +121,13 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
 
     drawingList.add(robot);
 
-     try
+    try
     {
       Representations.BUUserTeamMessage bumsg = Representations.BUUserTeamMessage.parseFrom(msg.data);
       
       if(bumsg.hasWasStriker() && bumsg.getWasStriker())
       {
-        Pen pen = new Pen(30, Color.red);
-        drawingList.add(pen);
+        drawingList.add(new Pen(30, Color.red));
 
         Circle marker = new Circle(
                 (int)robotPose.translation.x,
@@ -150,6 +149,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
     // get the number
     {
 
+      drawingList.add(new Pen(1, Color.BLACK));
       Text text = new Text(
         (int) robotPose.translation.x,
         (int) robotPose.translation.y + 150,
@@ -160,8 +160,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
     // ball
     if(msg.ballAge >= 0)
     {
-      Pen pen = new Pen(1, Color.orange);
-      drawingList.add(pen);
+      drawingList.add(new Pen(1, Color.orange));
 
       Vector2D ballPos = new Vector2D(msg.ball_x,
         msg.ball_y);
@@ -174,10 +173,15 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
         65,
         65);
       drawingList.add(ball);
+      
+      // add a surrounding black circle so the ball is easier to see
+      drawingList.add(new Pen(1, Color.black));
+      Circle outerBall = new Circle((int) globalBall.x, (int) globalBall.y, 65);
+      drawingList.add(outerBall);
+      
       {
-
-        Pen pen2 = new Pen(1, Color.black);
-        drawingList.add(pen2);
+        // show the time since the ball was last seen
+        drawingList.add(new Pen(1, Color.black));
         double t = msg.ballAge / 1000.0;
 
         Text text = new Text(
@@ -188,8 +192,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
       }
       // draw a line between robot and ball
       {
-        Pen pen2 = new Pen(1, Color.orange);
-        drawingList.add(pen2);
+        drawingList.add(new Pen(5, Color.orange));
         Line ballLine = new Line(
           (int) robotPose.translation.x, (int) robotPose.translation.y, 
           (int) globalBall.x,(int)  globalBall.y);

@@ -19,6 +19,7 @@ void GameController::execute()
   GameData::TeamColor oldTeamColor = getPlayerInfo().gameData.teamColor;
   GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
 
+  readHeadButtons();
   readButtons();
 
   if ( getGameData().valid ) {
@@ -52,6 +53,28 @@ void GameController::execute()
   }
   
 } // end execute
+
+void GameController::readHeadButtons()
+{
+  getSoundPlayData().mute = true;
+  getSoundPlayData().soundFile = "";
+
+
+  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+     && getPlayerInfo().gameData.gameState == GameData::initial)
+  {
+    unsigned int playerNumber = getPlayerInfo().gameData.playerNumber;
+    if(playerNumber >= 0 && playerNumber <= 9)
+    {
+      std::stringstream ssWav;
+      ssWav << playerNumber;
+      ssWav << ".wav";
+      getSoundPlayData().mute = false;
+      getSoundPlayData().soundFile = ssWav.str();
+    }
+  }
+
+}
 
 void GameController::readButtons()
 {

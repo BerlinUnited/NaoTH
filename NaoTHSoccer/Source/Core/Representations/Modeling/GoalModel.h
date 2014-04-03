@@ -47,6 +47,8 @@ public:
 
   Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
   Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOppGoal(double angle, const FieldInfo& fieldInfo) const;
+  Goal getOwnGoal(double angle, const FieldInfo& fieldInfo) const;
 
 
   // TODO: deprecated?!
@@ -59,6 +61,7 @@ public:
 
   static GoalModel::Goal calculateAnotherGoal(const GoalModel::Goal& one, double distance);
   Pose2D calculatePose(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Pose2D calculatePose(double angle, const FieldInfo& fieldInfo) const;
 
   //private:
   //  Goal another;

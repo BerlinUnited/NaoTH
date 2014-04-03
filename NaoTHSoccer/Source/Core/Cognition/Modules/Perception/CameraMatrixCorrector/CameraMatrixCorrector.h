@@ -43,6 +43,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
 
+  REQUIRE(KinematicChain)
+
   PROVIDE(CameraMatrixOffset)
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
@@ -67,9 +69,14 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  void calibrate();
+  typedef double (CameraMatrixCorrector::*ErrorFunction)(double, double);
+
+  void calibrate(ErrorFunction errorFunction);
   void reset_calibration();
   double projectionError(double offsetX, double offsetY);
+  double horizonError(double offsetX, double offsetY);
+
+  void calibrate1965();
 
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,CameraMatrix);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrector,GoalPercept);  

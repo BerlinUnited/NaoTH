@@ -314,13 +314,15 @@ void Motion::updateCameraMatrix()
 {
   getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
     getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Bottom],
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
     getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
   );
 
   getCameraMatrixTop() = CameraGeometry::calculateCameraMatrix(
     getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransformation[naoth::CameraInfo::Top],
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
     getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]
   );
 

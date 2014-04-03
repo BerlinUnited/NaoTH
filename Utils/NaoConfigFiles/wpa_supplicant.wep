@@ -2,7 +2,7 @@
 network={
         ssid="WLAN_SSID"
         key_mgmt=NONE
-        wep_key0=WLAN_KEY
+        wep_key0="WLAN_KEY"
         wep_tx_keyidx=0
         priority=1
 }

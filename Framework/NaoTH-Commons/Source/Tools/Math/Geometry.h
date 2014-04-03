@@ -100,6 +100,29 @@ public:
     Vector2d& center, 
     double& radius);
 
+	
+  class Rect2d {
+  private:
+    Vector2d minimum;
+    Vector2d maximum;
+
+  public:
+    Rect2d() {}
+    Rect2d(const Vector2d& a, const Vector2d& b) 
+	    :
+	    minimum(std::min(a.x,b.x), std::min(a.y,b.y)),
+	    maximum(std::max(a.x,b.x), std::max(a.y,b.y))
+	  {
+    }
+
+    inline bool inside(const Vector2d& p) const {
+       return maximum.x >= p.x && p.x <= -minimum.x &&
+              maximum.y >= p.y && p.y <= -minimum.y;
+    }
+
+    inline const Vector2d& min() const { return minimum; }
+    inline const Vector2d& max() const { return maximum; }
+  };
 };
 
 #endif //__Geometry_h____

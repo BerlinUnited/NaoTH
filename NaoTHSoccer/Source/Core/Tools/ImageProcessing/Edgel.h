@@ -10,15 +10,21 @@
 
 #include <Tools/Math/Vector2.h>
 
-class Edgel
+template<class T>
+class EdgelT
 {
 public:
-  Edgel() : angle(0.0)
+  EdgelT() : angle(0.0)
   {}
 
-  Vector2i point;
-  double angle;
+  Vector2<T> point;
+  Vector2d direction;
+
+  double angle; // deprecated
 };
+
+typedef EdgelT<int> Edgel;
+typedef EdgelT<double> EdgelD;
 
 class DoubleEdgel
 {
@@ -33,10 +39,14 @@ public:
     ScanLineID(0)
   {}
 
-  Vector2i center;
+  Vector2d dCenter;
+  Vector2i center; // deprecated
   double center_angle;
+
   Vector2i begin;
+  
   double begin_angle;
+
   Vector2i end;
   double end_angle;
 

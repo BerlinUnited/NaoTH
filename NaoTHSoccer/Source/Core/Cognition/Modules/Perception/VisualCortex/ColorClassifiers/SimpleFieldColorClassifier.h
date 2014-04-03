@@ -87,12 +87,12 @@ private:
     return parameters;
   }
 
+  // id of the camera the module is curently running on
+  CameraInfo::CameraID cameraID;
+
   UniformGrid uniformGrid; // subsampling of the image
   Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramY;
   Statistics::Histogram<ColorChannelHistograms::VALUE_COUNT> filteredHistogramU;
-
-  // id of the camera the module is curently running on
-  CameraInfo::CameraID cameraID;
 
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChannelHistograms);
