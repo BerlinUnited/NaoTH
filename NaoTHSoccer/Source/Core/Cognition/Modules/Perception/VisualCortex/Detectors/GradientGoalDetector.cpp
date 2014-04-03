@@ -530,9 +530,14 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   // check some pixels below the foot point
   BresenhamLineScan footPointGreenScanner(post.basePoint, scanDir, getImage().cameraInfo);
   double greenPixelCount = 0;
+  Vector2i lastGreenPoint(post.basePoint);
   for(int k = 0; k < params.footGreenScanSize && footPointGreenScanner.getNextWithCheck(pos); k++) {
     IMG_GET(pos.x, pos.y, pixel);
-    greenPixelCount += getFieldColorPercept().isFieldColor(pixel);
+
+    if(getFieldColorPercept().isFieldColor(pixel)) {
+      greenPixelCount++;
+      lastGreenPoint = pos;
+    }
 
     DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
       ColorClasses::Color c = getFieldColorPercept().isFieldColor(pixel)?ColorClasses::green:ColorClasses::gray;
@@ -543,7 +548,9 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   // 40% of the pixel below the post have to be green
   post.positionReliable = greenPixelCount > 0 && 
                           params.footGreenScanSize > 0 && 
-                          greenPixelCount/params.footGreenScanSize > 0.4;
+                          greenPixelCount/params.footGreenScanSize > 0.4 &&
+                          (getFieldPercept().getValidField().isInside(post.basePoint) || 
+                           getFieldPercept().getValidField().isInside(lastGreenPoint) );
 
   // NOTE: if the projection is not successfull, then post.position = (0,0)
   CameraGeometry::imagePixelToFieldCoord(
