@@ -149,9 +149,11 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
           //scan along the post to find the foot point of it to be sure its on the field
           scanForFootPoints(postScanDirection, goodFeatures.back().center, params.thresholdUV, params.thresholdY);
-
-          scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1), 
-            goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+          if(getGoalPercept().getNumberOfSeenPosts() && getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1).positionReliable)
+          {
+            scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1), 
+              goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+          }
         }
       }
     }//end for features[0].size()
@@ -495,8 +497,6 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     valueBuffer.add(diffVU);
     valueBufferY.add(pixel.y);
 
-    //collect some values for statisics of colors
-    getGoalPostHistograms().increaseChannelValue(pixel);
 
     if(pointBuffer.isFull())
     {
@@ -560,7 +560,11 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.position);
   
   post.directionInImage = scanDir;
-  getGoalPercept().add(post);
+
+  if(post.positionReliable)
+  {
+    getGoalPercept().add(post);
+  }
 
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans",
     ColorClasses::Color c = post.positionReliable?ColorClasses::yellowOrange:ColorClasses::red;
