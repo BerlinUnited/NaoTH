@@ -76,8 +76,8 @@ public:
       if( !execute(CameraInfo::Bottom)) {
         execute(CameraInfo::Bottom, false);
       }
+      debugStuff(CameraInfo::Bottom);
     }
-    debugStuff(CameraInfo::Bottom);
   }
 
 private:
@@ -164,6 +164,7 @@ private:
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
   void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
+  void scanForStatisticsToFootPoint( Vector2i footPoint, Vector2i pos, double threshold, double thresholdY);
   void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;

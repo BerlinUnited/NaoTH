@@ -161,6 +161,8 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
           {
             scanForTopPoints(getGoalPercept().getPost(lastPostIdxInList), 
               goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+            scanForStatisticsToFootPoint(getGoalPercept().getPost(lastPostIdxInList).basePoint,
+              goodFeatures.front().center, params.thresholdUV, params.thresholdY);
             lastSeenPostIdx = lastPostIdxInList; //save actually used post index
           }
         }
@@ -633,5 +635,17 @@ void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markTopScans",
     CIRCLE_PX(ColorClasses::blue, (int) pos.x, (int) pos.y, 10);
   );
+}
+
+void GradientGoalDetector::scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos, double threshold, double thresholdY)
+{
+  Pixel pixel;
+  BresenhamLineScan footPointScanner(pos, footPoint);
+  while(footPointScanner.getNextWithCheck(pos))
+  {
+    IMG_GET(pos.x, pos.y, pixel);
+    //collect some values for statisics of colors
+    getGoalPostHistograms().increaseChannelValue(pixel);
+  }
 }
 
