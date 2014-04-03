@@ -129,6 +129,8 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   GT_TRACE("GradientGoalDetector:beginValidationOfFeatures");
   std::fill(lastTestFeatureIdx.begin(),lastTestFeatureIdx.end(),0);
 
+  int lastSeenPostIdx = -1;
+
   for(int scanLineId = 0; scanLineId < params.numberOfScanlines - (params.minGoodPoints - 1); scanLineId++)
   {
     for(size_t i = 0; i < features[scanLineId].size(); i++)
@@ -149,10 +151,17 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
           //scan along the post to find the foot point of it to be sure its on the field
           scanForFootPoints(postScanDirection, goodFeatures.back().center, params.thresholdUV, params.thresholdY);
-          if(getGoalPercept().getNumberOfSeenPosts() && getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1).positionReliable)
+          int lastPostIdxInList = getGoalPercept().getNumberOfSeenPosts() - 1;
+          if
+          (
+            getGoalPercept().getNumberOfSeenPosts() > 0 && //any post in percept?
+            lastSeenPostIdx != lastPostIdxInList && //is last index of posts in percept not same as before? a new one?
+            getGoalPercept().getPost(lastPostIdxInList).positionReliable //last post in percept reliable?
+          )
           {
-            scanForTopPoints(getGoalPercept().getPost(getGoalPercept().getNumberOfSeenPosts()-1), 
+            scanForTopPoints(getGoalPercept().getPost(lastPostIdxInList), 
               goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+            lastSeenPostIdx = lastPostIdxInList; //save actually used post index
           }
         }
       }
