@@ -278,7 +278,7 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       else 
       {
         //POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
-    	  LINE_PX(ColorClasses::green, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+    	  LINE_PX(ColorClasses::blue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
     lastPixel = pixel;
