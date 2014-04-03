@@ -68,11 +68,14 @@ public:
 
   void execute()
   {
-    if( !execute(CameraInfo::Top)) {
+    bool topScanned = execute(CameraInfo::Top);
+
+    if(!topScanned) {
       execute(CameraInfo::Top, false);
     }
     debugStuff(CameraInfo::Top);
-    if( getGoalPercept().getNumberOfSeenPosts() == 0) {
+    
+    if(topScanned && getGoalPercept().getNumberOfSeenPosts() == 0) {
       if( !execute(CameraInfo::Bottom)) {
         execute(CameraInfo::Bottom, false);
       }
