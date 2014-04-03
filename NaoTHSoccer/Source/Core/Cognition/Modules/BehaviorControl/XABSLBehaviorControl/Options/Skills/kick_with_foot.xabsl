@@ -120,6 +120,8 @@ option kick_with_foot
       motion.walk.stop_with_stand = false;
       motion.walk.step_control.scale = 0.7;
 
+      motion.walk.style = fast;
+
       //look at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
@@ -152,6 +154,8 @@ option kick_with_foot
       motion.walk.step_control.time = 300;
       motion.walk.stop_with_stand = false;
       motion.walk.step_control.scale = 0.7;
+
+      motion.walk.style = fast;
 
       //loook at percept
       head.control_mode = none;

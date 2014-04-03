@@ -21,7 +21,8 @@ option fast_forward_kick
     action
     {
       head.control_mode = search_for_ball;
-      
+      motion.walk.style = normal;
+
       motion.type = walk;
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
@@ -43,7 +44,7 @@ option fast_forward_kick
       motion.type = walk;
       
       motion.walk.coordinate = right_foot;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk.step_control.foot = right;
       motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
@@ -72,7 +73,7 @@ option fast_forward_kick
       motion.type = walk;
       
       motion.walk.coordinate = left_foot;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk.step_control.foot = left;
       motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
