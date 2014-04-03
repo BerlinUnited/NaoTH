@@ -37,7 +37,7 @@ option sidekick_test
     }
     action 
     {
-      go_to_ball(distance = 130);
+      go_to_ball_with_foot(right = true,distance = 180);
     }
   }
 
@@ -52,7 +52,7 @@ option sidekick_test
     }
     action 
     {
-      sidekick(side = left);
+      sidekick(to = left);
     }
   }
 
@@ -67,7 +67,7 @@ option sidekick_test
     }
     action 
     {
-      go_to_ball(distance = 130);
+      go_to_ball_with_foot(right = false, distance = 180);
     }
   }
 
@@ -82,7 +82,7 @@ option sidekick_test
     }
     action 
     {
-      sidekick(side = right);
+      sidekick(to = right);
     }
   }
 

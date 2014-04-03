@@ -3,41 +3,19 @@
 
 option sidekick
 {
-  enum direction @side;
+  enum direction @to;
   
   initial state direction
   {
     decision
     {
-		  if(@side == right)
-		    goto sidestep_right;
+		  if(@to == right)
+		    goto sidekick_left_foot;
 		  else
-		    goto sidestep_left;
+		    goto sidekick_right_foot;
     }
     action
     {
-    }
-  }
-
-  state sidestep_right
-  {
-    decision
-    {
-      if(state_time > 500 && executed_motion.step_control.left_movable)
-      {
-        goto sidekick_left_foot;
-      }
-      else
-        stay;
-    }
-    action
-    {
-      head.control_mode = search_for_ball;
-      motion.type = walk;
-
-      motion.walk_speed.x = ball.preview.left_foot.x - ball.radius - 130;
-      motion.walk_speed.y = ball.preview.left_foot.y;
-      motion.walk_speed.rot = 0;
     }
   }
 
@@ -55,11 +33,11 @@ option sidekick
       motion.type = walk;
       
       motion.walk.coordinate = left_foot;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk.step_control.foot = left;
-      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
-      motion.walk.step_control.target.y = ball.preview.left_foot.y - 100;
+      motion.walk.step_control.target.x = 500;
+      motion.walk.step_control.target.y = -100;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = -90;
       motion.walk.step_control.time = 300;
@@ -70,28 +48,6 @@ option sidekick
     }
   }
 
-
-  state sidestep_left
-  {
-    decision
-    {
-      if(state_time > 500 && executed_motion.step_control.right_movable)
-      {
-        goto sidekick_right_foot;
-      }
-      else
-        stay;
-    }
-    action
-    {
-      head.control_mode = search_for_ball;
-      motion.type = walk;
-
-      motion.walk_speed.x = ball.preview.right_foot.x - ball.radius - 130;
-      motion.walk_speed.y = ball.preview.right_foot.y;
-      motion.walk_speed.rot = 0;
-    }
-  }
 
   state sidekick_right_foot
   {
@@ -107,11 +63,11 @@ option sidekick
       motion.type = walk;
       
       motion.walk.coordinate = right_foot;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk.step_control.foot = right;
-      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
-      motion.walk.step_control.target.y = ball.preview.right_foot.y + 100;
+      motion.walk.step_control.target.x = 500;
+      motion.walk.step_control.target.y = 100;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 90;
       motion.walk.step_control.time = 300;
