@@ -65,7 +65,7 @@ option decide_role
     action
     {
       team.is_playing_as_striker = false;
-      decide_and_go_to_passive_pos_b();
+      decide_and_go_to_passive_position();
     }
   }
   
