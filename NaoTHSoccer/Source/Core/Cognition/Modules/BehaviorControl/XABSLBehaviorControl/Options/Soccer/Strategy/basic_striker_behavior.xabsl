@@ -47,7 +47,7 @@ option basic_striker_behavior{
 
   state check_for_obstacles {
 	   decision {
-      else if((obstacle.ultrasound.distance < 350) && (obstacle.ultrasound.blockedtime > 200))
+      else if((obstacle.ultrasound.distance < 400) && (obstacle.ultrasound.blockedtime > 100))
         goto close_to_ball_with_USOA_situation_state;// TODO: this is just a do side kick state
       else
         goto decide_turning_direction;
@@ -77,7 +77,7 @@ option basic_striker_behavior{
         goto decide_search;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>250)
         goto go_to_ball;
-      else if (obstacle.ultrasound.blockedtime > 200 && obstacle.ultrasound.distance < 350  && state_time > 500)
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && state_time > 500)
         goto check_for_obstacles;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
         {
@@ -100,7 +100,7 @@ option basic_striker_behavior{
 
   state preattack_for_right {
     decision{
-      else if (obstacle.ultrasound.blockedtime > 200 && obstacle.ultrasound.distance < 350)
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
         goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
@@ -149,7 +149,7 @@ option basic_striker_behavior{
 
   state preattack_for_left {
     decision{
-      else if (obstacle.ultrasound.blockedtime > 200 && obstacle.ultrasound.distance < 350)
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
         goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search;

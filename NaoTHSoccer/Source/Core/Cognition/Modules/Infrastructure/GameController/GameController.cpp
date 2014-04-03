@@ -178,6 +178,11 @@ void GameController::updateLEDs()
   getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 0.0;
   getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 0.0;
 
+  for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
+  {
+    getGameControllerLEDRequest().request.theMonoLED[i] = 0.0;
+  }
+
   // show game state in torso
   switch (getPlayerInfo().gameData.gameState)
   {
@@ -208,7 +213,7 @@ void GameController::updateLEDs()
     getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
   }
 
-  // show kickoff state on right foot in initial, ready and set
+  // show kickoff state on right foot and head in initial, ready and set
   if (getPlayerInfo().gameData.gameState == GameData::initial
     || getPlayerInfo().gameData.gameState == GameData::ready
     || getPlayerInfo().gameData.gameState == GameData::set)
@@ -218,6 +223,11 @@ void GameController::updateLEDs()
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.7;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 1.0;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 1.0;
+
+      for(unsigned int i=LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
+      {
+        getGameControllerLEDRequest().request.theMonoLED[i] = 1.0;
+      }
     }
   }
 } // end updateLEDs

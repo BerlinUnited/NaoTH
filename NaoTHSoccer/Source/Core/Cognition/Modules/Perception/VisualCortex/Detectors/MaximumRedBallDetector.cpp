@@ -205,6 +205,11 @@ bool MaximumRedBallDetector::findBall ()
     return false;
   }
 
+  //HACK: reject bad scans
+  if(goodPoints.length + badPoints.length <= 13) {
+    return false;
+  }
+
 	for (int i = 0; i < goodPoints.length; i++) {
 		bestPoints.add(goodPoints[i]);
 	}
@@ -278,15 +283,28 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
 		  getFieldInfo().ballRadius,
 		  getBallPercept().bearingBasedOffsetOnField);
 
-		getBallPercept().radiusInImage = radiusBest;
-		getBallPercept().centerInImage = centerBest;
-		getBallPercept().ballWasSeen = projectionOK;
-		getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+    // HACK: don't take to far balls
+    projectionOK = projectionOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
+
+    // HACK: if the ball center is in image it has to be in the field polygon 
+    Vector2d ballPointToCheck(centerBest.x, centerBest.y - radiusBest);
+    projectionOK = projectionOK && 
+      (getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) && 
+       getFieldPercept().getValidField().isInside(ballPointToCheck));
+
+
+    if(projectionOK) 
+    {
+		  getBallPercept().radiusInImage = radiusBest;
+		  getBallPercept().centerInImage = centerBest;
+		  getBallPercept().ballWasSeen = projectionOK;
+		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 		
-    DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
-      PEN("FFFF00", 0.1);
-      CIRCLE( (centerBest.x),  (centerBest.y), (radiusBest));	      
-		);
+      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
+        PEN("FFFF00", 0.1);
+        CIRCLE( (centerBest.x),  (centerBest.y), (radiusBest));	  
+		  );
+    }
     return true;
 	}
 

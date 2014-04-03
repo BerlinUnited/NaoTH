@@ -59,12 +59,14 @@ include "Options/Skills/move_around_ball.xabsl";
 // Debug
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
-
+
+
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_passive_position.xabsl";
+include "Options/Soccer/Strategy/decide_and_go_to_passive_pos_b.xabsl";
 include "Options/Soccer/Strategy/go_to_and_keep_passive_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
@@ -182,7 +184,7 @@ agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
-agent role_change_test ("role_change_test_agent",role_change_test_agent);
+agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
 /** The Test agents */
 // Test agents Kicks

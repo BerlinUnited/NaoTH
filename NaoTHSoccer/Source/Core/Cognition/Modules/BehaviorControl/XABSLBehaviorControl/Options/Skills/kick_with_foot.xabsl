@@ -211,45 +211,4 @@ option kick_with_foot
     }
   }
 
-  state stand_right_kick
-  {
-    decision
-    {
-      if (state_time > 5000)
-        goto kick_right_foot;
-      else stay;
-    }
-    action
-    {
-      motion.walk.stop_with_stand = false;
-      motion.type = stand;
-      //look at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
-    }
-  }
-
-  state stand_left_kick
-  {
-    decision
-    {
-      if (state_time > 5000)
-        goto kick_left_foot;
-      else stay;
-    }
-    action
-    {
-      motion.walk.stop_with_stand = false;
-      motion.type = stand;
-      //look at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
-    }
-  }
 }

@@ -146,7 +146,7 @@ private:
   void add_double_edgel(const Vector2i& point, int id) {
     add_edgel(point);
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
-    int i_end = getScanLineEdgelPercept().edgels.size()-1;
+    int i_end = ((int) getScanLineEdgelPercept().edgels.size())-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
@@ -170,6 +170,8 @@ private:
 
   /** */
   ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
+
+  bool validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const;
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;

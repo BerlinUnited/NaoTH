@@ -213,7 +213,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       double offset = 150;
 
       FIELD_DRAWING_CONTEXT;
-      for(size_t x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++) 
+      for(unsigned int x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++)
       {
         double v = getProbabilisticQuadCompas()[x];
         Vector2d a(offset + v*scale, 0.0);
@@ -567,12 +567,12 @@ double NeoLineDetector::segmentSim(const Vector2d& p0, const Vector2d& p1, const
 void NeoLineDetector::calculatePairs(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<EdgelPair>& edgelPairs, double threshold) const
 {
   edgelPairs.clear();
-  for(size_t i = 0; i < edgels.size(); i++) 
+  for(unsigned int i = 0; i < edgels.size(); i++)
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
     int j_max = -1;
     double s_max = 0.0;
-    for(size_t j = i+1; j < edgels.size(); j++) 
+    for(unsigned int j = i+1; j < edgels.size(); j++)
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
@@ -605,7 +605,7 @@ void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::
   for(size_t i = 0; i < edgels.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
-    int j_max = -1;
+    // unused variable: int j_max = -1;
     double s_max = 0.0;
     for(size_t j = i+1; j < edgels.size(); j++) 
     {
@@ -617,31 +617,31 @@ void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::
 
         if(s > s_max) {
           s_max = s;
-          j_max = (int)j;
+          //j_max = (int)j;
         }
 
         // update neigbors
         if(edgelTwo.id < edgelOne.id) { // edgelTwo (j_max) is left of edgelOne (i)
         
           if(neighbors[i].left == -1 || neighbors[i].w_left < s) { // set the left neighbor for i
-            neighbors[i].left = j;
+            neighbors[i].left = (int) j;
             neighbors[i].w_left = s;
           }
 
           if(neighbors[j].right == -1 || neighbors[j].w_right < s) { // set the right neighbor for j_max
-            neighbors[j].right = i;
+            neighbors[j].right = (int) i;
             neighbors[j].w_right = s;
           }
 
         } else { // edgelTwo (j_max) is right of edgelOne (i)
         
           if(neighbors[i].right == -1 || neighbors[i].w_right < s) { // set the right neighbor for i
-            neighbors[i].right = j;
+            neighbors[i].right = (int) j;
             neighbors[i].w_right = s;
           }
 
           if(neighbors[j].left == -1 || neighbors[j].w_left < s) { // set the left neighbor for j_max
-            neighbors[j].left = i;
+            neighbors[j].left = (int) i;
             neighbors[j].w_left = s;
           }
         }
@@ -659,7 +659,7 @@ void NeoLineDetector::calculatePairsAndNeigbors(
   neighbors.resize(edgels.size());
   edgelPairs.clear();
 
-  for(size_t i = 0; i < edgels.size(); i++) 
+  for(unsigned int i = 0; i < edgels.size(); i++)
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
     int j_max = -1;
@@ -684,24 +684,24 @@ void NeoLineDetector::calculatePairsAndNeigbors(
         if(edgelTwo.id < edgelOne.id) { // edgelTwo (j_max) is left of edgelOne (i)
         
           if(neighbors[i].left == -1 || neighbors[i].w_left < s) { // set the left neighbor for i
-            neighbors[i].left = j;
+            neighbors[i].left = (int) j;
             neighbors[i].w_left = s;
           }
 
           if(neighbors[j].right == -1 || neighbors[j].w_right < s) { // set the right neighbor for j_max
-            neighbors[j].right = i;
+            neighbors[j].right = (int) i;
             neighbors[j].w_right = s;
           }
 
         } else { // edgelTwo (j_max) is right of edgelOne (i)
         
           if(neighbors[i].right == -1 || neighbors[i].w_right < s) { // set the right neighbor for i
-            neighbors[i].right = j;
-            neighbors[i].w_right = s;
+            neighbors[i].right = (int) j;
+            neighbors[i].w_right = (int) s;
           }
 
           if(neighbors[j].left == -1 || neighbors[j].w_left < s) { // set the left neighbor for j_max
-            neighbors[j].left = i;
+            neighbors[j].left = (int) i;
             neighbors[j].w_left = s;
           }
         }
