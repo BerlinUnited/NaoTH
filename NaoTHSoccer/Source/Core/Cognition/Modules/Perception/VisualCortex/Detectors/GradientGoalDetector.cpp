@@ -563,8 +563,8 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
 
 void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY)
 {      
-  //NOTE: this is only for debug
-  double lastResponse = 0.0;
+  //NOTE: this is only for debug (unused variable warning)
+  //double lastResponse = 0.0;
 
   double response = 0.0;
   double responseY = 0.0;
@@ -604,7 +604,7 @@ void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2
         POINT_PX(ColorClasses::pink, pointBuffer[2].x, pointBuffer[2].y);
       );
 
-      lastResponse = response;
+      //lastResponse = response;
     }
   }//end while
 

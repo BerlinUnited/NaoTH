@@ -146,7 +146,7 @@ private:
   void add_double_edgel(const Vector2i& point, int id) {
     add_edgel(point);
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
-    int i_end = getScanLineEdgelPercept().edgels.size()-1;
+    int i_end = ((int) getScanLineEdgelPercept().edgels.size())-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
