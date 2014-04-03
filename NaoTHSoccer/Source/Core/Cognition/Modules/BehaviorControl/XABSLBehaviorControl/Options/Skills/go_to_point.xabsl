@@ -16,7 +16,7 @@ option go_to_point
   {
     decision
     {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 500 )
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 300 )
         goto turn;
       else
         stay;
@@ -36,7 +36,7 @@ option go_to_point
   {
     decision
     {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 30
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 150
           && abs(value=robot_pose.planned.rotation - @rot) < 10 )
         goto stop;
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 800 )

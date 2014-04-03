@@ -47,8 +47,9 @@ public:
   }
 
 private:
-  UniformGrid uniformGrid; // subsampling of the image
   CameraInfo::CameraID cameraID;
+  UniformGrid uniformGrid; // subsampling of the image
+
 
   DOUBLE_CAM_REQUIRE(HistogramProvider, Image);
   DOUBLE_CAM_PROVIDE(HistogramProvider, ColorChannelHistograms);

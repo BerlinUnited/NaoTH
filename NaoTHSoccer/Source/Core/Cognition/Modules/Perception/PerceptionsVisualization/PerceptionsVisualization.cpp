@@ -135,12 +135,14 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-      if(!point.valid) continue;
+      // no projection is avaliable for this point
+      if(!point.valid && point.posOnField.x == 0 && point.posOnField.y == 0) continue;
 
-      if(point.posInImage.y < 10) // close to the top
+      if(point.posInImage.y < 10) { // close to the top
         PEN("009900", 20);
-      else
+      } else {
         PEN(ColorClasses::colorClassToHex(point.color), 20);
+      }
 
       CIRCLE(point.posOnField.x, point.posOnField.y, 10);
       if(i > 0)
@@ -152,23 +154,23 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
 
 
     
-    for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
     {
-      const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      const Edgel& edgelBegin = getScanLineEdgelPercept().edgels[pair.begin];
+      const Edgel& edgelEnd = getScanLineEdgelPercept().edgels[pair.end];
     
       Vector2d edgelOnFieldDirectionBegin;
       Vector2d edgelOnFieldBegin;
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
         getCameraInfo(),
-        e.begin.x,
-        e.begin.y,
+        edgelBegin.point.x,
+        edgelBegin.point.y,
         0.0,
         edgelOnFieldBegin))
       {
-        Vector2d direction(1,0);
-        direction.rotate(e.begin_angle);
-        direction += e.begin;
+        Vector2d direction = Vector2d(edgelBegin.point) + edgelBegin.direction;
         
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
@@ -190,14 +192,12 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
       if(CameraGeometry::imagePixelToFieldCoord(
         cameraMatrix,
         getCameraInfo(),
-        e.end.x,
-        e.end.y,
+        edgelEnd.point.x,
+        edgelEnd.point.y,
         0.0,
         edgelOnFieldEnd))
       {
-        Vector2<double> direction(1,0);
-        direction.rotate(e.end_angle);
-        direction += e.end;
+        Vector2d direction = Vector2d(edgelEnd.point) + edgelEnd.direction;
 
         if(CameraGeometry::imagePixelToFieldCoord(
           cameraMatrix,
@@ -212,32 +212,6 @@ void PerceptionsVisualization::execute(CameraInfo::CameraID id)
           double r = (edgelOnFieldDirectionEnd - edgelOnFieldEnd).angle();
           SIMPLE_PARTICLE(edgelOnFieldEnd.x,edgelOnFieldEnd.y,r);
         }
-      }
-
-
-
-      Vector2<double> direction(1,0);
-      direction.rotate(e.center_angle);
-      direction += e.center;
-      Vector2<double> edgelOnFieldDirectionCenter;
-
-      if(CameraGeometry::imagePixelToFieldCoord(
-        cameraMatrix,
-        getCameraInfo(),
-        direction.x,
-        direction.y,
-        0.0,
-        edgelOnFieldDirectionCenter))
-      {
-        PEN("000066", 5);
-        Vector2<double> c = (edgelOnFieldEnd + edgelOnFieldBegin)*0.5;
-        double r = (edgelOnFieldDirectionCenter - c).angle();
-        SIMPLE_PARTICLE(c.x,c.y,r);
-
-        PEN("FF2266", 5);
-        double r2 = ( (edgelOnFieldDirectionEnd-edgelOnFieldEnd).normalize() + 
-          (edgelOnFieldDirectionBegin - edgelOnFieldBegin).normalize()).angle();
-        SIMPLE_PARTICLE(c.x,c.y,r2);
       }
     }//end for
   );

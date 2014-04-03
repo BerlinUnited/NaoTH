@@ -45,6 +45,7 @@ public:
     Chest,
     LeftFoot,
     RightFoot,
+    HeadMiddle,
     numOfButtons
   };
 

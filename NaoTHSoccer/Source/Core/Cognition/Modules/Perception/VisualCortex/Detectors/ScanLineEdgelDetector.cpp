@@ -23,11 +23,12 @@ ScanLineEdgelDetector::ScanLineEdgelDetector()
 :
   cameraID(CameraInfo::Top)
 {
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:scanlines", "mark the scan lines", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_edgels", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_endpoints", "mark the endpints on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:scanlines", "mark the scan lines", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:expected_line_width", "", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:ScanLineEdgelDetector:mark_scan_segments", "...", false);
 }
 
 ScanLineEdgelDetector::~ScanLineEdgelDetector()
@@ -39,10 +40,6 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   CANVAS_PX(cameraID);
   getScanLineEdgelPercept().reset();
 
-  // needs a valid field polygon
-  //if(!getFieldPerceptRaw().valid) {
-  //  return;
-  //}
   // TODO: implement a general validation for timestamps
   if(getBodyContour().timestamp != getFrameInfo().getTime()) {
     return;
@@ -75,8 +72,9 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(i, start, end);
     
     // check if endpoint is not same as the begin of the scanline
-    if(endPoint.posInImage.y == start.y) {
+    if(endPoint.posInImage == start) {
       endPoint.color = ColorClasses::none;
+      endPoint.posInImage.y = borderY;
     }
 
     // try to project it on the ground
@@ -100,157 +98,143 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_edgels",
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
-      Vector2d g1 = Vector2d(10.0,0).rotate(edgel.angle).rotateRight();
-      LINE_PX(ColorClasses::black,edgel.point.x, edgel.point.y, edgel.point.x + (int)(g1.x), edgel.point.y + (int)(g1.y));
+      LINE_PX(ColorClasses::black,edgel.point.x, edgel.point.y, edgel.point.x + (int)(edgel.direction.x*10), edgel.point.y + (int)(edgel.direction.y*10));
     }
   );
 
   // mark finished valid edgels
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
-    for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
     {
-      const DoubleEdgel& double_edgel = getScanLineEdgelPercept().scanLineEdgels[i];
-      LINE_PX(ColorClasses::red   ,double_edgel.begin.x ,double_edgel.begin.y ,double_edgel.begin.x + (int)(10 * cos(double_edgel.begin_angle))   ,double_edgel.begin.y + (int)(10 * sin(double_edgel.begin_angle)));
-      LINE_PX(ColorClasses::blue  ,double_edgel.center.x,double_edgel.center.y,double_edgel.center.x + (int)(10 * cos(double_edgel.center_angle)) ,double_edgel.center.y + (int)(10 * sin(double_edgel.center_angle)));
-      LINE_PX(ColorClasses::black ,double_edgel.end.x   ,double_edgel.end.y   ,double_edgel.end.x + (int)(10 * cos(double_edgel.end_angle))       ,double_edgel.end.y + (int)(10 * sin(double_edgel.end_angle)));
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
+      LINE_PX(ColorClasses::red   ,(int)pair.point.x, (int)pair.point.y, (int)(pair.point.x + pair.direction.x*10), (int)(pair.point.y + pair.direction.y*10));
     }
   );
   
   DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_endpoints",
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
-      const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-      
-      CIRCLE_PX(point.color, point.posInImage.x, point.posInImage.y, 5);
-      if(i > 0)
-      {
-        const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
-        LINE_PX(last_point.color,
-                last_point.posInImage.x, last_point.posInImage.y,
-                point.posInImage.x, point.posInImage.y);
-      }//end if
-    }//end for
+      const ScanLineEdgelPercept::EndPoint& point_two = getScanLineEdgelPercept().endPoints[i];
+      CIRCLE_PX(point_two.color, point_two.posInImage.x, point_two.posInImage.y, 5);
+
+      if(i > 0) {
+        const ScanLineEdgelPercept::EndPoint& point_one = getScanLineEdgelPercept().endPoints[i-1];
+        LINE_PX(point_one.color,
+                point_one.posInImage.x, point_one.posInImage.y,
+                point_two.posInImage.x, point_two.posInImage.y);
+      }
+    }
   );
 }//end execute
 
 
-// scanForEdgels ala HTWK
-// TODO: reference to the master thesis von Thomas Reinhard
 ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id, const Vector2i& start, const Vector2i& end)
 {
-  //results
-  DoubleEdgel double_edgel;
-  //Edgel edgel;
+  ScanLineEdgelPercept::EndPoint endPoint;
+  endPoint.posInImage = start;
+  endPoint.color = ColorClasses::none;
+  endPoint.ScanLineID = scan_id;
+
+  const int step = 2;
+
+  if(end.y + step > start.y || end.y + step >= (int)getImage().height()) {
+    endPoint.posInImage.y = end.y;
+    return endPoint;
+  }
+
+
+  // no scan if the start is at the top of the image
+  if(start.y <= step) {
+    return endPoint;
+  }
 
   Vector2i point(start);
-  point.y -= 2; // make one step
+  point.y -= step; // make one step
 
-  Vector2i lastGreenPoint(start); // needed for the endpoint
-  Vector2i peak_point(start);
-
-  // initialize
-  int t_edge = theParameters.brightness_threshold * 2;
-  int g_min = t_edge;
-  int g_max = -t_edge;
-  int& x_peak = peak_point.y;//0;
-  int f_last = getImage().getY(point.x, point.y);
-
-  //
-  //double greenCount = 0;
-  //double segmentLength = 0;
-
+  Vector2i last_down_point(point); // needed for the endpoint
   bool begin_found = false;
-  int begin_y = 0;
 
+  // calculate the threashold
+  int t_edge = theParameters.brightness_threshold * 2;
+  // HACK (TEST): make it dependend on the angle of the camera in the future
+  if(cameraID == CameraInfo::Bottom) {
+    t_edge *= 4;
+  }
+
+  Vector2i lastGreenPoint(point); // HACK
+
+  // initialize the scanner
+  Vector2i peak_point_max(point);
+  Vector2i peak_point_min(point);
+  MaximumScan<int,int> positiveScan(peak_point_max.y, t_edge);
+  MaximumScan<int,int> negativeScan(peak_point_min.y, t_edge);
+
+  int f_last = getImage().getY(point.x, point.y); // scan the first point
   // just go up
-  for(;point.y >= end.y; point.y -= 2)
+  for(;point.y >= end.y + step; point.y -= step)
   {
-    // get the pixel color
-    //Pixel pixel = getImage().get(point.x, x_peak);
-    //bool green = getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-    //if(green) greenCount++;
-    //segmentLength++;
-
     // get the brightness chanel
-    int f_x = getImage().getY(point.x, point.y);
-    int g = f_x - f_last;
-    
-    if(g > g_max)
+    int f_y = getImage().getY(point.x, point.y);
+    int g = f_y - f_last;
+    f_last = f_y;
+
+    // begin found
+    if(positiveScan.addValue(point.y+1, g))
     {
-      /*
-      DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_edgels",
-        POINT_PX(ColorClasses::pink, start.x, x_peak);
-      );
-      */
+      // refine the position of the peak
+      int f_2 = getImage().getY(point.x, peak_point_max.y-2);
+      int f0  = getImage().getY(point.x, peak_point_max.y);
+      int f2  = getImage().getY(point.x, peak_point_max.y+2);
 
-      if(g_min < -t_edge)// end found
-      {
+      if(f_2-f0 > positiveScan.maxValue()) peak_point_max.y -= 1;
+      if(f0 -f2 > positiveScan.maxValue()) peak_point_max.y += 1;
 
-        //if( greenCount/segmentLength > 0.3 ) {
-        if(estimateColorOfSegment(lastGreenPoint, peak_point) == ColorClasses::green) {
-          lastGreenPoint.y = x_peak;
-        }
+      if(estimateColorOfSegment(last_down_point, peak_point_max) == ColorClasses::green) {
+        endPoint.color = ColorClasses::green;
+        endPoint.posInImage = peak_point_max;
+        lastGreenPoint = peak_point_max;
+      } else if (!validDistance(lastGreenPoint, peak_point_max)) {
+        break;
+      }
 
-        //begin_of_segment = x_peak;
-        //greenCount = 0;
-        //segmentLength = 1;
-
-        // new end edgel
-        add_edgel(start.x, x_peak); // peak_point
-
-        if(begin_found) // secure edgel
-        {
-          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
-            POINT_PX(ColorClasses::red, start.x, x_peak);
-          );
-          begin_found = false;
-
-          //a new double edgel
-          add_edgel(start.x, begin_y, start.x, x_peak, scan_id);
-        }
-        else
-        {
-          DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
-            POINT_PX(ColorClasses::yellow, start.x, x_peak);
-          );
-        }
-      }//end if
-
-      g_max = g;
-      g_min = t_edge;
-      x_peak = point.y+1; // +0.5?
-    }// end if
-
-    
-    if(g < g_min)
-    {
-      if(g_max > t_edge)// begin found
-      {
-        DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_double_edgels",
-          POINT_PX(ColorClasses::blue, start.x, (int)x_peak);
-        );
-
-        // new begin edgel
-        add_edgel(start.x, x_peak); // peak_point
-
-        //if( greenCount/segmentLength > 0.3 ) {
-        if(estimateColorOfSegment(lastGreenPoint, peak_point) == ColorClasses::green) {
-          lastGreenPoint.y = x_peak;
-        }
-
-        //greenCount = 0;
-        //segmentLength = 1;
-        //begin_of_segment = x_peak;
-        begin_found = true;
-        begin_y = x_peak;
-      }//end if
-
-      g_max = -t_edge;
-      g_min = g;
-      x_peak = point.y+1; // +0.5?
+      add_edgel(peak_point_max);
+      
+      begin_found = true;
+      last_down_point.y = peak_point_max.y;
     }//end if
 
-    f_last = f_x;
+    // end found
+    if(negativeScan.addValue(point.y+1, -g))
+    {
+      // refine the position of the peak
+      int f_2 = getImage().getY(point.x, peak_point_min.y-2);
+      int f0  = getImage().getY(point.x, peak_point_min.y);
+      int f2  = getImage().getY(point.x, peak_point_min.y+2);
+        
+      if(f_2-f0 < negativeScan.maxValue()) peak_point_min.y -= 1;
+      if(f0 -f2 < negativeScan.maxValue()) peak_point_min.y += 1;
+
+      if(estimateColorOfSegment(last_down_point, peak_point_min) == ColorClasses::green) {
+        endPoint.color = ColorClasses::green;
+        endPoint.posInImage = peak_point_min;
+        lastGreenPoint = peak_point_min;
+      } else if (!validDistance(lastGreenPoint, peak_point_min)) {
+        break;
+      }
+
+      // new end edgel
+      // found a new double edgel
+      if(begin_found) {
+        add_double_edgel(peak_point_min, scan_id);
+        begin_found = false;
+      } else {
+        add_edgel(peak_point_min);
+      }
+
+      last_down_point.y = peak_point_min.y;
+    }//end if
+
 
     DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:scanlines",
       Pixel pixel = getImage().get(point.x, point.y);
@@ -259,40 +243,97 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     );
   }//end for
 
-  // check the color of the last segment
-  //if(greenCount/segmentLength > 0.3) {
-  if(estimateColorOfSegment(lastGreenPoint, peak_point) == ColorClasses::green) {
-    lastGreenPoint.y = x_peak;
+  if(point.y < end.y + step) {
+    if(estimateColorOfSegment(last_down_point, end) == ColorClasses::green) {
+        endPoint.color = ColorClasses::green;
+        endPoint.posInImage = end;
+      }
   }
-
-  ScanLineEdgelPercept::EndPoint endPoint;
-  endPoint.posInImage = lastGreenPoint;
-  endPoint.color = ColorClasses::green;
-  endPoint.ScanLineID = scan_id;
 
   return endPoint;
 }//end scanForEdgels
+
+
+bool ScanLineEdgelDetector::validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const
+{
+  if (abs(pointOne.y - pointTwo.y) > 5) 
+  {  
+    Vector2d beginOnTheGround;
+    if(CameraGeometry::imagePixelToFieldCoord(
+      getCameraMatrix(),
+      getCameraInfo(),
+      pointOne.x,
+      pointOne.y,
+      0.0,
+      beginOnTheGround))
+    {
+      Vector2d endOnTheGround;
+      if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getCameraInfo(),
+        pointTwo.x,
+        pointTwo.y,
+        0.0,
+        endOnTheGround))
+      {
+        if((beginOnTheGround-endOnTheGround).abs2() > 700*700) {
+          return false;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 
 ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {
   ASSERT(begin.x == end.x && end.y <= begin.y);
 
+  const int numberOfSamples = theParameters.green_sampling_points;
   int length = begin.y - end.y;
   int numberOfGreen = 0;
-  const int numberOfSamples = std::min(length, 20);
   Vector2i point(begin);
   Pixel pixel;
 
-  for(int i = 0; i < numberOfSamples; i++)
+  if(numberOfSamples >= length) 
   {
-    int k = Math::random(length+1); // number in [0,length]
-    point.y = end.y + k;
-    getImage().get(point.x, point.y, pixel);
-    numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-  }//end for
+    for(; point.y > end.y; point.y--)
+    {
+      getImage().get(point.x, point.y, pixel);
+      numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+    }
+  }
+  else
+  {
+    int step = length / numberOfSamples;
+    int offset = Math::random(length); // number in [0,length-1]
 
-  return (numberOfGreen > numberOfSamples/2) ? ColorClasses::green : ColorClasses::none;
+    for(int i = 0; i < numberOfSamples; i++)
+    {
+      int k = (offset + i*step) % length;
+      point.y = end.y + k;
+      getImage().get(point.x, point.y, pixel);
+      numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+    }
+  }
+
+  ColorClasses::Color c = (numberOfGreen > numberOfSamples/2) ? ColorClasses::green : ColorClasses::none;
+
+  DEBUG_REQUEST("Vision:Detectors:ScanLineEdgelDetector:mark_scan_segments",
+    LINE_PX(c, begin.x, begin.y, end.x, end.y);
+  );
+
+  return c;
 }//end estimateColorOfSegment
 
 
@@ -326,5 +367,5 @@ Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
     -  getImage().getY(point.x+1, point.y+1);
 
   //calculate the angle of the gradient
-  return gradient;
+  return gradient.normalize();
 }//end calculateGradient

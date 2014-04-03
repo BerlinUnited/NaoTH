@@ -15,6 +15,9 @@ OpenCVWebCamController::OpenCVWebCamController()
 {
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);
+  registerInput<SensorJointData>(*this);
+
+  registerOutput<const MotorJointData>(*this);
 
   // debug
   registerInput<DebugMessageIn>(*this);
@@ -33,10 +36,9 @@ void OpenCVWebCamController::init()
   {
     std::cerr << "Can't open camera 0" << std::endl;
     exit(-1);
-  }
+  }//end if(!capture.isOpened())
 
-  capture.set(CV_CAP_PROP_FRAME_WIDTH, naoth::IMAGE_WIDTH);
-  capture.set(CV_CAP_PROP_FRAME_HEIGHT, naoth::IMAGE_HEIGHT);
+//   cvInitSystem(0, NULL);
 }//end init
 
 void OpenCVWebCamController::main()
@@ -50,12 +52,39 @@ void OpenCVWebCamController::main()
 
 void OpenCVWebCamController::get(Image& data)
 {
-  copyImage(data, yCbCr);
-}
+  copyImage(data);
+}//end get
 
 void OpenCVWebCamController::get(FrameInfo& data)
 {
   data.setTime(time);
+}
+
+void OpenCVWebCamController::get(SensorJointData& data)
+{
+  double dt = getBasicTimeStep() * 0.1;
+  for (int i = 0; i < JointData::numOfJoint; i++) 
+  {
+    double p = motorJointData.position[i];;
+    double dp = (p - data.position[i]) / dt;
+    data.ddp[i] = (dp - data.dp[i]) / dt;
+    data.dp[i] = dp;
+    data.position[i] = p;    
+    data.stiffness[i] = 1.0;
+  }//end for
+}
+
+void OpenCVWebCamController::set(const MotorJointData& data)
+{
+  MotorJointData tmpData = motorJointData;
+  motorJointData = data;
+  double dt = getBasicTimeStep() * 0.1;
+  for (int i = 0; i < JointData::numOfJoint; i++) 
+  {
+    double p = tmpData.position[i];
+    double dp = (data.position[i] - p) * dt;
+    motorJointData.position[i] = tmpData.position[i] + dp;
+  }//end for
 }
 
 
@@ -65,19 +94,43 @@ void OpenCVWebCamController::executeFrame()
 
   if(frameNative.data != NULL)
   {
-    //Size size;
-    //size.width = naoth::IMAGE_WIDTH;
-    //size.height = naoth::IMAGE_HEIGHT;
-    //resize(frameNative, frame, size, 0, 0, INTER_CUBIC);
-
-    // Kirill
-    cvtColor(frameNative, yCbCr, CV_BGR2YCrCb);
     // opencv release libs have some issues with highgui imshow() window's names,
     // so we use the old C functions: cvShowImage,
     // requests ImpImage and NOT Mat, so we must convert Mat to IplImage
     IplImage ipl_img = frameNative;
     cvShowImage(windowName.c_str(), &ipl_img);
     frameLossCounter = 0;
+  }
+}
+
+void OpenCVWebCamController::copyImage(Image& image)
+{
+  Size size;
+  size.width = image.width();
+  size.height = image.height();
+  Pixel pixel;
+
+  if(frameNative.data != NULL)
+  {
+    resize(frameNative, frame, size, 0, 0, INTER_CUBIC);
+
+    // Kirill
+    cvtColor(frame, yCbCr, CV_BGR2YCrCb);
+
+    // Kirill
+    for(int x = 0; x < size.width; x++)
+    {
+      for(int y = 0; y < size.height; y++)
+      {
+        int index = 3 * (x + y * size.width);
+        // YCrCb = YVU and NOT YUV, so we must
+        // rotate channels
+        pixel.y = yCbCr.data[index + 0];
+        pixel.u = yCbCr.data[index + 2];
+        pixel.v = yCbCr.data[index + 1];
+        image.set(x, y, pixel);
+      }//end for
+    }//end for
   }
   else
   {
@@ -88,35 +141,6 @@ void OpenCVWebCamController::executeFrame()
     std::cerr << "lost continuously  50 frames, exiting" << std::endl;
     exit(-1);
   }
-}
-
-void OpenCVWebCamController::copyImage(Image& image, Mat& capturedImage)
-{
-  // variables for fast access (it's in particular faster in debug mode, when inlining is deactivated)
-  unsigned char* data = image.data();
-  unsigned int width = image.width();
-  unsigned int height = image.height();
-
-  for(unsigned int x = 0; x < width; x++) {
-    for(unsigned int y = 0; y < height; y++)
-    {
-      int index = 3 * (x + y * width);
-      int yOffset = Image::PIXEL_SIZE_YUV422 * (y * width + x);
-
-      // YCrCb = YVU and NOT YUV, so we must
-      // rotate channels
-      //Pixel pixel;
-      //pixel.y = capturedImage.data[index + 0];
-      //pixel.u = capturedImage.data[index + 2];
-      //pixel.v = capturedImage.data[index + 1];
-      //image.set(x, y, pixel);
-      
-      data[yOffset] = capturedImage.data[index + 0]; // y
-      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      data[yOffset+1-((x & 1)<<1)] = capturedImage.data[index + 2]; // u
-      data[yOffset+3-((x & 1)<<1)] = capturedImage.data[index + 1]; // v
-    }//end for
-  }//end for
 }
 
 void OpenCVWebCamController::makeStep()

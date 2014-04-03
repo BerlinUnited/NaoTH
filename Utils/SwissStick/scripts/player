@@ -1,0 +1,13 @@
+#!/bin/bash
+
+### set player number, team number and team color
+PLAYER=$1
+TEAM=$2
+COLOR=$3
+
+echo $'[player]
+PlayerNumber='$PLAYER$'
+TeamNumber='$TEAM$'
+TeamColor='$COLOR | sudo -u nao tee /home/nao/Config/private/player.cfg
+
+

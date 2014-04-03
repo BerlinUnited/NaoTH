@@ -44,7 +44,7 @@ public class RobotStatus extends javax.swing.JPanel {
 
     public void setStatus(int playerNumber, long timestamp, SPLMessage msg)
     {
-      this.jlPlayerNumber.setText("PN: " + msg.playerNum);
+      this.jlPlayerNumber.setText("" + msg.playerNum);
       
       long currentTime = System.currentTimeMillis();
       
@@ -82,15 +82,15 @@ public class RobotStatus extends javax.swing.JPanel {
       }
 
       this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
-      this.jlBallAge.setText("BA: " + msg.ballAge);
+      this.jlBallAge.setText("" + msg.ballAge + "ms");
       
       jlTemperature.setForeground(Color.black);
       jlBatteryCharge.setForeground(Color.black);
       try
       {
         Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-        jlTemperature.setText(String.format("TEMP  %3.1f °C", user.getTemperature()));
-        jlBatteryCharge.setText(String.format("BATTERY %3.1f%%", user.getBatteryCharge()*100.0f));
+        jlTemperature.setText(String.format(" %3.1f °C", user.getTemperature()));
+        jlBatteryCharge.setText(String.format("%3.1f%%", user.getBatteryCharge()*100.0f));
         
         if(user.getTemperature() >= 60.0f)
         {
@@ -112,7 +112,7 @@ public class RobotStatus extends javax.swing.JPanel {
         
         
       
-      this.jlTeamNumber.setText("TN: " + user.getTeamNumber());
+      this.jlTeamNumber.setText("" + user.getTeamNumber());
         
       }
       catch(InvalidProtocolBufferException ex)
@@ -120,7 +120,7 @@ public class RobotStatus extends javax.swing.JPanel {
         Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, null, ex);
         
         jlTemperature.setText("TEMP ??");
-        jlBatteryCharge.setText("BATTERY ??");
+        jlBatteryCharge.setText("??");
       }
       
       this.connectButton.setEnabled(!this.messageServer.isConnected());
@@ -171,8 +171,8 @@ public class RobotStatus extends javax.swing.JPanel {
     jlPlayerNumber = new javax.swing.JLabel();
     jlTimestamp = new javax.swing.JLabel();
     jlTeamNumber = new javax.swing.JLabel();
-    jlTeamColor = new javax.swing.JLabel();
     jlFallenTime = new javax.swing.JLabel();
+    jlTeamColor = new javax.swing.JLabel();
     jlBallAge = new javax.swing.JLabel();
     jlBatteryCharge = new javax.swing.JLabel();
     jlTemperature = new javax.swing.JLabel();
@@ -198,30 +198,42 @@ public class RobotStatus extends javax.swing.JPanel {
     setPreferredSize(new java.awt.Dimension(150, 100));
     setLayout(new java.awt.GridLayout(5, 2));
 
+    jlPlayerNumber.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/user-info.png"))); // NOI18N
     jlPlayerNumber.setText("PN");
+    jlPlayerNumber.setToolTipText("Player Number");
     add(jlPlayerNumber);
 
+    jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
     jlTimestamp.setText("DEAD");
     add(jlTimestamp);
 
+    jlTeamNumber.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/system-users.png"))); // NOI18N
     jlTeamNumber.setText("TN");
+    jlTeamNumber.setToolTipText("Team Number");
     add(jlTeamNumber);
-
-    jlTeamColor.setText("NONE");
-    add(jlTeamColor);
 
     jlFallenTime.setText("FT");
     add(jlFallenTime);
 
+    jlTeamColor.setText("NONE");
+    add(jlTeamColor);
+
+    jlBallAge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
     jlBallAge.setText("BA");
+    jlBallAge.setToolTipText("Ball age");
     add(jlBallAge);
 
+    jlBatteryCharge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/battery.png"))); // NOI18N
     jlBatteryCharge.setText("BATTERY 100%");
+    jlBatteryCharge.setToolTipText("Battery charge");
     add(jlBatteryCharge);
 
+    jlTemperature.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/thermometer.png"))); // NOI18N
     jlTemperature.setText("TEMP 000°C");
+    jlTemperature.setToolTipText("Temperature");
     add(jlTemperature);
 
+    jlAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"))); // NOI18N
     jlAddress.setText("-");
     add(jlAddress);
 
