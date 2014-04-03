@@ -36,7 +36,8 @@ option positioning_for_own_kickoff
       //und das eher so semi cool ist, aber dann sieht er vielleicht nicht ein ball
       //der genau auf der Linie ist
       go_to_point_with_USOA(x=field.xPosOwnGroundline  + 200, y=0, rot=0);
-      head.control_mode = search_for_goal;
+      //head.control_mode = search_for_goal;
+      head.control_mode = search_for_goal_opp;
       motion.walk.style = stable;
     }
   }
