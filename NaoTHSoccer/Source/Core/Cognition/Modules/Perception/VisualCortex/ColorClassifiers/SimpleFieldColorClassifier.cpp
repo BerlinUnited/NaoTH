@@ -157,11 +157,9 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 
   STOPWATCH_STOP("SimpleFieldColorClassifier:Y_filtering");
 
-
   PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCr", maxWeightedIndexCr);
   PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":maxWeightedIndexCb", maxWeightedIndexCb);
   PLOT("SimpleFieldColorClassifier:" + getImage().cameraInfo.getCameraIDName(cameraID) + ":meanFieldY", meanFieldY);
-
 
   getFieldColorPercept().range.set(
     maxWeightedIndexY - (int)getParameters().fieldColorMin.y,
@@ -173,30 +171,20 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
     );
 
-  getFieldColorPercept().lastUpdated = getFrameInfo();
+  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
+
+  getFieldColorPerceptTop().range.set(
+    maxWeightedIndexY - (int)getParameters().fieldColorMin.y,
+    (int)maxWeightedIndexCb - (int)getParameters().fieldColorMax.u,
+    (int)maxWeightedIndexCr - (int)getParameters().fieldColorMax.v,
+
+    maxWeightedIndexY + (int)getParameters().fieldColorMax.y,
+    (int)maxWeightedIndexCb + (int)getParameters().fieldColorMax.u,
+    (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
+    );
+
+  getFieldColorPerceptTop().lastUpdated = getFrameInfo();
 
   
 
-  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green",
-    if(cameraID == CameraInfo::Bottom) {
-      for(unsigned int x = 0; x < getImage().width(); x++) {
-        for(unsigned int y = 0; y < getImage().height(); y++) {
-          if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
-            POINT_PX(ColorClasses::green, x, y);
-          }
-        }
-      } 
-    }
-  );
-  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green",
-    if(cameraID == CameraInfo::Top) {
-      for(unsigned int x = 0; x < getImage().width(); x++) {
-        for(unsigned int y = 0; y < getImage().height(); y++) {
-          if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
-            POINT_PX(ColorClasses::green, x, y);
-          }
-        }
-      } 
-    }
-  );
 }//end execute

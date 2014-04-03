@@ -54,7 +54,34 @@ public:
   void execute()
   {
     execute(CameraInfo::Bottom);
-    execute(CameraInfo::Top);
+    //execute(CameraInfo::Top);
+  
+    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green",
+      if(cameraID == CameraInfo::Bottom) {
+        for(unsigned int x = 0; x < getImage().width(); x++) {
+          for(unsigned int y = 0; y < getImage().height(); y++) {
+            if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
+              POINT_PX(ColorClasses::green, x, y);
+            }
+          }
+        } 
+      }
+    );
+
+    cameraID = CameraInfo::Top;
+    CANVAS_PX(cameraID);
+    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green",
+      if(cameraID == CameraInfo::Top) {
+        for(unsigned int x = 0; x < getImage().width(); x++) {
+          for(unsigned int y = 0; y < getImage().height(); y++) {
+            if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
+              POINT_PX(ColorClasses::green, x, y);
+            }
+          }
+        } 
+      }
+    );
+
   }
 
 private:
