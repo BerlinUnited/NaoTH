@@ -55,7 +55,7 @@ option positioning_for_opp_kickoff
     {
       //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
       go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
     }
   }
@@ -72,7 +72,7 @@ option positioning_for_opp_kickoff
     {
       //go_to_point_with_USOA(x=-1100, y=0, rot=0);
       go_to_point_with_USOA(x=-field.centerCircleRadius-300, y=0, rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       //go_to_point_with_lokalize(x=-1500, y=-600, rot=0) alt;
 
     }
@@ -93,7 +93,7 @@ option positioning_for_opp_kickoff
       x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2,
       y=field.yPosRightGoal,
       rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
 
     }
@@ -112,7 +112,7 @@ option positioning_for_opp_kickoff
       //go_to_point_with_USOA(x=-2500, y=900, rot=0);
       
       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank,rot=10);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       //go_to_point_with_lokalize(x=-1500, y=600, rot=-15) alt;
 
     }
@@ -120,7 +120,7 @@ option positioning_for_opp_kickoff
   
   target state arrived{
     action {
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       motion.type = stand;
     }
   }
