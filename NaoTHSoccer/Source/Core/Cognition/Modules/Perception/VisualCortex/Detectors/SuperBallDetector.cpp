@@ -126,7 +126,7 @@ void SuperBallDetector::execute(CameraInfo::CameraID id)
 		  getBallPercept().ballWasSeen = projectionOK;
 		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 		
-      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
+      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:draw_ball",
         CIRCLE_PX(ColorClasses::orange, start.x, start.y, 10);
 		  );
     }
