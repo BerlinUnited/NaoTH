@@ -162,7 +162,7 @@ void MonteCarloSelfLocatorSimple::execute()
   else if(state == TRACKING)
   {
     // sensor resetting
-    sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+    //sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
 
     if(parameters.resampleSUS) {
       resampleSUS(theSampleSet, theSampleSet.size());
