@@ -100,7 +100,7 @@ void MonteCarloSelfLocatorSimple::execute()
     return;
   }//end if
 
-  if(getMotionStatus().currentMotion == motion::init) {
+  if(parameters.treatInitState && getMotionStatus().currentMotion == motion::init) {
     DEBUG_REQUEST("MCSLS:draw_Samples", 
       theSampleSet.drawImportance();
     );
@@ -161,6 +161,9 @@ void MonteCarloSelfLocatorSimple::execute()
   }
   else if(state == TRACKING)
   {
+    // sensor resetting
+    sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+
     if(parameters.resampleSUS) {
       resampleSUS(theSampleSet, theSampleSet.size());
     }
@@ -662,9 +665,9 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
 int MonteCarloSelfLocatorSimple::sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const
 {
   // sensor resetting by whole goal
-  if(!getSensingGoalModel().someGoalWasSeen || 
+  if(!getSensingGoalModel().someGoalWasSeen)
 //     !getSensingGoalModel().horizonScan ||
-      getSensingGoalModel().goal.calculateCenter().angle() > Math::fromDegrees(60))
+//     getSensingGoalModel().goal.calculateCenter().angle() > Math::fromDegrees(60)) // needed when th distortion is high
   {
     return n;
   }

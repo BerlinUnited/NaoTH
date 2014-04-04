@@ -123,6 +123,8 @@ private: // local types
       PARAMETER_REGISTER(updateByCompas) = true;
 
       PARAMETER_REGISTER(treatLiftUp) = true;
+      PARAMETER_REGISTER(treatInitState) = true;
+      
       PARAMETER_REGISTER(resetOwnHalf) = false;
       PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
       PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
@@ -159,6 +161,7 @@ private: // local types
 
     bool updateByCompas;
     bool treatLiftUp;
+    bool treatInitState;
     bool resetOwnHalf;
     double downWeightFactorOwnHalf;
     double maxTimeForLiftUp;
