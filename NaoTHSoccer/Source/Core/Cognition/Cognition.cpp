@@ -69,6 +69,7 @@
 #include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/SuperBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/NeoLineDetector.h"
 
@@ -189,6 +190,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(BallDetector);
   REGISTER_MODULE(MaximumRedBallDetector);
+  REGISTER_MODULE(SuperBallDetector);
 
   REGISTER_MODULE(RobotDetector);
 

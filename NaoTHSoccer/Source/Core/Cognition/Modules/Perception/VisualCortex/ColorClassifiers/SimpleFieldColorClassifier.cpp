@@ -182,6 +182,10 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     (int)maxWeightedIndexCr + (int)getParameters().fieldColorMax.v
     );
 
+  getFieldColorPercept().histogramField.y = (unsigned char)Math::clamp(maxWeightedIndexY,0,255);
+  getFieldColorPercept().histogramField.u = (unsigned char)Math::clamp(maxWeightedIndexCb,0,255);
+  getFieldColorPercept().histogramField.v = (unsigned char)Math::clamp(maxWeightedIndexCr,0,255);
+
   getFieldColorPercept().lastUpdated = getFrameInfo();
 
   if(parameters.classifyInBothImages < 1)
