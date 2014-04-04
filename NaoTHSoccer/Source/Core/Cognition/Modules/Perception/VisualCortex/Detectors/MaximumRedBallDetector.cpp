@@ -110,8 +110,12 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
           LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
           LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
         );
-        maxRedPeak = pixel.v;
-        peakPos = point;
+        // HACK: if all before matched, but point has to be in the field polygon 
+        if(getFieldPercept().getValidField().isInside(point))
+        {
+          maxRedPeak = pixel.v;
+          peakPos = point;
+        }        
       }
 
       DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeakScan",

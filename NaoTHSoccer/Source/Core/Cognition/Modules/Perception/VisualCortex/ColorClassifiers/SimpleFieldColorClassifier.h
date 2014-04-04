@@ -54,7 +54,40 @@ public:
   void execute()
   {
     execute(CameraInfo::Bottom);
-    execute(CameraInfo::Top);
+
+    if(parameters.classifyInBothImages > 0)
+    {
+      execute(CameraInfo::Top);
+    }
+
+    cameraID = CameraInfo::Bottom;
+    CANVAS_PX(cameraID);
+    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green",
+      if(cameraID == CameraInfo::Bottom) {
+        for(unsigned int x = 0; x < getImage().width(); x++) {
+          for(unsigned int y = 0; y < getImage().height(); y++) {
+            if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
+              POINT_PX(ColorClasses::green, x, y);
+            }
+          }
+        } 
+      }
+    );
+
+    cameraID = CameraInfo::Top;
+    CANVAS_PX(cameraID);
+    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green",
+      if(cameraID == CameraInfo::Top) {
+        for(unsigned int x = 0; x < getImage().width(); x++) {
+          for(unsigned int y = 0; y < getImage().height(); y++) {
+            if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
+              POINT_PX(ColorClasses::green, x, y);
+            }
+          }
+        } 
+      }
+    );
+
   }
 
 private:
@@ -70,6 +103,7 @@ private:
       PARAMETER_REGISTER(fieldColorMin.y) = 64;
       PARAMETER_REGISTER(fieldColorMax.u) = 8;
       PARAMETER_REGISTER(fieldColorMax.v) = 10;
+      PARAMETER_REGISTER(classifyInBothImages) = 0;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -81,6 +115,7 @@ private:
 
     DoublePixel fieldColorMax;
     DoublePixel fieldColorMin;
+    int classifyInBothImages;
   } parameters;
 
   inline Parameters& getParameters() {
@@ -96,6 +131,7 @@ private:
 
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChannelHistograms);
+
   DOUBLE_CAM_PROVIDE(SimpleFieldColorClassifier,FieldColorPercept);
 };
 
