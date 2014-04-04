@@ -129,6 +129,7 @@ private:
       PARAMETER_REGISTER(ttMaxBlue) = 150;
       PARAMETER_REGISTER(ttMaxGreen) = 100;
       PARAMETER_REGISTER(ttMinRed) = 100;
+      PARAMETER_REGISTER(ttUseBallColorPara) = 1;
 
       syncWithConfig();
 
