@@ -34,7 +34,7 @@ option go_to_ball_with_foot
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
       motion.walk.style = stable;
@@ -60,7 +60,7 @@ option go_to_ball_with_foot
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
       motion.walk.style = stable;
@@ -85,7 +85,7 @@ option go_to_ball_with_foot
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
       motion.walk.style = stable;
@@ -110,7 +110,7 @@ option go_to_ball_with_foot
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
       motion.walk.style = stable;
