@@ -427,7 +427,7 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
           double squareError = (Vector2d(pos) - projection).abs2();
 
           //if error in width is to big, drop the point of the good points list
-          if(params.enableFeatureWidthcheck < 1 || squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
+          if(params.enableFeatureWidthCheck < 1 || squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
           {
             sumSquareFeatureWidth += featureWidth;
             meanSquareFeatureWidth = sumSquareFeatureWidth / (double) goodFeatures.size();
@@ -555,30 +555,35 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   GoalPercept::GoalPost post;
   post.basePoint = pos;
 
-  // check some pixels below the foot point
-  BresenhamLineScan footPointGreenScanner(post.basePoint, scanDir, getImage().cameraInfo);
-  double greenPixelCount = 0;
   Vector2i lastGreenPoint(post.basePoint);
-  for(int k = 0; k < params.footGreenScanSize && footPointGreenScanner.getNextWithCheck(pos); k++) {
-    IMG_GET(pos.x, pos.y, pixel);
+  if(params.enableGreenCheck > 0)
+  {
+    // check some pixels below the foot point
+    BresenhamLineScan footPointGreenScanner(post.basePoint, scanDir, getImage().cameraInfo);
+    double greenPixelCount = 0;
+    for(int k = 0; k < params.footGreenScanSize && footPointGreenScanner.getNextWithCheck(pos); k++) {
+      IMG_GET(pos.x, pos.y, pixel);
 
-    if(getFieldColorPercept().isFieldColor(pixel)) {
-      greenPixelCount++;
-      lastGreenPoint = pos;
+      if(getFieldColorPercept().isFieldColor(pixel)) {
+        greenPixelCount++;
+        lastGreenPoint = pos;
+      }
+
+      DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
+        ColorClasses::Color c = getFieldColorPercept().isFieldColor(pixel)?ColorClasses::green:ColorClasses::gray;
+        POINT_PX(c, pos.x, pos.y);
+      );
     }
 
-    DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans", 
-      ColorClasses::Color c = getFieldColorPercept().isFieldColor(pixel)?ColorClasses::green:ColorClasses::gray;
-      POINT_PX(c, pos.x, pos.y);
-    );
+    // 40% of the pixel below the post have to be green
+    post.positionReliable = greenPixelCount > 0 && 
+                            params.footGreenScanSize > 0 && 
+                            greenPixelCount/params.footGreenScanSize > 0.4;
   }
 
-  // 40% of the pixel below the post have to be green
-  post.positionReliable = greenPixelCount > 0 && 
-                          params.footGreenScanSize > 0 && 
-                          greenPixelCount/params.footGreenScanSize > 0.4 &&
-                          (getFieldPercept().getValidField().isInside(post.basePoint) || 
-                           getFieldPercept().getValidField().isInside(lastGreenPoint) );
+  post.positionReliable = post.positionReliable &&
+                        (getFieldPercept().getValidField().isInside(post.basePoint) || 
+                          getFieldPercept().getValidField().isInside(lastGreenPoint) );
 
   // NOTE: if the projection is not successfull, then post.position = (0,0)
   CameraGeometry::imagePixelToFieldCoord(
@@ -601,7 +606,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.seenWidth = meanWidth;
 
     bool isDouble = false;
-    if(params.enableFeatureWidthcheck < 1)
+    if(params.enableFeatureWidthCheck < 1)
     {
       //check if there is a post candidate found in the same post (double detections)
       for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
@@ -618,7 +623,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       }
     }
 
-    if(params.enableFeatureWidthcheck < 1 || !isDouble)
+    if(params.enableFeatureWidthCheck < 1 || !isDouble)
       getGoalPercept().add(post);
   }
 
