@@ -219,9 +219,9 @@ bool MaximumRedBallDetector::findBall ()
   }
 
   //HACK: reject bad scans
-  if(goodPoints.length + badPoints.length <= 13) {
+/* if(goodPoints.length + badPoints.length <= 13) {
     return false;
-  }
+  }*/
 
 	for (int i = 0; i < goodPoints.length; i++) {
 		bestPoints.add(goodPoints[i]);
