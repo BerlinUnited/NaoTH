@@ -69,9 +69,8 @@ option fast_forward_kick_test
     }
     action 
     {
-      go_to_ball_with_foot(right = false, distance = 130);
+      go_to_ball_with_foot(right = false, distance = 180);
       //go_to_ball(distance = 130);
-      motion.walk.style = (ball.preview.left_foot.x < 200) ? stable : normal;
     }
   }
 
@@ -86,9 +85,8 @@ option fast_forward_kick_test
     }
     action 
     {
-      go_to_ball_with_foot(right = true, distance = 130);
+      go_to_ball_with_foot(right = true, distance = 180);
       //go_to_ball(distance = 130);
-      motion.walk.style = (ball.preview.right_foot.x < 200) ? stable : normal;
     }
   }
 
