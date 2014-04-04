@@ -107,6 +107,8 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(footGreenScanSize) = 10;
       PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
+      PARAMETER_REGISTER(enableFeatureWidthCheck) = 0;
+      PARAMETER_REGISTER(enableGreenCheck) = 0;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -126,6 +128,8 @@ private:
     int minGoodPoints;
     double footGreenScanSize; // number of pixels to scan for green below the footpoint
     double maxFeatureWidthError;
+    int enableFeatureWidthCheck;
+    int enableGreenCheck;
   };
 
   Parameters params;
