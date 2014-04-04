@@ -126,9 +126,9 @@ private:
       PARAMETER_REGISTER(maxRansacTries) = 40;
       PARAMETER_REGISTER(maxScanlineSteps) = 50;
       PARAMETER_REGISTER(maxU) = 128;
-      PARAMETER_REGISTER(maxBlue) = 15;
-      PARAMETER_REGISTER(maxGreen) = 40;
-      PARAMETER_REGISTER(minRed) = 100;
+      PARAMETER_REGISTER(ttMaxBlue) = 150;
+      PARAMETER_REGISTER(ttMaxGreen) = 100;
+      PARAMETER_REGISTER(ttMinRed) = 100;
 
       syncWithConfig();
 
@@ -150,9 +150,10 @@ private:
     int maxRansacTries;
     int maxScanlineSteps;
     int maxU;
-    int maxBlue;
-    int maxGreen;
-    int minRed;
+    int ttMaxBlue;
+    int ttMaxGreen;
+    int ttMinRed;
+    int ttUseBallColorPara;
  //   int minY;
   };
 

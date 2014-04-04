@@ -109,10 +109,15 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
         
       )
       {
-        int blue = (int) (pixel.y + 1.765*(pixel.u-128)+0.5);
-        int red =  (int) (pixel.y + 1.400 * (pixel.v -128) + 0.5);
-        int green = (int) ((pixel.y - 0.343 * (pixel.u-128) - 0.711 * (pixel.v-128)) + 0.5);
-        if (blue < params.maxBlue && green < params.maxGreen && red > params.minRed) {
+        int blue = 0;
+        int red =  400;
+        int green = 0;
+        if (params.ttUseBallColorPara>0) {
+          blue = (int) (pixel.y + 1.765*(pixel.u-128)+0.5);
+          red =  (int) (pixel.y + 1.400 * (pixel.v -128) + 0.5);
+          green = (int) ((pixel.y - 0.343 * (pixel.u-128) - 0.711 * (pixel.v-128)) + 0.5);
+        }
+        if (blue < params.ttMaxBlue && green < params.ttMaxGreen && red > params.ttMinRed) {
           DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
             LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
             LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
