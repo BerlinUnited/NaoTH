@@ -580,6 +580,12 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
                             params.footGreenScanSize > 0 && 
                             greenPixelCount/params.footGreenScanSize > 0.4;
   }
+  else
+  {
+    lastGreenPoint.y += params.footGreenScanSize;
+    if(lastGreenPoint.y >= getImage().height()) 
+      lastGreenPoint.y =  getImage().height() - 1;
+  }
 
   post.positionReliable = post.positionReliable &&
                         (getFieldPercept().getValidField().isInside(post.basePoint) || 
@@ -623,7 +629,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       }
     }
 
-    if(params.enableFeatureWidthCheck < 1 || !isDouble)
+    if(params.enableFeatureWidthheck < 1 || !isDouble)
       getGoalPercept().add(post);
   }
 
