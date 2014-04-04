@@ -18,7 +18,7 @@ option play_soccer
         goto calibrate_inertial;
       else
         stay;
-    }
+    } 
     action{}
   }
 
@@ -116,6 +116,8 @@ option play_soccer
     {
       else if (game.current_mode != playing)
         goto idle;
+      else if(last_state_was_penalized)
+        goto localize; // allways localize after penalized!!!
       else 
         stay;
     }
