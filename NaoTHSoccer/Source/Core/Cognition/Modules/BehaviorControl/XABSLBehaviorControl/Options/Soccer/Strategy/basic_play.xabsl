@@ -76,6 +76,9 @@ option basic_play
       // supports localization, only set to true if in game state set
       situationStatusOwnHalf = false;
       
+      //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
+      body.ready_to_walk = true;
+      
       // react to the game controller and observe fall down
       decide_game_state();
 

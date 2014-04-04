@@ -36,6 +36,10 @@ namespace sensor("Sensor Symbols") {
   float input body.temperature.leg.left;
   /** maximal temperature in the right leg */
   float input body.temperature.leg.right;
+
+  bool input body.foot.groundcontact.left;
+  bool input body.foot.groundcontact.right;
+  float input body.foot.groundcontact.statetime;
   
   /** Ultrasound distance sensor */
   float input sensor.ultrasound;

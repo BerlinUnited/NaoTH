@@ -1,0 +1,38 @@
+option treat_lifted
+{
+  initial state idle
+  {
+    decision
+    {
+      if(!body.foot.groundcontact.left &&
+         !body.foot.groundcontact.right &&
+          body.foot.groundcontact.statetime > 100)
+        goto lifted;
+      else
+        stay;
+    }      
+    action
+    {
+      //HACK: body.ready_to_walk = true has to be set outside
+      //body.ready_to_walk = body.ready_to_walk && true;
+    }
+  }
+
+  state lifted
+  {
+    decision {
+      if(body.foot.groundcontact.left &&
+         body.foot.groundcontact.right &&
+         body.foot.groundcontact.statetime > 100)
+        goto idle;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      arm.control_mode = normal;
+      head.control_mode = look_straight_ahead;
+      body.ready_to_walk = false;
+    }
+  }
+}
