@@ -85,11 +85,11 @@ private:
 
     Parameters() : ParameterList("SuperBallDetectorParameters")
     {
-      PARAMETER_REGISTER(stepSize) = 4;    
-      PARAMETER_REGISTER(minOffsetToFieldY) = 0;    
+      PARAMETER_REGISTER(stepSize) = 2;    
+      PARAMETER_REGISTER(minOffsetToFieldY) = 100;    
       PARAMETER_REGISTER(sigmaFactorY) = 20;  
       PARAMETER_REGISTER(sigmaFactorUV) = 10; 
-      PARAMETER_REGISTER(orange_thresh) = 90;    
+      PARAMETER_REGISTER(orange_thresh) = 115;    
 	    
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
