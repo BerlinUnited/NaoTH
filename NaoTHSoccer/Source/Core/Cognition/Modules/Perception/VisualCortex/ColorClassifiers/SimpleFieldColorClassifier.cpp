@@ -91,7 +91,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 
     getImage().get(point.x, point.y, pixel);
 
-    if(lowBorderY < pixel.y && pixel.y < highBorderY)
+    if(!getBodyContour().isOccupied(point) && lowBorderY < pixel.y && pixel.y < highBorderY)
     {
       filteredHistogramV.add(pixel.v);
     }
@@ -142,7 +142,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
     
-    if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v )
+    if(!getBodyContour().isOccupied(point) && abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v)
     {
       filteredHistogramU.add(pixel.u);
     }

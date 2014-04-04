@@ -16,6 +16,7 @@
 #include "Representations/Infrastructure/Image.h" // just for debug
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/Histograms.h"
+#include "Representations/Perception/BodyContour.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
@@ -37,6 +38,8 @@ BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
   REQUIRE(ColorChannelHistogramsTop)
   REQUIRE(Image)
   REQUIRE(ImageTop)
+  REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
 
   PROVIDE(FieldColorPercept)
   PROVIDE(FieldColorPerceptTop)
@@ -152,6 +155,7 @@ private:
 
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,Image);
   DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier,ColorChannelHistograms);
+  DOUBLE_CAM_REQUIRE(SimpleFieldColorClassifier, BodyContour);
 
   DOUBLE_CAM_PROVIDE(SimpleFieldColorClassifier,FieldColorPercept);
 };
