@@ -582,9 +582,9 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   }
   else
   {
-    lastGreenPoint.y += params.footGreenScanSize;
-    if(lastGreenPoint.y >= getImage().height()) 
-      lastGreenPoint.y =  getImage().height() - 1;
+    lastGreenPoint.y += (int) params.footGreenScanSize;
+    if(lastGreenPoint.y >= (int) getImage().height()) 
+      lastGreenPoint.y =  (int) getImage().height() - 1;
   }
 
   post.positionReliable = post.positionReliable &&
@@ -629,7 +629,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       }
     }
 
-    if(params.enableFeatureWidthheck < 1 || !isDouble)
+    if(params.enableFeatureWidthCheck < 1 || !isDouble)
       getGoalPercept().add(post);
   }
 
