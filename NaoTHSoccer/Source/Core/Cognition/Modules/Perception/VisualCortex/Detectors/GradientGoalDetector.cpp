@@ -356,8 +356,10 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
   Pixel pixel;
 
   Vector2d scanDirection(scanDir);
-
   Vector2i pos(candidate.center);
+
+  double meanSquareFeatureWidth = (candidate.end - candidate.begin).abs2();
+  double sumSquareFeatureWidth = meanSquareFeatureWidth;
 
   IMG_GET(pos.x, pos.y, pixel);
   int diffVU = (int) pixel.v - (int) pixel.u;
@@ -412,6 +414,10 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
         int dist = (pos - features[y][j].center).abs();
         if(dist < params.maxFeatureDeviation)
         {
+          double featureWidth = (features[y][j].end - features[y][j].begin).abs2();
+          double squareFeatureWidthError = fabs(featureWidth - meanSquareFeatureWidth);
+
+          features[y][j].width = featureWidth;
           features[y][j].used = true;
           goodFeatures.push_back(features[y][j]);
           Math::Line line = fitLine(goodFeatures);
@@ -420,34 +426,47 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
           Vector2d projection = line.projection(pos);
           double squareError = (Vector2d(pos) - projection).abs2();
 
-          //if error does not raise leave the point to the good points list else drop it out
-          if(squareError <= params.maxFootScanSquareError || sumSquareError == 0.0)
+          //if error in width is to big, drop the point of the good points list
+          if(squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
           {
-            scanDirection = line.getDirection(); // 
-            sumSquareError += squareError;
-            lastTestFeatureIdx[y] = j;
-            Vector2i newPos(projection); // cast Vector2d to Vector2i
-          
-            if(!getImage().isInside(newPos.x, newPos.y))
+            sumSquareFeatureWidth += featureWidth;
+            meanSquareFeatureWidth = sumSquareFeatureWidth / (double) goodFeatures.size();
+            
+            //if error does not raise leave the point to the good points list else drop it out
+            if(squareError <= params.maxFootScanSquareError || sumSquareError == 0.0)
             {
-              newPos = features[y][j].center;
-            }
-            goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
-            pos = newPos;
+              scanDirection = line.getDirection(); // 
+              sumSquareError += squareError;
+              lastTestFeatureIdx[y] = j;
+              Vector2i newPos(projection); // cast Vector2d to Vector2i
+          
+              if(!getImage().isInside(newPos.x, newPos.y))
+              {
+                newPos = features[y][j].center;
+              }
+              goodFeatureScanner.setup(newPos, scanDirection, getImage().cameraInfo);
+              pos = newPos;
                 
-            DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
-              CIRCLE_PX(ColorClasses::black, features[y][j].center.x, features[y][j].center.y, 3);
-              POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
-            );
+              DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints", 
+                CIRCLE_PX(ColorClasses::black, features[y][j].center.x, features[y][j].center.y, 3);
+                POINT_PX(ColorClasses::red, features[y][j].center.x, features[y][j].center.y);
+              );
+            }
+            else
+            {
+              goodFeatures.pop_back();
+            }//end if
           }
           else
           {
+            features[y][j].used = false;
             goodFeatures.pop_back();
-          }
+          }//end if
+
           stop = true;
-        }
-      }
-    }
+        }//end if
+      }//end if
+    }//end for
   }//end for
 
   if(goodFeatures.size() >= (size_t) params.minGoodPoints)
@@ -572,7 +591,32 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
 
   if(post.positionReliable)
   {
-    getGoalPercept().add(post);
+    //calculate mean width of new found goal post
+    double meanWidth = 0.0;
+    for(size_t fIdx = 0; fIdx < goodFeatures.size(); fIdx++)
+    {
+      meanWidth += goodFeatures[fIdx].width;
+    }
+    meanWidth /= (double) goodFeatures.size();
+    post.seenWidth = meanWidth;
+
+    bool isDouble = false;
+    //check if there is a post candidate found in the same post (double detections)
+    for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
+    {
+      double precision = 1.0 - params.maxFeatureWidthError;
+      double footPointDistance = precision * (post.basePoint - getGoalPercept().getPost(pIdx).basePoint).abs();
+
+      if(meanWidth >= footPointDistance || getGoalPercept().getPost(pIdx).seenWidth >= footPointDistance)
+      {
+        post.positionReliable = false;
+        isDouble = true;
+        break;
+      }
+    }
+
+    if(!isDouble)
+      getGoalPercept().add(post);
   }
 
   DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:markFootScans",

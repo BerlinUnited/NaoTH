@@ -140,6 +140,8 @@ private:
     Vector2d responseAtBegin;
     Vector2d responseAtEnd;
 
+    double width;
+
     bool possibleObstacle;
     bool used;
 
@@ -149,6 +151,7 @@ private:
       end(-1, -1),
       responseAtBegin(0.0, 0.0),
       responseAtEnd(0.0, 0.0),
+      width(0.0),
       possibleObstacle(false),
       used(false)
     {
