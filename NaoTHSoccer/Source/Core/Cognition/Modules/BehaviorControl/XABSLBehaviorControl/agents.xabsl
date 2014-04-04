@@ -23,6 +23,7 @@ include "Symbols/field_symbols.xabsl";
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
+include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
@@ -33,6 +34,7 @@ include "Options/Skills/take_arms_back.xabsl";
 
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
+include "Options/Skills/treat_lifted.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
@@ -121,6 +123,8 @@ include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";
 include "Options/Test/ball_search/only_ball_looking.xabsl";
 include "Options/Test/ball_search/only_goal_looking.xabsl";
+include "Options/Test/ball_search/searching_for_ball_and_look_around.xabsl";
+
 
 include "Options/Test/change_state_input_test_agent.xabsl";
 
@@ -215,6 +219,7 @@ agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_
 
 // Test agents search
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
+agent searching_for_ball_and_look_around("searching_for_ball_and_look_around",searching_for_ball_and_look_around);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
 agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);

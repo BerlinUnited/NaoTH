@@ -68,16 +68,19 @@ public:
 
   void execute()
   {
-    if( !execute(CameraInfo::Top)) {
+    bool topScanned = execute(CameraInfo::Top);
+
+    if(!topScanned) {
       execute(CameraInfo::Top, false);
     }
     debugStuff(CameraInfo::Top);
-    if( getGoalPercept().getNumberOfSeenPosts() == 0) {
+    
+    if(topScanned && getGoalPercept().getNumberOfSeenPosts() == 0) {
       if( !execute(CameraInfo::Bottom)) {
         execute(CameraInfo::Bottom, false);
       }
+      debugStuff(CameraInfo::Bottom);
     }
-    debugStuff(CameraInfo::Bottom);
   }
 
 private:
@@ -104,6 +107,8 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(footGreenScanSize) = 10;
       PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
+      PARAMETER_REGISTER(enableFeatureWidthCheck) = 0;
+      PARAMETER_REGISTER(enableGreenCheck) = 0;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -123,6 +128,8 @@ private:
     int minGoodPoints;
     double footGreenScanSize; // number of pixels to scan for green below the footpoint
     double maxFeatureWidthError;
+    int enableFeatureWidthCheck;
+    int enableGreenCheck;
   };
 
   Parameters params;
@@ -137,6 +144,8 @@ private:
     Vector2d responseAtBegin;
     Vector2d responseAtEnd;
 
+    double width;
+
     bool possibleObstacle;
     bool used;
 
@@ -146,6 +155,7 @@ private:
       end(-1, -1),
       responseAtBegin(0.0, 0.0),
       responseAtEnd(0.0, 0.0),
+      width(0.0),
       possibleObstacle(false),
       used(false)
     {
@@ -164,6 +174,7 @@ private:
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
   void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
+  void scanForStatisticsToFootPoint( Vector2i footPoint, Vector2i pos, double threshold, double thresholdY);
   void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;
