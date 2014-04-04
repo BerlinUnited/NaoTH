@@ -39,6 +39,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
 
 
+  engine.registerBooleanInputSymbol("body.foot.groundcontact.left", &getBodyState().standByLeftFoot);
+  engine.registerBooleanInputSymbol("body.foot.groundcontact.right", &getBodyState().standByRightFoot);
+  engine.registerDecimalInputSymbol("body.foot.groundcontact.statetime", &getFootStateTime);
+
+
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
@@ -88,6 +93,10 @@ double SensorSymbols::getFrameNumber()
   return (double) (theInstance->getFrameInfo().getFrameNumber());
 }
 
+double SensorSymbols::getFootStateTime()
+{
+  return (double) theInstance->getFrameInfo().getTimeSince(theInstance->getBodyState().foot_state_time);
+}
 
 int SensorSymbols::getFallDownState()
 {

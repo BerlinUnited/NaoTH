@@ -21,7 +21,7 @@ option go_to_ball
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       
       motion.walk.coordinate = hip;
@@ -46,7 +46,7 @@ option go_to_ball
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;

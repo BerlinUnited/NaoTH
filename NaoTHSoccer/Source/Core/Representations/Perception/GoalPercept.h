@@ -26,7 +26,7 @@ public:
   class GoalPost
   {
   public:
-    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0){}
+    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0), seenWidth(0){}
     ~GoalPost(){}
 
     /* possible types of goalposts */
@@ -54,6 +54,8 @@ public:
 
     /* the seen height of the post */
     double seenHeight;
+
+    double seenWidth;
 
     /* the posts base point on the ground */
     Vector2d position;
