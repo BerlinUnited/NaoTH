@@ -427,7 +427,7 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
           double squareError = (Vector2d(pos) - projection).abs2();
 
           //if error in width is to big, drop the point of the good points list
-          if(squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
+          if(params.enableFeatureWidthcheck < 1 || squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
           {
             sumSquareFeatureWidth += featureWidth;
             meanSquareFeatureWidth = sumSquareFeatureWidth / (double) goodFeatures.size();
@@ -601,21 +601,24 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.seenWidth = meanWidth;
 
     bool isDouble = false;
-    //check if there is a post candidate found in the same post (double detections)
-    for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
+    if(params.enableFeatureWidthcheck < 1)
     {
-      double precision = 1.0 - params.maxFeatureWidthError;
-      double footPointDistance = precision * (post.basePoint - getGoalPercept().getPost(pIdx).basePoint).abs();
-
-      if(meanWidth >= footPointDistance || getGoalPercept().getPost(pIdx).seenWidth >= footPointDistance)
+      //check if there is a post candidate found in the same post (double detections)
+      for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
       {
-        post.positionReliable = false;
-        isDouble = true;
-        break;
+        double precision = 1.0 - params.maxFeatureWidthError;
+        double footPointDistance = precision * (post.basePoint - getGoalPercept().getPost(pIdx).basePoint).abs();
+
+        if(meanWidth >= footPointDistance || getGoalPercept().getPost(pIdx).seenWidth >= footPointDistance)
+        {
+          post.positionReliable = false;
+          isDouble = true;
+          break;
+        }
       }
     }
 
-    if(!isDouble)
+    if(params.enableFeatureWidthcheck < 1 || !isDouble)
       getGoalPercept().add(post);
   }
 
