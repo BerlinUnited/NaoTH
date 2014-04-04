@@ -38,7 +38,8 @@ GradientGoalDetector::GradientGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanResponse","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:markFootScanGoodPoints","..", false);   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:use_horizon","..", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:showColorByHisogram","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:showColorByHistogramBottom","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GradientGoalDetector:showColorByHistogramTop","..", false);
 }
 
 
@@ -198,12 +199,25 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
 
 void GradientGoalDetector::debugStuff(CameraInfo::CameraID camID)
 {
-  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHisogram",
-    CANVAS_PX(camID);
-    cameraID = camID;
-    for(unsigned int x = 0; x < getImage().width(); x++)
+  CANVAS_PX(camID);
+  cameraID = camID;
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHistogramBottom",
+    for(unsigned int x = 0; x < getImage().width(); x+=2)
     {
-      for(unsigned int y = 0; y < getImage().height(); y++)
+      for(unsigned int y = 0; y < getImage().height(); y+=2)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if(getGoalPostHistograms().isPostColor(pixel))
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
+  DEBUG_REQUEST("Vision:Detectors:GradientGoalDetector:showColorByHistogramTop",
+    for(unsigned int x = 0; x < getImage().width(); x+=2)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y+=2)
       {
         const Pixel& pixel = getImage().get(x, y);
         if(getGoalPostHistograms().isPostColor(pixel))
