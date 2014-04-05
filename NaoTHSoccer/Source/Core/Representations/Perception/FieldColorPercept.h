@@ -80,8 +80,11 @@ public:
   int maxU;
   int minU;
 
+
   FrameInfo lastUpdated;
   ColorRange range;
+  Pixel histogramField;
+
 
   FieldColorPercept()  
   : 
@@ -112,6 +115,7 @@ public:
     range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
+  // DEPRECATED
   inline bool isFieldColorOld(int yy, int cb, int cr) const {
     return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }
