@@ -37,6 +37,8 @@ include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
+include "Options/Skills/go_to_ball_with_right_foot.xabsl";
+include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
@@ -79,9 +81,11 @@ include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
+include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
+include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
@@ -183,6 +187,7 @@ agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
+agent role_fast_striker("fast_striker", fast_striker_agent);
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);

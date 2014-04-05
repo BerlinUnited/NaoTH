@@ -1,0 +1,228 @@
+option fast_striker_behavior{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  // this is only usefull for test agents which call basic_striker_behavior directly
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto decide_search;
+      else
+        stay;
+    }
+    action {
+    }
+  }
+
+  state decide_search{
+    decision{
+      else if (ball.was_seen || ball.time_since_last_seen < 100){
+	if (attack.direction.preview > 0 )	
+		goto go_to_ball_with_left_foot;
+	else
+        	goto go_to_ball_with_right_foot;
+	}
+      else
+        stay;
+    }
+    action{
+      search_ball();
+    }
+  
+  }
+
+
+  state go_to_ball_with_right_foot{
+    decision{
+      else if (ball.time_since_last_seen>1500)
+        goto decide_search;
+      else if (attack.direction.preview < -20 )
+	      goto go_to_ball_with_left_foot;
+      else if(action_done)
+	      goto decide_kick_right;
+      else
+        stay;
+    }
+    action{
+     go_to_ball_with_right_foot(distance =180); 
+    }
+  
+  }
+
+  state go_to_ball_with_left_foot{
+    decision{
+      else if (ball.time_since_last_seen>1500)
+        goto decide_search;
+      else if (attack.direction.preview > 20)
+	      goto go_to_ball_with_right_foot;
+      else if(action_done)
+	      goto decide_kick_left;
+      else
+        stay;
+    }
+    action{
+     go_to_ball_with_left_foot(distance =180); 
+    }
+  
+  }
+
+
+state decide_kick_left{
+	decision{
+      	   else if (ball.time_since_last_seen>1500)
+      	     goto decide_search;
+           else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        	{
+          	 if(random < 0.3)
+          	   goto do_kick_with_left_foot;
+          	 else
+          	   goto attack_with_left_foot;
+        	}
+      	   else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+		         goto sidekick_to_right;
+	         else
+		         goto decide_turning_direction;
+	}
+	action{
+	}
+}
+
+state decide_kick_right{
+	decision{
+      	   else if (ball.time_since_last_seen>1500)
+      	     goto decide_search;
+           else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        	{
+          	 if(random < 0.3)
+          	   goto do_kick_with_right_foot;
+          	 else
+          	   goto attack_with_right_foot;
+        	}
+      	   else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+		         goto sidekick_to_left;
+	         else
+		         goto decide_turning_direction;
+	}
+	action{
+	}
+}
+
+
+  state decide_turning_direction {
+    decision{
+      else if (ball.time_since_last_seen>1500)
+        goto decide_search;
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>250 || (abs(value = attack.direction.preview)<20)){
+	      if (attack.direction.preview > 0 )	
+		      goto go_to_ball_with_left_foot;
+	      else
+        	goto go_to_ball_with_right_foot;
+	      }
+      else
+        stay;
+    }
+    action{
+      move_around_ball(direction=(attack.direction.preview>0)?30:-30, radius=180);
+      motion.walk.style = fast;
+    }
+  }
+
+
+  state attack_with_right_foot {
+    decision {
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action {
+      fast_forward_kick(foot = right);
+    }
+  }
+
+ state do_kick_with_right_foot {
+    decision {
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action {
+      kick_with_foot(foot = right);
+    }
+  }
+
+  state attack_with_left_foot {
+    decision {
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action {
+      fast_forward_kick(foot = left);
+    }
+  }
+
+  state do_kick_with_left_foot {
+    decision {
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action {
+      kick_with_foot(foot = left);
+    }
+  }
+
+
+  state sidekick_to_right{
+    decision{
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action{
+      sidekick(to = right);
+    }
+  }
+
+  state sidekick_to_left{
+    decision{
+      else if(action_done)
+        goto go_to_ball_for_a_second;
+      else
+        stay;
+    }
+    action{
+      sidekick(to = left);
+    }
+  }
+
+  // unsatisfying solution for the second kick problem
+  state go_to_ball_for_a_second{
+    decision {
+      else if (ball.time_since_last_seen>1500)
+        goto decide_search;
+      else if(state_time > 1000){
+        if (attack.direction.preview > 0 )  
+          goto go_to_ball_with_left_foot;
+        else
+          goto go_to_ball_with_right_foot;
+        }
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_USOA(distance=180);
+    }
+  }
+}
