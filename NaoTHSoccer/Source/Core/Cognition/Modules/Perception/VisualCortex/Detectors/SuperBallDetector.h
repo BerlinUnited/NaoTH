@@ -86,11 +86,9 @@ private:
     Parameters() : ParameterList("SuperBallDetectorParameters")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
-      PARAMETER_REGISTER(minOffsetToFieldY) = 100;    
-      PARAMETER_REGISTER(sigmaFactorY) = 20;  
-      PARAMETER_REGISTER(sigmaFactorUV) = 10; 
-      PARAMETER_REGISTER(orange_thresh) = 115;    
-	    
+      PARAMETER_REGISTER(minOffsetToFieldY) = 100;
+      PARAMETER_REGISTER(mitUVDifference) = 50;
+
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
     }
@@ -102,18 +100,63 @@ private:
 
 	  int stepSize;
     int minOffsetToFieldY;
-    double sigmaFactorY;
-    double sigmaFactorUV;
-    double orange_thresh;
+    int mitUVDifference;
 
   } params;
 
-  Statistics::Histogram<256> filteredHistogramY;
-  Statistics::Histogram<256> filteredHistogramU;
-  Statistics::Histogram<256> filteredHistogramV;
+  template<typename T, typename V>
+class MaximumScan
+{
+private:
+  V threshhold;
+  V value_max;
+
+  // results of the scan
+  T& peakMax;
+  bool maximum;
+
+public:
+
+  MaximumScan(T& peakMax, V threshhold)
+    : threshhold(threshhold),
+      value_max(threshhold),
+      peakMax(peakMax),
+      maximum(false)
+  {
+  }
+
+  inline bool addValue(const T& point, V value)
+  {
+    if(maximum) {
+      value_max = threshhold;
+      maximum = false;
+    }
+
+    if(value > value_max)
+    {
+      value_max = value;
+      peakMax = point;
+    } else if(value_max > threshhold && value < threshhold) {
+      maximum = true;
+    }
+
+    return maximum;
+  }
+
+  inline bool isMax() { return maximum; }
+  inline V maxValue() { return value_max; }
+};
 
 private:
+  inline bool isOrange(const Pixel& pixel) const {
+    return
+      pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
+      pixel.v > pixel.u + params.mitUVDifference; // y-u hat to be high (this filter out the jerseys)
+  }
+
   bool findMaximumRedPoint(Vector2i& peakPos) const;
+  void scanForEdges(const Vector2i& start, const Vector2i& direction) const;
+  void calculateBallPercept(const Vector2i& center);
 
 private:
   // double cam stuff
