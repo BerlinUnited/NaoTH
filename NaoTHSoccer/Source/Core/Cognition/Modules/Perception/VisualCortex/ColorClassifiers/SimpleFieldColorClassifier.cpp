@@ -28,6 +28,11 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
+
+  //collect only last 20 seconds of histogram data
+  filteredHistogramY.setMaxTotalSum(uniformGrid.size() * 30 * 20);
+  filteredHistogramU.setMaxTotalSum(uniformGrid.size() * 30 * 20);
+  filteredHistogramV.setMaxTotalSum(uniformGrid.size() * 30 * 20);  
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
@@ -42,39 +47,13 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 
   const Statistics::HistogramX& histY = getColorChannelHistograms().histogramY;
   double start = histY.min;
-  double end = histY.max;
   double halfSpan = histY.spanWidth / 2.0;
   double quadSpan = histY.spanWidth / 4.0;
-
-  double common = histY.median;
-
-  if(filteredHistogramY.sum != 0)
-  {
-      common = filteredHistogramY.median;
-      start = filteredHistogramY.min;
-      end = filteredHistogramY.max;
-  }
 
   for(int i = 0; i < getColorChannelHistograms().histogramY.size; i++)
   {
     double f = 1.0;
-    if(filteredHistogramY.sum != 0)
-    {
-      double s = 0.0;
-      if(i <= common)
-      {
-        s = fabs(common - start) / 4.0;
-      }
-      else if(i > common)
-      {
-        s = fabs(end - common) / 4.0;
-      }
-      f = gauss(s, common, i);
-    }
-    else
-    {
-      f =  gauss(quadSpan, start + halfSpan, i);
-    }
+    f =  gauss(parameters.filterFactorY * quadSpan, start + halfSpan, i);
 
     int val = (int) Math::round(getColorChannelHistograms().histogramY.rawData[i] * f);
     filteredHistogramY.add(i, val);

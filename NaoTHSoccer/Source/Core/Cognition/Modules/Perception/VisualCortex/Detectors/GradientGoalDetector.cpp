@@ -174,6 +174,7 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   {
     //calculate histogram only, if a goalpost was found
     getGoalPostHistograms().calculate();
+    getGoalPostHistograms().setBorders(params.colorRegionDeviation);
   }
 
   // exactly two posts are seen => assign site labels
