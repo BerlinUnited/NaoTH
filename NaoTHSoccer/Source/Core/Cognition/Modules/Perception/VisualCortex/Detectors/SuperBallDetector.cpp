@@ -17,6 +17,7 @@
 #include "Tools/DoubleCamHelpers.h"
 
 #include "Tools/Math/Geometry.h"
+#include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 SuperBallDetector::SuperBallDetector()
 {
@@ -43,93 +44,25 @@ void SuperBallDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  Pixel pixel;
-  getImage().get(start.x, start.y, pixel);
-  unsigned char b = pixel.b;
-  unsigned char c = pixel.c;
-
-  // ball color
-  bool ballFound = false;
-
-  double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
-  unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
-
-  static int numberOfUpdates = 0;
-
-  if(t > params.orange_thresh)
+  if(cameraID == CameraInfo::Top)
   {
-    DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:draw_ball",
-      CIRCLE_PX(ColorClasses::yellow, start.x, start.y, 10);
-    );
+    scanForEdges(start, Vector2d(1,0));
+    scanForEdges(start, Vector2d(-1,0));
+    scanForEdges(start, Vector2d(0,1));
+    scanForEdges(start, Vector2d(0,-1));
 
-    filteredHistogramY.add(pixel.y);
-    filteredHistogramU.add(pixel.u);
-    filteredHistogramV.add(pixel.v);
-
-    filteredHistogramY.calculate();
-    filteredHistogramU.calculate();
-    filteredHistogramV.calculate();
-    numberOfUpdates++;
-
-    ballFound = true;
+    scanForEdges(start, Vector2d(1,1).normalize());
+    scanForEdges(start, Vector2d(-1,1).normalize());
+    scanForEdges(start, Vector2d(-1,1).normalize());
+    scanForEdges(start, Vector2d(-1,-1).normalize());
   }
 
-  filteredHistogramY.plotNormalized("filteredHistogramY");
-  filteredHistogramU.plotNormalized("filteredHistogramU");
-  filteredHistogramV.plotNormalized("filteredHistogramV");
-
-  if(numberOfUpdates > 60) {
-    if( pixel.y + filteredHistogramY.sigma*params.sigmaFactorY >= filteredHistogramY.mean &&
-        pixel.y <= filteredHistogramY.mean + filteredHistogramY.sigma*params.sigmaFactorY &&
-
-        pixel.u + filteredHistogramU.sigma*params.sigmaFactorUV >= filteredHistogramU.max &&
-        pixel.u <= filteredHistogramU.max + filteredHistogramU.sigma*params.sigmaFactorUV &&
-
-        pixel.v + filteredHistogramV.sigma*params.sigmaFactorUV >= filteredHistogramV.max &&
-        pixel.v <= filteredHistogramV.max + filteredHistogramV.sigma*params.sigmaFactorUV)
-    {
-
-      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:draw_ball",
-        CIRCLE_PX(ColorClasses::red, start.x, start.y, 10);
-      );
-
-      ballFound = true;
-    }
-  }
+  bool ballFound = true;
 
 
   if(ballFound)
   {
-    // calculate the ball
-    bool projectionOK = CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  start.x, 
-		  start.y, 
-		  getFieldInfo().ballRadius,
-		  getBallPercept().bearingBasedOffsetOnField);
-
-    // HACK: don't take to far balls
-    projectionOK = projectionOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
-
-    // HACK: if the ball center is in image it has to be in the field polygon 
-    Vector2d ballPointToCheck(start.x, start.y - 5);
-    projectionOK = projectionOK && 
-      (getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) && 
-        getFieldPercept().getValidField().isInside(ballPointToCheck));
-
-
-    if(projectionOK) 
-    {
-		  getBallPercept().radiusInImage = 5;
-		  getBallPercept().centerInImage = start;
-		  getBallPercept().ballWasSeen = projectionOK;
-		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-		
-      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
-        CIRCLE_PX(ColorClasses::orange, start.x, start.y, 10);
-		  );
-    }
+    calculateBallPercept(start);
   }
 
   PLOT("SuperBallDetector:ballFound",ballFound);
@@ -176,7 +109,6 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
   }
 
 
-
   int maxRedPeak = getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
   Vector2i point;
   Pixel pixel;
@@ -193,8 +125,9 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
       if
       (
         maxRedPeak < pixel.v && // "v" is the croma RED channel
-        pixel.y +  params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
+        isOrange(pixel) &&
         fieldPolygon.isInside_inline(point) // only points inside the field polygon
+        //&& !getGoalPostHistograms().isPostColor(pixel) // ball is not goal like colored
       )
       {
         maxRedPeak = pixel.v;
@@ -212,5 +145,92 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
     LINE_PX(ColorClasses::skyblue, peakPos.x, peakPos.y-10, peakPos.x, peakPos.y+10);
   );
 
-  return maxRedPeak >= 0;
+  // maxRedPeak is larger than its initial value
+  return maxRedPeak > getFieldColorPercept().range.getMax().v;
+}
+
+
+void SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2i& direction) const
+{
+  Vector2i point(start);
+  BresenhamLineScan footPointScanner(point, direction, getImage().cameraInfo);
+
+  // initialize the scanner
+  double t_edge = 6;
+  MODIFY("SuperBallDetector:t_edge", t_edge);
+  Vector2i peak_point_max(start);
+  Vector2i peak_point_min(start);
+  MaximumScan<Vector2i,int> positiveScan(peak_point_max, (int)t_edge);
+  MaximumScan<Vector2i,int> negativeScan(peak_point_min, (int)t_edge);
+
+  Pixel pixel;
+  getImage().get(point.x, point.y, pixel);
+  int f_last = (int)pixel.v - (int)pixel.u; // scan the first point
+  
+
+  int max_length = 10;
+  int i = 0;
+  while(footPointScanner.getNextWithCheck(point) && footPointScanner.getNextWithCheck(point) && i < max_length)
+  {
+    i++;
+    getImage().get(point.x, point.y, pixel);
+    int f_y = (int)pixel.v - (int)pixel.u;
+    int g = f_y - f_last;
+    f_last = f_y;
+
+    POINT_PX(ColorClasses::blue, point.x, point.y);
+
+    if(!isOrange(pixel)) {
+      break;
+    }
+
+    // begin found
+    if(positiveScan.addValue(point, g))
+    {
+      POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
+      break;
+    }
+
+    // end found
+    if(negativeScan.addValue(point, -g))
+    {
+      POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
+      break;
+    }
+  }//end for
+}//end scanForEdges
+
+
+void SuperBallDetector::calculateBallPercept(const Vector2i& center)
+{
+  // calculate the ball
+    bool projectionOK = CameraGeometry::imagePixelToFieldCoord(
+		  getCameraMatrix(), 
+		  getImage().cameraInfo,
+		  center.x, 
+		  center.y, 
+		  getFieldInfo().ballRadius,
+		  getBallPercept().bearingBasedOffsetOnField);
+
+    // HACK: don't take to far balls
+    projectionOK = projectionOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
+
+    // HACK: if the ball center is in image it has to be in the field polygon 
+    Vector2d ballPointToCheck(center.x, center.y - 5);
+    projectionOK = projectionOK && 
+      (getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) && 
+        getFieldPercept().getValidField().isInside(ballPointToCheck));
+
+
+    if(projectionOK) 
+    {
+		  getBallPercept().radiusInImage = 5;
+		  getBallPercept().centerInImage = center;
+		  getBallPercept().ballWasSeen = projectionOK;
+		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+		
+      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:draw_ball",
+        CIRCLE_PX(ColorClasses::orange, center.x, center.y, 10);
+		  );
+    }
 }

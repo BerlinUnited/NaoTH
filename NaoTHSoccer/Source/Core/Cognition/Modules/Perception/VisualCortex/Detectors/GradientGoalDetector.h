@@ -110,6 +110,8 @@ private:
       PARAMETER_REGISTER(enableFeatureWidthCheck) = 0;
       PARAMETER_REGISTER(enableGreenCheck) = 0;
 
+      PARAMETER_REGISTER(colorRegionDeviation) = 2;
+
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
     }
@@ -130,6 +132,8 @@ private:
     double maxFeatureWidthError;
     int enableFeatureWidthCheck;
     int enableGreenCheck;
+
+    double colorRegionDeviation;
   };
 
   Parameters params;
