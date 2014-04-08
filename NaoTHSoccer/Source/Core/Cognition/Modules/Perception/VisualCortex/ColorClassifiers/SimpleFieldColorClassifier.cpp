@@ -28,6 +28,11 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
   DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
+
+  //collect only last 20 seconds of histogram data
+  filteredHistogramY.setMaxTotalSum(uniformGrid.size() * 30 * 20);
+  filteredHistogramU.setMaxTotalSum(uniformGrid.size() * 30 * 20);
+  filteredHistogramV.setMaxTotalSum(uniformGrid.size() * 30 * 20);  
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
