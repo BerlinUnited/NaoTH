@@ -14,6 +14,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/Histograms.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
+#include "Representations/Perception/BodyContour.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -22,6 +23,8 @@
 BEGIN_DECLARE_MODULE(HistogramProvider)
   REQUIRE(Image)
   REQUIRE(ImageTop)
+  REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
 
   PROVIDE(ColorChannelHistograms)
   PROVIDE(ColorChannelHistogramsTop)
@@ -50,8 +53,9 @@ private:
   CameraInfo::CameraID cameraID;
   UniformGrid uniformGrid; // subsampling of the image
 
-
   DOUBLE_CAM_REQUIRE(HistogramProvider, Image);
+  DOUBLE_CAM_REQUIRE(HistogramProvider, BodyContour);
+
   DOUBLE_CAM_PROVIDE(HistogramProvider, ColorChannelHistograms);
 };
 

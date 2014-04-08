@@ -35,6 +35,7 @@ include "Options/Skills/take_arms_back.xabsl";
 
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
+include "Options/Skills/treat_lifted.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
