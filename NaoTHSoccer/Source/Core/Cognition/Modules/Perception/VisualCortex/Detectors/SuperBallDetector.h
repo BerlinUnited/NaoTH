@@ -87,6 +87,7 @@ private:
     {
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
+      PARAMETER_REGISTER(minOffsetV) = 100;
       PARAMETER_REGISTER(mitUVDifference) = 50;
 
       syncWithConfig();
@@ -100,6 +101,7 @@ private:
 
 	  int stepSize;
     int minOffsetToFieldY;
+    int minOffsetV;
     int mitUVDifference;
 
   } params;
@@ -151,6 +153,7 @@ private:
   inline bool isOrange(const Pixel& pixel) const {
     return
       pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
+      params.minOffsetV < pixel.v &&
       pixel.v > pixel.u + params.mitUVDifference; // y-u hat to be high (this filter out the jerseys)
   }
 
