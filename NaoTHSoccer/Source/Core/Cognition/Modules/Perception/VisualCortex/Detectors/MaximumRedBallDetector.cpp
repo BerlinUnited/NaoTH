@@ -98,24 +98,33 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSize)
     {
       getImage().get(point.x, point.y, pixel);
+      //double u = (double) pixel.u/0.493;      
+   //  int blue = (int) (1.164* (pixel.y-16) + 0.5);      
       if
       (
         maxRedPeak < pixel.v && 
         poly.isInside_inline(point) && 
         checkIfPixelIsOrange(pixel)
-        && !getBodyContour().isOccupied(point)
+        && !getBodyContour().isOccupied(point) 
+        
       )
       {
-        DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
-          LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
-          LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
-        );
-        // HACK: if all before matched, but point has to be in the field polygon 
-        if(getFieldPercept().getValidField().isInside(point))
-        {
+        int blue = 0;
+        int red =  400;
+        int green = 0;
+        if (params.ttUseBallColorPara>0) {
+          blue = (int) (pixel.y + 1.765*(pixel.u-128)+0.5);
+          red =  (int) (pixel.y + 1.400 * (pixel.v -128) + 0.5);
+          green = (int) ((pixel.y - 0.343 * (pixel.u-128) - 0.711 * (pixel.v-128)) + 0.5);
+        }
+        if (blue < params.ttMaxBlue && green < params.ttMaxGreen && red > params.ttMinRed) {
+          DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
+            LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
+            LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
+          );
           maxRedPeak = pixel.v;
           peakPos = point;
-        }        
+        }
       }
 
       DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeakScan",
@@ -210,9 +219,9 @@ bool MaximumRedBallDetector::findBall ()
   }
 
   //HACK: reject bad scans
-  if(goodPoints.length + badPoints.length <= 13) {
+/* if(goodPoints.length + badPoints.length <= 13) {
     return false;
-  }
+  }*/
 
 	for (int i = 0; i < goodPoints.length; i++) {
 		bestPoints.add(goodPoints[i]);

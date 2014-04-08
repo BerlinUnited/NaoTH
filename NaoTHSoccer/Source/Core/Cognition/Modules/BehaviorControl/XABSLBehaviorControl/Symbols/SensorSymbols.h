@@ -81,7 +81,7 @@ private:
   static double getObstacleDistanceLeft();
   static double getObstacleDistanceRight();
   static double getBlockedTime();
-
+  static double getFootStateTime();
   static double getTargetPointX();
   static double getTargetPointY();
 
