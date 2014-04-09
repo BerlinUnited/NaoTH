@@ -21,13 +21,10 @@ option fast_striker_behavior{
   state decide_search{
     decision{
       else if (ball.was_seen || ball.time_since_last_seen < 100){
-        goto go_to_ball;
-        /*
 				if (attack.direction.preview > 0 )	
 					goto go_to_ball_with_left_foot;
 				else
 			    goto go_to_ball_with_right_foot;
-        */
 				}
       else
         stay;
@@ -53,9 +50,10 @@ option fast_striker_behavior{
   }
 
 
-/*
   state go_to_ball_with_right_foot{
     decision{
+      else if (obstacle.ultrasound.blockedtime > 0 && obstacle.ultrasound.distance < 400)
+        goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
       else if (attack.direction.preview < -20 )
@@ -73,6 +71,8 @@ option fast_striker_behavior{
 
   state go_to_ball_with_left_foot{
     decision{
+      else if (obstacle.ultrasound.blockedtime > 0 && obstacle.ultrasound.distance < 400)
+        goto check_for_obstacles;
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
       else if (attack.direction.preview > 20)
@@ -87,7 +87,7 @@ option fast_striker_behavior{
     }
   
   }
-  */
+
 
   state check_for_obstacles {
      decision {
@@ -154,14 +154,13 @@ state decide_kick_right{
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
       else if(vector.abs(x=ball.preview.x, y=ball.preview.y)>250 || (abs(value = attack.direction.preview)<20)){
-        goto go_to_ball;
-	      /*
 	      if (attack.direction.preview > 0 )	
 		      goto go_to_ball_with_left_foot;
 	      else
         	goto go_to_ball_with_right_foot; 
-        */
 	    }
+     // else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && state_time > 500)
+     //   goto check_for_obstacles;
       else
         stay;
     }
@@ -251,13 +250,10 @@ state decide_kick_right{
       else if (ball.time_since_last_seen>1500)
         goto decide_search;
       else if(state_time > 1000){
-        goto go_to_ball;
-        /*
         if (attack.direction.preview > 0 )  
           goto go_to_ball_with_left_foot;
         else
           goto go_to_ball_with_right_foot;
-        */
         }
       else
         stay;
