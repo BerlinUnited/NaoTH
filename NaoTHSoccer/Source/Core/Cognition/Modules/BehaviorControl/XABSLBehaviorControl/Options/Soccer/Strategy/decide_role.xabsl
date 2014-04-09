@@ -24,7 +24,7 @@ option decide_role
     //}
     else if(true)
     {
-      goto passive;
+      goto prepare_passive;
     }
   }
 
@@ -61,11 +61,27 @@ option decide_role
     }
   }
 
+  state prepare_passive
+  {
+    decision
+    {
+      else if (action_done) 
+        goto passive;
+      else 
+        stay;
+    }
+    action
+    {
+      search_before_passive();
+    }
+  }
+
+
   state passive
   {
     action
     {
-      striker_search();
+      search_before_passive();
       team.is_playing_as_striker = false;
       decide_and_go_to_passive_position();
     }
