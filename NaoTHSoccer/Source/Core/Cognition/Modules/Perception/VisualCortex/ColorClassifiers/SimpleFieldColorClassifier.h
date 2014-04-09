@@ -126,6 +126,7 @@ private:
       PARAMETER_REGISTER(fieldColorMax.v) = 10;
       PARAMETER_REGISTER(filterFactorY) = 4;
       PARAMETER_REGISTER(classifyInBothImages) = 0;
+      PARAMETER_REGISTER(collectionTimeSpan) = 5;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -139,6 +140,7 @@ private:
     DoublePixel fieldColorMin;
     double filterFactorY;
     int classifyInBothImages;
+    int collectionTimeSpan;
   } parameters;
 
   inline Parameters& getParameters() {
