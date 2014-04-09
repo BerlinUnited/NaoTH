@@ -92,7 +92,7 @@ option basic_striker_behavior{
     }
   }
 
-  state approach_sidekick_to_left{
+  state approach_sidekick_to_left {
     decision{
       else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
         goto check_for_obstacles;

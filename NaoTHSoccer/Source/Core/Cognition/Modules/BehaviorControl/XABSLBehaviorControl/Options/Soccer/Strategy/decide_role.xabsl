@@ -24,7 +24,7 @@ option decide_role
     //}
     else if(true)
     {
-      goto prepare_passive;
+      goto passive;
     }
   }
 
@@ -60,22 +60,6 @@ option decide_role
       set_right_ear = platform.frameNumber % 10;
     }
   }
-
-  state prepare_passive
-  {
-    decision
-    {
-      else if (action_done) 
-        goto passive;
-      else 
-        stay;
-    }
-    action
-    {
-      search_before_passive();
-    }
-  }
-
 
   state passive
   {
