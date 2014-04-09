@@ -36,7 +36,7 @@ option passive_ball_not_seen
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= 90;
+      motion.walk_speed.rot= 20; //90
       head.control_mode = search_for_ball;      
     }
   }
@@ -52,7 +52,7 @@ option passive_ball_not_seen
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= -90;
+      motion.walk_speed.rot= -20; //-90
       head.control_mode = search_for_ball;      
     }
   }
