@@ -2,6 +2,8 @@
 #include "PlatformInterface/Platform.h"
 #include <Messages/Representations.pb.h>
 
+#include <Tools/NaoTime.h>
+
 using namespace std;
 
 TeamCommSender::TeamCommSender()
@@ -74,7 +76,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
 
   out.bodyID = robotInfo.bodyID;
-  out.timestamp = frameInfo.getTime();
+  out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;

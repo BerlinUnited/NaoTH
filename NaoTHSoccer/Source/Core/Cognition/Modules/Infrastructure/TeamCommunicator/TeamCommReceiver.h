@@ -18,6 +18,9 @@
 
 #include <Tools/DataStructures/RingBuffer.h>
 
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
+
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
@@ -44,7 +47,40 @@ public:
   virtual void execute();
 
 private:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("TeamCommReceiver")
+    {
+      PARAMETER_REGISTER(monotonicTimestampCheckResetTime) = 30000;
+      PARAMETER_REGISTER(monotonicTimestampCheck) = true;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    int monotonicTimestampCheckResetTime;
+    bool monotonicTimestampCheck;
+    
+    virtual ~Parameters() {
+      DebugParameterList::getInstance().remove(this);
+    }
+  } parameters;
+
+private:
   void handleMessage(const std::string& data, bool allowOwn = false);
+  
+  bool monotonicTimeStamp(const TeamMessage::Data& data) const
+  {
+    return 
+           // it's probably not our message (playing dropin => accept in any case)
+           data.timestamp == 0 ||
+           // the new message is monotonic => accept
+           data.timestamp > getTeamMessage().data[data.playerNum].timestamp || 
+           // the new message is much older than the current one => weird => reset
+           data.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNum].timestamp;
+  }
 
   RingBuffer<std::string, 100> delayBuffer;
   int droppedMessages;

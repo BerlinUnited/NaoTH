@@ -167,7 +167,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 
 
     // copy new data to the blackboard
-    if(data.timestamp == 0 || data.timestamp > getTeamMessage().data[data.playerNum].timestamp)
+    if(!parameters.monotonicTimestampCheck || monotonicTimeStamp(data))
     {
       getTeamMessage().data[data.playerNum] = data;
     }

@@ -18930,9 +18930,9 @@ public final class Representations {
     boolean hasTemperature();
     float getTemperature();
     
-    // optional uint32 timestamp = 9 [default = 0];
+    // optional uint64 timestamp = 9 [default = 0];
     boolean hasTimestamp();
-    int getTimestamp();
+    long getTimestamp();
   }
   public static final class BUUserTeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -19076,13 +19076,13 @@ public final class Representations {
       return temperature_;
     }
     
-    // optional uint32 timestamp = 9 [default = 0];
+    // optional uint64 timestamp = 9 [default = 0];
     public static final int TIMESTAMP_FIELD_NUMBER = 9;
-    private int timestamp_;
+    private long timestamp_;
     public boolean hasTimestamp() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    public int getTimestamp() {
+    public long getTimestamp() {
       return timestamp_;
     }
     
@@ -19095,7 +19095,7 @@ public final class Representations {
       teamNumber_ = 0;
       batteryCharge_ = 1F;
       temperature_ = 0F;
-      timestamp_ = 0;
+      timestamp_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -19140,7 +19140,7 @@ public final class Representations {
         output.writeFloat(8, temperature_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeUInt32(9, timestamp_);
+        output.writeUInt64(9, timestamp_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -19185,7 +19185,7 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(9, timestamp_);
+          .computeUInt64Size(9, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -19332,7 +19332,7 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000040);
         temperature_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000080);
-        timestamp_ = 0;
+        timestamp_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
@@ -19559,7 +19559,7 @@ public final class Representations {
             }
             case 72: {
               bitField0_ |= 0x00000100;
-              timestamp_ = input.readUInt32();
+              timestamp_ = input.readUInt64();
               break;
             }
           }
@@ -19916,15 +19916,15 @@ public final class Representations {
         return this;
       }
       
-      // optional uint32 timestamp = 9 [default = 0];
-      private int timestamp_ ;
+      // optional uint64 timestamp = 9 [default = 0];
+      private long timestamp_ ;
       public boolean hasTimestamp() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
-      public int getTimestamp() {
+      public long getTimestamp() {
         return timestamp_;
       }
-      public Builder setTimestamp(int value) {
+      public Builder setTimestamp(long value) {
         bitField0_ |= 0x00000100;
         timestamp_ = value;
         onChanged();
@@ -19932,7 +19932,7 @@ public final class Representations {
       }
       public Builder clearTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        timestamp_ = 0;
+        timestamp_ = 0L;
         onChanged();
         return this;
       }
@@ -21262,7 +21262,7 @@ public final class Representations {
       "false\022*\n\topponents\030\005 \003(\0132\027.naothmessages" +
       ".Opponent\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatt" +
       "eryCharge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:" +
-      "\0010\022\024\n\ttimestamp\030\t \001(\r:\0010\"L\n\010Opponent\022\024\n\t" +
+      "\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\"L\n\010Opponent\022\024\n\t" +
       "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132" +
       "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
       "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na",

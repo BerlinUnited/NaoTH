@@ -823,7 +823,7 @@ void protobuf_AddDesc_Representations_2eproto() {
     "false\022*\n\topponents\030\005 \003(\0132\027.naothmessages"
     ".Opponent\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatt"
     "eryCharge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:"
-    "\0010\022\024\n\ttimestamp\030\t \001(\r:\0010\"L\n\010Opponent\022\024\n\t"
+    "\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\"L\n\010Opponent\022\024\n\t"
     "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132"
     "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa"
     "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na"
@@ -9251,7 +9251,7 @@ void BUUserTeamMessage::SharedCtor() {
   teamnumber_ = 0u;
   batterycharge_ = 1;
   temperature_ = 0;
-  timestamp_ = 0u;
+  timestamp_ = GOOGLE_ULONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -9302,7 +9302,7 @@ void BUUserTeamMessage::Clear() {
     temperature_ = 0;
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    timestamp_ = 0u;
+    timestamp_ = GOOGLE_ULONGLONG(0);
   }
   opponents_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -9442,13 +9442,13 @@ bool BUUserTeamMessage::MergePartialFromCodedStream(
         break;
       }
       
-      // optional uint32 timestamp = 9 [default = 0];
+      // optional uint64 timestamp = 9 [default = 0];
       case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_timestamp:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &timestamp_)));
           set_has_timestamp();
         } else {
@@ -9521,9 +9521,9 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->temperature(), output);
   }
   
-  // optional uint32 timestamp = 9 [default = 0];
+  // optional uint64 timestamp = 9 [default = 0];
   if (has_timestamp()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(9, this->timestamp(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(9, this->timestamp(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -9581,9 +9581,9 @@ void BUUserTeamMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->temperature(), target);
   }
   
-  // optional uint32 timestamp = 9 [default = 0];
+  // optional uint64 timestamp = 9 [default = 0];
   if (has_timestamp()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(9, this->timestamp(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(9, this->timestamp(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -9640,10 +9640,10 @@ int BUUserTeamMessage::ByteSize() const {
     
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional uint32 timestamp = 9 [default = 0];
+    // optional uint64 timestamp = 9 [default = 0];
     if (has_timestamp()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
           this->timestamp());
     }
     

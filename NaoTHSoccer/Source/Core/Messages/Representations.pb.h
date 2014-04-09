@@ -2912,12 +2912,12 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline float temperature() const;
   inline void set_temperature(float value);
   
-  // optional uint32 timestamp = 9 [default = 0];
+  // optional uint64 timestamp = 9 [default = 0];
   inline bool has_timestamp() const;
   inline void clear_timestamp();
   static const int kTimestampFieldNumber = 9;
-  inline ::google::protobuf::uint32 timestamp() const;
-  inline void set_timestamp(::google::protobuf::uint32 value);
+  inline ::google::protobuf::uint64 timestamp() const;
+  inline void set_timestamp(::google::protobuf::uint64 value);
   
   // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
  private:
@@ -2948,8 +2948,8 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
   ::google::protobuf::uint32 teamnumber_;
   float batterycharge_;
+  ::google::protobuf::uint64 timestamp_;
   float temperature_;
-  ::google::protobuf::uint32 timestamp_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
@@ -6120,7 +6120,7 @@ inline void BUUserTeamMessage::set_temperature(float value) {
   temperature_ = value;
 }
 
-// optional uint32 timestamp = 9 [default = 0];
+// optional uint64 timestamp = 9 [default = 0];
 inline bool BUUserTeamMessage::has_timestamp() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }
@@ -6131,13 +6131,13 @@ inline void BUUserTeamMessage::clear_has_timestamp() {
   _has_bits_[0] &= ~0x00000100u;
 }
 inline void BUUserTeamMessage::clear_timestamp() {
-  timestamp_ = 0u;
+  timestamp_ = GOOGLE_ULONGLONG(0);
   clear_has_timestamp();
 }
-inline ::google::protobuf::uint32 BUUserTeamMessage::timestamp() const {
+inline ::google::protobuf::uint64 BUUserTeamMessage::timestamp() const {
   return timestamp_;
 }
-inline void BUUserTeamMessage::set_timestamp(::google::protobuf::uint32 value) {
+inline void BUUserTeamMessage::set_timestamp(::google::protobuf::uint64 value) {
   set_has_timestamp();
   timestamp_ = value;
 }
