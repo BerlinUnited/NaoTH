@@ -81,7 +81,6 @@ option decide_role
   {
     action
     {
-      search_before_passive();
       team.is_playing_as_striker = false;
       decide_and_go_to_passive_position();
     }
