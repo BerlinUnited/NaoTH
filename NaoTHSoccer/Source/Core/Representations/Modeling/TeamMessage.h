@@ -46,7 +46,8 @@ public:
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
-        isPenalized(false)
+        isPenalized(false),
+        timestamp(0)
     {
 
     }
@@ -89,6 +90,7 @@ public:
     std::vector<Opponent> opponents;
     float batteryCharge;
     float temperature;
+    unsigned int timestamp;
     // END BERLIN UNITED SPECIFIC
 
   };

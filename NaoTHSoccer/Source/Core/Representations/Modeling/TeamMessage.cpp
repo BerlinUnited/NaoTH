@@ -26,6 +26,7 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     naothmessages::BUUserTeamMessage* userMsg = msg->mutable_user();
 
     userMsg->set_teamnumber(d.teamNumber);
+    userMsg->set_timestamp(d.timestamp);
     userMsg->set_bodyid(d.bodyID);
     userMsg->set_timetoball(d.timeToBall);
     userMsg->set_wasstriker(d.wasStriker);
@@ -80,6 +81,7 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
       d.timeToBall = std::numeric_limits<unsigned int>::max();
     }
     d.teamNumber = msg.user().teamnumber();
+    d.timestamp = msg.user().timestamp();
     d.wasStriker = msg.user().wasstriker();
     d.isPenalized = msg.user().ispenalized();
     d.batteryCharge = msg.user().batterycharge();

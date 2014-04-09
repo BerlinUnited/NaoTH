@@ -2912,6 +2912,13 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline float temperature() const;
   inline void set_temperature(float value);
   
+  // optional uint32 timestamp = 9 [default = 0];
+  inline bool has_timestamp() const;
+  inline void clear_timestamp();
+  static const int kTimestampFieldNumber = 9;
+  inline ::google::protobuf::uint32 timestamp() const;
+  inline void set_timestamp(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
  private:
   inline void set_has_bodyid();
@@ -2928,6 +2935,8 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline void clear_has_batterycharge();
   inline void set_has_temperature();
   inline void clear_has_temperature();
+  inline void set_has_timestamp();
+  inline void clear_has_timestamp();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2940,9 +2949,10 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::uint32 teamnumber_;
   float batterycharge_;
   float temperature_;
+  ::google::protobuf::uint32 timestamp_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -6108,6 +6118,28 @@ inline float BUUserTeamMessage::temperature() const {
 inline void BUUserTeamMessage::set_temperature(float value) {
   set_has_temperature();
   temperature_ = value;
+}
+
+// optional uint32 timestamp = 9 [default = 0];
+inline bool BUUserTeamMessage::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void BUUserTeamMessage::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void BUUserTeamMessage::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void BUUserTeamMessage::clear_timestamp() {
+  timestamp_ = 0u;
+  clear_has_timestamp();
+}
+inline ::google::protobuf::uint32 BUUserTeamMessage::timestamp() const {
+  return timestamp_;
+}
+inline void BUUserTeamMessage::set_timestamp(::google::protobuf::uint32 value) {
+  set_has_timestamp();
+  timestamp_ = value;
 }
 
 // -------------------------------------------------------------------

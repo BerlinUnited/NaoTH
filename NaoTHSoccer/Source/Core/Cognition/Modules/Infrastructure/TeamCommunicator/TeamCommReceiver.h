@@ -47,6 +47,7 @@ private:
   void handleMessage(const std::string& data, bool allowOwn = false);
 
   RingBuffer<std::string, 100> delayBuffer;
+  int droppedMessages;
 };
 
 #endif // TEAMCOMMRECEIVER_H

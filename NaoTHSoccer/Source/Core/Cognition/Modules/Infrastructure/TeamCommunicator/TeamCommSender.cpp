@@ -74,6 +74,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
 
   out.bodyID = robotInfo.bodyID;
+  out.timestamp = frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
@@ -135,6 +136,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
   userMsg.set_bodyid(teamData.bodyID);
+  userMsg.set_timestamp(teamData.timestamp);
   userMsg.set_timetoball(teamData.timeToBall);
   userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_ispenalized(teamData.isPenalized);
