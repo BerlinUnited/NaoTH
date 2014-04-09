@@ -27,7 +27,7 @@ public:
   OdometrySymbols()
   {
     theInstance = this;
-  };
+  }
   virtual ~OdometrySymbols(){}
   
   /** registers the symbols at an engine */
