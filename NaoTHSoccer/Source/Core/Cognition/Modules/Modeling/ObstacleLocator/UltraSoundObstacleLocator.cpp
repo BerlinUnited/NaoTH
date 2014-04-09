@@ -150,25 +150,32 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   );
 } //end drawObstacleMode
 
+bool UltraSoundObstacleLocator::isNewDataAvaliable() const
+{
+  for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
+    if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
+       getUltraSoundReceiveData().dataRight[i] != lastValidUltraSoundReceiveData.dataRight[i])
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 void UltraSoundObstacleLocator::fillBuffer()
 {
-  double leftMeasurement = getUltraSoundReceiveData().dataLeft[0];
-  double rightMeasurement = getUltraSoundReceiveData().dataRight[0];
-
-  if(rightMeasurement >= UltraSoundReceiveData::MIN_DIST && 
-     rightMeasurement < UltraSoundReceiveData::INVALIDE &&
-     bufferRight.last() != rightMeasurement)
-  {
-    bufferRight.add(rightMeasurement * 1000.0);
+  if(!isNewDataAvaliable()) {
+    return;
   }
+  lastValidUltraSoundReceiveData = getUltraSoundReceiveData();
 
-  if(leftMeasurement >= UltraSoundReceiveData::MIN_DIST && 
-     leftMeasurement < UltraSoundReceiveData::INVALIDE &&
-     bufferLeft.last() != leftMeasurement)
-  {
-    bufferLeft.add(leftMeasurement * 1000.0);
-  }
-}//end fillBuffer
+  // convert to mm
+  double leftMeasurement = getUltraSoundReceiveData().dataLeft[0] * 1000.0;
+  double rightMeasurement = getUltraSoundReceiveData().dataRight[0] * 1000.0;
+
+  bufferRight.add(rightMeasurement);
+  bufferLeft.add(leftMeasurement);
+}
 
 void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 {

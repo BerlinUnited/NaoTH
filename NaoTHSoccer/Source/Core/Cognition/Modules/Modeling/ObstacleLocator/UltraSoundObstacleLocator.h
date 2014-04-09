@@ -86,10 +86,14 @@ private:
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
 
+  // used to recognize whether a new percept is avaliable
+  UltraSoundReceiveData lastValidUltraSoundReceiveData;
+
   RingBufferWithSum<double,5> bufferLeft;
   RingBufferWithSum<double,5> bufferRight;
 
   void provideToLocalObstacleModel();
+  bool isNewDataAvaliable() const;
   void fillBuffer();
   void drawObstacleModel();
 };
