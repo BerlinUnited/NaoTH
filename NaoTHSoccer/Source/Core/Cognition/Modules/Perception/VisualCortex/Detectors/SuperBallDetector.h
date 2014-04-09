@@ -89,6 +89,7 @@ private:
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
       PARAMETER_REGISTER(minOffsetV) = 100;
       PARAMETER_REGISTER(mitUVDifference) = 50;
+      PARAMETER_REGISTER(orange_thresh) = 50;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -103,6 +104,7 @@ private:
     int minOffsetToFieldY;
     int minOffsetV;
     int mitUVDifference;
+    int orange_thresh;
 
   } params;
 
@@ -157,8 +159,19 @@ private:
       pixel.v > pixel.u + params.mitUVDifference; // y-u hat to be high (this filter out the jerseys)
   }
 
-  bool findMaximumRedPoint(Vector2i& peakPos) const;
-  void scanForEdges(const Vector2i& start, const Vector2i& direction) const;
+  inline bool isOrangeGT07(const Pixel& pixel) const {
+    unsigned char b = pixel.b;
+    unsigned char c = pixel.c;
+
+    double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
+    unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
+
+    return t > params.orange_thresh;
+  }
+
+  bool findMaximumRedPoint(Vector2i& peakPos);
+  bool scanForEdges(const Vector2i& start, const Vector2d& direction);
+  int ckecknearBall(const Vector2i& start);
   void calculateBallPercept(const Vector2i& center);
 
 private:
