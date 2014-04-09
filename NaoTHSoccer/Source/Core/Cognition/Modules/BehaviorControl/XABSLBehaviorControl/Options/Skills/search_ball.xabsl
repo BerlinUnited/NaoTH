@@ -9,15 +9,17 @@ option search_ball{
   initial state search_ball_close {
     decision {
       if(action_done)
-        goto search_ball_far;
+        goto stand;
       else
         stay;
     }
     action {
-      search_ball_back_rot();
+      striker_search();
+      //search_ball_back_rot();
     }
   }
 
+/*
   state search_ball_far {
     decision {
       if(action_done || state_time>3000)
@@ -29,6 +31,7 @@ option search_ball{
       simple_search_ball();
     }
   }
+*/
 
   state stand {
     action{

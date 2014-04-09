@@ -7,8 +7,8 @@
 using namespace naoth;
 
 // todo: change this to mm?
-const double UltraSoundReceiveData::MIN_DIST = 0.25;
-const double UltraSoundReceiveData::INVALIDE = 2.55;
+const double UltraSoundReceiveData::MIN_DIST = 0.25 * 1000.0;
+const double UltraSoundReceiveData::INVALIDE = 2.55 * 1000.0;
 
 UltraSoundData::UltraSoundData()
 {

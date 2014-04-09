@@ -44,32 +44,11 @@ void SuperBallDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  if(cameraID == CameraInfo::Top)
-  {
-    scanForEdges(start, Vector2d(1,0));
-    scanForEdges(start, Vector2d(-1,0));
-    scanForEdges(start, Vector2d(0,1));
-    scanForEdges(start, Vector2d(0,-1));
-
-    scanForEdges(start, Vector2d(1,1).normalize());
-    scanForEdges(start, Vector2d(-1,1).normalize());
-    scanForEdges(start, Vector2d(-1,1).normalize());
-    scanForEdges(start, Vector2d(-1,-1).normalize());
-  }
-
-  bool ballFound = true;
-
-
-  if(ballFound)
-  {
-    calculateBallPercept(start);
-  }
-
-  PLOT("SuperBallDetector:ballFound",ballFound);
+  calculateBallPercept(start);
 }
 
 
-bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
+bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos)
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
@@ -130,13 +109,22 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
         //&& !getGoalPostHistograms().isPostColor(pixel) // ball is not goal like colored
       )
       {
-        maxRedPeak = pixel.v;
-        peakPos = point;
-
-        DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:markPeakScan",
-          POINT_PX(ColorClasses::red, point.x, point.y);
-        );
+        if(ckecknearBall(point) > 1) {
+          maxRedPeak = (int)pixel.v;
+          peakPos = point;
+        }
       }
+
+      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:markPeakScan",
+        if
+        (
+          isOrange(pixel) &&
+          fieldPolygon.isInside_inline(point) // only points inside the field polygon
+        )
+        {
+          POINT_PX(ColorClasses::red, point.x, point.y);
+        }
+      );
     }
   }
 
@@ -150,7 +138,23 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
 }
 
 
-void SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2i& direction) const
+int SuperBallDetector::ckecknearBall(const Vector2i& start)
+{
+  int green = 0;
+  green += scanForEdges(start, Vector2d(1,0));
+  green += scanForEdges(start, Vector2d(-1,0));
+  green += scanForEdges(start, Vector2d(0,1));
+  green += scanForEdges(start, Vector2d(0,-1));
+
+  green += scanForEdges(start, Vector2d(1,1).normalize());
+  green += scanForEdges(start, Vector2d(-1,1).normalize());
+  green += scanForEdges(start, Vector2d(-1,1).normalize());
+  green += scanForEdges(start, Vector2d(-1,-1).normalize());
+
+  return green;
+}
+
+bool SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction)
 {
   Vector2i point(start);
   BresenhamLineScan footPointScanner(point, direction, getImage().cameraInfo);
@@ -160,28 +164,28 @@ void SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2i& dire
   MODIFY("SuperBallDetector:t_edge", t_edge);
   Vector2i peak_point_max(start);
   Vector2i peak_point_min(start);
-  MaximumScan<Vector2i,int> positiveScan(peak_point_max, (int)t_edge);
-  MaximumScan<Vector2i,int> negativeScan(peak_point_min, (int)t_edge);
+  MaximumScan<Vector2i,double> positiveScan(peak_point_max, (int)t_edge);
+  MaximumScan<Vector2i,double> negativeScan(peak_point_min, (int)t_edge);
 
   Pixel pixel;
   getImage().get(point.x, point.y, pixel);
   int f_last = (int)pixel.v - (int)pixel.u; // scan the first point
-  
+  Vector2i lastPoint(point);
 
-  int max_length = 10;
+  int max_length = 3;
   int i = 0;
   while(footPointScanner.getNextWithCheck(point) && footPointScanner.getNextWithCheck(point) && i < max_length)
   {
-    i++;
     getImage().get(point.x, point.y, pixel);
     int f_y = (int)pixel.v - (int)pixel.u;
-    int g = f_y - f_last;
+    double g = (f_y - f_last) / Vector2d(point - lastPoint).abs();
     f_last = f_y;
+    lastPoint = point;
 
     POINT_PX(ColorClasses::blue, point.x, point.y);
 
     if(!isOrange(pixel)) {
-      break;
+      i++;
     }
 
     // begin found
@@ -197,7 +201,9 @@ void SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2i& dire
       POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       break;
     }
-  }//end for
+  }//end while
+
+  return getFieldColorPercept().isFieldColor(pixel);
 }//end scanForEdges
 
 

@@ -48,7 +48,7 @@ option decide_game_state
     {
       game.current_mode = set;
       motion.type = stand;
-      arm.control_mode = normal;
+      arm.control_mode = back;
       head.control_mode = stay_as_forced;
       treat_lifted();
       situationStatusOwnHalf = true;
