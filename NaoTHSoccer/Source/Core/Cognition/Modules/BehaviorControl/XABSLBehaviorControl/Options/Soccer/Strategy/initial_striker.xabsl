@@ -44,7 +44,7 @@ option initial_striker{
 
   state be_striker{
     action{
-      basic_striker_behavior();
+      fast_striker_behavior();
     }
   }
     

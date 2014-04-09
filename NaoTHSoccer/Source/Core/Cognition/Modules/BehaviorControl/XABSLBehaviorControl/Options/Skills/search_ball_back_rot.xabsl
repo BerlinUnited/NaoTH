@@ -37,7 +37,7 @@ action{
 state turn_left_first{
 
 decision{
-    else if(state_time>750 )
+    else if(state_time>1000 )
       goto stop1;
     else
       stay;
@@ -49,7 +49,7 @@ action{
       motion.walk.coordinate = hip;
       motion.walk_speed.x = -10000;
       motion.walk_speed.y = -10000;
-      motion.walk_speed.rot = 20;
+      motion.walk_speed.rot = 40;
 
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -62,7 +62,7 @@ action{
 state turn_right_first{
 
 decision{
-    else if(state_time>750 )
+    else if(state_time>1000 )
       goto stop2;
     else
       stay;
@@ -74,7 +74,7 @@ action{
       motion.walk.coordinate = hip;
       motion.walk_speed.x = -10000;
       motion.walk_speed.y = 10000;
-      motion.walk_speed.rot = -20;
+      motion.walk_speed.rot = -40;
 
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -142,7 +142,7 @@ action{
       motion.walk.coordinate = hip;
       motion.walk_speed.x = -10000;
       motion.walk_speed.y = 10000;
-      motion.walk_speed.rot = -20;
+      motion.walk_speed.rot = -40;
 
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -166,7 +166,7 @@ action{
       motion.walk.coordinate = hip;
       motion.walk_speed.x = -10000;
       motion.walk_speed.y = -10000;
-      motion.walk_speed.rot = 20;
+      motion.walk_speed.rot = 40;
 
       head.control_mode = none;
       head.point_in_world.x = 200;

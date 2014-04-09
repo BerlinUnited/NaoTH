@@ -27,6 +27,7 @@ include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
+include "Options/HeadControl/striker_search.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
@@ -38,6 +39,8 @@ include "Options/Skills/treat_lifted.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
+include "Options/Skills/go_to_ball_with_right_foot.xabsl";
+include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
@@ -80,9 +83,11 @@ include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
+include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
+include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
@@ -119,11 +124,13 @@ include "Options/Test/obstacle_test_agent.xabsl";
 // Test agents (options) Penalty
 include "Options/Test/penalty_kicker_test_agent.xabsl";
 // Test agents (options) ball search
+include "Options/Test/search_test_agent.xabsl";
 include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";
 include "Options/Test/ball_search/only_ball_looking.xabsl";
 include "Options/Test/ball_search/only_goal_looking.xabsl";
 include "Options/Test/ball_search/searching_for_ball_and_look_around.xabsl";
+
 
 
 include "Options/Test/change_state_input_test_agent.xabsl";
@@ -184,6 +191,7 @@ agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
+agent role_fast_striker("fast_striker", fast_striker_agent);
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
@@ -218,6 +226,7 @@ agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_
 
 
 // Test agents search
+agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
 agent searching_for_ball_and_look_around("searching_for_ball_and_look_around",searching_for_ball_and_look_around);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
