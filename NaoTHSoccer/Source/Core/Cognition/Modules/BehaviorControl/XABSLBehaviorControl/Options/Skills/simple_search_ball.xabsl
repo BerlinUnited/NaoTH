@@ -36,14 +36,14 @@ option simple_search_ball
       head.control_mode = none;
       head.point_in_world.x = 200;
       head.point_in_world.y = 200;
-      head.point_in_world.z = 200*abs(value=sin(angle=(state_time/30)%180));
+      head.point_in_world.z = 0;//200*abs(value=sin(angle=(state_time/30)%180));
       head.motion_type = look_at_world_point;
       //head.control_mode = search_for_ball;
       search_ball.search_direction = 1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = 70; //deg
+      motion.walk_speed.rot = 20; //deg
       motion.walk.coordinate = hip;
     }
   }
@@ -63,14 +63,14 @@ option simple_search_ball
       head.control_mode = none;
       head.point_in_world.x = 200;
       head.point_in_world.y = -200;
-      head.point_in_world.z = 200*(abs(value=sin(angle=(state_time/30)%180)));
+      head.point_in_world.z = 0;//200*abs(value=sin(angle=(state_time/30)%180));
       head.motion_type = look_at_world_point;
       //head.control_mode = search_for_ball;
       search_ball.search_direction = -1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = -70; //deg
+      motion.walk_speed.rot = -20; //deg
       motion.walk.coordinate = hip;
     }
   }
