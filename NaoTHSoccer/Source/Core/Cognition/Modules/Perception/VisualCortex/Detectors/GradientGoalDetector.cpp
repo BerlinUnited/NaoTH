@@ -629,7 +629,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.seenWidth = meanWidth;
 
     bool isDouble = false;
-    if(params.enableFeatureWidthCheck < 1)
+    if(params.enableFeatureWidthCheck > 0)
     {
       //check if there is a post candidate found in the same post (double detections)
       for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
@@ -646,7 +646,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       }
     }
 
-    if(params.enableFeatureWidthCheck < 1 || !isDouble)
+    if(params.enableFeatureWidthCheck > 0 || !isDouble)
     {
       getGoalPercept().add(post);
     }
