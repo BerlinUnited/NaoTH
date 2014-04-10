@@ -401,7 +401,7 @@ void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lin
 
 void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) const
 {
-  double offserY = 500;
+  double offserY = 0;
   Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
   Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
 
