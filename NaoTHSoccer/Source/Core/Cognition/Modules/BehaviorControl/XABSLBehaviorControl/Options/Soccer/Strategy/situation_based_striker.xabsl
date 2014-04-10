@@ -8,8 +8,6 @@ option situation_based_striker {
       goto search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 210)
       goto goto_ball;
-    else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
-      goto sidekick;
   }
 
   initial state idle {
@@ -24,6 +22,8 @@ option situation_based_striker {
 
   state search {
     decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick;
       else
         stay;
     }
@@ -35,6 +35,8 @@ option situation_based_striker {
 
   state goto_ball {
     decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick;
       else if(action_done && state_time > 1000)
       {
 	      if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
@@ -56,6 +58,8 @@ option situation_based_striker {
   
   state turn {
     decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
         goto attack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
@@ -85,6 +89,8 @@ option situation_based_striker {
 
   state attack {
     decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick;
       else if(action_done)
         goto goto_ball;
       else
