@@ -14,7 +14,8 @@ option decide_and_go_to_passive_position
         stay;
 	  }
 	  action {
-      search_before_passive();
+      //search_before_passive();
+      search_ball_back_rot();
 	  }
 	}  
   

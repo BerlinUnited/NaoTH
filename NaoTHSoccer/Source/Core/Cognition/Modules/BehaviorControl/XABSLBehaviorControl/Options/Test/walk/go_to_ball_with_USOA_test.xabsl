@@ -23,30 +23,30 @@ option go_to_ball_with_USOA_test{
 
   state go
   {
-  
-  decision
-  { else if(action_done)
-      goto close_to_ball_situation;
-    else
-      stay;
-  }
-  action
-  {
-    go_to_ball_with_USOA(distance=130);
-  }
-  
-  }
-
-  state close_to_ball_situation{
-	  decision{
+	  decision
+	  { 
 	    else if(action_done)
-	      goto go;
+	      goto done;
 	    else
 	      stay;
 	  }
-	  action{
-	    close_to_ball_with_USOA_situation();
+	  action
+	  {
+	    go_to_ball_with_USOA(distance=190);
 	  }
   }
-  
+
+  state done
+  {
+    decision{
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y) > 210)
+        goto go;
+      else
+        stay;
+    }
+    action{
+      motion.type = stand;
+      head.control_mode = search_for_ball;    
+    }
+  }
 }
