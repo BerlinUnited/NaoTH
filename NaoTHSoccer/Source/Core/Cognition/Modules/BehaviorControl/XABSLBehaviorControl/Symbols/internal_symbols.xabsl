@@ -70,4 +70,6 @@ namespace internal_symbols("Internal Symbols") {
   /** remember attack direction for hysteresis */
   float internal attack.direction.used;
 
+  /** this is used by the situation_based_striker, don't use itanywhere else*/
+  bool internal situation_abortable;
 }
