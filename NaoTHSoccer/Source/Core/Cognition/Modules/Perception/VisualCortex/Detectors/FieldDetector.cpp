@@ -74,21 +74,49 @@ void FieldDetector::execute(CameraInfo::CameraID id)
   }
   else if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
-    vector<Vector2i > points(getScanLineEdgelPercept().endPoints.size());
+    vector<Vector2i > points;//(getScanLineEdgelPercept().endPoints.size());
 
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
-      points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
+      const Vector2i& p = getScanLineEdgelPercept().endPoints[i].posInImage;
+      if(p.y < (int) getImage().height() - 6)
+      {
+        points.push_back(p);
+      }
+      //points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
     }
 
     // move the outer points
-    points.front().x = 0;
-    points.back().x = getImage().width()-1;
+    //points.front().x = 0;
+    //points.back().x = getImage().width()-1;
 
     // lower image points
-    points.push_back(Vector2i(0,getImage().height()-1));
-    points.push_back(Vector2i(getImage().width()-1, getImage().height()-1));
+    //points.push_back(Vector2i(0,getImage().height()-1));
+    //points.push_back(Vector2i(getImage().width()-1, getImage().height()-1));
 
+    if(points.size() > 1)
+    {
+      Vector2i p1 = points.front();
+      p1.y = getImage().height() - 1;
+      Vector2i p2 = points.back();
+      p2.y = getImage().height() - 1;
+
+      points.push_back(p1);
+      points.push_back(p2);
+
+      if(getScanLineEdgelPercept().endPoints.front().posInImage.y < (int) getImage().height() - 6)
+      {
+        points.push_back(Vector2i(0, getScanLineEdgelPercept().endPoints.front().posInImage.y));
+        points.push_back(Vector2i(0, getImage().height() - 1));
+      }
+
+      if(getScanLineEdgelPercept().endPoints.back().posInImage.y < (int) getImage().height() - 6)
+      {
+        points.push_back(Vector2i(getImage().width() - 1, getScanLineEdgelPercept().endPoints.back().posInImage.y));
+        points.push_back(Vector2i(getImage().width() - 1, getImage().height() - 1));
+      }
+
+    }
     // calculate the convex hull
     vector<Vector2i > result = ConvexHull::convexHull(points);
 

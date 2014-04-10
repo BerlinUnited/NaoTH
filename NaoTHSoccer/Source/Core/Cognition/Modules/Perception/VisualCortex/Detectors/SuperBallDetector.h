@@ -87,6 +87,7 @@ private:
     {
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
+      PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetV) = 100;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(orange_thresh) = 50;
@@ -102,6 +103,7 @@ private:
 
 	  int stepSize;
     int minOffsetToFieldY;
+    int minOffsetToGoalV;
     int minOffsetV;
     int mitUVDifference;
     int orange_thresh;
