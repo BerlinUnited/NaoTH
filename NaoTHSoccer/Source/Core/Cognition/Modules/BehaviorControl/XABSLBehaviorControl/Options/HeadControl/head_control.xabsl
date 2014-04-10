@@ -54,8 +54,8 @@ option head_control
   {
     action
     {
-      search_for_ball(force_ball_model_check = false);
       head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check = false);
     }
   }
 

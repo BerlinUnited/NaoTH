@@ -31,6 +31,7 @@ action{
       head.point_in_world.y = 0;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
+      head.camera.id = Bottom;
 }
 }
 
@@ -56,6 +57,7 @@ action{
       head.point_in_world.y = 200;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
+      head.camera.id = Bottom;
 }
 }
 
@@ -81,6 +83,7 @@ state turn_right_first{
       head.point_in_world.y = -200;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
+      head.camera.id = Bottom;
   }
 }
 
