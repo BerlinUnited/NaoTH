@@ -1,0 +1,99 @@
+option situation_based_striker {
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
+      goto search;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 210)
+      goto goto_ball;
+    else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+      goto sidekick;
+  }
+
+  initial state idle {
+    decision {
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state search {
+    decision{
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision{
+      else if(action_done && state_time > 1000)
+      {
+	      if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+	        goto attack;
+	      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+	              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+	        goto sidekick;
+	      else
+	        goto turn;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_USOA(distance=190);
+    }
+  }
+  
+  state turn {
+    decision{
+      else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        goto attack;
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+        goto sidekick;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      turn_to_attack_direction();
+    }
+  }
+
+  state sidekick {
+    decision{
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      situation_sidekick();
+    }
+  }
+
+  state attack {
+    decision{
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      situation_attack();
+    }
+  }
+
+}
