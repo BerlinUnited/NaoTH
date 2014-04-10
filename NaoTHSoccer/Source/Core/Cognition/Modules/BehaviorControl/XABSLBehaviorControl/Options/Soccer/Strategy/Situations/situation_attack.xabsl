@@ -108,7 +108,7 @@ option situation_attack
     action{
       //NOTE: this is synchronized with fast_forward_kick()->finished
       motion.type = stand;
-    
+      motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
