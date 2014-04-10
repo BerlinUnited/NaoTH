@@ -31,8 +31,8 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 
   //collect only last x seconds of histogram data
   filteredHistogramY.setMaxTotalSum(uniformGrid.size() * 30 * parameters.collectionTimeSpan);
-  filteredHistogramU.setMaxTotalSum(uniformGrid.size()/* * 30 * parameters.collectionTimeSpan*/);
-  filteredHistogramV.setMaxTotalSum(uniformGrid.size() /** 30 * parameters.collectionTimeSpan*/);  
+  //filteredHistogramU.setMaxTotalSum(uniformGrid.size()/* * 30 * parameters.collectionTimeSpan*/);
+  filteredHistogramV.setMaxTotalSum(uniformGrid.size() * 30 * parameters.collectionTimeSpan);  
 }
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
@@ -44,6 +44,9 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   if(!getColorChannelHistograms().colorChannelIsUptodate) {
     return;
   }
+
+  filteredHistogramU.clear();
+  //filteredHistogramV.clear();
 
   const Statistics::HistogramX& histY = getColorChannelHistograms().histogramY;
   double start = histY.min;
