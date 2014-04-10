@@ -128,6 +128,7 @@ bool SuperBallDetector::findMaximumRedPoint(Vector2i& peakPos) const
         isOrange(pixel) &&
         fieldPolygon.isInside_inline(point) // only points inside the field polygon
         //&& !getGoalPostHistograms().isPostColor(pixel) // ball is not goal like colored
+        && getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV < pixel.v
       )
       {
         maxRedPeak = pixel.v;

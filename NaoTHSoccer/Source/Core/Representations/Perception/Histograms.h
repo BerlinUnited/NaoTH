@@ -166,9 +166,9 @@ public:
     colU(255, 255),
     valid(false)
   {
-    histogramY.setMaxTotalSum(256000);
-    histogramU.setMaxTotalSum(256000);
-    histogramV.setMaxTotalSum(256000);
+    histogramY.setMaxTotalSum(2560);
+    histogramU.setMaxTotalSum(2560);
+    histogramV.setMaxTotalSum(2560);
   }
 
   void calculate()
@@ -206,6 +206,7 @@ public:
             << "max        : " << histogramU.max << std::endl
             << "mean       : " << histogramU.mean << std::endl
             << "median     : " << histogramU.median << std::endl
+            << "common     : " << histogramU.common << std::endl
             << "spanWidth  : " << histogramU.spanWidth << std::endl
             << "sigma      : " << histogramU.sigma << std::endl
             << "sum        : " << histogramU.sum << std::endl
@@ -216,6 +217,7 @@ public:
             << "max        : " << histogramV.max << std::endl
             << "mean       : " << histogramV.mean << std::endl
             << "median     : " << histogramV.median << std::endl
+            << "common     : " << histogramV.common << std::endl
             << "spanWidth  : " << histogramV.spanWidth << std::endl
             << "sigma      : " << histogramV.sigma << std::endl
             << "sum        : " << histogramV.sum << std::endl
