@@ -19,7 +19,7 @@ option search_ball{
     }
   }
 
-/*
+/* Integrated in "striker_search"
   state search_ball_far {
     decision {
       if(action_done || state_time>3000)

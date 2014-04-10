@@ -27,7 +27,8 @@ include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
-include "Options/HeadControl/striker_search.xabsl";
+include "Options/HeadControl/search_before_passive.xabsl";
+include "Options/HeadControl/striker_search.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
