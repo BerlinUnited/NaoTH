@@ -2,13 +2,14 @@
 #include "TeamCommSender.h"
 
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugBufferedOutput.h>
 #include <Messages/Representations.pb.h>
 #include <Representations/Modeling/SPLStandardMessage.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace std;
 
-TeamCommReceiver::TeamCommReceiver()
+TeamCommReceiver::TeamCommReceiver() : droppedMessages(0)
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
@@ -68,6 +69,8 @@ void TeamCommReceiver::execute()
     ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
     handleMessage(ownMsgData, true);
   }
+
+  PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
@@ -95,15 +98,14 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     return;
   }
 
-  unsigned int num = spl.playerNum;
   GameData::TeamColor teamColor = (GameData::TeamColor) spl.team;
 
   if ( teamColor == getPlayerInfo().gameData.teamColor
        // ignore our own messages, we are adding it artficially later
-       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
+       && (allowOwn || spl.playerNum != getPlayerInfo().gameData.playerNumber)
      )
   {
-    TeamMessage::Data& data = getTeamMessage().data[num];
+    TeamMessage::Data data;
     data.frameInfo = getFrameInfo();
 
     data.playerNum = spl.playerNum;
@@ -136,6 +138,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
       {
         if(userData.ParseFromArray(spl.data, spl.numOfDataBytes))
         {
+          data.timestamp = userData.timestamp();
           data.bodyID = userData.bodyid();
           data.timeToBall = userData.timetoball();
           data.wasStriker = userData.wasstriker();
@@ -160,6 +163,17 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         // TODO: we might want to maintain a list of robots which send
         // non-compliant messages in order to avoid overhead when trying to parse it
       }
+    }
+
+
+    // copy new data to the blackboard
+    if(!parameters.monotonicTimestampCheck || monotonicTimeStamp(data))
+    {
+      getTeamMessage().data[data.playerNum] = data;
+    }
+    else
+    {
+      droppedMessages++;
     }
   }
 }

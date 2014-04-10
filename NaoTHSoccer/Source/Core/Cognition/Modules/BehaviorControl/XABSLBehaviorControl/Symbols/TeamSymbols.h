@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMSYMBOLS_H
-#define  _TEAMSYMBOLS_H
+#define _TEAMSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -20,6 +20,9 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Motion/MotionStatus.h"
+
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamSymbols)
   REQUIRE(TeamMessage)
@@ -39,38 +42,41 @@ class TeamSymbols: public TeamSymbolsBase
 public:
 
   TeamSymbols()
-  :
-    teamMessage(getTeamMessage()),
-    frameInfo(getFrameInfo()),
-    ballModel(getBallModel()),
-    robotPose(getRobotPose()),
-    fieldInfo(getFieldInfo()),
-    bodyState(getBodyState()),
-    soccerStrategy(getSoccerStrategy()),
-    motionStatus(getMotionStatus()),
-    playerInfo(getPlayerInfo()),
-    maximumFreshTime(2000)
   {
     theInstance = this;
   }
 
-  /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
 
   virtual void execute();
 
   virtual ~TeamSymbols();
-private:
-  TeamMessage const& teamMessage;
-  FrameInfo const& frameInfo;
-  BallModel const& ballModel;
-  RobotPose const& robotPose;
-  FieldInfo const& fieldInfo;
-  BodyState const& bodyState;
-  SoccerStrategy const& soccerStrategy;
-  MotionStatus const& motionStatus;
-  PlayerInfo& playerInfo;
 
+private:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("TeamSymbols")
+    {
+      PARAMETER_REGISTER(maximumFreshTime) = 2000;
+      PARAMETER_REGISTER(strikerBonusTime) = 4000;
+      PARAMETER_REGISTER(maxBallLostTime) = 1000;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    int maximumFreshTime;
+    int strikerBonusTime;
+    int maxBallLostTime;
+    
+    virtual ~Parameters() {
+      DebugParameterList::getInstance().remove(this);
+    }
+  } parameters;
+
+private:
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();
   static bool calculateIfStriker();
@@ -79,8 +85,6 @@ private:
   static bool getWasStriker();
   static void setWasStriker(bool striker);
   static bool calculateIfTheLast();
-
-  const int maximumFreshTime;
 };
 
 #endif  /* _TEAMSYMBOLS_H */
