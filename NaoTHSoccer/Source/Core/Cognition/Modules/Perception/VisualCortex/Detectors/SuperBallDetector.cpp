@@ -25,6 +25,7 @@ SuperBallDetector::SuperBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:SuperBallDetector:markPeakScan", "mark the scanned points in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:SuperBallDetector:markPeak", "mark found maximum red peak in image", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:SuperBallDetector:drawScanlines", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:Detectors:SuperBallDetector:draw_ball","..", false);  
 }
@@ -183,7 +184,9 @@ bool SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dire
     f_last = f_y;
     lastPoint = point;
 
-    POINT_PX(ColorClasses::blue, point.x, point.y);
+    DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:drawScanlines",
+      POINT_PX(ColorClasses::blue, point.x, point.y);
+    );
 
     if(!isOrange(pixel)) {
       i++;
@@ -192,14 +195,18 @@ bool SuperBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dire
     // begin found
     if(positiveScan.addValue(point, g))
     {
-      POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
+      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:drawScanlines",
+        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
+      );
       break;
     }
 
     // end found
     if(negativeScan.addValue(point, -g))
     {
-      POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
+      DEBUG_REQUEST("Vision:Detectors:SuperBallDetector:drawScanlines",
+        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
+      );
       break;
     }
   }//end while
