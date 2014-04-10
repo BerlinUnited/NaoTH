@@ -18929,6 +18929,10 @@ public final class Representations {
     // optional float temperature = 8 [default = 0];
     boolean hasTemperature();
     float getTemperature();
+    
+    // optional uint64 timestamp = 9 [default = 0];
+    boolean hasTimestamp();
+    long getTimestamp();
   }
   public static final class BUUserTeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -19072,6 +19076,16 @@ public final class Representations {
       return temperature_;
     }
     
+    // optional uint64 timestamp = 9 [default = 0];
+    public static final int TIMESTAMP_FIELD_NUMBER = 9;
+    private long timestamp_;
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public long getTimestamp() {
+      return timestamp_;
+    }
+    
     private void initFields() {
       bodyID_ = "unknown";
       timeToBall_ = 0;
@@ -19081,6 +19095,7 @@ public final class Representations {
       teamNumber_ = 0;
       batteryCharge_ = 1F;
       temperature_ = 0F;
+      timestamp_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -19124,6 +19139,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeFloat(8, temperature_);
       }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt64(9, timestamp_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -19164,6 +19182,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(8, temperature_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(9, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -19310,6 +19332,8 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000040);
         temperature_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000080);
+        timestamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -19385,6 +19409,10 @@ public final class Representations {
           to_bitField0_ |= 0x00000040;
         }
         result.temperature_ = temperature_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.timestamp_ = timestamp_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -19447,6 +19475,9 @@ public final class Representations {
         }
         if (other.hasTemperature()) {
           setTemperature(other.getTemperature());
+        }
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -19524,6 +19555,11 @@ public final class Representations {
             case 69: {
               bitField0_ |= 0x00000080;
               temperature_ = input.readFloat();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              timestamp_ = input.readUInt64();
               break;
             }
           }
@@ -19876,6 +19912,27 @@ public final class Representations {
       public Builder clearTemperature() {
         bitField0_ = (bitField0_ & ~0x00000080);
         temperature_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint64 timestamp = 9 [default = 0];
+      private long timestamp_ ;
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      public Builder setTimestamp(long value) {
+        bitField0_ |= 0x00000100;
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        timestamp_ = 0L;
         onChanged();
         return this;
       }
@@ -21199,19 +21256,19 @@ public final class Representations {
       "Vector2\022\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010" +
       " \001(\0132 .naothmessages.BUUserTeamMessage\022+" +
       "\n\tframeInfo\030\t \001(\0132\030.naothmessages.FrameI",
-      "nfo\"\354\001\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(" +
+      "nfo\"\202\002\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(" +
       "\t:\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStr" +
       "iker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005" +
       "false\022*\n\topponents\030\005 \003(\0132\027.naothmessages" +
       ".Opponent\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatt" +
       "eryCharge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:" +
-      "\0010\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013" +
-      "poseOnField\030\002 \001(\0132\025.naothmessages.Pose2D" +
-      "\"Q\n\027CameraMatrixCalibration\0226\n\020correctio" +
-      "nOffset\030\001 \003(\0132\034.naothmessages.DoubleVect",
-      "or2*7\n\tTeamColor\022\014\n\010blueTeam\020\000\022\013\n\007redTea" +
-      "m\020\001\022\017\n\013invalidTeam\020\002B\026\n\024de.naoth.rc.mess" +
-      "ages"
+      "\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\"L\n\010Opponent\022\024\n\t" +
+      "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132" +
+      "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
+      "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na",
+      "othmessages.DoubleVector2*7\n\tTeamColor\022\014" +
+      "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam" +
+      "\020\002B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -21399,7 +21456,7 @@ public final class Representations {
           internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BUUserTeamMessage_descriptor,
-              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", "BatteryCharge", "Temperature", },
+              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", "BatteryCharge", "Temperature", "Timestamp", },
               de.naoth.rc.messages.Representations.BUUserTeamMessage.class,
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder.class);
           internal_static_naothmessages_Opponent_descriptor =
