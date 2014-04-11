@@ -91,6 +91,8 @@ private:
       PARAMETER_REGISTER(minOffsetV) = 100;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(orange_thresh) = 50;
+      PARAMETER_REGISTER(minGreenPoints) = 2;
+      
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -107,6 +109,7 @@ private:
     int minOffsetV;
     int mitUVDifference;
     int orange_thresh;
+    int minGreenPoints;
 
   } params;
 
@@ -172,9 +175,12 @@ private:
   }
 
   bool findMaximumRedPoint(Vector2i& peakPos);
-  bool scanForEdges(const Vector2i& start, const Vector2d& direction);
-  int ckecknearBall(const Vector2i& start);
-  void calculateBallPercept(const Vector2i& center);
+  bool scanForEdges(const Vector2i& start, const Vector2d& direction, Vector2i& endpoint);
+  int ckecknearBall(const Vector2i& start, Vector2d& center, double& radius);
+  void calculateBallPercept(const Vector2i& center, double radius);
+
+private: //data members
+  std::vector<Vector2i> listOfRedPoints;
 
 private:
   // double cam stuff
