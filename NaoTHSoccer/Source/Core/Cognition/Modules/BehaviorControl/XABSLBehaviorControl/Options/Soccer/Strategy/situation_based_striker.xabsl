@@ -35,12 +35,13 @@ option situation_based_striker {
     decision{
       else if(action_done && state_time > 1000)
       {
-	      if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
-	          || abs(value=attack.direction.preview)<12)
+        if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+          goto sidekick;
+	      else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
+	               || abs(value=attack.direction.preview)<12)
 	        goto attack;
 	      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
-	              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)
-	              ||(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+	              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
 	        goto sidekick;
 	      else
 	        goto turn;
@@ -56,11 +57,12 @@ option situation_based_striker {
   
   state turn {
     decision{
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
+        goto sidekick;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
         goto attack;
-      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90) // far away from goal and the target is behing us
-              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40) // a \in [40, 90]
-              ||(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)) // there is an obstacle
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
         goto sidekick;
       else
         stay;
