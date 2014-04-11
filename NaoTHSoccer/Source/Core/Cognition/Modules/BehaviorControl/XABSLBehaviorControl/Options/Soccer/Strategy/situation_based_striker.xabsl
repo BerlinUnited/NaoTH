@@ -21,7 +21,8 @@ option situation_based_striker {
   }
 
   state search {
-    decision{
+    decision{
+
       else
         stay;
     }
@@ -32,7 +33,8 @@ option situation_based_striker {
   }
 
   state goto_ball {
-    decision{
+    decision{
+
       else if(action_done && state_time > 1000)
       {
         if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
@@ -56,7 +58,8 @@ option situation_based_striker {
   }
   
   state turn {
-    decision{
+    decision{
+
       else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
         goto sidekick;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
