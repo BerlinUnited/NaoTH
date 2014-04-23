@@ -13,9 +13,9 @@ import de.naoth.rc.dialogs.drawings.three_dimension.ColorTable;
 import de.naoth.rc.dialogs.drawings.three_dimension.OrbitBehavior;
 import de.naoth.rc.dialogs.drawings.three_dimension.Scene;
 import de.naoth.rc.dialogs.drawings.three_dimension.VirtualWorld;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
-import de.naoth.rc.manager.SecondaryImageManager;
+import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
@@ -65,9 +65,9 @@ public class ThreeDimensionViewer extends AbstractDialog
       @InjectPlugin
       public static ThreeDimensionSceneManager threeDimensionSceneManager;
       @InjectPlugin
-      public static ImageManager imageManager;
+      public static ImageManagerBottom imageManager;
       @InjectPlugin
-      public static SecondaryImageManager imageTopManager;
+      public static ImageManagerTop imageTopManager;
   }//end Plugin
   
   

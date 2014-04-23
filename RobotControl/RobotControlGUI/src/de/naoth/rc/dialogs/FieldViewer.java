@@ -23,7 +23,7 @@ import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
 import de.naoth.rc.dialogs.drawings.RadarDrawing;
 import de.naoth.rc.dialogs.drawings.StrokePlot;
 import de.naoth.rc.manager.DebugDrawingManager;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.manager.TeamCommDrawingManager;
@@ -63,7 +63,7 @@ public class FieldViewer extends AbstractDialog
       @InjectPlugin
       public static PlotDataManager plotDataManager;
       @InjectPlugin
-      public static ImageManager imageManager;
+      public static ImageManagerBottom imageManager;
       @InjectPlugin
       public static TeamCommDrawingManager teamCommDrawingManager;
   }//end Plugin

@@ -7,7 +7,7 @@ import de.naoth.rc.dialogs.Tools.ColorTable;
 import de.naoth.rc.dialogs.Tools.Colors;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.panels.DynamicCanvasPanel;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
@@ -44,7 +44,7 @@ public class ColorTableTool extends AbstractDialog
   @InjectPlugin
   public RobotControl parent;
   @InjectPlugin
-  public ImageManager imageManager;
+  public ImageManagerBottom imageManager;
 
   private ImagePanel imageCanvas;
   private ColorClassifiedImagePanel colorClassifiedImageCanvas;
