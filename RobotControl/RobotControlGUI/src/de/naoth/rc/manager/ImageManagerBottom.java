@@ -11,7 +11,7 @@ import de.naoth.rc.dataformats.JanusImage;
  *
  * @author thomas
  */
-public interface ImageManager extends ManagerPlugin<JanusImage>
+public interface ImageManagerBottom extends ManagerPlugin<JanusImage>
 {
 
 }

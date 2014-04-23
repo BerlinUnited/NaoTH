@@ -4,9 +4,9 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.Colors;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
-import de.naoth.rc.manager.SecondaryImageManager;
+import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.*;
@@ -38,9 +38,9 @@ public class ColorCalibrationTool extends AbstractDialog implements /*ObjectList
   @InjectPlugin
   public RobotControl parent;
   @InjectPlugin
-  public ImageManager imageManager;
+  public ImageManagerBottom imageManager;
   @InjectPlugin
-  public SecondaryImageManager secondaryImageManager;
+  public ImageManagerTop secondaryImageManager;
 
   private ImagePanel imageCanvas;
   private final String cameraAutoParam = "camera:switch_auto_parameters";

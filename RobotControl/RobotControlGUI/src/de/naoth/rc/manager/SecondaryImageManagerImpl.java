@@ -20,7 +20,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  */
 @PluginImplementation
 public class SecondaryImageManagerImpl extends AbstractManagerPlugin<JanusImage>
-  implements SecondaryImageManager
+  implements ImageManagerTop
 {
 
   public SecondaryImageManagerImpl()
