@@ -8,8 +8,18 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.LogSimulator;
+import de.naoth.rc.server.ConnectionDialog;
+import de.naoth.rc.server.MessageServer;
+import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -20,6 +30,10 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 public class LogfilePlayer extends AbstractDialog 
 {
   LogSimulator logSimulator = new LogSimulator();
+  LogFileAutoPlay logFileAutoPlayer = null;
+  static private Properties config = null;
+  static private MessageServer messageServer = null;
+  boolean autoSliderChange = false;
   
   public LogfilePlayer() {
       initComponents();
@@ -27,6 +41,14 @@ public class LogfilePlayer extends AbstractDialog
       this.fileChooser.setFileFilter(new LogFileFilter());
   }
 
+  static public void setProperties (Properties config) {
+      LogfilePlayer.config = config;
+  }
+  
+  static public void setMessageServer (MessageServer messageServer) {
+      LogfilePlayer.messageServer = messageServer;
+  }
+  
   @Override
   public void dispose() 
   {
@@ -44,12 +66,49 @@ public class LogfilePlayer extends AbstractDialog
 
         fileChooser = new javax.swing.JFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
-        openButton = new javax.swing.JButton();
         logSlider = new javax.swing.JSlider();
         fileNameLabel = new javax.swing.JLabel();
+        openButton = new javax.swing.JButton();
+        jTextField2 = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
+
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField2KeyTyped(evt);
+            }
+        });
+
+        logSlider.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        logSlider.setEnabled(false);
+        logSlider.setPreferredSize(new java.awt.Dimension(480, 23));
+        logSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                logSliderStateChanged(evt);
+            }
+        });
+        logSlider.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
+        jToolBar1.add(logSlider);
+
+        fileNameLabel.setText("no file selected");
+        fileNameLabel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
 
         openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Open24.gif"))); // NOI18N
         openButton.setToolTipText("Open");
@@ -61,19 +120,54 @@ public class LogfilePlayer extends AbstractDialog
                 openButtonActionPerformed(evt);
             }
         });
-        jToolBar1.add(openButton);
-
-        logSlider.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        logSlider.setEnabled(false);
-        logSlider.setPreferredSize(new java.awt.Dimension(480, 23));
-        logSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                logSliderStateChanged(evt);
+        openButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
             }
         });
-        jToolBar1.add(logSlider);
 
-        fileNameLabel.setText("no file selected");
+        jTextField2.setText("0");
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
+        jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField2KeyTyped(evt);
+            }
+        });
+
+        jButton2.setLabel("||>");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jButton2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
+
+        jLabel1.setText("ms");
+        jLabel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
+
+        jButton3.setText("|<<");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jButton3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -81,17 +175,36 @@ public class LogfilePlayer extends AbstractDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 637, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(7, 7, 7)
+                .addComponent(openButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fileNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addGap(186, 186, 186))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fileNameLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fileNameLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(openButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -107,24 +220,240 @@ public class LogfilePlayer extends AbstractDialog
             this.logSimulator.openLogFile(openedFile.getAbsolutePath());
             this.logSlider.setMinimum(logSimulator.getMinFrame());
             this.logSlider.setMaximum(logSimulator.getMaxFrame());
-            this.logSlider.setEnabled(true);
+            this.logSimulator.jumpTo(logSimulator.getMinFrame());
+            this.logSlider.setEnabled(true);            
+     //       this.jButton1.setEnabled(false);
+            connectToSimulator();
         }
       }
     }//GEN-LAST:event_openButtonActionPerformed
 
     private void logSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_logSliderStateChanged
-        this.logSimulator.jumpTo(this.logSlider.getValue());
+        if (autoSliderChange){
+            autoSliderChange = false;
+        } else {            
+            if (logFileAutoPlayer!=null && !logFileAutoPlayer.isInterrupted()) {
+                 logFileAutoPlayer.interrupt();
+                 waitTillThreadsDeath();
+            }
+            this.logSimulator.jumpTo(this.logSlider.getValue());                  
+        }
+        
     }//GEN-LAST:event_logSliderStateChanged
+
+    private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
+        char key = evt.getKeyChar();
+        switch(key) {
+            case 'd':
+                if (logFileAutoPlayer == null || logFileAutoPlayer.interrupted()) this.logSimulator.stepForward();
+                break;
+            case 'a':
+                if (logFileAutoPlayer == null || logFileAutoPlayer.interrupted()) this.logSimulator.stepBack();
+                break;
+            case 'w':
+                 if (logFileAutoPlayer != null && !logFileAutoPlayer.interrupted()) 
+                {
+                    this.logFileAutoPlayer.interrupt();
+                    waitTillThreadsDeath();                      
+                }
+                this.logSimulator.jumpToBegin();
+                autoSliderChange = true;
+                this.logSlider.setValue(this.logSlider.getMinimum());                
+                break;
+            case 's':
+                if (logFileAutoPlayer != null && !logFileAutoPlayer.interrupted()) 
+                {
+                    this.logFileAutoPlayer.interrupt(); 
+                    waitTillThreadsDeath();            
+                }
+                autoSliderChange = true;
+                this.logSlider.setValue(this.logSlider.getMaximum());                
+                this.logSimulator.jumpToEnd();
+                break;
+            case 'p':                    
+                if (logFileAutoPlayer==null || logFileAutoPlayer.isInterrupted()) {
+                    logFileAutoPlayer = new LogFileAutoPlay(this);
+                    logFileAutoPlayer.start();
+                }
+                else {
+                    logFileAutoPlayer.interrupt();
+                    waitTillThreadsDeath(); 
+                }
+                break;
+            case 'l':
+                if (logFileAutoPlayer==null || logFileAutoPlayer.isInterrupted()) {
+                    logFileAutoPlayer = new LogFileAutoPlay(this, true);
+                    logFileAutoPlayer.start();
+                } 
+                else {
+                    logFileAutoPlayer.interrupt();
+                    waitTillThreadsDeath(); 
+                }
+                break;
+            case 'r':
+                if (logFileAutoPlayer == null || logFileAutoPlayer.interrupted()) this.logSimulator.jumpTo(logSimulator.getCurrentFrame());
+                break;
+        } 
+    }//GEN-LAST:event_formKeyTyped
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (verifyNumField()) {
+            jTextField2.setBackground(Color.white);
+            if (logFileAutoPlayer == null || logFileAutoPlayer.isInterrupted()) {            
+                logFileAutoPlayer = new  LogFileAutoPlay(this, Integer.parseInt(jTextField2.getText()));
+                logFileAutoPlayer.start();
+            }
+            else {
+                logFileAutoPlayer.interrupt();               
+                waitTillThreadsDeath();
+            }        
+        } else {
+            jTextField2.setBackground(Color.red);
+        }
+        
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+         if (logFileAutoPlayer!=null && !logFileAutoPlayer.isInterrupted()) {
+             logFileAutoPlayer.interrupt();
+             waitTillThreadsDeath();
+         }
+         logSimulator.jumpTo(logSimulator.getMinFrame());
+         autoSliderChange = true;
+         logSlider.setValue(logSlider.getMinimum());         
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2KeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JLabel fileNameLabel;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JSlider logSlider;
     private javax.swing.JButton openButton;
     // End of variables declaration//GEN-END:variables
 
+    
+  private class LogFileAutoPlay extends Thread {
+      LogSimulator logSimulator;
+      LogfilePlayer logfilePlayer;
+      long stopTime;
+      boolean loop;
+      int currentFrame;     
+      LogFileAutoPlay (LogfilePlayer logfilePlayer) {
+          this.logfilePlayer = logfilePlayer;
+          this.logSimulator = this.logfilePlayer.logSimulator;
+          this.stopTime = 33;
+          this.currentFrame = this.logSimulator.getCurrentFrame();          
+          this.loop = false;
+      }
+      LogFileAutoPlay (LogfilePlayer logfilePlayer, boolean loop) {
+          this.logfilePlayer = logfilePlayer;
+          this.logSimulator = this.logfilePlayer.logSimulator;         
+          this.currentFrame = this.logSimulator.getCurrentFrame();          
+          this.loop = loop;
+      }
+      LogFileAutoPlay (LogfilePlayer logfilePlayer, int stopTime) {
+          this.logfilePlayer = logfilePlayer;
+          this.logSimulator = this.logfilePlayer.logSimulator;
+          this.stopTime = stopTime;
+          this.currentFrame = this.logSimulator.getCurrentFrame();         
+          this.loop = false;
+      }      
+      @Override
+      public void run () {
+          try {
+            while (!Thread.currentThread().isInterrupted()) {                
+                if (currentFrame < logSimulator.getMaxFrame()) {
+                    logSimulator.stepForward();                        
+                    currentFrame++;
+                    autoSliderChange = true;
+                    logfilePlayer.logSlider.setValue(currentFrame);                    
+                 }
+                 else {
+                     if (loop) {
+                         logSimulator.jumpToBegin();
+                         currentFrame = this.logSimulator.getMinFrame();
+                         autoSliderChange = true;
+                         logfilePlayer.logSlider.setValue(currentFrame);                         
+                     } else {
+                         Thread.currentThread().interrupt();                         
+                     }
+                 }
+                 LogFileAutoPlay.sleep(stopTime);                 
+            }
+          }
+          catch (InterruptedException e) {
+              Thread.currentThread().interrupt();              
+          }
+      }
+      
+     /* @Override
+      public void interrupt () {
+          
+      }*/
+  }  
+ 
+  
+  
+    public boolean verifyNumField() {
+          String text = jTextField2.getText();
+          try {
+              int value = new Integer(text);
+              return true; 
+          } catch (NumberFormatException e) {
+              return false;
+          }
+    }
+    
+    private void waitTillThreadsDeath() {
+      try {
+          logFileAutoPlayer.join();
+      } catch (InterruptedException ex) {
+          Logger.getLogger(LogfilePlayer.class.getName()).log(Level.SEVERE, null, ex);
+          logFileAutoPlayer =  null;
+      }
+      logFileAutoPlayer =  null;
+    }
+ 
+  private void connectToSimulator () {
+        try {
+            messageServer.connect("localhost", 5401);
+            config.put("hostname", "localhost");
+            config.put("port", "5401");
+        }
+        catch(UnknownHostException ex)
+        {
+          JOptionPane.showMessageDialog(this,
+            "Could not connect: host \'" + this.messageServer.getAddress() + "\' is unknown.", 
+            "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        catch(SocketTimeoutException ex)
+        {
+          JOptionPane.showMessageDialog(this,
+            "Could not connect: socket timeout exception.",
+            "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+        catch(IOException ex)
+        {
+          JOptionPane.showMessageDialog(this,
+            "Etablishing connection failed: " + ex.getLocalizedMessage(), 
+            "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+  }
+  
 
   private class LogFileFilter extends javax.swing.filechooser.FileFilter
   {
