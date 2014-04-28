@@ -1,8 +1,9 @@
-/** 
- * @file LineGraphPercept.h
- * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * Declaration of class LineGraphPercept
- */
+/**
+* @file LineGraphPercept.h
+*
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* Definition of class ProbabilisticQuadCompas
+*/
 
 #ifndef _LineGraphPercept_h_
 #define _LineGraphPercept_h_
