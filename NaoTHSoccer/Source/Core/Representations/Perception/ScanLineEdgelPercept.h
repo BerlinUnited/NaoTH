@@ -7,8 +7,6 @@
 #ifndef _ScanLineEdgelPercept_h_
 #define _ScanLineEdgelPercept_h_
 
-#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
-
 #include "Tools/Math/Vector2.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ColorClasses.h"

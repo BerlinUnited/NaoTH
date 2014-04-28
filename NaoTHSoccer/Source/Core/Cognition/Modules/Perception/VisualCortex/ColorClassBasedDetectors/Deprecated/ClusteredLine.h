@@ -5,8 +5,9 @@
 * Definition of class ClusteredLine
 */
 
-#include "Edgel.h"
-#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
+#include "Tools/ImageProcessing/Edgel.h"
+#include "Tools/Math/Common.h"
+#include "LineDetectorConstParameters.h"
 
 #ifndef _ClusteredLine_H_
 #define _ClusteredLine_H_
