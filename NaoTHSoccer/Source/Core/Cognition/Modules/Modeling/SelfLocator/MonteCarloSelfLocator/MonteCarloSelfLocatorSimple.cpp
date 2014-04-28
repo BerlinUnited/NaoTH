@@ -29,11 +29,12 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
 
-  // fiald drawings
+  // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
 
   // resampling
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
@@ -156,8 +157,10 @@ void MonteCarloSelfLocatorSimple::execute()
     // global search
     resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
 
-    FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0, 0, "LOCALIZE");
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      TEXT_DRAWING(0, 0, "LOCALIZE");
+    );
   }
   else if(state == TRACKING)
   {
@@ -171,8 +174,10 @@ void MonteCarloSelfLocatorSimple::execute()
       resampleGT07(theSampleSet, true);
     }
 
-    FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0, 0, "TRACKING");
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      TEXT_DRAWING(0, 0, "TRACKING");
+    );
   }
 
 
@@ -419,9 +424,11 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
     }
   }
 
-  FIELD_DRAWING_CONTEXT;
-  leftStartingLine.draw();
-  rightStartingLine.draw();
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    leftStartingLine.draw();
+    rightStartingLine.draw();
+  );
 }
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
@@ -856,8 +863,8 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
       sampleSet.samples[idx].rotation = fixedRotation;
       sampleSet.samples[idx].likelihood = 1.0;
       idx++;
-    }//end for
-  }//end for
+    }
+  }
 
   updateBySensors(sampleSet);
   
@@ -867,8 +874,8 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
     for (int y = 0; y < ySize; y++)
     {
       maxValue = max(maxValue, sampleSet.samples[idx++].likelihood);
-    }//end for
-  }//end for
+    }
+  }
 
   if(maxValue == 0) return;
 
@@ -876,12 +883,12 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
   for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
-      Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
       double t = sampleSet.samples[idx++].likelihood / maxValue;
       DebugDrawings::Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-    }//end for
-  }//end for
+    }
+  }
 }//end draw_closest_points
