@@ -83,7 +83,6 @@ public:
       PARAMETER_REGISTER(x) = 6;
 
       syncWithConfig();
-
       DebugParameterList::getInstance().add(this);
     }
 
