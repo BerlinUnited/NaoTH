@@ -11,6 +11,7 @@
 #include <sstream>
 #include <map>
 #include <list>
+#include <vector>
 
 namespace naoth
 {
@@ -31,7 +32,22 @@ public:
 class DebugMessageOut
 {
 public:
-  std::list<std::string> answers;
+  typedef std::vector<char> Data;
+
+  std::list<Data*> answers;
+
+  void addResponse(std::stringstream& str) {
+    long length = (long)str.tellp(); length = length < 0 ? 0 : length;
+
+    // NOTE: the objects are deleted later by the DebugServer
+    Data* buffer = new Data(length);
+    str.read(buffer->data(), buffer->size());
+    answers.push_back(buffer);
+  }
+
+  void reset() {
+    answers.clear();
+  }
 };
 
 } // namespace naoth
