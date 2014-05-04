@@ -31,6 +31,8 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
 
   // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_BackendSamples", "draw sample set before resampling", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples_effective", "draw sample set before resampling", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
@@ -144,22 +146,43 @@ void MonteCarloSelfLocatorSimple::execute()
     theSampleSet.drawImportance();
   );
 
+  DEBUG_REQUEST("MCSLS:draw_BackendSamples",
+    mhBackendSet.drawImportance(false);
+  );
 
-  
+
   if(state == LOCALIZE) 
   {
-    // sensor resetting
-    sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
-
     // local optimization
     resampleMH(theSampleSet);
 
+    // sensor resetting
+    if(getSensingGoalModel().someGoalWasSeen) {
+      sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+      resampleSUS(theSampleSet, theSampleSet.size());
+    }
+
     // global search
-    resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
+    //resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
+
+    canopyClustering.cluster(mhBackendSet);
+    
+    Moments2<2> tmpMoments;
+    Sample tmpPose = mhBackendSet.meanOfLargestCluster(tmpMoments);
+
+    if(tmpMoments.getRawMoment(0,0) > 0.8*mhBackendSet.size() &&
+       (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)
+      ) {
+      theSampleSet = mhBackendSet;
+      state = TRACKING;
+    }
 
     DEBUG_REQUEST("MCSLS:draw_state",
       FIELD_DRAWING_CONTEXT;
       TEXT_DRAWING(0, 0, "LOCALIZE");
+    );
+    DEBUG_REQUEST("MCSLS:draw_Samples_effective",
+      mhBackendSet.drawImportance(false);
     );
   }
   else if(state == TRACKING)
@@ -174,24 +197,16 @@ void MonteCarloSelfLocatorSimple::execute()
       resampleGT07(theSampleSet, true);
     }
 
+    calculatePose(theSampleSet);
+
     DEBUG_REQUEST("MCSLS:draw_state",
       FIELD_DRAWING_CONTEXT;
       TEXT_DRAWING(0, 0, "TRACKING");
     );
+    DEBUG_REQUEST("MCSLS:draw_Samples_effective",
+      theSampleSet.drawImportance();
+    );
   }
-
-
-  calculatePose(theSampleSet);
-
-  Moments2<2> tmpMoments;
-  Sample tmpPose = theSampleSet.meanOfLargestCluster(tmpMoments);
-  
-  if(tmpMoments.getRawMoment(0,0) > 0.8*theSampleSet.size() &&
-     (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)
-    ) {
-    state = TRACKING;
-  }
-
 
   const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
   //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
@@ -221,6 +236,7 @@ void MonteCarloSelfLocatorSimple::execute()
   DEBUG_REQUEST("MCSLS:draw_sensor_belief",
     draw_sensor_belief();
   );
+
 }//end execute
 
 
@@ -229,7 +245,7 @@ void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool no
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
   for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
-    sampleSet[i] += odometryDelta; 
+    sampleSet[i] += odometryDelta;
     if(noise)
     {
       sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
@@ -565,6 +581,9 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
   double angle = 0.2;
   MODIFY("resampleMH:angle", angle);
 
+  double threshold = 1.0/sampleSet.size();
+  MODIFY("resampleMH:threshold", threshold);
+
   sampleSet.normalize();
   mhBackendSet.normalize();
 
@@ -575,12 +594,15 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
     } else {
       mhBackendSet[i] = sampleSet[i]; // accept
     }
-    applySimpleNoise(sampleSet[i], radius, angle);
+
+    if(sampleSet[i].likelihood < threshold) {
+      createRandomSample(parameters.resetOwnHalf ? getFieldInfo().ownHalfRect : getFieldInfo().carpetRect, sampleSet[i]);
+    } else {
+      applySimpleNoise(sampleSet[i], radius, angle);
+    }
   }
 
   //mainSet = sampleSet;
-
-  //mhBackendSet.drawImportance(false);
 }
 
 int MonteCarloSelfLocatorSimple::resampleSUS(SampleSet& sampleSet, int n) const
