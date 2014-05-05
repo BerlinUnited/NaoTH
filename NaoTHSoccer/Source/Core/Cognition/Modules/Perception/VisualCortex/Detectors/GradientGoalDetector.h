@@ -61,7 +61,7 @@ class GradientGoalDetector: private GradientGoalDetectorBase
 public:
 
   GradientGoalDetector();
-  virtual ~GradientGoalDetector(){};
+  virtual ~GradientGoalDetector(){}
 
   // override the Module execute method
   virtual bool execute(CameraInfo::CameraID id, bool horizon = true);
@@ -178,7 +178,7 @@ private:
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
   void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
-  void scanForStatisticsToFootPoint( Vector2i footPoint, Vector2i pos, double threshold, double thresholdY);
+  void scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos);
   void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;
