@@ -169,7 +169,7 @@ void SampleSet::drawCluster(unsigned int clusterId) const
   }
 }
 
-void SampleSet::drawImportance(bool arrows) const
+void SampleSet::drawImportance(bool /*arrows*/) const
 {
   ASSERT(samples.size() > 0);
   FIELD_DRAWING_CONTEXT;
@@ -196,6 +196,6 @@ void SampleSet::drawImportance(bool arrows) const
     ARROW(samples[i].translation.x, samples[i].translation.y, 
           samples[i].translation.x + 100*cos(samples[i].rotation), 
           samples[i].translation.y + 100*sin(samples[i].rotation));
-  }//end for
+  }
 }
 
