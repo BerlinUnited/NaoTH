@@ -13,15 +13,10 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
-class LineGraphPercept : public naoth::Printable
+class LineGraphPercept
 { 
 public:
-
   std::vector<Edgel> edgels;
-
-  virtual void print(std::ostream& stream) const {
-  }
-
 };
 
 #endif // _LineGraphPercept_h_

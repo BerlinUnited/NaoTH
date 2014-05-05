@@ -606,7 +606,7 @@ void NeoLineDetector::calculatePairs(const std::vector<ScanLineEdgelPercept::Edg
 }
 
 
-void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<Neighbors>& neighbors, double threshold) const
+void NeoLineDetector::calculateNeigbors(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<Neighbors>& neighbors, double /*threshold*/) const
 {
   neighbors.resize(edgels.size());
 

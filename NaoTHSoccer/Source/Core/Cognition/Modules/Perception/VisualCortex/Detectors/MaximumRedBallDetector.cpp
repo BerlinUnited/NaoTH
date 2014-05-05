@@ -324,7 +324,7 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
   return false;
 }
 
-bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest)
+bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2i& /*start*/, Vector2d& centerBest, double& radiusBest)
 {
 	int idxBest = -1;
 	int bestCount = 0;

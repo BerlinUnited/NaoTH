@@ -388,14 +388,15 @@ void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
   }
 }
 
-void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lineGraphPercept, SampleSet& sampleSet) const
 {
   const double sigmaDistance = parameters.goalPostSigmaDistance;
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  for(size_t i = 0; i < getLineGraphPercept().edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) {
-    const Vector2d& seen_point_relative = getLineGraphPercept().edgels[i].point;
+  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  {
+    const Vector2d& seen_point_relative = lineGraphPercept.edgels[i].point;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
     {
@@ -498,23 +499,22 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
 {
   double cross_entropy = 0.0;
   double avg = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    avg += theSampleSet[i].likelihood;
-
-    cross_entropy -= log(theSampleSet[i].likelihood);
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+    avg += sampleSet[i].likelihood;
+    cross_entropy -= log(sampleSet[i].likelihood);
   }
-  avg /= theSampleSet.size();
-  cross_entropy /= theSampleSet.size();
+  avg /= sampleSet.size();
+  cross_entropy /= sampleSet.size();
   PLOT("MonteCarloSelfLocatorSimple:w_average",avg);
   PLOT("MonteCarloSelfLocatorSimple:cross_entropy",avg);
 
-  theSampleSet.normalize();
+  sampleSet.normalize();
 
   // effective number of particles
   static RingBufferWithSum<double, 30>  effective_number_of_samples_buffer;
   double sum2 = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    sum2 += Math::sqr(theSampleSet[i].likelihood);
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+    sum2 += Math::sqr(sampleSet[i].likelihood);
   }
   effective_number_of_samples = 1.0/sum2;
   effective_number_of_samples_buffer.add(effective_number_of_samples);
@@ -749,26 +749,26 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
    ************************************/
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(sampleSet, getRobotPose().translation);
   
   // Hypothesis tracking:
   // the idea is to keep the cluster until it has at lest 1/3 of all particles
   // if not, then jump only if there is anoter cluster having more then 2/3 particles
 
   // if the hypothesis is to small...
-  if(clusterSize < 0.3*(double)theSampleSet.size())
+  if(clusterSize < 0.3*(double)sampleSet.size())
   {
     // make new cluseter
-    canopyClustering.cluster(theSampleSet);
+    canopyClustering.cluster(sampleSet);
 
     // find the largest cluster
     Moments2<2> tmpMoments;
-    Sample tmpPose = theSampleSet.meanOfLargestCluster(tmpMoments);
+    Sample tmpPose = sampleSet.meanOfLargestCluster(tmpMoments);
 
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
-    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
-      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)sampleSet.size()) {
+      canopyClustering.cluster(sampleSet, getRobotPose().translation);
     } else { // jump => change the state
       //state = LOCALIZE;
     }
@@ -780,7 +780,7 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
 
   // estimate the deviation of the pose
   Moments2<2> moments;
-  Sample newPose = theSampleSet.meanOfLargestCluster(moments);
+  Sample newPose = sampleSet.meanOfLargestCluster(moments);
 
   getRobotPose() = newPose;
 
@@ -795,7 +795,7 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   DEBUG_REQUEST("MCSLS:draw_Cluster",
-    theSampleSet.drawCluster(newPose.cluster);
+    sampleSet.drawCluster(newPose.cluster);
   );
 
   DEBUG_REQUEST("MCSLS:draw_position",
