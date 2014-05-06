@@ -12,7 +12,9 @@
 
 void SampleSet::sort(bool descending) 
 {
-  quicksort(descending?1:-1, 0, numberOfParticles-1);
+  if(samples.size() > 1) {
+    quicksort(descending?1:-1, 0, ((int)samples.size())-1);
+  }
 }
 
 void SampleSet::quicksort(int d, int low, int high) 
@@ -46,29 +48,31 @@ void SampleSet::quicksort(int d, int low, int high)
   } while(i <= j);
 
   /* recurse */
-  if(low < j) 
+  if(low < j) {
    quicksort(d, low, j);
+  }
 
-  if(i < high) 
-    quicksort(d, i, high); 
+  if(i < high) {
+    quicksort(d, i, high);
+  }
 }//end quicksort
 
 
 void SampleSet::normalize(double offset)
 {
   double sum = 0.0;
-  for(unsigned int i = 0; i < numberOfParticles; i++)
-  {
+  for(size_t i = 0; i < samples.size(); i++) {
     samples[i].likelihood = samples[i].likelihood;
     sum += samples[i].likelihood;
   }
 
-  if(sum == 0) return;
+  if(sum == 0) { 
+    return; 
+  }
 
-  double offset_sum = 1.0+offset*numberOfParticles;
+  double offset_sum = 1.0+offset*samples.size();
 
-  for(unsigned int i = 0; i < numberOfParticles; i++)
-  {
+  for(size_t i = 0; i < samples.size(); i++) {
     samples[i].likelihood = ((samples[i].likelihood/sum) + offset)/offset_sum;
   }
 }//end normalize
@@ -76,12 +80,16 @@ void SampleSet::normalize(double offset)
 
 void SampleSet::resetLikelihood()
 {
-  double likelihood = 1.0/static_cast<double>(numberOfParticles);
-  for(unsigned int i = 0; i < numberOfParticles; i++)
-  {
-    samples[i].likelihood = likelihood;
+  double likelihood = 1.0/static_cast<double>(samples.size());
+  setLikelihood(likelihood);
+}
+
+void SampleSet::setLikelihood(double v)
+{
+  for(size_t i = 0; i < samples.size(); i++) {
+    samples[i].likelihood = v;
   }
-}//end resetLikelihood
+}
 
 
 // TODO: make it more efficient (!!!)
@@ -90,48 +98,60 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments) const
   ASSERT(samples.size() > 0);
 
   // TODO: make it better
-  std::vector<int> cluster(numberOfParticles);
-  std::vector<Vector2<double> > averageTranslation(numberOfParticles);
-  std::vector<Vector2<double> > averageRotation(numberOfParticles);
-  unsigned int maxIndex = 0;
+  std::vector<int> cluster(samples.size());
+  int maxIndex = 0;
   double maxNumber = 0;
 
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(size_t i = 0; i < samples.size(); i++)
   {
-    if(samples[i].cluster >= 0 && samples[i].cluster < (int)numberOfParticles)
+    if(samples[i].cluster >= 0 && samples[i].cluster < (int)samples.size())
     {
       int idx = samples[i].cluster;
       cluster[idx]++;
-      averageTranslation[idx] += samples[i].translation;
-      averageRotation[idx].x += cos(samples[i].rotation);
-      averageRotation[idx].y += sin(samples[i].rotation);
 
-      if(maxNumber < cluster[idx])
-      {
+      if(maxNumber < cluster[idx]) {
         maxIndex = idx;
         maxNumber = cluster[idx];
       }
     }//end if
   }//end for
 
-  Sample result;
-  result.translation = averageTranslation[maxIndex]/maxNumber;
-  result.rotation = averageRotation[maxIndex].angle();
-  result.cluster = maxIndex;
+  return meanOfCluster(moments, maxIndex);
+}//end meanOfLargestCluster
 
+
+Sample SampleSet::meanOfCluster(Moments2<2>& moments, size_t idx) const 
+{
+  ASSERT(samples.size() > 0);
+
+  Vector2d averageTranslation;
+  Vector2d averageRotation;
+  double numberOfSamples = 0;
 
   // calculate the covariance of the largest cluster
-  for(unsigned int i = 0; i < numberOfParticles; i++)
+  for(size_t i = 0; i < samples.size(); i++)
   {
     const Sample& sample = samples[i];
-    if(sample.cluster == (int)maxIndex)
+    if(sample.cluster == idx)
     {
+      averageTranslation += sample.translation;
+      averageRotation.x += cos(sample.rotation);
+      averageRotation.y += sin(sample.rotation);
       moments.add(sample.translation);
+      numberOfSamples++;
     }
-  }//end for
+  }
+
+  Sample result;
+  result.cluster = idx;
+
+  if(numberOfSamples > 0) {
+    result.translation = averageTranslation/numberOfSamples;
+    result.rotation = (averageRotation/numberOfSamples).angle();
+  }
 
   return result;
-}//end meanOfLargestCluster
+}//end meanOfCluster
 
 const Sample& SampleSet::getMostLikelySample() const
 {
@@ -140,7 +160,7 @@ const Sample& SampleSet::getMostLikelySample() const
   double maxLikelihood = samples[0].likelihood;
   int maxIdx = 0;
 
-  for(unsigned int i = 1; i < numberOfParticles; i++)
+  for(size_t i = 1; i < samples.size(); i++)
   {
     if(maxLikelihood < samples[i].likelihood) {
       maxLikelihood = samples[i].likelihood;
@@ -177,7 +197,7 @@ void SampleSet::drawImportance(bool /*arrows*/) const
   // normalize the colors (black: less importent, red more importent)
   double minValue = samples[0].likelihood;
   double maxValue = samples[0].likelihood;
-  for (unsigned int i = 1; i < samples.size(); i++)
+  for (size_t i = 1; i < samples.size(); i++)
   {
     maxValue = std::max(samples[i].likelihood, maxValue);
     minValue = std::min(samples[i].likelihood, minValue);
