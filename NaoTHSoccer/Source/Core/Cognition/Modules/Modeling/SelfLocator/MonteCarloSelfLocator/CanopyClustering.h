@@ -37,17 +37,17 @@ public:
   {
   protected:
     unsigned int _size;
-    Vector2<double> _clusterSum;
-    Vector2<double> _center;
+    Vector2d _clusterSum;
+    Vector2d _center;
 
-    void add(const Vector2<double>& point)
+    void add(const Vector2d& point)
     {
       _size++;
       _clusterSum += point;
       _center = _clusterSum / static_cast<double>(_size);
     }
 
-    void set(const Vector2<double>& point)
+    void set(const Vector2d& point)
     {
       _size = 1;
       _clusterSum = point;
@@ -59,15 +59,15 @@ public:
     virtual ~CanopyCluster(){}
 
     unsigned int size() const { return _size; }
-    const Vector2<double>& clusterSum() const { return _clusterSum; }
-    const Vector2<double>& center() const { return _center; }
+    const Vector2d& clusterSum() const { return _clusterSum; }
+    const Vector2d& center() const { return _center; }
   };//end class CanopyCluster
 
 
-  unsigned int size() { return numOfClusters; }
+  unsigned int size() const { return numOfClusters; }
   const CanopyCluster& operator[](int index) const { ASSERT(index >= 0 && (unsigned int)index < this->numOfClusters); return clusters[index];}
   const CanopyCluster& getLargestCluster() const { ASSERT(largestCluster >= 0 && (unsigned int)largestCluster < this->numOfClusters); return (*this).clusters[largestCluster];  }
-  const int& getLargestClusterID() const {return this->largestCluster;}
+  int getLargestClusterID() const {return largestCluster;}
 
   void setClusterThreshold(const double clusterThreshold) {this->clusterThreshold = clusterThreshold;}
 
@@ -78,7 +78,7 @@ public:
 
     for (int j = 0; j < (int)sampleSet.size(); j++)
     {
-      Sample2D& sample = sampleSet[j]; //vlt besser size_t in sample-set
+      Sample2D& sample = sampleSet[j];
       sample.cluster = -1; // no cluster
 
       // look for a cluster with the smallest distance
@@ -100,8 +100,9 @@ public:
         sample.cluster = minIdx;
         clusters[minIdx].add(sample.getPos());
 
-        if(clusters[minIdx].size() > clusters[largestCluster].size())
+        if(clusters[minIdx].size() > clusters[largestCluster].size()) {
           largestCluster = minIdx;
+        }
       }
       // othervise create new cluster
       else if(numOfClusters < clusters.size()) // ACHTUNG: don't resize clusters
@@ -110,8 +111,9 @@ public:
         clusters[numOfClusters].set(sample.getPos());
         sample.cluster = (int)numOfClusters;
         
-        if(largestCluster == -1)
+        if(largestCluster == -1) {
           largestCluster = numOfClusters;
+        }
 
         numOfClusters++;
       }//end if
@@ -153,7 +155,7 @@ public:
   }//end cluster
 
 
-  unsigned int cluster(C& sampleSet, const Vector2<double>& start)
+  unsigned int cluster(C& sampleSet, const Vector2d& start)
   {
     numOfClusters = 1;
     largestCluster = 0;
@@ -182,56 +184,36 @@ private:
   public:
     virtual ~CanopyClusterBuilder(){}
     CanopyClusterBuilder(){}
-    CanopyClusterBuilder(const Vector2<double>& point)
-    {
+    CanopyClusterBuilder(const Vector2d& point) {
       set(point);
     }
 
-    void add(const Vector2<double>& point)
-    {
+    void add(const Vector2d& point) {
       CanopyCluster::add(point);
     }
 
-    void set(const Vector2<double>& point)
-    {
+    void set(const Vector2d& point) {
       CanopyCluster::set(point);
     }
 
-    void merge(const CanopyCluster& other)
-    {
+    void merge(const CanopyCluster& other) {
       this->_size += other.size();
       this->_clusterSum = (this->_clusterSum + other.clusterSum()) * 0.5;
       this->_center = (this->_center + other.center()) * 0.5;
     }
 
-    void clear()
-    {
+    void clear() {
       this->_size = 0;
     }
 
     // TODO: make it switchable
-    double distance(const Vector2<double>& point) const
-    {
-      return euclideanDistance(point);
-      //return manhattanDistance(point);
-    }
-  
-  private:
-    double manhattanDistance(const Vector2<double>& point) const
-    {
-      return std::fabs(this->center().x - point.x)
-           + std::fabs(this->center().y - point.y);
-    }
-
-    double euclideanDistance(const Vector2<double>& point) const
-    {
-      return (this->center() - point).abs();
+    double distance(const Vector2d& point) const {
+      return (center() - point).abs2();
     }
   };//end class CanopyClusterBuilder
 
 
-  bool isInCluster(const CanopyClusterBuilder& cluster, const Sample2D& sample) const
-  {
+  bool isInCluster(const CanopyClusterBuilder& cluster, const Sample2D& sample) const {
     return cluster.distance(sample.getPos()) < clusterThreshold;
   }
 
