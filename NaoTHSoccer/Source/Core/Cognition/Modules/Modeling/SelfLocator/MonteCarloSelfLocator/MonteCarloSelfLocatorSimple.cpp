@@ -59,12 +59,14 @@ void MonteCarloSelfLocatorSimple::execute()
   DEBUG_REQUEST("MCSLS:reset_samples",
     
     if(parameters.resetOwnHalf) {
-      initializeSampleSet(getFieldInfo().ownHalfRect, theSampleSet);
+      initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
     } else {
       initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
     }
     
     mhBackendSet = theSampleSet;
+    mhBackendSet.setLikelihood(0.0);
+
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
@@ -92,6 +94,8 @@ void MonteCarloSelfLocatorSimple::execute()
     }
 
     mhBackendSet = theSampleSet;
+    mhBackendSet.setLikelihood(0.0);
+
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
@@ -121,7 +125,7 @@ void MonteCarloSelfLocatorSimple::execute()
   updateBySensors(theSampleSet);
   
   if(state == LOCALIZE) {
-    if(getGameData().gameState == GameData::set) {
+    if(true || getGameData().gameState == GameData::set) {
       updateByOwnHalf(theSampleSet);
     } else {
       updateByStartPositions(theSampleSet);
@@ -139,8 +143,8 @@ void MonteCarloSelfLocatorSimple::execute()
 
   
 
-  // NOTE: statistics has to bew after updates and before resampling
-  updateStatistics(theSampleSet);
+  // NOTE: statistics has to be after updates and before resampling
+  //updateStatistics(theSampleSet);
 
   DEBUG_REQUEST("MCSLS:draw_Samples",
     theSampleSet.drawImportance();
@@ -150,7 +154,7 @@ void MonteCarloSelfLocatorSimple::execute()
     mhBackendSet.drawImportance(false);
   );
 
-
+  /*
   if(state == LOCALIZE) 
   {
     // local optimization
@@ -207,6 +211,7 @@ void MonteCarloSelfLocatorSimple::execute()
       theSampleSet.drawImportance();
     );
   }
+  */
 
   const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
   //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
@@ -215,7 +220,7 @@ void MonteCarloSelfLocatorSimple::execute()
 
   DEBUG_REQUEST("MCSLS:resample_sus",
     /*nt n = */ resampleSUS(theSampleSet, theSampleSet.size()); //  (int)(effective_number_of_samples+0.5)
-    sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+    //sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
   );
 
   /************************************
@@ -396,7 +401,8 @@ void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lin
 
   for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
-    const Vector2d& seen_point_relative = lineGraphPercept.edgels[i].point;
+    int idx = Math::random((int)lineGraphPercept.edgels.size());
+    const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
     {
@@ -450,6 +456,9 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 {
+  double sigmaUpdateByOwnHalf = 0.2;
+  MODIFY("sigmaUpdateByOwnHalf", sigmaUpdateByOwnHalf);
+
   for(unsigned int s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
@@ -459,7 +468,7 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
     }
 
     double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, 0.2);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, sigmaUpdateByOwnHalf);
   }
 }
 
@@ -584,15 +593,21 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
   double threshold = 1.0/sampleSet.size();
   MODIFY("resampleMH:threshold", threshold);
 
+  double alpha = 0.0;
+  MODIFY("resampleMH:alpha", alpha);
+
   sampleSet.normalize();
-  mhBackendSet.normalize();
+  //mhBackendSet.normalize();
 
   //int k = 0;
   for(unsigned int i = 0; i < sampleSet.size(); i++) {
-    if(sampleSet[i].likelihood < mhBackendSet[i].likelihood && Math::random() > sampleSet[i].likelihood) {
-      sampleSet[i] = mhBackendSet[i]; // reject
-    } else {
+    
+    // manage the backend set
+    if(sampleSet[i].likelihood > mhBackendSet[i].likelihood) {
       mhBackendSet[i] = sampleSet[i]; // accept
+    } else {
+      mhBackendSet[i].likelihood = (1.0 - alpha)*mhBackendSet[i].likelihood + alpha*sampleSet[i].likelihood; // aging
+      sampleSet[i] = mhBackendSet[i]; // reject
     }
 
     if(sampleSet[i].likelihood < threshold) {
@@ -600,6 +615,7 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
     } else {
       applySimpleNoise(sampleSet[i], radius, angle);
     }
+
   }
 
   //mainSet = sampleSet;
@@ -763,7 +779,8 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
 
     // find the largest cluster
     Moments2<2> tmpMoments;
-    Sample tmpPose = sampleSet.meanOfLargestCluster(tmpMoments);
+    //Sample tmpPose = sampleSet.meanOfLargestCluster(tmpMoments);
+    Sample tmpPose = sampleSet.meanOfCluster(tmpMoments, canopyClustering.getLargestClusterID());
 
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
@@ -780,7 +797,8 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
 
   // estimate the deviation of the pose
   Moments2<2> moments;
-  Sample newPose = sampleSet.meanOfLargestCluster(moments);
+  //Sample newPose = sampleSet.meanOfLargestCluster(moments);
+  Sample newPose = sampleSet.meanOfCluster(moments, canopyClustering.getLargestClusterID());
 
   getRobotPose() = newPose;
 
@@ -881,9 +899,9 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
     for (int y = 0; y < ySize; y++)
     {
       Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      sampleSet.samples[idx].translation = point;
-      sampleSet.samples[idx].rotation = fixedRotation;
-      sampleSet.samples[idx].likelihood = 1.0;
+      sampleSet[idx].translation = point;
+      sampleSet[idx].rotation = fixedRotation;
+      sampleSet[idx].likelihood = 1.0;
       idx++;
     }
   }
@@ -895,7 +913,7 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
   for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
-      maxValue = max(maxValue, sampleSet.samples[idx++].likelihood);
+      maxValue = max(maxValue, sampleSet[idx++].likelihood);
     }
   }
 
@@ -907,7 +925,7 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
     {
       Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
-      double t = sampleSet.samples[idx++].likelihood / maxValue;
+      double t = sampleSet[idx++].likelihood / maxValue;
       DebugDrawings::Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
