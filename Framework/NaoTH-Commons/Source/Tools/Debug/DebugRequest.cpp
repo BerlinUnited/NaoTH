@@ -30,7 +30,7 @@ void DebugRequest::executeDebugCommand(
     while(iter != requestMap.end())
     {
       outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << std::endl;
-      iter++;
+      ++iter;
     }
   }
   else

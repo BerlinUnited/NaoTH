@@ -91,10 +91,6 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
 
-
-    // TODO: not used now
-    unsigned int ultraSoundTimeStep;
-
     // this value is written to 
     // Device/SubDeviceList/US/Actuator/Value
     unsigned int mode;
