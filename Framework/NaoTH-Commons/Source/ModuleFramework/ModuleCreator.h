@@ -116,9 +116,9 @@ public:
   {
     ASSERT(isEnabled());
     // ACHTUNG:
-    // we have to use the unsafe cast because some modules may be privatly 
+    // we have to use the unsafe C-cast because some modules may be privatly 
     // derive from Module and make a type cast inaccesible
-    return reinterpret_cast<Module*>(theInstance);
+    return (Module*)(theInstance);
   }
 
 
