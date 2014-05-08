@@ -105,7 +105,7 @@ public:
     return cell;
   }
 
-  inline const Grid& getGrid() {
+  inline const Grid& getGrid() const {
     return grid;
   }
 

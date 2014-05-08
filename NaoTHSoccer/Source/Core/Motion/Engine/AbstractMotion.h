@@ -116,7 +116,7 @@ public:
   void execute()
   {
     /** do nothing */
-  }//end execute
+  }
 };
 
 #endif //_AbstractMotion_h_

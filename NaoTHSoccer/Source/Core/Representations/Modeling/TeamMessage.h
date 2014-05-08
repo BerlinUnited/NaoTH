@@ -47,9 +47,10 @@ public:
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
         isPenalized(false),
+        batteryCharge(0.0f),
+        temperature(0.0f),
         timestamp(0)
     {
-
     }
 
     naoth::FrameInfo frameInfo;
