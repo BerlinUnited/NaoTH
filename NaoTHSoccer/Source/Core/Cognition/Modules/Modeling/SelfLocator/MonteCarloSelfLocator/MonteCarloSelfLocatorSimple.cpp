@@ -65,7 +65,7 @@ void MonteCarloSelfLocatorSimple::execute()
     }
     
     mhBackendSet = theSampleSet;
-    mhBackendSet.setLikelihood(0.0);
+    //mhBackendSet.setLikelihood(0.0);
 
     state = LOCALIZE;
 
@@ -144,7 +144,9 @@ void MonteCarloSelfLocatorSimple::execute()
   
 
   // NOTE: statistics has to be after updates and before resampling
-  //updateStatistics(theSampleSet);
+  // NOTE: normalizes the likelihood
+  updateStatistics(theSampleSet);
+
 
   DEBUG_REQUEST("MCSLS:draw_Samples",
     theSampleSet.drawImportance();
@@ -154,14 +156,14 @@ void MonteCarloSelfLocatorSimple::execute()
     mhBackendSet.drawImportance(false);
   );
 
-  /*
+
   if(state == LOCALIZE) 
   {
     // local optimization
     resampleMH(theSampleSet);
 
     // sensor resetting
-    if(getSensingGoalModel().someGoalWasSeen) {
+    if(false && getSensingGoalModel().someGoalWasSeen) {
       sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
       resampleSUS(theSampleSet, theSampleSet.size());
     }
@@ -174,8 +176,8 @@ void MonteCarloSelfLocatorSimple::execute()
     Moments2<2> tmpMoments;
     Sample tmpPose = mhBackendSet.meanOfLargestCluster(tmpMoments);
 
-    if(tmpMoments.getRawMoment(0,0) > 0.8*mhBackendSet.size() &&
-       (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)
+    if(tmpMoments.getRawMoment(0,0) > 0.8*mhBackendSet.size()
+      //  && (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)
       ) {
       theSampleSet = mhBackendSet;
       state = TRACKING;
@@ -211,7 +213,7 @@ void MonteCarloSelfLocatorSimple::execute()
       theSampleSet.drawImportance();
     );
   }
-  */
+
 
   const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
   //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
@@ -587,38 +589,65 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
 
   double radius = 200;
   MODIFY("resampleMH:radius", radius);
+
   double angle = 0.2;
   MODIFY("resampleMH:angle", angle);
 
   double threshold = 1.0/sampleSet.size();
   MODIFY("resampleMH:threshold", threshold);
 
-  double alpha = 0.0;
+  double alpha = 0.1;
   MODIFY("resampleMH:alpha", alpha);
 
   sampleSet.normalize();
   //mhBackendSet.normalize();
 
-  //int k = 0;
-  for(unsigned int i = 0; i < sampleSet.size(); i++) {
-    
+  double backendSum = 0;
+
+  for(unsigned int j = 0; j < mhBackendSet.size(); j++) 
+  {
     // manage the backend set
-    if(sampleSet[i].likelihood > mhBackendSet[i].likelihood) {
-      mhBackendSet[i] = sampleSet[i]; // accept
+    if(sampleSet[j].likelihood > mhBackendSet[j].likelihood) {
+      mhBackendSet[j] = sampleSet[j]; // accept
     } else {
-      mhBackendSet[i].likelihood = (1.0 - alpha)*mhBackendSet[i].likelihood + alpha*sampleSet[i].likelihood; // aging
-      sampleSet[i] = mhBackendSet[i]; // reject
+      mhBackendSet[j].likelihood = (1.0 - alpha)*mhBackendSet[j].likelihood + alpha*sampleSet[j].likelihood; // aging
+      sampleSet[j] = mhBackendSet[j]; // reject
     }
 
-    if(sampleSet[i].likelihood < threshold) {
-      createRandomSample(parameters.resetOwnHalf ? getFieldInfo().ownHalfRect : getFieldInfo().carpetRect, sampleSet[i]);
-    } else {
-      applySimpleNoise(sampleSet[i], radius, angle);
-    }
+    backendSum += mhBackendSet[j].likelihood;
 
+    if(sampleSet[j].likelihood < threshold) { // new rendom particle
+      createRandomSample(parameters.resetOwnHalf ? getFieldInfo().ownHalfRect : getFieldInfo().carpetRect, sampleSet[j]);
+    } else { // just apply some noise
+      applySimpleNoise(sampleSet[j], radius, angle);
+    }
   }
 
-  //mainSet = sampleSet;
+
+  SampleSet oldSampleSet = sampleSet;
+  oldSampleSet.normalize(parameters.resamplingThreshhold);
+
+  double likelihood_step = 1.0/100.0; // the step in the weighting so we get exactly n particles
+  double targetSum = Math::random()*likelihood_step;
+  double currentSum = 0;
+
+  // Stochastic universal sampling
+  // i - count over the old sample set
+  // j - over the new one :)
+  unsigned int j = 0;
+  for(unsigned int i = 0; i < oldSampleSet.size(); i++)
+  {
+    currentSum += oldSampleSet[i].likelihood;
+
+    // select the particle to copy
+    while(targetSum < currentSum && j < oldSampleSet.size())
+    {
+      sampleSet[j] = oldSampleSet[i];
+      applySimpleNoise(sampleSet[j], radius, angle);
+      targetSum += likelihood_step;
+      j++;
+    }
+  }
 }
 
 int MonteCarloSelfLocatorSimple::resampleSUS(SampleSet& sampleSet, int n) const
