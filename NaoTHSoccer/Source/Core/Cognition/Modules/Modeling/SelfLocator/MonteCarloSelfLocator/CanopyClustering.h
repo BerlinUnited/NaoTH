@@ -82,7 +82,7 @@ public:
       sample.cluster = -1; // no cluster
 
       // look for a cluster with the smallest distance
-      double minDistance = 10000; // 10m
+      double minDistance = 1e+100;
       int minIdx = -1;
 
       for (unsigned int k = 0; k < numOfClusters; k++) {
@@ -214,7 +214,7 @@ private:
 
 
   bool isInCluster(const CanopyClusterBuilder& cluster, const Sample2D& sample) const {
-    return cluster.distance(sample.getPos()) < clusterThreshold;
+    return cluster.distance(sample.getPos()) < clusterThreshold*clusterThreshold;
   }
 
   // results of the clustering
