@@ -1,5 +1,5 @@
-option situation_based_striker {
-
+option situation_based_striker 
+{
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -21,14 +21,15 @@ option situation_based_striker {
   }
 
   state search {
-    decision{
-
+    decision {
+      else if(action_done)
+        goto goto_ball;
       else
         stay;
     }
     action{
       situation_abortable = true;
-      search_ball();
+      striker_search();
     }
   }
 

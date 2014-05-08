@@ -37,7 +37,6 @@ option search_ball{
     action{
       motion.type = stand;
       head.control_mode = search_for_ball;
-
     }
   }
 }
