@@ -54,7 +54,7 @@ option situation_based_striker
     }
     action{
       situation_abortable = true;
-      go_to_ball_with_USOA(distance=190);
+      go_to_ball_with_USOA(distance = 190);
     }
   }
   
@@ -78,13 +78,13 @@ option situation_based_striker
   }
 
   state sidekick {
-    decision{
+    decision {
       else if(action_done)
         goto goto_ball;
       else
         stay;
     }
-    action{
+    action {
       situation_abortable = true;
       situation_sidekick();
     }
