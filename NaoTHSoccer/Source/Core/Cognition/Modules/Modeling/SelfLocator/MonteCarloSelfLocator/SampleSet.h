@@ -65,7 +65,7 @@ public:
 
   const Sample& getMostLikelySample() const;
   Sample meanOfLargestCluster(Moments2<2>& moments) const;
-  Sample meanOfCluster(Moments2<2>& moments, size_t idx) const;
+  Sample meanOfCluster(Moments2<2>& moments, int idx) const;
 
   // TODO: move it out of here
   void drawCluster(unsigned int clusterId) const;

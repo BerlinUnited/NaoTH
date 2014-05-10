@@ -208,7 +208,7 @@ private:
 
     // TODO: make it switchable
     double distance(const Vector2d& point) const {
-      return (center() - point).abs2();
+      return (CanopyCluster::center() - point).abs2();
     }
   };//end class CanopyClusterBuilder
 

@@ -91,8 +91,6 @@ void SampleSet::setLikelihood(double v)
   }
 }
 
-
-// TODO: make it more efficient (!!!)
 Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments) const
 {
   ASSERT(samples.size() > 0);
@@ -120,7 +118,7 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments) const
 }//end meanOfLargestCluster
 
 
-Sample SampleSet::meanOfCluster(Moments2<2>& moments, size_t idx) const 
+Sample SampleSet::meanOfCluster(Moments2<2>& moments, int idx) const 
 {
   ASSERT(samples.size() > 0);
 
