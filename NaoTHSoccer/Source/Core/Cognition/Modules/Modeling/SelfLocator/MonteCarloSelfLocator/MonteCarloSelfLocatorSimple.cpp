@@ -57,177 +57,146 @@ void MonteCarloSelfLocatorSimple::execute()
 {
 
   DEBUG_REQUEST("MCSLS:reset_samples",
-    
-    if(parameters.resetOwnHalf) {
-      initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
-    } else {
-      initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
-    }
-    
-    mhBackendSet = theSampleSet;
-    //mhBackendSet.setLikelihood(0.0);
 
+    resetLocator();
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
       theSampleSet.drawImportance();
     );
+
     return;
   );
 
-
-  // (III) treat the situation when the robot has been lifted from the ground
+  // treat the situation when the robot has been lifted from the ground
   // (keednapped)
+
+  // only in stand, walk or init(!)
   bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
-                   getMotionStatus().currentMotion == motion::init;
+                   getMotionStatus().currentMotion == motion::init ||
+                   getMotionStatus().currentMotion == motion::walk;
 
-  if( motion_ok && // only in stand or init(!)
-      getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
-     !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
-      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp )) // we lose the ground contact for more then 1s
-  {
-    
-    if(parameters.resetOwnHalf) {
-      initializeSampleSet(getFieldInfo().ownHalfRect, theSampleSet);
-    } else {
-      initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
-    }
+  // true when the robot was lifted up
+  bool body_lift_up =  getBodyState().fall_down_state == BodyState::upright && 
+                      !getBodyState().standByLeftFoot && 
+                      !getBodyState().standByRightFoot && // no foot is on the ground
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp; // we lose the ground contact for some time
 
-    mhBackendSet = theSampleSet;
-    mhBackendSet.setLikelihood(0.0);
-
+  if(parameters.treatLiftUp && motion_ok && body_lift_up) {
+    state = KIDNAPPED;
+  } else if(state == KIDNAPPED) {
     state = LOCALIZE;
-
-    DEBUG_REQUEST("MCSLS:draw_Samples", 
-      theSampleSet.drawImportance();
-    );
-    DEBUG_REQUEST("MCSLS:draw_position",
-      drawPosition();
-    );
-    return;
-  }//end if
-
-  if(parameters.treatInitState && getMotionStatus().currentMotion == motion::init) {
-    DEBUG_REQUEST("MCSLS:draw_Samples", 
-      theSampleSet.drawImportance();
-    );
-    DEBUG_REQUEST("MCSLS:draw_position",
-      drawPosition();
-    );
-    return;
   }
 
-  updateByOdometry(theSampleSet, parameters.motionNoise);
+  bool motion_not_ok = getMotionStatus().currentMotion != motion::stand &&
+                       getMotionStatus().currentMotion != motion::walk;
+
+  bool body_not_upright = getBodyState().fall_down_state != BodyState::upright;
+
+  if(state != KIDNAPPED) 
+  {
+    if(parameters.treatInitState && (motion_not_ok || body_not_upright)) {
+      state = BLIND;
+    } else {
+      state = LOCALIZE;
+    }
+  }
+
+  switch(state) 
+  {
+    case KIDNAPPED:
+    {
+      resetLocator();
+      break;
+    }
+    case BLIND:
+    {
+      /* do nothing */
+      break;
+    }
+    case LOCALIZE:
+    {
+      updateByOdometry(theSampleSet, parameters.motionNoise);
+    
+      theSampleSet.resetLikelihood();
+      updateBySensors(theSampleSet);
+      updateBySituation(theSampleSet);
+
+      // NOTE: statistics has to be after updates and before resampling
+      // NOTE: normalizes the likelihood
+      updateStatistics(theSampleSet);
+
+      resampleMH(theSampleSet);
+
+      // estimate the state
+      canopyClustering.cluster(mhBackendSet);
+    
+      Moments2<2> moments;
+      Sample meanPose = mhBackendSet.meanOfCluster(moments, canopyClustering.getLargestClusterID());
+
+      if(moments.getRawMoment(0,0) > 0.8*mhBackendSet.size()) {
+        theSampleSet = mhBackendSet; // todo: implement swap
+        state = TRACKING;
+      }
+
+      
+      DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
+        mhBackendSet.drawImportance();
+      );
+
+      break;
+    }
+    case TRACKING:
+    {
+      updateByOdometry(theSampleSet, parameters.motionNoise);
+
+      theSampleSet.resetLikelihood();
+      updateBySensors(theSampleSet);
+
+      // NOTE: statistics has to be after updates and before resampling
+      // NOTE: normalizes the likelihood
+      updateStatistics(theSampleSet);
+
+      if(parameters.resampleSUS) {
+        resampleSUS(theSampleSet, theSampleSet.size());
+      }
+      if(parameters.resampleGT07) {
+        resampleGT07(theSampleSet, true);
+      }
+
+      calculatePose(theSampleSet);
+
+      DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
+        theSampleSet.drawImportance();
+      );
+
+      break;
+    }
+    default: assert(false); // should never be here
+  }
+  
   lastRobotOdometry = getOdometryData();
 
 
-  theSampleSet.resetLikelihood();
-  updateBySensors(theSampleSet);
-  
-  if(state == LOCALIZE) {
-    if(true || getGameData().gameState == GameData::set) {
-      updateByOwnHalf(theSampleSet);
-    } else {
-      updateByStartPositions(theSampleSet);
+  /************************************
+  * STEP VII: execude some debug requests (drawings)
+  ************************************/
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    switch(state) {
+      case KIDNAPPED: TEXT_DRAWING(0, 0, "KIDNAPPED"); break;
+      case BLIND: TEXT_DRAWING(0, 0, "BLIND"); break;
+      case LOCALIZE: TEXT_DRAWING(0, 0, "LOCALIZE"); break;
+      case TRACKING: TEXT_DRAWING(0, 0, "TRACKING"); break;
+      default: TEXT_DRAWING(0, 0, "DEFAULT");
     }
-  }
-
-  if(state == TRACKING) {
-    if(parameters.updateByOldPose && 
-       getGoalPercept().getNumberOfSeenPosts() == 0 // no goals seen
-      )
-    {
-      updateByOldPose(theSampleSet);
-    }
-  }
-
-  
-
-  // NOTE: statistics has to be after updates and before resampling
-  // NOTE: normalizes the likelihood
-  updateStatistics(theSampleSet);
-
-
-  DEBUG_REQUEST("MCSLS:draw_Samples",
-    theSampleSet.drawImportance();
   );
-
-  DEBUG_REQUEST("MCSLS:draw_BackendSamples",
-    mhBackendSet.drawImportance(false);
-  );
-
-
-  if(state == LOCALIZE) 
-  {
-    // local optimization
-    resampleMH(theSampleSet);
-
-    // sensor resetting
-    if(false && getSensingGoalModel().someGoalWasSeen) {
-      sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
-      resampleSUS(theSampleSet, theSampleSet.size());
-    }
-
-    // global search
-    //resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
-
-    canopyClustering.cluster(mhBackendSet);
-    
-    Moments2<2> tmpMoments;
-    Sample tmpPose = mhBackendSet.meanOfLargestCluster(tmpMoments);
-
-    if(tmpMoments.getRawMoment(0,0) > 0.8*mhBackendSet.size()
-      //  && (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)
-      ) {
-      theSampleSet = mhBackendSet;
-      state = TRACKING;
-    }
-
-    DEBUG_REQUEST("MCSLS:draw_state",
-      FIELD_DRAWING_CONTEXT;
-      TEXT_DRAWING(0, 0, "LOCALIZE");
-    );
-    DEBUG_REQUEST("MCSLS:draw_Samples_effective",
-      mhBackendSet.drawImportance(false);
-    );
-  }
-  else if(state == TRACKING)
-  {
-    // sensor resetting
-    //sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
-
-    if(parameters.resampleSUS) {
-      resampleSUS(theSampleSet, theSampleSet.size());
-    }
-    if(parameters.resampleGT07) {
-      resampleGT07(theSampleSet, true);
-    }
-
-    calculatePose(theSampleSet);
-
-    DEBUG_REQUEST("MCSLS:draw_state",
-      FIELD_DRAWING_CONTEXT;
-      TEXT_DRAWING(0, 0, "TRACKING");
-    );
-    DEBUG_REQUEST("MCSLS:draw_Samples_effective",
-      theSampleSet.drawImportance();
-    );
-  }
-
-
-  const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
-  //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
-  PLOT("resamplingPercentage", resamplingPercentage);
-  
 
   DEBUG_REQUEST("MCSLS:resample_sus",
-    /*nt n = */ resampleSUS(theSampleSet, theSampleSet.size()); //  (int)(effective_number_of_samples+0.5)
-    //sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size()-1);
+    resampleSUS(theSampleSet, theSampleSet.size());
   );
 
-  /************************************
-   * STEP VII: execude some debug requests (drawings)
-   ************************************/
   DEBUG_REQUEST("MCSLS:resample_gt", 
     resampleGT07(theSampleSet, true);
   );
@@ -244,8 +213,27 @@ void MonteCarloSelfLocatorSimple::execute()
     draw_sensor_belief();
   );
 
+  DEBUG_REQUEST("MCSLS:draw_Samples",
+    theSampleSet.drawImportance();
+  );
+
+  DEBUG_REQUEST("MCSLS:draw_BackendSamples",
+    mhBackendSet.drawImportance(false);
+  );
+
 }//end execute
 
+void MonteCarloSelfLocatorSimple::resetLocator()
+{
+  if(parameters.resetOwnHalf && getGameData().gameState == GameData::set) {
+    initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
+  } else {
+    initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
+  }
+    
+  mhBackendSet = theSampleSet;
+  //mhBackendSet.setLikelihood(0.0);
+}
 
 void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool noise) const
 {
@@ -273,6 +261,14 @@ void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool no
   }
 }//end updateByOdometry
 
+void MonteCarloSelfLocatorSimple::updateBySituation(SampleSet& sampleSet) const
+{
+  if(getGameData().gameState == GameData::set) {
+    updateByOwnHalf(sampleSet);
+  } else {
+    updateByStartPositions(sampleSet);
+  }
+}
 
 bool MonteCarloSelfLocatorSimple::updateBySensors(SampleSet& sampleSet) const
 {
@@ -401,10 +397,16 @@ void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lin
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
+  FIELD_DRAWING_CONTEXT;
+  PEN("000000", 10);
+
   for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
     int idx = Math::random((int)lineGraphPercept.edgels.size());
     const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
+
+    Vector2d seen_point_g = getRobotPose()*seen_point_relative;
+    CIRCLE(seen_point_g.x, seen_point_g.y, 20);
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
     {
@@ -458,7 +460,7 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 {
-  double sigmaUpdateByOwnHalf = 0.2;
+  double sigmaUpdateByOwnHalf = 0.6;
   MODIFY("sigmaUpdateByOwnHalf", sigmaUpdateByOwnHalf);
 
   for(unsigned int s=0; s < sampleSet.size(); s++)
@@ -472,6 +474,16 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
     double angleDiff = Math::normalize(sample.rotation - 0);
     sample.likelihood *=  Math::gaussianProbability(angleDiff, sigmaUpdateByOwnHalf);
   }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
+    const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  );
 }
 
 
@@ -541,6 +553,10 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
   fastWeighting = fastWeighting + alphaFast * (avg - fastWeighting);
   PLOT("slowWeighting", slowWeighting);
   PLOT("fastWeighting", fastWeighting);
+
+  const double resamplingPercentage = std::max(0.0, 1.0 - fastWeighting / slowWeighting);
+  //const double numberOfResampledSamples = theSampleSet.size() * (1.0 - resamplingPercentage);
+  PLOT("resamplingPercentage", resamplingPercentage);
 }
 
 

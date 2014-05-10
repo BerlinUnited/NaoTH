@@ -89,6 +89,8 @@ public:
 private: // local types
 
   enum State {
+    BLIND, // no sensory information is processed but the state is monitored
+    KIDNAPPED, // robot is lifted up 
     LOCALIZE,
     TRACKING
   } state;
@@ -228,6 +230,7 @@ private: // data members
 private: // workers
   void updateByOdometry(SampleSet& sampleSet, bool noise) const;
 
+  void updateBySituation(SampleSet& sampleSet) const;
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
@@ -240,6 +243,7 @@ private: // workers
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 
   void updateStatistics(SampleSet& sampleSet);
+  void resetLocator();
 
   void resampleSimple(SampleSet& sampleSet, int number) const;
   void resampleMH(SampleSet& sampleSet);
