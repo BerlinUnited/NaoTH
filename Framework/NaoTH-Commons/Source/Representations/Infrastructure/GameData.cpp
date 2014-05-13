@@ -147,7 +147,7 @@ void GameData::loadFromCfg(Configuration& config)
     numOfPlayers = config.getInt("player", "NumOfPlayer");
   } else
   {
-    std::cerr << "No number of players (NumOfPlayers) given" << std::endl;
+    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
   }
 
   if (config.hasKey("player", "PlayerNumber"))
@@ -155,7 +155,7 @@ void GameData::loadFromCfg(Configuration& config)
     playerNumber = config.getInt("player", "PlayerNumber");
   } else
   {
-    std::cerr << "No player number (PlayerNumber) given" << std::endl;
+    std::cerr << "[GameData] " << "No player number (PlayerNumber) given" << std::endl;
     playerNumber = 3;
   }
 
@@ -165,12 +165,12 @@ void GameData::loadFromCfg(Configuration& config)
     if (teamColor == GameData::numOfTeamColor)
     {
       teamColor = GameData::red;
-      std::cerr << "Invalid team color (TeamColor) \""
+      std::cerr << "[GameData] " << "Invalid team color (TeamColor) \""
         << config.getString("player", "TeamColor") << "\" given" << std::endl;
     }
   } else
   {
-    std::cerr << "No team color (TeamColor) given" << std::endl;
+    std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
     teamColor = GameData::red;
   }
 
@@ -179,7 +179,7 @@ void GameData::loadFromCfg(Configuration& config)
     teamNumber = config.getInt("player", "TeamNumber");
   } else
   {
-    std::cerr << "No team number (TeamNumber) given" << std::endl;
+    std::cerr << "[GameData] " << "No team number (TeamNumber) given" << std::endl;
     teamNumber = 0;
   }
 

@@ -23,8 +23,9 @@ BroadCastListener::BroadCastListener(unsigned int port, unsigned int buffersize)
   bufferSize = buffersize;
   buffer = new char[buffersize];
 
-  if (!g_thread_supported())
+  if (!g_thread_supported()) {
     g_thread_init(NULL);
+  }
   messageInMutex = g_mutex_new();
 
   GError* err = bindAndListen(port);
@@ -95,8 +96,9 @@ void BroadCastListener::receive(std::vector<std::string>& data)
 
 void BroadCastListener::loop()
 {
-  if(socket == NULL)
+  if(socket == NULL) {
     return;
+  }
 
   while(!exiting)
   {
