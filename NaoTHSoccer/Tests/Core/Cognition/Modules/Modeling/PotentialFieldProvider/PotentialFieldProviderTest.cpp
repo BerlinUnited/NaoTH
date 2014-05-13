@@ -28,7 +28,7 @@ protected:
     ModuleCreator<PotentialFieldProvider>* m =
         registerModule<PotentialFieldProvider>("PotentialFieldProvider");
     m->setEnabled(true);
-    potentialFieldProvider = (PotentialFieldProvider*) m->getModule();
+    potentialFieldProvider = m->getModuleT();
   }
 
 };
