@@ -24,10 +24,14 @@ template<typename T>
 class SharedMemory
 {
 private:
-  class Memory
+  struct Memory
   {
-  public:
-    Memory():writing(0),swapping(1),reading(2),swappingReady(false){}
+    Memory()
+      :
+      numRef(0),
+      writing(0),swapping(1),reading(2),
+      swappingReady(false)
+    {}
   
     int numRef; // how many objects share the same memory
     volatile int writing, swapping, reading;
@@ -51,112 +55,119 @@ public:
     
     theName = name;
     
-      if((sem = sem_open(theName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED)
-      {
-        perror("can not open semaphore");
-        return false;
-      }
-
-      trylock();
-      
-      if((shmId = shm_open(theName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1)
-      {
-        perror("can not open shared memory");
-        return false;
-      }
-
-      struct stat shmStat;
-      if ( fstat(shmId, &shmStat) != 0 )
-      {
-        perror("can not stat shared memory");
-        return false;
-      }
-
-      const int memSize = sizeof(Memory);
-      bool newMemory = false;
-      
-      if ( shmStat.st_size == 0 )
-      {
-        newMemory = true;
-        // allocate memory
-        if(ftruncate(shmId, memSize) != 0)
-        {
-          perror("can not truncate shared memory");
-          return false;
-        }
-      }
-      else if ( shmStat.st_size != memSize )
-      {
-        fprintf(stderr, "memory size are different\n");
-        return false;
-      }
-
-      // map data      
-      if((theMemory = (Memory*)mmap(NULL, memSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmId, 0)) == MAP_FAILED)
-      {
-        perror("can not map shared memory");
-        return false;
-      }
-
-      if (newMemory)
-        theMemory->numRef = 1;
-      else
-        theMemory->numRef++;
-
-      unlock();
-      
-      ready = true;
-      
-      return ready;
+    if((sem = sem_open(theName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 1)) == SEM_FAILED)
+    {
+      perror("can not open semaphore");
+      return false;
     }
 
-  ~SharedMemory()
-  {
+    trylock();
+    
+    if((shmId = shm_open(theName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1)
+    {
+      perror("can not open shared memory");
+      return false;
+    }
+
+    struct stat shmStat;
+    if ( fstat(shmId, &shmStat) != 0 )
+    {
+      perror("can not stat shared memory");
+      return false;
+    }
+
+    const int memSize = sizeof(Memory);
+    
+    if ( shmStat.st_size == 0 )
+    {
+      // allocate memory
+      if(ftruncate(shmId, memSize) != 0)
+      {
+        perror("can not truncate shared memory");
+        return false;
+      }
+    }
+    else if ( shmStat.st_size != memSize )
+    {
+      perror("memory size is different");
+      return false;
+    }
+
+    // map data      
+    if((theMemory = (Memory*)mmap(NULL, memSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmId, 0)) == MAP_FAILED)
+    {
+      perror("can not map shared memory");
+      return false;
+    }
+
+    theMemory->numRef++;
+
+    unlock();
+      
+    ready = true;
+    return ready;
+  }
+
+  ~SharedMemory() {
     close();
   }
   
   // return if get the new data
   bool swapReading()
   {
-    if ( !trylock() )
+    if ( !trylock() ) {
       return false;
+    }
 
     const bool swappingReady = theMemory->swappingReady;
-    if ( swappingReady )
-    {
+    if ( swappingReady ) {
       swap(theMemory->reading, theMemory->swapping);
       theMemory->swappingReady = false;
     }
     unlock();
     return swappingReady;
-  }//end swapReading
+  }
   
 
   void swapWriting()
   {
-    if ( trylock() )
-    {
+    if ( trylock() ) {
       swap(theMemory->writing, theMemory->swapping);
       theMemory->swappingReady = true;
     }
     unlock();
-  }//end swapWriting
+  }
 
 
-  T* writing() { return &(theMemory->data[theMemory->writing]); }
+  T* writing() { 
+    return &(theMemory->data[theMemory->writing]); 
+  }
   
-  const T* reading() const { return &(theMemory->data[theMemory->reading]); }
+  const T* reading() const { 
+    return &(theMemory->data[theMemory->reading]); 
+  }
   
   void close()
   {
-    if ( !ready ) return;
+    if ( !ready ) { 
+      return;
+    }
       
     lock();
+    
     theMemory->numRef--;
+    if(theMemory->numRef < 0) {
+      perror("something went wrong while unlinking: numRef < 0");
+    }
+    
     if ( theMemory->numRef == 0 )
     {
-      shm_unlink(theName.c_str());
-      sem_unlink(theName.c_str());
+      if(shm_unlink(theName.c_str()) == -1) {
+        perror("cannot unlink shared memory");
+      }
+      if(sem_unlink(theName.c_str()) == -1) {
+        perror("cannot unlink semaphore");
+      }
     }
     else
     {
@@ -167,25 +178,22 @@ public:
   }
     
 protected:
-    bool trylock() { return sem_trywait(sem) == 0; }
+    bool trylock() { 
+      return sem_trywait(sem) == 0; 
+    }
     
     void lock()
     {
-      if(sem_wait(sem) == -1)
-      {
-        std::cerr << "lock errno: " << errno << std::endl;
+      if(sem_wait(sem) == -1) {
+        perror("could not lock");
       }
     }//end lock
 
-    void unlock() 
+    void unlock()
     {
       int sval;
-      if(sem_getvalue(sem, &sval) == 0)
-      {
-        if(sval < 1)
-        {
-          sem_post(sem); 
-        }
+      if(sem_getvalue(sem, &sval) == 0 && sval < 1) {
+        sem_post(sem); 
       }
     }//end unlock
 

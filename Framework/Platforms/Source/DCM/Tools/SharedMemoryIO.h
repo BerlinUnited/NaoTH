@@ -45,8 +45,10 @@ public:
   void open(std::string name)
   {
     // debug
-    std::cout << "Opening Shared Memory: " << name << std::endl;
-    memory.open(name);
+    std::cout << "Opening shared memory (write): " << name << std::endl;
+    if(!memory.open(name)) {
+      assert(false);
+    }
   }
 
   template<class T>
@@ -83,8 +85,10 @@ public:
   void open(std::string name)
   {
     // debug
-    std::cout << "Opening Shared Memory: " << name << std::endl;
-    memory.open(name);
+    std::cout << "Opening shared memory (read): " << name << std::endl;
+    if(!memory.open(name)) {
+      assert(false);
+    }
   }
 
   template<class T>
