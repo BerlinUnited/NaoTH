@@ -38,10 +38,14 @@ public:
 
   void addResponse(std::stringstream& str) {
     long length = (long)str.tellp(); length = length < 0 ? 0 : length;
-
+  
     // NOTE: the objects are deleted later by the DebugServer
     Data* buffer = new Data(length);
-    str.read(buffer->data(), buffer->size());
+
+    if(length > 0) {
+      str.read(buffer->data(), buffer->size());
+    }
+
     answers.push_back(buffer);
   }
 
