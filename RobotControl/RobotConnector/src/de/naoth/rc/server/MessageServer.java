@@ -234,8 +234,12 @@ public class MessageServer extends AbstractMessageServer {
                 // read the answers for all the requests in answerRequestQueue
                 pollAnswers();
                 
-                // send all new commands
-                sendPendingCommands();
+                // send new commands
+                // NOTE: this is a approximation:
+                //       send new commands only when the old answers have been received
+                if(this.answerRequestList.size() < this.pendingSubscribersList.size() + this.pendingCommandsList.size()) {
+                    sendPendingCommands();
+                }
 
                 // send heart beat
                 sendHeartBeat();
@@ -287,7 +291,7 @@ public class MessageServer extends AbstractMessageServer {
     }//end sendPendingCommands
 
     private void pollAnswers() throws IOException {
-        socketChannel.configureBlocking(true);
+        //socketChannel.configureBlocking(true);
         
         Iterator<SingleExecEntry> i = answerRequestList.iterator();
         while (i.hasNext()) 
@@ -295,12 +299,15 @@ public class MessageServer extends AbstractMessageServer {
             SingleExecEntry e = i.next();
             
             // read size of data
+            socketChannel.configureBlocking(false);
             ByteBuffer sizeBuffer = readContent(socketChannel, 4);
             if (sizeBuffer == null) {
                 break;
             }
             int size = sizeBuffer.getInt();
 
+            // read the rest of the data
+            socketChannel.configureBlocking(true);
             ByteBuffer data = readContent(socketChannel, size);
             if (data == null) {
                 throw new IOException("No data could be read from the socket.");
