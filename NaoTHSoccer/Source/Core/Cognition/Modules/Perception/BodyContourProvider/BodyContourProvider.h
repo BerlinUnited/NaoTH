@@ -12,8 +12,6 @@
 
 #include <ModuleFramework/Module.h>
 
-#include <vector>
-
 //Tools
 #include <Tools/NaoInfo.h>
 #include "Tools/DoubleCamHelpers.h"
@@ -22,7 +20,7 @@
 
 //Representations
 #include "Representations/Perception/BodyContour.h"
-#include "Representations/Perception/CameraMatrix.h"
+//#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -61,21 +59,20 @@ class BodyContourProvider : public BodyContourProviderBase
 public:
 
   BodyContourProvider();
-  virtual ~BodyContourProvider(){};
+  virtual ~BodyContourProvider(){}
 
-  virtual void execute(CameraInfo::CameraID id);
-
-  void execute()
+  virtual void execute()
   {
      execute(CameraInfo::Bottom);
      execute(CameraInfo::Top);
   }
 
+  void execute(CameraInfo::CameraID id);
+
 private:
 
-  class BodyParts
+  struct BodyParts
   {
-  public:
     std::vector< Vector3d > torso, // the contour of the torso
                             upperArm, // the contour of the upper arm
                             lowerArm, // the contour of the lower arm
@@ -85,26 +82,21 @@ private:
   } bodyparts;
 
   
-  // add a line to BodyContour:
-  // take the Position of a robot's limb (Pose3d) and multiply it
-  // with the contour of this limb, finally, project the contour into the image
-  inline void add(
-    const Pose3D& origin, 
-    const std::vector<Vector3d>& c, 
-    double sign,
-    BodyContour::BodyPartID id);
+  /** 
+  * add a line to BodyContour:
+  * take the Position of a robot's limb (Pose3d) and multiply it
+  * with the contour of this limb, finally, project the contour into the image
+  */
+  inline void add( const Pose3D& origin, const std::vector<Vector3d>& c, double sign, BodyContour::BodyPartID id);
 
-  //
+  /**
+  * updates the grid of the BodyContour representation based on the segment p1--p2
+  */
   void updateBodyContur(const Vector2i& p1, const Vector2i& p2, BodyContour::BodyPartID id);
 
 
-  void debug();
-  void drawContur3D(
-    const Pose3D& origin, 
-    const std::vector<Vector3d>& c, 
-    double sign,
-    ColorClasses::Color color);
-  int k;
+  void debug() const;
+  void drawContur3D(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, ColorClasses::Color color) const;
 
 
   inline bool isInsideImage(const Vector2i& p) const {
@@ -112,14 +104,13 @@ private:
            p.y >= 0 && p.y < (int)getCameraInfo().resolutionHeight;
   }
 
-  bool clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b);
+  bool clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b) const;
 
   CameraInfo::CameraID cameraID;
 
-  // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
+  // HACK: we do this because the kinematic chain may be inconsistent with the camera matrix
   Pose3D kinematicCameraMatrix;
-  const Pose3D& getCameraMatrix() const
-  {
+  const Pose3D& getCameraMatrix() const {
     return kinematicCameraMatrix;
   }
 

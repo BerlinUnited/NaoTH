@@ -29,11 +29,12 @@ MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple()
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
 
-  // fiald drawings
+  // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
 
   // resampling
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
@@ -156,8 +157,10 @@ void MonteCarloSelfLocatorSimple::execute()
     // global search
     resampleSimple(theSampleSet, (int)(effective_number_of_samples+0.5));
 
-    FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0, 0, "LOCALIZE");
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      TEXT_DRAWING(0, 0, "LOCALIZE");
+    );
   }
   else if(state == TRACKING)
   {
@@ -171,8 +174,10 @@ void MonteCarloSelfLocatorSimple::execute()
       resampleGT07(theSampleSet, true);
     }
 
-    FIELD_DRAWING_CONTEXT;
-    TEXT_DRAWING(0, 0, "TRACKING");
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      TEXT_DRAWING(0, 0, "TRACKING");
+    );
   }
 
 
@@ -367,14 +372,15 @@ void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
   }
 }
 
-void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lineGraphPercept, SampleSet& sampleSet) const
 {
   const double sigmaDistance = parameters.goalPostSigmaDistance;
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  for(size_t i = 0; i < getLineGraphPercept().edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) {
-    const Vector2d& seen_point_relative = getLineGraphPercept().edgels[i].point;
+  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  {
+    const Vector2d& seen_point_relative = lineGraphPercept.edgels[i].point;
 
     for(unsigned int s=0; s < sampleSet.size(); s++)
     {
@@ -419,9 +425,11 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
     }
   }
 
-  FIELD_DRAWING_CONTEXT;
-  leftStartingLine.draw();
-  rightStartingLine.draw();
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    leftStartingLine.draw();
+    rightStartingLine.draw();
+  );
 }
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
@@ -475,23 +483,22 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
 {
   double cross_entropy = 0.0;
   double avg = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    avg += theSampleSet[i].likelihood;
-
-    cross_entropy -= log(theSampleSet[i].likelihood);
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+    avg += sampleSet[i].likelihood;
+    cross_entropy -= log(sampleSet[i].likelihood);
   }
-  avg /= theSampleSet.size();
-  cross_entropy /= theSampleSet.size();
+  avg /= sampleSet.size();
+  cross_entropy /= sampleSet.size();
   PLOT("MonteCarloSelfLocatorSimple:w_average",avg);
   PLOT("MonteCarloSelfLocatorSimple:cross_entropy",avg);
 
-  theSampleSet.normalize();
+  sampleSet.normalize();
 
   // effective number of particles
   static RingBufferWithSum<double, 30>  effective_number_of_samples_buffer;
   double sum2 = 0.0;
-  for (unsigned int i = 0; i < theSampleSet.size(); i++) {
-    sum2 += Math::sqr(theSampleSet[i].likelihood);
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+    sum2 += Math::sqr(sampleSet[i].likelihood);
   }
   effective_number_of_samples = 1.0/sum2;
   effective_number_of_samples_buffer.add(effective_number_of_samples);
@@ -720,26 +727,26 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
    ************************************/
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(sampleSet, getRobotPose().translation);
   
   // Hypothesis tracking:
   // the idea is to keep the cluster until it has at lest 1/3 of all particles
   // if not, then jump only if there is anoter cluster having more then 2/3 particles
 
   // if the hypothesis is to small...
-  if(clusterSize < 0.3*(double)theSampleSet.size())
+  if(clusterSize < 0.3*(double)sampleSet.size())
   {
     // make new cluseter
-    canopyClustering.cluster(theSampleSet);
+    canopyClustering.cluster(sampleSet);
 
     // find the largest cluster
     Moments2<2> tmpMoments;
-    Sample tmpPose = theSampleSet.meanOfLargestCluster(tmpMoments);
+    Sample tmpPose = sampleSet.meanOfLargestCluster(tmpMoments);
 
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
-    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.size()) {
-      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
+    if(tmpMoments.getRawMoment(0,0) < 0.6*(double)sampleSet.size()) {
+      canopyClustering.cluster(sampleSet, getRobotPose().translation);
     } else { // jump => change the state
       //state = LOCALIZE;
     }
@@ -751,7 +758,7 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
 
   // estimate the deviation of the pose
   Moments2<2> moments;
-  Sample newPose = theSampleSet.meanOfLargestCluster(moments);
+  Sample newPose = sampleSet.meanOfLargestCluster(moments);
 
   getRobotPose() = newPose;
 
@@ -766,7 +773,7 @@ void MonteCarloSelfLocatorSimple::calculatePose(SampleSet& sampleSet)
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   DEBUG_REQUEST("MCSLS:draw_Cluster",
-    theSampleSet.drawCluster(newPose.cluster);
+    sampleSet.drawCluster(newPose.cluster);
   );
 
   DEBUG_REQUEST("MCSLS:draw_position",
@@ -856,8 +863,8 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
       sampleSet.samples[idx].rotation = fixedRotation;
       sampleSet.samples[idx].likelihood = 1.0;
       idx++;
-    }//end for
-  }//end for
+    }
+  }
 
   updateBySensors(sampleSet);
   
@@ -867,8 +874,8 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
     for (int y = 0; y < ySize; y++)
     {
       maxValue = max(maxValue, sampleSet.samples[idx++].likelihood);
-    }//end for
-  }//end for
+    }
+  }
 
   if(maxValue == 0) return;
 
@@ -876,12 +883,12 @@ void MonteCarloSelfLocatorSimple::draw_sensor_belief() const
   for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
-      Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
       double t = sampleSet.samples[idx++].likelihood / maxValue;
       DebugDrawings::Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-    }//end for
-  }//end for
+    }
+  }
 }//end draw_closest_points

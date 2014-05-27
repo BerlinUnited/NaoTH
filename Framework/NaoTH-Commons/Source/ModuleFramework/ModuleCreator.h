@@ -64,7 +64,7 @@ private:
   M* theInstance;
 
   // cannot be copied
-  ModuleCreator& operator=( const ModuleCreator& ) {}
+  //ModuleCreator& operator=( const ModuleCreator& ) {}
 
   //
   Stopwatch& stopwatch;
@@ -96,11 +96,10 @@ public:
         theInstance = new ModuleInstance<M>(theBlackBoard);
       }
     } else {
-      //NOTE: it is safe to delete NULL
       delete theInstance;
       theInstance = NULL;
     }
-  }//end setEnabled
+  }
 
 
   void execute()
@@ -117,10 +116,10 @@ public:
   {
     ASSERT(isEnabled());
     // ACHTUNG:
-    // we have to use the unsafe cast because some modules may be privatly 
+    // we have to use the unsafe C-cast because some modules may be privatly 
     // derive from Module and make a type cast inaccesible
     return (Module*)(theInstance);
-  }//end getModule
+  }
 
 
   M* getModuleT() const {
@@ -156,12 +155,12 @@ public:
     RegistrationInterfaceMap::const_iterator i = staticRequired().begin();
     for(;i != staticRequired().end(); ++i) {
       stream << " > " << i->first << std::endl;
-    }//end for
+    }
 
     i = staticProvided().begin();
-    for(;i != staticProvided().end(); i++) {
+    for(;i != staticProvided().end(); ++i) {
       stream << " < " << i->first << std::endl;
-    }//end for
+    }
   }//end print
 
   virtual const Stopwatch& getStopwatch() const

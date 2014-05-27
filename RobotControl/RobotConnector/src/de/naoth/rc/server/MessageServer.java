@@ -12,6 +12,7 @@ import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,9 @@ public class MessageServer extends AbstractMessageServer {
     private long receivedBytes;
     private long sentBytes;
     private long loopCount;
+    
+    // heart beat sent in fixed intervals
+    private long timeOfLastHeartBeat = System.currentTimeMillis();
 
     public MessageServer() {
         this.socketChannel = null;
@@ -75,6 +79,7 @@ public class MessageServer extends AbstractMessageServer {
         // open and configure the socket
         this.socketChannel = SocketChannel.open();
         this.socketChannel.configureBlocking(true);
+        
         //this.socketChannel.connect(address);
         this.socketChannel.socket().connect(address, 1000);
 
@@ -225,29 +230,46 @@ public class MessageServer extends AbstractMessageServer {
     private void sendReceiveLoop() {
         try {
             if (isConnected()) {
-
-                // send all new commands
-                sendPendingCommands();
-
+                
                 // read the answers for all the requests in answerRequestQueue
                 pollAnswers();
+                
+                // send new commands
+                // NOTE: this is a approximation:
+                //       send new commands only when the old answers have been received
+                if(this.answerRequestList.size() < this.pendingSubscribersList.size() + this.pendingCommandsList.size()) {
+                    sendPendingCommands();
+                }
+
+                // send heart beat
+                sendHeartBeat();
                 
                 this.loopCount++;
             }
         } catch (AsynchronousCloseException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.INFO, "Connection was closed while trying to read.", ex);
             disconnect(ex.getMessage());
-        } 
-        catch (IOException ex) {
+        } catch (IOException ex) {
+            Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+                    "Unexpected exception...", ex);
+            disconnect(ex.getMessage());
+        } catch (Exception ex) { // this is needed for possible null exception and such
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
                     "Unexpected exception...", ex);
             disconnect(ex.getMessage());
         }
     }//end sendReceiveLoop
 
+    private void sendHeartBeat() throws IOException {
+        if(System.currentTimeMillis() > timeOfLastHeartBeat + 1000) {
+            timeOfLastHeartBeat = System.currentTimeMillis();
+            sentBytes += socketChannel.write(byteBufferFromInt(-1));
+        }
+    }
+    
     private void sendPendingCommands() throws IOException {
         socketChannel.configureBlocking(true);
-
+        
         // handle the single execution requests
         synchronized (this.pendingCommandsList) {
             for (SingleExecEntry e : this.pendingCommandsList) {
@@ -265,14 +287,27 @@ public class MessageServer extends AbstractMessageServer {
                 answerRequestList.add(e);
             }
         }
+        
     }//end sendPendingCommands
 
     private void pollAnswers() throws IOException {
-        socketChannel.configureBlocking(true);
-        for (SingleExecEntry e : answerRequestList) {
+        //socketChannel.configureBlocking(true);
+        
+        Iterator<SingleExecEntry> i = answerRequestList.iterator();
+        while (i.hasNext()) 
+        {
+            SingleExecEntry e = i.next();
+            
             // read size of data
-            int size = readContent(socketChannel, 4).getInt();
+            socketChannel.configureBlocking(false);
+            ByteBuffer sizeBuffer = readContent(socketChannel, 4);
+            if (sizeBuffer == null) {
+                break;
+            }
+            int size = sizeBuffer.getInt();
 
+            // read the rest of the data
+            socketChannel.configureBlocking(true);
             ByteBuffer data = readContent(socketChannel, size);
             if (data == null) {
                 throw new IOException("No data could be read from the socket.");
@@ -286,9 +321,9 @@ public class MessageServer extends AbstractMessageServer {
                 Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
                     "Exception while handling response to " + e.command, ex);
             }
-        }//end while
-
-        answerRequestList.clear();
+            
+            i.remove();
+        }//end for
     }//end pollAnswers
 
     // helpers
@@ -298,8 +333,7 @@ public class MessageServer extends AbstractMessageServer {
 
         if (command.getArguments() != null) {
             for (Map.Entry<String, byte[]> e : command.getArguments().entrySet()) {
-                CMDArg.Builder arg = CMDArg.newBuilder()
-                        .setName(e.getKey());
+                CMDArg.Builder arg = CMDArg.newBuilder().setName(e.getKey());
                 if (e.getValue() != null) {
                     arg = arg.setBytes(ByteString.copyFrom(e.getValue()));
                 }

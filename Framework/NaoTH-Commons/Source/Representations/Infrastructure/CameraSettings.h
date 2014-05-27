@@ -33,12 +33,12 @@ namespace naoth
         Contrast,
         Exposure,
         FadeToBlack,
-        FPS,
+        FPS, // TODO: remove this from settings?
         Gain,
         HorizontalFlip,
         Hue,
-        ResolutionHeight,
-        ResolutionWidth,
+        ResolutionHeight, // TODO: remove this from settings?
+        ResolutionWidth, // TODO: remove this from settings?
         Saturation,
         Sharpness,
         VerticalFlip,

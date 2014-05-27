@@ -64,7 +64,7 @@ void GameController::readHeadButtons()
      && getPlayerInfo().gameData.gameState == GameData::initial)
   {
     unsigned int playerNumber = getPlayerInfo().gameData.playerNumber;
-    if(playerNumber >= 0 && playerNumber <= 9)
+    if(playerNumber <= 9)
     {
       std::stringstream ssWav;
       ssWav << playerNumber;
@@ -73,7 +73,6 @@ void GameController::readHeadButtons()
       getSoundPlayData().soundFile = ssWav.str();
     }
   }
-
 }
 
 void GameController::readButtons()

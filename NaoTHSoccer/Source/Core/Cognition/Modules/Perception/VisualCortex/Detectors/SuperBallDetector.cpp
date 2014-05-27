@@ -203,7 +203,7 @@ int SuperBallDetector::ckecknearBall(const Vector2i& start, Vector2d& center, do
     sum += endPoints[i];
   }
   
-  center = sum/endPoints.size();
+  center = sum/((double)endPoints.size());
 
   RingBufferWithSum<double, 8> radiusBuffer;
   for(size_t i = 0; i < endPoints.size(); i++) {

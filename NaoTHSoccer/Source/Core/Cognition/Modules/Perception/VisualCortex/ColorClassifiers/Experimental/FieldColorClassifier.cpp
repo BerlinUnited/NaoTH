@@ -72,7 +72,7 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
     double span = histogramY.spanWidth;
     double halfSpan = span / 2.0;
     double quadSpan = span / 4.0;
-    double octSpan = span / 8.0;
+    //double octSpan = span / 8.0;
 
     double common = 0.0;
 
@@ -158,7 +158,7 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
     span = getColorChannelHistograms().histogramV.spanWidth;
     halfSpan = span / 2.0;
     quadSpan = span / 4.0;
-    octSpan = span / 8.0;
+    //octSpan = span / 8.0;
 
     if(histV.sum != 0)
     {
@@ -242,7 +242,7 @@ void FieldColorClassifier::execute(CameraInfo::CameraID id)
     span = getColorChannelHistograms().histogramU.spanWidth;
     halfSpan = span / 2.0;
     quadSpan = span / 4.0;
-    octSpan = span / 8.0;
+    //octSpan = span / 8.0;
 
     if(histU.sum != 0)
     {

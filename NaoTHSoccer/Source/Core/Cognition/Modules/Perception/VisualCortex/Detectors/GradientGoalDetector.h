@@ -61,7 +61,7 @@ class GradientGoalDetector: private GradientGoalDetectorBase
 public:
 
   GradientGoalDetector();
-  virtual ~GradientGoalDetector(){};
+  virtual ~GradientGoalDetector(){}
 
   // override the Module execute method
   virtual bool execute(CameraInfo::CameraID id, bool horizon = true);
@@ -107,8 +107,8 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(footGreenScanSize) = 10;
       PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
-      PARAMETER_REGISTER(enableFeatureWidthCheck) = 0;
-      PARAMETER_REGISTER(enableGreenCheck) = 0;
+      PARAMETER_REGISTER(enableFeatureWidthCheck) = false;
+      PARAMETER_REGISTER(enableGreenCheck) = false;
 
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
 
@@ -128,10 +128,12 @@ private:
     int maxFeatureDeviation;
     double maxFootScanSquareError;
     int minGoodPoints;
-    double footGreenScanSize; // number of pixels to scan for green below the footpoint
+
+    bool enableGreenCheck;
+    int footGreenScanSize; // number of pixels to scan for green below the footpoint
+    
     double maxFeatureWidthError;
-    int enableFeatureWidthCheck;
-    int enableGreenCheck;
+    bool enableFeatureWidthCheck;
 
     double colorRegionDeviation;
   };
@@ -178,7 +180,7 @@ private:
   void checkForGoodFeatures(const Vector2d& scanDir, Feature& candidate, int scanLineId, double threshold, double thresholdY);
   void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
   void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
-  void scanForStatisticsToFootPoint( Vector2i footPoint, Vector2i pos, double threshold, double thresholdY);
+  void scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos);
   void debugStuff(CameraInfo::CameraID camID);
 
   Math::Line fitLine(const std::vector<Feature>& features) const;

@@ -250,6 +250,13 @@ namespace Math {
     return normalizeAngle(ang);
   }
 
+  /**
+  * http://en.wikipedia.org/wiki/Mean_of_circular_quantities
+  */
+  inline double meanAngle(double a, double b) {
+    return atan2( sin(a)+sin(b), cos(a)+cos(b) );
+  }
+
 }//end namespace Math
 
 #endif // __Math_Common_h__

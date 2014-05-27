@@ -161,7 +161,7 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
             scanForTopPoints(getGoalPercept().getPost(lastPostIdxInList), 
               goodFeatures.front().center, params.thresholdUV, params.thresholdY);
             scanForStatisticsToFootPoint(getGoalPercept().getPost(lastPostIdxInList).basePoint,
-              goodFeatures.front().center, params.thresholdUV, params.thresholdY);
+              goodFeatures.front().center);
             lastSeenPostIdx = lastPostIdxInList; //save actually used post index
           }
         }
@@ -170,7 +170,7 @@ bool GradientGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
   GT_TRACE("GradientGoalDetector:setGoalPostPercept");
 
-  if(getGoalPercept().getNumberOfSeenPosts() > 0) 
+  if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
     //calculate histogram only, if a goalpost was found
     getGoalPostHistograms().calculate();
@@ -442,7 +442,7 @@ void GradientGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, Feature
           double squareError = (Vector2d(pos) - projection).abs2();
 
           //if error in width is to big, drop the point of the good points list
-          if(params.enableFeatureWidthCheck < 1 || squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
+          if(!params.enableFeatureWidthCheck || squareFeatureWidthError <= params.maxFeatureWidthError * meanSquareFeatureWidth)
           {
             sumSquareFeatureWidth += featureWidth;
             meanSquareFeatureWidth = sumSquareFeatureWidth / (double) goodFeatures.size();
@@ -569,9 +569,10 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
   // create a new goal post
   GoalPercept::GoalPost post;
   post.basePoint = pos;
+  post.positionReliable = true;
 
   Vector2i lastGreenPoint(post.basePoint);
-  if(params.enableGreenCheck > 0)
+  if(params.enableGreenCheck && params.footGreenScanSize > 0)
   {
     // check some pixels below the foot point
     BresenhamLineScan footPointGreenScanner(post.basePoint, scanDir, getImage().cameraInfo);
@@ -591,21 +592,15 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     }
 
     // 40% of the pixel below the post have to be green
-    post.positionReliable = greenPixelCount > 0 && 
-                            params.footGreenScanSize > 0 && 
-                            greenPixelCount/params.footGreenScanSize > 0.4;
+    post.positionReliable = greenPixelCount > 0.4*params.footGreenScanSize;
   }
   else
   {
-    lastGreenPoint.y += (int) params.footGreenScanSize;
-    if(lastGreenPoint.y >= (int) getImage().height()) 
-		{
-      lastGreenPoint.y =  (int) getImage().height() - 1;
-    }
+    lastGreenPoint.y = Math::clamp(lastGreenPoint.y + params.footGreenScanSize, 0, (int)getImage().height() - 1);
   }
 
   post.positionReliable = post.positionReliable &&
-                        (getFieldPercept().getValidField().isInside(post.basePoint) || 
+                         (getFieldPercept().getValidField().isInside(post.basePoint) || 
                           getFieldPercept().getValidField().isInside(lastGreenPoint) );
 
   // NOTE: if the projection is not successfull, then post.position = (0,0)
@@ -629,7 +624,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
     post.seenWidth = meanWidth;
 
     bool isDouble = false;
-    if(params.enableFeatureWidthCheck > 0)
+    if(params.enableFeatureWidthCheck)
     {
       //check if there is a post candidate found in the same post (double detections)
       for(int pIdx = 0; pIdx < getGoalPercept().getNumberOfSeenPosts(); pIdx++)
@@ -646,7 +641,7 @@ void GradientGoalDetector::scanForFootPoints(const Vector2d& scanDir, Vector2i p
       }
     }
 
-    if(params.enableFeatureWidthCheck > 0 || !isDouble)
+    if(params.enableFeatureWidthCheck || !isDouble)
     {
       getGoalPercept().add(post);
     }
@@ -712,7 +707,7 @@ void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2
   );
 }
 
-void GradientGoalDetector::scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos, double threshold, double thresholdY)
+void GradientGoalDetector::scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos)
 {
   Pixel pixel;
   BresenhamLineScan footPointScanner(pos, footPoint);
