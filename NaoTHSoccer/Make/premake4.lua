@@ -156,6 +156,8 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
 	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVImageLoader.lua")
 	  kind "ConsoleApp"
 	  links { "NaoTHSoccer", "NaoTH-Commons" }
