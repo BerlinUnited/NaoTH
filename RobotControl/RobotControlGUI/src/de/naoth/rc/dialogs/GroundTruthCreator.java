@@ -20,11 +20,11 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  Thomas
  * @author  Heinrich
  */
-public class ImageViewer extends AbstractDialog
+public class GroundTruthCreator extends AbstractDialog
 {
     
   @PluginImplementation
-  public static class Plugin extends DialogPlugin<ImageViewer> {
+  public static class Plugin extends DialogPlugin<GroundTruthCreator> {
     @InjectPlugin
     public static RobotControl parent;
     @InjectPlugin
@@ -42,7 +42,7 @@ public class ImageViewer extends AbstractDialog
   ImageListenerTop imageListenerTop;
   DrawingsListener drawingsListener;
 
-  public ImageViewer()
+  public GroundTruthCreator()
   {
     initComponents();
     
@@ -295,22 +295,22 @@ public class ImageViewer extends AbstractDialog
     {
       if (objectList != null)
       {
-        ImageViewer.this.imageCanvasBottom.getDrawingList().clear();
-        ImageViewer.this.imageCanvasTop.getDrawingList().clear();
+        GroundTruthCreator.this.imageCanvasBottom.getDrawingList().clear();
+        GroundTruthCreator.this.imageCanvasTop.getDrawingList().clear();
         
         DrawingCollection drawingCollection = objectList.get(DrawingOnImage.class);
         if (drawingCollection != null) {
-          ImageViewer.this.imageCanvasBottom.getDrawingList().add(drawingCollection);
+          GroundTruthCreator.this.imageCanvasBottom.getDrawingList().add(drawingCollection);
         }
         
         Canvas canvasTop = objectList.get("ImageTop");
         if (canvasTop != null) {
-          ImageViewer.this.imageCanvasTop.getDrawingList().add(canvasTop);
+          GroundTruthCreator.this.imageCanvasTop.getDrawingList().add(canvasTop);
         }
         
         Canvas canvasBottom = objectList.get("ImageBottom");
         if (canvasTop != null) {
-          ImageViewer.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
+          GroundTruthCreator.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
         }
         
         repaint();
@@ -320,8 +320,8 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void errorOccured(String cause)
     {
-      ImageViewer.this.btReceiveDrawings.setSelected(false);
-      ImageViewer.Plugin.debugDrawingManager.removeListener(this);
+      GroundTruthCreator.this.btReceiveDrawings.setSelected(false);
+      GroundTruthCreator.Plugin.debugDrawingManager.removeListener(this);
     }
   }//end class DrawingsListener
 
@@ -331,8 +331,8 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasBottom.setImage(object.getRgb());
-      ImageViewer.this.imageCanvasBottom.repaint();
+      GroundTruthCreator.this.imageCanvasBottom.setImage(object.getRgb());
+      GroundTruthCreator.this.imageCanvasBottom.repaint();
 
       updateResolution(object.getRgb().getWidth(), object.getRgb().getHeight());
       updateFPS();
@@ -341,9 +341,9 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void errorOccured(String cause)
     {
-      ImageViewer.this.btReceiveImagesTop.setSelected(false);
-      ImageViewer.this.imageCanvasBottom.setVisible(false);
-      ImageViewer.Plugin.imageManagerBottom.removeListener(this);
+      GroundTruthCreator.this.btReceiveImagesTop.setSelected(false);
+      GroundTruthCreator.this.imageCanvasBottom.setVisible(false);
+      GroundTruthCreator.Plugin.imageManagerBottom.removeListener(this);
     }
   }//end ImageListener
   
@@ -353,16 +353,16 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasTop.setImage(object.getRgb());
-      ImageViewer.this.imageCanvasTop.repaint();
+      GroundTruthCreator.this.imageCanvasTop.setImage(object.getRgb());
+      GroundTruthCreator.this.imageCanvasTop.repaint();
     }
 
     @Override
     public void errorOccured(String cause)
     {
-      ImageViewer.this.btReceiveImagesBottom.setSelected(false);
-      ImageViewer.this.imageCanvasTop.setVisible(false);
-      ImageViewer.Plugin.imageManagerTop.removeListener(this);
+      GroundTruthCreator.this.btReceiveImagesBottom.setSelected(false);
+      GroundTruthCreator.this.imageCanvasTop.setVisible(false);
+      GroundTruthCreator.Plugin.imageManagerTop.removeListener(this);
     }
   }//end SecondaryImageListener
 
@@ -375,5 +375,5 @@ public class ImageViewer extends AbstractDialog
     this.btReceiveImagesBottom.setSelected(false);
     this.btReceiveDrawings.setSelected(false);
   }
-}//end class ImageViewer
+}//end class GroundTruthCreator
 
