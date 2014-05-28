@@ -64,6 +64,9 @@ public:
   void jumpTo(unsigned int position);
   void play(bool loop = false);
 
+  int getCurrentFrame() { return *currentFrame; }
+  int getMinFrame() { return *(logFileScanner.begin());}
+  int getMaxFrame() { return *(logFileScanner.last());}
   
   /////////////////////// get ///////////////////////
   template<class T> void generalGet(T& data, std::string name) const;
