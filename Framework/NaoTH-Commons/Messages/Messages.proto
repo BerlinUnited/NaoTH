@@ -136,6 +136,7 @@ message SymbolValueList {
 		required int32 id = 1 [default=-1];
 		optional string name = 2;
 		optional int32 value = 13;
+		optional int32 typeId = 14;
 	}
 	
 	repeated DoubleSymbol decimal = 1;
@@ -146,8 +147,6 @@ message SymbolValueList {
 message BehaviorStatusSparse {  
   optional string agent = 1;
   repeated XABSLActionSparse activeRootActions = 2;
-  repeated XABSLSymbol inputSymbols = 3;
-  repeated XABSLSymbol outputSymbols = 4;
   
   optional SymbolValueList inputSymbolList = 10;
   optional SymbolValueList outputSymbolList = 11;

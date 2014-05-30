@@ -1960,6 +1960,13 @@ class SymbolValueList_EnumSymbol : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 value() const;
   inline void set_value(::google::protobuf::int32 value);
   
+  // optional int32 typeId = 14;
+  inline bool has_typeid_() const;
+  inline void clear_typeid_();
+  static const int kTypeIdFieldNumber = 14;
+  inline ::google::protobuf::int32 typeid_() const;
+  inline void set_typeid_(::google::protobuf::int32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList.EnumSymbol)
  private:
   inline void set_has_id();
@@ -1968,15 +1975,18 @@ class SymbolValueList_EnumSymbol : public ::google::protobuf::Message {
   inline void clear_has_name();
   inline void set_has_value();
   inline void clear_has_value();
+  inline void set_has_typeid_();
+  inline void clear_has_typeid_();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* name_;
   ::google::protobuf::int32 id_;
   ::google::protobuf::int32 value_;
+  ::google::protobuf::int32 typeid__;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -2179,30 +2189,6 @@ class BehaviorStatusSparse : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLActionSparse >*
       mutable_activerootactions();
   
-  // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
-  inline int inputsymbols_size() const;
-  inline void clear_inputsymbols();
-  static const int kInputSymbolsFieldNumber = 3;
-  inline const ::naothmessages::XABSLSymbol& inputsymbols(int index) const;
-  inline ::naothmessages::XABSLSymbol* mutable_inputsymbols(int index);
-  inline ::naothmessages::XABSLSymbol* add_inputsymbols();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >&
-      inputsymbols() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
-      mutable_inputsymbols();
-  
-  // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
-  inline int outputsymbols_size() const;
-  inline void clear_outputsymbols();
-  static const int kOutputSymbolsFieldNumber = 4;
-  inline const ::naothmessages::XABSLSymbol& outputsymbols(int index) const;
-  inline ::naothmessages::XABSLSymbol* mutable_outputsymbols(int index);
-  inline ::naothmessages::XABSLSymbol* add_outputsymbols();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >&
-      outputsymbols() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
-      mutable_outputsymbols();
-  
   // optional .naothmessages.SymbolValueList inputSymbolList = 10;
   inline bool has_inputsymbollist() const;
   inline void clear_inputsymbollist();
@@ -2254,15 +2240,13 @@ class BehaviorStatusSparse : public ::google::protobuf::Message {
   
   ::std::string* agent_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLActionSparse > activerootactions_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol > inputsymbols_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol > outputsymbols_;
   ::naothmessages::SymbolValueList* inputsymbollist_;
   ::naothmessages::SymbolValueList* outputsymbollist_;
   ::std::string* errormessage_;
   ::google::protobuf::uint32 framenumber_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -6001,6 +5985,28 @@ inline void SymbolValueList_EnumSymbol::set_value(::google::protobuf::int32 valu
   value_ = value;
 }
 
+// optional int32 typeId = 14;
+inline bool SymbolValueList_EnumSymbol::has_typeid_() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void SymbolValueList_EnumSymbol::set_has_typeid_() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void SymbolValueList_EnumSymbol::clear_has_typeid_() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void SymbolValueList_EnumSymbol::clear_typeid_() {
+  typeid__ = 0;
+  clear_has_typeid_();
+}
+inline ::google::protobuf::int32 SymbolValueList_EnumSymbol::typeid_() const {
+  return typeid__;
+}
+inline void SymbolValueList_EnumSymbol::set_typeid_(::google::protobuf::int32 value) {
+  set_has_typeid_();
+  typeid__ = value;
+}
+
 // -------------------------------------------------------------------
 
 // SymbolValueList
@@ -6167,65 +6173,15 @@ BehaviorStatusSparse::mutable_activerootactions() {
   return &activerootactions_;
 }
 
-// repeated .naothmessages.XABSLSymbol inputSymbols = 3;
-inline int BehaviorStatusSparse::inputsymbols_size() const {
-  return inputsymbols_.size();
-}
-inline void BehaviorStatusSparse::clear_inputsymbols() {
-  inputsymbols_.Clear();
-}
-inline const ::naothmessages::XABSLSymbol& BehaviorStatusSparse::inputsymbols(int index) const {
-  return inputsymbols_.Get(index);
-}
-inline ::naothmessages::XABSLSymbol* BehaviorStatusSparse::mutable_inputsymbols(int index) {
-  return inputsymbols_.Mutable(index);
-}
-inline ::naothmessages::XABSLSymbol* BehaviorStatusSparse::add_inputsymbols() {
-  return inputsymbols_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >&
-BehaviorStatusSparse::inputsymbols() const {
-  return inputsymbols_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
-BehaviorStatusSparse::mutable_inputsymbols() {
-  return &inputsymbols_;
-}
-
-// repeated .naothmessages.XABSLSymbol outputSymbols = 4;
-inline int BehaviorStatusSparse::outputsymbols_size() const {
-  return outputsymbols_.size();
-}
-inline void BehaviorStatusSparse::clear_outputsymbols() {
-  outputsymbols_.Clear();
-}
-inline const ::naothmessages::XABSLSymbol& BehaviorStatusSparse::outputsymbols(int index) const {
-  return outputsymbols_.Get(index);
-}
-inline ::naothmessages::XABSLSymbol* BehaviorStatusSparse::mutable_outputsymbols(int index) {
-  return outputsymbols_.Mutable(index);
-}
-inline ::naothmessages::XABSLSymbol* BehaviorStatusSparse::add_outputsymbols() {
-  return outputsymbols_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >&
-BehaviorStatusSparse::outputsymbols() const {
-  return outputsymbols_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
-BehaviorStatusSparse::mutable_outputsymbols() {
-  return &outputsymbols_;
-}
-
 // optional .naothmessages.SymbolValueList inputSymbolList = 10;
 inline bool BehaviorStatusSparse::has_inputsymbollist() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void BehaviorStatusSparse::set_has_inputsymbollist() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void BehaviorStatusSparse::clear_has_inputsymbollist() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void BehaviorStatusSparse::clear_inputsymbollist() {
   if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
@@ -6248,13 +6204,13 @@ inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_inputsymb
 
 // optional .naothmessages.SymbolValueList outputSymbolList = 11;
 inline bool BehaviorStatusSparse::has_outputsymbollist() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void BehaviorStatusSparse::set_has_outputsymbollist() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void BehaviorStatusSparse::clear_has_outputsymbollist() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void BehaviorStatusSparse::clear_outputsymbollist() {
   if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
@@ -6277,13 +6233,13 @@ inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_outputsym
 
 // optional uint32 frameNumber = 5;
 inline bool BehaviorStatusSparse::has_framenumber() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void BehaviorStatusSparse::set_has_framenumber() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void BehaviorStatusSparse::clear_has_framenumber() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void BehaviorStatusSparse::clear_framenumber() {
   framenumber_ = 0u;
@@ -6299,13 +6255,13 @@ inline void BehaviorStatusSparse::set_framenumber(::google::protobuf::uint32 val
 
 // optional string errorMessage = 6;
 inline bool BehaviorStatusSparse::has_errormessage() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void BehaviorStatusSparse::set_has_errormessage() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void BehaviorStatusSparse::clear_has_errormessage() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void BehaviorStatusSparse::clear_errormessage() {
   if (errormessage_ != &::google::protobuf::internal::kEmptyString) {

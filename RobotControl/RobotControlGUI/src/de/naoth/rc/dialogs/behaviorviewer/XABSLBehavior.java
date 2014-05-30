@@ -4,6 +4,8 @@
 package de.naoth.rc.dialogs.behaviorviewer;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -102,6 +104,7 @@ public class XABSLBehavior {
     public ArrayList<Option> options = new ArrayList<Option>();
     public ArrayList<Agent> agents = new ArrayList<Agent>();
     
-    public ArrayList<Symbol> inputSymbols = new ArrayList<Symbol>();
-    public ArrayList<Symbol> outputSymbols = new ArrayList<Symbol>();
+    public TreeMap<Integer, Symbol> inputSymbols = new TreeMap<Integer, Symbol>();
+    public TreeMap<Integer, Symbol> outputSymbols = new TreeMap<Integer, Symbol>();
+    
 }

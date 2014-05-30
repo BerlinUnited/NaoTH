@@ -9905,6 +9905,10 @@ public final class Messages {
       // optional int32 value = 13;
       boolean hasValue();
       int getValue();
+      
+      // optional int32 typeId = 14;
+      boolean hasTypeId();
+      int getTypeId();
     }
     public static final class EnumSymbol extends
         com.google.protobuf.GeneratedMessage
@@ -9987,10 +9991,21 @@ public final class Messages {
         return value_;
       }
       
+      // optional int32 typeId = 14;
+      public static final int TYPEID_FIELD_NUMBER = 14;
+      private int typeId_;
+      public boolean hasTypeId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getTypeId() {
+        return typeId_;
+      }
+      
       private void initFields() {
         id_ = -1;
         name_ = "";
         value_ = 0;
+        typeId_ = 0;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -10017,6 +10032,9 @@ public final class Messages {
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           output.writeInt32(13, value_);
         }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeInt32(14, typeId_);
+        }
         getUnknownFields().writeTo(output);
       }
       
@@ -10037,6 +10055,10 @@ public final class Messages {
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(13, value_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(14, typeId_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -10168,6 +10190,8 @@ public final class Messages {
           bitField0_ = (bitField0_ & ~0x00000002);
           value_ = 0;
           bitField0_ = (bitField0_ & ~0x00000004);
+          typeId_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
         
@@ -10218,6 +10242,10 @@ public final class Messages {
             to_bitField0_ |= 0x00000004;
           }
           result.value_ = value_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.typeId_ = typeId_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -10242,6 +10270,9 @@ public final class Messages {
           }
           if (other.hasValue()) {
             setValue(other.getValue());
+          }
+          if (other.hasTypeId()) {
+            setTypeId(other.getTypeId());
           }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
@@ -10291,6 +10322,11 @@ public final class Messages {
               case 104: {
                 bitField0_ |= 0x00000004;
                 value_ = input.readInt32();
+                break;
+              }
+              case 112: {
+                bitField0_ |= 0x00000008;
+                typeId_ = input.readInt32();
                 break;
               }
             }
@@ -10373,6 +10409,27 @@ public final class Messages {
         public Builder clearValue() {
           bitField0_ = (bitField0_ & ~0x00000004);
           value_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // optional int32 typeId = 14;
+        private int typeId_ ;
+        public boolean hasTypeId() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        public int getTypeId() {
+          return typeId_;
+        }
+        public Builder setTypeId(int value) {
+          bitField0_ |= 0x00000008;
+          typeId_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearTypeId() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          typeId_ = 0;
           onChanged();
           return this;
         }
@@ -11477,26 +11534,6 @@ public final class Messages {
     de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveRootActionsOrBuilder(
         int index);
     
-    // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
-    java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> 
-        getInputSymbolsList();
-    de.naoth.rc.messages.Messages.XABSLSymbol getInputSymbols(int index);
-    int getInputSymbolsCount();
-    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-        getInputSymbolsOrBuilderList();
-    de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getInputSymbolsOrBuilder(
-        int index);
-    
-    // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
-    java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> 
-        getOutputSymbolsList();
-    de.naoth.rc.messages.Messages.XABSLSymbol getOutputSymbols(int index);
-    int getOutputSymbolsCount();
-    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-        getOutputSymbolsOrBuilderList();
-    de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getOutputSymbolsOrBuilder(
-        int index);
-    
     // optional .naothmessages.SymbolValueList inputSymbolList = 10;
     boolean hasInputSymbolList();
     de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList();
@@ -11597,48 +11634,6 @@ public final class Messages {
       return activeRootActions_.get(index);
     }
     
-    // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
-    public static final int INPUTSYMBOLS_FIELD_NUMBER = 3;
-    private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> inputSymbols_;
-    public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getInputSymbolsList() {
-      return inputSymbols_;
-    }
-    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-        getInputSymbolsOrBuilderList() {
-      return inputSymbols_;
-    }
-    public int getInputSymbolsCount() {
-      return inputSymbols_.size();
-    }
-    public de.naoth.rc.messages.Messages.XABSLSymbol getInputSymbols(int index) {
-      return inputSymbols_.get(index);
-    }
-    public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getInputSymbolsOrBuilder(
-        int index) {
-      return inputSymbols_.get(index);
-    }
-    
-    // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
-    public static final int OUTPUTSYMBOLS_FIELD_NUMBER = 4;
-    private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> outputSymbols_;
-    public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getOutputSymbolsList() {
-      return outputSymbols_;
-    }
-    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-        getOutputSymbolsOrBuilderList() {
-      return outputSymbols_;
-    }
-    public int getOutputSymbolsCount() {
-      return outputSymbols_.size();
-    }
-    public de.naoth.rc.messages.Messages.XABSLSymbol getOutputSymbols(int index) {
-      return outputSymbols_.get(index);
-    }
-    public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getOutputSymbolsOrBuilder(
-        int index) {
-      return outputSymbols_.get(index);
-    }
-    
     // optional .naothmessages.SymbolValueList inputSymbolList = 10;
     public static final int INPUTSYMBOLLIST_FIELD_NUMBER = 10;
     private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_;
@@ -11710,8 +11705,6 @@ public final class Messages {
     private void initFields() {
       agent_ = "";
       activeRootActions_ = java.util.Collections.emptyList();
-      inputSymbols_ = java.util.Collections.emptyList();
-      outputSymbols_ = java.util.Collections.emptyList();
       inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
       outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
       frameNumber_ = 0;
@@ -11724,18 +11717,6 @@ public final class Messages {
       
       for (int i = 0; i < getActiveRootActionsCount(); i++) {
         if (!getActiveRootActions(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      for (int i = 0; i < getInputSymbolsCount(); i++) {
-        if (!getInputSymbols(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      for (int i = 0; i < getOutputSymbolsCount(); i++) {
-        if (!getOutputSymbols(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -11765,12 +11746,6 @@ public final class Messages {
       for (int i = 0; i < activeRootActions_.size(); i++) {
         output.writeMessage(2, activeRootActions_.get(i));
       }
-      for (int i = 0; i < inputSymbols_.size(); i++) {
-        output.writeMessage(3, inputSymbols_.get(i));
-      }
-      for (int i = 0; i < outputSymbols_.size(); i++) {
-        output.writeMessage(4, outputSymbols_.get(i));
-      }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(5, frameNumber_);
       }
@@ -11799,14 +11774,6 @@ public final class Messages {
       for (int i = 0; i < activeRootActions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, activeRootActions_.get(i));
-      }
-      for (int i = 0; i < inputSymbols_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, inputSymbols_.get(i));
-      }
-      for (int i = 0; i < outputSymbols_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, outputSymbols_.get(i));
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
@@ -11941,8 +11908,6 @@ public final class Messages {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getActiveRootActionsFieldBuilder();
-          getInputSymbolsFieldBuilder();
-          getOutputSymbolsFieldBuilder();
           getInputSymbolListFieldBuilder();
           getOutputSymbolListFieldBuilder();
         }
@@ -11961,34 +11926,22 @@ public final class Messages {
         } else {
           activeRootActionsBuilder_.clear();
         }
-        if (inputSymbolsBuilder_ == null) {
-          inputSymbols_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-        } else {
-          inputSymbolsBuilder_.clear();
-        }
-        if (outputSymbolsBuilder_ == null) {
-          outputSymbols_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
-        } else {
-          outputSymbolsBuilder_.clear();
-        }
         if (inputSymbolListBuilder_ == null) {
           inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
         } else {
           inputSymbolListBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (outputSymbolListBuilder_ == null) {
           outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
         } else {
           outputSymbolListBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000008);
         frameNumber_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000010);
         errorMessage_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -12040,25 +11993,7 @@ public final class Messages {
         } else {
           result.activeRootActions_ = activeRootActionsBuilder_.build();
         }
-        if (inputSymbolsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
-            inputSymbols_ = java.util.Collections.unmodifiableList(inputSymbols_);
-            bitField0_ = (bitField0_ & ~0x00000004);
-          }
-          result.inputSymbols_ = inputSymbols_;
-        } else {
-          result.inputSymbols_ = inputSymbolsBuilder_.build();
-        }
-        if (outputSymbolsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
-            outputSymbols_ = java.util.Collections.unmodifiableList(outputSymbols_);
-            bitField0_ = (bitField0_ & ~0x00000008);
-          }
-          result.outputSymbols_ = outputSymbols_;
-        } else {
-          result.outputSymbols_ = outputSymbolsBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000002;
         }
         if (inputSymbolListBuilder_ == null) {
@@ -12066,7 +12001,7 @@ public final class Messages {
         } else {
           result.inputSymbolList_ = inputSymbolListBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000004;
         }
         if (outputSymbolListBuilder_ == null) {
@@ -12074,11 +12009,11 @@ public final class Messages {
         } else {
           result.outputSymbolList_ = outputSymbolListBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000008;
         }
         result.frameNumber_ = frameNumber_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000010;
         }
         result.errorMessage_ = errorMessage_;
@@ -12127,58 +12062,6 @@ public final class Messages {
             }
           }
         }
-        if (inputSymbolsBuilder_ == null) {
-          if (!other.inputSymbols_.isEmpty()) {
-            if (inputSymbols_.isEmpty()) {
-              inputSymbols_ = other.inputSymbols_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-            } else {
-              ensureInputSymbolsIsMutable();
-              inputSymbols_.addAll(other.inputSymbols_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.inputSymbols_.isEmpty()) {
-            if (inputSymbolsBuilder_.isEmpty()) {
-              inputSymbolsBuilder_.dispose();
-              inputSymbolsBuilder_ = null;
-              inputSymbols_ = other.inputSymbols_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-              inputSymbolsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getInputSymbolsFieldBuilder() : null;
-            } else {
-              inputSymbolsBuilder_.addAllMessages(other.inputSymbols_);
-            }
-          }
-        }
-        if (outputSymbolsBuilder_ == null) {
-          if (!other.outputSymbols_.isEmpty()) {
-            if (outputSymbols_.isEmpty()) {
-              outputSymbols_ = other.outputSymbols_;
-              bitField0_ = (bitField0_ & ~0x00000008);
-            } else {
-              ensureOutputSymbolsIsMutable();
-              outputSymbols_.addAll(other.outputSymbols_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.outputSymbols_.isEmpty()) {
-            if (outputSymbolsBuilder_.isEmpty()) {
-              outputSymbolsBuilder_.dispose();
-              outputSymbolsBuilder_ = null;
-              outputSymbols_ = other.outputSymbols_;
-              bitField0_ = (bitField0_ & ~0x00000008);
-              outputSymbolsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getOutputSymbolsFieldBuilder() : null;
-            } else {
-              outputSymbolsBuilder_.addAllMessages(other.outputSymbols_);
-            }
-          }
-        }
         if (other.hasInputSymbolList()) {
           mergeInputSymbolList(other.getInputSymbolList());
         }
@@ -12198,18 +12081,6 @@ public final class Messages {
       public final boolean isInitialized() {
         for (int i = 0; i < getActiveRootActionsCount(); i++) {
           if (!getActiveRootActions(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        for (int i = 0; i < getInputSymbolsCount(); i++) {
-          if (!getInputSymbols(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        for (int i = 0; i < getOutputSymbolsCount(); i++) {
-          if (!getOutputSymbols(i).isInitialized()) {
             
             return false;
           }
@@ -12263,25 +12134,13 @@ public final class Messages {
               addActiveRootActions(subBuilder.buildPartial());
               break;
             }
-            case 26: {
-              de.naoth.rc.messages.Messages.XABSLSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addInputSymbols(subBuilder.buildPartial());
-              break;
-            }
-            case 34: {
-              de.naoth.rc.messages.Messages.XABSLSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addOutputSymbols(subBuilder.buildPartial());
-              break;
-            }
             case 40: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000010;
               frameNumber_ = input.readUInt32();
               break;
             }
             case 50: {
-              bitField0_ |= 0x00000080;
+              bitField0_ |= 0x00000020;
               errorMessage_ = input.readBytes();
               break;
             }
@@ -12531,384 +12390,12 @@ public final class Messages {
         return activeRootActionsBuilder_;
       }
       
-      // repeated .naothmessages.XABSLSymbol inputSymbols = 3;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> inputSymbols_ =
-        java.util.Collections.emptyList();
-      private void ensureInputSymbolsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          inputSymbols_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLSymbol>(inputSymbols_);
-          bitField0_ |= 0x00000004;
-         }
-      }
-      
-      private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> inputSymbolsBuilder_;
-      
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getInputSymbolsList() {
-        if (inputSymbolsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(inputSymbols_);
-        } else {
-          return inputSymbolsBuilder_.getMessageList();
-        }
-      }
-      public int getInputSymbolsCount() {
-        if (inputSymbolsBuilder_ == null) {
-          return inputSymbols_.size();
-        } else {
-          return inputSymbolsBuilder_.getCount();
-        }
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol getInputSymbols(int index) {
-        if (inputSymbolsBuilder_ == null) {
-          return inputSymbols_.get(index);
-        } else {
-          return inputSymbolsBuilder_.getMessage(index);
-        }
-      }
-      public Builder setInputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (inputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.set(index, value);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      public Builder setInputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (inputSymbolsBuilder_ == null) {
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addInputSymbols(de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (inputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.add(value);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      public Builder addInputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (inputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.add(index, value);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      public Builder addInputSymbols(
-          de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (inputSymbolsBuilder_ == null) {
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.add(builderForValue.build());
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addInputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (inputSymbolsBuilder_ == null) {
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addAllInputSymbols(
-          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLSymbol> values) {
-        if (inputSymbolsBuilder_ == null) {
-          ensureInputSymbolsIsMutable();
-          super.addAll(values, inputSymbols_);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      public Builder clearInputSymbols() {
-        if (inputSymbolsBuilder_ == null) {
-          inputSymbols_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.clear();
-        }
-        return this;
-      }
-      public Builder removeInputSymbols(int index) {
-        if (inputSymbolsBuilder_ == null) {
-          ensureInputSymbolsIsMutable();
-          inputSymbols_.remove(index);
-          onChanged();
-        } else {
-          inputSymbolsBuilder_.remove(index);
-        }
-        return this;
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder getInputSymbolsBuilder(
-          int index) {
-        return getInputSymbolsFieldBuilder().getBuilder(index);
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getInputSymbolsOrBuilder(
-          int index) {
-        if (inputSymbolsBuilder_ == null) {
-          return inputSymbols_.get(index);  } else {
-          return inputSymbolsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-           getInputSymbolsOrBuilderList() {
-        if (inputSymbolsBuilder_ != null) {
-          return inputSymbolsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(inputSymbols_);
-        }
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addInputSymbolsBuilder() {
-        return getInputSymbolsFieldBuilder().addBuilder(
-            de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addInputSymbolsBuilder(
-          int index) {
-        return getInputSymbolsFieldBuilder().addBuilder(
-            index, de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
-      }
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol.Builder> 
-           getInputSymbolsBuilderList() {
-        return getInputSymbolsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-          getInputSymbolsFieldBuilder() {
-        if (inputSymbolsBuilder_ == null) {
-          inputSymbolsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder>(
-                  inputSymbols_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
-                  getParentForChildren(),
-                  isClean());
-          inputSymbols_ = null;
-        }
-        return inputSymbolsBuilder_;
-      }
-      
-      // repeated .naothmessages.XABSLSymbol outputSymbols = 4;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> outputSymbols_ =
-        java.util.Collections.emptyList();
-      private void ensureOutputSymbolsIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
-          outputSymbols_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLSymbol>(outputSymbols_);
-          bitField0_ |= 0x00000008;
-         }
-      }
-      
-      private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> outputSymbolsBuilder_;
-      
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getOutputSymbolsList() {
-        if (outputSymbolsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(outputSymbols_);
-        } else {
-          return outputSymbolsBuilder_.getMessageList();
-        }
-      }
-      public int getOutputSymbolsCount() {
-        if (outputSymbolsBuilder_ == null) {
-          return outputSymbols_.size();
-        } else {
-          return outputSymbolsBuilder_.getCount();
-        }
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol getOutputSymbols(int index) {
-        if (outputSymbolsBuilder_ == null) {
-          return outputSymbols_.get(index);
-        } else {
-          return outputSymbolsBuilder_.getMessage(index);
-        }
-      }
-      public Builder setOutputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (outputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.set(index, value);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      public Builder setOutputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (outputSymbolsBuilder_ == null) {
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addOutputSymbols(de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (outputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.add(value);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      public Builder addOutputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
-        if (outputSymbolsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.add(index, value);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      public Builder addOutputSymbols(
-          de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (outputSymbolsBuilder_ == null) {
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.add(builderForValue.build());
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addOutputSymbols(
-          int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
-        if (outputSymbolsBuilder_ == null) {
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addAllOutputSymbols(
-          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLSymbol> values) {
-        if (outputSymbolsBuilder_ == null) {
-          ensureOutputSymbolsIsMutable();
-          super.addAll(values, outputSymbols_);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      public Builder clearOutputSymbols() {
-        if (outputSymbolsBuilder_ == null) {
-          outputSymbols_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.clear();
-        }
-        return this;
-      }
-      public Builder removeOutputSymbols(int index) {
-        if (outputSymbolsBuilder_ == null) {
-          ensureOutputSymbolsIsMutable();
-          outputSymbols_.remove(index);
-          onChanged();
-        } else {
-          outputSymbolsBuilder_.remove(index);
-        }
-        return this;
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder getOutputSymbolsBuilder(
-          int index) {
-        return getOutputSymbolsFieldBuilder().getBuilder(index);
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getOutputSymbolsOrBuilder(
-          int index) {
-        if (outputSymbolsBuilder_ == null) {
-          return outputSymbols_.get(index);  } else {
-          return outputSymbolsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-           getOutputSymbolsOrBuilderList() {
-        if (outputSymbolsBuilder_ != null) {
-          return outputSymbolsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(outputSymbols_);
-        }
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addOutputSymbolsBuilder() {
-        return getOutputSymbolsFieldBuilder().addBuilder(
-            de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
-      }
-      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addOutputSymbolsBuilder(
-          int index) {
-        return getOutputSymbolsFieldBuilder().addBuilder(
-            index, de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
-      }
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol.Builder> 
-           getOutputSymbolsBuilderList() {
-        return getOutputSymbolsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
-          getOutputSymbolsFieldBuilder() {
-        if (outputSymbolsBuilder_ == null) {
-          outputSymbolsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder>(
-                  outputSymbols_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
-                  getParentForChildren(),
-                  isClean());
-          outputSymbols_ = null;
-        }
-        return outputSymbolsBuilder_;
-      }
-      
       // optional .naothmessages.SymbolValueList inputSymbolList = 10;
       private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> inputSymbolListBuilder_;
       public boolean hasInputSymbolList() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList() {
         if (inputSymbolListBuilder_ == null) {
@@ -12927,7 +12414,7 @@ public final class Messages {
         } else {
           inputSymbolListBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder setInputSymbolList(
@@ -12938,12 +12425,12 @@ public final class Messages {
         } else {
           inputSymbolListBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder mergeInputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
         if (inputSymbolListBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               inputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
             inputSymbolList_ =
               de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(inputSymbolList_).mergeFrom(value).buildPartial();
@@ -12954,7 +12441,7 @@ public final class Messages {
         } else {
           inputSymbolListBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder clearInputSymbolList() {
@@ -12964,11 +12451,11 @@ public final class Messages {
         } else {
           inputSymbolListBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       public de.naoth.rc.messages.Messages.SymbolValueList.Builder getInputSymbolListBuilder() {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getInputSymbolListFieldBuilder().getBuilder();
       }
@@ -12998,7 +12485,7 @@ public final class Messages {
       private com.google.protobuf.SingleFieldBuilder<
           de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> outputSymbolListBuilder_;
       public boolean hasOutputSymbolList() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList() {
         if (outputSymbolListBuilder_ == null) {
@@ -13017,7 +12504,7 @@ public final class Messages {
         } else {
           outputSymbolListBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder setOutputSymbolList(
@@ -13028,12 +12515,12 @@ public final class Messages {
         } else {
           outputSymbolListBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder mergeOutputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
         if (outputSymbolListBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
               outputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
             outputSymbolList_ =
               de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(outputSymbolList_).mergeFrom(value).buildPartial();
@@ -13044,7 +12531,7 @@ public final class Messages {
         } else {
           outputSymbolListBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder clearOutputSymbolList() {
@@ -13054,11 +12541,11 @@ public final class Messages {
         } else {
           outputSymbolListBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       public de.naoth.rc.messages.Messages.SymbolValueList.Builder getOutputSymbolListBuilder() {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000008;
         onChanged();
         return getOutputSymbolListFieldBuilder().getBuilder();
       }
@@ -13086,19 +12573,19 @@ public final class Messages {
       // optional uint32 frameNumber = 5;
       private int frameNumber_ ;
       public boolean hasFrameNumber() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public int getFrameNumber() {
         return frameNumber_;
       }
       public Builder setFrameNumber(int value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000010;
         frameNumber_ = value;
         onChanged();
         return this;
       }
       public Builder clearFrameNumber() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000010);
         frameNumber_ = 0;
         onChanged();
         return this;
@@ -13107,7 +12594,7 @@ public final class Messages {
       // optional string errorMessage = 6;
       private java.lang.Object errorMessage_ = "";
       public boolean hasErrorMessage() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public String getErrorMessage() {
         java.lang.Object ref = errorMessage_;
@@ -13123,19 +12610,19 @@ public final class Messages {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
+  bitField0_ |= 0x00000020;
         errorMessage_ = value;
         onChanged();
         return this;
       }
       public Builder clearErrorMessage() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000020);
         errorMessage_ = getDefaultInstance().getErrorMessage();
         onChanged();
         return this;
       }
       void setErrorMessage(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000020;
         errorMessage_ = value;
         onChanged();
       }
@@ -26147,7 +25634,7 @@ public final class Messages {
       "SLSymbol\0226\n\006option\030\004 \001(\0132&.naothmessages" +
       ".XABSLActiveOptionSparse\"O\n\nActionType\022\n" +
       "\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\025\n\021SymbolA" +
-      "ssignement\020\002\022\013\n\007Unknown\020\003\"\203\003\n\017SymbolValu" +
+      "ssignement\020\002\022\013\n\007Unknown\020\003\"\223\003\n\017SymbolValu" +
       "eList\022<\n\007decimal\030\001 \003(\0132+.naothmessages.S" +
       "ymbolValueList.DoubleSymbol\022=\n\007boolean\030\002" +
       " \003(\0132,.naothmessages.SymbolValueList.Boo" +
@@ -26155,77 +25642,75 @@ public final class Messages {
       "ssages.SymbolValueList.EnumSymbol\032;\n\014Dou" +
       "bleSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022" +
       "\r\n\005value\030\003 \001(\001\032<\n\rBooleanSymbol\022\016\n\002id\030\001 " +
-      "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\0329\n\n" +
+      "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\032I\n\n" +
       "EnumSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t" +
-      "\022\r\n\005value\030\r \001(\005\"\345\002\n\024BehaviorStatusSparse" +
-      "\022\r\n\005agent\030\001 \001(\t\022;\n\021activeRootActions\030\002 \003" +
-      "(\0132 .naothmessages.XABSLActionSparse\0220\n\014" +
-      "inputSymbols\030\003 \003(\0132\032.naothmessages.XABSL" +
-      "Symbol\0221\n\routputSymbols\030\004 \003(\0132\032.naothmes",
-      "sages.XABSLSymbol\0227\n\017inputSymbolList\030\n \001" +
-      "(\0132\036.naothmessages.SymbolValueList\0228\n\020ou" +
-      "tputSymbolList\030\013 \001(\0132\036.naothmessages.Sym" +
-      "bolValueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014err" +
-      "orMessage\030\006 \001(\t\"\203\005\n\rXABSLBehavior\022;\n\014enu" +
-      "merations\030\n \003(\0132%.naothmessages.XABSLBeh" +
-      "avior.EnumType\0224\n\007options\030\013 \003(\0132#.naothm" +
-      "essages.XABSLBehavior.Option\0222\n\006agents\030\014" +
-      " \003(\0132\".naothmessages.XABSLBehavior.Agent" +
-      "\0227\n\017inputSymbolList\030\r \001(\0132\036.naothmessage",
-      "s.SymbolValueList\0228\n\020outputSymbolList\030\016 " +
-      "\001(\0132\036.naothmessages.SymbolValueList\032\201\001\n\010" +
-      "EnumType\022\014\n\004name\030\001 \002(\t\022?\n\010elements\030\002 \003(\013" +
-      "2-.naothmessages.XABSLBehavior.EnumType." +
-      "Element\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004nam" +
-      "e\030\002 \002(\t\032\250\001\n\006Option\022\014\n\004name\030\001 \002(\t\0229\n\006stat" +
-      "es\030\003 \003(\0132).naothmessages.XABSLBehavior.O" +
-      "ption.State\022.\n\nparameters\030\002 \003(\0132\032.naothm" +
-      "essages.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001 \002" +
-      "(\t\022\016\n\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 \002(",
-      "\t\022\022\n\nrootOption\030\002 \002(\t\"\341\001\n\016XABSLParameter" +
-      "\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'." +
-      "naothmessages.XABSLParameter.ParamType:\007" +
-      "Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolVal" +
-      "ue\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType" +
-      "\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007" +
-      "Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162" +
-      "%.naothmessages.XABSLAction.ActionType:\007" +
-      "Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOf" +
-      "Execution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022",
-      "\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035" +
-      ".naothmessages.XABSLParameter\0224\n\020activeS" +
-      "ubActions\030\007 \003(\0132\032.naothmessages.XABSLAct" +
-      "ion\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t" +
-      " \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n" +
-      "\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Decimal" +
-      "OutputSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022" +
-      "\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016B" +
-      "ehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRo" +
-      "otActions\030\002 \003(\0132\032.naothmessages.XABSLAct",
-      "ion\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessage" +
-      "s.XABSLParameter\0224\n\routputSymbols\030\004 \003(\0132" +
-      "\035.naothmessages.XABSLParameter\022\023\n\013frameN" +
-      "umber\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Mod" +
-      "ule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations" +
-      "\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022" +
-      "\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007" +
-      "modules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n" +
-      "\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmess" +
-      "ages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle",
-      "\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005" +
-      "\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionR" +
-      "esult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoin" +
-      "ts\030\002 \003(\0132\036.naothmessages.FeatureKeyPoint" +
-      "\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages.Si" +
-      "ngleDescriptor\022\031\n\021namesForKeyPoints\030\004 \003(" +
-      "\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035" +
-      "\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Feature" +
-      "Class\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.n" +
-      "aothmessages.SingleDescriptor\022\024\n\014objectH",
-      "eight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001" +
-      " \003(\0132\033.naothmessages.FeatureClass\022#\n\027num" +
-      "berOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.nao" +
-      "th.rc.messages"
+      "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\200\002\n\024Beha" +
+      "viorStatusSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021activ" +
+      "eRootActions\030\002 \003(\0132 .naothmessages.XABSL" +
+      "ActionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036." +
+      "naothmessages.SymbolValueList\0228\n\020outputS",
+      "ymbolList\030\013 \001(\0132\036.naothmessages.SymbolVa" +
+      "lueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMes" +
+      "sage\030\006 \001(\t\"\203\005\n\rXABSLBehavior\022;\n\014enumerat" +
+      "ions\030\n \003(\0132%.naothmessages.XABSLBehavior" +
+      ".EnumType\0224\n\007options\030\013 \003(\0132#.naothmessag" +
+      "es.XABSLBehavior.Option\0222\n\006agents\030\014 \003(\0132" +
+      "\".naothmessages.XABSLBehavior.Agent\0227\n\017i" +
+      "nputSymbolList\030\r \001(\0132\036.naothmessages.Sym" +
+      "bolValueList\0228\n\020outputSymbolList\030\016 \001(\0132\036" +
+      ".naothmessages.SymbolValueList\032\201\001\n\010EnumT",
+      "ype\022\014\n\004name\030\001 \002(\t\022?\n\010elements\030\002 \003(\0132-.na" +
+      "othmessages.XABSLBehavior.EnumType.Eleme" +
+      "nt\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002" +
+      "(\t\032\250\001\n\006Option\022\014\n\004name\030\001 \002(\t\0229\n\006states\030\003 " +
+      "\003(\0132).naothmessages.XABSLBehavior.Option" +
+      ".State\022.\n\nparameters\030\002 \003(\0132\032.naothmessag" +
+      "es.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001 \002(\t\022\016\n" +
+      "\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 \002(\t\022\022\n\n" +
+      "rootOption\030\002 \002(\t\"\341\001\n\016XABSLParameter\022\025\n\004n" +
+      "ame\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naoth",
+      "messages.XABSLParameter.ParamType:\007Unkno" +
+      "wn\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 " +
+      "\001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007D" +
+      "ecimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unkno" +
+      "wn\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162%.nao" +
+      "thmessages.XABSLAction.ActionType:\007Unkno" +
+      "wn\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecu" +
+      "tion\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tst" +
+      "ateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naot" +
+      "hmessages.XABSLParameter\0224\n\020activeSubAct",
+      "ions\030\007 \003(\0132\032.naothmessages.XABSLAction\022\024" +
+      "\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022" +
+      "\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Opt" +
+      "ion\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023DecimalOutpu" +
+      "tSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020En" +
+      "umOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016Behavi" +
+      "orStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootAct" +
+      "ions\030\002 \003(\0132\032.naothmessages.XABSLAction\0223" +
+      "\n\014inputSymbols\030\003 \003(\0132\035.naothmessages.XAB" +
+      "SLParameter\0224\n\routputSymbols\030\004 \003(\0132\035.nao",
+      "thmessages.XABSLParameter\022\023\n\013frameNumber" +
+      "\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Module\022\014" +
+      "\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002 \003(" +
+      "\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n\006ac" +
+      "tive\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007modul" +
+      "es\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017Feat" +
+      "ureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessages." +
+      "FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(" +
+      "\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010c" +
+      "lass_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionResult",
+      "\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 " +
+      "\003(\0132\036.naothmessages.FeatureKeyPoint\0224\n\013d" +
+      "escriptors\030\003 \003(\0132\037.naothmessages.SingleD" +
+      "escriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n\027" +
+      "numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020Sin" +
+      "gleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass" +
+      "\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naothm" +
+      "essages.SingleDescriptor\022\024\n\014objectHeight" +
+      "\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003(\0132" +
+      "\033.naothmessages.FeatureClass\022#\n\027numberOf",
+      "FeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth.rc" +
+      ".messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -26357,7 +25842,7 @@ public final class Messages {
           internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor,
-              new java.lang.String[] { "Id", "Name", "Value", },
+              new java.lang.String[] { "Id", "Name", "Value", "TypeId", },
               de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.class,
               de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder.class);
           internal_static_naothmessages_BehaviorStatusSparse_descriptor =
@@ -26365,7 +25850,7 @@ public final class Messages {
           internal_static_naothmessages_BehaviorStatusSparse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BehaviorStatusSparse_descriptor,
-              new java.lang.String[] { "Agent", "ActiveRootActions", "InputSymbols", "OutputSymbols", "InputSymbolList", "OutputSymbolList", "FrameNumber", "ErrorMessage", },
+              new java.lang.String[] { "Agent", "ActiveRootActions", "InputSymbolList", "OutputSymbolList", "FrameNumber", "ErrorMessage", },
               de.naoth.rc.messages.Messages.BehaviorStatusSparse.class,
               de.naoth.rc.messages.Messages.BehaviorStatusSparse.Builder.class);
           internal_static_naothmessages_XABSLBehavior_descriptor =
