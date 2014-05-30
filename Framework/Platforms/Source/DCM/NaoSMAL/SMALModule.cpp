@@ -46,9 +46,8 @@ static void motion_wrapper_post()
 }
 //
 
-void* shutdownCallback(void* ref)
+void* shutdownCallback(void* /*ref*/)
 {
-
   // play a sound that the user knows we recognized his shutdown request
   system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
 
@@ -82,7 +81,7 @@ int time_motionCallbackPost = 0;
 
 int current_line = 0;
 
-void* debug_wrapper(void* ref)
+void* debug_wrapper(void* /*ref*/)
 {
   while(true)
   {
@@ -174,11 +173,37 @@ void SMALModule::init()
 
   // save the value to file
   // FIXME: fixed path "Config/nao.info"
-  string staticMemberPath("Config/nao.info");
-  ofstream os(staticMemberPath.c_str());
-  ASSERT(os.good());
-  os<<theBodyID<<"\n"<<theBodyNickName<<endl;
-  os.close();
+  {
+    string staticMemberPath("Config/nao.info");
+    ofstream os(staticMemberPath.c_str());
+    ASSERT(os.good());
+    os<<theBodyID<<"\n"<<theBodyNickName<<endl;
+    os.close();
+  }
+
+  // NOTE: read the joint limits from the dcm and write it to the config
+  theDCMHandler.getJointPositionLimits(theMotorJointData);
+  {
+    ofstream os("Config/private/joints.cfg");
+    ASSERT(os.good());
+    os << "[joints]" << endl << endl;
+    os << "# auto generated joint limits for " << theBodyNickName << endl << endl;
+    for(int i=0;i<JointData::numOfJoint;i++)
+    {
+      double joint_min = theMotorJointData.min[i];
+      double joint_max = theMotorJointData.max[i];
+
+      // NOTE: we convert all the joint limits to degrees to be stored in the config
+      //       except for the hand, because those limits are just {0,1} ~ {close,open}
+      double joint_max_config = (i == JointData::LHand || i == JointData::RHand)?joint_max:Math::toDegrees(joint_max);
+      double joint_min_config = (i == JointData::LHand || i == JointData::RHand)?joint_min:Math::toDegrees(joint_min);
+
+      os << JointData::getJointName((JointData::JointID) i) << "Min = " << joint_min_config << ";" << endl;
+      os << JointData::getJointName((JointData::JointID) i) << "Max = " << joint_max_config << ";" << endl;
+      os << endl;
+    }
+    os.close();
+  }
 
   //key_t semkey = ftok("/dev/null",1);
 

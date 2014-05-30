@@ -74,6 +74,7 @@ private:
 
   void draw3D();
   void drawRobot3D(const Pose3D& robotPose);
+  void drawKinematicChain3D();
 
 
   void registerLogableRepresentationList()

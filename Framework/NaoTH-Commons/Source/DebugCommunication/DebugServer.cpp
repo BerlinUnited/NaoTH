@@ -15,6 +15,9 @@
 
 #include <Messages/Messages.pb.h>
 #include "DebugServer.h"
+#include <Tools/NaoTime.h>
+
+using namespace naoth;
 
 DebugServer::DebugServer()
   : connectionThread(NULL),
@@ -28,7 +31,29 @@ DebugServer::DebugServer()
 
   g_async_queue_ref(commands);
   g_async_queue_ref(answers);
-}//end DebugServer
+}
+
+DebugServer::~DebugServer()
+{
+  // notify the connectionThread to stop
+  g_mutex_lock(m_abort);
+  abort = true;
+  g_mutex_unlock(m_abort);
+
+  // wait for connectionThread to stop
+  if(connectionThread != NULL) {
+    g_thread_join(connectionThread);
+  }
+
+  clearBothQueues();
+  comm.disconnect();
+
+  g_mutex_free(m_executing);
+  g_mutex_free(m_abort);
+
+  g_async_queue_unref(commands);
+  g_async_queue_unref(answers);
+}
 
 
 void DebugServer::start(unsigned short port, bool threaded)
@@ -37,15 +62,15 @@ void DebugServer::start(unsigned short port, bool threaded)
 
   if(threaded)
   {
-    if (!g_thread_supported())
+    if (!g_thread_supported()) {
       g_thread_init(NULL);
+    }
 
     GError* err = NULL;
     g_debug("Starting debug server thread");
    
     connectionThread = g_thread_create(connection_thread_static, this, true, &err);
-    if(err)
-    {
+    if(err) {
       g_warning("Could not start debug server thread: %s", err->message);
     }
   }
@@ -62,24 +87,26 @@ void DebugServer::mainConnection()
     g_mutex_lock(m_abort);
     if(abort) {
       g_mutex_unlock(m_abort);
-      break; // end loop;
+      break;
     }
     g_mutex_unlock(m_abort);
 
-    // 1. send out already answered messages
-    if(comm.isConnected()) {
+    
+    if(comm.isConnected()) 
+    {
       try {
-        sendAll();
-      } catch(...) {
-        disconnect();
-      }
-    }
 
-    // 2. get new commands (maximal 50)
-    if(comm.isConnected()) {
-      try {
+        // 1. send out already answered messages
+        sendAll();
+
+        // 2. get new commands (maximal 50)
         receiveAll();
+
+      } catch(const char* msg) {
+        g_warning("debug server exception: %s", msg);
+        disconnect();
       } catch(...) {
+        g_warning("unexpected exception in debug server");
         disconnect();
       }
     }
@@ -91,7 +118,10 @@ void DebugServer::mainConnection()
 
     // always give other thread the possibility to gain control before entering
     // the loop again (wait for 1 ms)
+    
     g_usleep(1000);
+
+    // TODO: do we really need this here?
     g_thread_yield();
   } // end while true
 
@@ -120,18 +150,19 @@ void DebugServer::sendAll()
   int size = g_async_queue_length(answers);
   for(int i = 0; i < size && g_async_queue_length(answers) > 0; i++)
   {
-    GString* answer = (GString*) g_async_queue_pop(answers);
+    DebugMessageOut::Data* answer = (DebugMessageOut::Data*) g_async_queue_pop(answers);
 
     if(answer != NULL)
     {
-      if(!comm.sendMessage(answer->str, answer->len))
+      if(!comm.sendMessage(answer->data(), answer->size()))
       {
         g_warning("could not send message");
         disconnect();
       }
-      g_string_free(answer, true);
+      //g_string_free(answer, true);
+      delete answer;
     }
-  }//end while
+  }//end for
 }//end sendAll
 
 void DebugServer::disconnect()
@@ -143,10 +174,10 @@ void DebugServer::disconnect()
 
   // all commands are "answered", disconnect
   comm.disconnect();
-}//end disconnect
+}
 
 
-void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
+void DebugServer::getDebugMessageIn(DebugMessageIn& buffer)
 {
   buffer.messages.clear();
 
@@ -168,33 +199,34 @@ void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
         disconnect();
       }
     }
-  }// end if single threaded
+  }
 
-  // copy messages
+  // parse messages
   while (g_async_queue_length(commands) > 0)
   {
     GString* cmdRaw = (GString*) g_async_queue_pop(commands);
 
-    naoth::DebugMessageIn::Message message;
-    parseCommand(cmdRaw, message.command, message.arguments);
+    DebugMessageIn::Message message;
+    parseCommand(cmdRaw, message);
     buffer.messages.push_back(message);
 
     g_string_free(cmdRaw, true);
-  }//end while
+  }
 
   g_mutex_unlock(m_executing);
 }//end getDebugMessageIn
 
 
-void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
+void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
 {
   g_mutex_lock(m_executing);
 
-  for(std::list<std::string>::const_iterator iter=buffer.answers.begin(); iter!=buffer.answers.end(); ++iter)
+  for(std::list<DebugMessageOut::Data*>::const_iterator iter=buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
   {
-    GString* answer = g_string_new("");
-    g_string_append_len(answer, iter->c_str(), iter->size());
-    g_async_queue_push(answers, answer);
+    //GString* answer = g_string_sized_new(iter->si);
+    //GString* answer = g_string_new_len(iter->c_str(), iter->size());
+    //g_string_append_len(answer, iter->c_str(), iter->size());
+    g_async_queue_push(answers, *iter);
   }
 
   // if running in the single threaded mode
@@ -219,28 +251,25 @@ void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
 }//end getDebugMessageOut
 
 
-void DebugServer::parseCommand(
-  GString* cmdRaw, 
-  std::string& commandName, 
-  std::map<std::string, std::string>& arguments)
+void DebugServer::parseCommand(GString* cmdRaw, DebugMessageIn::Message& command) const
 {
   naothmessages::CMD cmd;
-  commandName = "invalidcommand";
+  command.command = "invalidcommand";
 
   if(cmd.ParseFromArray(cmdRaw->str, static_cast<int> (cmdRaw->len)))
   {
-    commandName = cmd.name();
+    command.command = cmd.name();
 
     for(int i=0; i < cmd.args().size(); i++)
     {
       const naothmessages::CMDArg& arg = cmd.args().Get(i);
       if(arg.has_bytes()) {
-        arguments[arg.name()] = arg.bytes();
+        command.arguments[arg.name()] = arg.bytes();
       } else {
-        arguments[arg.name()] = arg.name();
+        command.arguments[arg.name()] = arg.name();
       }
     }
-  }//end if
+  }
 }//end parseCommand
 
 
@@ -254,8 +283,8 @@ void DebugServer::clearBothQueues()
 
   while (g_async_queue_length(answers) > 0)
   {
-    GString* tmp = (GString*) g_async_queue_pop(answers);
-    g_string_free(tmp, true);
+    delete (DebugMessageOut::Data*) g_async_queue_pop(answers);
+    //g_string_free(tmp, true);
   }
 }//end clearBothQueues
 
@@ -263,28 +292,5 @@ void* DebugServer::connection_thread_static(void* ref)
 {
   static_cast<DebugServer*>(ref)->mainConnection();
   return NULL;
-}
-
-DebugServer::~DebugServer()
-{
-  // notify the connectionThread to stop
-  g_mutex_lock(m_abort);
-  abort = true;
-  g_mutex_unlock(m_abort);
-
-  // wait for connectionThread to stop
-  if(connectionThread != NULL)
-  {
-    g_thread_join(connectionThread);
-  }
-
-  clearBothQueues();
-  comm.disconnect();
-
-  g_mutex_free(m_executing);
-  g_mutex_free(m_abort);
-
-  g_async_queue_unref(commands);
-  g_async_queue_unref(answers);
 }
 

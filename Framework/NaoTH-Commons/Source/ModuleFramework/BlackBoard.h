@@ -69,7 +69,7 @@ public:
     virtual Representation& getRepresentation() = 0;
 
     virtual ~BlackBoardData() {}
-  };//end class BlackBoardData
+  };
 
 
   /** */
@@ -89,7 +89,7 @@ private:
     T instance;
 
   public:
-    BlackBoardDataHolder(const std::string name) : instance(name) {}
+    BlackBoardDataHolder(const std::string& name) : instance(name) {}
 
     T& operator*(){ return instance; }
     const T& operator*() const { return instance; }
@@ -100,7 +100,7 @@ private:
   };
 
 
-  /** holds the pointers to  */
+  /** holds the pointers to the representations */
   Registry registry;
   
   /*
@@ -119,8 +119,6 @@ public:
     //DataHolder<BlackBoardPtr>& bb_pointer = getRepresentation<DataHolder<BlackBoardPtr> >("BlackBoard");
     //(*bb_pointer).prt = this;
   }
-
-  BlackBoard(BlackBoard& /*blackBoard*/){}
 
   virtual ~BlackBoard()
   {
@@ -147,11 +145,11 @@ public:
     if(iter == registry.end())
     {
       // TODO: throw
-      std::cerr << "Representation not existing: " 
+      std::cerr << "[BlackBoard] Representation not existing: " 
                 << name << " of type " << typeid(T).name() 
                 << "is not registred and cannot be created." << std::endl;
       assert(false);
-    }//end if
+    }
 
 
     // try to cast the representation to the given type
@@ -161,7 +159,7 @@ public:
     if(typedData == NULL)
     {
       // TODO: throw
-      std::cerr << "Representation type mismatch: " 
+      std::cerr << "[BlackBoard] Representation type mismatch: " 
                 << name << " is registered as " << iter->second->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
       assert(false);

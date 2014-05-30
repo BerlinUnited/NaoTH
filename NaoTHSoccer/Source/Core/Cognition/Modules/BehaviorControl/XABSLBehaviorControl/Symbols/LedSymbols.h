@@ -5,8 +5,8 @@
 * Definition of class LedSymbols
 */
 
-#ifndef __LedSymbols_H_
-#define __LEdSymbols_H_
+#ifndef _LedSymbols_H_
+#define _LEdSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -28,8 +28,6 @@ class LedSymbols: public LedSymbolsBase
 
 public:
   LedSymbols()
-    :
-    ledRequest(getBehaviorLEDRequest())
   {
     theInstance = this;
     lastREar = 0.0;
@@ -46,9 +44,6 @@ public:
 private:
 
   static LedSymbols* theInstance;
-
-  // representations
-  LEDRequest& ledRequest;
 
   // helper
   void setEye(naoth::LEDData::MultiLEDID from, naoth::LEDData::MultiLEDID to, int value);
@@ -72,4 +67,4 @@ private:
 
 };//end class LedSymbols
 
-#endif // __LedSymbols_H_
+#endif // _LedSymbols_H_

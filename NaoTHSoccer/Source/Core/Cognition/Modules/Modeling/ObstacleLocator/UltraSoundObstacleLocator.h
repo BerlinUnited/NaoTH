@@ -16,6 +16,7 @@
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // tools
 #include "Tools/Math/Geometry.h"
@@ -55,19 +56,44 @@ public:
 
   virtual void execute();
 
+private:  
+  
+   class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("USParameters")
+    {
+      
+      PARAMETER_REGISTER(minBlockedDistance) = 350;
+
+      // load from the file after registering all parameters
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    int minBlockedDistance;
+
+    virtual ~Parameters() {
+      DebugParameterList::getInstance().remove(this);
+    }
+  } parameters;
+
 private:
 
   static const double maxValidDistance;
-  static const double minBlockedDistance;
   static const double invalidDistanceValue;
 
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
 
+  // used to recognize whether a new percept is avaliable
+  UltraSoundReceiveData lastValidUltraSoundReceiveData;
+
   RingBufferWithSum<double,5> bufferLeft;
   RingBufferWithSum<double,5> bufferRight;
 
   void provideToLocalObstacleModel();
+  bool isNewDataAvaliable() const;
   void fillBuffer();
   void drawObstacleModel();
 };

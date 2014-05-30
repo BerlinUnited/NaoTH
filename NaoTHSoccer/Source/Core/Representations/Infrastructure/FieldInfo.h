@@ -7,10 +7,11 @@
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 */ 
 
-#ifndef __FieldInfo_h_
-#define __FieldInfo_h_
+#ifndef _FieldInfo_h_
+#define _FieldInfo_h_
 
 #include <Tools/Math/Vector2.h>
+#include <Tools/Math/Geometry.h>
 #include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Printable.h>
@@ -34,6 +35,10 @@ public:
 
   virtual void print(std::ostream& stream) const;
 
+  // some tools
+  inline bool insideCarpet(const Vector2d& p) {
+    return carpetRect.inside(p);
+  }
 
   //colors
   ColorClasses::Color ballColor;
@@ -83,6 +88,8 @@ public:
   double yPosRightGoalpost;
   double yPosLeftGoalpost;
 
+  Geometry::Rect2d carpetRect;
+  Geometry::Rect2d ownHalfRect;
 
   enum LineCrossingsId
   {

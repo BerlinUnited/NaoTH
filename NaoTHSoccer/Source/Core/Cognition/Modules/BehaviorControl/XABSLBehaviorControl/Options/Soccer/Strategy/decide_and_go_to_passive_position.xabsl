@@ -8,10 +8,14 @@ option decide_and_go_to_passive_position
 
   initial state idle {
 	  decision {
-      else 
+      else if (action_done)
         goto check_player_number;
+      else
+        stay;
 	  }
 	  action {
+      //search_before_passive();
+      search_ball_back_rot();
 	  }
 	}  
   

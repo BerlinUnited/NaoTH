@@ -126,6 +126,32 @@ Module* KeyFrameMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
   keyFrameMotionCreator->setEnabled(false);
 
+  // special case: use by the motion editor
+  if(motionRequest.id == motion::play_editor_motionnet) {
+    try
+    {
+      MotionNet motionNet;
+
+      cout << "KeyFrameMotionFactory: load Config/play_editor_motionnet.mef";
+      loadMotionNetFromFile("Config/play_editor_motionnet.mef", motionNet);
+      cout << "\tok" << endl;
+
+      keyFrameMotionCreator->setEnabled(true);
+      KeyFrameMotion* motion = keyFrameMotionCreator->getModuleT();
+      motion->set(motionNet, motionRequest.id);
+
+      return keyFrameMotionCreator->getModule();
+    }
+    catch(std::string e)
+    {
+      // loading failed
+      cout << "\tfail" << endl; 
+      cout << e << endl;
+      return NULL;
+    }
+  }
+
+
   std::string motionName = motion::getName(motionRequest.id);
   const MotionNet* net = getMotionNets().get(motionName);
 

@@ -16,16 +16,20 @@ namespace Statistics
   class HistogramX
   {
     public:
+      static const int maxInt = (int)((unsigned) -1 / 2);
       int size;
 
       std::vector<int> rawData;
       std::vector<double> normalizedData;
       std::vector<double> cumulativeData;
      
+      int maxTotalSum;
       int median;
       int min;
       int max;
+      int common;
       int spanWidth;
+      double sum;
       double mean;
       double variance;
       double sigma;
@@ -35,15 +39,16 @@ namespace Statistics
 
       HistogramX()
       {
+        maxTotalSum = maxInt;
         size = 0;
         clear();
       }
       
       HistogramX(int newSize)
       {
+        maxTotalSum = maxInt;
         size = newSize;
         resize(newSize);
-        clear();
       }
       
       ~HistogramX()
@@ -54,7 +59,9 @@ namespace Statistics
         median = 0;
         min = 0;
         max = 0;
+        common = 0;
         spanWidth = 0;
+        sum = 0.0;
         mean = 0.0;
         variance = 0.0;
         sigma = 0.0;
@@ -70,6 +77,7 @@ namespace Statistics
         }
       }
 
+      //resize histogram to newSize bins
       void resize(int newSize)
       {
         size = newSize;
@@ -79,36 +87,78 @@ namespace Statistics
         clear();
       }
 
+      //add 1 to the bin for value
       void add(int value)
       {
         rawData[value]++;
       }
 
+      //add value to the bin at index idx
+      void add(int idx, int value)
+      {
+        rawData[idx] += value;
+      }
+
+      //set value of bin at index idx
       void set(int idx, int value)
       {
         rawData[idx] = value;
       }
 
+      //set maximal total sum for recalulation of bins
+      void setMaxTotalSum(int maxSum)
+      {
+        maxTotalSum = maxSum < maxInt / 2 ? maxSum * 2 : maxInt;// > 10 * size ? maxSum : 10 * size;
+      }
+
+      //reset maximal total sum for recalulation of bins to max integer value
+      void resetMaxTotalSum()
+      {
+        maxTotalSum = maxInt;
+      }
+
+      //calculate normalized and cumulated histograms and some moments
       void calculate()
       {
-        double sum = 0.0;
+        sum = 0.0;
         mean = 0.0;
         for(int i = 0; i < size; i++)
         {
           sum += rawData[i];
           mean += i * rawData[i];
         }
+        //if histogram is empty skip here
+        if(sum == 0) 
+          return;
+        //save total sum of bins if calculate() is running the first time, needed for recalculation if accumulation behaviour is used
         mean /= sum;
         median = 0;
         min = 255;
         max = 0;
+        common = 0;
         squareMean = 0.0;
         variance = 0.0;
         skewness = 0.0;
         kurtosis = 0.0;
+        //can only be true if accumulation behaviour is used and total sum is about to reach max value of int
+        bool reachingMaxSum = sum >= maxTotalSum;
+        double newSum = 0.0;
+        int maxRate = 0;
         for(int i = 0; i < size; i++)
         {
           normalizedData[i] = rawData[i] / sum;
+          //if accumulation behaviour is used and total sum is about to reach max value of int,
+          //recalculate bin values by use of normalized bin value and the total sum of first run
+          //we do loose some accuracy here and total sum of bins is not equal to the one from first run because of rounding doubles to ints
+          if(reachingMaxSum) 
+            rawData[i] = (int) Math::round(normalizedData[i] *maxTotalSum * 0.5); 
+          newSum += rawData[i];
+          
+          if(maxRate < rawData[i])
+          {
+            maxRate = rawData[i];
+            common = i;
+          }
           squareMean += i * i * normalizedData[i];
           double v = (i - mean);
           double v2 = v * v;
@@ -137,6 +187,7 @@ namespace Statistics
             max = i;
           }
         }
+        sum = newSum;
         spanWidth = max - min;
         squareMean = sqrt(squareMean);
         sigma = sqrt(variance);
@@ -146,6 +197,7 @@ namespace Statistics
         calculated = true;
       }
 
+      //generate plot for raw, normalized and cumulated histograms
       void plot(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -159,6 +211,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for raw histogram
       void plotRaw(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -167,6 +220,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for normalized histogram
       void plotNormalized(std::string id) const
       {
         for(int i = 0; i < size; i++)
@@ -175,6 +229,7 @@ namespace Statistics
         }
       }
 
+      //generate plot only for cumulated histogram
       void plotCumulated(std::string id) const
       {
         for(int i = 0; i < size; i++)

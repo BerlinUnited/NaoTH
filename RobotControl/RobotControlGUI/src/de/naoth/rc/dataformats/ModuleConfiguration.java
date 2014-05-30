@@ -94,6 +94,28 @@ public class ModuleConfiguration
     {
       return enabled;
     }
+    
+    /**
+     * Returns a cleaned up version of the path, without any 
+     * ".." and with the prepended process name
+     * @param processName
+     * @return 
+     */
+    public String getCleanPathForProcess(String processName)
+    {
+      String result = path;
+      int k = result.toLowerCase().indexOf(processName.toLowerCase());
+      if (k == -1)
+      {
+        int i = result.lastIndexOf(':');
+        result = processName.toLowerCase() + result.substring(i);
+      }
+      else
+      {
+        result = processName + result.substring(k + processName.length());
+      }
+      return result;
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -131,8 +153,7 @@ public class ModuleConfiguration
     public String toString() {
         return this.getName();
     }
-  }//end class Node
-
+  }
   public static class Edge
   {
     

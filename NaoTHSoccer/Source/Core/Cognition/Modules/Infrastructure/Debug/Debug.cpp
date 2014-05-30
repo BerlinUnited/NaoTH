@@ -56,6 +56,10 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 
+  DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:links", "Visualize the kinematic chain in the 3D viewer", false);
+  DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:mass", "Visualize the kinematic chain in the 3D viewer", false);
+  DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:com", "Visualize the kinematic chain in the 3D viewer", false);
+
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 
 
@@ -300,6 +304,10 @@ void Debug::draw3D()
     SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
   );
 
+  DEBUG_REQUEST("3DViewer:kinematic_chain:links",
+    drawKinematicChain3D();
+  );
+
 }//end draw3D
 
 
@@ -317,5 +325,43 @@ void Debug::drawRobot3D(const Pose3D& robotPose)
       Pose3D p = robotPose * theLink[i].M;
       ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), p);
     }
+  }//end for
+}//end drawRobot3D
+
+void Debug::drawKinematicChain3D()
+{
+  const Kinematics::Link* theLink = getKinematicChain().theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+      DEBUG_REQUEST("3DViewer:kinematic_chain:mass",
+        double s = theLink[i].mass/20 + 5;
+        BOX_3D(ColorClasses::blue,s,s,s,theLink[i].M);
+      );
+
+      DEBUG_REQUEST("3DViewer:kinematic_chain:com",
+        SPHERE(ColorClasses::pink, 15, getKinematicChain().CoM);
+        Vector3d projection(getKinematicChain().CoM.x, getKinematicChain().CoM.y, 0);
+        SPHERE(ColorClasses::red, 10, projection);
+        LINE_3D(ColorClasses::red, getKinematicChain().CoM, projection);
+      );
+
+      if(theLink[i].jointID != -1) {
+        DebugDrawings::Color color(fabs(theLink[i].a.x), fabs(theLink[i].a.y), fabs(theLink[i].a.z), 0.3);
+        //NOTE: by default the cylinder is aligned along the y-axis
+        const Vector3d axsis_origin(0,1,0);
+        const Vector3d axis_target(theLink[i].a);
+        const Vector3d axis_orthogonal = (axsis_origin^axis_target).normalize();
+        const double axis_angle = acos(axsis_origin*axis_target);
+        RotationMatrix r = RotationMatrix::fromQuaternion(axis_orthogonal, axis_angle);
+
+        CYLINDER(color.toString().c_str(), 3, 30, theLink[i].M*r);
+      }
+
+      Kinematics::Link* child = theLink[i].child;
+      while(child) {
+        LINE_3D(ColorClasses::red, theLink[i].p, (*child).p);
+        child = child->sister;
+      }
   }//end for
 }//end drawRobot3D

@@ -14,6 +14,8 @@ void ButtonEventMonitor::execute()
     getButtonData().isPressed[ButtonData::LeftFootLeft] || getButtonData().isPressed[ButtonData::LeftFootRight]);
   update(getButtonState()[ButtonState::RightFoot], 
     getButtonData().isPressed[ButtonData::RightFootLeft] || getButtonData().isPressed[ButtonData::RightFootRight]);
+  update(getButtonState()[ButtonState::HeadMiddle],
+    getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadMiddle]);
 }
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)

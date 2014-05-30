@@ -118,39 +118,22 @@ bool SPLGameController::update()
   header.assign(dataIn.header, 4);
   if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
-    int teamInfoIndex = -1;
+    bool teamFound = false;
     TeamInfo tinfo;
 
-    bool isRed = true;
-
-    if (dataIn.teams[TEAM_RED].teamNumber == data.teamNumber)
+    for(unsigned int i=0; i < 2; i++)
     {
-      isRed = true;
-    }
-    else if (dataIn.teams[TEAM_BLUE].teamNumber == data.teamNumber)
-    {
-      isRed = false;
-    }
-    else
-    {
-      // no message for us invalidate data
-      return false;
+      if(dataIn.teams[i].teamNumber == data.teamNumber)
+      {
+        tinfo = dataIn.teams[i];
+        teamFound = true;
+        data.teamColor = tinfo.teamColour == TEAM_BLUE ? GameData::blue : GameData::red;
+        break;
+      }
     }
 
-    if(isRed)
-    {
-      tinfo = dataIn.teams[TEAM_RED];
-      teamInfoIndex = TEAM_RED;
-      data.teamColor = GameData::red;
-    }
-    else
-    {
-      tinfo = dataIn.teams[TEAM_BLUE];
-      teamInfoIndex = TEAM_BLUE;
-      data.teamColor = GameData::blue;
-    }
 
-    if (teamInfoIndex >= 0)
+    if(teamFound)
     {
       switch (dataIn.state)
       {
@@ -183,12 +166,12 @@ bool SPLGameController::update()
             || data.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
-          data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+          data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::kick_off_own : GameData::kick_off_opp;
         }
       }
       else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
       {
-        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+        data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
       }
       else if ( dataIn.secondaryState == STATE2_OVERTIME )
       {
@@ -200,7 +183,8 @@ bool SPLGameController::update()
       if(playerNumberForGameController < MAX_NUM_PLAYERS)
       {
         RobotInfo rinfo =
-            dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
+            tinfo.players[playerNumberForGameController];
+
         data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
         data.msecsTillUnpenalised = rinfo.secsTillUnpenalised * 1000;
         if (rinfo.penalty != PENALTY_NONE)
@@ -208,7 +192,13 @@ bool SPLGameController::update()
           data.gameState = GameData::penalized;
         }
       }
+    } // endif teamFound
+    else
+    {
+      // no message for us invalidate data
+      return false;
     }
+
     return true;
   } // end if header correct
   return false;

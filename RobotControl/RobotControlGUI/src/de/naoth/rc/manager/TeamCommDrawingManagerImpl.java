@@ -5,22 +5,32 @@
 package de.naoth.rc.manager;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.dialogs.TeamCommViewer;
 import de.naoth.rc.dialogs.drawings.Circle;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
 import de.naoth.rc.dialogs.drawings.FillOval;
+import de.naoth.rc.dialogs.drawings.Line;
 import de.naoth.rc.dialogs.drawings.Pen;
 import de.naoth.rc.dialogs.drawings.Robot;
 import de.naoth.rc.dialogs.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
-import de.naoth.rc.messages.Messages.TeamCommMessage;
+import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -34,136 +44,159 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
 
   private static class DummyServer extends MessageServer
   {
+    @Override
+    public boolean isConnected()
+    {
+       return true;
+    }
+
+    @Override
+    public void connect(String host, int port) throws IOException
+    {
+      // do nothing
+    }
+
+    @Override
+    public void disconnect()
+    {
+      // do nothing
+    }
   }
-
-  DummyServer dummyServer = new DummyServer();
-
+ 
+  
+  private final DummyServer dummyServer = new DummyServer();
+  private DrawingsContainer drawings;
+  
   public TeamCommDrawingManagerImpl()
   {
-    
   }
-
-  private String currenId = null;
-  private HashMap<String, ArrayList<Drawable>> drawingMap = new HashMap<String, ArrayList<Drawable>>();
 
   @Override
-  public void setCurrenId(String currenId) {
-    this.currenId = currenId;
+  public void handleSPLMessages(Map<String, SPLMessage> messages)
+  {
+    drawings = new DrawingsContainer();
+    
+    for(SPLMessage msg : messages.values())
+  {
+      // add the drawings for this message/player
+      for(Drawable drawing : parseContainer(msg))
+      {
+        drawings.add(drawing);
+      }
+    }
+    
+    // HACK: trigger distribution of the message
+    handleResponse(null, null);
   }
 
+  
+  
   @Override
   public DrawingsContainer convertByteArrayToType(byte[] result) throws IllegalArgumentException
   {
-    if(this.currenId == null) return null;
+    return drawings;
 
-    DrawingsContainer drawingList = new DrawingsContainer();
-    
-    try{
-      TeamCommMessage msg = TeamCommMessage.parseFrom(result);
-      
-      drawingMap.put(currenId, parseContainer(msg));
-
-      for(ArrayList<Drawable> drawables: drawingMap.values())
-      {
-        for(Drawable drawing: drawables)
-        {
-          drawingList.add(drawing);
-        }
-      }
-
-    }catch(InvalidProtocolBufferException ex)
-    {
-      throw new IllegalArgumentException(ex.toString());
-    }
-
-    return drawingList;
   }//end convertByteArrayToType
 
 
-  private ArrayList<Drawable> parseContainer(TeamCommMessage msg)
+  private ArrayList<Drawable> parseContainer(SPLMessage msg)
   {
     ArrayList<Drawable> drawingList = new ArrayList<Drawable>();
     drawingList.add(new DrawingOnField(null));
 
     Pose2D robotPose = new Pose2D();
 
-    if(msg.hasPositionOnField())
+    drawingList.add(new Pen(30, Color.gray));
+    
+    robotPose = new Pose2D(msg.pose_x,
+            msg.pose_y,
+            msg.pose_a);
+
+    
+    drawingList.add(new Pen(1, msg.team == 0 ? Color.BLUE : Color.RED));
+    Robot robot = new Robot(
+            robotPose.translation.x,
+            robotPose.translation.y,
+            robotPose.rotation);
+
+    drawingList.add(robot);
+
+    try
     {
-      Pen pen = new Pen(30, Color.gray);
-      drawingList.add(pen);
+      Representations.BUUserTeamMessage bumsg = Representations.BUUserTeamMessage.parseFrom(msg.data);
+      
+      if(bumsg.hasWasStriker() && bumsg.getWasStriker())
+      {
+        drawingList.add(new Pen(30, Color.red));
 
-      robotPose = new Pose2D(
-              msg.getPositionOnField().getTranslation().getX(),
-              msg.getPositionOnField().getTranslation().getY(),
-              msg.getPositionOnField().getRotation());
+        Circle marker = new Circle(
+                (int)robotPose.translation.x,
+                (int)robotPose.translation.y,
+                150);
 
-      Robot robot = new Robot(
-              robotPose.translation.x,
-              robotPose.translation.y,
-              robotPose.rotation);
-
-      drawingList.add(robot);
-    }
-
-    if(msg.hasWasStriker() && msg.getWasStriker())
-    {
-      Pen pen = new Pen(30, Color.red);
-      drawingList.add(pen);
-
-      Circle marker = new Circle(
-              (int)robotPose.translation.x,
-              (int)robotPose.translation.y,
-              150);
-
-      drawingList.add(marker);
-    }
-
-    {
+        drawingList.add(marker);
+      }
+      
       Pen pen = new Pen(1, Color.black);
       drawingList.add(pen);
+      
+    }
+    catch(InvalidProtocolBufferException ex)
+    {
+      Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, "Invalid user team-message", ex);
+    }
+   
+    // get the number
+    {
 
-      // get the number
-      int ix = this.currenId.lastIndexOf('.');
-      String number = this.currenId.substring(ix);
-
+      drawingList.add(new Pen(1, Color.BLACK));
       Text text = new Text(
-              (int)robotPose.translation.x,
-              (int)robotPose.translation.y+150,
-              number+"(" + msg.getPlayerNumber() + ")");
+        (int) robotPose.translation.x,
+        (int) robotPose.translation.y + 150,
+        (msg.team == 0 ? "blue" : "red") + " " + msg.playerNum);
       drawingList.add(text);
     }
 
-    if(msg.hasBallPosition())
+    // ball
+    if(msg.ballAge >= 0)
     {
-      Pen pen = new Pen(1, Color.orange);
-      drawingList.add(pen);
+      drawingList.add(new Pen(1, Color.orange));
 
-
-      Vector2D ballPos = new Vector2D(
-              msg.getBallPosition().getX(),
-              msg.getBallPosition().getY());
+      Vector2D ballPos = new Vector2D(msg.ball_x,
+        msg.ball_y);
 
       Vector2D globalBall = robotPose.multiply(ballPos);
 
       FillOval ball = new FillOval(
-              (int)globalBall.x,
-              (int)globalBall.y,
-              65,
-              65);
+        (int) globalBall.x,
+        (int) globalBall.y,
+        65,
+        65);
       drawingList.add(ball);
-
-      if(msg.hasTimeSinceBallWasSeen())
-      {
-        Pen pen2 = new Pen(1, Color.black);
-        drawingList.add(pen2);
       
-        double t = msg.getTimeSinceBallWasSeen() / 1000.0;
+      // add a surrounding black circle so the ball is easier to see
+      drawingList.add(new Pen(1, Color.black));
+      Circle outerBall = new Circle((int) globalBall.x, (int) globalBall.y, 65);
+      drawingList.add(outerBall);
+      
+      {
+        // show the time since the ball was last seen
+        drawingList.add(new Pen(1, Color.black));
+        double t = msg.ballAge / 1000.0;
 
         Text text = new Text(
-                (int)globalBall.x+50,
-                (int)globalBall.y+50,
-                Math.round(t)+"s");
+          (int) globalBall.x + 50,
+          (int) globalBall.y + 50,
+          Math.round(t) + "s");
         drawingList.add(text);
+      }
+      // draw a line between robot and ball
+      {
+        drawingList.add(new Pen(5, Color.orange));
+        Line ballLine = new Line(
+          (int) robotPose.translation.x, (int) robotPose.translation.y, 
+          (int) globalBall.x,(int)  globalBall.y);
+        drawingList.add(ballLine);
       }
     }
 
@@ -173,7 +206,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
   @Override
   public Command getCurrentCommand()
   {
-    return null;
+    return new Command("dummy_teamcomm_command");
   }
 
   @Override

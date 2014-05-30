@@ -13,8 +13,8 @@
 
 HistogramProvider::HistogramProvider()
 :
-  uniformGrid(getImage().width(), getImage().height(), 60, 40),
-  cameraID(CameraInfo::Bottom)
+  cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {}
 
 void HistogramProvider::execute(CameraInfo::CameraID id)
@@ -30,10 +30,13 @@ void HistogramProvider::execute(CameraInfo::CameraID id)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
 
-    //getImage().getCorrected(point.x, point.y, pixel);
-    getImage().get(point.x, point.y, pixel);
+    if(!getBodyContour().isOccupied(point))
+    {
+      //getImage().getCorrected(point.x, point.y, pixel);
+      getImage().get(point.x, point.y, pixel);
 
-    getColorChannelHistograms().increaseChannelValue(pixel);
+      getColorChannelHistograms().increaseChannelValue(pixel);
+    }
   }//end for
   
   getColorChannelHistograms().histogramY.calculate();

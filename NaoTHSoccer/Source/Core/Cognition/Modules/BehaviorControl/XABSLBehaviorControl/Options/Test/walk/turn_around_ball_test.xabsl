@@ -52,7 +52,7 @@ option turn_around_ball_test
     }
 	  action
 	  {
-	    move_around_ball(direction=-30, radius=170);
+	    move_around_ball(direction=-30, radius=190);
       head.control_mode = search_for_ball;
       motion.walk.style = fast;
 	  }

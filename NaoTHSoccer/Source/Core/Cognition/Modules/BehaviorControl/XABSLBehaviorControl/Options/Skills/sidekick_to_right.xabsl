@@ -49,6 +49,7 @@ option sidekick_to_right
       motion.walk.step_control.speed_direction = -90;
       motion.walk.step_control.time = 300;
 
+
       //loook at percept
       head.control_mode = look_at_ball_percept;
     }

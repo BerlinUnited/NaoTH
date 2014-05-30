@@ -24,7 +24,7 @@ void BatteryAlert::execute()
     whenPlayed = getFrameInfo().getTimeInSeconds();
     getSoundPlayData().mute = false;
     getSoundPlayData().soundFile = "battery_low.wav";
-  } else {
+  } else if (getSoundPlayData().soundFile == "battery_low.wav"){
     getSoundPlayData().mute = true;
     getSoundPlayData().soundFile = "";
   }

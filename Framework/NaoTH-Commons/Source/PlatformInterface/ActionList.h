@@ -54,7 +54,7 @@ public:
     for(ActionListT::iterator iter = actions.begin(); iter != actions.end(); ++iter)
     {
       delete (*iter);
-    }//end for
+    }
   }
 
   void execute() const
@@ -62,8 +62,8 @@ public:
     for(ActionListT::const_iterator iter = actions.begin(); iter != actions.end(); ++iter)
     {
       (*iter)->execute();
-    }//end for
-  }//end execute
+    }
+  }
 
   void push_back(AbstractAction* action)
   {

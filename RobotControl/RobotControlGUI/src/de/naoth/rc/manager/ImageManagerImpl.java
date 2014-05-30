@@ -22,7 +22,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  */
 @PluginImplementation
 public class ImageManagerImpl extends AbstractManagerPlugin<JanusImage>
-  implements ImageManager
+  implements ImageManagerBottom
 {
 
   public ImageManagerImpl()

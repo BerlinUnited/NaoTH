@@ -14,6 +14,8 @@
 using namespace std;
 using namespace naoth;
 
+#define TEAMCOMM_MAX_MSG_SIZE 4096
+
 NaoController::NaoController()
     :
     PlatformInterface("Nao", 10),
@@ -40,7 +42,6 @@ NaoController::NaoController()
   // end init shared memory
   
 
-
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
   ifstream is(naoInfoPath.c_str());
@@ -56,16 +57,15 @@ NaoController::NaoController()
   else
   {
     is >> theBodyID >> theBodyNickName;
-    cout << "bodyID: " << theBodyID << endl;
-    cout << "bodyNickName: " << theBodyNickName << endl;
+    cout << "[NaoController] " << "bodyID: " << theBodyID << endl;
+    cout << "[NaoController] " << "bodyNickName: " << theBodyNickName << endl;
   }
 
   // read the mac address of the LAN adaptor
   ifstream isEthMac("/sys/class/net/eth0/address");    
   isEthMac >> theHeadNickName;
   std::replace(theHeadNickName.begin(), theHeadNickName.end(), ':', '_');    
-  cout << "headNickName: " << theHeadNickName << endl;
-
+  cout << "[NaoController] " << "headNickName: " << theHeadNickName << endl;
 
 
   /*  REGISTER IO  */
@@ -114,15 +114,15 @@ NaoController::NaoController()
 
 
   /*  INIT DEVICES  */
-  std::cout << "Init Platform" << endl;
+  std::cout << "[NaoController] " << "Init Platform" << endl;
   Platform::getInstance().init(this);
 
-  std::cout << "Init SoundHandler" <<endl;
+  std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
   //theSoundPlayer.play("penalized");
   theSoundHandler = new SoundControl();
 
   // create the teamcomm
-  std::cout << "Init TeamComm" << endl;
+  std::cout << "[NaoController] " << "Init TeamComm" << endl;
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
@@ -135,20 +135,20 @@ NaoController::NaoController()
   theBroadCastListener = new BroadCastListener(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
   // start the debug server at the default debug port
-  std::cout << "Init DebugServer" << endl;
+  std::cout << "[NaoController] " << "Init DebugServer" << endl;
   int debug_port = 5401; // default port
   config.get("network", "debug_port", debug_port);
   theDebugServer = new DebugServer();
   theDebugServer->start(static_cast<unsigned short>(debug_port), true);
 
 
-  std::cout<< "Init SPLGameController"<<endl;
+  std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
 
-  std::cout << "Init CameraHandler (bottom)" << std::endl;
+  std::cout << "[NaoController] " << "Init CameraHandler (bottom)" << std::endl;
   theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
-  std::cout << "Init CameraHandler (top)" << std::endl;
-  theTopCameraHandler.init("/dev/video0", CameraInfo::Bottom, false);
+  std::cout << "[NaoController] " << "Init CameraHandler (top)" << std::endl;
+  theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
 }
 
 NaoController::~NaoController()
@@ -160,53 +160,13 @@ NaoController::~NaoController()
   delete theDebugServer;
 }
 
-void NaoController::setCameraSettingsInternal(const CameraSettingsRequest &data,
-                        CameraInfo::CameraID camID)
-{
-  V4lCameraHandler& cameraHandler = camID == CameraInfo::Bottom
-      ? theBottomCameraHandler : theTopCameraHandler;
-
-  bool somethingChanged = false;
-  if(cameraHandler.isRunning())
-  {
-    CurrentCameraSettings current;
-    cameraHandler.getCameraSettings(current, data.queryCameraSettings);
-
-    if(data.queryCameraSettings)
-    {
-      somethingChanged = false;
-    }
-    else
-    {
-      for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
-      {
-        if(current.data[i] != data.data[i])
-        {
-          std::cout << "CameraParameter " <<
-                        CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-                    << " was requested to change from " << current.data[i]
-                    << " to " << data.data[i] << std::endl;
-          somethingChanged = true;
-//           break;
-        }
-      }
-    }
-  }
-  if(somethingChanged)
-  {
-    std::cout << "Settting camera settings ("
-              << (camID == CameraInfo::Bottom ? "bottom" : "top") << ")" << endl;
-    cameraHandler.setAllCameraParams(data);
-  }
-}//end set CameraSettingsRequest
-
 void NaoController::set(const CameraSettingsRequest &data)
 {
-  setCameraSettingsInternal(data, CameraInfo::Bottom);
+  theBottomCameraHandler.setAllCameraParams(data);
 }
 
 void NaoController::set(const CameraSettingsRequestTop &data)
 {
-  setCameraSettingsInternal(data, CameraInfo::Top);
+  theTopCameraHandler.setAllCameraParams(data);
 }
 

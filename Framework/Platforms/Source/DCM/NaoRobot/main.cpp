@@ -15,6 +15,7 @@
 
 using namespace naoth;
 
+gint framesSinceCognitionLastSeen;
 
 void got_signal(int t)
 {
@@ -83,6 +84,8 @@ void* cognitionThreadCallback(void* ref)
 
   while(true) {
     theController->runCognition();
+    g_atomic_int_set(&framesSinceCognitionLastSeen, 0);
+
     g_thread_yield();
   }
 
@@ -92,11 +95,33 @@ void* cognitionThreadCallback(void* ref)
 
 void* motionThreadCallback(void* ref)
 {
+  g_atomic_int_set(&framesSinceCognitionLastSeen, 0);
+
   NaoController* theController = static_cast<NaoController*> (ref);
 
   Stopwatch stopwatch;
   while(true)
   {
+    if(g_atomic_int_get(&framesSinceCognitionLastSeen) > 4000)
+    {
+      std::cerr << std::endl;
+      std::cerr << "+==================================+" << std::endl;
+      std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
+      std::cerr << "+==================================+" << std::endl;
+      std::cerr << "dumping traces" << std::endl;
+      Trace::getInstance().dump();
+      StopwatchManager::getInstance().dump("cognition");
+
+      #ifndef WIN32
+      std::cerr << "syncing file system..." ;
+      sync();
+      std::cerr << " finished." << std::endl;
+      #endif
+
+      ASSERT(false && "Cognition seems to be dead");
+    }//end if
+    g_atomic_int_inc(&framesSinceCognitionLastSeen);
+
     theController->runMotion();
     
     if(sem_wait(dcm_sem) == -1) {

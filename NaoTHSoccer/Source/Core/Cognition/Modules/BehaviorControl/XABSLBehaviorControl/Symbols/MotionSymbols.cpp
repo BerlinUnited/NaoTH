@@ -119,6 +119,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.walk.step_control.target.rot", &stepControlRequestTarget.rotation);
   engine.registerDecimalOutputSymbol("motion.walk.step_control.time", &stepControlRequestTime);
   engine.registerDecimalOutputSymbol("motion.walk.step_control.speed_direction", &stepControlRequestSpeedDirection);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.scale", &stepControlScale);
 
   // motion status
   engine.registerEnumeratedInputSymbol("executed_motion.type","motion.type", &getMotionStatusId);
@@ -178,6 +179,7 @@ void MotionSymbols::updateOutputSymbols()
     req.time = (int)(stepControlRequestTime);
     req.speedDirection = Math::fromDegrees(stepControlRequestSpeedDirection);
     req.moveLeftFoot = (stepControlFoot == left);
+    req.scale = stepControlScale;
   }
 }
 

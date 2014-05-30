@@ -7,7 +7,8 @@ option obstacle_test_agent
       basic_play();
 
       obstacle_test();
-      
+
+      arms_control();
       // control head movement according to value of head.control_mode
       head_control();
     }

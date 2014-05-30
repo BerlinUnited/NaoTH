@@ -41,8 +41,8 @@ void OdometrySymbols::registerSymbols(xabsl::Engine& engine)
 
 void OdometrySymbols::execute()
 {
-  Pose2D odometryDelta = lastRobotOdometry - odometryData;
-  lastRobotOdometry = odometryData;
+  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+  lastRobotOdometry = getOdometryData();
 
   relativePoint = odometryDelta * relativePoint;
 
@@ -51,30 +51,30 @@ void OdometrySymbols::execute()
     PEN("FF0000", 1);
     FILLOVAL(relativePoint.x, relativePoint.y, 25, 25);
   );
-}//end update
+}//end execute
 
 double OdometrySymbols::getOdometry_x()
 {
-  return theInstance->odometryData.translation.x;
-}//end get x translation
+  return theInstance->getOdometryData().translation.x;
+}
 
 double OdometrySymbols::getOdometry_y()
 {
-  return theInstance->odometryData.translation.y;
-}//end get y translation
+  return theInstance->getOdometryData().translation.y;
+}
 
 double OdometrySymbols::getOdometry_angle()
 {
-  return theInstance->odometryData.rotation;
-}//end get rotation
+  return theInstance->getOdometryData().rotation;
+}
 
 double OdometrySymbols::getOdometryPreview_x()
 {
-  return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).x;
-}//end get getOdometryPreview_x
+  return (theInstance->getMotionStatus().plannedMotion.hip/theInstance->previewParameter).x;
+}
 
 double OdometrySymbols::getOdometryPreview_y()
 {
-  return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).y;
-}//end get getOdometryPreview_y
+  return (theInstance->getMotionStatus().plannedMotion.hip/theInstance->previewParameter).y;
+}
 

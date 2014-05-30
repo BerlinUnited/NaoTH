@@ -1,28 +1,20 @@
 option decide_and_go_to_ready_position
 {
-  initial state check_out_the_situation
+  initial state decide
   {
     decision
     {
-      /* relocalize in initial kickoff */
-      if((robot_pose.is_valid && state_time>8000) || state_time>30000)
-        {
-          if(game.own_kickoff)
-            goto own_kickoff;
-          else
-            goto opp_kickoff;
-        }
-      else 
-        stay;
+      if(game.own_kickoff)
+        goto own_kickoff;
+      else
+        goto opp_kickoff;
     }
     action
     {
-      head.control_mode = search_for_goal;
-      motion.type = stand;
     }
   }
 
-    state own_kickoff{
+  state own_kickoff {
     decision {
         stay;
     }

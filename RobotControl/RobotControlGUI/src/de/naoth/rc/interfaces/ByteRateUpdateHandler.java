@@ -16,5 +16,5 @@ public interface ByteRateUpdateHandler extends Plugin
 
   public void setSentByteRate(double rate);
   public void setReceiveByteRate(double rate);
-
+  public void setServerLoopFPS(double fps);
 }

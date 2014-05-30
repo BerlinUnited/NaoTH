@@ -7,7 +7,7 @@
 */
 
 #ifndef _NAOTIME_H
-#define  _NAOTIME_H
+#define _NAOTIME_H
 
 #ifdef WIN32
 #include <windows.h>

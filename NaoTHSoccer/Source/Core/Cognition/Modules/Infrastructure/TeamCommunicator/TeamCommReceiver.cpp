@@ -2,13 +2,14 @@
 #include "TeamCommSender.h"
 
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugBufferedOutput.h>
 #include <Messages/Representations.pb.h>
 #include <Representations/Modeling/SPLStandardMessage.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace std;
 
-TeamCommReceiver::TeamCommReceiver()
+TeamCommReceiver::TeamCommReceiver() : droppedMessages(0)
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
@@ -68,6 +69,8 @@ void TeamCommReceiver::execute()
     ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
     handleMessage(ownMsgData, true);
   }
+
+  PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
@@ -95,15 +98,14 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     return;
   }
 
-  unsigned int num = spl.playerNum;
   GameData::TeamColor teamColor = (GameData::TeamColor) spl.team;
 
   if ( teamColor == getPlayerInfo().gameData.teamColor
        // ignore our own messages, we are adding it artficially later
-       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
+       && (allowOwn || spl.playerNum != getPlayerInfo().gameData.playerNumber)
      )
   {
-    TeamMessage::Data& data = getTeamMessage().data[num];
+    TeamMessage::Data data;
     data.frameInfo = getFrameInfo();
 
     data.playerNum = spl.playerNum;
@@ -129,27 +131,29 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     // TODO: use walkingTo and shootTo
 
     // check if we can deserialize the user defined data
-    if(spl.numOfDataBytes > 0 && spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+    if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
     {
       naothmessages::BUUserTeamMessage userData;
       try
       {
-        userData.ParseFromArray(spl.data, spl.numOfDataBytes);
-
-        data.bodyID = userData.bodyid();
-        data.timeToBall = userData.timetoball();
-        data.wasStriker = userData.wasstriker();
-        data.isPenalized = userData.ispenalized();
-        data.batteryCharge = userData.batterycharge();
-        data.temperature = userData.temperature();
-        data.teamNumber = userData.teamnumber();
-        data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
-        for(unsigned int i=0; i < data.opponents.size(); i++)
+        if(userData.ParseFromArray(spl.data, spl.numOfDataBytes))
         {
-          const naothmessages::Opponent& oppMsg = userData.opponents(i);
-          TeamMessage::Opponent& opp = data.opponents[i];
-          opp.playerNum = oppMsg.playernum();
-          DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
+          data.timestamp = userData.timestamp();
+          data.bodyID = userData.bodyid();
+          data.timeToBall = userData.timetoball();
+          data.wasStriker = userData.wasstriker();
+          data.isPenalized = userData.ispenalized();
+          data.batteryCharge = userData.batterycharge();
+          data.temperature = userData.temperature();
+          data.teamNumber = userData.teamnumber();
+          data.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
+          for(unsigned int i=0; i < data.opponents.size(); i++)
+          {
+            const naothmessages::Opponent& oppMsg = userData.opponents(i);
+            TeamMessage::Opponent& opp = data.opponents[i];
+            opp.playerNum = oppMsg.playernum();
+            DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
+          }
         }
       }
       catch(...)
@@ -159,6 +163,17 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
         // TODO: we might want to maintain a list of robots which send
         // non-compliant messages in order to avoid overhead when trying to parse it
       }
+    }
+
+
+    // copy new data to the blackboard
+    if(!parameters.monotonicTimestampCheck || monotonicTimeStamp(data))
+    {
+      getTeamMessage().data[data.playerNum] = data;
+    }
+    else
+    {
+      droppedMessages++;
     }
   }
 }

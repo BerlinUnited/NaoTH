@@ -69,7 +69,7 @@
         <Property name="axis" type="int" value="3"/>
       </Layout>
       <SubComponents>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="secondaryImageCanvas">
+        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasTop">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
@@ -78,9 +78,6 @@
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                 <LineBorder/>
               </Border>
-            </Property>
-            <Property name="componentPopupMenu" type="javax.swing.JPopupMenu" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="default"/>
             </Property>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -98,7 +95,7 @@
             </DimensionLayout>
           </Layout>
         </Container>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvas">
+        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasBottom">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
@@ -107,9 +104,6 @@
               <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                 <LineBorder/>
               </Border>
-            </Property>
-            <Property name="componentPopupMenu" type="javax.swing.JPopupMenu" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="default"/>
             </Property>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -137,15 +131,15 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JToggleButton" name="btReceiveImages">
+        <Component class="javax.swing.JToggleButton" name="btReceiveImagesTop">
           <Properties>
             <Property name="text" type="java.lang.String" value="Receive Bottom"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesTopActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="btReceiveSecondary">
+        <Component class="javax.swing.JToggleButton" name="btReceiveImagesBottom">
           <Properties>
             <Property name="text" type="java.lang.String" value="Receive Top"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -153,7 +147,7 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveSecondaryActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesBottomActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JToggleButton" name="btReceiveDrawings">

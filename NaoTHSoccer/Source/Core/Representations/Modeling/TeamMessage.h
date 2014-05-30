@@ -46,9 +46,11 @@ public:
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
-        isPenalized(false)
+        isPenalized(false),
+        batteryCharge(0.0f),
+        temperature(0.0f),
+        timestamp(0)
     {
-
     }
 
     naoth::FrameInfo frameInfo;
@@ -89,6 +91,7 @@ public:
     std::vector<Opponent> opponents;
     float batteryCharge;
     float temperature;
+    unsigned long long timestamp;
     // END BERLIN UNITED SPECIFIC
 
   };
@@ -106,6 +109,7 @@ public:
       stream << "From " << i->first << " ["<< d.bodyID <<"]"<< std::endl;
       i->second.frameInfo.print(stream);
       stream << "Message: " << std::endl;
+      stream << "Timestamp" << d.timestamp << std::endl;
       stream << "\tPos (x; y; rotation) = "
              << d.pose.translation.x << "; "
              << d.pose.translation.y << "; "

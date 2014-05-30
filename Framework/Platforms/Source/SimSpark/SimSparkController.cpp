@@ -1366,10 +1366,11 @@ void SimSparkController::jointControl()
     {
       v2 *= -1;
     }
-
-    theActData << '(' << theJointMotorNameMap[(JointData::JointID)i] << ' '
-      << v2
-      << ')';
+    
+    std::map<JointData::JointID, std::string>::const_iterator iter = theJointMotorNameMap.find((JointData::JointID)i);
+    if(iter != theJointMotorNameMap.end()) {
+      theActData << '(' << (iter->second) << ' ' << v2 << ')';
+    }
   }
 }
 

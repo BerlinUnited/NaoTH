@@ -18,10 +18,15 @@
 
 #include <Tools/CameraGeometry.h>
 
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugImageDrawings.h>
+
 ArtificialHorizonCalculator::ArtificialHorizonCalculator()
 :
   cameraID(CameraInfo::Bottom)
-{}
+{
+  DEBUG_REQUEST_REGISTER("ArtificialHorizonCalculator:draw_horizon", "draw the artificial horizon as a line in th image", false);  
+}
 
 void ArtificialHorizonCalculator::execute(CameraInfo::CameraID id)
 {
@@ -29,6 +34,13 @@ void ArtificialHorizonCalculator::execute(CameraInfo::CameraID id)
   Vector2d a,b;
   CameraGeometry::calculateArtificialHorizon(getCameraMatrix(), getCameraInfo(), a, b);
   getArtificialHorizon() = ArtificialHorizon(a, b);
+
+  DEBUG_REQUEST("ArtificialHorizonCalculator:draw_horizon",
+    CANVAS_PX(cameraID);
+    LINE_PX(ColorClasses::red,
+      (int)(getArtificialHorizon().begin().x +0.5), (int)(getArtificialHorizon().begin().y +0.5),
+      (int)(getArtificialHorizon().end().x +0.5), (int)(getArtificialHorizon().end().y +0.5));
+  );
 }
 
 ArtificialHorizonCalculator::~ArtificialHorizonCalculator()

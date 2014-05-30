@@ -28,6 +28,7 @@ class JointData
       LShoulderRoll,
       RShoulderPitch,
       LShoulderPitch,
+
       RElbowRoll,
       LElbowRoll,
       RElbowYaw,
@@ -45,6 +46,14 @@ class JointData
       LAnklePitch,
       RAnkleRoll,
       LAnkleRoll,
+
+      // NOTE: those values don't exist on the old V3.2/V3.3 robots
+      //       so, we pu them at the end for easier support for the old format
+      LWristYaw,
+      RWristYaw,
+      LHand,
+      RHand,
+
       numOfJoint //error value
     };
 

@@ -2,11 +2,13 @@
 #include "PlatformInterface/Platform.h"
 #include <Messages/Representations.pb.h>
 
+#include <Tools/NaoTime.h>
+
 using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
-    send_interval(500)
+    send_interval(400)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   if ( config.hasKey("teamcomm", "send_interval") )
@@ -74,6 +76,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   }
 
   out.bodyID = robotInfo.bodyID;
+  out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = playerInfo.isPlayingStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
@@ -135,6 +138,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
   userMsg.set_bodyid(teamData.bodyID);
+  userMsg.set_timestamp(teamData.timestamp);
   userMsg.set_timetoball(teamData.timeToBall);
   userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_ispenalized(teamData.isPenalized);

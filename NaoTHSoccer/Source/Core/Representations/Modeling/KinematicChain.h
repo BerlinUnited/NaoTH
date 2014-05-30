@@ -24,7 +24,8 @@ public:
     LShoulder,
     LBicep,
     LElbow,
-    LForeArm,
+    LForeArm, // motorized or passive
+    LHand, // only avaliable when in H25 with motorized LForeArm
     LPelvis,
     LHip,
     LThigh,
@@ -34,7 +35,8 @@ public:
     RShoulder,
     RBicep,
     RElbow,
-    RForeArm,
+    RForeArm, // motorized or passive
+    RHand, // only avaliable when in H25 with motorized RForeArm
     RPelvis,
     RHip,
     RThigh,

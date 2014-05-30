@@ -3,7 +3,7 @@
 
 option kick_with_foot
 {
-  bool @right;
+  enum direction @foot;
 
   initial state decide_foot
   {
@@ -11,9 +11,9 @@ option kick_with_foot
     {
       if (state_time > 500)
       {
-	      if (@right && executed_motion.step_control.left_movable)
+	      if (@foot == right && executed_motion.step_control.left_movable)
 	        goto prepare_right_kick;
-	      else if(!@right && executed_motion.step_control.right_movable)
+	      else if(@foot == left && executed_motion.step_control.right_movable)
 	        goto prepare_left_kick;
         else
           stay;
@@ -36,7 +36,7 @@ option kick_with_foot
   {
     decision
     {
-      if(state_time > 100 && executed_motion.step_control.right_movable)
+      if(state_time > 300 && executed_motion.step_control.right_movable)
         goto kick_right_foot;
       else
         stay;
@@ -68,7 +68,7 @@ option kick_with_foot
   {
     decision
     {
-      if(state_time > 100 && executed_motion.step_control.left_movable)
+      if(state_time > 300 && executed_motion.step_control.left_movable)
         goto kick_left_foot;
       else
         stay;
@@ -100,7 +100,7 @@ option kick_with_foot
   {
     decision
     {
-      if(state_time > 100 && executed_motion.step_control.left_movable)
+      if(state_time > 300 && executed_motion.step_control.left_movable)
         goto reset_controls;
       else
         stay;
@@ -116,8 +116,11 @@ option kick_with_foot
       motion.walk.step_control.target.y = ball.preview.right_foot.y;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 0;
-      motion.walk.step_control.time = 200;
+      motion.walk.step_control.time = 300;
       motion.walk.stop_with_stand = false;
+      motion.walk.step_control.scale = 0.7;
+
+      motion.walk.style = fast;
 
       //look at percept
       head.control_mode = none;
@@ -132,7 +135,7 @@ option kick_with_foot
   {
     decision
     {
-      if(state_time > 100 && executed_motion.step_control.right_movable)
+      if(state_time > 300 && executed_motion.step_control.right_movable)
         goto reset_controls;
       else
         stay;
@@ -148,8 +151,11 @@ option kick_with_foot
       motion.walk.step_control.target.y = ball.preview.left_foot.y;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 0;
-      motion.walk.step_control.time = 200;
+      motion.walk.step_control.time = 300;
       motion.walk.stop_with_stand = false;
+      motion.walk.step_control.scale = 0.7;
+
+      motion.walk.style = fast;
 
       //loook at percept
       head.control_mode = none;
@@ -209,45 +215,4 @@ option kick_with_foot
     }
   }
 
-  state stand_right_kick
-  {
-    decision
-    {
-      if (state_time > 5000)
-        goto kick_right_foot;
-      else stay;
-    }
-    action
-    {
-      motion.walk.stop_with_stand = false;
-      motion.type = stand;
-      //look at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
-    }
-  }
-
-  state stand_left_kick
-  {
-    decision
-    {
-      if (state_time > 5000)
-        goto kick_left_foot;
-      else stay;
-    }
-    action
-    {
-      motion.walk.stop_with_stand = false;
-      motion.type = stand;
-      //look at percept
-      head.control_mode = none;
-      head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x;
-      head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
-    }
-  }
 }

@@ -114,14 +114,15 @@ public:
    * calculation of the angles from the head of the robot to a given point in
    * the egocentric coordination system of the robot
    */
-  static Vector2<double> lookAtPoint(const Vector3<double>& point, double cameraHeight);
+  static Vector2d lookAtPoint(const Vector3d& point, double cameraHeight);
 
 
   /**
   */
   static Pose3D calculateCameraMatrix(
     const KinematicChain& theKinematicChain,
-    const Pose3D& theCameraOffset,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
 
   };

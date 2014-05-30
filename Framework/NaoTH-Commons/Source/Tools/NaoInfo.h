@@ -43,15 +43,21 @@ public:
       setCameraTransformation();
     }
     
-    // offset to the neck joint
-    Pose3D cameraTransformation[naoth::CameraInfo::numOfCamera];
+   // TODO: clean this mess up 
+   CameraTransformation cameraTransform[naoth::CameraInfo::numOfCamera];
+   Pose3D cameraTransformation[naoth::CameraInfo::numOfCamera];
 
   private:
+
+    // offset to the neck joint    
     CameraTransformation cameraTrans[naoth::CameraInfo::numOfCamera];
 
     void setCameraTransformation()
     {
       for(int i = 0; i < naoth::CameraInfo::numOfCamera; i++) {
+        cameraTransform[i].offset = cameraTrans[i].offset;
+        cameraTransform[i].rotationY = Math::fromDegrees(cameraTrans[i].rotationY);
+
         cameraTransformation[i].translation = cameraTrans[i].offset;
         cameraTransformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
       }
@@ -73,7 +79,6 @@ public:
   static const double FootHeight;
   static const double HandOffsetZ;
   static const double ElbowOffsetY;
-  static const double LegJointToHeadPan;
 
   static const double FSRMinForce;
   static const double FSRMaxForce;

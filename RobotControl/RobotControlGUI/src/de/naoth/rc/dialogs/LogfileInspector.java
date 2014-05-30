@@ -16,7 +16,7 @@ import com.google.protobuf.MessageOrBuilder;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector;
 import de.naoth.rc.messages.CommonTypes.JointID;
@@ -54,7 +54,7 @@ public class LogfileInspector extends AbstractDialog
   @InjectPlugin
   public RobotControl parent;
   @InjectPlugin
-  public ImageManager imageManager;
+  public ImageManagerBottom imageManager;
   
   private HashMap<Integer, Integer> framePosition;
   private ArrayList<LogFileFrame> frameList;

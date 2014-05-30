@@ -7,10 +7,7 @@
 #define _DebugExecutor_h_
 
 #include <ModuleFramework/Module.h>
-#include <PlatformInterface/PlatformInterface.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-#include <DebugCommunication/DebugCommandManager.h>
-
 
 BEGIN_DECLARE_MODULE(DebugExecutor)
   REQUIRE(DebugMessageIn)
@@ -24,6 +21,10 @@ public:
   virtual ~DebugExecutor(){}
 
   virtual void execute();
+
+private:
+  std::stringstream answer_stream;
+
 };
 
 #endif  /* _DebugExecutor_h_ */
