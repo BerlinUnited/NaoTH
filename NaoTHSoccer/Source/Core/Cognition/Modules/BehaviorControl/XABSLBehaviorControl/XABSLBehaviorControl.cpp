@@ -619,11 +619,10 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // decimalInputSymbols
   for (int i = 0; i < theEngine->decimalInputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_inputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Decimal);
+    naothmessages::SymbolValueList_DoubleSymbol* p = status.mutable_inputsymbollist()->add_decimal();
     p->set_name(theEngine->decimalInputSymbols[i]->n);
     p->set_id(theEngine->decimalInputSymbols[i]->index);
-    p->set_decimalvalue(theEngine->decimalInputSymbols[i]->getValue());
+    p->set_value(theEngine->decimalInputSymbols[i]->getValue());
 
     inputDecimalBuffer.push_back(theEngine->decimalInputSymbols[i]->getValue());
   }
@@ -631,11 +630,10 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // booleanInputSymbols
   for (int i = 0; i < theEngine->booleanInputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_inputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Boolean);
+    naothmessages::SymbolValueList_BooleanSymbol* p = status.mutable_inputsymbollist()->add_boolean();
     p->set_name(theEngine->booleanInputSymbols[i]->n);
     p->set_id(theEngine->booleanInputSymbols[i]->index);
-    p->set_boolvalue(theEngine->booleanInputSymbols[i]->getValue());
+    p->set_value(theEngine->booleanInputSymbols[i]->getValue());
 
     inputBooleanBuffer.push_back(theEngine->booleanInputSymbols[i]->getValue());
   }
@@ -643,11 +641,9 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // enumeratedInputSymbols
   for (int i = 0; i < theEngine->enumeratedInputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_inputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Enum);
+    naothmessages::SymbolValueList_EnumSymbol* p = status.mutable_inputsymbollist()->add_enumerated();
     p->set_id(theEngine->enumeratedInputSymbols[i]->index);
-    p->set_enumvalue(theEngine->enumeratedInputSymbols[i]->getValue());
-    p->set_enumtypeid(theEngine->enumeratedInputSymbols[i]->enumeration->index);
+    p->set_value(theEngine->enumeratedInputSymbols[i]->getValue());
 
     inputEnumBuffer.push_back(theEngine->enumeratedInputSymbols[i]->getValue());
   }
@@ -659,11 +655,10 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // decimalOutputSymbols
   for (int i = 0; i < theEngine->decimalOutputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_outputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Decimal);
+    naothmessages::SymbolValueList_DoubleSymbol* p = status.mutable_outputsymbollist()->add_decimal();
     p->set_id(theEngine->decimalOutputSymbols[i]->index);
     p->set_name(theEngine->decimalOutputSymbols[i]->n);
-    p->set_decimalvalue(theEngine->decimalOutputSymbols[i]->getValue());
+    p->set_value(theEngine->decimalOutputSymbols[i]->getValue());
 
     outputDecimalBuffer.push_back(theEngine->decimalOutputSymbols[i]->getValue());
   }
@@ -671,11 +666,10 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // booleanOutputSymbols
   for (int i = 0; i < theEngine->booleanOutputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_outputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Boolean);
+    naothmessages::SymbolValueList_BooleanSymbol* p = status.mutable_outputsymbollist()->add_boolean();
     p->set_id(theEngine->booleanOutputSymbols[i]->index);
     p->set_name(theEngine->booleanOutputSymbols[i]->n);
-    p->set_boolvalue(theEngine->booleanOutputSymbols[i]->getValue());
+    p->set_value(theEngine->booleanOutputSymbols[i]->getValue());
 
     outputBooleanBuffer.push_back(theEngine->booleanOutputSymbols[i]->getValue());
   }
@@ -683,11 +677,9 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
   // enumeratedOutputSymbols
   for (int i = 0; i < theEngine->enumeratedOutputSymbols.getSize(); i++)
   {
-    naothmessages::XABSLSymbol* p = status.add_outputsymbols();
-    p->set_type(naothmessages::XABSLSymbol_SymbolType_Enum);
+    naothmessages::SymbolValueList_EnumSymbol* p = status.mutable_outputsymbollist()->add_enumerated();
     p->set_id(theEngine->enumeratedOutputSymbols[i]->index);
-    p->set_enumvalue(theEngine->enumeratedOutputSymbols[i]->getValue());
-    p->set_enumtypeid(theEngine->enumeratedOutputSymbols[i]->enumeration->index);
+    p->set_value(theEngine->enumeratedOutputSymbols[i]->getValue());
 
     outputEnumBuffer.push_back(theEngine->enumeratedOutputSymbols[i]->getValue());
   }
@@ -717,7 +709,7 @@ void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::Behavio
     if(inputBooleanBuffer[i] != theEngine->booleanInputSymbols[i]->getValue())
     {
       naothmessages::SymbolValueList_BooleanSymbol* s = status.mutable_inputsymbollist()->add_boolean();
-      s->set_boolvalue(theEngine->booleanInputSymbols[i]->getValue());
+      s->set_value(theEngine->booleanInputSymbols[i]->getValue());
       s->set_id(i);
     }
   }
@@ -728,7 +720,7 @@ void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::Behavio
     if(inputEnumBuffer[i] != theEngine->enumeratedInputSymbols[i]->getValue())
     {
       naothmessages::SymbolValueList_EnumSymbol* s = status.mutable_inputsymbollist()->add_enumerated();
-      s->set_enumvalue(theEngine->enumeratedInputSymbols[i]->getValue());
+      s->set_value(theEngine->enumeratedInputSymbols[i]->getValue());
       s->set_id(i);
     }
   }
@@ -754,7 +746,7 @@ void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::Behavio
     if(outputBooleanBuffer[i] != theEngine->booleanOutputSymbols[i]->getValue())
     {
       naothmessages::SymbolValueList_BooleanSymbol* s = status.mutable_outputsymbollist()->add_boolean();
-      s->set_boolvalue(theEngine->booleanOutputSymbols[i]->getValue());
+      s->set_value(theEngine->booleanOutputSymbols[i]->getValue());
       s->set_id(i);
     }
   }
@@ -765,7 +757,7 @@ void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::Behavio
     if(outputEnumBuffer[i] != theEngine->enumeratedOutputSymbols[i]->getValue())
     {
       naothmessages::SymbolValueList_EnumSymbol* s = status.mutable_outputsymbollist()->add_enumerated();
-      s->set_enumvalue(theEngine->enumeratedOutputSymbols[i]->getValue());
+      s->set_value(theEngine->enumeratedOutputSymbols[i]->getValue());
       s->set_id(i);
     }
   }
