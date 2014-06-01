@@ -128,13 +128,10 @@ private:
   std::vector<bool> outputBooleanBuffer;
   std::vector<int> outputEnumBuffer;
 
-  void fillActiveOptions(naothmessages::BehaviorStatus &status);
-  void fillAction(const xabsl::Action* source, naothmessages::XABSLAction* dest);
   void fillActiveOptionsSparse(naothmessages::BehaviorStatusSparse &status);
   void fillActionSparse(const xabsl::Action* source, naothmessages::XABSLActionSparse* dest);
   void fillRegisteredBehavior(naothmessages::XABSLBehavior &status);
   void fillRegisteredSymbolsSparse(naothmessages::BehaviorStatusSparse &status);
-  void fillRegisteredSymbols(naothmessages::BehaviorStatus &status);
   void fillRegisteredSymbolsSparserer(naothmessages::BehaviorStatusSparse &status);
 
   //symbols

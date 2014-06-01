@@ -25,13 +25,13 @@ using namespace naoth;
 void Serializer<BehaviorStatus>::serialize(const BehaviorStatus& representation, std::ostream& stream)
 {
   google::protobuf::io::OstreamOutputStream buf(&stream);
-  representation.status.SerializeToZeroCopyStream(&buf);
+  representation.behavior.SerializeToZeroCopyStream(&buf);
 }
 
 void Serializer<BehaviorStatus>::deserialize(std::istream& stream, BehaviorStatus& representation)
 {
   google::protobuf::io::IstreamInputStream buf(&stream);
-  if(!representation.status.ParseFromZeroCopyStream(&buf))
+  if(!representation.behavior.ParseFromZeroCopyStream(&buf))
   {
     THROW("Serializer<BehaviorStatus>::deserialize failed");
   }
