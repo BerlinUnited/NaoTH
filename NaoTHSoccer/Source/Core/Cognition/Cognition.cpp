@@ -67,6 +67,8 @@
 //Perception - Vision -- Detectors
 #include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/NewGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/GoalFeatureDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/LineGraphProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
@@ -188,6 +190,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(LineGraphProvider);
 
   REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GoalFeatureDetector);
+  REGISTER_MODULE(NewGoalDetector);
   REGISTER_MODULE(GradientGoalDetector);
 
   REGISTER_MODULE(BallDetector);
