@@ -7,6 +7,7 @@ package de.naoth.rc;
 
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
+import de.naoth.rc.dialogs.LogfilePlayer;
 import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
@@ -136,6 +137,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
     this.connectionDialog.setLocationRelativeTo(this);
     this.disconnectMenuItem.setEnabled(false);
+    //LogfilePlayer static variables
+    LogfilePlayer.setMessageServer(this.messageServer);
+    LogfilePlayer.setProperties(this.getConfig());
   }//end constructor
 
   
@@ -419,7 +423,8 @@ public class RobotControlImpl extends javax.swing.JFrame
    */
   public static void main(String args[])
   {
-    java.awt.EventQueue.invokeLater(new Runnable()
+    
+      java.awt.EventQueue.invokeLater(new Runnable()
     {
 
       @Override

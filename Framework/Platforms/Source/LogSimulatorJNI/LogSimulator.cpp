@@ -10,6 +10,7 @@
 
 Simulator* simulator = NULL;
 
+
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
 
