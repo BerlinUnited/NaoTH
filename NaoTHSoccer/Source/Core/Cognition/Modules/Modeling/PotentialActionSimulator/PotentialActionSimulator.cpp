@@ -250,7 +250,9 @@ void PotentialActionSimulator::execute()
     const double trials = 10;
     
     Vector2<double> simulatedGlobalBall;
-    for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
+    for (simulatedGlobalBall.x = 
+		
+		getFieldInfo().opponentGoalCenter.x - 1000;
          simulatedGlobalBall.x <= getFieldInfo().opponentGoalCenter.x + 500;
          simulatedGlobalBall.x += stepX)
     {
@@ -259,7 +261,7 @@ void PotentialActionSimulator::execute()
            simulatedGlobalBall.y += stepY)
       {
 
-        // claculate the local attack direction for the current 
+        // calculate the local attack direction for the current 
         // robots position and current obstacles
         Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
         Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
@@ -269,6 +271,7 @@ void PotentialActionSimulator::execute()
         // ATTENTION: since it is a vector and not a point, we apply only the rotation
         f.rotate(robotPose.rotation);
         f.normalize();
+
 
         double deviation = 0;
 
@@ -387,60 +390,6 @@ Vector2<double> PotentialActionSimulator::compactExponentialRepeller(const Vecto
   return v.normalize() * exp(a / d - a / (d - t));
 }//end compactExponentialRepeller
 
-
-Vector2<double>PotentialActionSimulator::getGoalTargetOld(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
-{
-  double postOffset = 100.0;
-  double goalLineOffset = 100.0;
-  MODIFY("potentialfield:postOffset", postOffset);
-  MODIFY("potentialfield:goalLineOffset", goalLineOffset);
-
-
-  // relative vector from one post to another
-  Vector2<double> leftPost2RightPost = oppGoalModel.rightPost - oppGoalModel.leftPost;
-  Vector2<double> rightPost2LeftPost = oppGoalModel.leftPost - oppGoalModel.rightPost;
-
-  // the endpoints of our line are a shortened version of the goal line
-  Vector2<double> leftEndpoint = oppGoalModel.leftPost
-      + leftPost2RightPost.normalize(postOffset);
-  Vector2<double> rightEndpoint = oppGoalModel.rightPost
-      + rightPost2LeftPost.normalize(postOffset);
-
-  DEBUG_REQUEST("PotentialActionSimulator:goal_target",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 10);
-    CIRCLE((getRobotPose()*leftEndpoint).x, (getRobotPose()*leftEndpoint).y, 100);
-    CIRCLE((getRobotPose()*rightEndpoint).x, (getRobotPose()*rightEndpoint).y, 100);
-  );
-
-  // this is the goalline we are shooting for
-  Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
-
-  // project the point on the goal line
-  Vector2<double> target = goalLine.projection(point);
-
-  // a normal vector ponting from the goal towards the field
-  Vector2<double> goalNormal = leftPost2RightPost.rotateRight();
-
-  // get distance between point and target point
-  double dist = (target-point).abs();
-
-  if(dist <= goalLineOffset)
-  {
-    // the point is quite near to the goal line, put the target point behind the
-    // goal line
-    target = target - goalNormal.normalize(goalLineOffset);
-  }
-  else
-  {
-    // the point is far away from the goal line, put the target point before the
-    // goal line
-    target = target + goalNormal.normalize(goalLineOffset);
-  }
-
-  return target;
-}//end getGoalTarget
-
 Vector2<double> PotentialActionSimulator::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
 {
   // for debug reasons
@@ -490,3 +439,57 @@ Vector2<double> PotentialActionSimulator::getGoalTarget(const Vector2<double>& p
  
   return target;
 }//end getGoalTargetCool
+
+
+Vector2<double> PotentialActionSimulator::calculatePotential(
+	const Vector2<double>& point, 
+    const Vector2<double>& targetPoint,
+    const list<Vector2<double> > &obstacles) const{
+	// we are attracted to the target point
+  Vector2<double> fieldF = globalExponentialAttractor(targetPoint, point);
+
+  // we are repelled by the opponents
+  Vector2<double> playerF;
+  for (list<Vector2<double> >::const_iterator iter =
+       obstacles.begin(); iter != obstacles.end(); ++iter)
+  {
+    playerF -= compactExponentialRepeller(*iter, point);
+  }
+
+  if (!obstacles.empty())
+  {
+    // my self
+    playerF -= compactExponentialRepeller(Vector2<double>(0, 0), point);
+  }
+
+  // TODO: remove magic normalization
+  double ff = fieldF.abs() * 0.8;
+  if ( playerF.abs() > ff)
+  {
+    playerF.normalize(ff);
+  }
+
+  return fieldF + playerF;
+}
+
+double PotentialActionSimulator::globalAttractorPotential(const Vector2<double>& p, const Vector2<double>& x)const
+{
+  const double alpha = theParameters.goal_attractor_strength; //-0.001;
+
+  Vector2<double> v = p - x;
+  double d = v.abs();
+  
+  return exp(alpha * d);
+}//end globalExponentialAttractor
+
+double PotentialActionSimulator::compactRepellerPotential(const Vector2<double>& p, const Vector2<double>& x)const
+{
+  const double a = theParameters.player_repeller_strenth; //1500; 
+  const double d = theParameters.player_repeller_radius; //2000;
+
+  Vector2<double> v = p - x;
+  double t = v.abs();
+  if ( t >= d-100 ) return 0;
+
+  return exp(a / d - a / (d - t));
+}//end compactExponentialRepeller

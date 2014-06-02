@@ -5,8 +5,8 @@
 * Declaration of class PotentialActionSimulator
 */
 
-#ifndef _PotentialFieldProvider_h_
-#define _PotentialFieldProvider_h_
+#ifndef _PotentialActionSimulator_h_
+#define _PotentialActionSimulator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -149,6 +149,14 @@ private:
     */
   Vector2<double> compactExponentialRepeller( const Vector2<double>& p, const Vector2<double>& x ) const;
 
+
+  Vector2<double> calculatePotential(
+        const Vector2<double>& point, 
+        const Vector2<double>& targetPoint,
+        const std::list<Vector2<double> >& obstacles) const;
+
+  double globalAttractorPotential(const Vector2<double>& p, const Vector2<double>& x) const;
+  double compactRepellerPotential(const Vector2<double>& p, const Vector2<double>& x) const;
 };
 
 #endif //_PotentialFieldProvider_h_
