@@ -441,32 +441,32 @@ Vector2<double> PotentialActionSimulator::getGoalTarget(const Vector2<double>& p
 }//end getGoalTargetCool
 
 
-Vector2<double> PotentialActionSimulator::calculatePotential(
+double PotentialActionSimulator::calculatePotential(
 	const Vector2<double>& point, 
     const Vector2<double>& targetPoint,
     const list<Vector2<double> > &obstacles) const{
 	// we are attracted to the target point
-  Vector2<double> fieldF = globalExponentialAttractor(targetPoint, point);
+  double fieldF = globalAttractorPotential(targetPoint, point);
 
   // we are repelled by the opponents
-  Vector2<double> playerF;
+  double playerF = 0;
   for (list<Vector2<double> >::const_iterator iter =
        obstacles.begin(); iter != obstacles.end(); ++iter)
   {
-    playerF -= compactExponentialRepeller(*iter, point);
+   playerF -= compactRepellerPotential(*iter, point);
   }
 
   if (!obstacles.empty())
   {
     // my self
-    playerF -= compactExponentialRepeller(Vector2<double>(0, 0), point);
+    playerF -= compactRepellerPotential(Vector2<double>(0, 0), point);
   }
 
   // TODO: remove magic normalization
-  double ff = fieldF.abs() * 0.8;
-  if ( playerF.abs() > ff)
+  double ff = fieldF * 0.8;
+  if ( playerF > ff)
   {
-    playerF.normalize(ff);
+	 playerF=ff;
   }
 
   return fieldF + playerF;

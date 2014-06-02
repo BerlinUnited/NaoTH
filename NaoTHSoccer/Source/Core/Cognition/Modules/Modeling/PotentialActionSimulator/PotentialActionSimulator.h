@@ -150,7 +150,7 @@ private:
   Vector2<double> compactExponentialRepeller( const Vector2<double>& p, const Vector2<double>& x ) const;
 
 
-  Vector2<double> calculatePotential(
+	double calculatePotential(
         const Vector2<double>& point, 
         const Vector2<double>& targetPoint,
         const std::list<Vector2<double> >& obstacles) const;
