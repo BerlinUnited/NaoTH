@@ -10,6 +10,7 @@
 
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 
 #include "Tools/CameraGeometry.h"
@@ -107,7 +108,9 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
 
   GT_TRACE("GoalFeatureDetector:scanForFeatures");
   //find feature that are candidates for goal posts along scanlines 
-  findFeatureCandidates(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+  //findFeatureCandidates(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+  findfeatures(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+
   return true;
 }//end execute
 
@@ -238,3 +241,70 @@ void GoalFeatureDetector::findFeatureCandidates(const Vector2d& scanDir, const V
     while(scanner.getNextWithCheck(pos));
   }//end for
 }//end findFeatureCandidates
+
+
+void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
+{
+  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;  // 6 / 2 = 3
+
+  int start = (int) p1.y - offset;
+  int stop = (int) p1.y + offset;
+
+  if(start < 0) {
+    start = 2;
+  }
+
+  if(stop > (int) getImage().height()) {
+    start = start - (stop - getImage().height() - 2);
+  }
+
+  int y = start;
+  for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
+  {
+    y += params.scanlinesDistance;
+    Vector2i pos((int) p1.x + 2, y);
+    Pixel pixel;
+    BresenhamLineScan scanner(pos, scanDir, getImage().cameraInfo);
+
+    Filter<Diff,Vector2i,double> filter;
+
+    // initialize the scanner
+    double t_edge = 12;
+    MODIFY("t_edge",t_edge);
+    Vector2i peak_point_max(pos);
+    Vector2i peak_point_min(pos);
+    MaximumScan<Vector2i,double> positiveScan(peak_point_max, t_edge);
+    MaximumScan<Vector2i,double> negativeScan(peak_point_min, t_edge);
+
+    bool begin_found = false;
+
+    while(scanner.getNextWithCheck(pos)) 
+    {
+      IMG_GET(pos.x, pos.y, pixel);
+      int diffVU = (int) pixel.v - (int) pixel.u;
+
+      filter.add(pos, diffVU);
+      if(!filter.ready()) {
+        continue;
+      }
+
+      if(positiveScan.add(filter.point(), filter.value()))
+      {
+        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+        begin_found = true;
+      }
+
+      if(negativeScan.add(filter.point(), -filter.value()))
+      {
+        if(begin_found) {
+          LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
+          POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+        }
+        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
+
+        begin_found = false;
+      }
+
+    }//end while
+  }
+}//end findfeatures

@@ -26,6 +26,7 @@
 #include "Tools/DoubleCamHelpers.h"
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
+#include "Tools/ImageProcessing/MaximumScan.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -94,15 +95,6 @@ private:
       PARAMETER_REGISTER(scanlinesDistance) = 6;
       PARAMETER_REGISTER(thresholdUV) = 60;
       PARAMETER_REGISTER(thresholdY) = 140;
-
-      //PARAMETER_REGISTER(maxFeatureDeviation) = 5;
-      //PARAMETER_REGISTER(maxFootScanSquareError) = 4.0;
-      //PARAMETER_REGISTER(minGoodPoints) = 3;
-      //PARAMETER_REGISTER(footGreenScanSize) = 10;
-      //PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
-      //PARAMETER_REGISTER(enableFeatureWidthCheck) = false;
-      //PARAMETER_REGISTER(enableGreenCheck) = false;
-
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
 
       syncWithConfig();
@@ -117,23 +109,57 @@ private:
     int scanlinesDistance;
     int thresholdUV;
     int thresholdY;
-
-    //int maxFeatureDeviation;
-    //double maxFootScanSquareError;
-    //int minGoodPoints;
-
-    //bool enableGreenCheck;
-    //int footGreenScanSize; // number of pixels to scan for green below the footpoint
-    //
-    //double maxFeatureWidthError;
-    //bool enableFeatureWidthCheck;
-
     double colorRegionDeviation;
   };
 
   Parameters params;
 
+  template<typename V, int SIZE>
+  class Diff {
+    public: inline V operator()(const RingBuffer<V, SIZE>& values) const {
+      return (-values[4] - 2.0*values[3] + 0.0*values[2] + 2.0*values[1] + values[0])/3.0;
+    }
+  };
+
+  template<typename V, int SIZE>
+  class Gauss {
+    public: inline V operator()(const RingBuffer<V, SIZE>& values) const {
+      return (values[4] + 2.0*values[3] + 4.0*values[2] + 2.0*values[1] + values[0])/10.0;
+    }
+  };
+
+  template<template<typename V, int SIZE> class F, class T, typename V>
+  class Filter
+  {
+  private:
+    static const int SIZE = 5;
+    RingBuffer<T, SIZE> pointBuffer;
+    RingBuffer<V, SIZE> valueBuffer;
+    F<V,SIZE> function;
+
+  public:
+    inline bool ready() const {
+      return pointBuffer.isFull();
+    }
+
+    inline void add(const T& point, V value) {
+      pointBuffer.add(point);
+      valueBuffer.add(value);
+    }
+
+    inline V value() const {
+      ASSERT(valueBuffer.isFull());
+      //return 0.1*(-valueBuffer[4] - 2.0*valueBuffer[3] + 0.0*valueBuffer[2] + 2.0*valueBuffer[1] + valueBuffer[0]);
+      return function(valueBuffer);
+    }
+
+    inline const Vector2i& point() const {
+      return pointBuffer[2];
+    }
+  };
+
   void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
+  void findfeatures(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GoalFeatureDetector, Image);
