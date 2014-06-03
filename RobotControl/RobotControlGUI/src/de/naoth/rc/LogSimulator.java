@@ -5,8 +5,14 @@ package de.naoth.rc;
  * @author Heinrich
  */
 public class LogSimulator {
+    /*
     static {
         // Load native library at runtime
+        System.loadLibrary("logsimulator");
+    }
+    */
+    
+    public LogSimulator() {
         System.loadLibrary("logsimulator");
     }
 
