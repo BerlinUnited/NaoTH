@@ -107,6 +107,7 @@ public:
   //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////
+  void open(const std::string& filePath);
   virtual void init();
   
   const LogFileScanner::Frame& getRepresentations() {

@@ -9,51 +9,56 @@
 #include <ModuleFramework/ModuleCreator.h>
 
 Simulator* simulator = NULL;
-
+Cognition* cognitionProcess = NULL;
+Motion* motionProcess = NULL;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
 
 JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile(JNIEnv *env, jobject thisObj, jstring path)
 {
-  // close the old one
-  delete simulator;
-
   // Step 1: Convert the JNI String (jstring) into C-String (char*)
   const char* inCStr = (*env).GetStringUTFChars(path, NULL);
   if (NULL == inCStr) { 
     return;
   }
-  
-  g_type_init();
-  simulator = new Simulator(std::string(inCStr), false, false);
 
-  // init the platform
-  Platform::getInstance().init(simulator);
-  
-  //init_agent(sim);
-  Cognition& theCognition = *createCognition();
-  Motion& theMotion = *createMotion();
-
-  // ACHTUNG: C-Cast (!)
-  ModuleManager* theCognitionManager = getModuleManager(&theCognition);
-  if(!theCognitionManager)
+  if(simulator != NULL) 
   {
-    std::cerr << "ERROR: theCognition is not of type ModuleManager" << std::endl;
-    return;
+    simulator->open(std::string(inCStr));
   }
+  else
+  {
+    g_type_init();
+    simulator = new Simulator(std::string(inCStr), true, false);
 
-  // register a module to provide all the logged data
-  ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+    // init the platform
+    Platform::getInstance().init(simulator);
+  
+    //init_agent(sim);
+    cognitionProcess = createCognition();
+    motionProcess = createMotion();
 
-  // register processes
-  (*simulator).registerCognition((naoth::Callable*)(&theCognition));
-  (*simulator).registerMotion((naoth::Callable*)(&theMotion));
+    // ACHTUNG: C-Cast (!)
+    ModuleManager* theCognitionManager = getModuleManager(cognitionProcess);
+    if(!theCognitionManager)
+    {
+      std::cerr << "ERROR: theCognition is not of type ModuleManager" << std::endl;
+      return;
+    }
+
+    // register a module to provide all the logged data
+    ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+
+    // register processes
+    (*simulator).registerCognition((naoth::Callable*)(cognitionProcess));
+    (*simulator).registerMotion((naoth::Callable*)(motionProcess));
  
-  theLogProvider->setEnabled(true);
-  theLogProvider->getModuleT()->init((*simulator).logFileScanner, (*simulator).getRepresentations(), (*simulator).getIncludedRepresentations());
+    theLogProvider->setEnabled(true);
+    theLogProvider->getModuleT()->init((*simulator).logFileScanner, (*simulator).getRepresentations(), (*simulator).getIncludedRepresentations());
 
-  simulator->init();
+    simulator->init();
+  }
 
   // Step 2: Perform its intended operations
   (*env).ReleaseStringUTFChars(path, inCStr);  // release resources
