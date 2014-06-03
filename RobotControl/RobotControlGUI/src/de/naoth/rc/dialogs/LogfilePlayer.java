@@ -284,7 +284,7 @@ public class LogfilePlayer extends AbstractDialog
             this.jLabel2.setText("min: " +minFrame);
             this.jLabel3.setText("cur: " +minFrame);
             this.jLabel4.setText("max: " +maxFrame);
-            this.logSlider.setEnabled(true);            
+            this.logSlider.setEnabled(true);
             this.openButton.setEnabled(false);
             connectToSimulator();
         }
