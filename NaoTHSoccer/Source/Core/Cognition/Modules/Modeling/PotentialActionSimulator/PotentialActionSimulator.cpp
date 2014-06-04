@@ -163,9 +163,12 @@ void PotentialActionSimulator::execute()
       {
         Vector2<double> ball = getRobotPose()/Vector2<double>(x,y);
         Vector2<double> f = calculatePotentialField(ball, targetPoint, obstacles);
-        f.normalize(200);
-        f += ball;
-        ARROW(ball.x, ball.y, f.x, f.y);
+
+	    double rad = 5+f.abs()*50;
+
+        //f.normalize(200);
+        //f += ball;
+        CIRCLE(ball.x, ball.y, rad);
       }
     }
   );
@@ -173,9 +176,8 @@ void PotentialActionSimulator::execute()
 
   DEBUG_REQUEST("PotentialActionSimulator:draw_potential_field:global",
     FIELD_DRAWING_CONTEXT;
-    PEN("FFFFFF", 5);
-
-    const double stepX = getFieldInfo().xFieldLength/50.0;
+    PEN("FF69B4", 5);
+	const double stepX = getFieldInfo().xFieldLength/50.0;
     const double stepY = getFieldInfo().yFieldLength/50.0;
 
     Vector2<double> simulatedGlobalBall;
@@ -193,11 +195,13 @@ void PotentialActionSimulator::execute()
         Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
         Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
+		double rad = 5+f.abs()*50;
+
         // transform it to global coordinates
-        f.normalize(50);
-        f = robotPose*(f+simulatedLocalBall);
-        
-        ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
+        //f.normalize(50);
+        //f = robotPose*(f+simulatedLocalBall);
+
+        CIRCLE(simulatedGlobalBall.x, simulatedGlobalBall.y, rad);
       }
     }
   );
