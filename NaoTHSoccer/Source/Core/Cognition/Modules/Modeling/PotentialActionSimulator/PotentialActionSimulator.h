@@ -103,10 +103,6 @@ private:
     */
   Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const;
 
-  /**
-    */
-  Vector2<double> getGoalTargetOld(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const;
-
   /** 
     * Calculate the list of valide obstacles (opponents, teammates)
     */

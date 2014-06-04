@@ -93,6 +93,7 @@
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
+#include "Modules/Modeling/PotentialActionSimulator/PotentialActionSimulator.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
@@ -223,6 +224,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
   REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(PotentialActionSimulator);
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);

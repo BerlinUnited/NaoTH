@@ -29,7 +29,6 @@ PotentialActionSimulator::PotentialActionSimulator()
 
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:sensitivity", "", false);
 
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:getGoalTargetOld", "", false);
 }
 
 
@@ -392,10 +391,6 @@ Vector2<double> PotentialActionSimulator::compactExponentialRepeller(const Vecto
 
 Vector2<double> PotentialActionSimulator::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
 {
-  // for debug reasons
-  DEBUG_REQUEST("PotentialActionSimulator:getGoalTargetOld",
-    return getGoalTargetOld(point, oppGoalModel);
-  );
 
   // normalized vector from left post to the right
   const Vector2<double> leftToRight((oppGoalModel.rightPost - oppGoalModel.leftPost).normalize());
