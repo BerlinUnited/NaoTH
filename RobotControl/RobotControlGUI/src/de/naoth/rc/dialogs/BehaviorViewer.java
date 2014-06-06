@@ -10,10 +10,8 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
-import de.naoth.rc.dialogs.behaviorviewer.XABSLFrame;
-import de.naoth.rc.dialogs.behaviorviewer.XABSLFramePrototype;
-import de.naoth.rc.dialogs.behaviorviewer.XABSLFramePrototype.SymbolId;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -57,9 +55,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 
 public class BehaviorViewer extends AbstractDialog
-  implements
-  ObjectListener<byte[]>,
-  Dialog
+  implements  Dialog
 {
 
   @PluginImplementation
@@ -95,7 +91,8 @@ public class BehaviorViewer extends AbstractDialog
 
   private final Command getListOfAgents = new Command("behavior:list_agents");
 
-  ArrayList<XABSLFrame> behaviorBuffer;
+  ArrayList<XABSLBehaviorFrame> behaviorBuffer;
+  private XABSLBehavior currentBehavior;
   public static final Color DARK_GREEN = new Color(0, 128, 0);
   public static final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, 11);
   public static final Font BOLD_FONT = new Font("Sans Serif", Font.BOLD, 11);
@@ -103,7 +100,6 @@ public class BehaviorViewer extends AbstractDialog
   final private String behaviorConfKey = "behavior";
   final private String defaultBehavior = "../NaoController/Config/behavior/behavior-ic.dat";
 
-  private XABSLFramePrototype framePrototype = null;
   private XABSLProtoParser behaviorParser = null;
   
   private boolean vetoSetAgent = false;
@@ -155,23 +151,6 @@ public class BehaviorViewer extends AbstractDialog
     this.behaviorBuffer = new ArrayList<>();
   }
 
-  @Override
-  public void errorOccured(String cause)
-  {
-    btReceiveExecutionPath.setSelected(false);
-    sendCommand(disableUpdateBehaviorStatusCommand);
-    Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this);
-    Plugin.genericManagerFactory.getManager(getBehaviorStateComplete).removeListener(this);
-    //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
-
-    // make the liste of frame clickable again
-    this.frameList.addListSelectionListener(behaviorFrameListener);
-    
-    JOptionPane.showMessageDialog(null,
-      cause, "Error", JOptionPane.ERROR_MESSAGE);
-  }//end errorOccured
-
-
   class SymbolComperator implements Comparator<Messages.XABSLParameter>
   {
     @Override
@@ -190,7 +169,7 @@ public class BehaviorViewer extends AbstractDialog
               Messages.BehaviorStateComplete behavior_msg = Messages.BehaviorStateComplete.parseFrom(object);
               
               behaviorParser = new XABSLProtoParser();
-              behaviorParser.parse(behavior_msg);
+              currentBehavior =  behaviorParser.parse(behavior_msg);
             }
             catch(InvalidProtocolBufferException ex)
             {
@@ -217,10 +196,11 @@ public class BehaviorViewer extends AbstractDialog
               Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
               final XABSLBehaviorFrame frame = behaviorParser.parse(status);
               
+             
               SwingUtilities.invokeLater(new Runnable() {
                   @Override
                   public void run() {
-                      behaviorTreePanel.setFrame(frame);
+                      addFrame(frame);
                   }
               });
               
@@ -238,42 +218,6 @@ public class BehaviorViewer extends AbstractDialog
   }
   
   
-  @Override
-  public void newObjectReceived(byte[] object)
-  {
-    // don't accept empty messages
-    if(object == null || object.length == 0)
-      return;
-    
-    try
-    {
-      Messages.BehaviorStatus status = Messages.BehaviorStatus.parseFrom(object);
-
-      //setAgent(status.getAgent());
-
-      // disable selection
-      if(frameList.getSelectedIndex() > -1)
-      {
-        frameList.clearSelection();
-      }
-      
-      if(status.hasErrorMessage() && status.getErrorMessage().length() > 0)
-      {
-        errorOccured(status.getErrorMessage());
-      }
-      else
-      {
-        // show and add
-        addFrame(status);
-        showFrame(this.behaviorBuffer.get(this.behaviorBuffer.size()-1));
-      }
-    }
-    catch(InvalidProtocolBufferException ex)
-    {
-      Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-  }//end newObjectReceived
 
   class SymbolWatchCheckBoxListener implements ActionListener
   {
@@ -304,9 +248,9 @@ public class BehaviorViewer extends AbstractDialog
     }//end actionPerformed
   }//end SymbolWatchCheckBoxListener
   
-  private SortedSet<String> symbolsToWatch = new TreeSet<String>();
+  private SortedSet<String> symbolsToWatch = new TreeSet<>();
 
-  private void showFrame(XABSLFrame frame)
+  private void showFrame(XABSLBehaviorFrame frame)
   {
     if(frame != null)
     {
@@ -318,35 +262,45 @@ public class BehaviorViewer extends AbstractDialog
 
       for(String name: symbolsToWatch)
       {
-        SymbolId id = this.framePrototype.symbolRegistry.get(name);
+        XABSLBehavior.Symbol symbol = frame.getSymbolByName(name);
         // TODO: error treatment
-        if(id == null) return;
+        if(symbol == null) return;
 
         // remove the leading 
-        String data_value = frame.getStringValue(id);
+        String data_value = symbol.getValueAsString();
 
         // cut the leading enum type
-        if(id.data_type == SymbolId.DataType.Enum)
+        if(symbol instanceof XABSLBehavior.Symbol.Enum)
+        {
           data_value = data_value.replace(name+".", "");
-
-        if(id.io_type == SymbolId.IOType.input)
-          inputBuffer.append("> ")
-                   .append(name)
-                   .append(" = ")
-                   .append(data_value)
-                   .append(" (")
-                   .append(id.data_type.name())
-                   .append(")")
-                   .append("\n");
-        else
-          outputBuffer.append("< ")
-                   .append(name)
-                   .append(" = ")
-                   .append(data_value)
-                   .append(" (")
-                   .append(id.data_type.name())
-                   .append(")")
-                   .append("\n");
+        }
+        
+        XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
+        
+        if(type == XABSLBehaviorFrame.SymbolIOType.input)
+        {
+          inputBuffer.append("> ");
+          inputBuffer.append(name)
+                  .append(" = ")
+                  .append(data_value)
+                  .append(" (")
+                  .append(symbol.getDataType())
+                  .append(")")
+                  .append("\n");
+                   
+        }
+        else if(type == XABSLBehaviorFrame.SymbolIOType.output)
+        {
+          outputBuffer.append("< ");
+          outputBuffer.append(name)
+                  .append(" = ")
+                  .append(data_value)
+                  .append(" (")
+                  .append(symbol.getDataType())
+                  .append(")")
+                  .append("\n");
+        }
+          
       }//end for
       
       if(inputBuffer.length() > 0)
@@ -364,16 +318,16 @@ public class BehaviorViewer extends AbstractDialog
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options
-      this.behaviorTreePanel.setFrame(frame);
+      this.behaviorTreePanel.setFrame(frame, currentBehavior);
       
       // some global visualizations
-      drawFrameOnFieldGlobal(frame);
+      //drawFrameOnFieldGlobal(frame);
       
     }//end if
   }//end showFrame
 
   
-  private void drawFrameOnFieldGlobal(XABSLFrame frame)
+  private void drawFrameOnFieldGlobal(XABSLBehaviorFrame frame)
   {
     try
     {
@@ -457,58 +411,16 @@ public class BehaviorViewer extends AbstractDialog
   }//end drawFrameOnField
 
   
-  private String getSymbolValue(XABSLFrame frame, String name) throws Exception
+  private String getSymbolValue(XABSLBehaviorFrame frame, String name) throws Exception
   {
-    SymbolId id = this.framePrototype.symbolRegistry.get(name);
-    if(id == null)
+    XABSLBehavior.Symbol s = frame.getSymbolByName(name);
+    if(s == null)
+    {
         throw new Exception("Symbol " + name + " is not existing");
-
-    return frame.getStringValue(id);
+    }
+    return s.getValueAsString();
   }//end getDoubleSymbolValue
 
-
-  private XABSLFramePrototype createPrototype(Messages.BehaviorStatus status)
-  {
-    XABSLFramePrototype prototype = new XABSLFramePrototype();
-    
-    for(Messages.XABSLParameter p : status.getInputSymbolsList())
-    {
-      SymbolId id = null;
-      if(p.getType() == Messages.XABSLParameter.ParamType.Decimal && p.hasDecimalValue())
-      {
-        id = new SymbolId(prototype.numberOfInputSymbolsDecimal++, SymbolId.DataType.Decimal, SymbolId.IOType.input);
-      }
-      else if(p.getType() == Messages.XABSLParameter.ParamType.Boolean && p.hasBoolValue())
-      {
-        id = new SymbolId(prototype.numberOfInputSymbolsBoolean++, SymbolId.DataType.Boolean, SymbolId.IOType.input);
-      }
-      else if(p.getType() == Messages.XABSLParameter.ParamType.Enum && p.hasEnumValue())
-      {
-        id = new SymbolId(prototype.numberOfInputSymbolsEnum++, SymbolId.DataType.Enum, SymbolId.IOType.input);
-      }
-      prototype.symbolRegistry.put(p.getName(), id);
-    }//end for
-
-    for(Messages.XABSLParameter p : status.getOutputSymbolsList())
-    {
-      SymbolId id = null;
-      if(p.getType() == Messages.XABSLParameter.ParamType.Decimal && p.hasDecimalValue())
-      {
-        id = new SymbolId(prototype.numberOfOutputSymbolsDecimal++, SymbolId.DataType.Decimal, SymbolId.IOType.output);
-      }
-      else if(p.getType() == Messages.XABSLParameter.ParamType.Boolean && p.hasBoolValue())
-      {
-        id = new SymbolId(prototype.numberOfOutputSymbolsBoolean++, SymbolId.DataType.Boolean, SymbolId.IOType.output);
-      }
-      else if(p.getType() == Messages.XABSLParameter.ParamType.Enum && p.hasEnumValue())
-      {
-        id = new SymbolId(prototype.numberOfOutputSymbolsEnum++, SymbolId.DataType.Enum, SymbolId.IOType.output);
-      }
-      prototype.symbolRegistry.put(p.getName(), id);
-    }//end for
-
-    return prototype;
-  }//end createPrototype
 
   
   
@@ -533,50 +445,17 @@ public class BehaviorViewer extends AbstractDialog
       }
   }//end class BehaviorFrameListModel
   
-  private void addFrame(Messages.XABSLActionSparse status)
-  {
-    if(framePrototype == null)
-    {
-      return;
-    }
-    
-    if(this.behaviorBuffer.size() >= maxNumberOfFrames)
-    {
-      this.behaviorBuffer.remove(0);
-    }
-    
-    try{
-      //this.behaviorBuffer.add(new XABSLFrame(status));
-    }catch(Exception ex)
-    {
-      Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-      return;
-    }
-   
-    //Select the new item and make it visible.
-    BehaviorFrameListModel listModel = ((BehaviorFrameListModel) this.frameList.getModel());
-    
-    listModel.refresh();
-    this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
-    this.frameList.setSelectedIndex(listModel.getSize()-1);
-  }//end addFrame
   
-  
-  private void addFrame(Messages.BehaviorStatus status)
+  private void addFrame(XABSLBehaviorFrame status)
   {
     if(this.behaviorBuffer.size() >= maxNumberOfFrames)
     {
       this.behaviorBuffer.remove(0);
     }
 
-    // create the prototype
-    if(framePrototype == null)
-    {
-      framePrototype = createPrototype(status);
-    }
     
     try{
-      this.behaviorBuffer.add(new XABSLFrame(framePrototype, status));
+      this.behaviorBuffer.add(status);
     }catch(Exception ex)
     {
       Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
@@ -590,6 +469,9 @@ public class BehaviorViewer extends AbstractDialog
     this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
     this.frameList.setSelectedIndex(listModel.getSize()-1);
     //this.frameList.revalidate();
+    
+    showFrame(status);
+    
   }//end addFrame
 
   /** This method is called from within the constructor to
@@ -836,25 +718,32 @@ public class BehaviorViewer extends AbstractDialog
       this.inputSymbolsBoxPanel.removeAll();
       this.outputSymbolsBoxPanel.removeAll();
 
-      if(this.framePrototype == null || this.framePrototype.symbolRegistry == null)
-          return;
       
-      for(String name: this.framePrototype.symbolRegistry.keySet())
+      if(currentBehavior != null)
       {
-        JCheckBox checkBox = new JCheckBox(name);
-        checkBox.setSelected(this.symbolsToWatch.contains(name));
-        checkBox.setOpaque(false);
-        checkBox.setActionCommand("");
-        checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
+        for(XABSLBehavior.Symbol s : currentBehavior.inputSymbols.values())
+        {
+            JCheckBox checkBox = new JCheckBox(s.name);
+            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+            checkBox.setOpaque(false);
+            checkBox.setActionCommand("");
+            checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
-        SymbolId id = this.framePrototype.symbolRegistry.get(name);
-        if(id.io_type == SymbolId.IOType.input) {
-          this.inputSymbolsBoxPanel.add(checkBox);
-        } else {
-          this.outputSymbolsBoxPanel.add(checkBox);
+            this.inputSymbolsBoxPanel.add(checkBox);
         }
-      }//end for
 
+        for(XABSLBehavior.Symbol s : currentBehavior.outputSymbols.values())
+        {
+            JCheckBox checkBox = new JCheckBox(s.name);
+            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+            checkBox.setOpaque(false);
+            checkBox.setActionCommand("");
+            checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
+
+            this.outputSymbolsBoxPanel.add(checkBox);
+        }
+      }
+    
       sortSymbols(this.sortSymbolsTextInput.getText());
       this.symbolChooser.setVisible(true);
     }//GEN-LAST:event_btAddWatchActionPerformed

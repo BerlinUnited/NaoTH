@@ -5,15 +5,72 @@
 package de.naoth.rc.dialogs.behaviorviewer;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
  * @author Heinrich Mellmann
  */
-public class XABSLBehaviorFrame {
+public class XABSLBehaviorFrame 
+{
+
+    public enum SymbolIOType {input, output, unknown}
     
-    public ArrayList<XABSLBehavior.Symbol> inputSymbols = new ArrayList<XABSLBehavior.Symbol>();
-    public ArrayList<XABSLBehavior.Symbol> outputSymbols = new ArrayList<XABSLBehavior.Symbol>();
-    public ArrayList<XABSLAction> actions = new ArrayList<XABSLAction>();
-    String agent = "bua";
+    private Map<String, XABSLBehavior.Symbol> inputSymbols = new LinkedHashMap<>();
+    private Map<String, XABSLBehavior.Symbol> outputSymbols = new LinkedHashMap<>();
+    public ArrayList<XABSLAction> actions = new ArrayList<>();
+    
+    public final int frameNumber;
+    
+    public XABSLBehaviorFrame(int frameNumber)
+    {
+        this.frameNumber = frameNumber;
+    }
+    
+    public void addInputSymbol(XABSLBehavior.Symbol symbol)
+    {
+        if(symbol != null)
+        {
+            inputSymbols.put(symbol.name, symbol);
+        }
+    }
+    
+    public void addOutputSymbol(XABSLBehavior.Symbol symbol)
+    {
+        if(symbol != null)
+        {
+            outputSymbols.put(symbol.name, symbol);
+        }
+    }
+    
+    public XABSLBehavior.Symbol getSymbolByName(String name)
+    {
+        XABSLBehavior.Symbol result = null;
+        result = outputSymbols.get(name);
+        if(result == null)
+        {
+            result = inputSymbols.get(name);
+        }
+        return result;
+    }
+    
+    public SymbolIOType getSymbolIOType(String name)
+    {
+        if(outputSymbols.containsKey(name))
+        {
+            return SymbolIOType.output;
+        }
+        else if(inputSymbols.containsKey(name))
+        {
+            return SymbolIOType.input;
+        }
+        else
+        {
+            return SymbolIOType.unknown;
+        }
+    }
+    
 }

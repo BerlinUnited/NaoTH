@@ -20,7 +20,7 @@ import javax.swing.tree.TreePath;
 public class BehaviorTreePanel extends javax.swing.JScrollPane {
 
     private boolean showOptionsOnly = false;
-    private HashMap<String, Boolean> actionExpanded = new HashMap<String, Boolean>();
+    private HashMap<String, Boolean> actionExpanded = new HashMap<>();
     
     /**
      * Creates new form BehaviorTreePanel
@@ -30,17 +30,16 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         
         createNewTree(null);
     }
-
-    public void setFrame(XABSLFrame frame) {
-        DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode("Behavior (" + frame.agent + ")");
-        for (Messages.XABSLAction a : frame.activeActions) {
-            treeRoot.add(actionToNode(a));
-        }
-        createNewTree(treeRoot);
-    }
     
-    public void setFrame(XABSLBehaviorFrame frame) {
-        DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode("Behavior (" + frame.agent + ")");
+    public void setFrame(XABSLBehaviorFrame frame, XABSLBehavior behavior)
+    {
+        if(frame == null || behavior == null
+                || behavior.agents == null ||behavior.agents.isEmpty())
+        {
+            return;
+        }
+        DefaultMutableTreeNode treeRoot 
+                = new DefaultMutableTreeNode("Behavior (" + behavior.agents.get(0).name + ")");
         for (XABSLAction a : frame.actions) {
             treeRoot.add(actionToNode(a));
         }

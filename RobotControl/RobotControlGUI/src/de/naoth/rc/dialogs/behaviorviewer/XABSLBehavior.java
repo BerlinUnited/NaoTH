@@ -13,9 +13,24 @@ import java.util.TreeMap;
  */
 public class XABSLBehavior {
 
-    public static class Symbol {
-        public Symbol(String name) { this.name = name; }
+    public static class Symbol 
+    {
+ 
         public final String name;
+        
+        public Symbol(String name) 
+        { 
+            this.name = name; 
+        }
+        
+        
+        public String getValueAsString() {
+            return "";
+        }
+        
+        public String getDataType() {
+            return "";
+        }
     
         public Decimal createDecimal(double value) {
             return new Decimal(name, value);
@@ -33,6 +48,19 @@ public class XABSLBehavior {
                 this.value = value;
             }
             public final double value;
+
+            @Override
+            public String getValueAsString() 
+            {
+                return "" +  this.value;
+            }
+
+            @Override
+            public String getDataType() {
+                return "decimal";
+            }
+            
+            
         }
 
         public static class Boolean extends Symbol {
@@ -42,6 +70,19 @@ public class XABSLBehavior {
                 this.value = value;
             }
             public final boolean value;
+            
+            @Override
+            public String getValueAsString() 
+            {
+                return "" +  this.value;
+            }
+
+            @Override
+            public String getDataType() {
+                return "bool";
+            }
+            
+            
         }
 
         public static class Enum extends Symbol {
@@ -53,8 +94,21 @@ public class XABSLBehavior {
             }
             public final int value;
             public final EnumType enumType;
+            
+            @Override
+            public String getValueAsString() 
+            {
+                return enumType.elements.get(value).name;
+            }
+
+            @Override
+            public String getDataType() {
+                return "enum";
+            }
+            
+            
         }
-    }
+    } // end class Symbol
 
     public static class EnumType {
 
@@ -64,7 +118,7 @@ public class XABSLBehavior {
             public int value;
         }
         public String name;
-        public ArrayList<Element> elements = new ArrayList<Element>();
+        public Map<Integer, Element> elements = new TreeMap<>();
     }
 
     public static class Option {
