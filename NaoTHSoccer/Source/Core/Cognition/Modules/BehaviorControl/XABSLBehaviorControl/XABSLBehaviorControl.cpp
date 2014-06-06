@@ -138,6 +138,7 @@ void XABSLBehaviorControl::execute()
       fillActiveOptionsSparse(getBehaviorStateSparse().state);
       //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
       fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
+      getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
     );
 
     draw();
