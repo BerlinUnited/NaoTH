@@ -5,7 +5,9 @@ package de.naoth.rc.dialogs.behaviorviewer;
 
 import de.naoth.rc.messages.Messages;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -43,25 +45,42 @@ public class XABSLProtoParser {
     public ArrayList<XABSLBehavior.Symbol> parseSparse(
             Map<Integer, XABSLBehavior.Symbol> existing,
             Messages.SymbolValueList valueList) {
+        
         ArrayList<XABSLBehavior.Symbol> result
                 = new ArrayList<>(valueList.getBooleanCount()
                         + valueList.getDecimalCount()
                         + valueList.getEnumeratedCount());
+        
+        Set<Integer> includedIDs = new HashSet<>();
 
         for (Messages.SymbolValueList.DoubleSymbol symbol : valueList.getDecimalList()) {
             XABSLBehavior.Symbol s = existing.get(symbol.getId());
             result.add(parse(s, symbol));
+            includedIDs.add(symbol.getId());
         }
 
         for (Messages.SymbolValueList.BooleanSymbol symbol : valueList.getBooleanList()) {
             XABSLBehavior.Symbol s = existing.get(symbol.getId());
             result.add(parse(s, symbol));
+            includedIDs.add(symbol.getId());
         }
 
         for (Messages.SymbolValueList.EnumSymbol symbol : valueList.getEnumeratedList()) {
             XABSLBehavior.Symbol s = existing.get(symbol.getId());
             result.add(parse((XABSLBehavior.Symbol.Enum) s, symbol));
+            includedIDs.add(symbol.getId());
         }
+        
+        // also add all symbols that are in the existing list but have not been
+        // included in the sparse message
+        for(Map.Entry<Integer, XABSLBehavior.Symbol> entry : existing.entrySet())
+        {
+            if(!includedIDs.contains(entry.getKey()))
+            {
+                result.add(entry.getValue());
+            }
+        }
+        
         return result;
     }
 

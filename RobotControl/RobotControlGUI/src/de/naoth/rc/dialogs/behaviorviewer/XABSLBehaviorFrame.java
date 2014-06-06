@@ -6,9 +6,7 @@ package de.naoth.rc.dialogs.behaviorviewer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -48,12 +46,19 @@ public class XABSLBehaviorFrame
     
     public XABSLBehavior.Symbol getSymbolByName(String name)
     {
-        XABSLBehavior.Symbol result = null;
+        XABSLBehavior.Symbol result;
         result = outputSymbols.get(name);
         if(result == null)
         {
             result = inputSymbols.get(name);
         }
+        
+        // get the default value from the behavior
+        if(result == null)
+        {
+            
+        }
+        
         return result;
     }
     
