@@ -57,13 +57,13 @@ class SymbolValueList;
 class SymbolValueList_DoubleSymbol;
 class SymbolValueList_BooleanSymbol;
 class SymbolValueList_EnumSymbol;
-class BehaviorStatusSparse;
-class XABSLBehavior;
-class XABSLBehavior_EnumType;
-class XABSLBehavior_EnumType_Element;
-class XABSLBehavior_Option;
-class XABSLBehavior_Option_State;
-class XABSLBehavior_Agent;
+class BehaviorStateSparse;
+class BehaviorStateComplete;
+class BehaviorStateComplete_EnumType;
+class BehaviorStateComplete_EnumType_Element;
+class BehaviorStateComplete_Option;
+class BehaviorStateComplete_Option_State;
+class BehaviorStateComplete_Agent;
 class XABSLParameter;
 class XABSLAction;
 class BehaviorStatus;
@@ -2112,14 +2112,14 @@ class SymbolValueList : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BehaviorStatusSparse : public ::google::protobuf::Message {
+class BehaviorStateSparse : public ::google::protobuf::Message {
  public:
-  BehaviorStatusSparse();
-  virtual ~BehaviorStatusSparse();
+  BehaviorStateSparse();
+  virtual ~BehaviorStateSparse();
   
-  BehaviorStatusSparse(const BehaviorStatusSparse& from);
+  BehaviorStateSparse(const BehaviorStateSparse& from);
   
-  inline BehaviorStatusSparse& operator=(const BehaviorStatusSparse& from) {
+  inline BehaviorStateSparse& operator=(const BehaviorStateSparse& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2133,17 +2133,17 @@ class BehaviorStatusSparse : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const BehaviorStatusSparse& default_instance();
+  static const BehaviorStateSparse& default_instance();
   
-  void Swap(BehaviorStatusSparse* other);
+  void Swap(BehaviorStateSparse* other);
   
   // implements Message ----------------------------------------------
   
-  BehaviorStatusSparse* New() const;
+  BehaviorStateSparse* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const BehaviorStatusSparse& from);
-  void MergeFrom(const BehaviorStatusSparse& from);
+  void CopyFrom(const BehaviorStateSparse& from);
+  void MergeFrom(const BehaviorStateSparse& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2223,7 +2223,7 @@ class BehaviorStatusSparse : public ::google::protobuf::Message {
   inline ::std::string* mutable_errormessage();
   inline ::std::string* release_errormessage();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStatusSparse)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateSparse)
  private:
   inline void set_has_agent();
   inline void clear_has_agent();
@@ -2253,18 +2253,18 @@ class BehaviorStatusSparse : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static BehaviorStatusSparse* default_instance_;
+  static BehaviorStateSparse* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior_EnumType_Element : public ::google::protobuf::Message {
+class BehaviorStateComplete_EnumType_Element : public ::google::protobuf::Message {
  public:
-  XABSLBehavior_EnumType_Element();
-  virtual ~XABSLBehavior_EnumType_Element();
+  BehaviorStateComplete_EnumType_Element();
+  virtual ~BehaviorStateComplete_EnumType_Element();
   
-  XABSLBehavior_EnumType_Element(const XABSLBehavior_EnumType_Element& from);
+  BehaviorStateComplete_EnumType_Element(const BehaviorStateComplete_EnumType_Element& from);
   
-  inline XABSLBehavior_EnumType_Element& operator=(const XABSLBehavior_EnumType_Element& from) {
+  inline BehaviorStateComplete_EnumType_Element& operator=(const BehaviorStateComplete_EnumType_Element& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2278,17 +2278,17 @@ class XABSLBehavior_EnumType_Element : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior_EnumType_Element& default_instance();
+  static const BehaviorStateComplete_EnumType_Element& default_instance();
   
-  void Swap(XABSLBehavior_EnumType_Element* other);
+  void Swap(BehaviorStateComplete_EnumType_Element* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior_EnumType_Element* New() const;
+  BehaviorStateComplete_EnumType_Element* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior_EnumType_Element& from);
-  void MergeFrom(const XABSLBehavior_EnumType_Element& from);
+  void CopyFrom(const BehaviorStateComplete_EnumType_Element& from);
+  void MergeFrom(const BehaviorStateComplete_EnumType_Element& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2329,7 +2329,7 @@ class XABSLBehavior_EnumType_Element : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.EnumType.Element)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType.Element)
  private:
   inline void set_has_value();
   inline void clear_has_value();
@@ -2349,18 +2349,18 @@ class XABSLBehavior_EnumType_Element : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior_EnumType_Element* default_instance_;
+  static BehaviorStateComplete_EnumType_Element* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior_EnumType : public ::google::protobuf::Message {
+class BehaviorStateComplete_EnumType : public ::google::protobuf::Message {
  public:
-  XABSLBehavior_EnumType();
-  virtual ~XABSLBehavior_EnumType();
+  BehaviorStateComplete_EnumType();
+  virtual ~BehaviorStateComplete_EnumType();
   
-  XABSLBehavior_EnumType(const XABSLBehavior_EnumType& from);
+  BehaviorStateComplete_EnumType(const BehaviorStateComplete_EnumType& from);
   
-  inline XABSLBehavior_EnumType& operator=(const XABSLBehavior_EnumType& from) {
+  inline BehaviorStateComplete_EnumType& operator=(const BehaviorStateComplete_EnumType& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2374,17 +2374,17 @@ class XABSLBehavior_EnumType : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior_EnumType& default_instance();
+  static const BehaviorStateComplete_EnumType& default_instance();
   
-  void Swap(XABSLBehavior_EnumType* other);
+  void Swap(BehaviorStateComplete_EnumType* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior_EnumType* New() const;
+  BehaviorStateComplete_EnumType* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior_EnumType& from);
-  void MergeFrom(const XABSLBehavior_EnumType& from);
+  void CopyFrom(const BehaviorStateComplete_EnumType& from);
+  void MergeFrom(const BehaviorStateComplete_EnumType& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2405,7 +2405,7 @@ class XABSLBehavior_EnumType : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
-  typedef XABSLBehavior_EnumType_Element Element;
+  typedef BehaviorStateComplete_EnumType_Element Element;
   
   // accessors -------------------------------------------------------
   
@@ -2420,19 +2420,19 @@ class XABSLBehavior_EnumType : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
-  // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
   inline int elements_size() const;
   inline void clear_elements();
   static const int kElementsFieldNumber = 2;
-  inline const ::naothmessages::XABSLBehavior_EnumType_Element& elements(int index) const;
-  inline ::naothmessages::XABSLBehavior_EnumType_Element* mutable_elements(int index);
-  inline ::naothmessages::XABSLBehavior_EnumType_Element* add_elements();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType_Element >&
+  inline const ::naothmessages::BehaviorStateComplete_EnumType_Element& elements(int index) const;
+  inline ::naothmessages::BehaviorStateComplete_EnumType_Element* mutable_elements(int index);
+  inline ::naothmessages::BehaviorStateComplete_EnumType_Element* add_elements();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType_Element >&
       elements() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType_Element >*
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType_Element >*
       mutable_elements();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.EnumType)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -2440,7 +2440,7 @@ class XABSLBehavior_EnumType : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* name_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType_Element > elements_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType_Element > elements_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -2450,18 +2450,18 @@ class XABSLBehavior_EnumType : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior_EnumType* default_instance_;
+  static BehaviorStateComplete_EnumType* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior_Option_State : public ::google::protobuf::Message {
+class BehaviorStateComplete_Option_State : public ::google::protobuf::Message {
  public:
-  XABSLBehavior_Option_State();
-  virtual ~XABSLBehavior_Option_State();
+  BehaviorStateComplete_Option_State();
+  virtual ~BehaviorStateComplete_Option_State();
   
-  XABSLBehavior_Option_State(const XABSLBehavior_Option_State& from);
+  BehaviorStateComplete_Option_State(const BehaviorStateComplete_Option_State& from);
   
-  inline XABSLBehavior_Option_State& operator=(const XABSLBehavior_Option_State& from) {
+  inline BehaviorStateComplete_Option_State& operator=(const BehaviorStateComplete_Option_State& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2475,17 +2475,17 @@ class XABSLBehavior_Option_State : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior_Option_State& default_instance();
+  static const BehaviorStateComplete_Option_State& default_instance();
   
-  void Swap(XABSLBehavior_Option_State* other);
+  void Swap(BehaviorStateComplete_Option_State* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior_Option_State* New() const;
+  BehaviorStateComplete_Option_State* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior_Option_State& from);
-  void MergeFrom(const XABSLBehavior_Option_State& from);
+  void CopyFrom(const BehaviorStateComplete_Option_State& from);
+  void MergeFrom(const BehaviorStateComplete_Option_State& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2526,7 +2526,7 @@ class XABSLBehavior_Option_State : public ::google::protobuf::Message {
   inline bool target() const;
   inline void set_target(bool value);
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Option.State)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option.State)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -2546,18 +2546,18 @@ class XABSLBehavior_Option_State : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior_Option_State* default_instance_;
+  static BehaviorStateComplete_Option_State* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior_Option : public ::google::protobuf::Message {
+class BehaviorStateComplete_Option : public ::google::protobuf::Message {
  public:
-  XABSLBehavior_Option();
-  virtual ~XABSLBehavior_Option();
+  BehaviorStateComplete_Option();
+  virtual ~BehaviorStateComplete_Option();
   
-  XABSLBehavior_Option(const XABSLBehavior_Option& from);
+  BehaviorStateComplete_Option(const BehaviorStateComplete_Option& from);
   
-  inline XABSLBehavior_Option& operator=(const XABSLBehavior_Option& from) {
+  inline BehaviorStateComplete_Option& operator=(const BehaviorStateComplete_Option& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2571,17 +2571,17 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior_Option& default_instance();
+  static const BehaviorStateComplete_Option& default_instance();
   
-  void Swap(XABSLBehavior_Option* other);
+  void Swap(BehaviorStateComplete_Option* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior_Option* New() const;
+  BehaviorStateComplete_Option* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior_Option& from);
-  void MergeFrom(const XABSLBehavior_Option& from);
+  void CopyFrom(const BehaviorStateComplete_Option& from);
+  void MergeFrom(const BehaviorStateComplete_Option& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2602,7 +2602,7 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
-  typedef XABSLBehavior_Option_State State;
+  typedef BehaviorStateComplete_Option_State State;
   
   // accessors -------------------------------------------------------
   
@@ -2617,16 +2617,16 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   inline ::std::string* mutable_name();
   inline ::std::string* release_name();
   
-  // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+  // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
   inline int states_size() const;
   inline void clear_states();
   static const int kStatesFieldNumber = 3;
-  inline const ::naothmessages::XABSLBehavior_Option_State& states(int index) const;
-  inline ::naothmessages::XABSLBehavior_Option_State* mutable_states(int index);
-  inline ::naothmessages::XABSLBehavior_Option_State* add_states();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option_State >&
+  inline const ::naothmessages::BehaviorStateComplete_Option_State& states(int index) const;
+  inline ::naothmessages::BehaviorStateComplete_Option_State* mutable_states(int index);
+  inline ::naothmessages::BehaviorStateComplete_Option_State* add_states();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option_State >&
       states() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option_State >*
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option_State >*
       mutable_states();
   
   // repeated .naothmessages.XABSLSymbol parameters = 2;
@@ -2641,7 +2641,7 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
       mutable_parameters();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Option)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -2649,7 +2649,7 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* name_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option_State > states_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option_State > states_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol > parameters_;
   
   mutable int _cached_size_;
@@ -2660,18 +2660,18 @@ class XABSLBehavior_Option : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior_Option* default_instance_;
+  static BehaviorStateComplete_Option* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior_Agent : public ::google::protobuf::Message {
+class BehaviorStateComplete_Agent : public ::google::protobuf::Message {
  public:
-  XABSLBehavior_Agent();
-  virtual ~XABSLBehavior_Agent();
+  BehaviorStateComplete_Agent();
+  virtual ~BehaviorStateComplete_Agent();
   
-  XABSLBehavior_Agent(const XABSLBehavior_Agent& from);
+  BehaviorStateComplete_Agent(const BehaviorStateComplete_Agent& from);
   
-  inline XABSLBehavior_Agent& operator=(const XABSLBehavior_Agent& from) {
+  inline BehaviorStateComplete_Agent& operator=(const BehaviorStateComplete_Agent& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2685,17 +2685,17 @@ class XABSLBehavior_Agent : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior_Agent& default_instance();
+  static const BehaviorStateComplete_Agent& default_instance();
   
-  void Swap(XABSLBehavior_Agent* other);
+  void Swap(BehaviorStateComplete_Agent* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior_Agent* New() const;
+  BehaviorStateComplete_Agent* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior_Agent& from);
-  void MergeFrom(const XABSLBehavior_Agent& from);
+  void CopyFrom(const BehaviorStateComplete_Agent& from);
+  void MergeFrom(const BehaviorStateComplete_Agent& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2740,7 +2740,7 @@ class XABSLBehavior_Agent : public ::google::protobuf::Message {
   inline ::std::string* mutable_rootoption();
   inline ::std::string* release_rootoption();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Agent)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Agent)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -2760,18 +2760,18 @@ class XABSLBehavior_Agent : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior_Agent* default_instance_;
+  static BehaviorStateComplete_Agent* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class XABSLBehavior : public ::google::protobuf::Message {
+class BehaviorStateComplete : public ::google::protobuf::Message {
  public:
-  XABSLBehavior();
-  virtual ~XABSLBehavior();
+  BehaviorStateComplete();
+  virtual ~BehaviorStateComplete();
   
-  XABSLBehavior(const XABSLBehavior& from);
+  BehaviorStateComplete(const BehaviorStateComplete& from);
   
-  inline XABSLBehavior& operator=(const XABSLBehavior& from) {
+  inline BehaviorStateComplete& operator=(const BehaviorStateComplete& from) {
     CopyFrom(from);
     return *this;
   }
@@ -2785,17 +2785,17 @@ class XABSLBehavior : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const XABSLBehavior& default_instance();
+  static const BehaviorStateComplete& default_instance();
   
-  void Swap(XABSLBehavior* other);
+  void Swap(BehaviorStateComplete* other);
   
   // implements Message ----------------------------------------------
   
-  XABSLBehavior* New() const;
+  BehaviorStateComplete* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const XABSLBehavior& from);
-  void MergeFrom(const XABSLBehavior& from);
+  void CopyFrom(const BehaviorStateComplete& from);
+  void MergeFrom(const BehaviorStateComplete& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -2816,46 +2816,46 @@ class XABSLBehavior : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
-  typedef XABSLBehavior_EnumType EnumType;
-  typedef XABSLBehavior_Option Option;
-  typedef XABSLBehavior_Agent Agent;
+  typedef BehaviorStateComplete_EnumType EnumType;
+  typedef BehaviorStateComplete_Option Option;
+  typedef BehaviorStateComplete_Agent Agent;
   
   // accessors -------------------------------------------------------
   
-  // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
   inline int enumerations_size() const;
   inline void clear_enumerations();
   static const int kEnumerationsFieldNumber = 10;
-  inline const ::naothmessages::XABSLBehavior_EnumType& enumerations(int index) const;
-  inline ::naothmessages::XABSLBehavior_EnumType* mutable_enumerations(int index);
-  inline ::naothmessages::XABSLBehavior_EnumType* add_enumerations();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType >&
+  inline const ::naothmessages::BehaviorStateComplete_EnumType& enumerations(int index) const;
+  inline ::naothmessages::BehaviorStateComplete_EnumType* mutable_enumerations(int index);
+  inline ::naothmessages::BehaviorStateComplete_EnumType* add_enumerations();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType >&
       enumerations() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType >*
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType >*
       mutable_enumerations();
   
-  // repeated .naothmessages.XABSLBehavior.Option options = 11;
+  // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
   inline int options_size() const;
   inline void clear_options();
   static const int kOptionsFieldNumber = 11;
-  inline const ::naothmessages::XABSLBehavior_Option& options(int index) const;
-  inline ::naothmessages::XABSLBehavior_Option* mutable_options(int index);
-  inline ::naothmessages::XABSLBehavior_Option* add_options();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option >&
+  inline const ::naothmessages::BehaviorStateComplete_Option& options(int index) const;
+  inline ::naothmessages::BehaviorStateComplete_Option* mutable_options(int index);
+  inline ::naothmessages::BehaviorStateComplete_Option* add_options();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option >&
       options() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option >*
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option >*
       mutable_options();
   
-  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
   inline int agents_size() const;
   inline void clear_agents();
   static const int kAgentsFieldNumber = 12;
-  inline const ::naothmessages::XABSLBehavior_Agent& agents(int index) const;
-  inline ::naothmessages::XABSLBehavior_Agent* mutable_agents(int index);
-  inline ::naothmessages::XABSLBehavior_Agent* add_agents();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Agent >&
+  inline const ::naothmessages::BehaviorStateComplete_Agent& agents(int index) const;
+  inline ::naothmessages::BehaviorStateComplete_Agent* mutable_agents(int index);
+  inline ::naothmessages::BehaviorStateComplete_Agent* add_agents();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent >&
       agents() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Agent >*
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent >*
       mutable_agents();
   
   // optional .naothmessages.SymbolValueList inputSymbolList = 13;
@@ -2874,7 +2874,7 @@ class XABSLBehavior : public ::google::protobuf::Message {
   inline ::naothmessages::SymbolValueList* mutable_outputsymbollist();
   inline ::naothmessages::SymbolValueList* release_outputsymbollist();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior)
+  // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete)
  private:
   inline void set_has_inputsymbollist();
   inline void clear_has_inputsymbollist();
@@ -2883,9 +2883,9 @@ class XABSLBehavior : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType > enumerations_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option > options_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Agent > agents_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType > enumerations_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option > options_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent > agents_;
   ::naothmessages::SymbolValueList* inputsymbollist_;
   ::naothmessages::SymbolValueList* outputsymbollist_;
   
@@ -2897,7 +2897,7 @@ class XABSLBehavior : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static XABSLBehavior* default_instance_;
+  static BehaviorStateComplete* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -6088,56 +6088,56 @@ SymbolValueList::mutable_enumerated() {
 
 // -------------------------------------------------------------------
 
-// BehaviorStatusSparse
+// BehaviorStateSparse
 
 // optional string agent = 1;
-inline bool BehaviorStatusSparse::has_agent() const {
+inline bool BehaviorStateSparse::has_agent() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void BehaviorStatusSparse::set_has_agent() {
+inline void BehaviorStateSparse::set_has_agent() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void BehaviorStatusSparse::clear_has_agent() {
+inline void BehaviorStateSparse::clear_has_agent() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void BehaviorStatusSparse::clear_agent() {
+inline void BehaviorStateSparse::clear_agent() {
   if (agent_ != &::google::protobuf::internal::kEmptyString) {
     agent_->clear();
   }
   clear_has_agent();
 }
-inline const ::std::string& BehaviorStatusSparse::agent() const {
+inline const ::std::string& BehaviorStateSparse::agent() const {
   return *agent_;
 }
-inline void BehaviorStatusSparse::set_agent(const ::std::string& value) {
+inline void BehaviorStateSparse::set_agent(const ::std::string& value) {
   set_has_agent();
   if (agent_ == &::google::protobuf::internal::kEmptyString) {
     agent_ = new ::std::string;
   }
   agent_->assign(value);
 }
-inline void BehaviorStatusSparse::set_agent(const char* value) {
+inline void BehaviorStateSparse::set_agent(const char* value) {
   set_has_agent();
   if (agent_ == &::google::protobuf::internal::kEmptyString) {
     agent_ = new ::std::string;
   }
   agent_->assign(value);
 }
-inline void BehaviorStatusSparse::set_agent(const char* value, size_t size) {
+inline void BehaviorStateSparse::set_agent(const char* value, size_t size) {
   set_has_agent();
   if (agent_ == &::google::protobuf::internal::kEmptyString) {
     agent_ = new ::std::string;
   }
   agent_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* BehaviorStatusSparse::mutable_agent() {
+inline ::std::string* BehaviorStateSparse::mutable_agent() {
   set_has_agent();
   if (agent_ == &::google::protobuf::internal::kEmptyString) {
     agent_ = new ::std::string;
   }
   return agent_;
 }
-inline ::std::string* BehaviorStatusSparse::release_agent() {
+inline ::std::string* BehaviorStateSparse::release_agent() {
   clear_has_agent();
   if (agent_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6149,53 +6149,53 @@ inline ::std::string* BehaviorStatusSparse::release_agent() {
 }
 
 // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
-inline int BehaviorStatusSparse::activerootactions_size() const {
+inline int BehaviorStateSparse::activerootactions_size() const {
   return activerootactions_.size();
 }
-inline void BehaviorStatusSparse::clear_activerootactions() {
+inline void BehaviorStateSparse::clear_activerootactions() {
   activerootactions_.Clear();
 }
-inline const ::naothmessages::XABSLActionSparse& BehaviorStatusSparse::activerootactions(int index) const {
+inline const ::naothmessages::XABSLActionSparse& BehaviorStateSparse::activerootactions(int index) const {
   return activerootactions_.Get(index);
 }
-inline ::naothmessages::XABSLActionSparse* BehaviorStatusSparse::mutable_activerootactions(int index) {
+inline ::naothmessages::XABSLActionSparse* BehaviorStateSparse::mutable_activerootactions(int index) {
   return activerootactions_.Mutable(index);
 }
-inline ::naothmessages::XABSLActionSparse* BehaviorStatusSparse::add_activerootactions() {
+inline ::naothmessages::XABSLActionSparse* BehaviorStateSparse::add_activerootactions() {
   return activerootactions_.Add();
 }
 inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLActionSparse >&
-BehaviorStatusSparse::activerootactions() const {
+BehaviorStateSparse::activerootactions() const {
   return activerootactions_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLActionSparse >*
-BehaviorStatusSparse::mutable_activerootactions() {
+BehaviorStateSparse::mutable_activerootactions() {
   return &activerootactions_;
 }
 
 // optional .naothmessages.SymbolValueList inputSymbolList = 10;
-inline bool BehaviorStatusSparse::has_inputsymbollist() const {
+inline bool BehaviorStateSparse::has_inputsymbollist() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void BehaviorStatusSparse::set_has_inputsymbollist() {
+inline void BehaviorStateSparse::set_has_inputsymbollist() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void BehaviorStatusSparse::clear_has_inputsymbollist() {
+inline void BehaviorStateSparse::clear_has_inputsymbollist() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void BehaviorStatusSparse::clear_inputsymbollist() {
+inline void BehaviorStateSparse::clear_inputsymbollist() {
   if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
   clear_has_inputsymbollist();
 }
-inline const ::naothmessages::SymbolValueList& BehaviorStatusSparse::inputsymbollist() const {
+inline const ::naothmessages::SymbolValueList& BehaviorStateSparse::inputsymbollist() const {
   return inputsymbollist_ != NULL ? *inputsymbollist_ : *default_instance_->inputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::mutable_inputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateSparse::mutable_inputsymbollist() {
   set_has_inputsymbollist();
   if (inputsymbollist_ == NULL) inputsymbollist_ = new ::naothmessages::SymbolValueList;
   return inputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_inputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateSparse::release_inputsymbollist() {
   clear_has_inputsymbollist();
   ::naothmessages::SymbolValueList* temp = inputsymbollist_;
   inputsymbollist_ = NULL;
@@ -6203,28 +6203,28 @@ inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_inputsymb
 }
 
 // optional .naothmessages.SymbolValueList outputSymbolList = 11;
-inline bool BehaviorStatusSparse::has_outputsymbollist() const {
+inline bool BehaviorStateSparse::has_outputsymbollist() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void BehaviorStatusSparse::set_has_outputsymbollist() {
+inline void BehaviorStateSparse::set_has_outputsymbollist() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void BehaviorStatusSparse::clear_has_outputsymbollist() {
+inline void BehaviorStateSparse::clear_has_outputsymbollist() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void BehaviorStatusSparse::clear_outputsymbollist() {
+inline void BehaviorStateSparse::clear_outputsymbollist() {
   if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
   clear_has_outputsymbollist();
 }
-inline const ::naothmessages::SymbolValueList& BehaviorStatusSparse::outputsymbollist() const {
+inline const ::naothmessages::SymbolValueList& BehaviorStateSparse::outputsymbollist() const {
   return outputsymbollist_ != NULL ? *outputsymbollist_ : *default_instance_->outputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::mutable_outputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateSparse::mutable_outputsymbollist() {
   set_has_outputsymbollist();
   if (outputsymbollist_ == NULL) outputsymbollist_ = new ::naothmessages::SymbolValueList;
   return outputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_outputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateSparse::release_outputsymbollist() {
   clear_has_outputsymbollist();
   ::naothmessages::SymbolValueList* temp = outputsymbollist_;
   outputsymbollist_ = NULL;
@@ -6232,75 +6232,75 @@ inline ::naothmessages::SymbolValueList* BehaviorStatusSparse::release_outputsym
 }
 
 // optional uint32 frameNumber = 5;
-inline bool BehaviorStatusSparse::has_framenumber() const {
+inline bool BehaviorStateSparse::has_framenumber() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void BehaviorStatusSparse::set_has_framenumber() {
+inline void BehaviorStateSparse::set_has_framenumber() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void BehaviorStatusSparse::clear_has_framenumber() {
+inline void BehaviorStateSparse::clear_has_framenumber() {
   _has_bits_[0] &= ~0x00000010u;
 }
-inline void BehaviorStatusSparse::clear_framenumber() {
+inline void BehaviorStateSparse::clear_framenumber() {
   framenumber_ = 0u;
   clear_has_framenumber();
 }
-inline ::google::protobuf::uint32 BehaviorStatusSparse::framenumber() const {
+inline ::google::protobuf::uint32 BehaviorStateSparse::framenumber() const {
   return framenumber_;
 }
-inline void BehaviorStatusSparse::set_framenumber(::google::protobuf::uint32 value) {
+inline void BehaviorStateSparse::set_framenumber(::google::protobuf::uint32 value) {
   set_has_framenumber();
   framenumber_ = value;
 }
 
 // optional string errorMessage = 6;
-inline bool BehaviorStatusSparse::has_errormessage() const {
+inline bool BehaviorStateSparse::has_errormessage() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
-inline void BehaviorStatusSparse::set_has_errormessage() {
+inline void BehaviorStateSparse::set_has_errormessage() {
   _has_bits_[0] |= 0x00000020u;
 }
-inline void BehaviorStatusSparse::clear_has_errormessage() {
+inline void BehaviorStateSparse::clear_has_errormessage() {
   _has_bits_[0] &= ~0x00000020u;
 }
-inline void BehaviorStatusSparse::clear_errormessage() {
+inline void BehaviorStateSparse::clear_errormessage() {
   if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
     errormessage_->clear();
   }
   clear_has_errormessage();
 }
-inline const ::std::string& BehaviorStatusSparse::errormessage() const {
+inline const ::std::string& BehaviorStateSparse::errormessage() const {
   return *errormessage_;
 }
-inline void BehaviorStatusSparse::set_errormessage(const ::std::string& value) {
+inline void BehaviorStateSparse::set_errormessage(const ::std::string& value) {
   set_has_errormessage();
   if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
     errormessage_ = new ::std::string;
   }
   errormessage_->assign(value);
 }
-inline void BehaviorStatusSparse::set_errormessage(const char* value) {
+inline void BehaviorStateSparse::set_errormessage(const char* value) {
   set_has_errormessage();
   if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
     errormessage_ = new ::std::string;
   }
   errormessage_->assign(value);
 }
-inline void BehaviorStatusSparse::set_errormessage(const char* value, size_t size) {
+inline void BehaviorStateSparse::set_errormessage(const char* value, size_t size) {
   set_has_errormessage();
   if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
     errormessage_ = new ::std::string;
   }
   errormessage_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* BehaviorStatusSparse::mutable_errormessage() {
+inline ::std::string* BehaviorStateSparse::mutable_errormessage() {
   set_has_errormessage();
   if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
     errormessage_ = new ::std::string;
   }
   return errormessage_;
 }
-inline ::std::string* BehaviorStatusSparse::release_errormessage() {
+inline ::std::string* BehaviorStateSparse::release_errormessage() {
   clear_has_errormessage();
   if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6313,78 +6313,78 @@ inline ::std::string* BehaviorStatusSparse::release_errormessage() {
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior_EnumType_Element
+// BehaviorStateComplete_EnumType_Element
 
 // required int32 value = 1;
-inline bool XABSLBehavior_EnumType_Element::has_value() const {
+inline bool BehaviorStateComplete_EnumType_Element::has_value() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void XABSLBehavior_EnumType_Element::set_has_value() {
+inline void BehaviorStateComplete_EnumType_Element::set_has_value() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void XABSLBehavior_EnumType_Element::clear_has_value() {
+inline void BehaviorStateComplete_EnumType_Element::clear_has_value() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void XABSLBehavior_EnumType_Element::clear_value() {
+inline void BehaviorStateComplete_EnumType_Element::clear_value() {
   value_ = 0;
   clear_has_value();
 }
-inline ::google::protobuf::int32 XABSLBehavior_EnumType_Element::value() const {
+inline ::google::protobuf::int32 BehaviorStateComplete_EnumType_Element::value() const {
   return value_;
 }
-inline void XABSLBehavior_EnumType_Element::set_value(::google::protobuf::int32 value) {
+inline void BehaviorStateComplete_EnumType_Element::set_value(::google::protobuf::int32 value) {
   set_has_value();
   value_ = value;
 }
 
 // required string name = 2;
-inline bool XABSLBehavior_EnumType_Element::has_name() const {
+inline bool BehaviorStateComplete_EnumType_Element::has_name() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void XABSLBehavior_EnumType_Element::set_has_name() {
+inline void BehaviorStateComplete_EnumType_Element::set_has_name() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void XABSLBehavior_EnumType_Element::clear_has_name() {
+inline void BehaviorStateComplete_EnumType_Element::clear_has_name() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void XABSLBehavior_EnumType_Element::clear_name() {
+inline void BehaviorStateComplete_EnumType_Element::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& XABSLBehavior_EnumType_Element::name() const {
+inline const ::std::string& BehaviorStateComplete_EnumType_Element::name() const {
   return *name_;
 }
-inline void XABSLBehavior_EnumType_Element::set_name(const ::std::string& value) {
+inline void BehaviorStateComplete_EnumType_Element::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_EnumType_Element::set_name(const char* value) {
+inline void BehaviorStateComplete_EnumType_Element::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_EnumType_Element::set_name(const char* value, size_t size) {
+inline void BehaviorStateComplete_EnumType_Element::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_EnumType_Element::mutable_name() {
+inline ::std::string* BehaviorStateComplete_EnumType_Element::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* XABSLBehavior_EnumType_Element::release_name() {
+inline ::std::string* BehaviorStateComplete_EnumType_Element::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6397,56 +6397,56 @@ inline ::std::string* XABSLBehavior_EnumType_Element::release_name() {
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior_EnumType
+// BehaviorStateComplete_EnumType
 
 // required string name = 1;
-inline bool XABSLBehavior_EnumType::has_name() const {
+inline bool BehaviorStateComplete_EnumType::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void XABSLBehavior_EnumType::set_has_name() {
+inline void BehaviorStateComplete_EnumType::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void XABSLBehavior_EnumType::clear_has_name() {
+inline void BehaviorStateComplete_EnumType::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void XABSLBehavior_EnumType::clear_name() {
+inline void BehaviorStateComplete_EnumType::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& XABSLBehavior_EnumType::name() const {
+inline const ::std::string& BehaviorStateComplete_EnumType::name() const {
   return *name_;
 }
-inline void XABSLBehavior_EnumType::set_name(const ::std::string& value) {
+inline void BehaviorStateComplete_EnumType::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_EnumType::set_name(const char* value) {
+inline void BehaviorStateComplete_EnumType::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_EnumType::set_name(const char* value, size_t size) {
+inline void BehaviorStateComplete_EnumType::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_EnumType::mutable_name() {
+inline ::std::string* BehaviorStateComplete_EnumType::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* XABSLBehavior_EnumType::release_name() {
+inline ::std::string* BehaviorStateComplete_EnumType::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6457,83 +6457,83 @@ inline ::std::string* XABSLBehavior_EnumType::release_name() {
   }
 }
 
-// repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
-inline int XABSLBehavior_EnumType::elements_size() const {
+// repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+inline int BehaviorStateComplete_EnumType::elements_size() const {
   return elements_.size();
 }
-inline void XABSLBehavior_EnumType::clear_elements() {
+inline void BehaviorStateComplete_EnumType::clear_elements() {
   elements_.Clear();
 }
-inline const ::naothmessages::XABSLBehavior_EnumType_Element& XABSLBehavior_EnumType::elements(int index) const {
+inline const ::naothmessages::BehaviorStateComplete_EnumType_Element& BehaviorStateComplete_EnumType::elements(int index) const {
   return elements_.Get(index);
 }
-inline ::naothmessages::XABSLBehavior_EnumType_Element* XABSLBehavior_EnumType::mutable_elements(int index) {
+inline ::naothmessages::BehaviorStateComplete_EnumType_Element* BehaviorStateComplete_EnumType::mutable_elements(int index) {
   return elements_.Mutable(index);
 }
-inline ::naothmessages::XABSLBehavior_EnumType_Element* XABSLBehavior_EnumType::add_elements() {
+inline ::naothmessages::BehaviorStateComplete_EnumType_Element* BehaviorStateComplete_EnumType::add_elements() {
   return elements_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType_Element >&
-XABSLBehavior_EnumType::elements() const {
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType_Element >&
+BehaviorStateComplete_EnumType::elements() const {
   return elements_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType_Element >*
-XABSLBehavior_EnumType::mutable_elements() {
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType_Element >*
+BehaviorStateComplete_EnumType::mutable_elements() {
   return &elements_;
 }
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior_Option_State
+// BehaviorStateComplete_Option_State
 
 // required string name = 1;
-inline bool XABSLBehavior_Option_State::has_name() const {
+inline bool BehaviorStateComplete_Option_State::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void XABSLBehavior_Option_State::set_has_name() {
+inline void BehaviorStateComplete_Option_State::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void XABSLBehavior_Option_State::clear_has_name() {
+inline void BehaviorStateComplete_Option_State::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void XABSLBehavior_Option_State::clear_name() {
+inline void BehaviorStateComplete_Option_State::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& XABSLBehavior_Option_State::name() const {
+inline const ::std::string& BehaviorStateComplete_Option_State::name() const {
   return *name_;
 }
-inline void XABSLBehavior_Option_State::set_name(const ::std::string& value) {
+inline void BehaviorStateComplete_Option_State::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Option_State::set_name(const char* value) {
+inline void BehaviorStateComplete_Option_State::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Option_State::set_name(const char* value, size_t size) {
+inline void BehaviorStateComplete_Option_State::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_Option_State::mutable_name() {
+inline ::std::string* BehaviorStateComplete_Option_State::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* XABSLBehavior_Option_State::release_name() {
+inline ::std::string* BehaviorStateComplete_Option_State::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6545,79 +6545,79 @@ inline ::std::string* XABSLBehavior_Option_State::release_name() {
 }
 
 // optional bool target = 2;
-inline bool XABSLBehavior_Option_State::has_target() const {
+inline bool BehaviorStateComplete_Option_State::has_target() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void XABSLBehavior_Option_State::set_has_target() {
+inline void BehaviorStateComplete_Option_State::set_has_target() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void XABSLBehavior_Option_State::clear_has_target() {
+inline void BehaviorStateComplete_Option_State::clear_has_target() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void XABSLBehavior_Option_State::clear_target() {
+inline void BehaviorStateComplete_Option_State::clear_target() {
   target_ = false;
   clear_has_target();
 }
-inline bool XABSLBehavior_Option_State::target() const {
+inline bool BehaviorStateComplete_Option_State::target() const {
   return target_;
 }
-inline void XABSLBehavior_Option_State::set_target(bool value) {
+inline void BehaviorStateComplete_Option_State::set_target(bool value) {
   set_has_target();
   target_ = value;
 }
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior_Option
+// BehaviorStateComplete_Option
 
 // required string name = 1;
-inline bool XABSLBehavior_Option::has_name() const {
+inline bool BehaviorStateComplete_Option::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void XABSLBehavior_Option::set_has_name() {
+inline void BehaviorStateComplete_Option::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void XABSLBehavior_Option::clear_has_name() {
+inline void BehaviorStateComplete_Option::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void XABSLBehavior_Option::clear_name() {
+inline void BehaviorStateComplete_Option::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& XABSLBehavior_Option::name() const {
+inline const ::std::string& BehaviorStateComplete_Option::name() const {
   return *name_;
 }
-inline void XABSLBehavior_Option::set_name(const ::std::string& value) {
+inline void BehaviorStateComplete_Option::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Option::set_name(const char* value) {
+inline void BehaviorStateComplete_Option::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Option::set_name(const char* value, size_t size) {
+inline void BehaviorStateComplete_Option::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_Option::mutable_name() {
+inline ::std::string* BehaviorStateComplete_Option::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* XABSLBehavior_Option::release_name() {
+inline ::std::string* BehaviorStateComplete_Option::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6628,108 +6628,108 @@ inline ::std::string* XABSLBehavior_Option::release_name() {
   }
 }
 
-// repeated .naothmessages.XABSLBehavior.Option.State states = 3;
-inline int XABSLBehavior_Option::states_size() const {
+// repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+inline int BehaviorStateComplete_Option::states_size() const {
   return states_.size();
 }
-inline void XABSLBehavior_Option::clear_states() {
+inline void BehaviorStateComplete_Option::clear_states() {
   states_.Clear();
 }
-inline const ::naothmessages::XABSLBehavior_Option_State& XABSLBehavior_Option::states(int index) const {
+inline const ::naothmessages::BehaviorStateComplete_Option_State& BehaviorStateComplete_Option::states(int index) const {
   return states_.Get(index);
 }
-inline ::naothmessages::XABSLBehavior_Option_State* XABSLBehavior_Option::mutable_states(int index) {
+inline ::naothmessages::BehaviorStateComplete_Option_State* BehaviorStateComplete_Option::mutable_states(int index) {
   return states_.Mutable(index);
 }
-inline ::naothmessages::XABSLBehavior_Option_State* XABSLBehavior_Option::add_states() {
+inline ::naothmessages::BehaviorStateComplete_Option_State* BehaviorStateComplete_Option::add_states() {
   return states_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option_State >&
-XABSLBehavior_Option::states() const {
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option_State >&
+BehaviorStateComplete_Option::states() const {
   return states_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option_State >*
-XABSLBehavior_Option::mutable_states() {
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option_State >*
+BehaviorStateComplete_Option::mutable_states() {
   return &states_;
 }
 
 // repeated .naothmessages.XABSLSymbol parameters = 2;
-inline int XABSLBehavior_Option::parameters_size() const {
+inline int BehaviorStateComplete_Option::parameters_size() const {
   return parameters_.size();
 }
-inline void XABSLBehavior_Option::clear_parameters() {
+inline void BehaviorStateComplete_Option::clear_parameters() {
   parameters_.Clear();
 }
-inline const ::naothmessages::XABSLSymbol& XABSLBehavior_Option::parameters(int index) const {
+inline const ::naothmessages::XABSLSymbol& BehaviorStateComplete_Option::parameters(int index) const {
   return parameters_.Get(index);
 }
-inline ::naothmessages::XABSLSymbol* XABSLBehavior_Option::mutable_parameters(int index) {
+inline ::naothmessages::XABSLSymbol* BehaviorStateComplete_Option::mutable_parameters(int index) {
   return parameters_.Mutable(index);
 }
-inline ::naothmessages::XABSLSymbol* XABSLBehavior_Option::add_parameters() {
+inline ::naothmessages::XABSLSymbol* BehaviorStateComplete_Option::add_parameters() {
   return parameters_.Add();
 }
 inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >&
-XABSLBehavior_Option::parameters() const {
+BehaviorStateComplete_Option::parameters() const {
   return parameters_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLSymbol >*
-XABSLBehavior_Option::mutable_parameters() {
+BehaviorStateComplete_Option::mutable_parameters() {
   return &parameters_;
 }
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior_Agent
+// BehaviorStateComplete_Agent
 
 // required string name = 1;
-inline bool XABSLBehavior_Agent::has_name() const {
+inline bool BehaviorStateComplete_Agent::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void XABSLBehavior_Agent::set_has_name() {
+inline void BehaviorStateComplete_Agent::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void XABSLBehavior_Agent::clear_has_name() {
+inline void BehaviorStateComplete_Agent::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void XABSLBehavior_Agent::clear_name() {
+inline void BehaviorStateComplete_Agent::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& XABSLBehavior_Agent::name() const {
+inline const ::std::string& BehaviorStateComplete_Agent::name() const {
   return *name_;
 }
-inline void XABSLBehavior_Agent::set_name(const ::std::string& value) {
+inline void BehaviorStateComplete_Agent::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Agent::set_name(const char* value) {
+inline void BehaviorStateComplete_Agent::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void XABSLBehavior_Agent::set_name(const char* value, size_t size) {
+inline void BehaviorStateComplete_Agent::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_Agent::mutable_name() {
+inline ::std::string* BehaviorStateComplete_Agent::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* XABSLBehavior_Agent::release_name() {
+inline ::std::string* BehaviorStateComplete_Agent::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6741,53 +6741,53 @@ inline ::std::string* XABSLBehavior_Agent::release_name() {
 }
 
 // required string rootOption = 2;
-inline bool XABSLBehavior_Agent::has_rootoption() const {
+inline bool BehaviorStateComplete_Agent::has_rootoption() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void XABSLBehavior_Agent::set_has_rootoption() {
+inline void BehaviorStateComplete_Agent::set_has_rootoption() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void XABSLBehavior_Agent::clear_has_rootoption() {
+inline void BehaviorStateComplete_Agent::clear_has_rootoption() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void XABSLBehavior_Agent::clear_rootoption() {
+inline void BehaviorStateComplete_Agent::clear_rootoption() {
   if (rootoption_ != &::google::protobuf::internal::kEmptyString) {
     rootoption_->clear();
   }
   clear_has_rootoption();
 }
-inline const ::std::string& XABSLBehavior_Agent::rootoption() const {
+inline const ::std::string& BehaviorStateComplete_Agent::rootoption() const {
   return *rootoption_;
 }
-inline void XABSLBehavior_Agent::set_rootoption(const ::std::string& value) {
+inline void BehaviorStateComplete_Agent::set_rootoption(const ::std::string& value) {
   set_has_rootoption();
   if (rootoption_ == &::google::protobuf::internal::kEmptyString) {
     rootoption_ = new ::std::string;
   }
   rootoption_->assign(value);
 }
-inline void XABSLBehavior_Agent::set_rootoption(const char* value) {
+inline void BehaviorStateComplete_Agent::set_rootoption(const char* value) {
   set_has_rootoption();
   if (rootoption_ == &::google::protobuf::internal::kEmptyString) {
     rootoption_ = new ::std::string;
   }
   rootoption_->assign(value);
 }
-inline void XABSLBehavior_Agent::set_rootoption(const char* value, size_t size) {
+inline void BehaviorStateComplete_Agent::set_rootoption(const char* value, size_t size) {
   set_has_rootoption();
   if (rootoption_ == &::google::protobuf::internal::kEmptyString) {
     rootoption_ = new ::std::string;
   }
   rootoption_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* XABSLBehavior_Agent::mutable_rootoption() {
+inline ::std::string* BehaviorStateComplete_Agent::mutable_rootoption() {
   set_has_rootoption();
   if (rootoption_ == &::google::protobuf::internal::kEmptyString) {
     rootoption_ = new ::std::string;
   }
   return rootoption_;
 }
-inline ::std::string* XABSLBehavior_Agent::release_rootoption() {
+inline ::std::string* BehaviorStateComplete_Agent::release_rootoption() {
   clear_has_rootoption();
   if (rootoption_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -6800,106 +6800,106 @@ inline ::std::string* XABSLBehavior_Agent::release_rootoption() {
 
 // -------------------------------------------------------------------
 
-// XABSLBehavior
+// BehaviorStateComplete
 
-// repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
-inline int XABSLBehavior::enumerations_size() const {
+// repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+inline int BehaviorStateComplete::enumerations_size() const {
   return enumerations_.size();
 }
-inline void XABSLBehavior::clear_enumerations() {
+inline void BehaviorStateComplete::clear_enumerations() {
   enumerations_.Clear();
 }
-inline const ::naothmessages::XABSLBehavior_EnumType& XABSLBehavior::enumerations(int index) const {
+inline const ::naothmessages::BehaviorStateComplete_EnumType& BehaviorStateComplete::enumerations(int index) const {
   return enumerations_.Get(index);
 }
-inline ::naothmessages::XABSLBehavior_EnumType* XABSLBehavior::mutable_enumerations(int index) {
+inline ::naothmessages::BehaviorStateComplete_EnumType* BehaviorStateComplete::mutable_enumerations(int index) {
   return enumerations_.Mutable(index);
 }
-inline ::naothmessages::XABSLBehavior_EnumType* XABSLBehavior::add_enumerations() {
+inline ::naothmessages::BehaviorStateComplete_EnumType* BehaviorStateComplete::add_enumerations() {
   return enumerations_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType >&
-XABSLBehavior::enumerations() const {
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType >&
+BehaviorStateComplete::enumerations() const {
   return enumerations_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_EnumType >*
-XABSLBehavior::mutable_enumerations() {
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_EnumType >*
+BehaviorStateComplete::mutable_enumerations() {
   return &enumerations_;
 }
 
-// repeated .naothmessages.XABSLBehavior.Option options = 11;
-inline int XABSLBehavior::options_size() const {
+// repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+inline int BehaviorStateComplete::options_size() const {
   return options_.size();
 }
-inline void XABSLBehavior::clear_options() {
+inline void BehaviorStateComplete::clear_options() {
   options_.Clear();
 }
-inline const ::naothmessages::XABSLBehavior_Option& XABSLBehavior::options(int index) const {
+inline const ::naothmessages::BehaviorStateComplete_Option& BehaviorStateComplete::options(int index) const {
   return options_.Get(index);
 }
-inline ::naothmessages::XABSLBehavior_Option* XABSLBehavior::mutable_options(int index) {
+inline ::naothmessages::BehaviorStateComplete_Option* BehaviorStateComplete::mutable_options(int index) {
   return options_.Mutable(index);
 }
-inline ::naothmessages::XABSLBehavior_Option* XABSLBehavior::add_options() {
+inline ::naothmessages::BehaviorStateComplete_Option* BehaviorStateComplete::add_options() {
   return options_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option >&
-XABSLBehavior::options() const {
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option >&
+BehaviorStateComplete::options() const {
   return options_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Option >*
-XABSLBehavior::mutable_options() {
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Option >*
+BehaviorStateComplete::mutable_options() {
   return &options_;
 }
 
-// repeated .naothmessages.XABSLBehavior.Agent agents = 12;
-inline int XABSLBehavior::agents_size() const {
+// repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+inline int BehaviorStateComplete::agents_size() const {
   return agents_.size();
 }
-inline void XABSLBehavior::clear_agents() {
+inline void BehaviorStateComplete::clear_agents() {
   agents_.Clear();
 }
-inline const ::naothmessages::XABSLBehavior_Agent& XABSLBehavior::agents(int index) const {
+inline const ::naothmessages::BehaviorStateComplete_Agent& BehaviorStateComplete::agents(int index) const {
   return agents_.Get(index);
 }
-inline ::naothmessages::XABSLBehavior_Agent* XABSLBehavior::mutable_agents(int index) {
+inline ::naothmessages::BehaviorStateComplete_Agent* BehaviorStateComplete::mutable_agents(int index) {
   return agents_.Mutable(index);
 }
-inline ::naothmessages::XABSLBehavior_Agent* XABSLBehavior::add_agents() {
+inline ::naothmessages::BehaviorStateComplete_Agent* BehaviorStateComplete::add_agents() {
   return agents_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Agent >&
-XABSLBehavior::agents() const {
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent >&
+BehaviorStateComplete::agents() const {
   return agents_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLBehavior_Agent >*
-XABSLBehavior::mutable_agents() {
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent >*
+BehaviorStateComplete::mutable_agents() {
   return &agents_;
 }
 
 // optional .naothmessages.SymbolValueList inputSymbolList = 13;
-inline bool XABSLBehavior::has_inputsymbollist() const {
+inline bool BehaviorStateComplete::has_inputsymbollist() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void XABSLBehavior::set_has_inputsymbollist() {
+inline void BehaviorStateComplete::set_has_inputsymbollist() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void XABSLBehavior::clear_has_inputsymbollist() {
+inline void BehaviorStateComplete::clear_has_inputsymbollist() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void XABSLBehavior::clear_inputsymbollist() {
+inline void BehaviorStateComplete::clear_inputsymbollist() {
   if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
   clear_has_inputsymbollist();
 }
-inline const ::naothmessages::SymbolValueList& XABSLBehavior::inputsymbollist() const {
+inline const ::naothmessages::SymbolValueList& BehaviorStateComplete::inputsymbollist() const {
   return inputsymbollist_ != NULL ? *inputsymbollist_ : *default_instance_->inputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* XABSLBehavior::mutable_inputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateComplete::mutable_inputsymbollist() {
   set_has_inputsymbollist();
   if (inputsymbollist_ == NULL) inputsymbollist_ = new ::naothmessages::SymbolValueList;
   return inputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* XABSLBehavior::release_inputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateComplete::release_inputsymbollist() {
   clear_has_inputsymbollist();
   ::naothmessages::SymbolValueList* temp = inputsymbollist_;
   inputsymbollist_ = NULL;
@@ -6907,28 +6907,28 @@ inline ::naothmessages::SymbolValueList* XABSLBehavior::release_inputsymbollist(
 }
 
 // optional .naothmessages.SymbolValueList outputSymbolList = 14;
-inline bool XABSLBehavior::has_outputsymbollist() const {
+inline bool BehaviorStateComplete::has_outputsymbollist() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void XABSLBehavior::set_has_outputsymbollist() {
+inline void BehaviorStateComplete::set_has_outputsymbollist() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void XABSLBehavior::clear_has_outputsymbollist() {
+inline void BehaviorStateComplete::clear_has_outputsymbollist() {
   _has_bits_[0] &= ~0x00000010u;
 }
-inline void XABSLBehavior::clear_outputsymbollist() {
+inline void BehaviorStateComplete::clear_outputsymbollist() {
   if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
   clear_has_outputsymbollist();
 }
-inline const ::naothmessages::SymbolValueList& XABSLBehavior::outputsymbollist() const {
+inline const ::naothmessages::SymbolValueList& BehaviorStateComplete::outputsymbollist() const {
   return outputsymbollist_ != NULL ? *outputsymbollist_ : *default_instance_->outputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* XABSLBehavior::mutable_outputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateComplete::mutable_outputsymbollist() {
   set_has_outputsymbollist();
   if (outputsymbollist_ == NULL) outputsymbollist_ = new ::naothmessages::SymbolValueList;
   return outputsymbollist_;
 }
-inline ::naothmessages::SymbolValueList* XABSLBehavior::release_outputsymbollist() {
+inline ::naothmessages::SymbolValueList* BehaviorStateComplete::release_outputsymbollist() {
   clear_has_outputsymbollist();
   ::naothmessages::SymbolValueList* temp = outputsymbollist_;
   outputsymbollist_ = NULL;

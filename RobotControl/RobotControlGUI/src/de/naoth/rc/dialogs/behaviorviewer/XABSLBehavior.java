@@ -100,11 +100,11 @@ public class XABSLBehavior {
         public String rootOption;
     }
 
-    public ArrayList<EnumType> enumerations = new ArrayList<EnumType>();
-    public ArrayList<Option> options = new ArrayList<Option>();
-    public ArrayList<Agent> agents = new ArrayList<Agent>();
+    public ArrayList<EnumType> enumerations = new ArrayList<>();
+    public ArrayList<Option> options = new ArrayList<>();
+    public ArrayList<Agent> agents = new ArrayList<>();
     
-    public TreeMap<Integer, Symbol> inputSymbols = new TreeMap<Integer, Symbol>();
-    public TreeMap<Integer, Symbol> outputSymbols = new TreeMap<Integer, Symbol>();
+    public TreeMap<Integer, Symbol> inputSymbols = new TreeMap<>();
+    public TreeMap<Integer, Symbol> outputSymbols = new TreeMap<>();
     
 }

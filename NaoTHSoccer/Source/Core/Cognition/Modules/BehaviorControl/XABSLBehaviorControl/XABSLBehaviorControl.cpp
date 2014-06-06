@@ -77,7 +77,7 @@ XABSLBehaviorControl::~XABSLBehaviorControl()
 void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string agent)
 {
   // clear old status
-  getBehaviorStatus().behavior.Clear();
+  getBehaviorStateComplete().state.Clear();
 
   // clear old errors
   error_stream.str("");
@@ -108,14 +108,13 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   std::cout << "[XABSLBehaviorControl] current agent is set to \"" << theEngine->getSelectedAgentName() << "\"" << std::endl;
 
   if(!theErrorHandler.errorsOccurred) {
-    getBehaviorStatus().behavior.Clear();
     inputDecimalBuffer.clear();
     inputBooleanBuffer.clear();
     inputEnumBuffer.clear();
     outputDecimalBuffer.clear();
     outputBooleanBuffer.clear();
     outputEnumBuffer.clear();
-    fillRegisteredBehavior(getBehaviorStatus().behavior);
+    fillRegisteredBehavior(getBehaviorStateComplete().state);
   }
 }//end reloadBehaviorFromFile
 
@@ -135,10 +134,10 @@ void XABSLBehaviorControl::execute()
 
     // update the behavior status
     DEBUG_REQUEST("XABSL:update_status",
-      getBehaviorStatus().status_sparse.Clear();
-      fillActiveOptionsSparse(getBehaviorStatus().status_sparse);
+      getBehaviorStateSparse().state.Clear();
+      fillActiveOptionsSparse(getBehaviorStateSparse().state);
       //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
-      fillRegisteredSymbolsSparserer(getBehaviorStatus().status_sparse);
+      fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
     );
 
     draw();
@@ -147,7 +146,7 @@ void XABSLBehaviorControl::execute()
   DEBUG_REQUEST("XABSL:update_status",
     if(theErrorHandler.errorsOccurred)
     {
-      getBehaviorStatus().status_sparse.set_errormessage(error_stream.str());
+      getBehaviorStateSparse().state.set_errormessage(error_stream.str());
     }
   );
 }//end execute
@@ -352,7 +351,7 @@ void XABSLBehaviorControl::executeDebugCommand(
   }
 }//end executeDebugCommand
 
-void XABSLBehaviorControl::fillActiveOptionsSparse(naothmessages::BehaviorStatusSparse &status)
+void XABSLBehaviorControl::fillActiveOptionsSparse(naothmessages::BehaviorStateSparse &status)
 {
   const xabsl::Array<xabsl::Action*>& actions = theEngine->getRootActions();
   for (int i=0; i < actions.getSize(); i++)
@@ -428,25 +427,25 @@ void XABSLBehaviorControl::fillActionSparse(const xabsl::Action* source, naothme
   }
 } // end fillAction
 
-void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &status)
+void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::BehaviorStateComplete &status)
 {
   for (int i = 0; i < theEngine->getAgents().getSize(); i++)
   {
-    naothmessages::XABSLBehavior_Agent *agent_msg = status.add_agents();
+    naothmessages::BehaviorStateComplete_Agent *agent_msg = status.add_agents();
     agent_msg->set_name(theEngine->getAgents()[i]->n);
     agent_msg->set_rootoption(theEngine->getAgents()[i]->getRootOption()->n);
   }
 
   for (int i = 0; i < theEngine->getOptions().getSize(); i++)
   {
-    naothmessages::XABSLBehavior_Option* option_msg = status.add_options();
+    naothmessages::BehaviorStateComplete_Option* option_msg = status.add_options();
     const xabsl::Option* option = theEngine->getOptions()[i];
 
     option_msg->set_name(option->n);
 
     for(int j = 0; j < option->states.getSize(); j++)
     {
-      naothmessages::XABSLBehavior_Option_State* state_msg = option_msg->add_states();
+      naothmessages::BehaviorStateComplete_Option_State* state_msg = option_msg->add_states();
       state_msg->set_name(option->states[j]->n);
       state_msg->set_target(option->states[j]->isTargetState());
     }
@@ -486,13 +485,13 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
 
   for (int i = 0; i < theEngine->enumerations.getSize(); i++)
   {
-    naothmessages::XABSLBehavior_EnumType* enum_msg = status.add_enumerations();
+    naothmessages::BehaviorStateComplete_EnumType* enum_msg = status.add_enumerations();
     const xabsl::Enumeration& enumeration = *(theEngine->enumerations[i]);
-    
+
     enum_msg->set_name(enumeration.n);
     for(int j = 0; j < enumeration.enumElements.getSize(); j++)
     {
-      naothmessages::XABSLBehavior_EnumType_Element* element = enum_msg->add_elements();
+      naothmessages::BehaviorStateComplete_EnumType_Element* element = enum_msg->add_elements();
       element->set_value(enumeration.enumElements[j]->v);
       element->set_name(enumeration.enumElements[j]->n);
     }
@@ -576,7 +575,7 @@ void XABSLBehaviorControl::fillRegisteredBehavior(naothmessages::XABSLBehavior &
 }
 
 
-void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::BehaviorStatusSparse &status)
+void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::BehaviorStateSparse &status)
 {
  /*******************************************************************
    * input symbols
@@ -654,7 +653,7 @@ void XABSLBehaviorControl::fillRegisteredSymbolsSparserer(naothmessages::Behavio
 }
 
 
-void XABSLBehaviorControl::fillRegisteredSymbolsSparse(naothmessages::BehaviorStatusSparse &status)
+void XABSLBehaviorControl::fillRegisteredSymbolsSparse(naothmessages::BehaviorStateSparse &status)
 {
  /*******************************************************************
    * input symbols

@@ -25,7 +25,8 @@
 #include "PlatformInterface/Platform.h"
 */
 
-#include "Representations/Modeling/BehaviorStatus.h"
+#include "Representations/Modeling/BehaviorStateComplete.h"
+#include "Representations/Modeling/BehaviorStateSparse.h"
 
 
 // symbols
@@ -75,7 +76,8 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   REQUIRE(CompassDirection)
   REQUIRE(MotionRequest)
 
-  PROVIDE(BehaviorStatus)
+  PROVIDE(BehaviorStateSparse)
+  PROVIDE(BehaviorStateComplete)
 END_DECLARE_MODULE(XABSLBehaviorControl)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
@@ -128,11 +130,11 @@ private:
   std::vector<bool> outputBooleanBuffer;
   std::vector<int> outputEnumBuffer;
 
-  void fillActiveOptionsSparse(naothmessages::BehaviorStatusSparse &status);
+  void fillActiveOptionsSparse(naothmessages::BehaviorStateSparse &status);
   void fillActionSparse(const xabsl::Action* source, naothmessages::XABSLActionSparse* dest);
-  void fillRegisteredBehavior(naothmessages::XABSLBehavior &status);
-  void fillRegisteredSymbolsSparse(naothmessages::BehaviorStatusSparse &status);
-  void fillRegisteredSymbolsSparserer(naothmessages::BehaviorStatusSparse &status);
+  void fillRegisteredBehavior(naothmessages::BehaviorStateComplete &status);
+  void fillRegisteredSymbolsSparse(naothmessages::BehaviorStateSparse &status);
+  void fillRegisteredSymbolsSparserer(naothmessages::BehaviorStateSparse &status);
 
   //symbols
   ModuleCreator<BallSymbols>* theBallSymbols;

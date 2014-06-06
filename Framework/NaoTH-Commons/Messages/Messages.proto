@@ -144,7 +144,7 @@ message SymbolValueList {
 	repeated EnumSymbol enumerated = 3;
 }
 
-message BehaviorStatusSparse {  
+message BehaviorStateSparse {  
   optional string agent = 1;
   repeated XABSLActionSparse activeRootActions = 2;
   
@@ -156,7 +156,7 @@ message BehaviorStatusSparse {
 }
 
 
-message XABSLBehavior {
+message BehaviorStateComplete {
   
   message EnumType {
 	message Element {

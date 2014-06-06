@@ -11517,7 +11517,7 @@ public final class Messages {
     // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList)
   }
   
-  public interface BehaviorStatusSparseOrBuilder
+  public interface BehaviorStateSparseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
     // optional string agent = 1;
@@ -11552,32 +11552,32 @@ public final class Messages {
     boolean hasErrorMessage();
     String getErrorMessage();
   }
-  public static final class BehaviorStatusSparse extends
+  public static final class BehaviorStateSparse extends
       com.google.protobuf.GeneratedMessage
-      implements BehaviorStatusSparseOrBuilder {
-    // Use BehaviorStatusSparse.newBuilder() to construct.
-    private BehaviorStatusSparse(Builder builder) {
+      implements BehaviorStateSparseOrBuilder {
+    // Use BehaviorStateSparse.newBuilder() to construct.
+    private BehaviorStateSparse(Builder builder) {
       super(builder);
     }
-    private BehaviorStatusSparse(boolean noInit) {}
+    private BehaviorStateSparse(boolean noInit) {}
     
-    private static final BehaviorStatusSparse defaultInstance;
-    public static BehaviorStatusSparse getDefaultInstance() {
+    private static final BehaviorStateSparse defaultInstance;
+    public static BehaviorStateSparse getDefaultInstance() {
       return defaultInstance;
     }
     
-    public BehaviorStatusSparse getDefaultInstanceForType() {
+    public BehaviorStateSparse getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStatusSparse_descriptor;
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStatusSparse_fieldAccessorTable;
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -11803,41 +11803,41 @@ public final class Messages {
       return super.writeReplace();
     }
     
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(byte[] data)
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(java.io.InputStream input)
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseDelimitedFrom(java.io.InputStream input)
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       Builder builder = newBuilder();
       if (builder.mergeDelimitedFrom(input)) {
@@ -11846,7 +11846,7 @@ public final class Messages {
         return null;
       }
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseDelimitedFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11857,12 +11857,12 @@ public final class Messages {
         return null;
       }
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.BehaviorStatusSparse parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11872,7 +11872,7 @@ public final class Messages {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStatusSparse prototype) {
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateSparse prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -11885,18 +11885,18 @@ public final class Messages {
     }
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements de.naoth.rc.messages.Messages.BehaviorStatusSparseOrBuilder {
+       implements de.naoth.rc.messages.Messages.BehaviorStateSparseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStatusSparse_descriptor;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStatusSparse_fieldAccessorTable;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
       }
       
-      // Construct using de.naoth.rc.messages.Messages.BehaviorStatusSparse.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.BehaviorStateSparse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11951,24 +11951,24 @@ public final class Messages {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return de.naoth.rc.messages.Messages.BehaviorStatusSparse.getDescriptor();
+        return de.naoth.rc.messages.Messages.BehaviorStateSparse.getDescriptor();
       }
       
-      public de.naoth.rc.messages.Messages.BehaviorStatusSparse getDefaultInstanceForType() {
-        return de.naoth.rc.messages.Messages.BehaviorStatusSparse.getDefaultInstance();
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateSparse.getDefaultInstance();
       }
       
-      public de.naoth.rc.messages.Messages.BehaviorStatusSparse build() {
-        de.naoth.rc.messages.Messages.BehaviorStatusSparse result = buildPartial();
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse build() {
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
       
-      private de.naoth.rc.messages.Messages.BehaviorStatusSparse buildParsed()
+      private de.naoth.rc.messages.Messages.BehaviorStateSparse buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        de.naoth.rc.messages.Messages.BehaviorStatusSparse result = buildPartial();
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
@@ -11976,8 +11976,8 @@ public final class Messages {
         return result;
       }
       
-      public de.naoth.rc.messages.Messages.BehaviorStatusSparse buildPartial() {
-        de.naoth.rc.messages.Messages.BehaviorStatusSparse result = new de.naoth.rc.messages.Messages.BehaviorStatusSparse(this);
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse buildPartial() {
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = new de.naoth.rc.messages.Messages.BehaviorStateSparse(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12023,16 +12023,16 @@ public final class Messages {
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof de.naoth.rc.messages.Messages.BehaviorStatusSparse) {
-          return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStatusSparse)other);
+        if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateSparse) {
+          return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateSparse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStatusSparse other) {
-        if (other == de.naoth.rc.messages.Messages.BehaviorStatusSparse.getDefaultInstance()) return this;
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateSparse other) {
+        if (other == de.naoth.rc.messages.Messages.BehaviorStateSparse.getDefaultInstance()) return this;
         if (other.hasAgent()) {
           setAgent(other.getAgent());
         }
@@ -12627,48 +12627,48 @@ public final class Messages {
         onChanged();
       }
       
-      // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStatusSparse)
+      // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateSparse)
     }
     
     static {
-      defaultInstance = new BehaviorStatusSparse(true);
+      defaultInstance = new BehaviorStateSparse(true);
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStatusSparse)
+    // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateSparse)
   }
   
-  public interface XABSLBehaviorOrBuilder
+  public interface BehaviorStateCompleteOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
-    java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> 
+    // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> 
         getEnumerationsList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.EnumType getEnumerations(int index);
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index);
     int getEnumerationsCount();
-    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder> 
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
         getEnumerationsOrBuilderList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder getEnumerationsOrBuilder(
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
         int index);
     
-    // repeated .naothmessages.XABSLBehavior.Option options = 11;
-    java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option> 
+    // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> 
         getOptionsList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.Option getOptions(int index);
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index);
     int getOptionsCount();
-    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder> 
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
         getOptionsOrBuilderList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder getOptionsOrBuilder(
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
         int index);
     
-    // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
-    java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent> 
+    // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> 
         getAgentsList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.Agent getAgents(int index);
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index);
     int getAgentsCount();
-    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder> 
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
         getAgentsOrBuilderList();
-    de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder getAgentsOrBuilder(
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
         int index);
     
     // optional .naothmessages.SymbolValueList inputSymbolList = 13;
@@ -12681,32 +12681,32 @@ public final class Messages {
     de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList();
     de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder();
   }
-  public static final class XABSLBehavior extends
+  public static final class BehaviorStateComplete extends
       com.google.protobuf.GeneratedMessage
-      implements XABSLBehaviorOrBuilder {
-    // Use XABSLBehavior.newBuilder() to construct.
-    private XABSLBehavior(Builder builder) {
+      implements BehaviorStateCompleteOrBuilder {
+    // Use BehaviorStateComplete.newBuilder() to construct.
+    private BehaviorStateComplete(Builder builder) {
       super(builder);
     }
-    private XABSLBehavior(boolean noInit) {}
+    private BehaviorStateComplete(boolean noInit) {}
     
-    private static final XABSLBehavior defaultInstance;
-    public static XABSLBehavior getDefaultInstance() {
+    private static final BehaviorStateComplete defaultInstance;
+    public static BehaviorStateComplete getDefaultInstance() {
       return defaultInstance;
     }
     
-    public XABSLBehavior getDefaultInstanceForType() {
+    public BehaviorStateComplete getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_descriptor;
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_fieldAccessorTable;
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
     }
     
     public interface EnumTypeOrBuilder
@@ -12716,14 +12716,14 @@ public final class Messages {
       boolean hasName();
       String getName();
       
-      // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
-      java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> 
+      // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+      java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> 
           getElementsList();
-      de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element getElements(int index);
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index);
       int getElementsCount();
-      java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder> 
+      java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
           getElementsOrBuilderList();
-      de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder getElementsOrBuilder(
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
           int index);
     }
     public static final class EnumType extends
@@ -12746,12 +12746,12 @@ public final class Messages {
       
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_descriptor;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_fieldAccessorTable;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
       }
       
       public interface ElementOrBuilder
@@ -12785,12 +12785,12 @@ public final class Messages {
         
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_Element_descriptor;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
         }
         
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_Element_fieldAccessorTable;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
         }
         
         private int bitField0_;
@@ -12895,41 +12895,41 @@ public final class Messages {
           return super.writeReplace();
         }
         
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             com.google.protobuf.ByteString data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(byte[] data)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(byte[] data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             byte[] data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(java.io.InputStream input)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(java.io.InputStream input)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseDelimitedFrom(java.io.InputStream input)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseDelimitedFrom(java.io.InputStream input)
             throws java.io.IOException {
           Builder builder = newBuilder();
           if (builder.mergeDelimitedFrom(input)) {
@@ -12938,7 +12938,7 @@ public final class Messages {
             return null;
           }
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseDelimitedFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseDelimitedFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
@@ -12949,12 +12949,12 @@ public final class Messages {
             return null;
           }
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             com.google.protobuf.CodedInputStream input)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
@@ -12964,7 +12964,7 @@ public final class Messages {
         
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element prototype) {
+        public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element prototype) {
           return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
@@ -12977,18 +12977,18 @@ public final class Messages {
         }
         public static final class Builder extends
             com.google.protobuf.GeneratedMessage.Builder<Builder>
-           implements de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder {
+           implements de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder {
           public static final com.google.protobuf.Descriptors.Descriptor
               getDescriptor() {
-            return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_Element_descriptor;
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
           }
           
           protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
               internalGetFieldAccessorTable() {
-            return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_Element_fieldAccessorTable;
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
           }
           
-          // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.newBuilder()
+          // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.newBuilder()
           private Builder() {
             maybeForceBuilderInitialization();
           }
@@ -13020,24 +13020,24 @@ public final class Messages {
           
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
-            return de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.getDescriptor();
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDescriptor();
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element getDefaultInstanceForType() {
-            return de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.getDefaultInstance();
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getDefaultInstanceForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance();
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element build() {
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element result = buildPartial();
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element build() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = buildPartial();
             if (!result.isInitialized()) {
               throw newUninitializedMessageException(result);
             }
             return result;
           }
           
-          private de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element buildParsed()
+          private de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element buildParsed()
               throws com.google.protobuf.InvalidProtocolBufferException {
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element result = buildPartial();
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = buildPartial();
             if (!result.isInitialized()) {
               throw newUninitializedMessageException(
                 result).asInvalidProtocolBufferException();
@@ -13045,8 +13045,8 @@ public final class Messages {
             return result;
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element buildPartial() {
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element result = new de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element(this);
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element buildPartial() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element(this);
             int from_bitField0_ = bitField0_;
             int to_bitField0_ = 0;
             if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -13063,16 +13063,16 @@ public final class Messages {
           }
           
           public Builder mergeFrom(com.google.protobuf.Message other) {
-            if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element) {
-              return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element)other);
+            if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element) {
+              return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element)other);
             } else {
               super.mergeFrom(other);
               return this;
             }
           }
           
-          public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element other) {
-            if (other == de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.getDefaultInstance()) return this;
+          public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element other) {
+            if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance()) return this;
             if (other.hasValue()) {
               setValue(other.getValue());
             }
@@ -13191,7 +13191,7 @@ public final class Messages {
             onChanged();
           }
           
-          // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior.EnumType.Element)
+          // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.EnumType.Element)
         }
         
         static {
@@ -13199,7 +13199,7 @@ public final class Messages {
           defaultInstance.initFields();
         }
         
-        // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.EnumType.Element)
+        // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType.Element)
       }
       
       private int bitField0_;
@@ -13235,23 +13235,23 @@ public final class Messages {
         }
       }
       
-      // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+      // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
       public static final int ELEMENTS_FIELD_NUMBER = 2;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> elements_;
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> getElementsList() {
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> elements_;
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> getElementsList() {
         return elements_;
       }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder> 
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
           getElementsOrBuilderList() {
         return elements_;
       }
       public int getElementsCount() {
         return elements_.size();
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element getElements(int index) {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index) {
         return elements_.get(index);
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder getElementsOrBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
           int index) {
         return elements_.get(index);
       }
@@ -13317,41 +13317,41 @@ public final class Messages {
         return super.writeReplace();
       }
       
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(byte[] data)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseDelimitedFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         Builder builder = newBuilder();
         if (builder.mergeDelimitedFrom(input)) {
@@ -13360,7 +13360,7 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseDelimitedFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -13371,12 +13371,12 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.EnumType parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -13386,7 +13386,7 @@ public final class Messages {
       
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType prototype) {
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -13399,18 +13399,18 @@ public final class Messages {
       }
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder {
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_descriptor;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
         }
         
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_EnumType_fieldAccessorTable;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
         }
         
-        // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.newBuilder()
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -13447,24 +13447,24 @@ public final class Messages {
         
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.getDescriptor();
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDescriptor();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType getDefaultInstanceForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.getDefaultInstance();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType build() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType result = buildPartial();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
         
-        private de.naoth.rc.messages.Messages.XABSLBehavior.EnumType buildParsed()
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType result = buildPartial();
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
@@ -13472,8 +13472,8 @@ public final class Messages {
           return result;
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType buildPartial() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType result = new de.naoth.rc.messages.Messages.XABSLBehavior.EnumType(this);
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -13495,16 +13495,16 @@ public final class Messages {
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior.EnumType) {
-            return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior.EnumType)other);
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
         
-        public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType other) {
-          if (other == de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.getDefaultInstance()) return this;
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance()) return this;
           if (other.hasName()) {
             setName(other.getName());
           }
@@ -13581,7 +13581,7 @@ public final class Messages {
                 break;
               }
               case 18: {
-                de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.newBuilder();
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.newBuilder();
                 input.readMessage(subBuilder, extensionRegistry);
                 addElements(subBuilder.buildPartial());
                 break;
@@ -13628,20 +13628,20 @@ public final class Messages {
           onChanged();
         }
         
-        // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
-        private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> elements_ =
+        // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+        private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> elements_ =
           java.util.Collections.emptyList();
         private void ensureElementsIsMutable() {
           if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-            elements_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element>(elements_);
+            elements_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element>(elements_);
             bitField0_ |= 0x00000002;
            }
         }
         
         private com.google.protobuf.RepeatedFieldBuilder<
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder> elementsBuilder_;
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> elementsBuilder_;
         
-        public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> getElementsList() {
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> getElementsList() {
           if (elementsBuilder_ == null) {
             return java.util.Collections.unmodifiableList(elements_);
           } else {
@@ -13655,7 +13655,7 @@ public final class Messages {
             return elementsBuilder_.getCount();
           }
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element getElements(int index) {
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index) {
           if (elementsBuilder_ == null) {
             return elements_.get(index);
           } else {
@@ -13663,7 +13663,7 @@ public final class Messages {
           }
         }
         public Builder setElements(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element value) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
           if (elementsBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -13677,7 +13677,7 @@ public final class Messages {
           return this;
         }
         public Builder setElements(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder builderForValue) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
           if (elementsBuilder_ == null) {
             ensureElementsIsMutable();
             elements_.set(index, builderForValue.build());
@@ -13687,7 +13687,7 @@ public final class Messages {
           }
           return this;
         }
-        public Builder addElements(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element value) {
+        public Builder addElements(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
           if (elementsBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -13701,7 +13701,7 @@ public final class Messages {
           return this;
         }
         public Builder addElements(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element value) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
           if (elementsBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -13715,7 +13715,7 @@ public final class Messages {
           return this;
         }
         public Builder addElements(
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder builderForValue) {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
           if (elementsBuilder_ == null) {
             ensureElementsIsMutable();
             elements_.add(builderForValue.build());
@@ -13726,7 +13726,7 @@ public final class Messages {
           return this;
         }
         public Builder addElements(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder builderForValue) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
           if (elementsBuilder_ == null) {
             ensureElementsIsMutable();
             elements_.add(index, builderForValue.build());
@@ -13737,7 +13737,7 @@ public final class Messages {
           return this;
         }
         public Builder addAllElements(
-            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element> values) {
+            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> values) {
           if (elementsBuilder_ == null) {
             ensureElementsIsMutable();
             super.addAll(values, elements_);
@@ -13767,18 +13767,18 @@ public final class Messages {
           }
           return this;
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder getElementsBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder getElementsBuilder(
             int index) {
           return getElementsFieldBuilder().getBuilder(index);
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder getElementsOrBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
             int index) {
           if (elementsBuilder_ == null) {
             return elements_.get(index);  } else {
             return elementsBuilder_.getMessageOrBuilder(index);
           }
         }
-        public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder> 
+        public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
              getElementsOrBuilderList() {
           if (elementsBuilder_ != null) {
             return elementsBuilder_.getMessageOrBuilderList();
@@ -13786,25 +13786,25 @@ public final class Messages {
             return java.util.Collections.unmodifiableList(elements_);
           }
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder addElementsBuilder() {
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder addElementsBuilder() {
           return getElementsFieldBuilder().addBuilder(
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.getDefaultInstance());
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance());
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder addElementsBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder addElementsBuilder(
             int index) {
           return getElementsFieldBuilder().addBuilder(
-              index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.getDefaultInstance());
+              index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance());
         }
-        public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder> 
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder> 
              getElementsBuilderList() {
           return getElementsFieldBuilder().getBuilderList();
         }
         private com.google.protobuf.RepeatedFieldBuilder<
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder> 
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
             getElementsFieldBuilder() {
           if (elementsBuilder_ == null) {
             elementsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-                de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.ElementOrBuilder>(
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder>(
                     elements_,
                     ((bitField0_ & 0x00000002) == 0x00000002),
                     getParentForChildren(),
@@ -13814,7 +13814,7 @@ public final class Messages {
           return elementsBuilder_;
         }
         
-        // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior.EnumType)
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.EnumType)
       }
       
       static {
@@ -13822,7 +13822,7 @@ public final class Messages {
         defaultInstance.initFields();
       }
       
-      // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.EnumType)
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType)
     }
     
     public interface OptionOrBuilder
@@ -13832,14 +13832,14 @@ public final class Messages {
       boolean hasName();
       String getName();
       
-      // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
-      java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> 
+      // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+      java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> 
           getStatesList();
-      de.naoth.rc.messages.Messages.XABSLBehavior.Option.State getStates(int index);
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index);
       int getStatesCount();
-      java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder> 
+      java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
           getStatesOrBuilderList();
-      de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder getStatesOrBuilder(
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
           int index);
       
       // repeated .naothmessages.XABSLSymbol parameters = 2;
@@ -13872,12 +13872,12 @@ public final class Messages {
       
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_descriptor;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_fieldAccessorTable;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
       }
       
       public interface StateOrBuilder
@@ -13911,12 +13911,12 @@ public final class Messages {
         
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_State_descriptor;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
         }
         
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_State_fieldAccessorTable;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
         }
         
         private int bitField0_;
@@ -14017,41 +14017,41 @@ public final class Messages {
           return super.writeReplace();
         }
         
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             com.google.protobuf.ByteString data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             com.google.protobuf.ByteString data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(byte[] data)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(byte[] data)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             byte[] data,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
           return newBuilder().mergeFrom(data, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(java.io.InputStream input)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(java.io.InputStream input)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input, extensionRegistry)
                    .buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseDelimitedFrom(java.io.InputStream input)
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseDelimitedFrom(java.io.InputStream input)
             throws java.io.IOException {
           Builder builder = newBuilder();
           if (builder.mergeDelimitedFrom(input)) {
@@ -14060,7 +14060,7 @@ public final class Messages {
             return null;
           }
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseDelimitedFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseDelimitedFrom(
             java.io.InputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
@@ -14071,12 +14071,12 @@ public final class Messages {
             return null;
           }
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             com.google.protobuf.CodedInputStream input)
             throws java.io.IOException {
           return newBuilder().mergeFrom(input).buildParsed();
         }
-        public static de.naoth.rc.messages.Messages.XABSLBehavior.Option.State parseFrom(
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
@@ -14086,7 +14086,7 @@ public final class Messages {
         
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior.Option.State prototype) {
+        public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State prototype) {
           return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
@@ -14099,18 +14099,18 @@ public final class Messages {
         }
         public static final class Builder extends
             com.google.protobuf.GeneratedMessage.Builder<Builder>
-           implements de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder {
+           implements de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder {
           public static final com.google.protobuf.Descriptors.Descriptor
               getDescriptor() {
-            return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_State_descriptor;
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
           }
           
           protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
               internalGetFieldAccessorTable() {
-            return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_State_fieldAccessorTable;
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
           }
           
-          // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.newBuilder()
+          // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.newBuilder()
           private Builder() {
             maybeForceBuilderInitialization();
           }
@@ -14142,24 +14142,24 @@ public final class Messages {
           
           public com.google.protobuf.Descriptors.Descriptor
               getDescriptorForType() {
-            return de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.getDescriptor();
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDescriptor();
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State getDefaultInstanceForType() {
-            return de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.getDefaultInstance();
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getDefaultInstanceForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance();
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State build() {
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State result = buildPartial();
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State build() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = buildPartial();
             if (!result.isInitialized()) {
               throw newUninitializedMessageException(result);
             }
             return result;
           }
           
-          private de.naoth.rc.messages.Messages.XABSLBehavior.Option.State buildParsed()
+          private de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State buildParsed()
               throws com.google.protobuf.InvalidProtocolBufferException {
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State result = buildPartial();
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = buildPartial();
             if (!result.isInitialized()) {
               throw newUninitializedMessageException(
                 result).asInvalidProtocolBufferException();
@@ -14167,8 +14167,8 @@ public final class Messages {
             return result;
           }
           
-          public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State buildPartial() {
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State result = new de.naoth.rc.messages.Messages.XABSLBehavior.Option.State(this);
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State buildPartial() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State(this);
             int from_bitField0_ = bitField0_;
             int to_bitField0_ = 0;
             if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -14185,16 +14185,16 @@ public final class Messages {
           }
           
           public Builder mergeFrom(com.google.protobuf.Message other) {
-            if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior.Option.State) {
-              return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior.Option.State)other);
+            if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State) {
+              return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State)other);
             } else {
               super.mergeFrom(other);
               return this;
             }
           }
           
-          public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior.Option.State other) {
-            if (other == de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.getDefaultInstance()) return this;
+          public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State other) {
+            if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance()) return this;
             if (other.hasName()) {
               setName(other.getName());
             }
@@ -14309,7 +14309,7 @@ public final class Messages {
             return this;
           }
           
-          // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior.Option.State)
+          // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Option.State)
         }
         
         static {
@@ -14317,7 +14317,7 @@ public final class Messages {
           defaultInstance.initFields();
         }
         
-        // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Option.State)
+        // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option.State)
       }
       
       private int bitField0_;
@@ -14353,23 +14353,23 @@ public final class Messages {
         }
       }
       
-      // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+      // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
       public static final int STATES_FIELD_NUMBER = 3;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> states_;
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> getStatesList() {
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> states_;
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> getStatesList() {
         return states_;
       }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder> 
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
           getStatesOrBuilderList() {
         return states_;
       }
       public int getStatesCount() {
         return states_.size();
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State getStates(int index) {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index) {
         return states_.get(index);
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder getStatesOrBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
           int index) {
         return states_.get(index);
       }
@@ -14470,41 +14470,41 @@ public final class Messages {
         return super.writeReplace();
       }
       
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(byte[] data)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseDelimitedFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         Builder builder = newBuilder();
         if (builder.mergeDelimitedFrom(input)) {
@@ -14513,7 +14513,7 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseDelimitedFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -14524,12 +14524,12 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Option parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -14539,7 +14539,7 @@ public final class Messages {
       
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior.Option prototype) {
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -14552,18 +14552,18 @@ public final class Messages {
       }
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder {
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_descriptor;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
         }
         
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Option_fieldAccessorTable;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
         }
         
-        // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.Option.newBuilder()
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -14607,24 +14607,24 @@ public final class Messages {
         
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.Option.getDescriptor();
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDescriptor();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option getDefaultInstanceForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.Option.getDefaultInstance();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option build() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option result = buildPartial();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
         
-        private de.naoth.rc.messages.Messages.XABSLBehavior.Option buildParsed()
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.Option buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option result = buildPartial();
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
@@ -14632,8 +14632,8 @@ public final class Messages {
           return result;
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option buildPartial() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option result = new de.naoth.rc.messages.Messages.XABSLBehavior.Option(this);
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Option(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -14664,16 +14664,16 @@ public final class Messages {
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior.Option) {
-            return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior.Option)other);
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Option) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Option)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
         
-        public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior.Option other) {
-          if (other == de.naoth.rc.messages.Messages.XABSLBehavior.Option.getDefaultInstance()) return this;
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance()) return this;
           if (other.hasName()) {
             setName(other.getName());
           }
@@ -14788,7 +14788,7 @@ public final class Messages {
                 break;
               }
               case 26: {
-                de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.newBuilder();
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.newBuilder();
                 input.readMessage(subBuilder, extensionRegistry);
                 addStates(subBuilder.buildPartial());
                 break;
@@ -14835,20 +14835,20 @@ public final class Messages {
           onChanged();
         }
         
-        // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
-        private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> states_ =
+        // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+        private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> states_ =
           java.util.Collections.emptyList();
         private void ensureStatesIsMutable() {
           if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-            states_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State>(states_);
+            states_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State>(states_);
             bitField0_ |= 0x00000002;
            }
         }
         
         private com.google.protobuf.RepeatedFieldBuilder<
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder> statesBuilder_;
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> statesBuilder_;
         
-        public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> getStatesList() {
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> getStatesList() {
           if (statesBuilder_ == null) {
             return java.util.Collections.unmodifiableList(states_);
           } else {
@@ -14862,7 +14862,7 @@ public final class Messages {
             return statesBuilder_.getCount();
           }
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State getStates(int index) {
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index) {
           if (statesBuilder_ == null) {
             return states_.get(index);
           } else {
@@ -14870,7 +14870,7 @@ public final class Messages {
           }
         }
         public Builder setStates(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State value) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
           if (statesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -14884,7 +14884,7 @@ public final class Messages {
           return this;
         }
         public Builder setStates(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder builderForValue) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
           if (statesBuilder_ == null) {
             ensureStatesIsMutable();
             states_.set(index, builderForValue.build());
@@ -14894,7 +14894,7 @@ public final class Messages {
           }
           return this;
         }
-        public Builder addStates(de.naoth.rc.messages.Messages.XABSLBehavior.Option.State value) {
+        public Builder addStates(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
           if (statesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -14908,7 +14908,7 @@ public final class Messages {
           return this;
         }
         public Builder addStates(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State value) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
           if (statesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
@@ -14922,7 +14922,7 @@ public final class Messages {
           return this;
         }
         public Builder addStates(
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder builderForValue) {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
           if (statesBuilder_ == null) {
             ensureStatesIsMutable();
             states_.add(builderForValue.build());
@@ -14933,7 +14933,7 @@ public final class Messages {
           return this;
         }
         public Builder addStates(
-            int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder builderForValue) {
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
           if (statesBuilder_ == null) {
             ensureStatesIsMutable();
             states_.add(index, builderForValue.build());
@@ -14944,7 +14944,7 @@ public final class Messages {
           return this;
         }
         public Builder addAllStates(
-            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Option.State> values) {
+            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> values) {
           if (statesBuilder_ == null) {
             ensureStatesIsMutable();
             super.addAll(values, states_);
@@ -14974,18 +14974,18 @@ public final class Messages {
           }
           return this;
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder getStatesBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder getStatesBuilder(
             int index) {
           return getStatesFieldBuilder().getBuilder(index);
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder getStatesOrBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
             int index) {
           if (statesBuilder_ == null) {
             return states_.get(index);  } else {
             return statesBuilder_.getMessageOrBuilder(index);
           }
         }
-        public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder> 
+        public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
              getStatesOrBuilderList() {
           if (statesBuilder_ != null) {
             return statesBuilder_.getMessageOrBuilderList();
@@ -14993,25 +14993,25 @@ public final class Messages {
             return java.util.Collections.unmodifiableList(states_);
           }
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder addStatesBuilder() {
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder addStatesBuilder() {
           return getStatesFieldBuilder().addBuilder(
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.getDefaultInstance());
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance());
         }
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder addStatesBuilder(
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder addStatesBuilder(
             int index) {
           return getStatesFieldBuilder().addBuilder(
-              index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.getDefaultInstance());
+              index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance());
         }
-        public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder> 
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder> 
              getStatesBuilderList() {
           return getStatesFieldBuilder().getBuilderList();
         }
         private com.google.protobuf.RepeatedFieldBuilder<
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.State, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder> 
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
             getStatesFieldBuilder() {
           if (statesBuilder_ == null) {
             statesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-                de.naoth.rc.messages.Messages.XABSLBehavior.Option.State, de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.Option.StateOrBuilder>(
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder>(
                     states_,
                     ((bitField0_ & 0x00000002) == 0x00000002),
                     getParentForChildren(),
@@ -15207,7 +15207,7 @@ public final class Messages {
           return parametersBuilder_;
         }
         
-        // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior.Option)
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Option)
       }
       
       static {
@@ -15215,7 +15215,7 @@ public final class Messages {
         defaultInstance.initFields();
       }
       
-      // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Option)
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option)
     }
     
     public interface AgentOrBuilder
@@ -15249,12 +15249,12 @@ public final class Messages {
       
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Agent_descriptor;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Agent_fieldAccessorTable;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
       }
       
       private int bitField0_;
@@ -15381,41 +15381,41 @@ public final class Messages {
         return super.writeReplace();
       }
       
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(byte[] data)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return newBuilder().mergeFrom(data, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input, extensionRegistry)
                  .buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseDelimitedFrom(java.io.InputStream input)
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         Builder builder = newBuilder();
         if (builder.mergeDelimitedFrom(input)) {
@@ -15424,7 +15424,7 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseDelimitedFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -15435,12 +15435,12 @@ public final class Messages {
           return null;
         }
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return newBuilder().mergeFrom(input).buildParsed();
       }
-      public static de.naoth.rc.messages.Messages.XABSLBehavior.Agent parseFrom(
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -15450,7 +15450,7 @@ public final class Messages {
       
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior.Agent prototype) {
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
@@ -15463,18 +15463,18 @@ public final class Messages {
       }
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder>
-         implements de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder {
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Agent_descriptor;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
         }
         
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_Agent_fieldAccessorTable;
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
         }
         
-        // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.Agent.newBuilder()
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -15506,24 +15506,24 @@ public final class Messages {
         
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.Agent.getDescriptor();
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDescriptor();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Agent getDefaultInstanceForType() {
-          return de.naoth.rc.messages.Messages.XABSLBehavior.Agent.getDefaultInstance();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance();
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Agent build() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent result = buildPartial();
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
         
-        private de.naoth.rc.messages.Messages.XABSLBehavior.Agent buildParsed()
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent buildParsed()
             throws com.google.protobuf.InvalidProtocolBufferException {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent result = buildPartial();
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(
               result).asInvalidProtocolBufferException();
@@ -15531,8 +15531,8 @@ public final class Messages {
           return result;
         }
         
-        public de.naoth.rc.messages.Messages.XABSLBehavior.Agent buildPartial() {
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent result = new de.naoth.rc.messages.Messages.XABSLBehavior.Agent(this);
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -15549,16 +15549,16 @@ public final class Messages {
         }
         
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior.Agent) {
-            return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior.Agent)other);
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
         
-        public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior.Agent other) {
-          if (other == de.naoth.rc.messages.Messages.XABSLBehavior.Agent.getDefaultInstance()) return this;
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance()) return this;
           if (other.hasName()) {
             setName(other.getName());
           }
@@ -15692,7 +15692,7 @@ public final class Messages {
           onChanged();
         }
         
-        // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior.Agent)
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Agent)
       }
       
       static {
@@ -15700,69 +15700,69 @@ public final class Messages {
         defaultInstance.initFields();
       }
       
-      // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior.Agent)
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Agent)
     }
     
     private int bitField0_;
-    // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+    // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
     public static final int ENUMERATIONS_FIELD_NUMBER = 10;
-    private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> enumerations_;
-    public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> getEnumerationsList() {
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> enumerations_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> getEnumerationsList() {
       return enumerations_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder> 
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
         getEnumerationsOrBuilderList() {
       return enumerations_;
     }
     public int getEnumerationsCount() {
       return enumerations_.size();
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType getEnumerations(int index) {
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index) {
       return enumerations_.get(index);
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder getEnumerationsOrBuilder(
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
         int index) {
       return enumerations_.get(index);
     }
     
-    // repeated .naothmessages.XABSLBehavior.Option options = 11;
+    // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
     public static final int OPTIONS_FIELD_NUMBER = 11;
-    private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option> options_;
-    public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option> getOptionsList() {
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> options_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> getOptionsList() {
       return options_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder> 
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
         getOptionsOrBuilderList() {
       return options_;
     }
     public int getOptionsCount() {
       return options_.size();
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.Option getOptions(int index) {
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index) {
       return options_.get(index);
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder getOptionsOrBuilder(
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
         int index) {
       return options_.get(index);
     }
     
-    // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+    // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
     public static final int AGENTS_FIELD_NUMBER = 12;
-    private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent> agents_;
-    public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent> getAgentsList() {
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> agents_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> getAgentsList() {
       return agents_;
     }
-    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder> 
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
         getAgentsOrBuilderList() {
       return agents_;
     }
     public int getAgentsCount() {
       return agents_.size();
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.Agent getAgents(int index) {
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index) {
       return agents_.get(index);
     }
-    public de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder getAgentsOrBuilder(
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
         int index) {
       return agents_.get(index);
     }
@@ -15898,41 +15898,41 @@ public final class Messages {
       return super.writeReplace();
     }
     
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(byte[] data)
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(java.io.InputStream input)
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseDelimitedFrom(java.io.InputStream input)
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       Builder builder = newBuilder();
       if (builder.mergeDelimitedFrom(input)) {
@@ -15941,7 +15941,7 @@ public final class Messages {
         return null;
       }
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseDelimitedFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -15952,12 +15952,12 @@ public final class Messages {
         return null;
       }
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.naoth.rc.messages.Messages.XABSLBehavior parseFrom(
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -15967,7 +15967,7 @@ public final class Messages {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLBehavior prototype) {
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -15980,18 +15980,18 @@ public final class Messages {
     }
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements de.naoth.rc.messages.Messages.XABSLBehaviorOrBuilder {
+       implements de.naoth.rc.messages.Messages.BehaviorStateCompleteOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_descriptor;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLBehavior_fieldAccessorTable;
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
       }
       
-      // Construct using de.naoth.rc.messages.Messages.XABSLBehavior.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -16054,24 +16054,24 @@ public final class Messages {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return de.naoth.rc.messages.Messages.XABSLBehavior.getDescriptor();
+        return de.naoth.rc.messages.Messages.BehaviorStateComplete.getDescriptor();
       }
       
-      public de.naoth.rc.messages.Messages.XABSLBehavior getDefaultInstanceForType() {
-        return de.naoth.rc.messages.Messages.XABSLBehavior.getDefaultInstance();
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateComplete.getDefaultInstance();
       }
       
-      public de.naoth.rc.messages.Messages.XABSLBehavior build() {
-        de.naoth.rc.messages.Messages.XABSLBehavior result = buildPartial();
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete build() {
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
       
-      private de.naoth.rc.messages.Messages.XABSLBehavior buildParsed()
+      private de.naoth.rc.messages.Messages.BehaviorStateComplete buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        de.naoth.rc.messages.Messages.XABSLBehavior result = buildPartial();
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
@@ -16079,8 +16079,8 @@ public final class Messages {
         return result;
       }
       
-      public de.naoth.rc.messages.Messages.XABSLBehavior buildPartial() {
-        de.naoth.rc.messages.Messages.XABSLBehavior result = new de.naoth.rc.messages.Messages.XABSLBehavior(this);
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete buildPartial() {
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = new de.naoth.rc.messages.Messages.BehaviorStateComplete(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (enumerationsBuilder_ == null) {
@@ -16132,16 +16132,16 @@ public final class Messages {
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof de.naoth.rc.messages.Messages.XABSLBehavior) {
-          return mergeFrom((de.naoth.rc.messages.Messages.XABSLBehavior)other);
+        if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete) {
+          return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLBehavior other) {
-        if (other == de.naoth.rc.messages.Messages.XABSLBehavior.getDefaultInstance()) return this;
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete other) {
+        if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.getDefaultInstance()) return this;
         if (enumerationsBuilder_ == null) {
           if (!other.enumerations_.isEmpty()) {
             if (enumerations_.isEmpty()) {
@@ -16288,19 +16288,19 @@ public final class Messages {
               break;
             }
             case 82: {
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.newBuilder();
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addEnumerations(subBuilder.buildPartial());
               break;
             }
             case 90: {
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLBehavior.Option.newBuilder();
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addOptions(subBuilder.buildPartial());
               break;
             }
             case 98: {
-              de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLBehavior.Agent.newBuilder();
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addAgents(subBuilder.buildPartial());
               break;
@@ -16329,20 +16329,20 @@ public final class Messages {
       
       private int bitField0_;
       
-      // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> enumerations_ =
+      // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> enumerations_ =
         java.util.Collections.emptyList();
       private void ensureEnumerationsIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          enumerations_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType>(enumerations_);
+          enumerations_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType>(enumerations_);
           bitField0_ |= 0x00000001;
          }
       }
       
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder> enumerationsBuilder_;
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> enumerationsBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> getEnumerationsList() {
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> getEnumerationsList() {
         if (enumerationsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(enumerations_);
         } else {
@@ -16356,7 +16356,7 @@ public final class Messages {
           return enumerationsBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType getEnumerations(int index) {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index) {
         if (enumerationsBuilder_ == null) {
           return enumerations_.get(index);
         } else {
@@ -16364,7 +16364,7 @@ public final class Messages {
         }
       }
       public Builder setEnumerations(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
         if (enumerationsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16378,7 +16378,7 @@ public final class Messages {
         return this;
       }
       public Builder setEnumerations(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
         if (enumerationsBuilder_ == null) {
           ensureEnumerationsIsMutable();
           enumerations_.set(index, builderForValue.build());
@@ -16388,7 +16388,7 @@ public final class Messages {
         }
         return this;
       }
-      public Builder addEnumerations(de.naoth.rc.messages.Messages.XABSLBehavior.EnumType value) {
+      public Builder addEnumerations(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
         if (enumerationsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16402,7 +16402,7 @@ public final class Messages {
         return this;
       }
       public Builder addEnumerations(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
         if (enumerationsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16416,7 +16416,7 @@ public final class Messages {
         return this;
       }
       public Builder addEnumerations(
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder builderForValue) {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
         if (enumerationsBuilder_ == null) {
           ensureEnumerationsIsMutable();
           enumerations_.add(builderForValue.build());
@@ -16427,7 +16427,7 @@ public final class Messages {
         return this;
       }
       public Builder addEnumerations(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
         if (enumerationsBuilder_ == null) {
           ensureEnumerationsIsMutable();
           enumerations_.add(index, builderForValue.build());
@@ -16438,7 +16438,7 @@ public final class Messages {
         return this;
       }
       public Builder addAllEnumerations(
-          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumType> values) {
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> values) {
         if (enumerationsBuilder_ == null) {
           ensureEnumerationsIsMutable();
           super.addAll(values, enumerations_);
@@ -16468,18 +16468,18 @@ public final class Messages {
         }
         return this;
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder getEnumerationsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder getEnumerationsBuilder(
           int index) {
         return getEnumerationsFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder getEnumerationsOrBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
           int index) {
         if (enumerationsBuilder_ == null) {
           return enumerations_.get(index);  } else {
           return enumerationsBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder> 
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
            getEnumerationsOrBuilderList() {
         if (enumerationsBuilder_ != null) {
           return enumerationsBuilder_.getMessageOrBuilderList();
@@ -16487,25 +16487,25 @@ public final class Messages {
           return java.util.Collections.unmodifiableList(enumerations_);
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder addEnumerationsBuilder() {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder addEnumerationsBuilder() {
         return getEnumerationsFieldBuilder().addBuilder(
-            de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.getDefaultInstance());
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance());
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder addEnumerationsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder addEnumerationsBuilder(
           int index) {
         return getEnumerationsFieldBuilder().addBuilder(
-            index, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.getDefaultInstance());
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder> 
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder> 
            getEnumerationsBuilderList() {
         return getEnumerationsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.EnumType, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder> 
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
           getEnumerationsFieldBuilder() {
         if (enumerationsBuilder_ == null) {
           enumerationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType, de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.EnumTypeOrBuilder>(
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder>(
                   enumerations_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -16515,20 +16515,20 @@ public final class Messages {
         return enumerationsBuilder_;
       }
       
-      // repeated .naothmessages.XABSLBehavior.Option options = 11;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option> options_ =
+      // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> options_ =
         java.util.Collections.emptyList();
       private void ensureOptionsIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          options_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLBehavior.Option>(options_);
+          options_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option>(options_);
           bitField0_ |= 0x00000002;
          }
       }
       
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option, de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder> optionsBuilder_;
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> optionsBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option> getOptionsList() {
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> getOptionsList() {
         if (optionsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(options_);
         } else {
@@ -16542,7 +16542,7 @@ public final class Messages {
           return optionsBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option getOptions(int index) {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index) {
         if (optionsBuilder_ == null) {
           return options_.get(index);
         } else {
@@ -16550,7 +16550,7 @@ public final class Messages {
         }
       }
       public Builder setOptions(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
         if (optionsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16564,7 +16564,7 @@ public final class Messages {
         return this;
       }
       public Builder setOptions(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
         if (optionsBuilder_ == null) {
           ensureOptionsIsMutable();
           options_.set(index, builderForValue.build());
@@ -16574,7 +16574,7 @@ public final class Messages {
         }
         return this;
       }
-      public Builder addOptions(de.naoth.rc.messages.Messages.XABSLBehavior.Option value) {
+      public Builder addOptions(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
         if (optionsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16588,7 +16588,7 @@ public final class Messages {
         return this;
       }
       public Builder addOptions(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
         if (optionsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16602,7 +16602,7 @@ public final class Messages {
         return this;
       }
       public Builder addOptions(
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder builderForValue) {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
         if (optionsBuilder_ == null) {
           ensureOptionsIsMutable();
           options_.add(builderForValue.build());
@@ -16613,7 +16613,7 @@ public final class Messages {
         return this;
       }
       public Builder addOptions(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
         if (optionsBuilder_ == null) {
           ensureOptionsIsMutable();
           options_.add(index, builderForValue.build());
@@ -16624,7 +16624,7 @@ public final class Messages {
         return this;
       }
       public Builder addAllOptions(
-          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Option> values) {
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> values) {
         if (optionsBuilder_ == null) {
           ensureOptionsIsMutable();
           super.addAll(values, options_);
@@ -16654,18 +16654,18 @@ public final class Messages {
         }
         return this;
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder getOptionsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder getOptionsBuilder(
           int index) {
         return getOptionsFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder getOptionsOrBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
           int index) {
         if (optionsBuilder_ == null) {
           return options_.get(index);  } else {
           return optionsBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder> 
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
            getOptionsOrBuilderList() {
         if (optionsBuilder_ != null) {
           return optionsBuilder_.getMessageOrBuilderList();
@@ -16673,25 +16673,25 @@ public final class Messages {
           return java.util.Collections.unmodifiableList(options_);
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder addOptionsBuilder() {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder addOptionsBuilder() {
         return getOptionsFieldBuilder().addBuilder(
-            de.naoth.rc.messages.Messages.XABSLBehavior.Option.getDefaultInstance());
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance());
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder addOptionsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder addOptionsBuilder(
           int index) {
         return getOptionsFieldBuilder().addBuilder(
-            index, de.naoth.rc.messages.Messages.XABSLBehavior.Option.getDefaultInstance());
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder> 
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder> 
            getOptionsBuilderList() {
         return getOptionsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.Option, de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder> 
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
           getOptionsFieldBuilder() {
         if (optionsBuilder_ == null) {
           optionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option, de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.OptionOrBuilder>(
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder>(
                   options_,
                   ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
@@ -16701,20 +16701,20 @@ public final class Messages {
         return optionsBuilder_;
       }
       
-      // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
-      private java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent> agents_ =
+      // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> agents_ =
         java.util.Collections.emptyList();
       private void ensureAgentsIsMutable() {
         if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          agents_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLBehavior.Agent>(agents_);
+          agents_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent>(agents_);
           bitField0_ |= 0x00000004;
          }
       }
       
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder> agentsBuilder_;
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> agentsBuilder_;
       
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent> getAgentsList() {
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> getAgentsList() {
         if (agentsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(agents_);
         } else {
@@ -16728,7 +16728,7 @@ public final class Messages {
           return agentsBuilder_.getCount();
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Agent getAgents(int index) {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index) {
         if (agentsBuilder_ == null) {
           return agents_.get(index);
         } else {
@@ -16736,7 +16736,7 @@ public final class Messages {
         }
       }
       public Builder setAgents(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Agent value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
         if (agentsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16750,7 +16750,7 @@ public final class Messages {
         return this;
       }
       public Builder setAgents(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
         if (agentsBuilder_ == null) {
           ensureAgentsIsMutable();
           agents_.set(index, builderForValue.build());
@@ -16760,7 +16760,7 @@ public final class Messages {
         }
         return this;
       }
-      public Builder addAgents(de.naoth.rc.messages.Messages.XABSLBehavior.Agent value) {
+      public Builder addAgents(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
         if (agentsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16774,7 +16774,7 @@ public final class Messages {
         return this;
       }
       public Builder addAgents(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Agent value) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
         if (agentsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16788,7 +16788,7 @@ public final class Messages {
         return this;
       }
       public Builder addAgents(
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder builderForValue) {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
         if (agentsBuilder_ == null) {
           ensureAgentsIsMutable();
           agents_.add(builderForValue.build());
@@ -16799,7 +16799,7 @@ public final class Messages {
         return this;
       }
       public Builder addAgents(
-          int index, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder builderForValue) {
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
         if (agentsBuilder_ == null) {
           ensureAgentsIsMutable();
           agents_.add(index, builderForValue.build());
@@ -16810,7 +16810,7 @@ public final class Messages {
         return this;
       }
       public Builder addAllAgents(
-          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLBehavior.Agent> values) {
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> values) {
         if (agentsBuilder_ == null) {
           ensureAgentsIsMutable();
           super.addAll(values, agents_);
@@ -16840,18 +16840,18 @@ public final class Messages {
         }
         return this;
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder getAgentsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder getAgentsBuilder(
           int index) {
         return getAgentsFieldBuilder().getBuilder(index);
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder getAgentsOrBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
           int index) {
         if (agentsBuilder_ == null) {
           return agents_.get(index);  } else {
           return agentsBuilder_.getMessageOrBuilder(index);
         }
       }
-      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder> 
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
            getAgentsOrBuilderList() {
         if (agentsBuilder_ != null) {
           return agentsBuilder_.getMessageOrBuilderList();
@@ -16859,25 +16859,25 @@ public final class Messages {
           return java.util.Collections.unmodifiableList(agents_);
         }
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder addAgentsBuilder() {
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder addAgentsBuilder() {
         return getAgentsFieldBuilder().addBuilder(
-            de.naoth.rc.messages.Messages.XABSLBehavior.Agent.getDefaultInstance());
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance());
       }
-      public de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder addAgentsBuilder(
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder addAgentsBuilder(
           int index) {
         return getAgentsFieldBuilder().addBuilder(
-            index, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.getDefaultInstance());
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance());
       }
-      public java.util.List<de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder> 
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder> 
            getAgentsBuilderList() {
         return getAgentsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          de.naoth.rc.messages.Messages.XABSLBehavior.Agent, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder> 
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
           getAgentsFieldBuilder() {
         if (agentsBuilder_ == null) {
           agentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              de.naoth.rc.messages.Messages.XABSLBehavior.Agent, de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder, de.naoth.rc.messages.Messages.XABSLBehavior.AgentOrBuilder>(
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder>(
                   agents_,
                   ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
@@ -17067,15 +17067,15 @@ public final class Messages {
         return outputSymbolListBuilder_;
       }
       
-      // @@protoc_insertion_point(builder_scope:naothmessages.XABSLBehavior)
+      // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete)
     }
     
     static {
-      defaultInstance = new XABSLBehavior(true);
+      defaultInstance = new BehaviorStateComplete(true);
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:naothmessages.XABSLBehavior)
+    // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete)
   }
   
   public interface XABSLParameterOrBuilder
@@ -25496,40 +25496,40 @@ public final class Messages {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_BehaviorStatusSparse_descriptor;
+    internal_static_naothmessages_BehaviorStateSparse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_BehaviorStatusSparse_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_EnumType_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_EnumType_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_EnumType_Element_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_EnumType_Element_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_Option_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_Option_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_Option_State_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_Option_State_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_XABSLBehavior_Agent_descriptor;
+    internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_XABSLBehavior_Agent_fieldAccessorTable;
+      internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_XABSLParameter_descriptor;
   private static
@@ -25644,73 +25644,74 @@ public final class Messages {
       "\r\n\005value\030\003 \001(\001\032<\n\rBooleanSymbol\022\016\n\002id\030\001 " +
       "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\032I\n\n" +
       "EnumSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t" +
-      "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\200\002\n\024Beha" +
-      "viorStatusSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021activ" +
-      "eRootActions\030\002 \003(\0132 .naothmessages.XABSL" +
-      "ActionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036." +
-      "naothmessages.SymbolValueList\0228\n\020outputS",
-      "ymbolList\030\013 \001(\0132\036.naothmessages.SymbolVa" +
-      "lueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMes" +
-      "sage\030\006 \001(\t\"\203\005\n\rXABSLBehavior\022;\n\014enumerat" +
-      "ions\030\n \003(\0132%.naothmessages.XABSLBehavior" +
-      ".EnumType\0224\n\007options\030\013 \003(\0132#.naothmessag" +
-      "es.XABSLBehavior.Option\0222\n\006agents\030\014 \003(\0132" +
-      "\".naothmessages.XABSLBehavior.Agent\0227\n\017i" +
-      "nputSymbolList\030\r \001(\0132\036.naothmessages.Sym" +
-      "bolValueList\0228\n\020outputSymbolList\030\016 \001(\0132\036" +
-      ".naothmessages.SymbolValueList\032\201\001\n\010EnumT",
-      "ype\022\014\n\004name\030\001 \002(\t\022?\n\010elements\030\002 \003(\0132-.na" +
-      "othmessages.XABSLBehavior.EnumType.Eleme" +
-      "nt\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002" +
-      "(\t\032\250\001\n\006Option\022\014\n\004name\030\001 \002(\t\0229\n\006states\030\003 " +
-      "\003(\0132).naothmessages.XABSLBehavior.Option" +
-      ".State\022.\n\nparameters\030\002 \003(\0132\032.naothmessag" +
-      "es.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001 \002(\t\022\016\n" +
-      "\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 \002(\t\022\022\n\n" +
-      "rootOption\030\002 \002(\t\"\341\001\n\016XABSLParameter\022\025\n\004n" +
-      "ame\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naoth",
-      "messages.XABSLParameter.ParamType:\007Unkno" +
-      "wn\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 " +
-      "\001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007D" +
-      "ecimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unkno" +
-      "wn\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162%.nao" +
-      "thmessages.XABSLAction.ActionType:\007Unkno" +
-      "wn\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecu" +
-      "tion\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tst" +
-      "ateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naot" +
-      "hmessages.XABSLParameter\0224\n\020activeSubAct",
-      "ions\030\007 \003(\0132\032.naothmessages.XABSLAction\022\024" +
-      "\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022" +
-      "\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Opt" +
-      "ion\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023DecimalOutpu" +
-      "tSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020En" +
-      "umOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016Behavi" +
-      "orStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootAct" +
-      "ions\030\002 \003(\0132\032.naothmessages.XABSLAction\0223" +
-      "\n\014inputSymbols\030\003 \003(\0132\035.naothmessages.XAB" +
-      "SLParameter\0224\n\routputSymbols\030\004 \003(\0132\035.nao",
-      "thmessages.XABSLParameter\022\023\n\013frameNumber" +
-      "\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Module\022\014" +
-      "\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002 \003(" +
-      "\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n\006ac" +
-      "tive\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007modul" +
-      "es\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017Feat" +
-      "ureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessages." +
-      "FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(" +
-      "\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010c" +
-      "lass_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionResult",
-      "\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 " +
-      "\003(\0132\036.naothmessages.FeatureKeyPoint\0224\n\013d" +
-      "escriptors\030\003 \003(\0132\037.naothmessages.SingleD" +
-      "escriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n\027" +
-      "numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020Sin" +
-      "gleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass" +
-      "\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naothm" +
-      "essages.SingleDescriptor\022\024\n\014objectHeight" +
-      "\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003(\0132" +
-      "\033.naothmessages.FeatureClass\022#\n\027numberOf",
-      "FeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth.rc" +
-      ".messages"
+      "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\377\001\n\023Beha" +
+      "viorStateSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021active" +
+      "RootActions\030\002 \003(\0132 .naothmessages.XABSLA" +
+      "ctionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036.n" +
+      "aothmessages.SymbolValueList\0228\n\020outputSy",
+      "mbolList\030\013 \001(\0132\036.naothmessages.SymbolVal" +
+      "ueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMess" +
+      "age\030\006 \001(\t\"\263\005\n\025BehaviorStateComplete\022C\n\014e" +
+      "numerations\030\n \003(\0132-.naothmessages.Behavi" +
+      "orStateComplete.EnumType\022<\n\007options\030\013 \003(" +
+      "\0132+.naothmessages.BehaviorStateComplete." +
+      "Option\022:\n\006agents\030\014 \003(\0132*.naothmessages.B" +
+      "ehaviorStateComplete.Agent\0227\n\017inputSymbo" +
+      "lList\030\r \001(\0132\036.naothmessages.SymbolValueL" +
+      "ist\0228\n\020outputSymbolList\030\016 \001(\0132\036.naothmes",
+      "sages.SymbolValueList\032\211\001\n\010EnumType\022\014\n\004na" +
+      "me\030\001 \002(\t\022G\n\010elements\030\002 \003(\01325.naothmessag" +
+      "es.BehaviorStateComplete.EnumType.Elemen" +
+      "t\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002(" +
+      "\t\032\260\001\n\006Option\022\014\n\004name\030\001 \002(\t\022A\n\006states\030\003 \003" +
+      "(\01321.naothmessages.BehaviorStateComplete" +
+      ".Option.State\022.\n\nparameters\030\002 \003(\0132\032.naot" +
+      "hmessages.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001" +
+      " \002(\t\022\016\n\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 " +
+      "\002(\t\022\022\n\nrootOption\030\002 \002(\t\"\341\001\n\016XABSLParamet",
+      "er\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162" +
+      "\'.naothmessages.XABSLParameter.ParamType" +
+      ":\007Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolV" +
+      "alue\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamTy" +
+      "pe\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013" +
+      "\n\007Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(" +
+      "\0162%.naothmessages.XABSLAction.ActionType" +
+      ":\007Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017time" +
+      "OfExecution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(" +
+      "\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\013",
+      "2\035.naothmessages.XABSLParameter\0224\n\020activ" +
+      "eSubActions\030\007 \003(\0132\032.naothmessages.XABSLA" +
+      "ction\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue" +
+      "\030\t \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType" +
+      "\022\n\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Decim" +
+      "alOutputSymbol\020\002\022\027\n\023BooleanOutputSymbol\020" +
+      "\003\022\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n" +
+      "\016BehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021active" +
+      "RootActions\030\002 \003(\0132\032.naothmessages.XABSLA" +
+      "ction\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessa",
+      "ges.XABSLParameter\0224\n\routputSymbols\030\004 \003(" +
+      "\0132\035.naothmessages.XABSLParameter\022\023\n\013fram" +
+      "eNumber\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006M" +
+      "odule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentatio" +
+      "ns\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003(" +
+      "\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&" +
+      "\n\007modules\030\001 \003(\0132\025.naothmessages.Module\"\213" +
+      "\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothme" +
+      "ssages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005ang" +
+      "le\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002",
+      "(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectio" +
+      "nResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPo" +
+      "ints\030\002 \003(\0132\036.naothmessages.FeatureKeyPoi" +
+      "nt\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages." +
+      "SingleDescriptor\022\031\n\021namesForKeyPoints\030\004 " +
+      "\003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264" +
+      "\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Featu" +
+      "reClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037" +
+      ".naothmessages.SingleDescriptor\022\024\n\014objec" +
+      "tHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes",
+      "\030\001 \003(\0132\033.naothmessages.FeatureClass\022#\n\027n" +
+      "umberOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.n" +
+      "aoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -25845,62 +25846,62 @@ public final class Messages {
               new java.lang.String[] { "Id", "Name", "Value", "TypeId", },
               de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.class,
               de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder.class);
-          internal_static_naothmessages_BehaviorStatusSparse_descriptor =
+          internal_static_naothmessages_BehaviorStateSparse_descriptor =
             getDescriptor().getMessageTypes().get(13);
-          internal_static_naothmessages_BehaviorStatusSparse_fieldAccessorTable = new
+          internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_BehaviorStatusSparse_descriptor,
+              internal_static_naothmessages_BehaviorStateSparse_descriptor,
               new java.lang.String[] { "Agent", "ActiveRootActions", "InputSymbolList", "OutputSymbolList", "FrameNumber", "ErrorMessage", },
-              de.naoth.rc.messages.Messages.BehaviorStatusSparse.class,
-              de.naoth.rc.messages.Messages.BehaviorStatusSparse.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_descriptor =
+              de.naoth.rc.messages.Messages.BehaviorStateSparse.class,
+              de.naoth.rc.messages.Messages.BehaviorStateSparse.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_descriptor =
             getDescriptor().getMessageTypes().get(14);
-          internal_static_naothmessages_XABSLBehavior_fieldAccessorTable = new
+          internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_descriptor,
               new java.lang.String[] { "Enumerations", "Options", "Agents", "InputSymbolList", "OutputSymbolList", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_EnumType_descriptor =
-            internal_static_naothmessages_XABSLBehavior_descriptor.getNestedTypes().get(0);
-          internal_static_naothmessages_XABSLBehavior_EnumType_fieldAccessorTable = new
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_EnumType_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor,
               new java.lang.String[] { "Name", "Elements", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_EnumType_Element_descriptor =
-            internal_static_naothmessages_XABSLBehavior_EnumType_descriptor.getNestedTypes().get(0);
-          internal_static_naothmessages_XABSLBehavior_EnumType_Element_fieldAccessorTable = new
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_EnumType_Element_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor,
               new java.lang.String[] { "Value", "Name", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.EnumType.Element.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_Option_descriptor =
-            internal_static_naothmessages_XABSLBehavior_descriptor.getNestedTypes().get(1);
-          internal_static_naothmessages_XABSLBehavior_Option_fieldAccessorTable = new
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Option_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(1);
+          internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_Option_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_Option_descriptor,
               new java.lang.String[] { "Name", "States", "Parameters", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_Option_State_descriptor =
-            internal_static_naothmessages_XABSLBehavior_Option_descriptor.getNestedTypes().get(0);
-          internal_static_naothmessages_XABSLBehavior_Option_State_fieldAccessorTable = new
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_Option_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_Option_State_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor,
               new java.lang.String[] { "Name", "Target", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.Option.State.Builder.class);
-          internal_static_naothmessages_XABSLBehavior_Agent_descriptor =
-            internal_static_naothmessages_XABSLBehavior_descriptor.getNestedTypes().get(2);
-          internal_static_naothmessages_XABSLBehavior_Agent_fieldAccessorTable = new
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(2);
+          internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_XABSLBehavior_Agent_descriptor,
+              internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor,
               new java.lang.String[] { "Name", "RootOption", },
-              de.naoth.rc.messages.Messages.XABSLBehavior.Agent.class,
-              de.naoth.rc.messages.Messages.XABSLBehavior.Agent.Builder.class);
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder.class);
           internal_static_naothmessages_XABSLParameter_descriptor =
             getDescriptor().getMessageTypes().get(15);
           internal_static_naothmessages_XABSLParameter_fieldAccessorTable = new

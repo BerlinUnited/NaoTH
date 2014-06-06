@@ -76,27 +76,27 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* SymbolValueList_EnumSymbol_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   SymbolValueList_EnumSymbol_reflection_ = NULL;
-const ::google::protobuf::Descriptor* BehaviorStatusSparse_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateSparse_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  BehaviorStatusSparse_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_descriptor_ = NULL;
+  BehaviorStateSparse_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_EnumType_descriptor_ = NULL;
+  BehaviorStateComplete_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_EnumType_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_EnumType_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_EnumType_Element_descriptor_ = NULL;
+  BehaviorStateComplete_EnumType_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_EnumType_Element_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_EnumType_Element_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_Option_descriptor_ = NULL;
+  BehaviorStateComplete_EnumType_Element_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Option_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_Option_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_Option_State_descriptor_ = NULL;
+  BehaviorStateComplete_Option_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Option_State_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_Option_State_reflection_ = NULL;
-const ::google::protobuf::Descriptor* XABSLBehavior_Agent_descriptor_ = NULL;
+  BehaviorStateComplete_Option_State_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Agent_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  XABSLBehavior_Agent_reflection_ = NULL;
+  BehaviorStateComplete_Agent_reflection_ = NULL;
 const ::google::protobuf::Descriptor* XABSLParameter_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   XABSLParameter_reflection_ = NULL;
@@ -427,126 +427,126 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SymbolValueList_EnumSymbol));
-  BehaviorStatusSparse_descriptor_ = file->message_type(13);
-  static const int BehaviorStatusSparse_offsets_[6] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, agent_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, activerootactions_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, inputsymbollist_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, outputsymbollist_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, framenumber_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, errormessage_),
+  BehaviorStateSparse_descriptor_ = file->message_type(13);
+  static const int BehaviorStateSparse_offsets_[6] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, agent_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, activerootactions_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, inputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, outputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, framenumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, errormessage_),
   };
-  BehaviorStatusSparse_reflection_ =
+  BehaviorStateSparse_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      BehaviorStatusSparse_descriptor_,
-      BehaviorStatusSparse::default_instance_,
-      BehaviorStatusSparse_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatusSparse, _unknown_fields_),
+      BehaviorStateSparse_descriptor_,
+      BehaviorStateSparse::default_instance_,
+      BehaviorStateSparse_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateSparse, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(BehaviorStatusSparse));
-  XABSLBehavior_descriptor_ = file->message_type(14);
-  static const int XABSLBehavior_offsets_[5] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, enumerations_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, options_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, agents_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, inputsymbollist_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, outputsymbollist_),
+      sizeof(BehaviorStateSparse));
+  BehaviorStateComplete_descriptor_ = file->message_type(14);
+  static const int BehaviorStateComplete_offsets_[5] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, enumerations_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, options_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, agents_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, inputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, outputsymbollist_),
   };
-  XABSLBehavior_reflection_ =
+  BehaviorStateComplete_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_descriptor_,
-      XABSLBehavior::default_instance_,
-      XABSLBehavior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior, _unknown_fields_),
+      BehaviorStateComplete_descriptor_,
+      BehaviorStateComplete::default_instance_,
+      BehaviorStateComplete_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior));
-  XABSLBehavior_EnumType_descriptor_ = XABSLBehavior_descriptor_->nested_type(0);
-  static const int XABSLBehavior_EnumType_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType, elements_),
+      sizeof(BehaviorStateComplete));
+  BehaviorStateComplete_EnumType_descriptor_ = BehaviorStateComplete_descriptor_->nested_type(0);
+  static const int BehaviorStateComplete_EnumType_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType, elements_),
   };
-  XABSLBehavior_EnumType_reflection_ =
+  BehaviorStateComplete_EnumType_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_EnumType_descriptor_,
-      XABSLBehavior_EnumType::default_instance_,
-      XABSLBehavior_EnumType_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType, _unknown_fields_),
+      BehaviorStateComplete_EnumType_descriptor_,
+      BehaviorStateComplete_EnumType::default_instance_,
+      BehaviorStateComplete_EnumType_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior_EnumType));
-  XABSLBehavior_EnumType_Element_descriptor_ = XABSLBehavior_EnumType_descriptor_->nested_type(0);
-  static const int XABSLBehavior_EnumType_Element_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType_Element, value_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType_Element, name_),
+      sizeof(BehaviorStateComplete_EnumType));
+  BehaviorStateComplete_EnumType_Element_descriptor_ = BehaviorStateComplete_EnumType_descriptor_->nested_type(0);
+  static const int BehaviorStateComplete_EnumType_Element_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType_Element, value_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType_Element, name_),
   };
-  XABSLBehavior_EnumType_Element_reflection_ =
+  BehaviorStateComplete_EnumType_Element_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_EnumType_Element_descriptor_,
-      XABSLBehavior_EnumType_Element::default_instance_,
-      XABSLBehavior_EnumType_Element_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType_Element, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_EnumType_Element, _unknown_fields_),
+      BehaviorStateComplete_EnumType_Element_descriptor_,
+      BehaviorStateComplete_EnumType_Element::default_instance_,
+      BehaviorStateComplete_EnumType_Element_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType_Element, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_EnumType_Element, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior_EnumType_Element));
-  XABSLBehavior_Option_descriptor_ = XABSLBehavior_descriptor_->nested_type(1);
-  static const int XABSLBehavior_Option_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option, states_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option, parameters_),
+      sizeof(BehaviorStateComplete_EnumType_Element));
+  BehaviorStateComplete_Option_descriptor_ = BehaviorStateComplete_descriptor_->nested_type(1);
+  static const int BehaviorStateComplete_Option_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option, states_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option, parameters_),
   };
-  XABSLBehavior_Option_reflection_ =
+  BehaviorStateComplete_Option_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_Option_descriptor_,
-      XABSLBehavior_Option::default_instance_,
-      XABSLBehavior_Option_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option, _unknown_fields_),
+      BehaviorStateComplete_Option_descriptor_,
+      BehaviorStateComplete_Option::default_instance_,
+      BehaviorStateComplete_Option_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior_Option));
-  XABSLBehavior_Option_State_descriptor_ = XABSLBehavior_Option_descriptor_->nested_type(0);
-  static const int XABSLBehavior_Option_State_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option_State, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option_State, target_),
+      sizeof(BehaviorStateComplete_Option));
+  BehaviorStateComplete_Option_State_descriptor_ = BehaviorStateComplete_Option_descriptor_->nested_type(0);
+  static const int BehaviorStateComplete_Option_State_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option_State, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option_State, target_),
   };
-  XABSLBehavior_Option_State_reflection_ =
+  BehaviorStateComplete_Option_State_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_Option_State_descriptor_,
-      XABSLBehavior_Option_State::default_instance_,
-      XABSLBehavior_Option_State_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option_State, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Option_State, _unknown_fields_),
+      BehaviorStateComplete_Option_State_descriptor_,
+      BehaviorStateComplete_Option_State::default_instance_,
+      BehaviorStateComplete_Option_State_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option_State, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Option_State, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior_Option_State));
-  XABSLBehavior_Agent_descriptor_ = XABSLBehavior_descriptor_->nested_type(2);
-  static const int XABSLBehavior_Agent_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, rootoption_),
+      sizeof(BehaviorStateComplete_Option_State));
+  BehaviorStateComplete_Agent_descriptor_ = BehaviorStateComplete_descriptor_->nested_type(2);
+  static const int BehaviorStateComplete_Agent_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Agent, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Agent, rootoption_),
   };
-  XABSLBehavior_Agent_reflection_ =
+  BehaviorStateComplete_Agent_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      XABSLBehavior_Agent_descriptor_,
-      XABSLBehavior_Agent::default_instance_,
-      XABSLBehavior_Agent_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLBehavior_Agent, _unknown_fields_),
+      BehaviorStateComplete_Agent_descriptor_,
+      BehaviorStateComplete_Agent::default_instance_,
+      BehaviorStateComplete_Agent_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Agent, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete_Agent, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(XABSLBehavior_Agent));
+      sizeof(BehaviorStateComplete_Agent));
   XABSLParameter_descriptor_ = file->message_type(15);
   static const int XABSLParameter_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, name_),
@@ -777,19 +777,19 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     SymbolValueList_EnumSymbol_descriptor_, &SymbolValueList_EnumSymbol::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    BehaviorStatusSparse_descriptor_, &BehaviorStatusSparse::default_instance());
+    BehaviorStateSparse_descriptor_, &BehaviorStateSparse::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_descriptor_, &XABSLBehavior::default_instance());
+    BehaviorStateComplete_descriptor_, &BehaviorStateComplete::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_EnumType_descriptor_, &XABSLBehavior_EnumType::default_instance());
+    BehaviorStateComplete_EnumType_descriptor_, &BehaviorStateComplete_EnumType::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_EnumType_Element_descriptor_, &XABSLBehavior_EnumType_Element::default_instance());
+    BehaviorStateComplete_EnumType_Element_descriptor_, &BehaviorStateComplete_EnumType_Element::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_Option_descriptor_, &XABSLBehavior_Option::default_instance());
+    BehaviorStateComplete_Option_descriptor_, &BehaviorStateComplete_Option::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_Option_State_descriptor_, &XABSLBehavior_Option_State::default_instance());
+    BehaviorStateComplete_Option_State_descriptor_, &BehaviorStateComplete_Option_State::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    XABSLBehavior_Agent_descriptor_, &XABSLBehavior_Agent::default_instance());
+    BehaviorStateComplete_Agent_descriptor_, &BehaviorStateComplete_Agent::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLParameter_descriptor_, &XABSLParameter::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -847,20 +847,20 @@ void protobuf_ShutdownFile_Messages_2eproto() {
   delete SymbolValueList_BooleanSymbol_reflection_;
   delete SymbolValueList_EnumSymbol::default_instance_;
   delete SymbolValueList_EnumSymbol_reflection_;
-  delete BehaviorStatusSparse::default_instance_;
-  delete BehaviorStatusSparse_reflection_;
-  delete XABSLBehavior::default_instance_;
-  delete XABSLBehavior_reflection_;
-  delete XABSLBehavior_EnumType::default_instance_;
-  delete XABSLBehavior_EnumType_reflection_;
-  delete XABSLBehavior_EnumType_Element::default_instance_;
-  delete XABSLBehavior_EnumType_Element_reflection_;
-  delete XABSLBehavior_Option::default_instance_;
-  delete XABSLBehavior_Option_reflection_;
-  delete XABSLBehavior_Option_State::default_instance_;
-  delete XABSLBehavior_Option_State_reflection_;
-  delete XABSLBehavior_Agent::default_instance_;
-  delete XABSLBehavior_Agent_reflection_;
+  delete BehaviorStateSparse::default_instance_;
+  delete BehaviorStateSparse_reflection_;
+  delete BehaviorStateComplete::default_instance_;
+  delete BehaviorStateComplete_reflection_;
+  delete BehaviorStateComplete_EnumType::default_instance_;
+  delete BehaviorStateComplete_EnumType_reflection_;
+  delete BehaviorStateComplete_EnumType_Element::default_instance_;
+  delete BehaviorStateComplete_EnumType_Element_reflection_;
+  delete BehaviorStateComplete_Option::default_instance_;
+  delete BehaviorStateComplete_Option_reflection_;
+  delete BehaviorStateComplete_Option_State::default_instance_;
+  delete BehaviorStateComplete_Option_State_reflection_;
+  delete BehaviorStateComplete_Agent::default_instance_;
+  delete BehaviorStateComplete_Agent_reflection_;
   delete XABSLParameter::default_instance_;
   delete XABSLParameter_reflection_;
   delete XABSLAction::default_instance_;
@@ -946,73 +946,74 @@ void protobuf_AddDesc_Messages_2eproto() {
     "\r\n\005value\030\003 \001(\001\032<\n\rBooleanSymbol\022\016\n\002id\030\001 "
     "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\032I\n\n"
     "EnumSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t"
-    "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\200\002\n\024Beha"
-    "viorStatusSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021activ"
-    "eRootActions\030\002 \003(\0132 .naothmessages.XABSL"
-    "ActionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036."
-    "naothmessages.SymbolValueList\0228\n\020outputS"
-    "ymbolList\030\013 \001(\0132\036.naothmessages.SymbolVa"
-    "lueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMes"
-    "sage\030\006 \001(\t\"\203\005\n\rXABSLBehavior\022;\n\014enumerat"
-    "ions\030\n \003(\0132%.naothmessages.XABSLBehavior"
-    ".EnumType\0224\n\007options\030\013 \003(\0132#.naothmessag"
-    "es.XABSLBehavior.Option\0222\n\006agents\030\014 \003(\0132"
-    "\".naothmessages.XABSLBehavior.Agent\0227\n\017i"
-    "nputSymbolList\030\r \001(\0132\036.naothmessages.Sym"
-    "bolValueList\0228\n\020outputSymbolList\030\016 \001(\0132\036"
-    ".naothmessages.SymbolValueList\032\201\001\n\010EnumT"
-    "ype\022\014\n\004name\030\001 \002(\t\022\?\n\010elements\030\002 \003(\0132-.na"
-    "othmessages.XABSLBehavior.EnumType.Eleme"
-    "nt\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002"
-    "(\t\032\250\001\n\006Option\022\014\n\004name\030\001 \002(\t\0229\n\006states\030\003 "
-    "\003(\0132).naothmessages.XABSLBehavior.Option"
-    ".State\022.\n\nparameters\030\002 \003(\0132\032.naothmessag"
-    "es.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001 \002(\t\022\016\n"
-    "\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 \002(\t\022\022\n\n"
-    "rootOption\030\002 \002(\t\"\341\001\n\016XABSLParameter\022\025\n\004n"
-    "ame\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naoth"
-    "messages.XABSLParameter.ParamType:\007Unkno"
-    "wn\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 "
-    "\001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007D"
-    "ecimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unkno"
-    "wn\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162%.nao"
-    "thmessages.XABSLAction.ActionType:\007Unkno"
-    "wn\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecu"
-    "tion\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tst"
-    "ateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naot"
-    "hmessages.XABSLParameter\0224\n\020activeSubAct"
-    "ions\030\007 \003(\0132\032.naothmessages.XABSLAction\022\024"
-    "\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022"
-    "\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Opt"
-    "ion\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023DecimalOutpu"
-    "tSymbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020En"
-    "umOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016Behavi"
-    "orStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootAct"
-    "ions\030\002 \003(\0132\032.naothmessages.XABSLAction\0223"
-    "\n\014inputSymbols\030\003 \003(\0132\035.naothmessages.XAB"
-    "SLParameter\0224\n\routputSymbols\030\004 \003(\0132\035.nao"
-    "thmessages.XABSLParameter\022\023\n\013frameNumber"
-    "\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006Module\022\014"
-    "\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002 \003("
-    "\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n\006ac"
-    "tive\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007modul"
-    "es\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017Feat"
-    "ureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessages."
-    "FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002("
-    "\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010c"
-    "lass_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionResult"
-    "\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 "
-    "\003(\0132\036.naothmessages.FeatureKeyPoint\0224\n\013d"
-    "escriptors\030\003 \003(\0132\037.naothmessages.SingleD"
-    "escriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n\027"
-    "numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020Sin"
-    "gleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass"
-    "\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naothm"
-    "essages.SingleDescriptor\022\024\n\014objectHeight"
-    "\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003(\0132"
-    "\033.naothmessages.FeatureClass\022#\n\027numberOf"
-    "FeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth.rc"
-    ".messages", 4849);
+    "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\377\001\n\023Beha"
+    "viorStateSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021active"
+    "RootActions\030\002 \003(\0132 .naothmessages.XABSLA"
+    "ctionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036.n"
+    "aothmessages.SymbolValueList\0228\n\020outputSy"
+    "mbolList\030\013 \001(\0132\036.naothmessages.SymbolVal"
+    "ueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMess"
+    "age\030\006 \001(\t\"\263\005\n\025BehaviorStateComplete\022C\n\014e"
+    "numerations\030\n \003(\0132-.naothmessages.Behavi"
+    "orStateComplete.EnumType\022<\n\007options\030\013 \003("
+    "\0132+.naothmessages.BehaviorStateComplete."
+    "Option\022:\n\006agents\030\014 \003(\0132*.naothmessages.B"
+    "ehaviorStateComplete.Agent\0227\n\017inputSymbo"
+    "lList\030\r \001(\0132\036.naothmessages.SymbolValueL"
+    "ist\0228\n\020outputSymbolList\030\016 \001(\0132\036.naothmes"
+    "sages.SymbolValueList\032\211\001\n\010EnumType\022\014\n\004na"
+    "me\030\001 \002(\t\022G\n\010elements\030\002 \003(\01325.naothmessag"
+    "es.BehaviorStateComplete.EnumType.Elemen"
+    "t\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002("
+    "\t\032\260\001\n\006Option\022\014\n\004name\030\001 \002(\t\022A\n\006states\030\003 \003"
+    "(\01321.naothmessages.BehaviorStateComplete"
+    ".Option.State\022.\n\nparameters\030\002 \003(\0132\032.naot"
+    "hmessages.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001"
+    " \002(\t\022\016\n\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 "
+    "\002(\t\022\022\n\nrootOption\030\002 \002(\t\"\341\001\n\016XABSLParamet"
+    "er\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162"
+    "\'.naothmessages.XABSLParameter.ParamType"
+    ":\007Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolV"
+    "alue\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamTy"
+    "pe\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013"
+    "\n\007Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001("
+    "\0162%.naothmessages.XABSLAction.ActionType"
+    ":\007Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017time"
+    "OfExecution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001("
+    "\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\013"
+    "2\035.naothmessages.XABSLParameter\0224\n\020activ"
+    "eSubActions\030\007 \003(\0132\032.naothmessages.XABSLA"
+    "ction\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue"
+    "\030\t \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType"
+    "\022\n\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Decim"
+    "alOutputSymbol\020\002\022\027\n\023BooleanOutputSymbol\020"
+    "\003\022\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n"
+    "\016BehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021active"
+    "RootActions\030\002 \003(\0132\032.naothmessages.XABSLA"
+    "ction\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessa"
+    "ges.XABSLParameter\0224\n\routputSymbols\030\004 \003("
+    "\0132\035.naothmessages.XABSLParameter\022\023\n\013fram"
+    "eNumber\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006M"
+    "odule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentatio"
+    "ns\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003("
+    "\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&"
+    "\n\007modules\030\001 \003(\0132\025.naothmessages.Module\"\213"
+    "\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothme"
+    "ssages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005ang"
+    "le\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002"
+    "(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectio"
+    "nResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPo"
+    "ints\030\002 \003(\0132\036.naothmessages.FeatureKeyPoi"
+    "nt\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages."
+    "SingleDescriptor\022\031\n\021namesForKeyPoints\030\004 "
+    "\003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264"
+    "\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Featu"
+    "reClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037"
+    ".naothmessages.SingleDescriptor\022\024\n\014objec"
+    "tHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes"
+    "\030\001 \003(\0132\033.naothmessages.FeatureClass\022#\n\027n"
+    "umberOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.n"
+    "aoth.rc.messages", 4896);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();
@@ -1031,13 +1032,13 @@ void protobuf_AddDesc_Messages_2eproto() {
   SymbolValueList_DoubleSymbol::default_instance_ = new SymbolValueList_DoubleSymbol();
   SymbolValueList_BooleanSymbol::default_instance_ = new SymbolValueList_BooleanSymbol();
   SymbolValueList_EnumSymbol::default_instance_ = new SymbolValueList_EnumSymbol();
-  BehaviorStatusSparse::default_instance_ = new BehaviorStatusSparse();
-  XABSLBehavior::default_instance_ = new XABSLBehavior();
-  XABSLBehavior_EnumType::default_instance_ = new XABSLBehavior_EnumType();
-  XABSLBehavior_EnumType_Element::default_instance_ = new XABSLBehavior_EnumType_Element();
-  XABSLBehavior_Option::default_instance_ = new XABSLBehavior_Option();
-  XABSLBehavior_Option_State::default_instance_ = new XABSLBehavior_Option_State();
-  XABSLBehavior_Agent::default_instance_ = new XABSLBehavior_Agent();
+  BehaviorStateSparse::default_instance_ = new BehaviorStateSparse();
+  BehaviorStateComplete::default_instance_ = new BehaviorStateComplete();
+  BehaviorStateComplete_EnumType::default_instance_ = new BehaviorStateComplete_EnumType();
+  BehaviorStateComplete_EnumType_Element::default_instance_ = new BehaviorStateComplete_EnumType_Element();
+  BehaviorStateComplete_Option::default_instance_ = new BehaviorStateComplete_Option();
+  BehaviorStateComplete_Option_State::default_instance_ = new BehaviorStateComplete_Option_State();
+  BehaviorStateComplete_Agent::default_instance_ = new BehaviorStateComplete_Agent();
   XABSLParameter::default_instance_ = new XABSLParameter();
   XABSLAction::default_instance_ = new XABSLAction();
   BehaviorStatus::default_instance_ = new BehaviorStatus();
@@ -1064,13 +1065,13 @@ void protobuf_AddDesc_Messages_2eproto() {
   SymbolValueList_DoubleSymbol::default_instance_->InitAsDefaultInstance();
   SymbolValueList_BooleanSymbol::default_instance_->InitAsDefaultInstance();
   SymbolValueList_EnumSymbol::default_instance_->InitAsDefaultInstance();
-  BehaviorStatusSparse::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior_EnumType::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior_EnumType_Element::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior_Option::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior_Option_State::default_instance_->InitAsDefaultInstance();
-  XABSLBehavior_Agent::default_instance_->InitAsDefaultInstance();
+  BehaviorStateSparse::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete_EnumType::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete_EnumType_Element::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete_Option::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete_Option_State::default_instance_->InitAsDefaultInstance();
+  BehaviorStateComplete_Agent::default_instance_->InitAsDefaultInstance();
   XABSLParameter::default_instance_->InitAsDefaultInstance();
   XABSLAction::default_instance_->InitAsDefaultInstance();
   BehaviorStatus::default_instance_->InitAsDefaultInstance();
@@ -6548,31 +6549,31 @@ void SymbolValueList::Swap(SymbolValueList* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int BehaviorStatusSparse::kAgentFieldNumber;
-const int BehaviorStatusSparse::kActiveRootActionsFieldNumber;
-const int BehaviorStatusSparse::kInputSymbolListFieldNumber;
-const int BehaviorStatusSparse::kOutputSymbolListFieldNumber;
-const int BehaviorStatusSparse::kFrameNumberFieldNumber;
-const int BehaviorStatusSparse::kErrorMessageFieldNumber;
+const int BehaviorStateSparse::kAgentFieldNumber;
+const int BehaviorStateSparse::kActiveRootActionsFieldNumber;
+const int BehaviorStateSparse::kInputSymbolListFieldNumber;
+const int BehaviorStateSparse::kOutputSymbolListFieldNumber;
+const int BehaviorStateSparse::kFrameNumberFieldNumber;
+const int BehaviorStateSparse::kErrorMessageFieldNumber;
 #endif  // !_MSC_VER
 
-BehaviorStatusSparse::BehaviorStatusSparse()
+BehaviorStateSparse::BehaviorStateSparse()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void BehaviorStatusSparse::InitAsDefaultInstance() {
+void BehaviorStateSparse::InitAsDefaultInstance() {
   inputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
   outputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
 }
 
-BehaviorStatusSparse::BehaviorStatusSparse(const BehaviorStatusSparse& from)
+BehaviorStateSparse::BehaviorStateSparse(const BehaviorStateSparse& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void BehaviorStatusSparse::SharedCtor() {
+void BehaviorStateSparse::SharedCtor() {
   _cached_size_ = 0;
   agent_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   inputsymbollist_ = NULL;
@@ -6582,11 +6583,11 @@ void BehaviorStatusSparse::SharedCtor() {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-BehaviorStatusSparse::~BehaviorStatusSparse() {
+BehaviorStateSparse::~BehaviorStateSparse() {
   SharedDtor();
 }
 
-void BehaviorStatusSparse::SharedDtor() {
+void BehaviorStateSparse::SharedDtor() {
   if (agent_ != &::google::protobuf::internal::kEmptyString) {
     delete agent_;
   }
@@ -6599,27 +6600,27 @@ void BehaviorStatusSparse::SharedDtor() {
   }
 }
 
-void BehaviorStatusSparse::SetCachedSize(int size) const {
+void BehaviorStateSparse::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* BehaviorStatusSparse::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateSparse::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return BehaviorStatusSparse_descriptor_;
+  return BehaviorStateSparse_descriptor_;
 }
 
-const BehaviorStatusSparse& BehaviorStatusSparse::default_instance() {
+const BehaviorStateSparse& BehaviorStateSparse::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-BehaviorStatusSparse* BehaviorStatusSparse::default_instance_ = NULL;
+BehaviorStateSparse* BehaviorStateSparse::default_instance_ = NULL;
 
-BehaviorStatusSparse* BehaviorStatusSparse::New() const {
-  return new BehaviorStatusSparse;
+BehaviorStateSparse* BehaviorStateSparse::New() const {
+  return new BehaviorStateSparse;
 }
 
-void BehaviorStatusSparse::Clear() {
+void BehaviorStateSparse::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_agent()) {
       if (agent_ != &::google::protobuf::internal::kEmptyString) {
@@ -6644,7 +6645,7 @@ void BehaviorStatusSparse::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool BehaviorStatusSparse::MergePartialFromCodedStream(
+bool BehaviorStateSparse::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -6758,7 +6759,7 @@ bool BehaviorStatusSparse::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void BehaviorStatusSparse::SerializeWithCachedSizes(
+void BehaviorStateSparse::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional string agent = 1;
   if (has_agent()) {
@@ -6807,7 +6808,7 @@ void BehaviorStatusSparse::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* BehaviorStatusSparse::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateSparse::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional string agent = 1;
   if (has_agent()) {
@@ -6862,7 +6863,7 @@ void BehaviorStatusSparse::SerializeWithCachedSizes(
   return target;
 }
 
-int BehaviorStatusSparse::ByteSize() const {
+int BehaviorStateSparse::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -6921,10 +6922,10 @@ int BehaviorStatusSparse::ByteSize() const {
   return total_size;
 }
 
-void BehaviorStatusSparse::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateSparse::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const BehaviorStatusSparse* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStatusSparse*>(
+  const BehaviorStateSparse* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateSparse*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -6933,7 +6934,7 @@ void BehaviorStatusSparse::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void BehaviorStatusSparse::MergeFrom(const BehaviorStatusSparse& from) {
+void BehaviorStateSparse::MergeFrom(const BehaviorStateSparse& from) {
   GOOGLE_CHECK_NE(&from, this);
   activerootactions_.MergeFrom(from.activerootactions_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -6956,19 +6957,19 @@ void BehaviorStatusSparse::MergeFrom(const BehaviorStatusSparse& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void BehaviorStatusSparse::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateSparse::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void BehaviorStatusSparse::CopyFrom(const BehaviorStatusSparse& from) {
+void BehaviorStateSparse::CopyFrom(const BehaviorStateSparse& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool BehaviorStatusSparse::IsInitialized() const {
+bool BehaviorStateSparse::IsInitialized() const {
   
   for (int i = 0; i < activerootactions_size(); i++) {
     if (!this->activerootactions(i).IsInitialized()) return false;
@@ -6982,7 +6983,7 @@ bool BehaviorStatusSparse::IsInitialized() const {
   return true;
 }
 
-void BehaviorStatusSparse::Swap(BehaviorStatusSparse* other) {
+void BehaviorStateSparse::Swap(BehaviorStateSparse* other) {
   if (other != this) {
     std::swap(agent_, other->agent_);
     activerootactions_.Swap(&other->activerootactions_);
@@ -6996,11 +6997,11 @@ void BehaviorStatusSparse::Swap(BehaviorStatusSparse* other) {
   }
 }
 
-::google::protobuf::Metadata BehaviorStatusSparse::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateSparse::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = BehaviorStatusSparse_descriptor_;
-  metadata.reflection = BehaviorStatusSparse_reflection_;
+  metadata.descriptor = BehaviorStateSparse_descriptor_;
+  metadata.reflection = BehaviorStateSparse_reflection_;
   return metadata;
 }
 
@@ -7008,36 +7009,36 @@ void BehaviorStatusSparse::Swap(BehaviorStatusSparse* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int XABSLBehavior_EnumType_Element::kValueFieldNumber;
-const int XABSLBehavior_EnumType_Element::kNameFieldNumber;
+const int BehaviorStateComplete_EnumType_Element::kValueFieldNumber;
+const int BehaviorStateComplete_EnumType_Element::kNameFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior_EnumType_Element::XABSLBehavior_EnumType_Element()
+BehaviorStateComplete_EnumType_Element::BehaviorStateComplete_EnumType_Element()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior_EnumType_Element::InitAsDefaultInstance() {
+void BehaviorStateComplete_EnumType_Element::InitAsDefaultInstance() {
 }
 
-XABSLBehavior_EnumType_Element::XABSLBehavior_EnumType_Element(const XABSLBehavior_EnumType_Element& from)
+BehaviorStateComplete_EnumType_Element::BehaviorStateComplete_EnumType_Element(const BehaviorStateComplete_EnumType_Element& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior_EnumType_Element::SharedCtor() {
+void BehaviorStateComplete_EnumType_Element::SharedCtor() {
   _cached_size_ = 0;
   value_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior_EnumType_Element::~XABSLBehavior_EnumType_Element() {
+BehaviorStateComplete_EnumType_Element::~BehaviorStateComplete_EnumType_Element() {
   SharedDtor();
 }
 
-void XABSLBehavior_EnumType_Element::SharedDtor() {
+void BehaviorStateComplete_EnumType_Element::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -7045,27 +7046,27 @@ void XABSLBehavior_EnumType_Element::SharedDtor() {
   }
 }
 
-void XABSLBehavior_EnumType_Element::SetCachedSize(int size) const {
+void BehaviorStateComplete_EnumType_Element::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior_EnumType_Element::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete_EnumType_Element::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_EnumType_Element_descriptor_;
+  return BehaviorStateComplete_EnumType_Element_descriptor_;
 }
 
-const XABSLBehavior_EnumType_Element& XABSLBehavior_EnumType_Element::default_instance() {
+const BehaviorStateComplete_EnumType_Element& BehaviorStateComplete_EnumType_Element::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior_EnumType_Element* XABSLBehavior_EnumType_Element::default_instance_ = NULL;
+BehaviorStateComplete_EnumType_Element* BehaviorStateComplete_EnumType_Element::default_instance_ = NULL;
 
-XABSLBehavior_EnumType_Element* XABSLBehavior_EnumType_Element::New() const {
-  return new XABSLBehavior_EnumType_Element;
+BehaviorStateComplete_EnumType_Element* BehaviorStateComplete_EnumType_Element::New() const {
+  return new BehaviorStateComplete_EnumType_Element;
 }
 
-void XABSLBehavior_EnumType_Element::Clear() {
+void BehaviorStateComplete_EnumType_Element::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     value_ = 0;
     if (has_name()) {
@@ -7078,7 +7079,7 @@ void XABSLBehavior_EnumType_Element::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior_EnumType_Element::MergePartialFromCodedStream(
+bool BehaviorStateComplete_EnumType_Element::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -7132,7 +7133,7 @@ bool XABSLBehavior_EnumType_Element::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior_EnumType_Element::SerializeWithCachedSizes(
+void BehaviorStateComplete_EnumType_Element::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required int32 value = 1;
   if (has_value()) {
@@ -7154,7 +7155,7 @@ void XABSLBehavior_EnumType_Element::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior_EnumType_Element::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete_EnumType_Element::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required int32 value = 1;
   if (has_value()) {
@@ -7178,7 +7179,7 @@ void XABSLBehavior_EnumType_Element::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior_EnumType_Element::ByteSize() const {
+int BehaviorStateComplete_EnumType_Element::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -7208,10 +7209,10 @@ int XABSLBehavior_EnumType_Element::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior_EnumType_Element::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_EnumType_Element::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior_EnumType_Element* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_EnumType_Element*>(
+  const BehaviorStateComplete_EnumType_Element* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete_EnumType_Element*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -7220,7 +7221,7 @@ void XABSLBehavior_EnumType_Element::MergeFrom(const ::google::protobuf::Message
   }
 }
 
-void XABSLBehavior_EnumType_Element::MergeFrom(const XABSLBehavior_EnumType_Element& from) {
+void BehaviorStateComplete_EnumType_Element::MergeFrom(const BehaviorStateComplete_EnumType_Element& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_value()) {
@@ -7233,25 +7234,25 @@ void XABSLBehavior_EnumType_Element::MergeFrom(const XABSLBehavior_EnumType_Elem
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior_EnumType_Element::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_EnumType_Element::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior_EnumType_Element::CopyFrom(const XABSLBehavior_EnumType_Element& from) {
+void BehaviorStateComplete_EnumType_Element::CopyFrom(const BehaviorStateComplete_EnumType_Element& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior_EnumType_Element::IsInitialized() const {
+bool BehaviorStateComplete_EnumType_Element::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
   return true;
 }
 
-void XABSLBehavior_EnumType_Element::Swap(XABSLBehavior_EnumType_Element* other) {
+void BehaviorStateComplete_EnumType_Element::Swap(BehaviorStateComplete_EnumType_Element* other) {
   if (other != this) {
     std::swap(value_, other->value_);
     std::swap(name_, other->name_);
@@ -7261,11 +7262,11 @@ void XABSLBehavior_EnumType_Element::Swap(XABSLBehavior_EnumType_Element* other)
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior_EnumType_Element::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete_EnumType_Element::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_EnumType_Element_descriptor_;
-  metadata.reflection = XABSLBehavior_EnumType_Element_reflection_;
+  metadata.descriptor = BehaviorStateComplete_EnumType_Element_descriptor_;
+  metadata.reflection = BehaviorStateComplete_EnumType_Element_reflection_;
   return metadata;
 }
 
@@ -7273,35 +7274,35 @@ void XABSLBehavior_EnumType_Element::Swap(XABSLBehavior_EnumType_Element* other)
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int XABSLBehavior_EnumType::kNameFieldNumber;
-const int XABSLBehavior_EnumType::kElementsFieldNumber;
+const int BehaviorStateComplete_EnumType::kNameFieldNumber;
+const int BehaviorStateComplete_EnumType::kElementsFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior_EnumType::XABSLBehavior_EnumType()
+BehaviorStateComplete_EnumType::BehaviorStateComplete_EnumType()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior_EnumType::InitAsDefaultInstance() {
+void BehaviorStateComplete_EnumType::InitAsDefaultInstance() {
 }
 
-XABSLBehavior_EnumType::XABSLBehavior_EnumType(const XABSLBehavior_EnumType& from)
+BehaviorStateComplete_EnumType::BehaviorStateComplete_EnumType(const BehaviorStateComplete_EnumType& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior_EnumType::SharedCtor() {
+void BehaviorStateComplete_EnumType::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior_EnumType::~XABSLBehavior_EnumType() {
+BehaviorStateComplete_EnumType::~BehaviorStateComplete_EnumType() {
   SharedDtor();
 }
 
-void XABSLBehavior_EnumType::SharedDtor() {
+void BehaviorStateComplete_EnumType::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -7309,27 +7310,27 @@ void XABSLBehavior_EnumType::SharedDtor() {
   }
 }
 
-void XABSLBehavior_EnumType::SetCachedSize(int size) const {
+void BehaviorStateComplete_EnumType::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior_EnumType::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete_EnumType::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_EnumType_descriptor_;
+  return BehaviorStateComplete_EnumType_descriptor_;
 }
 
-const XABSLBehavior_EnumType& XABSLBehavior_EnumType::default_instance() {
+const BehaviorStateComplete_EnumType& BehaviorStateComplete_EnumType::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior_EnumType* XABSLBehavior_EnumType::default_instance_ = NULL;
+BehaviorStateComplete_EnumType* BehaviorStateComplete_EnumType::default_instance_ = NULL;
 
-XABSLBehavior_EnumType* XABSLBehavior_EnumType::New() const {
-  return new XABSLBehavior_EnumType;
+BehaviorStateComplete_EnumType* BehaviorStateComplete_EnumType::New() const {
+  return new BehaviorStateComplete_EnumType;
 }
 
-void XABSLBehavior_EnumType::Clear() {
+void BehaviorStateComplete_EnumType::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -7342,7 +7343,7 @@ void XABSLBehavior_EnumType::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior_EnumType::MergePartialFromCodedStream(
+bool BehaviorStateComplete_EnumType::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -7364,7 +7365,7 @@ bool XABSLBehavior_EnumType::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+      // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -7395,7 +7396,7 @@ bool XABSLBehavior_EnumType::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior_EnumType::SerializeWithCachedSizes(
+void BehaviorStateComplete_EnumType::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
   if (has_name()) {
@@ -7406,7 +7407,7 @@ void XABSLBehavior_EnumType::SerializeWithCachedSizes(
       1, this->name(), output);
   }
   
-  // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
   for (int i = 0; i < this->elements_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->elements(i), output);
@@ -7418,7 +7419,7 @@ void XABSLBehavior_EnumType::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior_EnumType::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete_EnumType::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
   if (has_name()) {
@@ -7430,7 +7431,7 @@ void XABSLBehavior_EnumType::SerializeWithCachedSizes(
         1, this->name(), target);
   }
   
-  // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
   for (int i = 0; i < this->elements_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -7444,7 +7445,7 @@ void XABSLBehavior_EnumType::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior_EnumType::ByteSize() const {
+int BehaviorStateComplete_EnumType::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -7456,7 +7457,7 @@ int XABSLBehavior_EnumType::ByteSize() const {
     }
     
   }
-  // repeated .naothmessages.XABSLBehavior.EnumType.Element elements = 2;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
   total_size += 1 * this->elements_size();
   for (int i = 0; i < this->elements_size(); i++) {
     total_size +=
@@ -7475,10 +7476,10 @@ int XABSLBehavior_EnumType::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior_EnumType::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_EnumType::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior_EnumType* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_EnumType*>(
+  const BehaviorStateComplete_EnumType* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete_EnumType*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -7487,7 +7488,7 @@ void XABSLBehavior_EnumType::MergeFrom(const ::google::protobuf::Message& from) 
   }
 }
 
-void XABSLBehavior_EnumType::MergeFrom(const XABSLBehavior_EnumType& from) {
+void BehaviorStateComplete_EnumType::MergeFrom(const BehaviorStateComplete_EnumType& from) {
   GOOGLE_CHECK_NE(&from, this);
   elements_.MergeFrom(from.elements_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -7498,19 +7499,19 @@ void XABSLBehavior_EnumType::MergeFrom(const XABSLBehavior_EnumType& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior_EnumType::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_EnumType::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior_EnumType::CopyFrom(const XABSLBehavior_EnumType& from) {
+void BehaviorStateComplete_EnumType::CopyFrom(const BehaviorStateComplete_EnumType& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior_EnumType::IsInitialized() const {
+bool BehaviorStateComplete_EnumType::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   for (int i = 0; i < elements_size(); i++) {
@@ -7519,7 +7520,7 @@ bool XABSLBehavior_EnumType::IsInitialized() const {
   return true;
 }
 
-void XABSLBehavior_EnumType::Swap(XABSLBehavior_EnumType* other) {
+void BehaviorStateComplete_EnumType::Swap(BehaviorStateComplete_EnumType* other) {
   if (other != this) {
     std::swap(name_, other->name_);
     elements_.Swap(&other->elements_);
@@ -7529,11 +7530,11 @@ void XABSLBehavior_EnumType::Swap(XABSLBehavior_EnumType* other) {
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior_EnumType::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete_EnumType::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_EnumType_descriptor_;
-  metadata.reflection = XABSLBehavior_EnumType_reflection_;
+  metadata.descriptor = BehaviorStateComplete_EnumType_descriptor_;
+  metadata.reflection = BehaviorStateComplete_EnumType_reflection_;
   return metadata;
 }
 
@@ -7541,36 +7542,36 @@ void XABSLBehavior_EnumType::Swap(XABSLBehavior_EnumType* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int XABSLBehavior_Option_State::kNameFieldNumber;
-const int XABSLBehavior_Option_State::kTargetFieldNumber;
+const int BehaviorStateComplete_Option_State::kNameFieldNumber;
+const int BehaviorStateComplete_Option_State::kTargetFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior_Option_State::XABSLBehavior_Option_State()
+BehaviorStateComplete_Option_State::BehaviorStateComplete_Option_State()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior_Option_State::InitAsDefaultInstance() {
+void BehaviorStateComplete_Option_State::InitAsDefaultInstance() {
 }
 
-XABSLBehavior_Option_State::XABSLBehavior_Option_State(const XABSLBehavior_Option_State& from)
+BehaviorStateComplete_Option_State::BehaviorStateComplete_Option_State(const BehaviorStateComplete_Option_State& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Option_State::SharedCtor() {
+void BehaviorStateComplete_Option_State::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   target_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior_Option_State::~XABSLBehavior_Option_State() {
+BehaviorStateComplete_Option_State::~BehaviorStateComplete_Option_State() {
   SharedDtor();
 }
 
-void XABSLBehavior_Option_State::SharedDtor() {
+void BehaviorStateComplete_Option_State::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -7578,27 +7579,27 @@ void XABSLBehavior_Option_State::SharedDtor() {
   }
 }
 
-void XABSLBehavior_Option_State::SetCachedSize(int size) const {
+void BehaviorStateComplete_Option_State::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior_Option_State::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Option_State::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_Option_State_descriptor_;
+  return BehaviorStateComplete_Option_State_descriptor_;
 }
 
-const XABSLBehavior_Option_State& XABSLBehavior_Option_State::default_instance() {
+const BehaviorStateComplete_Option_State& BehaviorStateComplete_Option_State::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior_Option_State* XABSLBehavior_Option_State::default_instance_ = NULL;
+BehaviorStateComplete_Option_State* BehaviorStateComplete_Option_State::default_instance_ = NULL;
 
-XABSLBehavior_Option_State* XABSLBehavior_Option_State::New() const {
-  return new XABSLBehavior_Option_State;
+BehaviorStateComplete_Option_State* BehaviorStateComplete_Option_State::New() const {
+  return new BehaviorStateComplete_Option_State;
 }
 
-void XABSLBehavior_Option_State::Clear() {
+void BehaviorStateComplete_Option_State::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -7611,7 +7612,7 @@ void XABSLBehavior_Option_State::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior_Option_State::MergePartialFromCodedStream(
+bool BehaviorStateComplete_Option_State::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -7665,7 +7666,7 @@ bool XABSLBehavior_Option_State::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior_Option_State::SerializeWithCachedSizes(
+void BehaviorStateComplete_Option_State::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
   if (has_name()) {
@@ -7687,7 +7688,7 @@ void XABSLBehavior_Option_State::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior_Option_State::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete_Option_State::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
   if (has_name()) {
@@ -7711,7 +7712,7 @@ void XABSLBehavior_Option_State::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior_Option_State::ByteSize() const {
+int BehaviorStateComplete_Option_State::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -7739,10 +7740,10 @@ int XABSLBehavior_Option_State::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior_Option_State::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Option_State::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior_Option_State* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_Option_State*>(
+  const BehaviorStateComplete_Option_State* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete_Option_State*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -7751,7 +7752,7 @@ void XABSLBehavior_Option_State::MergeFrom(const ::google::protobuf::Message& fr
   }
 }
 
-void XABSLBehavior_Option_State::MergeFrom(const XABSLBehavior_Option_State& from) {
+void BehaviorStateComplete_Option_State::MergeFrom(const BehaviorStateComplete_Option_State& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_name()) {
@@ -7764,25 +7765,25 @@ void XABSLBehavior_Option_State::MergeFrom(const XABSLBehavior_Option_State& fro
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior_Option_State::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Option_State::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Option_State::CopyFrom(const XABSLBehavior_Option_State& from) {
+void BehaviorStateComplete_Option_State::CopyFrom(const BehaviorStateComplete_Option_State& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior_Option_State::IsInitialized() const {
+bool BehaviorStateComplete_Option_State::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }
 
-void XABSLBehavior_Option_State::Swap(XABSLBehavior_Option_State* other) {
+void BehaviorStateComplete_Option_State::Swap(BehaviorStateComplete_Option_State* other) {
   if (other != this) {
     std::swap(name_, other->name_);
     std::swap(target_, other->target_);
@@ -7792,11 +7793,11 @@ void XABSLBehavior_Option_State::Swap(XABSLBehavior_Option_State* other) {
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior_Option_State::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete_Option_State::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_Option_State_descriptor_;
-  metadata.reflection = XABSLBehavior_Option_State_reflection_;
+  metadata.descriptor = BehaviorStateComplete_Option_State_descriptor_;
+  metadata.reflection = BehaviorStateComplete_Option_State_reflection_;
   return metadata;
 }
 
@@ -7804,36 +7805,36 @@ void XABSLBehavior_Option_State::Swap(XABSLBehavior_Option_State* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int XABSLBehavior_Option::kNameFieldNumber;
-const int XABSLBehavior_Option::kStatesFieldNumber;
-const int XABSLBehavior_Option::kParametersFieldNumber;
+const int BehaviorStateComplete_Option::kNameFieldNumber;
+const int BehaviorStateComplete_Option::kStatesFieldNumber;
+const int BehaviorStateComplete_Option::kParametersFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior_Option::XABSLBehavior_Option()
+BehaviorStateComplete_Option::BehaviorStateComplete_Option()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior_Option::InitAsDefaultInstance() {
+void BehaviorStateComplete_Option::InitAsDefaultInstance() {
 }
 
-XABSLBehavior_Option::XABSLBehavior_Option(const XABSLBehavior_Option& from)
+BehaviorStateComplete_Option::BehaviorStateComplete_Option(const BehaviorStateComplete_Option& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Option::SharedCtor() {
+void BehaviorStateComplete_Option::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior_Option::~XABSLBehavior_Option() {
+BehaviorStateComplete_Option::~BehaviorStateComplete_Option() {
   SharedDtor();
 }
 
-void XABSLBehavior_Option::SharedDtor() {
+void BehaviorStateComplete_Option::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -7841,27 +7842,27 @@ void XABSLBehavior_Option::SharedDtor() {
   }
 }
 
-void XABSLBehavior_Option::SetCachedSize(int size) const {
+void BehaviorStateComplete_Option::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior_Option::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Option::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_Option_descriptor_;
+  return BehaviorStateComplete_Option_descriptor_;
 }
 
-const XABSLBehavior_Option& XABSLBehavior_Option::default_instance() {
+const BehaviorStateComplete_Option& BehaviorStateComplete_Option::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior_Option* XABSLBehavior_Option::default_instance_ = NULL;
+BehaviorStateComplete_Option* BehaviorStateComplete_Option::default_instance_ = NULL;
 
-XABSLBehavior_Option* XABSLBehavior_Option::New() const {
-  return new XABSLBehavior_Option;
+BehaviorStateComplete_Option* BehaviorStateComplete_Option::New() const {
+  return new BehaviorStateComplete_Option;
 }
 
-void XABSLBehavior_Option::Clear() {
+void BehaviorStateComplete_Option::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -7875,7 +7876,7 @@ void XABSLBehavior_Option::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior_Option::MergePartialFromCodedStream(
+bool BehaviorStateComplete_Option::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -7912,7 +7913,7 @@ bool XABSLBehavior_Option::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+      // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -7943,7 +7944,7 @@ bool XABSLBehavior_Option::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior_Option::SerializeWithCachedSizes(
+void BehaviorStateComplete_Option::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
   if (has_name()) {
@@ -7960,7 +7961,7 @@ void XABSLBehavior_Option::SerializeWithCachedSizes(
       2, this->parameters(i), output);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+  // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
   for (int i = 0; i < this->states_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, this->states(i), output);
@@ -7972,7 +7973,7 @@ void XABSLBehavior_Option::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior_Option::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete_Option::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
   if (has_name()) {
@@ -7991,7 +7992,7 @@ void XABSLBehavior_Option::SerializeWithCachedSizes(
         2, this->parameters(i), target);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+  // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
   for (int i = 0; i < this->states_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -8005,7 +8006,7 @@ void XABSLBehavior_Option::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior_Option::ByteSize() const {
+int BehaviorStateComplete_Option::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -8017,7 +8018,7 @@ int XABSLBehavior_Option::ByteSize() const {
     }
     
   }
-  // repeated .naothmessages.XABSLBehavior.Option.State states = 3;
+  // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
   total_size += 1 * this->states_size();
   for (int i = 0; i < this->states_size(); i++) {
     total_size +=
@@ -8044,10 +8045,10 @@ int XABSLBehavior_Option::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior_Option::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Option::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior_Option* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_Option*>(
+  const BehaviorStateComplete_Option* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete_Option*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -8056,7 +8057,7 @@ void XABSLBehavior_Option::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void XABSLBehavior_Option::MergeFrom(const XABSLBehavior_Option& from) {
+void BehaviorStateComplete_Option::MergeFrom(const BehaviorStateComplete_Option& from) {
   GOOGLE_CHECK_NE(&from, this);
   states_.MergeFrom(from.states_);
   parameters_.MergeFrom(from.parameters_);
@@ -8068,19 +8069,19 @@ void XABSLBehavior_Option::MergeFrom(const XABSLBehavior_Option& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior_Option::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Option::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Option::CopyFrom(const XABSLBehavior_Option& from) {
+void BehaviorStateComplete_Option::CopyFrom(const BehaviorStateComplete_Option& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior_Option::IsInitialized() const {
+bool BehaviorStateComplete_Option::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   for (int i = 0; i < states_size(); i++) {
@@ -8092,7 +8093,7 @@ bool XABSLBehavior_Option::IsInitialized() const {
   return true;
 }
 
-void XABSLBehavior_Option::Swap(XABSLBehavior_Option* other) {
+void BehaviorStateComplete_Option::Swap(BehaviorStateComplete_Option* other) {
   if (other != this) {
     std::swap(name_, other->name_);
     states_.Swap(&other->states_);
@@ -8103,11 +8104,11 @@ void XABSLBehavior_Option::Swap(XABSLBehavior_Option* other) {
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior_Option::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete_Option::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_Option_descriptor_;
-  metadata.reflection = XABSLBehavior_Option_reflection_;
+  metadata.descriptor = BehaviorStateComplete_Option_descriptor_;
+  metadata.reflection = BehaviorStateComplete_Option_reflection_;
   return metadata;
 }
 
@@ -8115,36 +8116,36 @@ void XABSLBehavior_Option::Swap(XABSLBehavior_Option* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int XABSLBehavior_Agent::kNameFieldNumber;
-const int XABSLBehavior_Agent::kRootOptionFieldNumber;
+const int BehaviorStateComplete_Agent::kNameFieldNumber;
+const int BehaviorStateComplete_Agent::kRootOptionFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior_Agent::XABSLBehavior_Agent()
+BehaviorStateComplete_Agent::BehaviorStateComplete_Agent()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior_Agent::InitAsDefaultInstance() {
+void BehaviorStateComplete_Agent::InitAsDefaultInstance() {
 }
 
-XABSLBehavior_Agent::XABSLBehavior_Agent(const XABSLBehavior_Agent& from)
+BehaviorStateComplete_Agent::BehaviorStateComplete_Agent(const BehaviorStateComplete_Agent& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Agent::SharedCtor() {
+void BehaviorStateComplete_Agent::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   rootoption_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior_Agent::~XABSLBehavior_Agent() {
+BehaviorStateComplete_Agent::~BehaviorStateComplete_Agent() {
   SharedDtor();
 }
 
-void XABSLBehavior_Agent::SharedDtor() {
+void BehaviorStateComplete_Agent::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -8155,27 +8156,27 @@ void XABSLBehavior_Agent::SharedDtor() {
   }
 }
 
-void XABSLBehavior_Agent::SetCachedSize(int size) const {
+void BehaviorStateComplete_Agent::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior_Agent::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete_Agent::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_Agent_descriptor_;
+  return BehaviorStateComplete_Agent_descriptor_;
 }
 
-const XABSLBehavior_Agent& XABSLBehavior_Agent::default_instance() {
+const BehaviorStateComplete_Agent& BehaviorStateComplete_Agent::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior_Agent* XABSLBehavior_Agent::default_instance_ = NULL;
+BehaviorStateComplete_Agent* BehaviorStateComplete_Agent::default_instance_ = NULL;
 
-XABSLBehavior_Agent* XABSLBehavior_Agent::New() const {
-  return new XABSLBehavior_Agent;
+BehaviorStateComplete_Agent* BehaviorStateComplete_Agent::New() const {
+  return new BehaviorStateComplete_Agent;
 }
 
-void XABSLBehavior_Agent::Clear() {
+void BehaviorStateComplete_Agent::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -8192,7 +8193,7 @@ void XABSLBehavior_Agent::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior_Agent::MergePartialFromCodedStream(
+bool BehaviorStateComplete_Agent::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -8247,7 +8248,7 @@ bool XABSLBehavior_Agent::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior_Agent::SerializeWithCachedSizes(
+void BehaviorStateComplete_Agent::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
   if (has_name()) {
@@ -8273,7 +8274,7 @@ void XABSLBehavior_Agent::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior_Agent::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete_Agent::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
   if (has_name()) {
@@ -8302,7 +8303,7 @@ void XABSLBehavior_Agent::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior_Agent::ByteSize() const {
+int BehaviorStateComplete_Agent::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -8332,10 +8333,10 @@ int XABSLBehavior_Agent::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior_Agent::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Agent::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior_Agent* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior_Agent*>(
+  const BehaviorStateComplete_Agent* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete_Agent*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -8344,7 +8345,7 @@ void XABSLBehavior_Agent::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void XABSLBehavior_Agent::MergeFrom(const XABSLBehavior_Agent& from) {
+void BehaviorStateComplete_Agent::MergeFrom(const BehaviorStateComplete_Agent& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_name()) {
@@ -8357,25 +8358,25 @@ void XABSLBehavior_Agent::MergeFrom(const XABSLBehavior_Agent& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior_Agent::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete_Agent::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior_Agent::CopyFrom(const XABSLBehavior_Agent& from) {
+void BehaviorStateComplete_Agent::CopyFrom(const BehaviorStateComplete_Agent& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior_Agent::IsInitialized() const {
+bool BehaviorStateComplete_Agent::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
   return true;
 }
 
-void XABSLBehavior_Agent::Swap(XABSLBehavior_Agent* other) {
+void BehaviorStateComplete_Agent::Swap(BehaviorStateComplete_Agent* other) {
   if (other != this) {
     std::swap(name_, other->name_);
     std::swap(rootoption_, other->rootoption_);
@@ -8385,11 +8386,11 @@ void XABSLBehavior_Agent::Swap(XABSLBehavior_Agent* other) {
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior_Agent::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete_Agent::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_Agent_descriptor_;
-  metadata.reflection = XABSLBehavior_Agent_reflection_;
+  metadata.descriptor = BehaviorStateComplete_Agent_descriptor_;
+  metadata.reflection = BehaviorStateComplete_Agent_reflection_;
   return metadata;
 }
 
@@ -8397,68 +8398,68 @@ void XABSLBehavior_Agent::Swap(XABSLBehavior_Agent* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int XABSLBehavior::kEnumerationsFieldNumber;
-const int XABSLBehavior::kOptionsFieldNumber;
-const int XABSLBehavior::kAgentsFieldNumber;
-const int XABSLBehavior::kInputSymbolListFieldNumber;
-const int XABSLBehavior::kOutputSymbolListFieldNumber;
+const int BehaviorStateComplete::kEnumerationsFieldNumber;
+const int BehaviorStateComplete::kOptionsFieldNumber;
+const int BehaviorStateComplete::kAgentsFieldNumber;
+const int BehaviorStateComplete::kInputSymbolListFieldNumber;
+const int BehaviorStateComplete::kOutputSymbolListFieldNumber;
 #endif  // !_MSC_VER
 
-XABSLBehavior::XABSLBehavior()
+BehaviorStateComplete::BehaviorStateComplete()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void XABSLBehavior::InitAsDefaultInstance() {
+void BehaviorStateComplete::InitAsDefaultInstance() {
   inputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
   outputsymbollist_ = const_cast< ::naothmessages::SymbolValueList*>(&::naothmessages::SymbolValueList::default_instance());
 }
 
-XABSLBehavior::XABSLBehavior(const XABSLBehavior& from)
+BehaviorStateComplete::BehaviorStateComplete(const BehaviorStateComplete& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void XABSLBehavior::SharedCtor() {
+void BehaviorStateComplete::SharedCtor() {
   _cached_size_ = 0;
   inputsymbollist_ = NULL;
   outputsymbollist_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-XABSLBehavior::~XABSLBehavior() {
+BehaviorStateComplete::~BehaviorStateComplete() {
   SharedDtor();
 }
 
-void XABSLBehavior::SharedDtor() {
+void BehaviorStateComplete::SharedDtor() {
   if (this != default_instance_) {
     delete inputsymbollist_;
     delete outputsymbollist_;
   }
 }
 
-void XABSLBehavior::SetCachedSize(int size) const {
+void BehaviorStateComplete::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* XABSLBehavior::descriptor() {
+const ::google::protobuf::Descriptor* BehaviorStateComplete::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return XABSLBehavior_descriptor_;
+  return BehaviorStateComplete_descriptor_;
 }
 
-const XABSLBehavior& XABSLBehavior::default_instance() {
+const BehaviorStateComplete& BehaviorStateComplete::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-XABSLBehavior* XABSLBehavior::default_instance_ = NULL;
+BehaviorStateComplete* BehaviorStateComplete::default_instance_ = NULL;
 
-XABSLBehavior* XABSLBehavior::New() const {
-  return new XABSLBehavior;
+BehaviorStateComplete* BehaviorStateComplete::New() const {
+  return new BehaviorStateComplete;
 }
 
-void XABSLBehavior::Clear() {
+void BehaviorStateComplete::Clear() {
   if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
     if (has_inputsymbollist()) {
       if (inputsymbollist_ != NULL) inputsymbollist_->::naothmessages::SymbolValueList::Clear();
@@ -8474,13 +8475,13 @@ void XABSLBehavior::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool XABSLBehavior::MergePartialFromCodedStream(
+bool BehaviorStateComplete::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+      // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
       case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -8495,7 +8496,7 @@ bool XABSLBehavior::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.XABSLBehavior.Option options = 11;
+      // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
       case 11: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -8510,7 +8511,7 @@ bool XABSLBehavior::MergePartialFromCodedStream(
         break;
       }
       
-      // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+      // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
       case 12: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -8569,21 +8570,21 @@ bool XABSLBehavior::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void XABSLBehavior::SerializeWithCachedSizes(
+void BehaviorStateComplete::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
   for (int i = 0; i < this->enumerations_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       10, this->enumerations(i), output);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Option options = 11;
+  // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
   for (int i = 0; i < this->options_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       11, this->options(i), output);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
   for (int i = 0; i < this->agents_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       12, this->agents(i), output);
@@ -8607,23 +8608,23 @@ void XABSLBehavior::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* XABSLBehavior::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BehaviorStateComplete::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
   for (int i = 0; i < this->enumerations_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         10, this->enumerations(i), target);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Option options = 11;
+  // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
   for (int i = 0; i < this->options_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         11, this->options(i), target);
   }
   
-  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
   for (int i = 0; i < this->agents_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -8651,7 +8652,7 @@ void XABSLBehavior::SerializeWithCachedSizes(
   return target;
 }
 
-int XABSLBehavior::ByteSize() const {
+int BehaviorStateComplete::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
@@ -8670,7 +8671,7 @@ int XABSLBehavior::ByteSize() const {
     }
     
   }
-  // repeated .naothmessages.XABSLBehavior.EnumType enumerations = 10;
+  // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
   total_size += 1 * this->enumerations_size();
   for (int i = 0; i < this->enumerations_size(); i++) {
     total_size +=
@@ -8678,7 +8679,7 @@ int XABSLBehavior::ByteSize() const {
         this->enumerations(i));
   }
   
-  // repeated .naothmessages.XABSLBehavior.Option options = 11;
+  // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
   total_size += 1 * this->options_size();
   for (int i = 0; i < this->options_size(); i++) {
     total_size +=
@@ -8686,7 +8687,7 @@ int XABSLBehavior::ByteSize() const {
         this->options(i));
   }
   
-  // repeated .naothmessages.XABSLBehavior.Agent agents = 12;
+  // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
   total_size += 1 * this->agents_size();
   for (int i = 0; i < this->agents_size(); i++) {
     total_size +=
@@ -8705,10 +8706,10 @@ int XABSLBehavior::ByteSize() const {
   return total_size;
 }
 
-void XABSLBehavior::MergeFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const XABSLBehavior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const XABSLBehavior*>(
+  const BehaviorStateComplete* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BehaviorStateComplete*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -8717,7 +8718,7 @@ void XABSLBehavior::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void XABSLBehavior::MergeFrom(const XABSLBehavior& from) {
+void BehaviorStateComplete::MergeFrom(const BehaviorStateComplete& from) {
   GOOGLE_CHECK_NE(&from, this);
   enumerations_.MergeFrom(from.enumerations_);
   options_.MergeFrom(from.options_);
@@ -8733,19 +8734,19 @@ void XABSLBehavior::MergeFrom(const XABSLBehavior& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void XABSLBehavior::CopyFrom(const ::google::protobuf::Message& from) {
+void BehaviorStateComplete::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void XABSLBehavior::CopyFrom(const XABSLBehavior& from) {
+void BehaviorStateComplete::CopyFrom(const BehaviorStateComplete& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool XABSLBehavior::IsInitialized() const {
+bool BehaviorStateComplete::IsInitialized() const {
   
   for (int i = 0; i < enumerations_size(); i++) {
     if (!this->enumerations(i).IsInitialized()) return false;
@@ -8765,7 +8766,7 @@ bool XABSLBehavior::IsInitialized() const {
   return true;
 }
 
-void XABSLBehavior::Swap(XABSLBehavior* other) {
+void BehaviorStateComplete::Swap(BehaviorStateComplete* other) {
   if (other != this) {
     enumerations_.Swap(&other->enumerations_);
     options_.Swap(&other->options_);
@@ -8778,11 +8779,11 @@ void XABSLBehavior::Swap(XABSLBehavior* other) {
   }
 }
 
-::google::protobuf::Metadata XABSLBehavior::GetMetadata() const {
+::google::protobuf::Metadata BehaviorStateComplete::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = XABSLBehavior_descriptor_;
-  metadata.reflection = XABSLBehavior_reflection_;
+  metadata.descriptor = BehaviorStateComplete_descriptor_;
+  metadata.reflection = BehaviorStateComplete_reflection_;
   return metadata;
 }
 

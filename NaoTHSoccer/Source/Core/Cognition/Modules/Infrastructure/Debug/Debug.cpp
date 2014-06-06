@@ -43,9 +43,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
 
-  REGISTER_DEBUG_COMMAND("behavior:status", "send the active XABSL options", this);
-  REGISTER_DEBUG_COMMAND("behavior:status_sparse", "send only the active XABSL options", this);
-  REGISTER_DEBUG_COMMAND("behavior:behavior", "send the full behavior status", this);
+  REGISTER_DEBUG_COMMAND("behavior:state", "send the XABSL options and symbols state", this);
+  REGISTER_DEBUG_COMMAND("behavior:state_sparse", "send only the an update of the XABSL options and symbols state", this);
 
   registerLogableRepresentationList();
 
@@ -248,19 +247,13 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 
     }
   }
-  else if(command == "behavior:status")
+  else if(command == "behavior:state")
   {
-    naoth::Serializer<BehaviorStatus>::serialize(getBehaviorStatus(), outstream);
+    naoth::Serializer<BehaviorStateComplete>::serialize(getBehaviorStateComplete(), outstream);
   }
-  else if(command == "behavior:status_sparse")
+  else if(command == "behavior:state_sparse")
   {
-    google::protobuf::io::OstreamOutputStream buf(&outstream);
-    getBehaviorStatus().status_sparse.SerializeToZeroCopyStream(&buf);
-  }
-  else if(command == "behavior:behavior")
-  {
-    google::protobuf::io::OstreamOutputStream buf(&outstream);
-    getBehaviorStatus().behavior.SerializeToZeroCopyStream(&buf);
+    naoth::Serializer<BehaviorStateSparse>::serialize(getBehaviorStateSparse(), outstream);
   }
 }
 

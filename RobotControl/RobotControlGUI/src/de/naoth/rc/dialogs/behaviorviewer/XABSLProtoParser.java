@@ -17,7 +17,7 @@ public class XABSLProtoParser {
     private XABSLBehavior behavior = null;
 
     
-    public XABSLBehaviorFrame parse(Messages.BehaviorStatusSparse status)
+    public XABSLBehaviorFrame parse(Messages.BehaviorStateSparse status)
     {
         XABSLBehaviorFrame frame = new XABSLBehaviorFrame();
         
@@ -100,7 +100,7 @@ public class XABSLProtoParser {
     }
     
     
-    public XABSLBehavior parse(Messages.XABSLBehavior behavior_msg) {
+    public XABSLBehavior parse(Messages.BehaviorStateComplete behavior_msg) {
         this.behavior = new XABSLBehavior();
 
         // parse the enumerations first, so they are available when symbols are parsed
@@ -146,7 +146,7 @@ public class XABSLProtoParser {
         return result;
     }
 
-    private XABSLBehavior.Option parse(Messages.XABSLBehavior.Option option_msg) {
+    private XABSLBehavior.Option parse(Messages.BehaviorStateComplete.Option option_msg) {
         XABSLBehavior.Option option = new XABSLBehavior.Option(option_msg.getName());
         
         for (int j = 0; j < option_msg.getParametersCount(); j++) {
@@ -160,7 +160,7 @@ public class XABSLProtoParser {
         return option;
     }
 
-    private XABSLBehavior.Option.State parse(Messages.XABSLBehavior.Option.State state_msg) {
+    private XABSLBehavior.Option.State parse(Messages.BehaviorStateComplete.Option.State state_msg) {
         return new XABSLBehavior.Option.State(state_msg.getName(), state_msg.getTarget());
     }
 
@@ -197,14 +197,14 @@ public class XABSLProtoParser {
     }
     
 
-    private XABSLBehavior.Agent parse(Messages.XABSLBehavior.Agent agent_msg) {
+    private XABSLBehavior.Agent parse(Messages.BehaviorStateComplete.Agent agent_msg) {
         XABSLBehavior.Agent agent = new XABSLBehavior.Agent();
         agent.name = agent_msg.getName();
         agent.rootOption = agent_msg.getRootOption();
         return agent;
     }
 
-    private XABSLBehavior.EnumType parse(Messages.XABSLBehavior.EnumType enum_msg) {
+    private XABSLBehavior.EnumType parse(Messages.BehaviorStateComplete.EnumType enum_msg) {
         XABSLBehavior.EnumType enumeration = new XABSLBehavior.EnumType();
         enumeration.name = enum_msg.getName();
         for (int i = 0; i < enum_msg.getElementsCount(); i++) {
@@ -213,7 +213,7 @@ public class XABSLProtoParser {
         return enumeration;
     }
 
-    private XABSLBehavior.EnumType.Element parse(Messages.XABSLBehavior.EnumType.Element element_msg) {
+    private XABSLBehavior.EnumType.Element parse(Messages.BehaviorStateComplete.EnumType.Element element_msg) {
         XABSLBehavior.EnumType.Element element = new XABSLBehavior.EnumType.Element();
         element.name = element_msg.getName();
         element.value = (int) element_msg.getValue();

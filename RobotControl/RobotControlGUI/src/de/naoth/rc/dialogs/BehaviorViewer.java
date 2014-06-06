@@ -84,10 +84,10 @@ public class BehaviorViewer extends AbstractDialog
 
   private final Command reloadBehaviorCommand = new Command("behavior:reload");
   private final Command getAgentCommand = new Command("behavior:get_agent");
-  private final Command getExecutedBehaviorCommand = new Command("behavior:status");
+  private final Command getExecutedBehaviorCommand = new Command("behavior:state");
   
   private final Command getCurrentBehavior = new Command("behavior:behavior");
-  private final Command getBehaviorStatusSparse = new Command("behavior:status_sparse");
+  private final Command getBehaviorStatusSparse = new Command("behavior:state");
   
   
   private final Command enableUpdateBehaviorStatusCommand =
@@ -154,7 +154,7 @@ public class BehaviorViewer extends AbstractDialog
     });
 
 
-    this.behaviorBuffer = new ArrayList<XABSLFrame>();
+    this.behaviorBuffer = new ArrayList<>();
   }
 
   @Override
@@ -188,7 +188,7 @@ public class BehaviorViewer extends AbstractDialog
         public void newObjectReceived(byte[] object) {
             try
             {
-              Messages.XABSLBehavior behavior_msg = Messages.XABSLBehavior.parseFrom(object);
+              Messages.BehaviorStateComplete behavior_msg = Messages.BehaviorStateComplete.parseFrom(object);
               
               behaviorParser = new XABSLProtoParser();
               behaviorParser.parse(behavior_msg);
@@ -215,7 +215,7 @@ public class BehaviorViewer extends AbstractDialog
             
             try
             {
-              Messages.BehaviorStatusSparse status = Messages.BehaviorStatusSparse.parseFrom(object);
+              Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
               final XABSLBehaviorFrame frame = behaviorParser.parse(status);
               
               SwingUtilities.invokeLater(new Runnable() {

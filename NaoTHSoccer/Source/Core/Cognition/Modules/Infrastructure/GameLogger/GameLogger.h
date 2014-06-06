@@ -5,13 +5,15 @@
 #include <Tools/Logfile/LogfileManager.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Modeling/BehaviorStatus.h>
+#include <Representations/Modeling/BehaviorStateComplete.h>
+#include <Representations/Modeling/BehaviorStateSparse.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(FrameInfo)
-  REQUIRE(BehaviorStatus)
+  REQUIRE(BehaviorStateSparse)
+  REQUIRE(BehaviorStateComplete)
 END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
