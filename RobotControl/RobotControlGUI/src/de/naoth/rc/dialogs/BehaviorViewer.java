@@ -10,7 +10,6 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLFrame;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLFramePrototype;
@@ -84,10 +83,9 @@ public class BehaviorViewer extends AbstractDialog
 
   private final Command reloadBehaviorCommand = new Command("behavior:reload");
   private final Command getAgentCommand = new Command("behavior:get_agent");
-  private final Command getExecutedBehaviorCommand = new Command("behavior:state");
   
-  private final Command getCurrentBehavior = new Command("behavior:behavior");
-  private final Command getBehaviorStatusSparse = new Command("behavior:state");
+  private final Command getBehaviorStateComplete = new Command("behavior:state");
+  private final Command getBehaviorStateSparse = new Command("behavior:state_sparse");
   
   
   private final Command enableUpdateBehaviorStatusCommand =
@@ -162,7 +160,8 @@ public class BehaviorViewer extends AbstractDialog
   {
     btReceiveExecutionPath.setSelected(false);
     sendCommand(disableUpdateBehaviorStatusCommand);
-    Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
+    Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this);
+    Plugin.genericManagerFactory.getManager(getBehaviorStateComplete).removeListener(this);
     //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
 
     // make the liste of frame clickable again
@@ -773,8 +772,8 @@ public class BehaviorViewer extends AbstractDialog
         //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
         
         // TEST (Heinrich)
-        Plugin.commandExecutor.executeCommand(this.behaviorListener, getCurrentBehavior);
-        Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).addListener(this.behaviorUpdateListener);
+        Plugin.commandExecutor.executeCommand(this.behaviorListener, getBehaviorStateComplete);
+        Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).addListener(this.behaviorUpdateListener);
         
         // make the list of frames not clickable
         this.frameList.removeListSelectionListener(behaviorFrameListener);
@@ -789,7 +788,7 @@ public class BehaviorViewer extends AbstractDialog
       this.frameList.addListSelectionListener(behaviorFrameListener);
       sendCommand(disableUpdateBehaviorStatusCommand);
       //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
-      Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).removeListener(this.behaviorUpdateListener);
+      Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
     }
 
 }//GEN-LAST:event_btReceiveExecutionPathActionPerformed
@@ -1058,7 +1057,7 @@ public class BehaviorViewer extends AbstractDialog
   public void dispose()
   {
     //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
-    Plugin.genericManagerFactory.getManager(getBehaviorStatusSparse).removeListener(this.behaviorUpdateListener);
+    Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
   }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
