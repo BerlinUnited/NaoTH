@@ -11,6 +11,7 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugModify.h"
 
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
@@ -72,10 +73,6 @@ bool NewGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
       features[scanLineId].push_back(extFeature);
     }
   }
-
-  //GT_TRACE("NewGoalDetector:scanForFeatures");
-  ////find feature that are candidates for goal posts along scanlines 
-  //findFeatureCandidates(horizonDirection, p1, params.thresholdUV, params.thresholdY);
 
 
   GT_TRACE("NewGoalDetector:beginValidationOfFeatures");
@@ -151,6 +148,7 @@ bool NewGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
   return true;
 }//end execute
 
+
 void NewGoalDetector::debugStuff(CameraInfo::CameraID camID)
 {
   CANVAS_PX(camID);
@@ -182,6 +180,78 @@ void NewGoalDetector::debugStuff(CameraInfo::CameraID camID)
     }
   );
 }
+
+
+void NewGoalDetector::clusterEdgelFeatures()
+{
+  double t_sim = 0.5;
+  MODIFY("t_sim",t_sim);
+  
+  std::vector<EdgelT<double> > pairs;
+
+  for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().edgel_features.size(); scanIdOne++) {
+    for(size_t i = 0; i < getGoalFeaturePercept().edgel_features[scanIdOne].size(); i++) {
+      const EdgelT<double>& e1 = getGoalFeaturePercept().edgel_features[scanIdOne][i];
+
+      size_t scanIdTwo = scanIdOne+1;
+      //for(size_t scanIdTwo = scanIdOne+1; scanIdTwo < features.size(); scanIdTwo++) {
+        for(size_t j = 0; j < getGoalFeaturePercept().edgel_features[scanIdTwo].size(); j++) {
+          const EdgelT<double>& e2 = getGoalFeaturePercept().edgel_features[scanIdTwo][j];
+
+          if(e1.sim(e2) > t_sim) {
+            //LINE_PX(ColorClasses::red, (int)(e1.point.x+0.5), (int)(e1.point.y+0.5), (int)(e2.point.x+0.5), (int)(e2.point.y+0.5));
+
+            EdgelT<double> pair;
+            pair.point = (e1.point + e2.point)*0.5;
+            pair.direction = (e2.direction + e1.direction).normalize();
+            pairs.push_back(pair);
+          }
+        }
+      //}
+    }
+  }
+
+
+  std::vector<Cluster> clusters;
+
+  for(size_t i = 0; i < pairs.size(); i++) {
+    const EdgelT<double>& e1 = pairs[i];
+
+    size_t cluster_idx = 0;
+    double max_sim = -1;
+
+    for(size_t j = 0; j < clusters.size(); j++) {
+      Cluster& cluster = clusters[j];
+      double s = cluster.sim(e1);
+      if(s > max_sim) {
+        max_sim = s;
+        cluster_idx = j;
+      }
+    }
+
+    if(max_sim > t_sim) {
+      clusters[cluster_idx].add(e1);
+    } else {
+      Cluster cluster;
+      cluster.add(e1);
+      clusters.push_back(cluster);
+    }
+  }
+
+  for(size_t j = 0; j < clusters.size(); j++) {
+      Cluster& cluster = clusters[j];
+      
+      if(cluster.size() > 2) {
+        Math::Line line = cluster.getLine();
+
+        Vector2d begin, end;
+        begin = line.getBase();
+        end = line.getBase() + line.getDirection()*50;
+        LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
+      }
+  }
+}
+
 
 void NewGoalDetector::checkForGoodFeatures(const Vector2d& scanDir, ExtFeature& candidate, int scanLineId, double threshold, double thresholdY)
 {
