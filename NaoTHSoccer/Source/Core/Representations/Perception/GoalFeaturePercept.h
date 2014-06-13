@@ -13,6 +13,7 @@
 #include "Tools/Math/Vector3.h"
 #include "Tools/ColorClasses.h"
 #include <Tools/DataStructures/Printable.h>
+#include "Tools/ImageProcessing/Edgel.h"
 
 class GoalFeaturePercept : public naoth::Printable
 { 
@@ -49,6 +50,10 @@ public:
     }
   };
 
+  //NOTE: experimental
+  std::vector<std::vector<EdgelT<double> > > edgel_features;
+
+  //
   std::vector<std::vector<Feature> > features;
   Vector2d horizonNormal; 
 

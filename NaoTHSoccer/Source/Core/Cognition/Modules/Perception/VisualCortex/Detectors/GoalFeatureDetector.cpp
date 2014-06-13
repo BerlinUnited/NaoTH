@@ -95,157 +95,115 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
   p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
   
   // adjust the vectors if the parameters change
-  if((int)getGoalFeaturePercept().features.size() != params.numberOfScanlines)
-  {
+  if((int)getGoalFeaturePercept().features.size() != params.numberOfScanlines) {
     getGoalFeaturePercept().reset(params.numberOfScanlines);
+  }
+  if((int)getGoalFeaturePercept().edgel_features.size() != params.numberOfScanlines) {
+    getGoalFeaturePercept().edgel_features.resize(params.numberOfScanlines);
   }
 
   // clear the old features
   for(int i = 0; i < params.numberOfScanlines; i++) {
      getGoalFeaturePercept().features[i].clear();
+     getGoalFeaturePercept().edgel_features[i].clear();
   }
 
-
-  GT_TRACE("GoalFeatureDetector:scanForFeatures");
   //find feature that are candidates for goal posts along scanlines 
-  //findFeatureCandidates(horizonDirection, p1, params.thresholdUV, params.thresholdY);
-  findfeatures(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+  //findfeatures(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+  findfeaturesColor(horizonDirection, p1, params.thresholdUV, params.thresholdY);
 
   return true;
 }//end execute
 
-void GoalFeatureDetector::findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
+
+void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
 {
-  double response = 0.0;
-  double responseY = 0.0;
-  double lastResponse = 0.0;
-  double lastResponseY = 0.0;
-
-  Pixel pixel;
-
-  bool isCandidate = false;
-  bool isObstacle = false;
-    
-  GoalFeaturePercept::Feature candidate;
-
-  int diffVU = 0;
-  int lastDiffVU = 0;
-
-  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;  // 6 / 2 = 3
+  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
 
   int start = (int) p1.y - offset;
   int stop = (int) p1.y + offset;
 
-  if(start < 0)
-  {
+  if(start < 0) {
     start = 2;
   }
 
-  if(stop > (int) getImage().height())
-  {
+  if(stop > (int) getImage().height()) {
     start = start - (stop - getImage().height() - 2);
   }
+
   int y = start;
-  for(int aktIdx = 0; aktIdx < params.numberOfScanlines; aktIdx++)
+  for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
-    valueBuffer.init();
-    valueBufferY.init();
-    pointBuffer.init();
-    isCandidate = false;
     y += params.scanlinesDistance;
     Vector2i pos((int) p1.x + 2, y);
+    Pixel pixel;
     BresenhamLineScan scanner(pos, scanDir, getImage().cameraInfo);
-    do
-    {
-      pointBuffer.add(pos);
-      IMG_GET(pos.x, pos.y, pixel);
-      diffVU = (int) pixel.v - (int) pixel.u;
-      valueBuffer.add(diffVU);
-      valueBufferY.add(pixel.y);
 
-      if(pointBuffer.isFull())
-      {
-        response = valueBuffer[4] + 2 * valueBuffer[3] + 4 * valueBuffer[2] + valueBuffer[1] * 2 + valueBuffer[0];
-        responseY = valueBufferY[2];
-        response /= 10;
-        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
-          if(aktIdx == 2)
-          {
-            POINT_PX(ColorClasses::yellow, pos.x, pos.y );
-          }
-          else
-          {
-            POINT_PX(ColorClasses::gray, pos.x, pos.y );
-          }
-        );
-        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_difference",
-          if(aktIdx == 2)
-          {
-            LINE_PX(ColorClasses::green, (int) pointBuffer[3].x, (int) pointBuffer[3].y - lastDiffVU, (int) pointBuffer[4].x, (int) pointBuffer[4].y - diffVU);
-            lastDiffVU = diffVU;
-          }
-        );
-        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_response",
-          if(aktIdx == 2)
-          {
-            LINE_PX(ColorClasses::red, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) /*fabs*/(lastResponse), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int)/* fabs*/(response) );
-            LINE_PX(ColorClasses::white, (int) pointBuffer[1].x, (int) pointBuffer[1].y - (int) fabs(lastResponseY / 3), (int) pointBuffer[2].x, (int) pointBuffer[2].y - (int) fabs(responseY / 3) );
-            lastResponse = response;
-            lastResponseY = responseY;
-          }
-        );
-        if(response >= threshold && fabs(responseY) >= thresholdY)
+    Filter<Gauss,Vector2i,double> filter;
+    
+    Vector2i begin;
+    bool begin_found = false;
+    double jump = 0;
+
+    while(scanner.getNextWithCheck(pos)) 
+    {
+      IMG_GET(pos.x, pos.y, pixel);
+      int diffVU = (int) pixel.v - (int) pixel.u;
+
+      filter.add(pos, diffVU);
+      if(!filter.ready()) {
+        continue;
+      }
+
+      if(!begin_found) {
+
+        if(filter.value() > params.thresholdUV)
         {
-          if(!isCandidate)
-          {
-            candidate.begin = pointBuffer[2];
-            candidate.center = pointBuffer[2];
-            candidate.end = pointBuffer[2];
-            candidate.responseAtBegin.x = response;
-            candidate.responseAtBegin.y = diffVU;
-            if(diffVU < 0)
-            {
-              isObstacle = true;
-            }
-          }
-          isCandidate = true;
+          begin = filter.point();
+          POINT_PX(ColorClasses::red, begin.x, begin.y );
+          
+          jump = filter.value() - jump;
+          begin_found = true;
         }
         else
         {
-          if(isCandidate)
-          {
-            candidate.end = pointBuffer[2];
-            candidate.center = (candidate.end + candidate.begin) / 2;
-            candidate.responseAtEnd.x = response;
-            candidate.responseAtEnd.y = diffVU;
-            getGoalFeaturePercept().features[aktIdx].push_back(candidate);
-            if(isObstacle)
-            {
-              candidate.possibleObstacle = isObstacle;
-              DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks", 
-                LINE_PX(ColorClasses::orange, candidate.begin.x, candidate.begin.y, candidate.end.x, candidate.end.y);
-              );
-            }
-            else
-            {
-              DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks", 
-                LINE_PX(ColorClasses::blue, candidate.begin.x, candidate.begin.y, candidate.end.x, candidate.end.y);
-              );
-            }
-          }
-          isCandidate = false;
-          isObstacle = false;
-        }//end if
+          jump = filter.value();
+        }
       }
-    }
-    while(scanner.getNextWithCheck(pos));
-  }//end for
-}//end findFeatureCandidates
+
+      if(begin_found && filter.value() + jump*0.5 < params.thresholdUV)
+      {
+        const Vector2i& end = filter.point();
+        POINT_PX(ColorClasses::red, end.x, end.y );
+
+        Vector2d gradientBegin = calculateGradientUV(begin);
+        LINE_PX(ColorClasses::black, begin.x, begin.y, begin.x + (int)(10*gradientBegin.x+0.5), begin.y + (int)(10*gradientBegin.y+0.5));
+
+        Vector2d gradientEnd = calculateGradientUV(end);
+        LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
+
+        double t_gradient = 0.5;
+        MODIFY("t_gradient",t_gradient);
+        if(fabs(gradientBegin*gradientEnd) > t_gradient) {
+          LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
+
+          EdgelT<double> edgel;
+          edgel.point = Vector2d(begin + end)*0.5;
+          edgel.direction = (gradientBegin - gradientEnd).normalize();
+          
+          getGoalFeaturePercept().edgel_features[scanId].push_back(edgel);
+        }
+
+        begin_found = false;
+      }
+    }//end while
+  }
+}//end findfeatures
 
 
 void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
 {
-  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;  // 6 / 2 = 3
+  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
 
   int start = (int) p1.y - offset;
   int stop = (int) p1.y + offset;
@@ -277,6 +235,8 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
     MaximumScan<Vector2i,double> negativeScan(peak_point_min, t_edge);
 
     bool begin_found = false;
+    double t_gradient = 0.8;
+    MODIFY("t_gradient",t_gradient);
 
     while(scanner.getNextWithCheck(pos)) 
     {
@@ -296,11 +256,25 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
 
       if(negativeScan.add(filter.point(), -filter.value()))
       {
-        if(begin_found) {
+        Vector2d gradientBegin = calculateGradientUV(peak_point_max);
+        LINE_PX(ColorClasses::black, peak_point_max.x, peak_point_max.y, peak_point_max.x + (int)(10*gradientBegin.x+0.5), peak_point_max.y + (int)(10*gradientBegin.y+0.5));
+        
+        Vector2d gradientEnd = calculateGradientUV(peak_point_min);
+        LINE_PX(ColorClasses::black, peak_point_min.x, peak_point_min.y, peak_point_min.x + (int)(10*gradientEnd.x+0.5), peak_point_min.y + (int)(10*gradientEnd.y+0.5));
+        
+        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
+
+        // double edgel
+        if(begin_found && fabs(gradientBegin*gradientEnd) > t_gradient) {
           LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
           POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+
+          EdgelT<double> edgel;
+          edgel.point = Vector2d(peak_point_max + peak_point_min)*0.5;
+          edgel.direction = (gradientBegin - gradientEnd).normalize();
+
+          getGoalFeaturePercept().edgel_features[scanId].push_back(edgel);
         }
-        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
 
         begin_found = false;
       }
@@ -308,3 +282,54 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
     }//end while
   }
 }//end findfeatures
+
+
+Vector2d GoalFeatureDetector::calculateGradientUV(const Vector2i& point) const
+{
+  // no angle at the border (shouldn't happen)
+  if( point.x < 2 || point.x + 3 > (int)getImage().width() ||
+      point.y < 2 || point.y + 3 > (int)getImage().height() ) {
+    return Vector2d();
+  }
+
+  //apply Sobel Operator on (pointX, pointY)
+  //and calculate gradient in x and y direction by that means
+  
+  Vector2d gradientU;
+  gradientU.x =
+       (int)getImage().getU(point.x-2, point.y+2)
+    +2*(int)getImage().getU(point.x  , point.y+2)
+    +  (int)getImage().getU(point.x+2, point.y+2)
+    -  (int)getImage().getU(point.x-2, point.y-2)
+    -2*(int)getImage().getU(point.x  , point.y-2)
+    -  (int)getImage().getU(point.x+2, point.y-2);
+
+  gradientU.y =
+       (int)getImage().getU(point.x-2, point.y-2)
+    +2*(int)getImage().getU(point.x-2, point.y  )
+    +  (int)getImage().getU(point.x-2, point.y+2)
+    -  (int)getImage().getU(point.x+2, point.y-2)
+    -2*(int)getImage().getU(point.x+2, point.y  )
+    -  (int)getImage().getU(point.x+2, point.y+2);
+
+
+  Vector2d gradientV;
+  gradientV.x =
+       (int)getImage().getV(point.x-2, point.y+2)
+    +2*(int)getImage().getV(point.x  , point.y+2)
+    +  (int)getImage().getV(point.x+2, point.y+2)
+    -  (int)getImage().getV(point.x-2, point.y-2)
+    -2*(int)getImage().getV(point.x  , point.y-2)
+    -  (int)getImage().getV(point.x+2, point.y-2);
+
+  gradientV.y =
+       (int)getImage().getV(point.x-2, point.y-2)
+    +2*(int)getImage().getV(point.x-2, point.y  )
+    +  (int)getImage().getV(point.x-2, point.y+2)
+    -  (int)getImage().getV(point.x+2, point.y-2)
+    -2*(int)getImage().getV(point.x+2, point.y  )
+    -  (int)getImage().getV(point.x+2, point.y+2);
+
+  //calculate the angle of the gradient
+  return (gradientV - gradientU).normalize();
+}

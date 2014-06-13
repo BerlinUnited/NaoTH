@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "Tools/naoth_opencv.h"
+#include "Tools/ImageProcessing/Edgel.h"
 
 BEGIN_DECLARE_MODULE(GoalFeatureDetector)
   REQUIRE(Image)
@@ -112,6 +113,9 @@ private:
     double colorRegionDeviation;
   };
 
+
+private:
+
   Parameters params;
 
   template<typename V, int SIZE>
@@ -158,9 +162,22 @@ private:
     }
   };
 
-  void findFeatureCandidates(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
+  void findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
   void findfeatures(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY);
+  Vector2d calculateGradientUV(const Vector2i& point) const;
 
+  double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2) const
+  {
+    double s = 0.0;
+    if(e1.direction*e2.direction > 0) {
+      Vector2d v = (e2.point - e1.point).rotateRight().normalize();
+      s = 1.0-0.5*(fabs(e1.direction*v) + fabs(e2.direction*v));
+    }
+
+    return s;
+  }
+
+private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(GoalFeatureDetector, Image);
   DOUBLE_CAM_REQUIRE(GoalFeatureDetector, CameraMatrix);
