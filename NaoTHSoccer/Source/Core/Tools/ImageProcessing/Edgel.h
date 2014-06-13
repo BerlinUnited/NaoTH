@@ -21,6 +21,19 @@ public:
   Vector2d direction;
 
   double angle; // deprecated
+
+  // calculate the simmilarity to the other edgel
+  // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
+  inline double sim(const EdgelT<T>& other) const
+  {
+    double s = 0.0;
+    if(direction*other.direction > 0) {
+      Vector2d v = (other.point - point).rotateRight().normalize();
+      s = 1.0-0.5*(fabs(direction*v) + fabs(other.direction*v));
+    }
+
+    return s;
+  }
 };
 
 typedef EdgelT<int> Edgel;
