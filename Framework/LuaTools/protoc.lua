@@ -129,7 +129,7 @@ function add_gcc_ignore_pragmas(files)
 		local content = f:read("*all")
 		f:close()
 		
-		local f = io.open(v, "wb")
+		local f = io.open(v, "w+")
 		f:write(prefix);
 		f:write(content);
 		f:write(suffix);
