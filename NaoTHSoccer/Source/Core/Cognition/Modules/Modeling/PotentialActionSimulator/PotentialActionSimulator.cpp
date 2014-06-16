@@ -29,6 +29,7 @@ PotentialActionSimulator::PotentialActionSimulator()
 
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:sensitivity", "", false);
 
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:best_action","best action",false);
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:my_pos","My Pos",false);
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:long_kick","Long Kick",false);
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:short_kick","Short Kick",false);
@@ -88,61 +89,46 @@ void PotentialActionSimulator::execute()
 
   //calculate the actions
 
+  double action_potential[5];
+  //action[0] = my_pos_potential;
+  //action[1] = action_long_kick_potential;
+  //action[2] = action_short_kick_potential;
+  //action[3] = action_sidekick_left_potential;
+  //action[4] = action_sidekick_right_potential;
+
   //first we get our potential to the goal, to see at the end if we can get our position better then yet
   Vector2<double> goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
   double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
 
   //calculation for long kick
-  Vector2<double> action_long_kick;
-  action_long_kick.x = 0;
-  action_long_kick.y = theParameters.action_long_kick_distance;
+  Vector2<double> action_kicks[5];
 
-  action_long_kick.rotate(getRobotPose().rotation);
+  action_kicks[0].x = 0;
+  action_kicks[0].y = 0;
 
-  double action_long_kick_potential = calculatePotential(getRobotPose().translation+action_long_kick, goal_target, obstacles);
+  action_kicks[1].x = theParameters.action_long_kick_distance;
+  action_kicks[1].y = 0;
+  action_kicks[1].rotate(getRobotPose().rotation);
 
-  //calculation for short kick
-  Vector2<double> action_short_kick;
-  action_short_kick.x = 0;
-  action_short_kick.y = theParameters.action_short_kick_distance;
+  action_kicks[2].x = theParameters.action_short_kick_distance;
+  action_kicks[2].y = 0;
+  action_kicks[2].rotate(getRobotPose().rotation);
 
-  action_short_kick.rotate(getRobotPose().rotation);
+  action_kicks[3].x = 0;
+  action_kicks[3].y = -theParameters.action_sidekick_distance;
+  action_kicks[3].rotate(getRobotPose().rotation);
 
-  double action_short_kick_potential = calculatePotential(getRobotPose().translation+action_short_kick, goal_target, obstacles);
-
-  //calculation for sidekick to left
-  Vector2<double> action_sidekick_left;
-  action_sidekick_left.x = -theParameters.action_sidekick_distance;
-  action_sidekick_left.y = 0;
-
-  action_sidekick_left.rotate(getRobotPose().rotation);
-
-  double action_sidekick_left_potential = calculatePotential(getRobotPose().translation+action_sidekick_left, goal_target, obstacles);
-
-  //calculation for sidekick to right
-  Vector2<double> action_sidekick_right;
-  action_sidekick_right.x = theParameters.action_sidekick_distance;
-  action_sidekick_right.y = 0;
-
-  action_sidekick_right.rotate(getRobotPose().rotation);
-
-  double action_sidekick_right_potential = calculatePotential(getRobotPose().translation+action_sidekick_right, goal_target, obstacles);
-
-  //compare our calculations
-
-  double action[5];
-  action[0] = my_pos_potential;
-  action[1] = action_long_kick_potential;
-  action[2] = action_short_kick_potential;
-  action[3] = action_sidekick_left_potential;
-  action[4] = action_sidekick_right_potential;
+  action_kicks[4].x = 0;
+  action_kicks[4].y = theParameters.action_sidekick_distance;
+  action_kicks[4].rotate(getRobotPose().rotation);
 
   int location = 0;
   double maximum = 0;
 
   for (int i = 0 ; i < 5 ; i++ ) {
-    if ( action[i] > maximum ){
-      maximum = action[i];
+	action_potential[i] = calculatePotential(getRobotPose().translation+action_kicks[i], goal_target, obstacles);
+    if ( action_potential[i] > maximum ){
+      maximum = action_potential[i];
       location = i;
     }
   }
@@ -158,7 +144,7 @@ void PotentialActionSimulator::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
-    CIRCLE(getRobotPose().translation.x+action_long_kick.x, getRobotPose().translation.y+action_long_kick.y, 50);
+    CIRCLE(getRobotPose().translation.x+action_kicks[1].x, getRobotPose().translation.y+action_kicks[1].y, 50);
   );
 
   
@@ -166,23 +152,30 @@ void PotentialActionSimulator::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_short_kick.x, getRobotPose().translation.y+action_short_kick.y, 50);
+	CIRCLE(getRobotPose().translation.x+action_kicks[2].x, getRobotPose().translation.y+action_kicks[2].y, 50);
   );
  
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_right",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_sidekick_right.x, getRobotPose().translation.y+action_sidekick_right.y, 50);
+	CIRCLE(getRobotPose().translation.x+action_kicks[3].x, getRobotPose().translation.y+action_kicks[3].y, 50);
   );
     
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_left",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_sidekick_left.x, getRobotPose().translation.y+action_sidekick_left.y, 50);
+	CIRCLE(getRobotPose().translation.x+action_kicks[4].x, getRobotPose().translation.y+action_kicks[4].y, 50);
   );
 
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:best_action",
+    FIELD_DRAWING_CONTEXT;
+    PEN("F0F0F0", 1);
+
+
+	CIRCLE(getRobotPose().translation.x+action_kicks[location].x, getRobotPose().translation.y+action_kicks[location].y, 50);
+  );
   
   // ATTENTION: PREVIEW
   // while aplying preview consider following facts:
