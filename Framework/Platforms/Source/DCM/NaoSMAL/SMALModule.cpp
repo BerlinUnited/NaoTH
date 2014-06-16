@@ -46,9 +46,8 @@ static void motion_wrapper_post()
 }
 //
 
-void* shutdownCallback(void* ref)
+void* shutdownCallback(void* /*ref*/)
 {
-
   // play a sound that the user knows we recognized his shutdown request
   system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
 
@@ -82,7 +81,7 @@ int time_motionCallbackPost = 0;
 
 int current_line = 0;
 
-void* debug_wrapper(void* ref)
+void* debug_wrapper(void* /*ref*/)
 {
   while(true)
   {

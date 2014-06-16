@@ -33,10 +33,6 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
-//#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/Stopwatch.h"
-
-
 struct buffer
 {
   void * start;
@@ -55,12 +51,13 @@ struct buffer
  *
  */
 
- namespace naoth{
+namespace naoth {
 
 class V4lCameraHandler
 {
 public:
   V4lCameraHandler();
+  virtual ~V4lCameraHandler();
 
   void init(std::string camDevice = "/dev/video1",
             CameraInfo::CameraID camID = CameraInfo::Bottom,
@@ -73,8 +70,6 @@ public:
 
   bool isRunning();
   void setAllCameraParams(const CameraSettings &data);
-
-  virtual ~V4lCameraHandler();
 
 private:
 
@@ -96,7 +91,7 @@ private:
   void closeDevice();
 
   int getSingleCameraParameter(int id);
-  int setSingleCameraParameter(int id, int value);
+  bool setSingleCameraParameter(int id, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
   std::string getErrnoDescription(int err);
@@ -120,7 +115,7 @@ private:
   /** Image buffers (v4l2) */
   struct buffer* buffers;
   /** Buffer number counter */
-  unsigned int n_buffers ;
+  unsigned int n_buffers;
 
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;

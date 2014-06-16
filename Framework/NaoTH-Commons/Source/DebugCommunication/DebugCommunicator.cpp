@@ -15,253 +15,20 @@
 #include <iostream>
 #include <sstream>
 
+#include <Tools/NaoTime.h>
+
 #include "DebugCommunicator.h"
 
 
 DebugCommunicator::DebugCommunicator()
-: serverSocket(NULL),
-connection(NULL),
-port(-1),
-fatalFail(false)
+  : 
+    serverSocket(NULL),
+    connection(NULL),
+    port(-1),
+    fatalFail(false),
+    time_of_last_message(0),
+    time_out_delta(5) // seconds
 {
-}
-
-void DebugCommunicator::init(unsigned short portNum)
-{
-  port = portNum;
-  
-  GError* err = internalInit();
-  if (err)
-  {
-    fatalFail = true;
-    g_warning("(DebugServer) No communication available. Error message:\n%s", err->message);
-  } else
-  {
-    g_debug("Port %d is ready for incoming connections ", port);
-  }
-
-}//end init
-
-GError* DebugCommunicator::internalInit()
-{
-  GError *err = NULL;
-  serverSocket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
-
-  if (err) return err;
-
-  g_socket_set_blocking(serverSocket, true);
-
-  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
-
-  g_socket_bind(serverSocket, socketAddress, true, &err);
-  if (err) return err;
-
-  g_socket_listen(serverSocket, &err);
-  if (err) return err;
-
-  return NULL;
-}
-
-bool DebugCommunicator::sendMessage(const char* data, size_t size)
-{
-  GError* err = internalSendMessage(data, size);
-  if (err)
-  {
-    g_warning("(SocketException in sendMessage) %s", err->message);
-    g_error_free(err);
-    return false;
-  }
-  return true;
-}//end sendMessage
-
-
-GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
-{
-  GError* err = NULL;
-  if (connection != NULL)
-  {
-    // send message size in 4 bytes
-    guint32 sizeFixed = static_cast<unsigned int> (size);
-    g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
-
-    gsize pos = 0;
-    while(err == NULL && connection != NULL && pos < size)
-    {
-      gsize length = size-pos;
-
-      gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
-      pos += sent;
-    }//end while
-
-    //if(pos > 0)
-      //std::cout << " s " << std::endl;
-  }//end if
-
-  return err;
-}//end sendMessage
-
-
-GString* DebugCommunicator::internalReadMessage(GError** err)
-{
-  *err = NULL;
-  if (connection != NULL)
-  {
-
-    guint32 sizeOfMessage = 0;
-    if(fatalFail) return NULL;
-
-    gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
-
-    if ( initialBytes==0 && (*err)==NULL )
-    {
-      throw "should return G_IO_ERROR_WOULD_BLOCK error";
-    }
-
-    if(initialBytes == 4)
-    {
-      if(sizeOfMessage > 0)
-      {
-        GString* buffer = g_string_new("");
-        g_string_set_size(buffer, sizeOfMessage);
-        g_assert(buffer->len == sizeOfMessage);
-
-        guint32 pos = 0;
-        // read message completly
-        while(!fatalFail && *err == NULL && pos < sizeOfMessage)
-        {
-          gssize read_bytes =
-              g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
-
-          if(read_bytes == 0)
-          {
-            g_string_free(buffer, true);
-            buffer = NULL;
-            // we got 0 bytes, this indicates
-            // an error in the connection (-1 is set if no data was available
-            // in non-blocking mode)
-            throw "Connection Error";
-
-          }
-            pos += static_cast<unsigned int> (read_bytes);
-        } // end while read bytes
-
-        //std::cout << " r ";
-
-        if(*err)
-        {
-          g_string_free(buffer, true);
-          return NULL;
-        }
-
-        return buffer;
-      }
-      else
-      {
-        //g_debug("keepalive received");
-        // keepalive message, ignore
-        return NULL;
-      } // end if sizeOfMessage > 0
-    } // end if header read
-  }//end if connection not null
-
-  return NULL;
-}
-GString* DebugCommunicator::readMessage()
-{
-  if (fatalFail)
-  {
-    throw "fatalFail";
-  }
-
-  GError* err = NULL;
-  GString* result = internalReadMessage(&err);
-  if(err)
-  {
-    if(err->code != G_IO_ERROR_WOULD_BLOCK)
-    {
-      std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
-      << err->message << std::endl;
-
-      if(result != NULL)
-      {
-        g_string_free(result,true);
-      }
-      throw "Socket Exception";
-    }
-    else
-    {
-      g_error_free(err);
-    }
-  }
-  return result;
-}//end triggerRead
-
-bool DebugCommunicator::connect(int timeout)
-{
-  GError* err = NULL;
-
-  if (connection == NULL)
-  {
-    // try to accept an eventually pending connection request
-    if (serverSocket != NULL)
-    {
-      if(timeout < 0)
-      {
-        g_socket_set_blocking(serverSocket, false);
-      }
-      else
-      {
-        g_socket_set_timeout(serverSocket, timeout);
-      }
-      connection = g_socket_accept(serverSocket, NULL, &err);
-      g_socket_set_blocking(serverSocket, true);
-      g_socket_set_timeout(serverSocket, 0);
-
-      if (err) return false;
-
-      if (connection != NULL)
-      {
-
-        GInetSocketAddress* remoteSocketAddr =
-          G_INET_SOCKET_ADDRESS(g_socket_get_remote_address(connection, &err));
-
-        if (err)
-        {
-          // cleanup
-          g_socket_close(connection, NULL);
-          g_object_unref(connection);
-          connection = NULL;
-          return false;
-        }
-        GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
-
-        char* addrString = g_inet_address_to_string(addr);
-        g_message("DebugServer port %d connected to %s", port, addrString);
-        g_free(addrString);
-        g_object_unref(remoteSocketAddr);
-
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-void DebugCommunicator::disconnect()
-{
-  if (connection != NULL)
-  {
-    g_socket_close(connection, NULL);
-    g_object_unref(connection);
-    connection = NULL;
-    std::cerr << "[DebugServer:port " << port << "] " << "disconnected" << std::endl;
-  }//end if
-}
-
-bool DebugCommunicator::isConnected()
-{
-  return connection != NULL;
 }
 
 DebugCommunicator::~DebugCommunicator()
@@ -274,4 +41,266 @@ DebugCommunicator::~DebugCommunicator()
     g_object_unref(serverSocket);
   }
 }
+
+void DebugCommunicator::init(unsigned short portNum)
+{
+  port = portNum;
+  
+  GError* err = internalInit();
+  if (err)
+  {
+    fatalFail = true;
+    std::cerr << "[DebugServer:port " << port << "] " << "No communication available. Error message:\n" << err->message << std::endl;
+  } else {
+    std::cout << "[DebugServer:port " << port << "] " << "is ready for incoming connections." << std::endl;
+  }
+}//end init
+
+GError* DebugCommunicator::internalInit()
+{
+  GError* err = NULL;
+
+  serverSocket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
+  if (err) { return err; }
+
+  g_socket_set_blocking(serverSocket, true);
+
+  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
+
+  g_socket_bind(serverSocket, socketAddress, true, &err);
+  if (err) { return err; }
+
+  g_socket_listen(serverSocket, &err);
+  if (err) { return err; }
+
+  return NULL;
+}
+
+bool DebugCommunicator::sendMessage(const char* data, size_t size)
+{
+  if (fatalFail) {
+    throw "fatalFail";
+  }
+
+  GError* err = internalSendMessage(data, size);
+  if (err)
+  {
+    std::cerr << "[DebugServer:port " << port << "] " << "SocketException in sendMessage: " << err->message << std::endl;
+    g_error_free(err);
+    return false;
+  }
+  return true;
+}//end sendMessage
+
+
+GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
+{
+  GError* err = NULL;
+  if (connection != NULL)
+  {
+    g_socket_set_blocking(connection, true);
+
+    // send message size in 4 bytes
+    guint32 sizeFixed = static_cast<unsigned int> (size);
+    g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
+
+    gsize pos = 0;
+    while(err == NULL && connection != NULL && pos < size)
+    {
+      gsize length = size-pos;
+
+      gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
+      pos += sent;
+    }
+  }
+
+  return err;
+}//end sendMessage
+
+
+GString* DebugCommunicator::readMessage()
+{
+  if (fatalFail) {
+    throw "fatalFail";
+  }
+
+  GError* err = NULL;
+  GString* result = internalReadMessage(&err);
+
+  if(err)
+  {
+    if(err->code != G_IO_ERROR_WOULD_BLOCK)
+    {
+      std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
+                << err->message << std::endl;
+      g_error_free(err);
+
+      if(result != NULL) {
+        g_string_free(result,true);
+      }
+      
+      throw "Socket Exception";
+    }
+    else
+    {
+      g_error_free(err);
+    }
+  }
+  return result;
+}//end readMessage
+
+GString* DebugCommunicator::internalReadMessage(GError** err)
+{
+  *err = NULL;
+  if (connection == NULL) {
+    return NULL;
+  }
+
+  gint32 sizeOfMessage = 0;
+  gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
+
+  // nothing to read
+  if ( initialBytes == -1 ) {
+    // no data was received for a while, time out
+    unsigned long long current_time = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    if( time_of_last_message > 0 && 
+        time_out_delta > 0 && 
+        current_time > time_of_last_message + time_out_delta*1000 ) 
+    {
+      throw "connection timed out";
+    }
+
+    return NULL;
+  }
+
+  if(initialBytes != 4) {
+    throw "wrong message size";
+  }
+
+  // some data was received, so keep the connection alive
+  time_of_last_message = naoth::NaoTime::getSystemTimeInMilliSeconds();
+
+  // heartbeat message, ignore
+  if(sizeOfMessage == -1) { 
+    // std::cout << "heartbeat received" << std::endl;
+    return NULL;
+  }
+
+  if(sizeOfMessage > 0)
+  {
+    GString* buffer = g_string_new("");
+    g_string_set_size(buffer, sizeOfMessage);
+    g_assert(buffer->len == (guint32)sizeOfMessage);
+
+    // read message completly
+    guint32 pos = 0;
+    while(*err == NULL && pos < (guint32)sizeOfMessage)
+    {
+      gssize read_bytes =
+          g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
+
+      if(read_bytes == 0)
+      {
+        g_string_free(buffer, true);
+        buffer = NULL;
+        // we got 0 bytes, this indicates
+        // an error in the connection (-1 is set if no data was available
+        // in non-blocking mode)
+        throw "Connection Error";
+      }
+      pos += static_cast<unsigned int> (read_bytes);
+    }
+
+    if(*err) {
+      g_string_free(buffer, true);
+      return NULL;
+    }
+
+    return buffer;
+  }
+
+  return NULL;
+}
+
+
+bool DebugCommunicator::connect(int timeout)
+{
+  GError* err = NULL;
+
+  // TODO: use isConnected()?
+  // already connected
+  if (connection != NULL) {
+    return true;
+  }
+
+  // TODO: throw?
+  // not initialized
+  if (serverSocket == NULL) {
+    return false;
+  }
+
+  // prepare the server socket
+  if(timeout < 0) {
+    g_socket_set_blocking(serverSocket, false);
+  } else {
+    g_socket_set_blocking(serverSocket, true);
+    g_socket_set_timeout(serverSocket, timeout);
+  }
+
+  // try to accept an eventually pending connection request
+  connection = g_socket_accept(serverSocket, NULL, &err);
+
+  // TODO: throw?
+  if (err) {
+    return false;
+  }
+
+  if (connection != NULL)
+  {
+    GInetSocketAddress* remoteSocketAddr = 
+      G_INET_SOCKET_ADDRESS(g_socket_get_remote_address(connection, &err));
+
+    if (err)
+    {
+      // cleanup
+      g_socket_close(connection, NULL);
+      g_object_unref(connection);
+      connection = NULL;
+      return false;
+    }
+
+    // print the address
+    GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
+    char* addrString = g_inet_address_to_string(addr);
+    std::cout << "[DebugServer:port " << port << "] " << "connected to " << addrString << std::endl;
+    g_free(addrString);
+    g_object_unref(remoteSocketAddr);
+
+    // init the time stamp for the time out
+    time_of_last_message = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    g_socket_set_timeout(connection, time_out_delta);
+
+    return true;
+  }
+
+  return false;
+}
+
+void DebugCommunicator::disconnect()
+{
+  if (connection != NULL)
+  {
+    g_socket_close(connection, NULL);
+    g_object_unref(connection);
+    connection = NULL;
+    std::cerr << "[DebugServer:port " << port << "] " << "disconnected" << std::endl;
+  }
+}
+
+bool DebugCommunicator::isConnected()
+{
+  return connection != NULL && g_socket_is_connected(connection);
+}
+
 

@@ -257,8 +257,8 @@ void LineGraphProvider::calculatePairsAndNeigbors(
         // update neigbors
         if(s > threshold) 
         {
-          int idx_left = edgelTwo.id < edgelOne.id ? j : i;
-          int idx_right = edgelTwo.id < edgelOne.id ? i : j;
+          int idx_left = edgelTwo.id < edgelOne.id ? (int)j : (int)i;
+          int idx_right = edgelTwo.id < edgelOne.id ? (int)i : (int)j;
 
           Neighbors& left_node = neighbors[idx_left];
           Neighbors& right_node = neighbors[idx_right];

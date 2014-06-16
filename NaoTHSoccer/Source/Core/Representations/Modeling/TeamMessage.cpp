@@ -11,7 +11,7 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
   naothmessages::TeamMessageCollection collection;
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator it=r.data.begin();
-      it != r.data.end(); it++)
+      it != r.data.end(); ++it)
   {
     const TeamMessage::Data& d = it->second;
     naothmessages::TeamMessage* msg = collection.add_data();

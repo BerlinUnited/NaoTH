@@ -64,14 +64,11 @@ public:
     double leftFootHeight = theKinematicChain.theLinks[KinematicChain::LFoot].p.z;
     double rightFootHeight = theKinematicChain.theLinks[KinematicChain::RFoot].p.z;
 
-    bool leftFootTouch = false;
-    bool rightFootTouch = false;
-
-    rightFootTouch = !(rightFootHeight > leftFootHeight + 5);
-    leftFootTouch = !(leftFootHeight > rightFootHeight + 5);
+    bool leftFootTouch = !(leftFootHeight > rightFootHeight + 5);
+    bool rightFootTouch = !(rightFootHeight > leftFootHeight + 5);
 
     // predict
-    Vector2<double> p;
+    Vector2d p;
     p[0] = theRightFootTouchDetector.isTouch();
     p[1] = theLeftFootTouchDetector.isTouch();
 
@@ -81,7 +78,7 @@ public:
 
     predictionBuffer.add(p);
     
-    Vector2<double> mean = predictionBuffer.getAverage();
+    Vector2d mean = predictionBuffer.getAverage();
 
     PLOT("FootTouchCalibrator:target:left", leftFootTouch);
     PLOT("FootTouchCalibrator:prediction:left", p[1]);

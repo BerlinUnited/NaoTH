@@ -20,10 +20,11 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
   #ifdef WIN32
     LARGE_INTEGER highPerformanceTick;
     LARGE_INTEGER freq;
-    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq))
-    {
+    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq)) {
       double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
       return (unsigned long long) (inSeconds * 1000000.0);
+    } else {
+      return 0;
     }
   #else
   #ifdef NAO
@@ -33,14 +34,13 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
   #else
     struct timeval t;
     int returnval = gettimeofday(&t, NULL);
-    if(returnval == 0)
-    {
+    if(returnval == 0) {
       return ((unsigned long long)t.tv_sec) * long_million + ((unsigned long long)t.tv_usec);
+    } else {
+      return 0;
     }
   #endif
   #endif
-
-  return 0;
 }//end getSystemTimeInMicroSeconds
 
 
@@ -49,10 +49,11 @@ unsigned long long NaoTime::getSystemTimeInMilliSeconds()
   #ifdef WIN32
     LARGE_INTEGER highPerformanceTick;
     LARGE_INTEGER freq;
-    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq))
-    {
+    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq)) {
       double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
       return (unsigned long long) (inSeconds * 1000.0);
+    } else {
+      return 0;
     }
   #else
   #ifdef NAO
@@ -62,18 +63,17 @@ unsigned long long NaoTime::getSystemTimeInMilliSeconds()
   #else
     struct timeval t;
     int returnval = gettimeofday(&t, NULL);
-    if(returnval == 0)
-    {
+    if(returnval == 0) {
       return ((unsigned long long)t.tv_sec) * long_thousand + ((unsigned long long)t.tv_usec) / long_thousand;
+    } else {
+      return 0;
     }
   #endif
   #endif
-
-  return 0;
 }//end getSystemTimeInMilliSeconds
 
 
 unsigned int NaoTime::getNaoTimeInMilliSeconds()
 {
   return (unsigned int) (getSystemTimeInMilliSeconds() - startingTimeInMilliSeconds);
-}//end getNaoTimeInMilliSeconds
+}
