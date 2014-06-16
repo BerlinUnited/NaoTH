@@ -84,8 +84,8 @@ void PotentialActionSimulator::execute()
   //calculate the actions
 
   //first we get our potential to the goal, to see at the end if we can get our position better then yet
-  Vector2<double> target = getGoalTarget(getRobotPose().translation, oppGoalModel);
-  double my_pos_potential = calculatePotential(getRobotPose().translation, target, obstacles);
+  Vector2<double> goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
+  double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
 
   //calculation for long kick
   Vector2<double> action_long_kick;
@@ -94,7 +94,7 @@ void PotentialActionSimulator::execute()
 
   action_long_kick.rotate(getRobotPose().rotation);
 
-  double action_long_kick_potential = calculatePotential(getRobotPose().translation+action_long_kick, target, obstacles);
+  double action_long_kick_potential = calculatePotential(getRobotPose().translation+action_long_kick, goal_target, obstacles);
 
   //calculation for short kick
   Vector2<double> action_short_kick;
@@ -103,7 +103,7 @@ void PotentialActionSimulator::execute()
 
   action_short_kick.rotate(getRobotPose().rotation);
 
-  double action_short_kick_potential = calculatePotential(getRobotPose().translation+action_short_kick, target, obstacles);
+  double action_short_kick_potential = calculatePotential(getRobotPose().translation+action_short_kick, goal_target, obstacles);
 
   //calculation for sidekick to left
   Vector2<double> action_sidekick_left;
@@ -112,7 +112,7 @@ void PotentialActionSimulator::execute()
 
   action_sidekick_left.rotate(getRobotPose().rotation);
 
-  double action_sidekick_left_potential = calculatePotential(getRobotPose().translation+action_sidekick_left, target, obstacles);
+  double action_sidekick_left_potential = calculatePotential(getRobotPose().translation+action_sidekick_left, goal_target, obstacles);
 
   //calculation for sidekick to right
   Vector2<double> action_sidekick_right;
@@ -121,7 +121,7 @@ void PotentialActionSimulator::execute()
 
   action_sidekick_right.rotate(getRobotPose().rotation);
 
-  double action_sidekick_right_potential = calculatePotential(getRobotPose().translation+action_sidekick_right, target, obstacles);
+  double action_sidekick_right_potential = calculatePotential(getRobotPose().translation+action_sidekick_right, goal_target, obstacles);
 
   //compare our calculations
 
@@ -133,15 +133,44 @@ void PotentialActionSimulator::execute()
   action[4] = action_sidekick_right_potential;
 
   int location = 0;
-  double max = 0;
+  double maximum = 0;
 
   for (int i = 0 ; i < 5 ; i++ ) {
-    if ( action[i] < max ){
-      max = action[i];
+    if ( action[i] > maximum ){
+      maximum = action[i];
       location = i;
     }
-  } 
+  }
+  
+   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:long_kick",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
 
+    CIRCLE(getRobotPose().translation.x+action_long_kick.x, getRobotPose().translation.y+action_long_kick.y, 50);
+  );
+
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:short_kick",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+
+	CIRCLE(getRobotPose().translation.x+action_short_kick.x, getRobotPose().translation.y+action_short_kick.y, 50);
+  );
+
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_right",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 1);
+
+	CIRCLE(getRobotPose().translation.x+action_sidekick_right.x, getRobotPose().translation.y+action_sidekick_right.y, 50);
+  );
+
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_left",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 1);
+
+	CIRCLE(getRobotPose().translation.x+action_sidekick_left.x, getRobotPose().translation.y+action_sidekick_left.y, 50);
+  );
+
+  
   // ATTENTION: PREVIEW
   // while aplying preview consider following facts:
   // - transformation has to be applied to all points involved in the calculations
@@ -302,7 +331,7 @@ void PotentialActionSimulator::execute()
   );
 
 
-
+  
   DEBUG_REQUEST("PotentialActionSimulator:draw_potential_field:sensitivity",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
