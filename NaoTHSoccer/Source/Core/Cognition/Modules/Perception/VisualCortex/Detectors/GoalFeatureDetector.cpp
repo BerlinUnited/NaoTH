@@ -267,7 +267,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
           edgel.point = Vector2d(peak_point_max + peak_point_min)*0.5;
           edgel.direction = (gradientBegin - gradientEnd).normalize();
 
-          getGoalFeaturePercept().edgel_features[scanId].push_back(edgel);
+          features.push_back(edgel);
         }
 
         begin_found = false;
