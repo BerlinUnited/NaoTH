@@ -81,6 +81,67 @@ void PotentialActionSimulator::execute()
   getRawAttackDirection().attackDirection = attackDirection;
 
 
+  //calculate the actions
+
+  //first we get our potential to the goal, to see at the end if we can get our position better then yet
+  Vector2<double> target = getGoalTarget(getRobotPose().translation, oppGoalModel);
+  double my_pos_potential = calculatePotential(getRobotPose().translation, target, obstacles);
+
+  //calculation for long kick
+  Vector2<double> action_long_kick;
+  action_long_kick.x = 0;
+  action_long_kick.y = theParameters.action_long_kick_distance;
+
+  action_long_kick.rotate(getRobotPose().rotation);
+
+  double action_long_kick_potential = calculatePotential(getRobotPose().translation+action_long_kick, target, obstacles);
+
+  //calculation for short kick
+  Vector2<double> action_short_kick;
+  action_short_kick.x = 0;
+  action_short_kick.y = theParameters.action_short_kick_distance;
+
+  action_short_kick.rotate(getRobotPose().rotation);
+
+  double action_short_kick_potential = calculatePotential(getRobotPose().translation+action_short_kick, target, obstacles);
+
+  //calculation for sidekick to left
+  Vector2<double> action_sidekick_left;
+  action_sidekick_left.x = -theParameters.action_sidekick_distance;
+  action_sidekick_left.y = 0;
+
+  action_sidekick_left.rotate(getRobotPose().rotation);
+
+  double action_sidekick_left_potential = calculatePotential(getRobotPose().translation+action_sidekick_left, target, obstacles);
+
+  //calculation for sidekick to right
+  Vector2<double> action_sidekick_right;
+  action_sidekick_right.x = theParameters.action_sidekick_distance;
+  action_sidekick_right.y = 0;
+
+  action_sidekick_right.rotate(getRobotPose().rotation);
+
+  double action_sidekick_right_potential = calculatePotential(getRobotPose().translation+action_sidekick_right, target, obstacles);
+
+  //compare our calculations
+
+  double action[5];
+  action[0] = my_pos_potential;
+  action[1] = action_long_kick_potential;
+  action[2] = action_short_kick_potential;
+  action[3] = action_sidekick_left_potential;
+  action[4] = action_sidekick_right_potential;
+
+  int location = 0;
+  double max = 0;
+
+  for (int i = 0 ; i < 5 ; i++ ) {
+    if ( action[i] < max ){
+      max = action[i];
+      location = i;
+    }
+  } 
+
   // ATTENTION: PREVIEW
   // while aplying preview consider following facts:
   // - transformation has to be applied to all points involved in the calculations

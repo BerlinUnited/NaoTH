@@ -61,7 +61,7 @@ public:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("PotentialFieldParameters")
+    Parameters() : ParameterList("PotentialActionParameters")
     {
       PARAMETER_REGISTER(goal_attractor_strength) = -0.001;
       PARAMETER_REGISTER(goal_post_offset) = 200.0;
@@ -70,6 +70,10 @@ public:
 
       PARAMETER_REGISTER(player_repeller_radius) = 2000;
       PARAMETER_REGISTER(player_repeller_strenth) = 1500;
+
+	  PARAMETER_REGISTER(action_sidekick_distance) = 2000;
+      PARAMETER_REGISTER(action_short_kick_distance) = 2500;
+	  PARAMETER_REGISTER(action_long_kick_distance) = 5000;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -90,6 +94,10 @@ public:
     double player_repeller_radius;
     double player_repeller_strenth;
     
+	double action_sidekick_distance;
+    double action_short_kick_distance;
+	double action_long_kick_distance;
+
   } theParameters;
 
 
