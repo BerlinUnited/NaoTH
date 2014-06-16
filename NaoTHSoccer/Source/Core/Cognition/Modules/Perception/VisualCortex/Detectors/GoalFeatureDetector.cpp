@@ -31,7 +31,8 @@ GoalFeatureDetector::GoalFeatureDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:markPeaks", "mark found maximum u-v peaks in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_response","..", false);  
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_difference","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_difference","..", false);
+
   getGoalFeaturePercept().reset(params.numberOfScanlines);
   getGoalFeaturePerceptTop().reset(params.numberOfScanlines);
 }
@@ -42,7 +43,6 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
   cameraID = id;
   CANVAS_PX(cameraID);
 
-	GT_TRACE("GoalFeatureDetector:start");
   Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
   Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
   Vector2d horizonDirection(1,0);
@@ -77,49 +77,42 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
   
   int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
   // image over the horizon
-  if(heightOfHorizon > (int) getImage().height() - 10) 
-  { 
+  if(heightOfHorizon > (int) getImage().height() - 10) {
     return false;
   }
-
-  // correct parameters
-  //minimal 2  or more at all points have to be found
-  if(params.numberOfScanlines < 2) {
-    return false;
-  }
-
-  GT_TRACE("GoalFeatureDetector:initializeScan");
   
   // clamp the scanline
   p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().height() - imageBorderOffset - 5);
   p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
   
-  // adjust the vectors if the parameters change
-  if((int)getGoalFeaturePercept().features.size() != params.numberOfScanlines) {
-    getGoalFeaturePercept().reset(params.numberOfScanlines);
+
+  // correct parameters
+  // minimal 2  or more at all points have to be found
+  if(params.numberOfScanlines < 2) {
+    return false;
   }
+
+  // adjust the vectors if the parameters change
   if((int)getGoalFeaturePercept().edgel_features.size() != params.numberOfScanlines) {
     getGoalFeaturePercept().edgel_features.resize(params.numberOfScanlines);
   }
 
   // clear the old features
   for(int i = 0; i < params.numberOfScanlines; i++) {
-     getGoalFeaturePercept().features[i].clear();
      getGoalFeaturePercept().edgel_features[i].clear();
   }
 
   //find feature that are candidates for goal posts along scanlines 
-  //findfeatures(horizonDirection, p1, params.thresholdUV, params.thresholdY);
-  findfeaturesColor(horizonDirection, p1, params.thresholdUV, params.thresholdY);
+  //findfeaturesDiff(horizonDirection, p1);
+  findfeaturesColor(horizonDirection, p1);
 
   return true;
 }//end execute
 
 
-void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
+void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1)
 {
   int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
-
   int start = (int) p1.y - offset;
   int stop = (int) p1.y + offset;
 
@@ -134,6 +127,8 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
   int y = start;
   for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
+    std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
+
     y += params.scanlinesDistance;
     Vector2i pos((int) p1.x + 2, y);
     Pixel pixel;
@@ -155,7 +150,8 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         continue;
       }
 
-      if(!begin_found) {
+      if(!begin_found)
+      {
 
         if(filter.value() > params.thresholdUV)
         {
@@ -182,16 +178,15 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         Vector2d gradientEnd = calculateGradientUV(end);
         LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
 
-        double t_gradient = 0.5;
-        MODIFY("t_gradient",t_gradient);
-        if(fabs(gradientBegin*gradientEnd) > t_gradient) {
+        if(fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
+        {
           LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
 
           EdgelT<double> edgel;
           edgel.point = Vector2d(begin + end)*0.5;
           edgel.direction = (gradientBegin - gradientEnd).normalize();
           
-          getGoalFeaturePercept().edgel_features[scanId].push_back(edgel);
+          features.push_back(edgel);
         }
 
         begin_found = false;
@@ -201,7 +196,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
 }//end findfeatures
 
 
-void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& p1, double threshold, double thresholdY)
+void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector2d& p1)
 {
   int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
 
@@ -219,6 +214,8 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
   int y = start;
   for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
+    std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
+
     y += params.scanlinesDistance;
     Vector2i pos((int) p1.x + 2, y);
     Pixel pixel;
@@ -227,16 +224,12 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
     Filter<Diff,Vector2i,double> filter;
 
     // initialize the scanner
-    double t_edge = 12;
-    MODIFY("t_edge",t_edge);
     Vector2i peak_point_max(pos);
     Vector2i peak_point_min(pos);
-    MaximumScan<Vector2i,double> positiveScan(peak_point_max, t_edge);
-    MaximumScan<Vector2i,double> negativeScan(peak_point_min, t_edge);
+    MaximumScan<Vector2i,double> positiveScan(peak_point_max, params.thresholdUVGradient);
+    MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdUVGradient);
 
     bool begin_found = false;
-    double t_gradient = 0.8;
-    MODIFY("t_gradient",t_gradient);
 
     while(scanner.getNextWithCheck(pos)) 
     {
@@ -265,7 +258,8 @@ void GoalFeatureDetector::findfeatures(const Vector2d& scanDir, const Vector2d& 
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
 
         // double edgel
-        if(begin_found && fabs(gradientBegin*gradientEnd) > t_gradient) {
+        if(begin_found && fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
+        {
           LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
           POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
 
