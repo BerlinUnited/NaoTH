@@ -29,6 +29,11 @@ PotentialActionSimulator::PotentialActionSimulator()
 
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:sensitivity", "", false);
 
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:my_pos","My Pos",false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:long_kick","Long Kick",false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:short_kick","Short Kick",false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:sidekick_right","Sidekick right",false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:sidekick_left","Sidekick left",false);
 }
 
 
@@ -141,7 +146,14 @@ void PotentialActionSimulator::execute()
       location = i;
     }
   }
-  
+
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:my_pos",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+
+    CIRCLE(getRobotPose().translation.x, getRobotPose().translation.y, 50);
+  );
+
    DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:long_kick",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
@@ -149,20 +161,21 @@ void PotentialActionSimulator::execute()
     CIRCLE(getRobotPose().translation.x+action_long_kick.x, getRobotPose().translation.y+action_long_kick.y, 50);
   );
 
+  
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:short_kick",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
 	CIRCLE(getRobotPose().translation.x+action_short_kick.x, getRobotPose().translation.y+action_short_kick.y, 50);
   );
-
+ 
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_right",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
 
 	CIRCLE(getRobotPose().translation.x+action_sidekick_right.x, getRobotPose().translation.y+action_sidekick_right.y, 50);
   );
-
+    
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_left",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
