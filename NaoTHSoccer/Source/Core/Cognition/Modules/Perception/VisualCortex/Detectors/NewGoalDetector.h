@@ -12,9 +12,6 @@
 #include <ModuleFramework/Module.h>
 
 #include <Representations/Infrastructure/Image.h>
-#include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/FieldColorPercept.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/GoalFeaturePercept.h"
@@ -22,12 +19,7 @@
 #include "Representations/Perception/FieldPercept.h"
 
 // tools
-#include "Tools/Math/Matrix_nxn.h"
-#include "Tools/Math/Matrix_mxn.h"
-
 #include "Tools/DoubleCamHelpers.h"
-#include <Tools/DataStructures/RingBuffer.h>
-#include <Tools/DataStructures/RingBufferWithSum.h>
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -37,19 +29,19 @@
 #include "Tools/naoth_opencv.h"
 
 BEGIN_DECLARE_MODULE(NewGoalDetector)
+  REQUIRE(FrameInfo)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
-  REQUIRE(ArtificialHorizon)
-  REQUIRE(ArtificialHorizonTop)
+  //REQUIRE(CameraMatrix)
+  //REQUIRE(CameraMatrixTop)
+  //REQUIRE(ArtificialHorizon)
+  //REQUIRE(ArtificialHorizonTop)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
 
-  REQUIRE(FieldColorPercept)
-  REQUIRE(FieldColorPerceptTop)
-  REQUIRE(FrameInfo)
+  //REQUIRE(FieldColorPercept)
+  //REQUIRE(FieldColorPerceptTop)
   
   REQUIRE(GoalFeaturePercept)
   REQUIRE(GoalFeaturePerceptTop)
@@ -88,12 +80,8 @@ public:
   }
 
 private:
-  static const int imageBorderOffset = 5;
   CameraInfo::CameraID cameraID;
 
-  RingBuffer<Vector2i, 5> pointBuffer;
-  RingBufferWithSum<double, 5> valueBuffer;
-  RingBufferWithSum<double, 5> valueBufferY;
 
   class Parameters: public ParameterList
   {
@@ -101,19 +89,8 @@ private:
 
     Parameters() : ParameterList("NewGoalDetectorParameters")
     {
-      //PARAMETER_REGISTER(numberOfScanlines) = 5;
-      //PARAMETER_REGISTER(scanlinesDistance) = 6;
       PARAMETER_REGISTER(thresholdUV) = 60;
-      PARAMETER_REGISTER(thresholdY) = 140;
-
-      PARAMETER_REGISTER(maxFeatureDeviation) = 5;
-      PARAMETER_REGISTER(maxFootScanSquareError) = 4.0;
       PARAMETER_REGISTER(minGoodPoints) = 3;
-      PARAMETER_REGISTER(footGreenScanSize) = 10;
-      PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
-      PARAMETER_REGISTER(enableFeatureWidthCheck) = false;
-      PARAMETER_REGISTER(enableGreenCheck) = false;
-
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
 
       syncWithConfig();
@@ -124,55 +101,12 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    //int numberOfScanlines;
-    //int scanlinesDistance;
     int thresholdUV;
-    int thresholdY;
-
-    int maxFeatureDeviation;
-    double maxFootScanSquareError;
     int minGoodPoints;
-
-    bool enableGreenCheck;
-    int footGreenScanSize; // number of pixels to scan for green below the footpoint
-    
-    double maxFeatureWidthError;
-    bool enableFeatureWidthCheck;
-
     double colorRegionDeviation;
   };
 
   Parameters params;
-
-  class ExtFeature
-  {
-  public:
-    Vector2i begin;
-    Vector2i center;
-    Vector2i end;
-
-    Vector2d responseAtBegin;
-    Vector2d responseAtEnd;
-
-    double width;
-
-    bool possibleObstacle;
-    bool used;
-
-    ExtFeature(const GoalFeaturePercept::Feature& feature)
-    :
-      begin(feature.begin),
-      center(feature.center),
-      end(feature.end),
-      responseAtBegin(feature.responseAtBegin),
-      responseAtEnd(feature.responseAtEnd),
-      width(0.0),
-      possibleObstacle(feature.possibleObstacle),
-      used(false)
-    {
-
-    }
-  };
 
   // NOTE: experimental
   class Cluster 
@@ -222,28 +156,18 @@ private:
     }
   };
 
-  std::vector<std::vector<ExtFeature> > features;
-  std::vector<ExtFeature> goodFeatures;
-
-  // NOTE: needed by checkForGoodFeatures (has to have the same size as features)
-  std::vector<int> lastTestFeatureIdx;
-
-  // NOTE: experimental
   void clusterEdgelFeatures();
+  std::vector<Cluster> clusters;
 
-  void checkForGoodFeatures(const Vector2d& scanDir, ExtFeature& candidate, int scanLineId, double threshold, double thresholdY);
-  void scanForFootPoints(const Vector2d& scanDir, Vector2i pos, double threshold, double thresholdY);
-  void scanForTopPoints(GoalPercept::GoalPost& post, Vector2i pos, double threshold, double thresholdY);
-  void scanForStatisticsToFootPoint(Vector2i footPoint, Vector2i pos);
   void debugStuff(CameraInfo::CameraID camID);
 
-  Math::Line fitLine(const std::vector<ExtFeature>& features) const;
+  Vector2i scanForEndPoint(const Vector2i& start, const Vector2d& direction) const;
 
   // double cam stuff
   DOUBLE_CAM_REQUIRE(NewGoalDetector, Image);
-  DOUBLE_CAM_REQUIRE(NewGoalDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(NewGoalDetector, ArtificialHorizon);
-  DOUBLE_CAM_REQUIRE(NewGoalDetector, FieldColorPercept);
+  //DOUBLE_CAM_REQUIRE(NewGoalDetector, CameraMatrix);
+  //DOUBLE_CAM_REQUIRE(NewGoalDetector, ArtificialHorizon);
+  //DOUBLE_CAM_REQUIRE(NewGoalDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(NewGoalDetector, FieldPercept);
   DOUBLE_CAM_REQUIRE(NewGoalDetector, GoalFeaturePercept);
 
