@@ -84,8 +84,6 @@ void MonteCarloSelfLocatorSimple::execute()
 
   if(parameters.treatLiftUp && motion_ok && body_lift_up) {
     state = KIDNAPPED;
-  } else if(state == KIDNAPPED) {
-    state = LOCALIZE;
   }
 
   bool motion_not_ok = getMotionStatus().currentMotion != motion::stand &&
@@ -97,9 +95,24 @@ void MonteCarloSelfLocatorSimple::execute()
   {
     if(parameters.treatInitState && (motion_not_ok || body_not_upright)) {
       state = BLIND;
-    } else {
-      state = LOCALIZE;
     }
+  }
+
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    switch(state) {
+      case KIDNAPPED: TEXT_DRAWING(0, 0, "KIDNAPPED"); break;
+      case BLIND: TEXT_DRAWING(0, 0, "BLIND"); break;
+      case LOCALIZE: TEXT_DRAWING(0, 0, "LOCALIZE"); break;
+      case TRACKING: TEXT_DRAWING(0, 0, "TRACKING"); break;
+      default: TEXT_DRAWING(0, 0, "DEFAULT");
+    }
+  );
+
+  static unsigned localize_start = getFrameInfo().getTime();
+  if(state != LOCALIZE) {
+    localize_start = getFrameInfo().getTime();
   }
 
   switch(state) 
@@ -107,11 +120,13 @@ void MonteCarloSelfLocatorSimple::execute()
     case KIDNAPPED:
     {
       resetLocator();
+      state = LOCALIZE;
       break;
     }
     case BLIND:
     {
       /* do nothing */
+      state = LOCALIZE;
       break;
     }
     case LOCALIZE:
@@ -120,7 +135,14 @@ void MonteCarloSelfLocatorSimple::execute()
     
       theSampleSet.resetLikelihood();
       updateBySensors(theSampleSet);
-      updateBySituation(theSampleSet);
+
+      if(parameters.updateBySituation) {
+        if(getGameData().gameState == GameData::set) {
+          updateByOwnHalf(theSampleSet);
+        } else {
+          updateByStartPositions(theSampleSet);
+        }
+      }
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
@@ -134,11 +156,14 @@ void MonteCarloSelfLocatorSimple::execute()
       Moments2<2> moments;
       Sample meanPose = mhBackendSet.meanOfCluster(moments, canopyClustering.getLargestClusterID());
 
-      if(moments.getRawMoment(0,0) > 0.8*mhBackendSet.size()) {
+      unsigned localize_time = getFrameInfo().getTimeSince(localize_start);
+
+      if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*mhBackendSet.size()) {
         theSampleSet = mhBackendSet; // todo: implement swap
         state = TRACKING;
       }
 
+      calculatePose(mhBackendSet);
       
       DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
         mhBackendSet.drawImportance();
@@ -152,6 +177,12 @@ void MonteCarloSelfLocatorSimple::execute()
 
       theSampleSet.resetLikelihood();
       updateBySensors(theSampleSet);
+
+      if(parameters.updateBySituation) {
+        if(getGameData().gameState == GameData::set) {
+          updateByOwnHalf(theSampleSet);
+        }
+      }
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
@@ -181,17 +212,6 @@ void MonteCarloSelfLocatorSimple::execute()
   /************************************
   * STEP VII: execude some debug requests (drawings)
   ************************************/
-
-  DEBUG_REQUEST("MCSLS:draw_state",
-    FIELD_DRAWING_CONTEXT;
-    switch(state) {
-      case KIDNAPPED: TEXT_DRAWING(0, 0, "KIDNAPPED"); break;
-      case BLIND: TEXT_DRAWING(0, 0, "BLIND"); break;
-      case LOCALIZE: TEXT_DRAWING(0, 0, "LOCALIZE"); break;
-      case TRACKING: TEXT_DRAWING(0, 0, "TRACKING"); break;
-      default: TEXT_DRAWING(0, 0, "DEFAULT");
-    }
-  );
 
   DEBUG_REQUEST("MCSLS:resample_sus",
     resampleSUS(theSampleSet, theSampleSet.size());
@@ -261,14 +281,6 @@ void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool no
   }
 }//end updateByOdometry
 
-void MonteCarloSelfLocatorSimple::updateBySituation(SampleSet& sampleSet) const
-{
-  if(getGameData().gameState == GameData::set) {
-    updateByOwnHalf(sampleSet);
-  } else {
-    updateByStartPositions(sampleSet);
-  }
-}
 
 bool MonteCarloSelfLocatorSimple::updateBySensors(SampleSet& sampleSet) const
 {
@@ -323,7 +335,8 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
     Vector2d expectedPostPosition;
 
     // each particle decides for itself
-    if(fabs(Math::normalize(sample.rotation + seenAngle)) < Math::pi_2)
+    //if(fabs(Math::normalize(sample.rotation + seenAngle)) < Math::pi_2)
+    if((sample*seenPost.position).x > 0)
     {
       leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
       rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
@@ -440,8 +453,8 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
   Vector2d startRight(startLeft.x, -startLeft.y);
   Vector2d endRight(endLeft.x, -endLeft.y);
 
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, 500, 0.1);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, 500, 0.1);
+  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
   for(unsigned int i = 0; i < sampleSet.size(); i++) {
     if(sampleSet[i].translation.y > 0) {
@@ -460,9 +473,6 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 {
-  double sigmaUpdateByOwnHalf = 0.6;
-  MODIFY("sigmaUpdateByOwnHalf", sigmaUpdateByOwnHalf);
-
   for(unsigned int s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
@@ -472,7 +482,7 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
     }
 
     double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, sigmaUpdateByOwnHalf);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
   }
 
   DEBUG_REQUEST("MCSLS:draw_state",

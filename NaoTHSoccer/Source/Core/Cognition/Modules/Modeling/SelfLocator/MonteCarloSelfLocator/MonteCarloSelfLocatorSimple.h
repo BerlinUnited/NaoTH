@@ -130,6 +130,10 @@ private: // local types
       PARAMETER_REGISTER(resetOwnHalf) = false;
       PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
       PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
+      
+      PARAMETER_REGISTER(updateBySituation) = true;
+      PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
+      PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
@@ -167,6 +171,10 @@ private: // local types
     bool resetOwnHalf;
     double downWeightFactorOwnHalf;
     double maxTimeForLiftUp;
+
+    bool updateBySituation;
+    double startPositionsSigmaDistance;
+    double startPositionsSigmaAngle;
 
     bool resampleSUS;
     bool resampleGT07;
@@ -230,7 +238,6 @@ private: // data members
 private: // workers
   void updateByOdometry(SampleSet& sampleSet, bool noise) const;
 
-  void updateBySituation(SampleSet& sampleSet) const;
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
