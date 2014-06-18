@@ -6,9 +6,18 @@ import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
 import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.Command;
 import java.awt.Color;
+import java.awt.DefaultKeyboardFocusManager;
+import java.awt.KeyEventPostProcessor;
+import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -29,26 +38,57 @@ public class GroundTruthCreator extends AbstractDialog
     public static RobotControl parent;  
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
+  /*  @InjectPlugin
+    public static Representation frameworkRepresentation;
+    */
   }//end Plugin
 
   private final Command getBallDataCommand = new Command("Cognition:representation:getbinary").addArg("BallPercept");
   private final Command getBallTopDataCommand = new Command("Cognition:representation:getbinary").addArg("BallPerceptTop");
+  private final Command getGoalTopDataCommand = new Command("Cognition:representation:getbinary").addArg("GoalPerceptTop");
+  private final Command getGoalDataCommand = new Command("Cognition:representation:getbinary").addArg("GoalPercept");
+  private final Command getFrameInfoCommand = new Command("Cognition:representation:getbinary").addArg("FrameInfo");
+          
+  
   
   private final BallDataListener ballTopListener = new BallDataListener(getBallTopDataCommand, true);
   private final BallDataListener ballListener = new BallDataListener(getBallDataCommand, false);
+  private final GoalDataListener goalListener =  new GoalDataListener(getGoalDataCommand, false);
+  private final GoalDataListener goalTopListener = new GoalDataListener(getGoalTopDataCommand, true);
+  private final FrameInfoListener frameInfoListener = new FrameInfoListener(getFrameInfoCommand);
+  
+  private final Map<Integer,Boolean> topBall,
+                               bottomBall,
+                               topGoal,
+                               bottomGoal;
+  
+ 
+  
 
 
     public GroundTruthCreator()
     {
-      initComponents();
-     // Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
-      //Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
+        this.topBall = new HashMap<>();
+        this.bottomBall = new HashMap<>();
+        this.topGoal = new HashMap<>();
+        this.bottomGoal = new HashMap<>();       
+        initComponents();
+        DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
+            addKeyEventPostProcessor(new GroundTruthKeyController());
 
     }
   
-    public void initListeners () {
-      Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
-      Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
+    public boolean initListeners () {
+        try {
+            Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
+            Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
+            Plugin.genericManagerFactory.getManager(getGoalDataCommand).addListener(goalListener);
+            Plugin.genericManagerFactory.getManager(getGoalTopDataCommand).addListener(goalTopListener);
+            Plugin.genericManagerFactory.getManager(getFrameInfoCommand).addListener(frameInfoListener);
+        } catch (java.nio.channels.NotYetConnectedException ex) {
+            return false;
+        }
+        return true;
     }
   
     @Override
@@ -56,6 +96,9 @@ public class GroundTruthCreator extends AbstractDialog
     {
         Plugin.genericManagerFactory.getManager(getBallDataCommand).removeListener(ballListener);
         Plugin.genericManagerFactory.getManager(getBallTopDataCommand).removeListener(ballTopListener);
+        Plugin.genericManagerFactory.getManager(getGoalDataCommand).removeListener(goalListener);
+        Plugin.genericManagerFactory.getManager(getGoalTopDataCommand).removeListener(goalTopListener);
+        Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(frameInfoListener);
     }
 
   /** This method is called from within the constructor to
@@ -79,11 +122,14 @@ public class GroundTruthCreator extends AbstractDialog
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton6 = new javax.swing.JRadioButton();
         jToggleButton3 = new javax.swing.JToggleButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jButton1 = new javax.swing.JButton();
 
-        jToggleButton1.setBackground(new java.awt.Color(255, 0, 51));
+        jToggleButton1.setBackground(new java.awt.Color(255, 0, 0));
         jToggleButton1.setSelected(true);
         jToggleButton1.setText("ball");
         jToggleButton1.setBorderPainted(false);
+        jToggleButton1.setEnabled(false);
         jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton1ActionPerformed(evt);
@@ -92,6 +138,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setText("no goalpost");
+        jRadioButton1.setEnabled(false);
         jRadioButton1.setOpaque(false);
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -101,6 +148,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup1.add(jRadioButton2);
         jRadioButton2.setText("1 goalpost");
+        jRadioButton2.setEnabled(false);
         jRadioButton2.setOpaque(false);
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,6 +158,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup1.add(jRadioButton3);
         jRadioButton3.setText("2 goalpost");
+        jRadioButton3.setEnabled(false);
         jRadioButton3.setOpaque(false);
         jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -121,10 +170,11 @@ public class GroundTruthCreator extends AbstractDialog
 
         jLabel2.setText("Bottom Camera:");
 
-        jToggleButton2.setBackground(new java.awt.Color(255, 0, 51));
+        jToggleButton2.setBackground(new java.awt.Color(255, 0, 0));
         jToggleButton2.setSelected(true);
         jToggleButton2.setText("ball");
         jToggleButton2.setBorderPainted(false);
+        jToggleButton2.setEnabled(false);
         jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton2ActionPerformed(evt);
@@ -133,6 +183,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup2.add(jRadioButton4);
         jRadioButton4.setText("no goalpost");
+        jRadioButton4.setEnabled(false);
         jRadioButton4.setOpaque(false);
         jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,6 +193,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup2.add(jRadioButton5);
         jRadioButton5.setText("1 goalpost");
+        jRadioButton5.setEnabled(false);
         jRadioButton5.setOpaque(false);
         jRadioButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -151,6 +203,7 @@ public class GroundTruthCreator extends AbstractDialog
 
         buttonGroup2.add(jRadioButton6);
         jRadioButton6.setText("2 goalpost");
+        jRadioButton6.setEnabled(false);
         jRadioButton6.setOpaque(false);
         jRadioButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -159,9 +212,26 @@ public class GroundTruthCreator extends AbstractDialog
         });
 
         jToggleButton3.setText("listen");
+        jToggleButton3.setToolTipText("");
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton3ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox1.setSelected(true);
+        jCheckBox1.setText("record");
+        jCheckBox1.setEnabled(false);
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("save");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -171,6 +241,7 @@ public class GroundTruthCreator extends AbstractDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -183,17 +254,20 @@ public class GroundTruthCreator extends AbstractDialog
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jToggleButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jRadioButton4)
+                            .addComponent(jRadioButton4, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jRadioButton6, javax.swing.GroupLayout.Alignment.LEADING)))
-                    .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
+                    .addComponent(jCheckBox1)
+                    .addComponent(jButton1))
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToggleButton3)
-                .addGap(14, 14, 14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -213,57 +287,103 @@ public class GroundTruthCreator extends AbstractDialog
                 .addComponent(jRadioButton5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton6)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        ballTopToggle();
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    private void ballTopToggle() {
         if (this.jToggleButton1.getBackground() == Color.red) {
             this.jToggleButton1.setBackground(Color.green);
         } else {
             this.jToggleButton1.setBackground(Color.red);
         }
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
-
+        if (this.jCheckBox1.isSelected()) {      
+            topBall.put(LogfilePlayer.getCurrentFrame(), jToggleButton1.isSelected());
+        } 
+    }
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-       
+            topGoal.put(LogfilePlayer.getCurrentFrame(), false);
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        
+            topGoal.put(LogfilePlayer.getCurrentFrame(), null);
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
- 
+            topGoal.put(LogfilePlayer.getCurrentFrame(), true);
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-        // TODO add your handling code here:
+            ballBottomToggle();
     }//GEN-LAST:event_jToggleButton2ActionPerformed
-
+    private void ballBottomToggle() {
+        if (this.jToggleButton2.getBackground() == Color.red) {
+            this.jToggleButton2.setBackground(Color.green);
+        } else {
+            this.jToggleButton2.setBackground(Color.red);
+        }
+        if (this.jCheckBox1.isSelected()) {
+            bottomBall.put(LogfilePlayer.getCurrentFrame(), jToggleButton2.isSelected());            
+        }    
+    }
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
-        // TODO add your handling code here:
+            bottomGoal.put(LogfilePlayer.getCurrentFrame(), null);
     }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     private void jRadioButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton5ActionPerformed
-        // TODO add your handling code here:
+            bottomGoal.put(LogfilePlayer.getCurrentFrame(), false);
     }//GEN-LAST:event_jRadioButton5ActionPerformed
 
     private void jRadioButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton6ActionPerformed
-        // TODO add your handling code here:
+            bottomGoal.put(LogfilePlayer.getCurrentFrame(), true);
     }//GEN-LAST:event_jRadioButton6ActionPerformed
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
        if (jToggleButton3.isSelected()) {
-            initListeners ();
+            if (!initListeners()) {
+                jToggleButton3.setSelected(false);
+                JOptionPane.showMessageDialog(null,"Not connected to Robot", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         } else {
             dispose();
         }
+        toggleButtons();
     }//GEN-LAST:event_jToggleButton3ActionPerformed
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String fileName = LogfilePlayer.getFileName();
+        fileName = fileName.substring(0,fileName.lastIndexOf(".")+1) + "gts" ;
+        ObjectOutputStream o;
+        try {
+            o = new ObjectOutputStream(new FileOutputStream
+                        (fileName,true));
+            o.writeObject(topBall);
+            o.writeObject(bottomBall);
+            o.writeObject(topGoal);
+            o.writeObject(bottomGoal);
+            o.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GroundTruthCreator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      		
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
@@ -276,47 +396,226 @@ public class GroundTruthCreator extends AbstractDialog
     private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JToggleButton jToggleButton3;
     // End of variables declaration//GEN-END:variables
-class BallDataListener implements ObjectListener<byte[]>
-    {      
-        
-        private final Command getBallDataCommand;
-        private boolean topCam;
-        
-        BallDataListener (Command getBallDataCommand, boolean topCam) {
-            this.getBallDataCommand = getBallDataCommand;
-            this.topCam = topCam;
-        }
-        
+class GroundTruthKeyController implements KeyEventPostProcessor 
+    {
         @Override
-        public void errorOccured(String cause) {
-            RobotHealth.Plugin.genericManagerFactory.getManager(getBallDataCommand).removeListener(this);
+        public boolean postProcessKeyEvent(KeyEvent e) {
+            
+            if(e.getID() != KeyEvent.KEY_PRESSED) {
+                return false;
+            }            
+            switch(e.getKeyChar()) {
+                case '9':
+                    GroundTruthCreator.this.jToggleButton1.setSelected(
+                                !GroundTruthCreator.this.jToggleButton1.isSelected());
+                    ballTopToggle();
+                    return true;
+                case '8':
+                    GroundTruthCreator.this.jToggleButton2.setSelected(
+                                !GroundTruthCreator.this.jToggleButton2.isSelected());
+                    ballBottomToggle();
+                    return true;                
+                case '7':
+                    topGoal.put(LogfilePlayer.getCurrentFrame(), null);
+                    GroundTruthCreator.this.jRadioButton1.setSelected(true);
+                    return true;
+                case '6':
+                    topGoal.put(LogfilePlayer.getCurrentFrame(), false); 
+                    GroundTruthCreator.this.jRadioButton2.setSelected(true);
+                    return true;
+                case '5':
+                    topGoal.put(LogfilePlayer.getCurrentFrame(), true);
+                    GroundTruthCreator.this.jRadioButton3.setSelected(true);
+                    return true;
+                case '4':                    
+                    bottomGoal.put(LogfilePlayer.getCurrentFrame(), null);
+                    GroundTruthCreator.this.jRadioButton4.setSelected(true);
+                    return true;
+                case '3':
+                    bottomGoal.put(LogfilePlayer.getCurrentFrame(), false);
+                    GroundTruthCreator.this.jRadioButton5.setSelected(true);
+                    return true;
+                case '2':
+                    bottomGoal.put(LogfilePlayer.getCurrentFrame(), false);
+                    GroundTruthCreator.this.jRadioButton6.setSelected(true);
+                    return true;
+            }
+            
+            return false;
         }
+  }
+    
+    class BallDataListener implements ObjectListener<byte[]>
+{  
+    private final Command getBallDataCommand;
+    private final boolean topCam;
 
-        @Override
-        public void newObjectReceived(byte[] object) 
-        {
-          try
-          {
-            Representations.BallPercept ballData = 
-                    Representations.BallPercept.parseFrom(object);
-            if (topCam) {
-                if (ballData.getBallWasSeen()) jToggleButton1.setBackground(Color.green);
-                else jToggleButton1.setBackground(Color.red); 
-            } else {
-                if (ballData.getBallWasSeen()) jToggleButton2.setBackground(Color.green);
-                else jToggleButton2.setBackground(Color.red);
-            }           
-          }
-          catch (InvalidProtocolBufferException ex)
-          {
-            //ex.printStackTrace();
-            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
-            errorOccured(ex.getMessage());
-            String msg = new String(object);
-            JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
-          }
-        }//end newObjectReceived
-    }//end class FSRDataListener
+    BallDataListener (Command getBallDataCommand, boolean topCam) {
+        this.getBallDataCommand = getBallDataCommand;
+        this.topCam = topCam;
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        RobotHealth.Plugin.genericManagerFactory.getManager(getBallDataCommand).removeListener(this);
+    }
+
+    @Override
+    public void newObjectReceived(byte[] object) 
+    {
+      try
+      {
+        Representations.BallPercept ballData = 
+                Representations.BallPercept.parseFrom(object);
+        if (topCam) {
+            if (ballData.getBallWasSeen()) jToggleButton1.setBackground(Color.green);
+            else jToggleButton1.setBackground(Color.red);
+            if (GroundTruthCreator.this.jCheckBox1.isSelected()) {
+                GroundTruthCreator.this.topBall.put(LogfilePlayer.getCurrentFrame(),
+                        ballData.getBallWasSeen());
+            }
+            
+        } else {
+            if (ballData.getBallWasSeen()) jToggleButton2.setBackground(Color.green);
+            else jToggleButton2.setBackground(Color.red);
+            if (GroundTruthCreator.this.jCheckBox1.isSelected()) {
+                GroundTruthCreator.this.bottomBall.put(LogfilePlayer.getCurrentFrame(),
+                        ballData.getBallWasSeen());
+            }
+        }           
+      }
+      catch (InvalidProtocolBufferException ex)
+      {
+        //ex.printStackTrace();
+        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
+        errorOccured(ex.getMessage());
+        String msg = new String(object);
+        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }//end newObjectReceived
+}//end class BallDataListener
+
+class GoalDataListener implements ObjectListener<byte[]> {
+    private final Command getGoalDataCommand;
+    private final boolean topCam;
+    
+    GoalDataListener (Command getGoalDataCommand, boolean topCam) {
+        this.getGoalDataCommand = getGoalDataCommand;
+        this.topCam = topCam;
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        RobotHealth.Plugin.genericManagerFactory.getManager(getGoalDataCommand).removeListener(this);
+    }
+
+    @Override
+    public void newObjectReceived(byte[] object) 
+    {
+      try
+      {
+        Representations.GoalPercept goalData = 
+                Representations.GoalPercept.parseFrom(object);
+        if (topCam) {
+            int postCount = goalData.getPostCount();
+            switch (postCount) {
+                case 0:
+                    jRadioButton1.setSelected(true);
+                    GroundTruthCreator.this.topGoal.put(LogfilePlayer.getCurrentFrame(), null);
+                    break;
+                case 1:
+                    jRadioButton2.setSelected(true);
+                    GroundTruthCreator.this.topGoal.put(LogfilePlayer.getCurrentFrame(), false);
+                    break;
+                case 2:
+                    jRadioButton3.setSelected(true);
+                    GroundTruthCreator.this.topGoal.put(LogfilePlayer.getCurrentFrame(), true);
+                    break;                   
+            }            
+        } else {
+            int postCount = goalData.getPostCount();
+            switch (postCount) {
+                case 0:
+                    jRadioButton4.setSelected(true);
+                    GroundTruthCreator.this.bottomGoal.put(LogfilePlayer.getCurrentFrame(), null);
+                    break;
+                case 1:
+                    jRadioButton5.setSelected(true);
+                    GroundTruthCreator.this.bottomGoal.put(LogfilePlayer.getCurrentFrame(), false);
+                    break;
+                case 2:
+                    jRadioButton6.setSelected(true);
+                    GroundTruthCreator.this.bottomGoal.put(LogfilePlayer.getCurrentFrame(), true);
+                    break;                   
+            }
+           
+        }           
+      }
+      catch (InvalidProtocolBufferException ex)
+      {
+        //ex.printStackTrace();
+        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
+        errorOccured(ex.getMessage());
+        String msg = new String(object);
+        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }//end newObjectReceived
+    
+   
+}//end class GoalDataListener
+
+
+class FrameInfoListener implements ObjectListener<byte[]>
+{  
+    private final Command getFrameInfoCommand; 
+    public int currentFrame = 0;
+
+    FrameInfoListener (Command getFrameInfoCommand) {
+        this.getFrameInfoCommand = getFrameInfoCommand;      
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        RobotHealth.Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(this);
+    }
+
+    @Override
+    public void newObjectReceived(byte[] object) 
+    {
+      try
+      {
+        FrameInfo frameInfo = 
+                FrameInfo.parseFrom(object);
+        this.currentFrame = frameInfo.getFrameNumber();
+               
+      }
+      catch (InvalidProtocolBufferException ex)
+      {
+        //ex.printStackTrace();
+        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
+        errorOccured(ex.getMessage());
+        String msg = new String(object);
+        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
+      }
+    }//end newObjectReceived
+}//end class FrameInfoListener
+
+ private void toggleButtons() {
+     boolean enabled = true;
+        if (this.jToggleButton1.isEnabled()) {
+            enabled = false;
+        }
+        this.jCheckBox1.setEnabled(enabled);
+        this.jRadioButton1.setEnabled(enabled);
+        this.jRadioButton2.setEnabled(enabled);
+        this.jRadioButton3.setEnabled(enabled);
+        this.jRadioButton4.setEnabled(enabled);
+        this.jRadioButton5.setEnabled(enabled);
+        this.jRadioButton6.setEnabled(enabled);
+        this.jToggleButton1.setEnabled(enabled);
+        this.jToggleButton2.setEnabled(enabled);
+        this.jButton1.setEnabled(enabled);
+    }
 
   
 }//end class GroundTruthCreator

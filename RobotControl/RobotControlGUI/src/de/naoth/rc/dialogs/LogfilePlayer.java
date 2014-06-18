@@ -1,4 +1,4 @@
-/*
+ /*
  * LogfileInspector.java
  *
  * Created on 06.08.2010, 17:01:29
@@ -11,6 +11,9 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.LogSimulator;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.KeyEventPostProcessor;
@@ -36,14 +39,21 @@ public class LogfilePlayer extends AbstractDialog
   public static class Plugin extends DialogPlugin<LogfilePlayer> {
     @InjectPlugin
     public static RobotControl parent;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
   }
     
+ 
+  private final Command getFrameInfoCommand = new Command("Cognition:representation:getbinary").addArg("FrameInfo");
     
   LogSimulator logSimulator = null;
   LogFileAutoPlay logFileAutoPlayer = null;
   private boolean autoSliderChange = false;
   private int minFrame;
-  private int maxFrame; 
+  private int maxFrame;
+  //Hack um FrameNumber zu bekommen
+  private static int currentFrame = -1;
+  private static String fileName = "";
   
   private static final String LAST_FILE_PATH_PROPERTY = "logfileplayer.last.file.path";
   
@@ -68,9 +78,17 @@ public class LogfilePlayer extends AbstractDialog
       
       DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
             addKeyEventPostProcessor(new LogfilePlayerKeyController());
+  }  
+  
+  public static int getCurrentFrame() {
+      return LogfilePlayer.currentFrame;
   }
   
-    class LogfilePlayerKeyController implements KeyEventPostProcessor 
+  public static String getFileName () {
+      return LogfilePlayer.fileName;
+  }
+    
+  class LogfilePlayerKeyController implements KeyEventPostProcessor 
     {
         @Override
         public boolean postProcessKeyEvent(KeyEvent e) {
@@ -82,9 +100,8 @@ public class LogfilePlayer extends AbstractDialog
             // stop the player first if necessary
             if((new String("awsdrlp")).indexOf(e.getKeyChar()) >= 0)
             {
-                if (logFileAutoPlayer != null && !logFileAutoPlayer.interrupted()) 
+                if (logFileAutoPlayer != null) 
                 {
-                    LogfilePlayer.this.logFileAutoPlayer.interrupt();
                     waitTillThreadsDeath();
                     
                     if(e.getKeyChar() == 'p' || e.getKeyChar() == 'l') {
@@ -95,10 +112,14 @@ public class LogfilePlayer extends AbstractDialog
             
             switch(e.getKeyChar()) {
                 case 'd':
+                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.stepForward();
+                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'a':
+                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.stepBack();
+                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'w':
                     autoSliderChange = true;
@@ -123,7 +144,7 @@ public class LogfilePlayer extends AbstractDialog
                     return true;
             }
             
-            return true;
+            return false;
         }
   }
   
@@ -155,6 +176,7 @@ public class LogfilePlayer extends AbstractDialog
         jLabel4 = new javax.swing.JLabel();
         logSlider = new javax.swing.JSlider();
         openButton = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -277,6 +299,13 @@ public class LogfilePlayer extends AbstractDialog
             }
         });
 
+        jCheckBox1.setText("sync");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -303,8 +332,10 @@ public class LogfilePlayer extends AbstractDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(logSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                        .addComponent(jCheckBox1))
+                    .addComponent(logSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,7 +353,8 @@ public class LogfilePlayer extends AbstractDialog
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jCheckBox1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fileNameLabel))
         );
@@ -355,24 +387,24 @@ public class LogfilePlayer extends AbstractDialog
             this.jLabel4.setText("max: " +maxFrame);
             this.logSlider.setEnabled(true);
             //this.openButton.setEnabled(false);
+            LogfilePlayer.fileName = openedFile.getAbsolutePath();
             connectToSimulator();
         }
       }
     }//GEN-LAST:event_openButtonActionPerformed
 
     private void logSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_logSliderStateChanged
-        Object o = evt.getSource();
-        
+        Object o = evt.getSource();        
         if (autoSliderChange){
             autoSliderChange = false;
         } else {            
-            if (logFileAutoPlayer!=null && !logFileAutoPlayer.isInterrupted()) {
-                 logFileAutoPlayer.interrupt();
+            if (logFileAutoPlayer!=null) {
                  waitTillThreadsDeath();
             }
             this.logSimulator.jumpTo(this.logSlider.getValue());                  
         }
         this.jLabel3.setText("cur: " +this.logSlider.getValue());
+        LogfilePlayer.currentFrame = this.logSlider.getValue(); 
         
     }//GEN-LAST:event_logSliderStateChanged
 
@@ -387,12 +419,11 @@ public class LogfilePlayer extends AbstractDialog
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (verifyStringInt(jTextField2.getText())) {
             jTextField2.setBackground(Color.white);
-            if (logFileAutoPlayer == null || logFileAutoPlayer.isInterrupted()) {            
-                logFileAutoPlayer = new  LogFileAutoPlay(this, Integer.parseInt(jTextField2.getText()));
+            if (logFileAutoPlayer == null) {            
+                logFileAutoPlayer = new LogFileAutoPlay(this, Integer.parseInt(jTextField2.getText()));
                 logFileAutoPlayer.start();
             }
             else {
-                logFileAutoPlayer.interrupt();               
                 waitTillThreadsDeath();
             }        
         } else {
@@ -403,8 +434,7 @@ public class LogfilePlayer extends AbstractDialog
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-         if (logFileAutoPlayer!=null && !logFileAutoPlayer.isInterrupted()) {
-             logFileAutoPlayer.interrupt();
+         if (logFileAutoPlayer!=null) {
              waitTillThreadsDeath();
          }
          logSimulator.jumpTo(logSimulator.getMinFrame());
@@ -421,8 +451,7 @@ public class LogfilePlayer extends AbstractDialog
             int frame = Integer.parseInt(jTextField1.getText());
             if (frame >= minFrame && frame <= maxFrame) { 
                 jTextField1.setBackground(Color.white);
-                if (logFileAutoPlayer!=null && !logFileAutoPlayer.isInterrupted()) {
-                    logFileAutoPlayer.interrupt();
+                if (logFileAutoPlayer!=null) {
                     waitTillThreadsDeath();
                 }
                 logSimulator.jumpTo(frame);
@@ -438,6 +467,14 @@ public class LogfilePlayer extends AbstractDialog
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        if(this.jCheckBox1.isSelected()) {
+            Plugin.genericManagerFactory.getManager(getFrameInfoCommand).addListener(this.frameFinfoListener);
+        } else {
+            Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(frameFinfoListener);
+        }
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFileChooser fileChooser;
@@ -445,6 +482,7 @@ public class LogfilePlayer extends AbstractDialog
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -461,7 +499,10 @@ public class LogfilePlayer extends AbstractDialog
       LogfilePlayer logfilePlayer;
       long stopTime;
       boolean loop;
-      int currentFrame;     
+      int currentFrame; 
+      
+      boolean isRunning = true;
+      
       LogFileAutoPlay (LogfilePlayer logfilePlayer) {
           this.logfilePlayer = logfilePlayer;
           this.logSimulator = this.logfilePlayer.logSimulator;
@@ -481,14 +522,26 @@ public class LogfilePlayer extends AbstractDialog
           this.stopTime = stopTime;
           this.currentFrame = this.logSimulator.getCurrentFrame();         
           this.loop = false;
-      }      
+      }    
+      
       @Override
       public void run () {
-          try {
-            while (!Thread.currentThread().isInterrupted()) {                
+          frameExecuted = true;
+            while (isRunning) {
+                /*
+                if(!frameExecuted) {
+                    try {
+                        LogFileAutoPlay.sleep(10);
+                    } catch (InterruptedException ex ) {
+                        break;
+                    }
+                    continue;
+                }*/
+                
                 if (currentFrame < logSimulator.getMaxFrame()) {
                     logSimulator.stepForward();                        
                     currentFrame++;
+                    frameExecuted = false;
                     autoSliderChange = true;
                     logfilePlayer.logSlider.setValue(currentFrame);                    
                  }
@@ -499,15 +552,20 @@ public class LogfilePlayer extends AbstractDialog
                          autoSliderChange = true;
                          logfilePlayer.logSlider.setValue(currentFrame);                         
                      } else {
-                         Thread.currentThread().interrupt();                         
+                         break;                        
                      }
                  }
-                 LogFileAutoPlay.sleep(stopTime);                 
+                
+                 try {
+                    LogFileAutoPlay.sleep(stopTime);
+                 } catch (InterruptedException ex ) {
+                     break;
+                 }
             }
-          }
-          catch (InterruptedException e) {
-              Thread.currentThread().interrupt();              
-          }
+      }
+      
+      public void stopPlay() {
+          this.isRunning = false;
       }
       
      /* @Override
@@ -530,12 +588,14 @@ public class LogfilePlayer extends AbstractDialog
     
     private void waitTillThreadsDeath() {
       try {
+          logFileAutoPlayer.stopPlay();
           logFileAutoPlayer.join();
       } catch (InterruptedException ex) {
           Logger.getLogger(LogfilePlayer.class.getName()).log(Level.SEVERE, null, ex);
           logFileAutoPlayer =  null;
+      } finally {
+        logFileAutoPlayer =  null;
       }
-      logFileAutoPlayer =  null;
     }
  
   private void connectToSimulator () {
@@ -563,6 +623,30 @@ public class LogfilePlayer extends AbstractDialog
             "ERROR", JOptionPane.ERROR_MESSAGE);
         }
   }
+  
+  
+  boolean frameExecuted = false;
+  FrameInfoListener frameFinfoListener = new FrameInfoListener(getFrameInfoCommand);
+  
+  class FrameInfoListener implements ObjectListener<byte[]>
+{  
+    private final Command getFrameInfoCommand; 
+
+    FrameInfoListener (Command getFrameInfoCommand) {
+        this.getFrameInfoCommand = getFrameInfoCommand;      
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        RobotHealth.Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(this);
+    }
+
+    @Override
+    public void newObjectReceived(byte[] object) 
+    {
+      frameExecuted = true;
+    }
+}//end class FrameInfoListener
   
 
   private class LogFileFilter extends javax.swing.filechooser.FileFilter
