@@ -10,6 +10,7 @@
 // Debug
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
+#include <limits.h>
 
 using namespace naoth;
 using namespace std;
@@ -62,7 +63,7 @@ void PotentialActionSimulator::execute()
 
   // calculate the target point to play the ball to based on the 
   // goal model and the ball model 
-  Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
+  Vector2d targetPoint = getGoalTarget(ballRelative, oppGoalModel);
   // preview
   targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
   // ----------
@@ -79,11 +80,11 @@ void PotentialActionSimulator::execute()
   );
 
   // get valide obstacles
-  std::list<Vector2<double> > obstacles = getValidObstacles();
+  std::list<Vector2d> obstacles = getValidObstacles();
 
 
   // calculate the potential field at the ball
-  Vector2<double> attackDirection = calculatePotentialField(ballRelative, targetPoint, obstacles);
+  Vector2d attackDirection = calculatePotentialField(ballRelative, targetPoint, obstacles);
   getRawAttackDirection().attackDirection = attackDirection;
 
 
@@ -97,41 +98,39 @@ void PotentialActionSimulator::execute()
   //action[4] = action_sidekick_right_potential;
 
   //first we get our potential to the goal, to see at the end if we can get our position better then yet
-  Vector2<double> goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
+  Vector2d goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
   double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
 
+
+  Vector2d ballPosition;
+
   //calculation for long kick
-  Vector2<double> action_kicks[5];
+  Vector2d action_kicks[5];
+  action_kicks[0] = ballPosition;
+  action_kicks[1] = ballPosition + Vector2d(theParameters.action_long_kick_distance, 0);
+  action_kicks[2] = ballPosition + Vector2d(theParameters.action_short_kick_distance, 0);
+  action_kicks[3] = ballPosition + Vector2d(0, -theParameters.action_sidekick_distance);
+  action_kicks[4] = ballPosition + Vector2d(0, theParameters.action_sidekick_distance);
 
-  action_kicks[0].x = 0;
-  action_kicks[0].y = 0;
+  int location = -1;
+  double minimum = std::numeric_limits<double>::max();
 
-  action_kicks[1].x = theParameters.action_long_kick_distance;
-  action_kicks[1].y = 0;
-  action_kicks[1].rotate(getRobotPose().rotation);
-
-  action_kicks[2].x = theParameters.action_short_kick_distance;
-  action_kicks[2].y = 0;
-  action_kicks[2].rotate(getRobotPose().rotation);
-
-  action_kicks[3].x = 0;
-  action_kicks[3].y = -theParameters.action_sidekick_distance;
-  action_kicks[3].rotate(getRobotPose().rotation);
-
-  action_kicks[4].x = 0;
-  action_kicks[4].y = theParameters.action_sidekick_distance;
-  action_kicks[4].rotate(getRobotPose().rotation);
-
-  int location = 0;
-  double maximum = 0;
+  FIELD_DRAWING_CONTEXT;
+  PEN("000000", 1);
 
   for (int i = 0 ; i < 5 ; i++ ) {
-	action_potential[i] = calculatePotential(getRobotPose().translation+action_kicks[i], goal_target, obstacles);
-    if ( action_potential[i] > maximum ){
-      maximum = action_potential[i];
+	Vector2d actionGlobal = robotPose * action_kicks[i];
+	action_potential[i] = calculatePotential(actionGlobal, goal_target, obstacles);
+    if ( action_potential[i] < minimum || location == -1){
+      minimum = action_potential[i];
       location = i;
     }
+
+	CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+	TEXT_DRAWING(actionGlobal.x+100, actionGlobal.y+100, action_potential[i]);
   }
+
+  ASSERT(location >= 0);
 
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:my_pos",
     FIELD_DRAWING_CONTEXT;
@@ -172,9 +171,9 @@ void PotentialActionSimulator::execute()
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("F0F0F0", 1);
+	Vector2d actionGlobal = robotPose * action_kicks[location];
 
-
-	CIRCLE(getRobotPose().translation.x+action_kicks[location].x, getRobotPose().translation.y+action_kicks[location].y, 50);
+	CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
   
   // ATTENTION: PREVIEW
