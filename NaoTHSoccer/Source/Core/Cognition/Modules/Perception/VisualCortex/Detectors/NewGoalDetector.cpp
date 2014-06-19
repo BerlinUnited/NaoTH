@@ -34,46 +34,19 @@ NewGoalDetector::NewGoalDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:NewGoalDetector:showColorByHistogramTop","..", false);
 }
 
-bool NewGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
+void NewGoalDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
-
   getGoalPercept().reset();
 
-	GT_TRACE("NewGoalDetector:start");
-  // correct parameters
-  //minimal 2  or more at all points have to be found
-  if(params.minGoodPoints < 2 || getGoalFeaturePercept().features.size() < 2) {
-    return false;
-  }
-  if(params.minGoodPoints > (int) getGoalFeaturePercept().features.size()) {
-    params.minGoodPoints = (int) getGoalFeaturePercept().features.size();
-  }
-
+  // calculate the clusters
   clusters.clear();
   clusterEdgelFeatures();
 
-  for(size_t j = 0; j < clusters.size(); j++) 
-  {
-    Cluster& cluster = clusters[j];
-      
-    if(cluster.size() > params.minGoodPoints) 
-    {
-      Math::Line line = cluster.getLine();
-
-      Vector2d begin, end;
-      begin = line.getBase();
-      end = line.getBase() + line.getDirection()*50;
-      LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-
-      GoalPercept::GoalPost post;
-      post.directionInImage = line.getDirection();
-      post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
-      post.topPoint = scanForEndPoint(line.getBase(), -post.directionInImage);
-      post.positionReliable = getFieldPercept().getValidField().isInside(post.basePoint);
-    }
-  }
+  // calculate the goal posts based on the clusters
+  calcuateGoalPosts();
+  
 
   if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
@@ -104,49 +77,13 @@ bool NewGoalDetector::execute(CameraInfo::CameraID id, bool horizon)
     // what do do here?
   }
 
-  getGoalPercept().horizonScan = horizon;
-  return true;
+  // TODO: check this
+  getGoalPercept().horizonScan = true;
 }//end execute
-
-
-void NewGoalDetector::debugStuff(CameraInfo::CameraID camID)
-{
-  CANVAS_PX(camID);
-  cameraID = camID;
-  DEBUG_REQUEST("Vision:Detectors:NewGoalDetector:showColorByHistogramBottom",
-    for(unsigned int x = 0; x < getImage().width(); x+=2)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y+=2)
-      {
-        const Pixel& pixel = getImage().get(x, y);
-        if(getGoalPostHistograms().isPostColor(pixel))
-        {
-          POINT_PX(ColorClasses::pink, x, y);
-        }
-      }
-    }
-  );
-  DEBUG_REQUEST("Vision:Detectors:NewGoalDetector:showColorByHistogramTop",
-    for(unsigned int x = 0; x < getImage().width(); x+=2)
-    {
-      for(unsigned int y = 0; y < getImage().height(); y+=2)
-      {
-        const Pixel& pixel = getImage().get(x, y);
-        if(getGoalPostHistograms().isPostColor(pixel))
-        {
-          POINT_PX(ColorClasses::pink, x, y);
-        }
-      }
-    }
-  );
-}
 
 
 void NewGoalDetector::clusterEdgelFeatures()
 {
-  double t_sim = 0.5;
-  MODIFY("t_sim",t_sim);
-  
   std::vector<EdgelT<double> > pairs;
   for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().edgel_features.size(); scanIdOne++) 
   {
@@ -160,7 +97,7 @@ void NewGoalDetector::clusterEdgelFeatures()
         for(size_t j = 0; j < getGoalFeaturePercept().edgel_features[scanIdTwo].size(); j++) {
           const EdgelT<double>& e2 = getGoalFeaturePercept().edgel_features[scanIdTwo][j];
 
-          if(e1.sim(e2) > t_sim) {
+          if(e1.sim(e2) > params.thresholdFeatureSimilarity) {
             //LINE_PX(ColorClasses::red, (int)(e1.point.x+0.5), (int)(e1.point.y+0.5), (int)(e2.point.x+0.5), (int)(e2.point.y+0.5));
 
             EdgelT<double> pair;
@@ -190,7 +127,7 @@ void NewGoalDetector::clusterEdgelFeatures()
       }
     }
 
-    if(max_sim > t_sim) {
+    if(max_sim > params.thresholdFeatureSimilarity) {
       clusters[cluster_idx].add(e1);
     } else {
       Cluster cluster;
@@ -200,6 +137,39 @@ void NewGoalDetector::clusterEdgelFeatures()
   }
 }
 
+void NewGoalDetector::calcuateGoalPosts()
+{
+  for(size_t j = 0; j < clusters.size(); j++) 
+  {
+    Cluster& cluster = clusters[j];
+      
+    if(cluster.size() > params.minGoodPoints) 
+    {
+      Math::Line line = cluster.getLine();
+
+      Vector2d begin, end;
+      begin = line.getBase();
+      end = line.getBase() + line.getDirection()*50;
+      LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
+
+      GoalPercept::GoalPost post;
+      post.directionInImage = line.getDirection();
+      post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
+      post.topPoint = scanForEndPoint(line.getBase(), -post.directionInImage);
+      post.positionReliable = getFieldPercept().getValidField().isInside(post.basePoint);
+
+      // NOTE: if the projection is not successfull, then post.position = (0,0)
+      bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), getImage().cameraInfo,
+          post.basePoint.x, post.basePoint.y, 0.0,
+          post.position);
+
+      post.positionReliable = post.positionReliable && projectionOk;
+
+      getGoalPercept().add(post);
+    }
+  }
+}
 
 Vector2i NewGoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& direction) const
 {
@@ -237,3 +207,34 @@ Vector2i NewGoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d&
 }
 
 
+void NewGoalDetector::debugStuff(CameraInfo::CameraID camID)
+{
+  CANVAS_PX(camID);
+  cameraID = camID;
+  DEBUG_REQUEST("Vision:Detectors:NewGoalDetector:showColorByHistogramBottom",
+    for(unsigned int x = 0; x < getImage().width(); x+=2)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y+=2)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if(getGoalPostHistograms().isPostColor(pixel))
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
+  DEBUG_REQUEST("Vision:Detectors:NewGoalDetector:showColorByHistogramTop",
+    for(unsigned int x = 0; x < getImage().width(); x+=2)
+    {
+      for(unsigned int y = 0; y < getImage().height(); y+=2)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+        if(getGoalPostHistograms().isPostColor(pixel))
+        {
+          POINT_PX(ColorClasses::pink, x, y);
+        }
+      }
+    }
+  );
+}

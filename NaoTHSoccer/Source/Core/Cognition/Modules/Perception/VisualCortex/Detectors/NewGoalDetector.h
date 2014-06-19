@@ -17,6 +17,7 @@
 #include "Representations/Perception/GoalFeaturePercept.h"
 #include "Representations/Perception/Histograms.h"
 #include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -32,8 +33,8 @@ BEGIN_DECLARE_MODULE(NewGoalDetector)
   REQUIRE(FrameInfo)
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  //REQUIRE(CameraMatrix)
-  //REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   //REQUIRE(ArtificialHorizon)
   //REQUIRE(ArtificialHorizonTop)
 
@@ -60,28 +61,18 @@ public:
   virtual ~NewGoalDetector(){}
 
   // override the Module execute method
-  virtual bool execute(CameraInfo::CameraID id, bool horizon = true);
-
-  void execute()
+  virtual void execute()
   {
-    bool topScanned = execute(CameraInfo::Top);
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
 
-    if(!topScanned) {
-      execute(CameraInfo::Top, false);
-    }
     debugStuff(CameraInfo::Top);
-    
-    if(topScanned && getGoalPercept().getNumberOfSeenPosts() == 0) {
-      if( !execute(CameraInfo::Bottom)) {
-        execute(CameraInfo::Bottom, false);
-      }
-      debugStuff(CameraInfo::Bottom);
-    }
+    debugStuff(CameraInfo::Bottom);
   }
 
 private:
+  void execute(CameraInfo::CameraID id);
   CameraInfo::CameraID cameraID;
-
 
   class Parameters: public ParameterList
   {
@@ -92,6 +83,7 @@ private:
       PARAMETER_REGISTER(thresholdUV) = 60;
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
+      PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -103,6 +95,7 @@ private:
 
     int thresholdUV;
     int minGoodPoints;
+    double thresholdFeatureSimilarity;
     double colorRegionDeviation;
   };
 
@@ -156,16 +149,16 @@ private:
     }
   };
 
-  void clusterEdgelFeatures();
   std::vector<Cluster> clusters;
+  void clusterEdgelFeatures();
+  void calcuateGoalPosts();
+  Vector2i scanForEndPoint(const Vector2i& start, const Vector2d& direction) const;
 
   void debugStuff(CameraInfo::CameraID camID);
 
-  Vector2i scanForEndPoint(const Vector2i& start, const Vector2d& direction) const;
-
   // double cam stuff
   DOUBLE_CAM_REQUIRE(NewGoalDetector, Image);
-  //DOUBLE_CAM_REQUIRE(NewGoalDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(NewGoalDetector, CameraMatrix);
   //DOUBLE_CAM_REQUIRE(NewGoalDetector, ArtificialHorizon);
   //DOUBLE_CAM_REQUIRE(NewGoalDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(NewGoalDetector, FieldPercept);
