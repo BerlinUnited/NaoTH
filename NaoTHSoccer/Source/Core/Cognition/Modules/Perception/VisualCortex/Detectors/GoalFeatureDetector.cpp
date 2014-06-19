@@ -15,7 +15,7 @@
 
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-#include <algorithm>
+#include "Tools/Math/Geometry.h"
 
 #define IMG_GET(x,y,p) \
   if(!getImage().isInside(x,y)) { \
@@ -28,6 +28,7 @@ GoalFeatureDetector::GoalFeatureDetector()
 : 
   cameraID(CameraInfo::Bottom)
 {
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:markPeaks", "mark found maximum u-v peaks in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_response","..", false);  
@@ -38,59 +39,23 @@ GoalFeatureDetector::GoalFeatureDetector()
 }
 
 
-bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
+bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
 
-  Vector2d p1(0                   , getImage().cameraInfo.getOpticalCenterY());
-  Vector2d p2(getImage().width()-1, getImage().cameraInfo.getOpticalCenterY());
-  Vector2d horizonDirection(1,0);
+  // horizon
+  Vector2d p1 = getArtificialHorizon().begin();
+  Vector2d p2 = getArtificialHorizon().end();
+  Vector2d horizonDirection = getArtificialHorizon().getDirection();
 
-  if(!horizon && cameraID == CameraInfo::Bottom)
-  {
-    int offsetY = (params.numberOfScanlines * params.scanlinesDistance) / 2 + imageBorderOffset;
-
-    p1.y = offsetY;
-    p2.y = offsetY;
-  }
-
-  if(horizon) {
-    p1 = getArtificialHorizon().begin();
-    p2 = getArtificialHorizon().end();
-    horizonDirection = getArtificialHorizon().getDirection();
-  }
-
-  // orthogonal to the horizontal scan pointing towards the ground
-  getGoalFeaturePercept().horizonNormal.x = -horizonDirection.y;
-  getGoalFeaturePercept().horizonNormal.y = horizonDirection.x;
-
-  // sanity check
-  if( p1.x != 0 || 
-      p2.x != getImage().width()-1 ||
-      p1.y < imageBorderOffset || p1.y > getImage().height() - imageBorderOffset ||
-      p2.y < imageBorderOffset || p2.y > getImage().height() - imageBorderOffset
-      ) 
-  {
-    return false;
-  }
-  
-  int heightOfHorizon = (int) ((p1.y + p2.y) * 0.5 + 0.5);
-  // image over the horizon
-  if(heightOfHorizon > (int) getImage().height() - 10) {
-    return false;
-  }
-  
-  // clamp the scanline
-  p1.y = Math::clamp((int) p1.y, imageBorderOffset + 5, (int)getImage().height() - imageBorderOffset - 5);
-  p2.y = Math::clamp((int) p2.y, imageBorderOffset + 5 , (int)getImage().height() - imageBorderOffset - 5);
-  
-
-  // correct parameters
-  // minimal 2  or more at all points have to be found
-  if(params.numberOfScanlines < 2) {
-    return false;
-  }
+  // calculate the startpoint for the scanlines based on the horizon
+  // NOTE: this point doesn't have to be at the edge of the image
+  Vector2d c = (p2+p1)*0.5;
+  int offsetY = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
+  int y = (int)(c.y - offsetY + 0.5);
+  int yc = Math::clamp(y, 0, (int)(getImage().height())-1-2*offsetY);
+  Vector2d start(c.x, yc);
 
   // adjust the vectors if the parameters change
   if((int)getGoalFeaturePercept().edgel_features.size() != params.numberOfScanlines) {
@@ -98,52 +63,53 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id, bool horizon)
   }
 
   // clear the old features
-  for(int i = 0; i < params.numberOfScanlines; i++) {
+  for(size_t i = 0; i < getGoalFeaturePercept().edgel_features.size(); i++) {
      getGoalFeaturePercept().edgel_features[i].clear();
   }
 
   //find feature that are candidates for goal posts along scanlines 
-  //findfeaturesDiff(horizonDirection, p1);
-  findfeaturesColor(horizonDirection, p1);
+  findfeaturesDiff(horizonDirection, start);
+  //findfeaturesColor(horizonDirection, start);
 
   return true;
 }//end execute
 
 
-void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1)
+void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vector2i& start)
 {
-  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
-  int start = (int) p1.y - offset;
-  int stop = (int) p1.y + offset;
+  const Vector2i frameUpperLeft(0,0);
+  const Vector2i frameLowerRight(getImage().width()-1, getImage().height()-1);
 
-  if(start < 0) {
-    start = 2;
-  }
-
-  if(stop > (int) getImage().height()) {
-    start = start - (stop - getImage().height() - 2);
-  }
-
-  int y = start;
   for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
     std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
-
-    y += params.scanlinesDistance;
-    Vector2i pos((int) p1.x + 2, y);
-    Pixel pixel;
-    BresenhamLineScan scanner(pos, scanDir, getImage().cameraInfo);
-
+    
+    // adjust the start and end point for this scanline
+    Vector2i pos((int) start.x, start.y + params.scanlinesDistance*scanId);
+    Vector2i end;
+    Math::Line scanLine(pos, scanDir);
+    Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, scanLine, pos, end);
+    
+    if(!getImage().isInside(pos.x, pos.y)) {
+      continue;
+    }
+    
+    BresenhamLineScan scanner(pos, end);
     Filter<Gauss,Vector2i,double> filter;
     
     Vector2i begin;
     bool begin_found = false;
     double jump = 0;
 
+    Pixel pixel;
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
       int diffVU = (int) pixel.v - (int) pixel.u;
+
+      DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
+        POINT_PX(ColorClasses::gray, pos.x, pos.y );
+      );
 
       filter.add(pos, diffVU);
       if(!filter.ready()) {
@@ -196,31 +162,26 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
 }//end findfeatures
 
 
-void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector2d& p1)
+void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector2i& start)
 {
-  int offset = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
+  const Vector2i frameUpperLeft(0,0);
+  const Vector2i frameLowerRight(getImage().width()-1, getImage().height()-1);
 
-  int start = (int) p1.y - offset;
-  int stop = (int) p1.y + offset;
-
-  if(start < 0) {
-    start = 2;
-  }
-
-  if(stop > (int) getImage().height()) {
-    start = start - (stop - getImage().height() - 2);
-  }
-
-  int y = start;
   for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
     std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
 
-    y += params.scanlinesDistance;
-    Vector2i pos((int) p1.x + 2, y);
-    Pixel pixel;
-    BresenhamLineScan scanner(pos, scanDir, getImage().cameraInfo);
-
+    // adjust the start and end point for this scanline
+    Vector2i pos((int) start.x, start.y + params.scanlinesDistance*scanId);
+    Vector2i end;
+    Math::Line scanLine(pos, scanDir);
+    Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, scanLine, pos, end);
+    
+    if(!getImage().isInside(pos.x, pos.y)) {
+      continue;
+    }
+    
+    BresenhamLineScan scanner(pos, end);
     Filter<Diff,Vector2i,double> filter;
 
     // initialize the scanner
@@ -231,10 +192,15 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
 
     bool begin_found = false;
 
+    Pixel pixel;
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
       int diffVU = (int) pixel.v - (int) pixel.u;
+
+      DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
+        POINT_PX(ColorClasses::gray, pos.x, pos.y );
+      );
 
       filter.add(pos, diffVU);
       if(!filter.ready()) {

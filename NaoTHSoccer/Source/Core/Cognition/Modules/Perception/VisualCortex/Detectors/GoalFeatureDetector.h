@@ -49,18 +49,12 @@ public:
   virtual ~GoalFeatureDetector(){}
 
   // override the Module execute method
-  bool execute(CameraInfo::CameraID id, bool horizon = true);
+  bool execute(CameraInfo::CameraID id);
 
   virtual void execute()
   {
-    bool topScanned = execute(CameraInfo::Top);
-
-    if(!topScanned) {
-      execute(CameraInfo::Top, false);
-      if( !execute(CameraInfo::Bottom)) {
-        execute(CameraInfo::Bottom, false);
-      }
-    }
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
   }
 
 private:
@@ -103,8 +97,8 @@ private:
 private:
   Parameters params;
 
-  void findfeaturesColor(const Vector2d& scanDir, const Vector2d& p1);
-  void findfeaturesDiff(const Vector2d& scanDir, const Vector2d& p1);
+  void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
+  void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;
 
 private:

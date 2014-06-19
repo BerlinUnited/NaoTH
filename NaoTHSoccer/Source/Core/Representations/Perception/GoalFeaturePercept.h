@@ -55,10 +55,8 @@ public:
 
   //
   std::vector<std::vector<Feature> > features;
-  Vector2d horizonNormal; 
 
-  void reset(size_t length)
-  {
+  void reset(size_t length) {
     features.resize(length);
   }
 
