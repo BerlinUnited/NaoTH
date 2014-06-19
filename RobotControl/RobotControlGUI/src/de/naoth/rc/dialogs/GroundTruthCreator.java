@@ -3,6 +3,7 @@ package de.naoth.rc.dialogs;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.LogSimulator;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
@@ -64,7 +65,7 @@ public class GroundTruthCreator extends AbstractDialog
   
  
   
-
+ private final LogPerceptListener logPerceptListener = new LogPerceptListener();
 
     public GroundTruthCreator()
     {
@@ -76,6 +77,7 @@ public class GroundTruthCreator extends AbstractDialog
         DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
             addKeyEventPostProcessor(new GroundTruthKeyController());
 
+        LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
     }
   
     public boolean initListeners () {
@@ -599,6 +601,28 @@ class FrameInfoListener implements ObjectListener<byte[]>
       }
     }//end newObjectReceived
 }//end class FrameInfoListener
+
+class LogPerceptListener implements LogSimulator.LogSimulatorActionListener 
+{
+
+   @Override
+   public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {
+       System.out.println(frameNumber);
+
+       try{
+           byte[] data = b.getRepresentation("BallPercept");
+           Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
+           System.out.println("ball fm: " + ballPercept.getFrameInfoWhenBallWasSeen().getFrameNumber());
+       } catch(InvalidProtocolBufferException ex) {
+           ex.printStackTrace(System.err);
+       }
+   }
+
+   @Override
+   public void logfileOpened(LogSimulator.BlackBoard b, String path) {
+       System.out.println("open new log: " + path);
+   }
+}
 
  private void toggleButtons() {
      boolean enabled = true;

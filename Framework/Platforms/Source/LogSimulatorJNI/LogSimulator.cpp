@@ -11,6 +11,7 @@
 Simulator* simulator = NULL;
 Cognition* cognitionProcess = NULL;
 Motion* motionProcess = NULL;
+LogProvider* logProvider = NULL;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
@@ -56,6 +57,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile(JNIEnv *env, jo
  
     theLogProvider->setEnabled(true);
     theLogProvider->getModuleT()->init((*simulator).logFileScanner, (*simulator).getRepresentations(), (*simulator).getIncludedRepresentations());
+    logProvider = theLogProvider->getModuleT();
 
     simulator->init();
   }
@@ -123,3 +125,24 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMaxFrame(JNIEnv *env, jo
   return -1;
 }
 
+
+JNIEXPORT jbyteArray Java_de_naoth_rc_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name)
+{
+  const char* inCStr = (*env).GetStringUTFChars(name, NULL);
+  if (NULL == inCStr) { 
+    return NULL;
+  }
+
+  std::stringstream stream;
+  logProvider->getRepresentation(std::string(inCStr), stream);
+
+  std::string data(stream.str());
+
+  //jbyte *data;
+  //int size;
+
+  jbyteArray result=(*env).NewByteArray(data.size());
+  (*env).SetByteArrayRegion(result, 0, data.size(), (jbyte*)data.c_str());
+
+  return result;
+}

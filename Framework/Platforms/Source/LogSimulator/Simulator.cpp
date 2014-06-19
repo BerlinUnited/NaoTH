@@ -67,6 +67,7 @@ void Simulator::init()
   lastFrameTime = 0;
   simulatedTime = 0;
   theDebugServer.start(5401, true);
+  theDebugServer.setTimeOut(0);
 }
 
 void Simulator::printRepresentations()

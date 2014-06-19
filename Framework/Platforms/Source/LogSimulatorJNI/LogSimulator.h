@@ -79,6 +79,9 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMinFrame
 JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMaxFrame
   (JNIEnv *, jobject);
 
+
+JNIEXPORT jbyteArray Java_de_naoth_rc_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name);
+
 #ifdef __cplusplus
 }
 #endif
