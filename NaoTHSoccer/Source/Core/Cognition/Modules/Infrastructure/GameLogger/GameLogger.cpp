@@ -3,7 +3,7 @@
 GameLogger::GameLogger()
   : logfileManager(true)
 {
-  logfileManager.openFile("game.log");
+  logfileManager.openFile("/tmp/game.log");
 }
 
 void GameLogger::execute()
