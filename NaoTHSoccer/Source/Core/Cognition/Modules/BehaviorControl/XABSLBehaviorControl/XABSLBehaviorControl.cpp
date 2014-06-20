@@ -132,12 +132,13 @@ void XABSLBehaviorControl::execute()
 
   // TODO: only update sparse behavior status on some kind of request (or make it configurable)
   // update the behavior status
+  STOPWATCH_START("XABSLBehaviorControl:fillBehaviorStatusSparse");
   getBehaviorStateSparse().state.Clear();
   fillActiveOptionsSparse(getBehaviorStateSparse().state);
   //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
   fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
   getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
-
+  STOPWATCH_STOP("XABSLBehaviorControl:fillBehaviorStatusSparse");
 
     draw();
   }//end if
