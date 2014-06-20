@@ -4,8 +4,8 @@
 
 package de.naoth.rc.dialogs.behaviorviewer;
 
-import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior.Option;
-import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior.Symbol;
+import de.naoth.rc.dialogs.behaviorviewer.model.Option;
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import java.util.ArrayList;
 
 

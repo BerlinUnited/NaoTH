@@ -4,6 +4,7 @@
 
 package de.naoth.rc.dialogs.behaviorviewer;
 
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,8 +18,8 @@ public class XABSLBehaviorFrame
 
     public enum SymbolIOType {input, output, unknown}
     
-    private Map<String, XABSLBehavior.Symbol> inputSymbols = new LinkedHashMap<>();
-    private Map<String, XABSLBehavior.Symbol> outputSymbols = new LinkedHashMap<>();
+    private Map<String, Symbol> inputSymbols = new LinkedHashMap<>();
+    private Map<String, Symbol> outputSymbols = new LinkedHashMap<>();
     public ArrayList<XABSLAction> actions = new ArrayList<>();
     
     public final int frameNumber;
@@ -28,7 +29,7 @@ public class XABSLBehaviorFrame
         this.frameNumber = frameNumber;
     }
     
-    public void addInputSymbol(XABSLBehavior.Symbol symbol)
+    public void addInputSymbol(Symbol symbol)
     {
         if(symbol != null)
         {
@@ -36,7 +37,7 @@ public class XABSLBehaviorFrame
         }
     }
     
-    public void addOutputSymbol(XABSLBehavior.Symbol symbol)
+    public void addOutputSymbol(Symbol symbol)
     {
         if(symbol != null)
         {
@@ -44,9 +45,9 @@ public class XABSLBehaviorFrame
         }
     }
     
-    public XABSLBehavior.Symbol getSymbolByName(String name)
+    public Symbol getSymbolByName(String name)
     {
-        XABSLBehavior.Symbol result;
+        Symbol result;
         result = outputSymbols.get(name);
         if(result == null)
         {

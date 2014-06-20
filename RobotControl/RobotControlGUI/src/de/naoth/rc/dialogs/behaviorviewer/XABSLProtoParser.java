@@ -3,12 +3,19 @@
  */
 package de.naoth.rc.dialogs.behaviorviewer;
 
+import de.naoth.rc.dialogs.behaviorviewer.model.EnumType;
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
+import de.naoth.rc.dialogs.behaviorviewer.model.SymbolType;
+import de.naoth.rc.dialogs.behaviorviewer.model.Agent;
+import de.naoth.rc.dialogs.behaviorviewer.model.Option;
+import de.naoth.rc.dialogs.behaviorviewer.model.SymbolKey;
 import de.naoth.rc.messages.Messages;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+
 
 /**
  *
@@ -21,17 +28,17 @@ public class XABSLProtoParser {
     public XABSLBehaviorFrame parse(Messages.BehaviorStateSparse status) {
         XABSLBehaviorFrame frame = new XABSLBehaviorFrame(status.getFrameNumber());
 
-        ArrayList<XABSLBehavior.Symbol> inputSymbols = parseSparse(
+        ArrayList<Symbol> inputSymbols = parseSparse(
                 behavior.inputSymbols,
                 status.getInputSymbolList());
-        for (XABSLBehavior.Symbol s : inputSymbols) {
+        for (Symbol s : inputSymbols) {
             frame.addInputSymbol(s);
         }
 
-        ArrayList<XABSLBehavior.Symbol> outputSymbols = parseSparse(
+        ArrayList<Symbol> outputSymbols = parseSparse(
                 behavior.outputSymbols,
                 status.getOutputSymbolList());
-        for (XABSLBehavior.Symbol s : outputSymbols) {
+        for (Symbol s : outputSymbols) {
             frame.addOutputSymbol(s);
         }
 
@@ -42,38 +49,41 @@ public class XABSLProtoParser {
         return frame;
     }
 
-    public ArrayList<XABSLBehavior.Symbol> parseSparse(
-            Map<Integer, XABSLBehavior.Symbol> existing,
+    public ArrayList<Symbol> parseSparse(
+            Map<SymbolKey, Symbol> existing,
             Messages.SymbolValueList valueList) {
         
-        ArrayList<XABSLBehavior.Symbol> result
+        ArrayList<Symbol> result
                 = new ArrayList<>(valueList.getBooleanCount()
                         + valueList.getDecimalCount()
                         + valueList.getEnumeratedCount());
         
-        Set<Integer> includedIDs = new HashSet<>();
+        Set<SymbolKey> includedIDs = new HashSet<>();
 
         for (Messages.SymbolValueList.DoubleSymbol symbol : valueList.getDecimalList()) {
-            XABSLBehavior.Symbol s = existing.get(symbol.getId());
+            SymbolKey key = new SymbolKey(SymbolType.DECIMAL, symbol.getId());
+            Symbol s = existing.get(key);
             result.add(parse(s, symbol));
-            includedIDs.add(symbol.getId());
+            includedIDs.add(key);
         }
 
         for (Messages.SymbolValueList.BooleanSymbol symbol : valueList.getBooleanList()) {
-            XABSLBehavior.Symbol s = existing.get(symbol.getId());
+            SymbolKey key = new SymbolKey(SymbolType.BOOL, symbol.getId());
+            Symbol s = existing.get(key);
             result.add(parse(s, symbol));
-            includedIDs.add(symbol.getId());
+            includedIDs.add(key);
         }
 
         for (Messages.SymbolValueList.EnumSymbol symbol : valueList.getEnumeratedList()) {
-            XABSLBehavior.Symbol s = existing.get(symbol.getId());
-            result.add(parse((XABSLBehavior.Symbol.Enum) s, symbol));
-            includedIDs.add(symbol.getId());
+            SymbolKey key = new SymbolKey(SymbolType.ENUM, symbol.getId());
+            Symbol s = existing.get(key);
+            result.add(parse((Symbol.Enum) s, symbol));
+            includedIDs.add(key);
         }
         
         // also add all symbols that are in the existing list but have not been
         // included in the sparse message
-        for(Map.Entry<Integer, XABSLBehavior.Symbol> entry : existing.entrySet())
+        for(Map.Entry<SymbolKey, Symbol> entry : existing.entrySet())
         {
             if(!includedIDs.contains(entry.getKey()))
             {
@@ -94,8 +104,8 @@ public class XABSLProtoParser {
             a.stateTime = option_msg.getStateTime();
             a.id = option_msg.getId();
 
-            XABSLBehavior.Option protoOption = this.behavior.options.get(a.id);
-            a.option = new XABSLBehavior.Option(protoOption); // make a shallow copy
+            Option protoOption = this.behavior.options.get(a.id);
+            a.option = new Option(protoOption); // make a shallow copy
 
             // TODO: parameters
             for (Messages.XABSLActionSparse sa : option_msg.getActiveSubActionsList()) {
@@ -105,7 +115,11 @@ public class XABSLProtoParser {
             return a;
         } else if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.SymbolAssignement) {
             XABSLAction.SymbolAssignement a = new XABSLAction.SymbolAssignement();
-            a.symbol = parse(behavior.outputSymbols.get(action_msg.getSymbol().getId()), action_msg.getSymbol());
+            
+            SymbolKey key = new SymbolKey(action_msg.getSymbol().getType(), 
+                action_msg.getSymbol().getId());
+                    
+            a.symbol = parse(behavior.outputSymbols.get(key), action_msg.getSymbol());
             return a;
         } else if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.BasicBehavior) {
             XABSLAction.BasicBehaviorExecution a = new XABSLAction.BasicBehaviorExecution();
@@ -136,32 +150,32 @@ public class XABSLProtoParser {
         return this.behavior;
     }
 
-    public TreeMap<Integer, XABSLBehavior.Symbol> parse(
+    public Map<SymbolKey, Symbol> parse(
             Messages.SymbolValueList valueList) {
-        TreeMap<Integer, XABSLBehavior.Symbol> result = new TreeMap<>();
+        Map<SymbolKey, Symbol> result = new HashMap<>();
 
         for (Messages.SymbolValueList.DoubleSymbol s_msg : valueList.getDecimalList()) {
-            result.put(s_msg.getId(),
-                    new XABSLBehavior.Symbol.Decimal(s_msg.getName(), s_msg.getValue()));
+            result.put(new SymbolKey(SymbolType.DECIMAL, s_msg.getId()),
+                    new Symbol.Decimal(s_msg.getName(), s_msg.getValue()));
         }
 
         for (Messages.SymbolValueList.BooleanSymbol s_msg : valueList.getBooleanList()) {
-            result.put(s_msg.getId(),
-                    new XABSLBehavior.Symbol.Boolean(s_msg.getName(),
+            result.put(new SymbolKey(SymbolType.BOOL, s_msg.getId()),
+                    new Symbol.Boolean(s_msg.getName(),
                             s_msg.getValue()));
         }
 
         for (Messages.SymbolValueList.EnumSymbol s_msg : valueList.getEnumeratedList()) {
-            XABSLBehavior.EnumType enumType = this.behavior.enumerations.get(s_msg.getTypeId());
-            result.put(s_msg.getId(),
-                    new XABSLBehavior.Symbol.Enum(s_msg.getName(), enumType, s_msg.getValue()));
+            EnumType enumType = this.behavior.enumerations.get(s_msg.getTypeId());
+            result.put(new SymbolKey(SymbolType.ENUM, s_msg.getId()),
+                    new Symbol.Enum(s_msg.getName(), enumType, s_msg.getValue()));
         }
 
         return result;
     }
 
-    private XABSLBehavior.Option parse(Messages.BehaviorStateComplete.Option option_msg) {
-        XABSLBehavior.Option option = new XABSLBehavior.Option(option_msg.getName());
+    private Option parse(Messages.BehaviorStateComplete.Option option_msg) {
+        Option option = new Option(option_msg.getName());
 
         for (int j = 0; j < option_msg.getParametersCount(); j++) {
             option.parameters.add(j, parse(option_msg.getParameters(j)));
@@ -174,60 +188,60 @@ public class XABSLProtoParser {
         return option;
     }
 
-    private XABSLBehavior.Option.State parse(Messages.BehaviorStateComplete.Option.State state_msg) {
-        return new XABSLBehavior.Option.State(state_msg.getName(), state_msg.getTarget());
+    private Option.State parse(Messages.BehaviorStateComplete.Option.State state_msg) {
+        return new Option.State(state_msg.getName(), state_msg.getTarget());
     }
 
-    private XABSLBehavior.Symbol parse(Messages.XABSLSymbol p_msg) 
+    private Symbol parse(Messages.XABSLSymbol p_msg) 
     {
-        XABSLBehavior.Symbol p = new XABSLBehavior.Symbol(p_msg.getName());
+        Symbol p = new Symbol(p_msg.getName());
         return parse(p, p_msg);
     }
 
-    private XABSLBehavior.Symbol parse(XABSLBehavior.Symbol p, Messages.XABSLSymbol p_msg) {
+    private Symbol parse(Symbol p, Messages.XABSLSymbol p_msg) {
         switch (p_msg.getType()) {
             case Decimal:
                 return p.createDecimal(p_msg.getDecimalValue());
             case Boolean:
                 return p.createBoolean(p_msg.getBoolValue());
             case Enum:
-                XABSLBehavior.EnumType enumeration = this.behavior.enumerations.get(p_msg.getEnumTypeId());
+                EnumType enumeration = this.behavior.enumerations.get(p_msg.getEnumTypeId());
                 return p.createEnum(enumeration, p_msg.getEnumValue());
         }
         return p;
     }
 
-    private XABSLBehavior.Symbol parse(XABSLBehavior.Symbol s, Messages.SymbolValueList.DoubleSymbol s_msg) {
+    private Symbol parse(Symbol s, Messages.SymbolValueList.DoubleSymbol s_msg) {
         return s.createDecimal(s_msg.getValue());
     }
 
-    private XABSLBehavior.Symbol parse(XABSLBehavior.Symbol s, Messages.SymbolValueList.BooleanSymbol s_msg) {
+    private Symbol parse(Symbol s, Messages.SymbolValueList.BooleanSymbol s_msg) {
         return s.createBoolean(s_msg.getValue());
     }
 
-    private XABSLBehavior.Symbol parse(XABSLBehavior.Symbol.Enum s, Messages.SymbolValueList.EnumSymbol s_msg) {
+    private Symbol parse(Symbol.Enum s, Messages.SymbolValueList.EnumSymbol s_msg) {
         return s.createEnum(s.enumType, s_msg.getValue());
     }
 
-    private XABSLBehavior.Agent parse(Messages.BehaviorStateComplete.Agent agent_msg) {
-        XABSLBehavior.Agent agent = new XABSLBehavior.Agent();
+    private Agent parse(Messages.BehaviorStateComplete.Agent agent_msg) {
+        Agent agent = new Agent();
         agent.name = agent_msg.getName();
         agent.rootOption = agent_msg.getRootOption();
         return agent;
     }
 
-    private XABSLBehavior.EnumType parse(Messages.BehaviorStateComplete.EnumType enum_msg) {
-        XABSLBehavior.EnumType enumeration = new XABSLBehavior.EnumType();
+    private EnumType parse(Messages.BehaviorStateComplete.EnumType enum_msg) {
+        EnumType enumeration = new EnumType();
         enumeration.name = enum_msg.getName();
         for (Messages.BehaviorStateComplete.EnumType.Element msgElement : enum_msg.getElementsList()) {
-            XABSLBehavior.EnumType.Element e = parse(msgElement);
+            EnumType.Element e = parse(msgElement);
             enumeration.elements.put(e.value, e);
         }
         return enumeration;
     }
 
-    private XABSLBehavior.EnumType.Element parse(Messages.BehaviorStateComplete.EnumType.Element element_msg) {
-        XABSLBehavior.EnumType.Element element = new XABSLBehavior.EnumType.Element();
+    private EnumType.Element parse(Messages.BehaviorStateComplete.EnumType.Element element_msg) {
+        EnumType.Element element = new EnumType.Element();
         element.name = element_msg.getName();
         element.value = (int) element_msg.getValue();
         return element;

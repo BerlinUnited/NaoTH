@@ -10,6 +10,7 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLProtoParser;
@@ -262,7 +263,7 @@ public class BehaviorViewer extends AbstractDialog
 
       for(String name: symbolsToWatch)
       {
-        XABSLBehavior.Symbol symbol = frame.getSymbolByName(name);
+                Symbol symbol = frame.getSymbolByName(name);
         // TODO: error treatment
         if(symbol == null) return;
 
@@ -270,7 +271,7 @@ public class BehaviorViewer extends AbstractDialog
         String data_value = symbol.getValueAsString();
 
         // cut the leading enum type
-        if(symbol instanceof XABSLBehavior.Symbol.Enum)
+        if(symbol instanceof Symbol.Enum)
         {
           data_value = data_value.replace(name+".", "");
         }
@@ -413,7 +414,7 @@ public class BehaviorViewer extends AbstractDialog
   
   private String getSymbolValue(XABSLBehaviorFrame frame, String name) throws Exception
   {
-    XABSLBehavior.Symbol s = frame.getSymbolByName(name);
+        Symbol s = frame.getSymbolByName(name);
     if(s == null)
     {
         throw new Exception("Symbol " + name + " is not existing");
@@ -721,7 +722,7 @@ public class BehaviorViewer extends AbstractDialog
       
       if(currentBehavior != null)
       {
-        for(XABSLBehavior.Symbol s : currentBehavior.inputSymbols.values())
+        for(Symbol s : currentBehavior.inputSymbols.values())
         {
             JCheckBox checkBox = new JCheckBox(s.name);
             checkBox.setSelected(this.symbolsToWatch.contains(s.name));
@@ -732,7 +733,7 @@ public class BehaviorViewer extends AbstractDialog
             this.inputSymbolsBoxPanel.add(checkBox);
         }
 
-        for(XABSLBehavior.Symbol s : currentBehavior.outputSymbols.values())
+        for(Symbol s : currentBehavior.outputSymbols.values())
         {
             JCheckBox checkBox = new JCheckBox(s.name);
             checkBox.setSelected(this.symbolsToWatch.contains(s.name));

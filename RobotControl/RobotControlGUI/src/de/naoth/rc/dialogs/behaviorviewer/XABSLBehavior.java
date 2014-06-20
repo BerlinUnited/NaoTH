@@ -3,8 +3,16 @@
  */
 package de.naoth.rc.dialogs.behaviorviewer;
 
+import de.naoth.rc.dialogs.behaviorviewer.model.EnumType;
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
+import de.naoth.rc.dialogs.behaviorviewer.model.SymbolKey;
+import de.naoth.rc.dialogs.behaviorviewer.model.SymbolType;
+import de.naoth.rc.dialogs.behaviorviewer.model.Agent;
+import de.naoth.rc.dialogs.behaviorviewer.model.Option;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -13,152 +21,17 @@ import java.util.TreeMap;
  */
 public class XABSLBehavior {
 
-    public static class Symbol 
-    {
- 
-        public final String name;
-        
-        public Symbol(String name) 
-        { 
-            this.name = name; 
-        }
-        
-        
-        public String getValueAsString() {
-            return "";
-        }
-        
-        public String getDataType() {
-            return "";
-        }
+
+
+
     
-        public Decimal createDecimal(double value) {
-            return new Decimal(name, value);
-        }
-        public Boolean createBoolean(boolean value) {
-            return new Boolean(name, value);
-        }
-        public Enum createEnum(EnumType enumType, int value) {
-            return new Enum(name, enumType, value);
-        }
-        
-        public static class Decimal extends Symbol {
-            public Decimal(String name, double value) {
-                super(name);
-                this.value = value;
-            }
-            public final double value;
-
-            @Override
-            public String getValueAsString() 
-            {
-                return "" +  this.value;
-            }
-
-            @Override
-            public String getDataType() {
-                return "decimal";
-            }
-            
-            
-        }
-
-        public static class Boolean extends Symbol {
-
-            public Boolean(String name, boolean value) {
-                super(name);
-                this.value = value;
-            }
-            public final boolean value;
-            
-            @Override
-            public String getValueAsString() 
-            {
-                return "" +  this.value;
-            }
-
-            @Override
-            public String getDataType() {
-                return "bool";
-            }
-            
-            
-        }
-
-        public static class Enum extends Symbol {
-
-            public Enum(String name, EnumType enumType, int value) {
-                super(name);
-                this.enumType = enumType;
-                this.value = value;
-            }
-            public final int value;
-            public final EnumType enumType;
-            
-            @Override
-            public String getValueAsString() 
-            {
-                return enumType.elements.get(value).name;
-            }
-
-            @Override
-            public String getDataType() {
-                return "enum";
-            }
-            
-            
-        }
-    } // end class Symbol
-
-    public static class EnumType {
-
-        public static class Element {
-
-            public String name;
-            public int value;
-        }
-        public String name;
-        public Map<Integer, Element> elements = new TreeMap<>();
-    }
-
-    public static class Option {
-
-        public static class State {
-            State(String name, boolean target)
-            {
-                this.name = name;
-                this.target = target;
-            }
-            public final String name;
-            public final boolean target;
-        }
-        
-        public Option(String name) {
-            this.name = name;
-        }
-        
-        public Option(Option other) {
-            name = other.name;
-            states.addAll(other.states);
-            parameters.addAll(other.parameters);
-        }
-        
-        public final String name;
-        public final ArrayList<State> states = new ArrayList<State>();
-        public final ArrayList<Symbol> parameters = new ArrayList<Symbol>();
-    }
-
-    public static class Agent {
-
-        public String name;
-        public String rootOption;
-    }
-
-    public ArrayList<EnumType> enumerations = new ArrayList<>();
-    public ArrayList<Option> options = new ArrayList<>();
-    public ArrayList<Agent> agents = new ArrayList<>();
     
-    public TreeMap<Integer, Symbol> inputSymbols = new TreeMap<>();
-    public TreeMap<Integer, Symbol> outputSymbols = new TreeMap<>();
+
+    public final ArrayList<EnumType> enumerations = new ArrayList<>();
+    public final ArrayList<Option> options = new ArrayList<>();
+    public final ArrayList<Agent> agents = new ArrayList<>();
+    
+    public final Map<SymbolKey, Symbol> inputSymbols = new HashMap<>();
+    public final Map<SymbolKey, Symbol> outputSymbols = new HashMap<>();
     
 }

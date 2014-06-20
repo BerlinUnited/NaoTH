@@ -3,6 +3,7 @@
  */
 package de.naoth.rc.dialogs.behaviorviewer;
 
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import de.naoth.rc.messages.Messages;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution)a;
 
             // add parameters
-            for (XABSLBehavior.Symbol p : oe.option.parameters) {
+            for (Symbol p : oe.option.parameters) {
                 result.add(new DefaultMutableTreeNode(p));
             }
             

@@ -3,6 +3,7 @@
  */
 package de.naoth.rc.dialogs.behaviorviewer;
 
+import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import static de.naoth.rc.dialogs.BehaviorViewer.BOLD_FONT;
 import static de.naoth.rc.dialogs.BehaviorViewer.DARK_GREEN;
 import static de.naoth.rc.dialogs.BehaviorViewer.ITALIC_FONT;
@@ -49,33 +50,33 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                 } else if (a instanceof XABSLAction.BasicBehaviorExecution) {
                     text.append(((XABSLAction.BasicBehaviorExecution) a).name);
                 } else if (a instanceof XABSLAction.SymbolAssignement) {
-                    XABSLBehavior.Symbol s = ((XABSLAction.SymbolAssignement) a).symbol;
+                    Symbol s = ((XABSLAction.SymbolAssignement) a).symbol;
 
                     text.append(s.name);
                     text.append("=");
-                    if (s instanceof XABSLBehavior.Symbol.Boolean) {
-                        text.append(((XABSLBehavior.Symbol.Boolean) s).value);
-                    } else if (s instanceof XABSLBehavior.Symbol.Decimal) {
-                        text.append(((XABSLBehavior.Symbol.Decimal) s).value);
-                    } else if (s instanceof XABSLBehavior.Symbol.Enum) {
-                        text.append(((XABSLBehavior.Symbol.Enum) s).value);
+                    if (s instanceof Symbol.Boolean) {
+                        text.append(((Symbol.Boolean) s).value);
+                    } else if (s instanceof Symbol.Decimal) {
+                        text.append(((Symbol.Decimal) s).value);
+                    } else if (s instanceof Symbol.Enum) {
+                        text.append(((Symbol.Enum) s).value);
                     }
                 }
 
-            } else if (n.getUserObject() instanceof XABSLBehavior.Symbol) {
-                XABSLBehavior.Symbol s = (XABSLBehavior.Symbol) n.getUserObject();
+            } else if (n.getUserObject() instanceof Symbol) {
+                Symbol s = (Symbol) n.getUserObject();
                 color = Color.DARK_GRAY;
                 font = ITALIC_FONT;
 
                 text.append("@");
                 text.append(s.name);
                 text.append("=");
-                if (s instanceof XABSLBehavior.Symbol.Boolean) {
-                    text.append(((XABSLBehavior.Symbol.Boolean) s).value);
-                } else if (s instanceof XABSLBehavior.Symbol.Decimal) {
-                    text.append(((XABSLBehavior.Symbol.Decimal) s).value);
-                } else if (s instanceof XABSLBehavior.Symbol) {
-                    text.append(((XABSLBehavior.Symbol.Enum) s).value);
+                if (s instanceof Symbol.Boolean) {
+                    text.append(((Symbol.Boolean) s).value);
+                } else if (s instanceof Symbol.Decimal) {
+                    text.append(((Symbol.Decimal) s).value);
+                } else if (s instanceof Symbol) {
+                    text.append(((Symbol.Enum) s).value);
                 }
             } else {
                 text.append(n.getUserObject().toString());
