@@ -84,11 +84,6 @@ public class BehaviorViewer extends AbstractDialog
   private final Command getBehaviorStateComplete = new Command("behavior:state");
   private final Command getBehaviorStateSparse = new Command("behavior:state_sparse");
   
-  
-  private final Command enableUpdateBehaviorStatusCommand =
-          new Command("XABSL:update_status").addArg("on");
-  private final Command disableUpdateBehaviorStatusCommand =
-          new Command("XABSL:update_status").addArg("off");
 
   private final Command getListOfAgents = new Command("behavior:list_agents");
 
@@ -649,7 +644,6 @@ public class BehaviorViewer extends AbstractDialog
     {
       if(Plugin.parent.checkConnected())
       {
-        sendCommand(enableUpdateBehaviorStatusCommand);
         sendCommand(getListOfAgents);
         sendCommand(getAgentCommand);
         //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
@@ -669,7 +663,6 @@ public class BehaviorViewer extends AbstractDialog
     else
     {
       this.frameList.addListSelectionListener(behaviorFrameListener);
-      sendCommand(disableUpdateBehaviorStatusCommand);
       //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
       Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
     }

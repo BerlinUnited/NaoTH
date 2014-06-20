@@ -30,8 +30,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_DEBUG_COMMAND("behavior:get_symbol",
     "return the value of a symbol. usage behavior:get_symbol <symbol_name>", this);
 
-  DEBUG_REQUEST_REGISTER("XABSL:update_status", "update the debug behavior-status", false);
-
   DEBUG_REQUEST_REGISTER("XABSL:draw_motion_request", "draw the motion intention of the robot on the field", false);
   DEBUG_REQUEST_REGISTER("XABSL:draw_foot_decision", "visualize the foot decision", false);
 
@@ -132,24 +130,22 @@ void XABSLBehaviorControl::execute()
     updateOutputSymbols();
     //cout << "test " << getMotionStatus().motionRequest << endl;
 
-    // update the behavior status
-    DEBUG_REQUEST("XABSL:update_status",
-      getBehaviorStateSparse().state.Clear();
-      fillActiveOptionsSparse(getBehaviorStateSparse().state);
-      //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
-      fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
-      getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
-    );
+  // TODO: only update sparse behavior status on some kind of request (or make it configurable)
+  // update the behavior status
+  getBehaviorStateSparse().state.Clear();
+  fillActiveOptionsSparse(getBehaviorStateSparse().state);
+  //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
+  fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
+  getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
+
 
     draw();
   }//end if
 
-  DEBUG_REQUEST("XABSL:update_status",
-    if(theErrorHandler.errorsOccurred)
-    {
-      getBehaviorStateSparse().state.set_errormessage(error_stream.str());
-    }
-  );
+  if(theErrorHandler.errorsOccurred)
+  {
+    getBehaviorStateSparse().state.set_errormessage(error_stream.str());
+  }
 }//end execute
 
 
