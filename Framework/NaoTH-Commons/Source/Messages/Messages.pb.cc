@@ -448,12 +448,13 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BehaviorStateSparse));
   BehaviorStateComplete_descriptor_ = file->message_type(14);
-  static const int BehaviorStateComplete_offsets_[5] = {
+  static const int BehaviorStateComplete_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, enumerations_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, options_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, agents_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, inputsymbollist_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, outputsymbollist_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStateComplete, framenumber_),
   };
   BehaviorStateComplete_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -953,7 +954,7 @@ void protobuf_AddDesc_Messages_2eproto() {
     "aothmessages.SymbolValueList\0228\n\020outputSy"
     "mbolList\030\013 \001(\0132\036.naothmessages.SymbolVal"
     "ueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMess"
-    "age\030\006 \001(\t\"\263\005\n\025BehaviorStateComplete\022C\n\014e"
+    "age\030\006 \001(\t\"\310\005\n\025BehaviorStateComplete\022C\n\014e"
     "numerations\030\n \003(\0132-.naothmessages.Behavi"
     "orStateComplete.EnumType\022<\n\007options\030\013 \003("
     "\0132+.naothmessages.BehaviorStateComplete."
@@ -961,59 +962,59 @@ void protobuf_AddDesc_Messages_2eproto() {
     "ehaviorStateComplete.Agent\0227\n\017inputSymbo"
     "lList\030\r \001(\0132\036.naothmessages.SymbolValueL"
     "ist\0228\n\020outputSymbolList\030\016 \001(\0132\036.naothmes"
-    "sages.SymbolValueList\032\211\001\n\010EnumType\022\014\n\004na"
-    "me\030\001 \002(\t\022G\n\010elements\030\002 \003(\01325.naothmessag"
-    "es.BehaviorStateComplete.EnumType.Elemen"
-    "t\032&\n\007Element\022\r\n\005value\030\001 \002(\005\022\014\n\004name\030\002 \002("
-    "\t\032\260\001\n\006Option\022\014\n\004name\030\001 \002(\t\022A\n\006states\030\003 \003"
-    "(\01321.naothmessages.BehaviorStateComplete"
-    ".Option.State\022.\n\nparameters\030\002 \003(\0132\032.naot"
-    "hmessages.XABSLSymbol\032%\n\005State\022\014\n\004name\030\001"
-    " \002(\t\022\016\n\006target\030\002 \001(\010\032)\n\005Agent\022\014\n\004name\030\001 "
-    "\002(\t\022\022\n\nrootOption\030\002 \002(\t\"\341\001\n\016XABSLParamet"
-    "er\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162"
-    "\'.naothmessages.XABSLParameter.ParamType"
-    ":\007Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolV"
-    "alue\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamTy"
-    "pe\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013"
-    "\n\007Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001("
-    "\0162%.naothmessages.XABSLAction.ActionType"
-    ":\007Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017time"
-    "OfExecution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001("
-    "\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(\013"
-    "2\035.naothmessages.XABSLParameter\0224\n\020activ"
-    "eSubActions\030\007 \003(\0132\032.naothmessages.XABSLA"
-    "ction\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValue"
-    "\030\t \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionType"
-    "\022\n\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Decim"
-    "alOutputSymbol\020\002\022\027\n\023BooleanOutputSymbol\020"
-    "\003\022\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n"
-    "\016BehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021active"
-    "RootActions\030\002 \003(\0132\032.naothmessages.XABSLA"
-    "ction\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmessa"
-    "ges.XABSLParameter\0224\n\routputSymbols\030\004 \003("
-    "\0132\035.naothmessages.XABSLParameter\022\023\n\013fram"
-    "eNumber\030\005 \001(\r\022\024\n\014errorMessage\030\006 \001(\t\"k\n\006M"
-    "odule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentatio"
-    "ns\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003("
-    "\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&"
-    "\n\007modules\030\001 \003(\0132\025.naothmessages.Module\"\213"
-    "\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothme"
-    "ssages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005ang"
-    "le\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002"
-    "(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectio"
-    "nResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPo"
-    "ints\030\002 \003(\0132\036.naothmessages.FeatureKeyPoi"
-    "nt\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages."
-    "SingleDescriptor\022\031\n\021namesForKeyPoints\030\004 "
-    "\003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264"
-    "\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Featu"
-    "reClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037"
-    ".naothmessages.SingleDescriptor\022\024\n\014objec"
-    "tHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes"
-    "\030\001 \003(\0132\033.naothmessages.FeatureClass\022#\n\027n"
-    "umberOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.n"
-    "aoth.rc.messages", 4896);
+    "sages.SymbolValueList\022\023\n\013frameNumber\030\017 \001"
+    "(\r\032\211\001\n\010EnumType\022\014\n\004name\030\001 \002(\t\022G\n\010element"
+    "s\030\002 \003(\01325.naothmessages.BehaviorStateCom"
+    "plete.EnumType.Element\032&\n\007Element\022\r\n\005val"
+    "ue\030\001 \002(\005\022\014\n\004name\030\002 \002(\t\032\260\001\n\006Option\022\014\n\004nam"
+    "e\030\001 \002(\t\022A\n\006states\030\003 \003(\01321.naothmessages."
+    "BehaviorStateComplete.Option.State\022.\n\npa"
+    "rameters\030\002 \003(\0132\032.naothmessages.XABSLSymb"
+    "ol\032%\n\005State\022\014\n\004name\030\001 \002(\t\022\016\n\006target\030\002 \001("
+    "\010\032)\n\005Agent\022\014\n\004name\030\001 \002(\t\022\022\n\nrootOption\030\002"
+    " \002(\t\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007u"
+    "nknown\022>\n\004type\030\002 \001(\0162\'.naothmessages.XAB"
+    "SLParameter.ParamType:\007Unknown\022\024\n\014decima"
+    "lValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumV"
+    "alue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007"
+    "Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XAB"
+    "SLAction\022<\n\004type\030\001 \001(\0162%.naothmessages.X"
+    "ABSLAction.ActionType:\007Unknown\022\025\n\004name\030\002"
+    " \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\001"
+    "0\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001("
+    "\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages.XA"
+    "BSLParameter\0224\n\020activeSubActions\030\007 \003(\0132\032"
+    ".naothmessages.XABSLAction\022\024\n\014decimalVal"
+    "ue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue"
+    "\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBas"
+    "icBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n"
+    "\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputSymb"
+    "ol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016BehaviorStatus\022\r\n\005"
+    "agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032"
+    ".naothmessages.XABSLAction\0223\n\014inputSymbo"
+    "ls\030\003 \003(\0132\035.naothmessages.XABSLParameter\022"
+    "4\n\routputSymbols\030\004 \003(\0132\035.naothmessages.X"
+    "ABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014er"
+    "rorMessage\030\006 \001(\t\"k\n\006Module\022\014\n\004name\030\001 \002(\t"
+    "\022\033\n\023usedRepresentations\030\002 \003(\t\022\037\n\027provide"
+    "dRepresentations\030\003 \003(\t\022\025\n\006active\030\004 \001(\010:\005"
+    "false\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132\025.n"
+    "aothmessages.Module\"\213\001\n\017FeatureKeyPoint\022"
+    "\'\n\002pt\030\001 \002(\0132\033.naothmessages.FloatVector2"
+    "\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010respons"
+    "e\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006 \002("
+    "\005\"\331\001\n\026FeatureDetectionResult\022\026\n\016grayScal"
+    "eImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.naothm"
+    "essages.FeatureKeyPoint\0224\n\013descriptors\030\003"
+    " \003(\0132\037.naothmessages.SingleDescriptor\022\031\n"
+    "\021namesForKeyPoints\030\004 \003(\t\022#\n\027numberOfFeat"
+    "ureElements\030\005 \001(\005:\00264\"\035\n\020SingleDescripto"
+    "r\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030\001 \002"
+    "(\t\0220\n\007samples\030\002 \003(\0132\037.naothmessages.Sing"
+    "leDescriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n\014Fe"
+    "atureTable\022,\n\007classes\030\001 \003(\0132\033.naothmessa"
+    "ges.FeatureClass\022#\n\027numberOfFeatureEleme"
+    "nts\030\002 \001(\005:\00264B\026\n\024de.naoth.rc.messages", 4917);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();
@@ -8403,6 +8404,7 @@ const int BehaviorStateComplete::kOptionsFieldNumber;
 const int BehaviorStateComplete::kAgentsFieldNumber;
 const int BehaviorStateComplete::kInputSymbolListFieldNumber;
 const int BehaviorStateComplete::kOutputSymbolListFieldNumber;
+const int BehaviorStateComplete::kFrameNumberFieldNumber;
 #endif  // !_MSC_VER
 
 BehaviorStateComplete::BehaviorStateComplete()
@@ -8425,6 +8427,7 @@ void BehaviorStateComplete::SharedCtor() {
   _cached_size_ = 0;
   inputsymbollist_ = NULL;
   outputsymbollist_ = NULL;
+  framenumber_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -8467,6 +8470,7 @@ void BehaviorStateComplete::Clear() {
     if (has_outputsymbollist()) {
       if (outputsymbollist_ != NULL) outputsymbollist_->::naothmessages::SymbolValueList::Clear();
     }
+    framenumber_ = 0u;
   }
   enumerations_.Clear();
   options_.Clear();
@@ -8550,6 +8554,22 @@ bool BehaviorStateComplete::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(120)) goto parse_frameNumber;
+        break;
+      }
+      
+      // optional uint32 frameNumber = 15;
+      case 15: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_frameNumber:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &framenumber_)));
+          set_has_framenumber();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -8602,6 +8622,11 @@ void BehaviorStateComplete::SerializeWithCachedSizes(
       14, this->outputsymbollist(), output);
   }
   
+  // optional uint32 frameNumber = 15;
+  if (has_framenumber()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(15, this->framenumber(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -8645,6 +8670,11 @@ void BehaviorStateComplete::SerializeWithCachedSizes(
         14, this->outputsymbollist(), target);
   }
   
+  // optional uint32 frameNumber = 15;
+  if (has_framenumber()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(15, this->framenumber(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -8668,6 +8698,13 @@ int BehaviorStateComplete::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->outputsymbollist());
+    }
+    
+    // optional uint32 frameNumber = 15;
+    if (has_framenumber()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->framenumber());
     }
     
   }
@@ -8730,6 +8767,9 @@ void BehaviorStateComplete::MergeFrom(const BehaviorStateComplete& from) {
     if (from.has_outputsymbollist()) {
       mutable_outputsymbollist()->::naothmessages::SymbolValueList::MergeFrom(from.outputsymbollist());
     }
+    if (from.has_framenumber()) {
+      set_framenumber(from.framenumber());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -8773,6 +8813,7 @@ void BehaviorStateComplete::Swap(BehaviorStateComplete* other) {
     agents_.Swap(&other->agents_);
     std::swap(inputsymbollist_, other->inputsymbollist_);
     std::swap(outputsymbollist_, other->outputsymbollist_);
+    std::swap(framenumber_, other->framenumber_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

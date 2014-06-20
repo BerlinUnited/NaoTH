@@ -2874,12 +2874,21 @@ class BehaviorStateComplete : public ::google::protobuf::Message {
   inline ::naothmessages::SymbolValueList* mutable_outputsymbollist();
   inline ::naothmessages::SymbolValueList* release_outputsymbollist();
   
+  // optional uint32 frameNumber = 15;
+  inline bool has_framenumber() const;
+  inline void clear_framenumber();
+  static const int kFrameNumberFieldNumber = 15;
+  inline ::google::protobuf::uint32 framenumber() const;
+  inline void set_framenumber(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete)
  private:
   inline void set_has_inputsymbollist();
   inline void clear_has_inputsymbollist();
   inline void set_has_outputsymbollist();
   inline void clear_has_outputsymbollist();
+  inline void set_has_framenumber();
+  inline void clear_has_framenumber();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2888,9 +2897,10 @@ class BehaviorStateComplete : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::naothmessages::BehaviorStateComplete_Agent > agents_;
   ::naothmessages::SymbolValueList* inputsymbollist_;
   ::naothmessages::SymbolValueList* outputsymbollist_;
+  ::google::protobuf::uint32 framenumber_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -6933,6 +6943,28 @@ inline ::naothmessages::SymbolValueList* BehaviorStateComplete::release_outputsy
   ::naothmessages::SymbolValueList* temp = outputsymbollist_;
   outputsymbollist_ = NULL;
   return temp;
+}
+
+// optional uint32 frameNumber = 15;
+inline bool BehaviorStateComplete::has_framenumber() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void BehaviorStateComplete::set_has_framenumber() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void BehaviorStateComplete::clear_has_framenumber() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void BehaviorStateComplete::clear_framenumber() {
+  framenumber_ = 0u;
+  clear_has_framenumber();
+}
+inline ::google::protobuf::uint32 BehaviorStateComplete::framenumber() const {
+  return framenumber_;
+}
+inline void BehaviorStateComplete::set_framenumber(::google::protobuf::uint32 value) {
+  set_has_framenumber();
+  framenumber_ = value;
 }
 
 // -------------------------------------------------------------------

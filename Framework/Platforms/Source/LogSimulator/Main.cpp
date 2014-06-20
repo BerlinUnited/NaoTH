@@ -85,11 +85,11 @@ int main(int argc, char** argv)
   Platform::getInstance().init(&sim);
   
   //init_agent(sim);
-  Cognition& theCognition = *createCognition();
-  Motion& theMotion = *createMotion();
+  Cognition* theCognition = createCognition();
+  Motion* theMotion = createMotion();
 
   // ACHTUNG: C-Cast (!)
-  ModuleManager* theCognitionManager = getModuleManager(&theCognition);
+  ModuleManager* theCognitionManager = getModuleManager(theCognition);
   if(!theCognitionManager)
   {
     std::cerr << "ERROR: theCognition is not of type ModuleManager" << std::endl;
@@ -100,8 +100,8 @@ int main(int argc, char** argv)
   ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
 
   // register processes
-  sim.registerCognition((naoth::Callable*)(&theCognition));
-  sim.registerMotion((naoth::Callable*)(&theMotion));
+  sim.registerCognition((naoth::Callable*)(theCognition));
+  sim.registerMotion((naoth::Callable*)(theMotion));
  
   theLogProvider->setEnabled(true);
   theLogProvider->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
@@ -109,9 +109,12 @@ int main(int argc, char** argv)
 
   // start the execution
   sim.main();
-  
+
   // dump some debug information
   StopwatchManager::getInstance().dump();
+
+  deleteCognition(theCognition);
+  deleteMotion(theMotion);
 
   return (EXIT_SUCCESS);
 }//end main

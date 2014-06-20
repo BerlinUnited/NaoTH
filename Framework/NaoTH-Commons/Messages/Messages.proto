@@ -189,6 +189,7 @@ message BehaviorStateComplete {
   
   optional SymbolValueList inputSymbolList = 13;
   optional SymbolValueList outputSymbolList = 14;
+  optional uint32 frameNumber = 15;
 }
 
 
