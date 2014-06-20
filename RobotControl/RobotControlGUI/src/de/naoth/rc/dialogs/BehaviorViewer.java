@@ -14,6 +14,10 @@ import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLProtoParser;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ObjectListener;
@@ -37,6 +41,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
+import javax.jws.Oneway;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -48,6 +53,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -70,6 +76,8 @@ public class BehaviorViewer extends AbstractDialog
       public static DebugDrawingManager debugDrawingManager;
       @InjectPlugin
       public static SwingCommandExecutor commandExecutor;
+      @InjectPlugin
+      public static LogFileEventManager logFileEventManager;
   }//end Plugin
   
 
@@ -109,6 +117,7 @@ public class BehaviorViewer extends AbstractDialog
 
   private BehaviorListener behaviorListener = new BehaviorListener();
   private BehaviorUpdateListener behaviorUpdateListener = new BehaviorUpdateListener();
+  private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
   
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
@@ -155,7 +164,7 @@ public class BehaviorViewer extends AbstractDialog
     }
   }//end SymbolComperator
 
-  
+
   class BehaviorListener implements ObjectListener<byte[]>
   {
         @Override
@@ -486,7 +495,8 @@ public class BehaviorViewer extends AbstractDialog
         outputSymbolsBoxPanel = new javax.swing.JPanel();
         sortSymbolsTextInput = new javax.swing.JTextField();
         jToolBar1 = new javax.swing.JToolBar();
-        btReceiveExecutionPath = new javax.swing.JToggleButton();
+        btReceive = new javax.swing.JToggleButton();
+        btReceiveLogData = new javax.swing.JToggleButton();
         cbOnlyOptions = new javax.swing.JCheckBox();
         btSend = new javax.swing.JButton();
         cbAgents = new javax.swing.JComboBox();
@@ -539,16 +549,27 @@ public class BehaviorViewer extends AbstractDialog
         jToolBar1.setRollover(true);
         jToolBar1.setBorderPainted(false);
 
-        btReceiveExecutionPath.setText("Receive Execution Path");
-        btReceiveExecutionPath.setFocusable(false);
-        btReceiveExecutionPath.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btReceiveExecutionPath.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btReceiveExecutionPath.addActionListener(new java.awt.event.ActionListener() {
+        btReceive.setText("Receive");
+        btReceive.setFocusable(false);
+        btReceive.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btReceive.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btReceive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReceiveExecutionPathActionPerformed(evt);
+                btReceiveActionPerformed(evt);
             }
         });
-        jToolBar1.add(btReceiveExecutionPath);
+        jToolBar1.add(btReceive);
+
+        btReceiveLogData.setText("Receive");
+        btReceiveLogData.setFocusable(false);
+        btReceiveLogData.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btReceiveLogData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btReceiveLogData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btReceiveLogDataActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btReceiveLogData);
 
         cbOnlyOptions.setText("only options");
         cbOnlyOptions.setFocusable(false);
@@ -638,9 +659,9 @@ public class BehaviorViewer extends AbstractDialog
         add(drawingPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-  private void btReceiveExecutionPathActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveExecutionPathActionPerformed
-  {//GEN-HEADEREND:event_btReceiveExecutionPathActionPerformed
-    if(btReceiveExecutionPath.isSelected())
+  private void btReceiveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveActionPerformed
+  {//GEN-HEADEREND:event_btReceiveActionPerformed
+    if(btReceive.isSelected())
     {
       if(Plugin.parent.checkConnected())
       {
@@ -657,7 +678,7 @@ public class BehaviorViewer extends AbstractDialog
       }
       else
       {
-        btReceiveExecutionPath.setSelected(false);
+        btReceive.setSelected(false);
       }
     }
     else
@@ -667,7 +688,7 @@ public class BehaviorViewer extends AbstractDialog
       Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
     }
 
-}//GEN-LAST:event_btReceiveExecutionPathActionPerformed
+}//GEN-LAST:event_btReceiveActionPerformed
 
     private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
       String behavior = Plugin.parent.getConfig().getProperty(behaviorConfKey, defaultBehavior);
@@ -770,6 +791,48 @@ public class BehaviorViewer extends AbstractDialog
       
     }//GEN-LAST:event_cbAgentsMouseClicked
 
+    private void btReceiveLogDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveLogDataActionPerformed
+        if(btReceiveLogData.isSelected())
+        {
+            Plugin.logFileEventManager.addListener(logBehaviorListener);
+        }
+        else
+        {
+            Plugin.logFileEventManager.removeListener(logBehaviorListener);
+        }
+    }//GEN-LAST:event_btReceiveLogDataActionPerformed
+
+  private class LogBehaviorListener implements LogFrameListener
+  {
+    @Override
+    public void newFrame(BlackBoard b, int frameNumber) {
+        
+        try
+        {
+          LogDataFrame f = b.get("BehaviorStateComplete");
+          Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
+          
+          behaviorParser = new XABSLProtoParser();
+          currentBehavior =  behaviorParser.parse(status);
+        }
+        catch(InvalidProtocolBufferException ex)
+        {
+          Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try
+        {
+          LogDataFrame f = b.get("BehaviorStateSparse");
+          Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
+          final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+          addFrame(frame);
+        }
+        catch(InvalidProtocolBufferException ex)
+        {
+          Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+  }
 
   //TODO: check if the agent name is avaliable
   private void setAgent(String name)
@@ -946,7 +1009,8 @@ public class BehaviorViewer extends AbstractDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private de.naoth.rc.dialogs.behaviorviewer.BehaviorTreePanel behaviorTreePanel;
     private javax.swing.JButton btAddWatch;
-    private javax.swing.JToggleButton btReceiveExecutionPath;
+    private javax.swing.JToggleButton btReceive;
+    private javax.swing.JToggleButton btReceiveLogData;
     private javax.swing.JButton btSend;
     private javax.swing.JComboBox cbAgents;
     private javax.swing.JCheckBox cbOnlyOptions;
