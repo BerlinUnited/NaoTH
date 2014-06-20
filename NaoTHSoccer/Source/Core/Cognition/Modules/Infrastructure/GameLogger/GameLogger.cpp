@@ -12,8 +12,6 @@ void GameLogger::execute()
   if(getBehaviorStateComplete().state.IsInitialized() &&
           getBehaviorStateSparse().state.IsInitialized())
   {
-      std::cout << "executing game logger " << std::endl;
-
       std::stringstream& streamFrameInfo =
           logfileManager.log(getFrameInfo().getFrameNumber(), "FrameInfo");
       Serializer<FrameInfo>::serialize(getFrameInfo(), streamFrameInfo);
@@ -36,6 +34,5 @@ void GameLogger::execute()
 
 GameLogger::~GameLogger()
 {
-  std::cout << "closing game log file" << std::endl;
   logfileManager.closeFile();
 }
