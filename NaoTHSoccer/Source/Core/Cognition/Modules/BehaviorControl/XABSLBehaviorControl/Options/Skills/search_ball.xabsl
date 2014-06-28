@@ -1,39 +1,71 @@
-option search_ball{  
+option search_ball
+{  
 
-  /*
-  diese option mitreinnehmen?
-      if((vector.abs(y=ball.preview.y,x=ball.preview.x)<250) && (state_time>1500))
-        goto search_ball_close;
-  */
+  initial state start
+  {
+    decision {
+      if(ball.preview.y > 0)
+        goto search_ball_rot_left;
+      else
+        goto search_ball_rot_right;
+    }
+    action {
+    }
+  }
   
-  initial state search_ball_close {
+  state search_ball_rot_left
+  {
     decision {
       if(action_done)
-        goto stand;
+        goto search_ball_simple_right;
       else
         stay;
     }
     action {
-      striker_search();
-      //search_ball_back_rot();
+      search_ball_back_rot(search_direction = left);
     }
   }
 
-/* Integrated in "striker_search"
-  state search_ball_far {
+ state search_ball_rot_right
+  {
     decision {
-      if(action_done || state_time>3000)
-        goto stand;
+      if(action_done)
+        goto search_ball_simple_left;
       else
         stay;
     }
     action {
-      simple_search_ball();
+      search_ball_back_rot(search_direction = right);
     }
   }
-*/
 
-  state stand {
+  state search_ball_simple_left
+  {
+    decision {
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball(search_direction = left);
+    }
+  }
+
+  state search_ball_simple_right
+  {
+    decision {
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball(search_direction = right);
+    }
+  }
+
+  state finish {
     action{
       motion.type = stand;
       head.control_mode = search_for_ball;

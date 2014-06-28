@@ -29,7 +29,7 @@ option situation_based_striker
     }
     action{
       situation_abortable = true;
-      striker_search();
+      search_ball();
     }
   }
 
