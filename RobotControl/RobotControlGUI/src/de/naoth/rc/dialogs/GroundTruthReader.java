@@ -3,16 +3,13 @@ package de.naoth.rc.dialogs;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.LogSimulator;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.messages.Representations;
-import de.naoth.rc.server.Command;
-import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,101 +19,73 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author  Thomas
- * @author  Heinrich
+ * @author Heinrich
+ * @author Peter
  */
-public class GroundTruthReader extends AbstractDialog
-{
+public class GroundTruthReader extends AbstractDialog {
+    
+      private Map<Integer, Boolean> topBall,
+            bottomBall;
+     private Map<Integer, Integer> topGoal,
+            bottomGoal;
 
-    private void openFile() {
-       String fileName = LogfilePlayer.getFileName();
-       fileName = fileName.substring(0, fileName.lastIndexOf(".")+1) +"gts";
-       ObjectInputStream o;
+    
+   
+
+    @PluginImplementation
+    public static class Plugin extends DialogPlugin<GroundTruthReader> {
+
+        @InjectPlugin
+        public static RobotControl parent;
+        @InjectPlugin
+        public static GenericManagerFactory genericManagerFactory;
+        /*  @InjectPlugin
+         public static Representation frameworkRepresentation;
+         */
+    }//end Plugin
+  
+    private final GroundTruthReader.LogPerceptListener logPerceptListener = new GroundTruthReader.LogPerceptListener();
+
+    public GroundTruthReader() {
+
+        initComponents();
+        LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
+     // Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
+        //Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
+
+    }
+
+     private void openFile() {
+        if (!this.jToggleButton3.isSelected()) return;
+        String fileName = LogfilePlayer.getFileName();
+        if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "No opend logfile", "Error", JOptionPane.ERROR_MESSAGE);
+            this.jToggleButton3.setSelected(false);
+            return;
+        }
+        fileName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + "gts";
+        ObjectInputStream o;
         try {
 
-            o = new ObjectInputStream(new FileInputStream
-                                (fileName));
-            topBall = (Map<Integer,Boolean>) o.readObject();
-            bottomBall = (Map<Integer,Boolean>) o.readObject();
-            topGoal = (Map<Integer,Boolean>) o.readObject();
-            bottomGoal = (Map<Integer,Boolean>) o.readObject();
-            
+            o = new ObjectInputStream(new FileInputStream(fileName));
+            topBall = (Map<Integer, Boolean>) o.readObject();
+            bottomBall = (Map<Integer, Boolean>) o.readObject();
+            topGoal = (Map<Integer, Integer>) o.readObject();
+            bottomGoal = (Map<Integer, Integer>) o.readObject();
+
         } catch (IOException ex) {
-             JOptionPane.showMessageDialog(null,"No Groundtruth for this lopgfile", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No Groundtruth for this logfile", "Error", JOptionPane.ERROR_MESSAGE);
+            this.jToggleButton3.setSelected(false);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    @PluginImplementation
-    public static class Plugin extends DialogPlugin<GroundTruthReader> {
-    @InjectPlugin
-    public static RobotControl parent;  
-    @InjectPlugin
-    public static GenericManagerFactory genericManagerFactory;
-  /*  @InjectPlugin
-    public static Representation frameworkRepresentation;
-    */
-  }//end Plugin
 
-  private final Command getBallDataCommand = new Command("Cognition:representation:getbinary").addArg("BallPercept");
-  private final Command getBallTopDataCommand = new Command("Cognition:representation:getbinary").addArg("BallPerceptTop");
-  private final Command getGoalTopDataCommand = new Command("Cognition:representation:getbinary").addArg("GoalPerceptTop");
-  private final Command getGoalDataCommand = new Command("Cognition:representation:getbinary").addArg("GoalPerceptTop");
-  //private final Command getFrameInfoCommand = new Command("Cognition:representation:getbinary").addArg("FrameInfo");
-          
-  
-  
-  private final BallDataListener ballTopListener = new BallDataListener(getBallTopDataCommand, true);
-  private final BallDataListener ballListener = new BallDataListener(getBallDataCommand, false);
-  private final GoalDataListener goalListener =  new GoalDataListener(getGoalDataCommand, false);
-  private final GoalDataListener goalTopListener = new GoalDataListener(getGoalTopDataCommand, true);
-  //private final FrameInfoListener frameInfoListener = new FrameInfoListener(getFrameInfoCommand);
-  
-  private Map<Integer,Boolean> topBall,
-                               bottomBall,
-                               topGoal,
-                               bottomGoal;
-  
- 
-  
-
-
-    public GroundTruthReader()    {
-         
-        initComponents();
-     // Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
-      //Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
-
-    }
-  
-    public boolean initListeners () {
-        try {
-            Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
-            Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
-            Plugin.genericManagerFactory.getManager(getGoalDataCommand).addListener(goalListener);
-            Plugin.genericManagerFactory.getManager(getGoalDataCommand).addListener(goalTopListener);
-        } catch (java.nio.channels.NotYetConnectedException ex) {
-            return false;
-        }
-        return true;
-    }
-  
-    @Override
-    public void dispose()
-    {
-        Plugin.genericManagerFactory.getManager(getBallDataCommand).removeListener(ballListener);
-        Plugin.genericManagerFactory.getManager(getBallTopDataCommand).removeListener(ballTopListener);
-        Plugin.genericManagerFactory.getManager(getGoalDataCommand).removeListener(goalListener);
-        Plugin.genericManagerFactory.getManager(getGoalTopDataCommand).removeListener(goalTopListener);
-       // Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(frameInfoListener);
-    }
-
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -135,6 +104,7 @@ public class GroundTruthReader extends AbstractDialog
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.setFocusable(false);
         jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -157,18 +127,9 @@ public class GroundTruthReader extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-       if (jToggleButton3.isSelected()) {
-            if (initListeners ()) {
+        if (jToggleButton3.isSelected()) {           
                 openFile();
-            } else {
-                jToggleButton3.setSelected(false);
-                JOptionPane.showMessageDialog(null,"Not connected to Robot", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } else {
-            dispose();
         }
-       
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -178,157 +139,116 @@ public class GroundTruthReader extends AbstractDialog
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JToggleButton jToggleButton3;
     // End of variables declaration//GEN-END:variables
-class BallDataListener implements ObjectListener<byte[]>
-{  
-    private final Command getBallDataCommand;
-    private final boolean topCam;
 
-    BallDataListener (Command getBallDataCommand, boolean topCam) {
-        this.getBallDataCommand = getBallDataCommand;
-        this.topCam = topCam;
-    }
+    class LogPerceptListener implements LogSimulator.LogSimulatorActionListener {
 
-    @Override
-    public void errorOccured(String cause) {
-        RobotHealth.Plugin.genericManagerFactory.getManager(getBallDataCommand).removeListener(this);
-    }
-
-    @Override
-    public void newObjectReceived(byte[] object) 
-    {
-      try
-      {
-        Representations.BallPercept ballData = 
-                Representations.BallPercept.parseFrom(object);
-        Boolean ballGT;
-        if (topCam) {
-            ballGT = topBall.get(LogfilePlayer.getCurrentFrame());
-        //    int currentFrame = LogfilePlayer.getCurrentFrame(); 
-            if (ballGT==null){
-                String msg = "Missing frame " +LogfilePlayer.getCurrentFrame() +" in Groundtruth\n";
-                GroundTruthReader.this.jTextArea1.append(msg);
-            } else if (ballGT != ballData.getBallWasSeen()){
-                if (ballGT) {
-                 //  GroundTruthReader.this.jTextArea1.set(Color.red);
-                   GroundTruthReader.this.jTextArea1.append("[" +LogfilePlayer.getCurrentFrame()  +"] missed ball on topcamera\n");
-                  // GroundTruthReader.this.jTextArea1.setForeground(Color.black);
-                } else {
-                  // GroundTruthReader.this.jTextArea1.setForeground(Color.red);
-                   GroundTruthReader.this.jTextArea1.append("[" +LogfilePlayer.getCurrentFrame()  +"] false ball on topcamera\n");
-                //   GroundTruthReader.this.jTextArea1.setForeground(Color.black);
-                }
-            }            
-        } else {
-            ballGT = bottomBall.get(LogfilePlayer.getCurrentFrame());
-            if (ballGT==null){
-                String msg = "Missing frame " +LogfilePlayer.getCurrentFrame() +" in Groundtruth\n";
-                GroundTruthReader.this.jTextArea1.append(msg);
-            } else if (ballGT != ballData.getBallWasSeen()){
-                if (ballGT) {
-                   GroundTruthReader.this.jTextArea1.setForeground(Color.red);
-                   GroundTruthReader.this.jTextArea1.append("" +LogfilePlayer.getCurrentFrame()  +": missed ball on botttomcamera\n");
-                   GroundTruthReader.this.jTextArea1.setForeground(Color.black);
-                } else {
-                   GroundTruthReader.this.jTextArea1.setForeground(Color.red);
-                   GroundTruthReader.this.jTextArea1.append("" +LogfilePlayer.getCurrentFrame()  +": false ball on bottomcamera\n");
-                   GroundTruthReader.this.jTextArea1.setForeground(Color.black);
-                }
+        @Override
+        public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {            
+            if (!GroundTruthReader.this.jToggleButton3.isSelected()) {
+                return;
             }
-           
-        }           
-      }
-      catch (InvalidProtocolBufferException ex)
-      {
-        //ex.printStackTrace();
-        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
-        errorOccured(ex.getMessage());
-        String msg = new String(object);
-        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }//end newObjectReceived
-    }//end class BallDataListener
+            try {               
+                /**
+                 * ************BallPercept*****************************************************
+                 */
+                byte[]data = b.getRepresentation("BallPercept");
+                Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
+                Boolean ballHere = bottomBall.get(frameNumber);
+                if (ballHere == null) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
+                    return;
+                } else {
+                    if (ballHere != ballPercept.getBallWasSeen()) {
+                        if (ballHere) {
+                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missed ball on botttomCamera\n");
+                        } else {
+                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": false ball on botttomCamera\n");
+                        }
+                    }
+                }
+                /**
+                 * ************BallPercept*****************************************************
+                 */
+                /**
+                 * ************BallPerceptTop**************************************************
+                 */
+                data = b.getRepresentation("BallPerceptTop");
+                ballPercept = Representations.BallPercept.parseFrom(data);
+                ballHere = topBall.get(frameNumber);
+                if (ballHere == null) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
+                    return;
+                } else {
+                    if (ballHere != ballPercept.getBallWasSeen()) {
+                        if (ballHere) {
+                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missed ball on topCamera\n");
+                        } else {
+                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": false ball on topCamera\n");
+                        }
+                    }
+                }
+                /**
+                 * ************BallPerceptTop**************************************************
+                 */
+                /**
+                 * ************GoalPercept**************************************************
+                 */
+                data = b.getRepresentation("GoalPercept");
+                Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
+                int postCount = goalPercept.getPostCount();
+                Integer goalHere = bottomGoal.get(frameNumber);
+                if (goalHere == null) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
+                    return;
+                }
+                if (goalHere == 0 && postCount != 0) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 0 on bottomCamera\n");
+                } else if (goalHere == 1 && postCount != 1) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 1 on bottomCamera\n");
+                } else if (goalHere == 2 && postCount != 2) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 2 on bottomCamera\n");
+                }
+                /**
+                 * ************GoalPercept**************************************************
+                 */
+                /**
+                 * ************GoalPerceptTop***********************************************
+                 */
+                data = b.getRepresentation("GoalPerceptTop");
+                Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
+                postCount = goalPerceptTop.getPostCount();
+                goalHere = topGoal.get(frameNumber);
+                if (goalHere == null) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
+                    return;
+                }
+                if (goalHere == 0 && postCount != 0) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 0 on topCamera\n");
+                } else if (goalHere == 1 && postCount != 1) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 1 on topCamera\n");
+                } else if (goalHere == 2 && postCount != 2) {
+                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
+                            + " GroundTruth: 2 on topCamera\n");
+                }
+                /**
+                 * ************GoalPerceptTop***********************************************
+                 */
 
-class GoalDataListener implements ObjectListener<byte[]> {
-    private final Command getGoalDataCommand;
-    private final boolean topCam;
-    
-    GoalDataListener (Command getGoalDataCommand, boolean topCam) {
-        this.getGoalDataCommand = getGoalDataCommand;
-        this.topCam = topCam;
+            } catch (InvalidProtocolBufferException ex) {
+                ex.printStackTrace(System.err);
+            }
+        }
+
+        @Override
+        public void logfileOpened(LogSimulator.BlackBoard b, String path) {
+            GroundTruthReader.this.openFile();
+        }
     }
 
-    @Override
-    public void errorOccured(String cause) {
-        RobotHealth.Plugin.genericManagerFactory.getManager(getGoalDataCommand).removeListener(this);
-    }
-
-    @Override
-    public void newObjectReceived(byte[] object) 
-    {
-      try
-      {
-        Representations.GoalPercept goalData = 
-                Representations.GoalPercept.parseFrom(object);
-        if (topCam) {
-                      
-                      
-        } else {
-                           
-           
-           
-        }           
-      }
-      catch (InvalidProtocolBufferException ex)
-      {
-        //ex.printStackTrace();
-        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
-        errorOccured(ex.getMessage());
-        String msg = new String(object);
-        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }//end newObjectReceived
-    
-   
-}//end class GoalDataListener
-
-/*
-class FrameInfoListener implements ObjectListener<byte[]>
-{  
-    private final Command getFrameInfoCommand; 
-    public int currentFrame = 0;
-
-    FrameInfoListener (Command getFrameInfoCommand) {
-        this.getFrameInfoCommand = getFrameInfoCommand;      
-    }
-
-    @Override
-    public void errorOccured(String cause) {
-        RobotHealth.Plugin.genericManagerFactory.getManager(getFrameInfoCommand).removeListener(this);
-    }
-
-    @Override
-    public void newObjectReceived(byte[] object) 
-    {
-      try
-      {
-        FrameInfo frameInfo = 
-                FrameInfo.parseFrom(object);
-        this.currentFrame = frameInfo.getFrameNumber();
-               
-      }
-      catch (InvalidProtocolBufferException ex)
-      {
-        //ex.printStackTrace();
-        Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, ex);
-        errorOccured(ex.getMessage());
-        String msg = new String(object);
-        JOptionPane.showMessageDialog(null,msg, "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }//end newObjectReceived
-}//end class FrameInfoListener
-*/
- 
-
-  
 }//end class GroundTruthCreator
 
