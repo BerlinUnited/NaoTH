@@ -13,9 +13,11 @@ import java.io.ObjectInputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import org.apache.commons.collections4.map.LinkedMap;
 
 /**
  *
@@ -24,12 +26,46 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class GroundTruthReader extends AbstractDialog {
     
-      private Map<Integer, Boolean> topBall,
+     private Map<Integer, Boolean> topBall,
             bottomBall;
      private Map<Integer, Integer> topGoal,
             bottomGoal;
+     DefaultListModel listModel;
 
-    
+    private class MissmatchSaver{
+        int frame;
+        Boolean topBall = null,
+            bottomBall = null,
+            missingFrame = false;
+        Integer  topGoalGT = null,
+            bottomGoalGT = null,
+                topGoalSeen = null,
+                bottomGoalSeen = null;        
+        
+        @Override
+        public String toString() {
+            String back = "[" +frame +"] ";
+            if (missingFrame){
+                back += "missingFrame ";
+            }
+            if (topBall!=null) {
+                if (topBall) back += "missed topBall ";
+                else back+= "false topBall ";
+            }
+            if (bottomBall!=null) {
+                if (bottomBall) back += "missed bottomBall ";
+                else back+= "false bottomBall ";
+            }
+            if (topGoalGT != null) {
+                back += "Top goalPostsGT: " +topGoalGT +" goalPostsSeen: " +topGoalSeen +" ";
+            }
+            if (bottomGoalGT != null) {
+                back += "Bottom goalPostsGT: " +bottomGoalGT +" goalPostsSeen: " +bottomGoalSeen +" ";
+            }            
+            return back;
+        } 
+    }
+    Map<Integer,MissmatchSaver> missmatches;
    
 
     @PluginImplementation
@@ -47,9 +83,10 @@ public class GroundTruthReader extends AbstractDialog {
     private final GroundTruthReader.LogPerceptListener logPerceptListener = new GroundTruthReader.LogPerceptListener();
 
     public GroundTruthReader() {
-
+        listModel = new DefaultListModel();
         initComponents();
         LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
+        
      // Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
         //Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
 
@@ -79,6 +116,7 @@ public class GroundTruthReader extends AbstractDialog {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
         }
+        missmatches = new LinkedMap<>();
     }
 
     /**
@@ -92,8 +130,8 @@ public class GroundTruthReader extends AbstractDialog {
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
         jToggleButton3 = new javax.swing.JToggleButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
 
         jToggleButton3.setText("listen");
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -102,10 +140,8 @@ public class GroundTruthReader extends AbstractDialog {
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setFocusable(false);
-        jScrollPane1.setViewportView(jTextArea1);
+        jList1.setModel(listModel);
+        jScrollPane2.setViewportView(jList1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -113,16 +149,19 @@ public class GroundTruthReader extends AbstractDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(123, 523, Short.MAX_VALUE))
-            .addComponent(jScrollPane1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToggleButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(46, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -135,8 +174,8 @@ public class GroundTruthReader extends AbstractDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JList jList1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToggleButton jToggleButton3;
     // End of variables declaration//GEN-END:variables
 
@@ -147,22 +186,27 @@ public class GroundTruthReader extends AbstractDialog {
             if (!GroundTruthReader.this.jToggleButton3.isSelected()) {
                 return;
             }
+            MissmatchSaver missmatch = new MissmatchSaver();
+            boolean foundMissmatch = false;
             try {               
                 /**
                  * ************BallPercept*****************************************************
                  */
                 byte[]data = b.getRepresentation("BallPercept");
                 Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
-                Boolean ballHere = bottomBall.get(frameNumber);
+                Boolean ballHere = bottomBall.get(frameNumber); 
+                missmatch.frame = frameNumber;
                 if (ballHere == null) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
-                    return;
+                    missmatch.missingFrame = true;
+                    foundMissmatch=true;                    
                 } else {
                     if (ballHere != ballPercept.getBallWasSeen()) {
                         if (ballHere) {
-                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missed ball on botttomCamera\n");
+                            missmatch.bottomBall = true;
+                            foundMissmatch=true;  
                         } else {
-                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": false ball on botttomCamera\n");
+                            missmatch.bottomBall = false;
+                            foundMissmatch=true;
                         }
                     }
                 }
@@ -176,14 +220,16 @@ public class GroundTruthReader extends AbstractDialog {
                 ballPercept = Representations.BallPercept.parseFrom(data);
                 ballHere = topBall.get(frameNumber);
                 if (ballHere == null) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
-                    return;
+                    missmatch.missingFrame = true;
+                    foundMissmatch=true; 
                 } else {
                     if (ballHere != ballPercept.getBallWasSeen()) {
                         if (ballHere) {
-                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missed ball on topCamera\n");
+                            missmatch.topBall = true;
+                            foundMissmatch=true;
                         } else {
-                            GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": false ball on topCamera\n");
+                            missmatch.topBall = false;
+                            foundMissmatch=true;
                         }
                     }
                 }
@@ -198,19 +244,14 @@ public class GroundTruthReader extends AbstractDialog {
                 int postCount = goalPercept.getPostCount();
                 Integer goalHere = bottomGoal.get(frameNumber);
                 if (goalHere == null) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
-                    return;
+                    missmatch.missingFrame = true;
+                    foundMissmatch=true; 
                 }
-                if (goalHere == 0 && postCount != 0) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 0 on bottomCamera\n");
-                } else if (goalHere == 1 && postCount != 1) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 1 on bottomCamera\n");
-                } else if (goalHere == 2 && postCount != 2) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 2 on bottomCamera\n");
-                }
+                if (goalHere != postCount) {
+                    missmatch.bottomGoalGT = goalHere;
+                    missmatch.bottomGoalSeen = postCount;
+                    foundMissmatch=true;
+                } 
                 /**
                  * ************GoalPercept**************************************************
                  */
@@ -222,18 +263,13 @@ public class GroundTruthReader extends AbstractDialog {
                 postCount = goalPerceptTop.getPostCount();
                 goalHere = topGoal.get(frameNumber);
                 if (goalHere == null) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missing Frame\n");
-                    return;
+                    missmatch.missingFrame = true;
+                    foundMissmatch=true; 
                 }
-                if (goalHere == 0 && postCount != 0) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 0 on topCamera\n");
-                } else if (goalHere == 1 && postCount != 1) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 1 on topCamera\n");
-                } else if (goalHere == 2 && postCount != 2) {
-                    GroundTruthReader.this.jTextArea1.append("" + frameNumber + ": missmatch goalpost seen: " + postCount
-                            + " GroundTruth: 2 on topCamera\n");
+                if (goalHere != postCount) {
+                    missmatch.topGoalGT = goalHere;
+                    missmatch.topGoalSeen = postCount;
+                    foundMissmatch=true;
                 }
                 /**
                  * ************GoalPerceptTop***********************************************
@@ -241,6 +277,10 @@ public class GroundTruthReader extends AbstractDialog {
 
             } catch (InvalidProtocolBufferException ex) {
                 ex.printStackTrace(System.err);
+            }
+            if (foundMissmatch) {
+                missmatches.put(missmatch.frame, missmatch);               
+                listModel.addElement(missmatch);
             }
         }
 

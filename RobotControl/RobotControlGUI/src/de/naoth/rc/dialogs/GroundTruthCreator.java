@@ -439,27 +439,27 @@ class GroundTruthKeyController implements KeyEventPostProcessor
                                 !GroundTruthCreator.this.jToggleButton2.isSelected());
                     ballBottomToggle();
                     return true;                
-                case '7':
+                case '6':
                     topGoal.put(logPerceptListener.currentFrame, 0);
                     GroundTruthCreator.this.jRadioButton1.setSelected(true);
                     return true;
-                case '6':
+                case '5':
                     topGoal.put(logPerceptListener.currentFrame, 1); 
                     GroundTruthCreator.this.jRadioButton2.setSelected(true);
                     return true;
-                case '5':
+                case '4':
                     topGoal.put(logPerceptListener.currentFrame, 2);
                     GroundTruthCreator.this.jRadioButton3.setSelected(true);
                     return true;
-                case '4':                    
+                case '3':                    
                     bottomGoal.put(logPerceptListener.currentFrame, 0);
                     GroundTruthCreator.this.jRadioButton4.setSelected(true);
                     return true;
-                case '3':
+                case '2':
                     bottomGoal.put(logPerceptListener.currentFrame, 1);
                     GroundTruthCreator.this.jRadioButton5.setSelected(true);
                     return true;
-                case '2':
+                case '1':
                     bottomGoal.put(logPerceptListener.currentFrame, 2);
                     GroundTruthCreator.this.jRadioButton6.setSelected(true);
                     return true;
