@@ -30,9 +30,11 @@ GoalFeatureDetector::GoalFeatureDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:markPeaks", "mark found maximum u-v peaks in image", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:markGradients", "mark found gradients in image", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_response","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_difference","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:useColorFeatures","..", false);
 
   getGoalFeaturePercept().reset(params.numberOfScanlines);
   getGoalFeaturePerceptTop().reset(params.numberOfScanlines);
@@ -67,9 +69,19 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
      getGoalFeaturePercept().edgel_features[i].clear();
   }
 
+  bool useColor = false;
+  DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:useColorFeatures",
+    useColor = true;
+  );
   //find feature that are candidates for goal posts along scanlines 
-  findfeaturesDiff(horizonDirection, start);
-  //findfeaturesColor(horizonDirection, start);
+  if(!useColor)
+  {
+    findfeaturesDiff(horizonDirection, start);
+  }
+  else
+  {
+    findfeaturesColor(horizonDirection, start);
+  }
 
   return true;
 }//end execute
@@ -122,8 +134,9 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         if(filter.value() > params.thresholdUV)
         {
           begin = filter.point();
-          POINT_PX(ColorClasses::red, begin.x, begin.y );
-          
+          DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
+            POINT_PX(ColorClasses::red, begin.x, begin.y );
+          );
           jump = filter.value() - jump;
           begin_found = true;
         }
@@ -136,17 +149,23 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
       if(begin_found && filter.value() + jump*0.5 < params.thresholdUV)
       {
         const Vector2i& end = filter.point();
-        POINT_PX(ColorClasses::red, end.x, end.y );
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
+          POINT_PX(ColorClasses::red, end.x, end.y );
+        );
 
         Vector2d gradientBegin = calculateGradientUV(begin);
-        LINE_PX(ColorClasses::black, begin.x, begin.y, begin.x + (int)(10*gradientBegin.x+0.5), begin.y + (int)(10*gradientBegin.y+0.5));
-
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markGradients", 
+          LINE_PX(ColorClasses::black, begin.x, begin.y, begin.x + (int)(10*gradientBegin.x+0.5), begin.y + (int)(10*gradientBegin.y+0.5));
+        );
         Vector2d gradientEnd = calculateGradientUV(end);
-        LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
-
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markGradients", 
+          LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
+        );
         if(fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
         {
-          LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
+          DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks", 
+            LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
+          );
 
           EdgelT<double> edgel;
           edgel.point = Vector2d(begin + end)*0.5;
@@ -209,26 +228,32 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
 
       if(positiveScan.add(filter.point(), filter.value()))
       {
-        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
+          POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+        );
         begin_found = true;
       }
 
       if(negativeScan.add(filter.point(), -filter.value()))
       {
         Vector2d gradientBegin = calculateGradientUV(peak_point_max);
-        LINE_PX(ColorClasses::black, peak_point_max.x, peak_point_max.y, peak_point_max.x + (int)(10*gradientBegin.x+0.5), peak_point_max.y + (int)(10*gradientBegin.y+0.5));
-        
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markGradients",
+          LINE_PX(ColorClasses::black, peak_point_max.x, peak_point_max.y, peak_point_max.x + (int)(10*gradientBegin.x+0.5), peak_point_max.y + (int)(10*gradientBegin.y+0.5));
+        );
         Vector2d gradientEnd = calculateGradientUV(peak_point_min);
-        LINE_PX(ColorClasses::black, peak_point_min.x, peak_point_min.y, peak_point_min.x + (int)(10*gradientEnd.x+0.5), peak_point_min.y + (int)(10*gradientEnd.y+0.5));
-        
-        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
-
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markGradients",
+          LINE_PX(ColorClasses::black, peak_point_min.x, peak_point_min.y, peak_point_min.x + (int)(10*gradientEnd.x+0.5), peak_point_min.y + (int)(10*gradientEnd.y+0.5));
+        );
+        DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
+          POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
+        );
         // double edgel
         if(begin_found && fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
         {
-          LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
-          POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
-
+          DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
+            LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
+            POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+          );
           EdgelT<double> edgel;
           edgel.point = Vector2d(peak_point_max + peak_point_min)*0.5;
           edgel.direction = (gradientBegin - gradientEnd).normalize();

@@ -150,8 +150,9 @@ void NewGoalDetector::calcuateGoalPosts()
       Vector2d begin, end;
       begin = line.getBase();
       end = line.getBase() + line.getDirection()*50;
-      LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-
+      DEBUG_REQUEST("Vision:Detectors:NewGoalDetector:markPostScans",  
+        LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
+      );
       GoalPercept::GoalPost post;
       post.directionInImage = line.getDirection();
       post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
