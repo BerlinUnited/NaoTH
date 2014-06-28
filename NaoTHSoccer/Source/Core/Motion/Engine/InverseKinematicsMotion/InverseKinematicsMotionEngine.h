@@ -209,7 +209,6 @@ public:
 
   virtual ~InverseKinematicsMotionEngineService() 
   {
-    delete theEngine;
   }
 
   InverseKinematicsMotionEngine& getEngine() const

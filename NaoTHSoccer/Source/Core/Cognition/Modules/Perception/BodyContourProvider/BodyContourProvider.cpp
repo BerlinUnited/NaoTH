@@ -8,12 +8,12 @@
 */
 
 #include "BodyContourProvider.h"
+
 #include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/DebugDrawings.h>
-
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 using namespace std;
@@ -28,18 +28,18 @@ BodyContourProvider::BodyContourProvider()
 
   // load contour parameters
   // torso
-  bodyparts.torso.push_back(Vector3d(-60, 17, 80));
-  bodyparts.torso.push_back(Vector3d(-53, 45, 80));
-  bodyparts.torso.push_back(Vector3d( -35, 58, 100));
-  bodyparts.torso.push_back(Vector3d( -32, 75, 115));
-  bodyparts.torso.push_back(Vector3d(32, 75, 115));
-  bodyparts.torso.push_back(Vector3d(35, 58, 100));
-  bodyparts.torso.push_back(Vector3d(51, 45, 80));
-  bodyparts.torso.push_back(Vector3d(59, 17, 80));
-  bodyparts.torso.push_back(Vector3d(59, -17, 80));
-  bodyparts.torso.push_back(Vector3d(51, -45, 80));
-  bodyparts.torso.push_back(Vector3d(35, -58, 100));
-  bodyparts.torso.push_back(Vector3d(32, -75, 115));
+  bodyparts.torso.push_back(Vector3d(-60,  17, 80));
+  bodyparts.torso.push_back(Vector3d(-53,  45, 80));
+  bodyparts.torso.push_back(Vector3d(-35,  58, 100));
+  bodyparts.torso.push_back(Vector3d(-32,  75, 115));
+  bodyparts.torso.push_back(Vector3d( 32,  75, 115));
+  bodyparts.torso.push_back(Vector3d( 35,  58, 100));
+  bodyparts.torso.push_back(Vector3d( 51,  45, 80));
+  bodyparts.torso.push_back(Vector3d( 59,  17, 80));
+  bodyparts.torso.push_back(Vector3d( 59, -17, 80));
+  bodyparts.torso.push_back(Vector3d( 51, -45, 80));
+  bodyparts.torso.push_back(Vector3d( 35, -58, 100));
+  bodyparts.torso.push_back(Vector3d( 32, -75, 115));
   bodyparts.torso.push_back(Vector3d(-32, -75, 115));
   bodyparts.torso.push_back(Vector3d(-35, -58, 100));
   bodyparts.torso.push_back(Vector3d(-53, -45, 80));
@@ -56,25 +56,25 @@ BodyContourProvider::BodyContourProvider()
   bodyparts.upperArm.push_back(Vector3d(   0, -22,  47));
   bodyparts.upperArm.push_back(Vector3d( 120, -22,  47));
   // lower arm
-  bodyparts.lowerArm.push_back(Vector3d(-20, 30, 25));
-  bodyparts.lowerArm.push_back(Vector3d(120, 30, 45));
+  bodyparts.lowerArm.push_back(Vector3d(-20,  30, 25));
+  bodyparts.lowerArm.push_back(Vector3d(120,  30, 45));
   bodyparts.lowerArm.push_back(Vector3d(120, -40, 40));
   // upper leg
-  bodyparts.upperLeg.push_back(Vector3d(50, 30, 0));
-  bodyparts.upperLeg.push_back(Vector3d(50, 50, -115));
-  bodyparts.upperLeg.push_back(Vector3d(-60, 45, -160));
+  bodyparts.upperLeg.push_back(Vector3d( 50,  30,    0));
+  bodyparts.upperLeg.push_back(Vector3d( 50,  50, -115));
+  bodyparts.upperLeg.push_back(Vector3d(-60,  45, -160));
   bodyparts.upperLeg.push_back(Vector3d(-60, -38, -160));
-  bodyparts.upperLeg.push_back(Vector3d(50, -42, -115));
-  bodyparts.upperLeg.push_back(Vector3d(50, -30, 0));
+  bodyparts.upperLeg.push_back(Vector3d( 50, -42, -115));
+  bodyparts.upperLeg.push_back(Vector3d( 50, -30,    0));
   // lower leg
-  bodyparts.lowerLeg.push_back(Vector3d(50, 50, -115));
+  bodyparts.lowerLeg.push_back(Vector3d(50,  50, -115));
   bodyparts.lowerLeg.push_back(Vector3d(50, -42, -115));
   // foot
-  bodyparts.foot.push_back(Vector3d(-20, 50, -35));
-  bodyparts.foot.push_back(Vector3d(65, 50, -35));
-  bodyparts.foot.push_back(Vector3d(105, 20, -35));
+  bodyparts.foot.push_back(Vector3d(-20,  50, -35));
+  bodyparts.foot.push_back(Vector3d( 65,  50, -35));
+  bodyparts.foot.push_back(Vector3d(105,  20, -35));
   bodyparts.foot.push_back(Vector3d(105, -20, -35));
-  bodyparts.foot.push_back(Vector3d(80, -40, -35));
+  bodyparts.foot.push_back(Vector3d( 80, -40, -35));
   bodyparts.foot.push_back(Vector3d(-20, -40, -35));
   
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_3d:feet", "draw 3D body contour of the feet", false);
@@ -106,16 +106,16 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
   // HACK: end
 
   // calculate body contours
-  add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, BodyContour::Torso);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg, 1, BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg, 1, BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot, 1, BodyContour::FootLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, BodyContour::FootRight);
-  add(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm, 1, BodyContour::UpperArmLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, BodyContour::UpperArmRight);
-  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, BodyContour::LowerArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::Torso].M,    bodyparts.torso,     1, BodyContour::Torso);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M,   bodyparts.upperLeg,  1, BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M,   bodyparts.upperLeg, -1, BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M,   bodyparts.lowerLeg,  1, BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M,   bodyparts.lowerLeg, -1, BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LFoot].M,    bodyparts.foot,      1, BodyContour::FootLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RFoot].M,    bodyparts.foot,     -1, BodyContour::FootRight);
+  add(getKinematicChain().theLinks[KinematicChain::LBicep].M,   bodyparts.upperArm,  1, BodyContour::UpperArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RBicep].M,   bodyparts.upperArm, -1, BodyContour::UpperArmRight);
+  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm,  1, BodyContour::LowerArmLeft);
   add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, BodyContour::LowerArmRight);
 
   // draw some debug stuff
@@ -123,11 +123,7 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
 }// end execute
 
 
-void BodyContourProvider::add(
-  const Pose3D& origin, 
-  const std::vector<Vector3d>& c, 
-  double sign, 
-  BodyContour::BodyPartID id)
+void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, BodyContour::BodyPartID id)
 {
   // constants
   const Vector2i frameUpperLeft(0,0);
@@ -146,7 +142,7 @@ void BodyContourProvider::add(
     Vector2i q2;
     bool q2_ok = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p2, q2);
 
-    // if the prjection was successful
+    // if the projection was successful
     if (q1_ok && q2_ok)
     {
       Vector2i a(q1);
@@ -217,12 +213,13 @@ void BodyContourProvider::updateBodyContur(const Vector2i& p1, const Vector2i& p
   }
 }//end updateBodyContur
 
-bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b)
+bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b) const
 {
   bool aInside = isInsideImage(a);
   bool bInside = isInsideImage(b);
 
-  if(!aInside || !bInside) {
+  if(!aInside || !bInside)
+  {
     Math::LineSegment segment(a, b);
     Vector2i ac, bc;
     if(!Geometry::getIntersectionPointsOfLineAndRectangle(ul, lr, segment, ac, bc)) {
@@ -230,7 +227,8 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
     }
 
     // check if the clamped points are inside of the segment (a,b)
-    if(!aInside && !bInside) {
+    if(!aInside && !bInside) 
+    {
       if(ac.x > max(a.x,b.x) || ac.x < min(a.x,b.x) || ac.y > max(a.y,b.y) || ac.y < min(a.y,b.y) ||
          bc.x > max(a.x,b.x) || bc.x < min(a.x,b.x) || bc.y > max(a.y,b.y) || bc.y < min(a.y,b.y))
       {
@@ -247,14 +245,16 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
 }//end clampSegment
 
 
- void BodyContourProvider::debug()
+ void BodyContourProvider::debug() const
  {
 
   DEBUG_REQUEST("BodyContourProvider:draw_activated_cells",
     for(int i = 0; i < getBodyContour().gridWidth(); i++) {
       for (int j = 0; j < getBodyContour().gridHeight(); j++) {
         if (getBodyContour().getGrid()[i][j].occupied) {
-            RECT_PX(ColorClasses::black, i*getBodyContour().cellSize(), j*getBodyContour().cellSize(), (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
+            RECT_PX(ColorClasses::black, 
+                  i*getBodyContour().cellSize(),     j*getBodyContour().cellSize(), 
+              (i+1)*getBodyContour().cellSize(), (j+1)*getBodyContour().cellSize());
         }
       }
     }
@@ -284,11 +284,7 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
   );
 }//end debug
 
-void BodyContourProvider::drawContur3D(
-  const Pose3D& origin, 
-  const std::vector<Vector3d>& c, 
-  double sign,
-  ColorClasses::Color color)
+void BodyContourProvider::drawContur3D(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, ColorClasses::Color color) const
 {
   Vector3d p1 = origin * Vector3d(c[0].x, c[0].y * sign, c[0].z);
 

@@ -62,12 +62,13 @@
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/HistogramFieldDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/GoalDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/BallDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/LineDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
 //Perception - Vision -- Detectors
 #include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
-#include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/LineGraphProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/SuperBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
@@ -185,6 +186,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(LineDetector);
   REGISTER_MODULE(NeoLineDetector);
   REGISTER_MODULE(LineClusterProvider);
+  REGISTER_MODULE(LineGraphProvider);
 
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(GradientGoalDetector);

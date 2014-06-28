@@ -13,6 +13,8 @@
 
 #include "Tools/NaoTime.h"
 #include "Tools/IPCData.h"
+#include "Tools/NaoTime.h"
+#include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
 #include "DCMHandler.h"

@@ -19,7 +19,6 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/LinePercept.h"
-#include "Representations/Perception/ObjectPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 
@@ -56,7 +55,6 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualization)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
-  REQUIRE(ObjectPercept)
   REQUIRE(PlayersPercept)
   
   REQUIRE(FieldInfo)
