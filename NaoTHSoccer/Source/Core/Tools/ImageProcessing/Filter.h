@@ -41,16 +41,23 @@ public:
 
 // some predefined filtering functions
 template<typename V, int SIZE>
-class Diff {
+class Prewitt3x1 {
   public: inline V operator()(const RingBuffer<V, SIZE>& values) const {
-    return (-values[4] - 2.0*values[3] + 0.0*values[2] + 2.0*values[1] + values[0])/3.0;
+    return  -values[2] /*+ 0.0*values[1]*/ + values[0];
   }
 };
 
 template<typename V, int SIZE>
-class Gauss {
+class Diff5x1 {
   public: inline V operator()(const RingBuffer<V, SIZE>& values) const {
-    return (values[4] + 2.0*values[3] + 4.0*values[2] + 2.0*values[1] + values[0])/10.0;
+    return (-values[4] - 2.0*values[3] /*+ 0.0*values[2]*/ + 2.0*values[1] + values[0]) / 3.0;
+  }
+};
+
+template<typename V, int SIZE>
+class Gauss5x1 {
+  public: inline V operator()(const RingBuffer<V, SIZE>& values) const {
+    return (values[4] + 4.0*values[3] + 6.0*values[2] + 4.0*values[1] + values[0]) / 12.0;
   }
 };
 

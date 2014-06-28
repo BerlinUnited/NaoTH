@@ -107,7 +107,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
     }
     
     BresenhamLineScan scanner(pos, end);
-    Filter<Gauss,Vector2i,double> filter;
+    Filter<Gauss5x1,Vector2i,double> filter;
     
     Vector2i begin;
     bool begin_found = false;
@@ -201,7 +201,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     }
     
     BresenhamLineScan scanner(pos, end);
-    Filter<Diff,Vector2i,double> filter;
+    Filter<Diff5x1,Vector2i,double> filter;
 
     // initialize the scanner
     Vector2i peak_point_max(pos);
