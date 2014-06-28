@@ -21,6 +21,7 @@
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/RawAttackDirection.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Modeling/ActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 
 // Tools
@@ -43,6 +44,7 @@ BEGIN_DECLARE_MODULE(PotentialActionSimulator)
   REQUIRE(MotionStatus)
   
   PROVIDE(RawAttackDirection)
+  PROVIDE(ActionModel)
 END_DECLARE_MODULE(PotentialActionSimulator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

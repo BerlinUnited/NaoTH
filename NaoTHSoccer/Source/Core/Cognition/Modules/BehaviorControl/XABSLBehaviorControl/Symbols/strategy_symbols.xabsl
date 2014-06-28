@@ -84,6 +84,20 @@ namespace strategy("Strategy Symbols") {
   //bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
 
   /** Information for the ball model */
-  bool output reactiveBallModelNeeded;  
+  bool output reactiveBallModelNeeded;
+  
+  enum attack.action_type
+  {
+    ball_position,
+    kick_short,
+    kick_long,
+    sidekick_left,
+    sidekick_right,
+    none
+  };
+
+  enum attack.action_type input attack.best_action;
+
+  
 }
   

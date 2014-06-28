@@ -113,7 +113,7 @@ void PotentialActionSimulator::execute()
   action_kicks[4] = ballPosition + Vector2d(0, theParameters.action_sidekick_distance);
 
   int location = -1;
-  double minimum = std::numeric_limits<double>::max();
+  double maximum = std::numeric_limits<double>::min();
 
   FIELD_DRAWING_CONTEXT;
   PEN("000000", 1);
@@ -121,14 +121,21 @@ void PotentialActionSimulator::execute()
   for (int i = 0 ; i < 5 ; i++ ) {
 	Vector2d actionGlobal = robotPose * action_kicks[i];
 	action_potential[i] = calculatePotential(actionGlobal, goal_target, obstacles);
-    if ( action_potential[i] < minimum || location == -1){
-      minimum = action_potential[i];
+    if ( action_potential[i] > maximum || location == -1){
+      maximum = action_potential[i];
       location = i;
     }
 
 	CIRCLE(actionGlobal.x, actionGlobal.y, 50);
 	TEXT_DRAWING(actionGlobal.x+100, actionGlobal.y+100, action_potential[i]);
   }
+
+  if(location == 0)getActionModel().myAction = ActionModel::ball_position;
+  else if(location == 1)getActionModel().myAction = ActionModel::kick_long;
+  else if(location == 2)getActionModel().myAction = ActionModel::kick_short;
+  else if(location == 3)getActionModel().myAction = ActionModel::sidekick_left;
+  else if(location == 4)getActionModel().myAction = ActionModel::sidekick_right;
+  else getActionModel().myAction = ActionModel::none;
 
   ASSERT(location >= 0);
 
@@ -143,7 +150,9 @@ void PotentialActionSimulator::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
-    CIRCLE(getRobotPose().translation.x+action_kicks[1].x, getRobotPose().translation.y+action_kicks[1].y, 50);
+	Vector2d actionGlobal = robotPose * action_kicks[1];
+
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
 
   
@@ -151,21 +160,27 @@ void PotentialActionSimulator::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_kicks[2].x, getRobotPose().translation.y+action_kicks[2].y, 50);
+	Vector2d actionGlobal = robotPose * action_kicks[2];
+
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
  
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_right",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_kicks[3].x, getRobotPose().translation.y+action_kicks[3].y, 50);
+	Vector2d actionGlobal = robotPose * action_kicks[3];
+
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
     
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_left",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 1);
 
-	CIRCLE(getRobotPose().translation.x+action_kicks[4].x, getRobotPose().translation.y+action_kicks[4].y, 50);
+	Vector2d actionGlobal = robotPose * action_kicks[4];
+
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
 
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:best_action",
@@ -173,7 +188,7 @@ void PotentialActionSimulator::execute()
     PEN("F0F0F0", 1);
 	Vector2d actionGlobal = robotPose * action_kicks[location];
 
-	CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
   
   // ATTENTION: PREVIEW

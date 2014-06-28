@@ -40,6 +40,7 @@ option situation_based_striker
       {
         if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
           goto sidekick;
+        /*  
 	      else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
 	               || abs(value=attack.direction.preview)<12)
 	        goto attack;
@@ -48,6 +49,16 @@ option situation_based_striker
 	        goto sidekick;
 	      else
 	        goto turn;
+        */
+        else if(attack.best_action == kick_long)
+          goto simLongKick;
+        else if(attack.best_action == kick_short)
+          goto simShortKick;
+        else if(attack.best_action == sidekick_left)
+          goto approach_sidekick_to_left;
+        else if(attack.best_action == sidekick_right)
+          goto approach_sidekick_to_right;
+        else goto turn;
       }
       else
         stay;
@@ -63,11 +74,21 @@ option situation_based_striker
 
       else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
         goto sidekick;
+      /*  
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
         goto attack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
               ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
         goto sidekick;
+      */
+      else if(attack.best_action == kick_long)
+        goto simLongKick;
+      else if(attack.best_action == kick_short)
+        goto simShortKick;
+      else if(attack.best_action == sidekick_left)
+        goto approach_sidekick_to_left;
+      else if(attack.best_action == sidekick_right)
+        goto approach_sidekick_to_right;   
       else
         stay;
     }
@@ -86,7 +107,7 @@ option situation_based_striker
     }
     action {
       situation_abortable = true;
-      situation_sidekick();
+      //situation_sidekick(); //temporär
     }
   }
 
@@ -101,8 +122,89 @@ option situation_based_striker
     }
     action{
       situation_abortable = true;
-      situation_attack();
+     // situation_attack();
     }
   }
+
+  state simLongKick{
+    decision{
+      else if(action_done)
+        goto search;
+      else
+        stay;
+    }
+    action{
+      go_to_ball_with_foot(right=true, distance=190);
+      motion.walk.style = normal;
+    }
+
+  }
+
+  state simShortKick{
+    decision{
+      else if(action_done)
+        goto search;
+      else
+        stay;
+
+    }
+    action{
+      situation_abortable = false;
+      fast_forward_kick(foot = right);
+    }
+
+  }
+
+  state approach_sidekick_to_left {
+    decision {
+      else if(action_done)
+        goto sidekick_to_left;
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_foot(right = true, distance = 190);
+    }
+  }
+
+  state approach_sidekick_to_right {
+    decision {
+      else if(action_done)
+        goto sidekick_to_right;
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_foot(right = false, distance = 190);
+    }
+  }
+
+  state sidekick_to_right{
+    decision {
+      else if(action_done)
+        goto search;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      sidekick(to = right);
+    }
+  }
+
+  state sidekick_to_left {
+    decision{
+      else if(action_done)
+        goto search;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      sidekick(to = left);
+    }
+  }
+
+
 
 }
