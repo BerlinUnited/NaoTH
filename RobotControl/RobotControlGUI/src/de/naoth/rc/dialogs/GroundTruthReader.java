@@ -7,9 +7,15 @@ import de.naoth.rc.LogSimulator;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -132,6 +138,7 @@ public class GroundTruthReader extends AbstractDialog {
         jToggleButton3 = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
+        jButton1 = new javax.swing.JButton();
 
         jToggleButton3.setText("listen");
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -143,22 +150,36 @@ public class GroundTruthReader extends AbstractDialog {
         jList1.setModel(listModel);
         jScrollPane2.setViewportView(jList1);
 
+        jButton1.setText("report");
+        jButton1.setEnabled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jToggleButton3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jToggleButton3)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(46, Short.MAX_VALUE))
@@ -166,23 +187,33 @@ public class GroundTruthReader extends AbstractDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-        if (jToggleButton3.isSelected()) {           
-                openFile();
+        if (jToggleButton3.isSelected()) {         
+            openFile();
+            this.jButton1.setEnabled(true);
+        } else {
+            this.jButton1.setEnabled(false);
         }
     }//GEN-LAST:event_jToggleButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        report();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToggleButton jToggleButton3;
     // End of variables declaration//GEN-END:variables
 
     class LogPerceptListener implements LogSimulator.LogSimulatorActionListener {
-
+        int     minFrame = Integer.MAX_VALUE,
+                maxFrame = 0;
+        
         @Override
-        public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {            
+        public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {
             if (!GroundTruthReader.this.jToggleButton3.isSelected()) {
                 return;
             }
@@ -192,6 +223,8 @@ public class GroundTruthReader extends AbstractDialog {
                 /**
                  * ************BallPercept*****************************************************
                  */
+                if (minFrame>frameNumber) minFrame=frameNumber;
+                if (maxFrame<frameNumber) maxFrame=frameNumber;
                 byte[]data = b.getRepresentation("BallPercept");
                 Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
                 Boolean ballHere = bottomBall.get(frameNumber); 
@@ -288,6 +321,88 @@ public class GroundTruthReader extends AbstractDialog {
         public void logfileOpened(LogSimulator.BlackBoard b, String path) {
             GroundTruthReader.this.openFile();
         }
+    }
+    
+    public void report() {
+        final int intervall = 10;
+               int step = 0;       
+        int     topMissedBalls=0, 
+                topFalseBalls=0,
+                topMissedGP=0,
+                topFalseGP=0,
+                bottomMissedBalls=0,
+                bottomFalseBalls=0,
+                bottomMissedGP=0,
+                bottomFalseGP=0,
+                topMissedBallsInv=0, 
+                topFalseBallsInv=0,
+                topNotSeenGPInv=0,
+                topfalseGPInv=0,
+                bottomMissedBallsInv=0,
+                bottomFalseBallsInv=0,
+                bottomMissedGPInv=0,
+                bottomFalseGPInv=0;
+        String topBallString[] = new String[3]; 
+        String bottomBallString[] = new String[3]; 
+        String topGPString[] = new String[3]; 
+        String bottomGPString[] = new String[3]; 
+        
+        for (int i=logPerceptListener.minFrame; i<=logPerceptListener.maxFrame; i++){
+            step++;
+            if (step==intervall){
+                step=0;
+                if(topMissedBallsInv==0) {
+                    topBallString[0] +=" ";
+                    
+                }
+                topMissedBallsInv=0; 
+                topFalseBallsInv=0;
+                topNotSeenGPInv=0;
+                topfalseGPInv=0;
+                bottomMissedBallsInv=0;
+                bottomFalseBallsInv=0;
+                bottomMissedGPInv=0;
+                bottomFalseGPInv=0;
+             }
+            MissmatchSaver missmatch = missmatches.get(i);
+            if (missmatch!=null)
+            {
+                if(missmatch.bottomBall!=null) {
+                    if (missmatch.bottomBall) bottomMissedBalls++;
+                    else bottomFalseBalls++;
+                }
+                if(missmatch.topBall!=null) {
+                    if (missmatch.topBall) topMissedBalls++;
+                    else topFalseBalls++;
+                }
+                if(missmatch.bottomGoalGT!=null) {
+                    bottomMissedGP += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
+                    bottomFalseGP += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
+                }
+                if(missmatch.topGoalGT!=null) {
+                    topMissedGP += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
+                    topFalseGP += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
+                }
+            }
+        }
+        String fileName = LogfilePlayer.getFileName();
+        fileName = fileName.substring(0, fileName.length()-4);
+        fileName += JOptionPane.showInputDialog(null,"Please enter FileEnding","UserInput", JOptionPane.PLAIN_MESSAGE) +".txt";
+        BufferedWriter writer;
+        try {
+            File reportFile = new File(fileName);
+            writer = new BufferedWriter(new FileWriter(reportFile));
+            writer.write("GroundTruthReportFile: \n");
+            writer.write("TotalMissedBalls: " +(topMissedBalls+bottomMissedBalls) +" TotalFalseBalls: " +(topFalseBalls+bottomFalseBalls) +"\n");
+            writer.write("TopMissedBalls: " +topMissedBalls +" TopFalseBalls: " +topFalseBalls +"\n");
+            writer.write("BottomMissedBalls: " +bottomMissedBalls +" bottomFalseBalls: " +bottomFalseBalls +"\n");          
+            writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\n");
+            writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\n");
+            writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\n");
+            writer.close();
+        } catch (IOException ex) {
+             ex.printStackTrace(System.err);
+        }             
     }
 
 }//end class GroundTruthCreator
