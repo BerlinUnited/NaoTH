@@ -9,6 +9,7 @@ package de.naoth.rc.dialogs;
 import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.LogSimulator;
 import de.naoth.rc.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -40,21 +41,23 @@ public class LogfilePlayer extends AbstractDialog
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
   }
-    
+   
+  private final LogPerceptListener logPerceptListener = new LogPerceptListener();
+  
   LogSimulatorManager logSimulator = null;
   LogFileAutoPlay logFileAutoPlayer = null;
   private boolean autoSliderChange = false;
   private int minFrame;
   private int maxFrame;
   //Hack um FrameNumber zu bekommen
-  private static int currentFrame = -1;
+ // private static int currentFrame = -1;
   private static String fileName = "";
   
   private static final String LAST_FILE_PATH_PROPERTY = "logfileplayer.last.file.path";
   
   public LogfilePlayer() {
       initComponents();
-
+      LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
       this.fileChooser.setFileFilter(new LogFileFilter());
       String path = Plugin.parent.getConfig().getProperty(LAST_FILE_PATH_PROPERTY);
       if(path != null) {
@@ -74,11 +77,7 @@ public class LogfilePlayer extends AbstractDialog
       DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
             addKeyEventPostProcessor(new LogfilePlayerKeyController());
   }  
-  
-  public static int getCurrentFrame() {
-      return LogfilePlayer.currentFrame;
-  }
-  
+    
   public static String getFileName () {
       return LogfilePlayer.fileName;
   }
@@ -107,24 +106,20 @@ public class LogfilePlayer extends AbstractDialog
             
             switch(e.getKeyChar()) {
                 case 'd':
-                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.stepForward();
-                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
+                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'a':
-                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.stepBack();
-                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
+                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'w':
-                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.jumpToBegin();
-                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMinimum());                
+                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMinimum());                
                     return true;
                 case 's':
-                    autoSliderChange = true;
                     LogfilePlayer.this.logSimulator.jumpToEnd();
-                    LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMaximum());  
+                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMaximum());  
                     return true;
                 case 'r':
                     LogfilePlayer.this.logSimulator.jumpTo(logSimulator.getCurrentFrame());
@@ -387,10 +382,7 @@ public class LogfilePlayer extends AbstractDialog
                  waitTillThreadsDeath();
             }
             this.logSimulator.jumpTo(this.logSlider.getValue());                  
-        }
-        this.jLabel3.setText("cur: " +this.logSlider.getValue());
-        LogfilePlayer.currentFrame = this.logSlider.getValue(); 
-        
+        }        
     }//GEN-LAST:event_logSliderStateChanged
 
     private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
@@ -423,8 +415,6 @@ public class LogfilePlayer extends AbstractDialog
              waitTillThreadsDeath();
          }
          logSimulator.jumpTo(logSimulator.getMinFrame());
-         autoSliderChange = true;
-         logSlider.setValue(logSlider.getMinimum());         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jTextField2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyTyped
@@ -440,8 +430,6 @@ public class LogfilePlayer extends AbstractDialog
                     waitTillThreadsDeath();
                 }
                 logSimulator.jumpTo(frame);
-                autoSliderChange = true;
-                logSlider.setValue(frame); 
                 return;
             }            
         } 
@@ -505,29 +493,14 @@ public class LogfilePlayer extends AbstractDialog
 
             while (isRunning) 
             {
-                /*
-                try{
-                byte[] data = logSimulator.getRepresentation("FrameInfo");
-                FrameworkRepresentations.FrameInfo f = FrameworkRepresentations.FrameInfo.parseFrom(data);
-                System.out.println(f.getFrameNumber());
-                } catch(InvalidProtocolBufferException ex) {
-                    ex.printStackTrace(System.err);
-                }
-                */
-                
-                
                 if (currentFrame < logSimulator.getMaxFrame()) {
                     logSimulator.stepForward();                        
-                    currentFrame++;
-                    autoSliderChange = true;
-                    logfilePlayer.logSlider.setValue(currentFrame);                    
+                    currentFrame++;                                        
                  }
                  else {
                      if (loop) {
                          logSimulator.jumpToBegin();
                          currentFrame = this.logSimulator.getMinFrame();
-                         autoSliderChange = true;
-                         logfilePlayer.logSlider.setValue(currentFrame);                         
                      } else {
                          break;                        
                      }
@@ -544,11 +517,6 @@ public class LogfilePlayer extends AbstractDialog
       public void stopPlay() {
           this.isRunning = false;
       }
-      
-     /* @Override
-      public void interrupt () {
-          
-      }*/
   }  
  
   
@@ -557,7 +525,7 @@ public class LogfilePlayer extends AbstractDialog
           try {
               int value = new Integer(text);
               if (value>=0) return true; 
-              return false;
+              else return false;
           } catch (NumberFormatException e) {
               return false;
           }
@@ -627,4 +595,20 @@ public class LogfilePlayer extends AbstractDialog
       return ".log";
     }
   }//end class LogFileFilter
+  
+    class LogPerceptListener implements LogSimulator.LogSimulatorActionListener 
+    {
+        @Override
+        public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {
+            autoSliderChange = true;
+            LogfilePlayer.this.logSlider.setValue(frameNumber);
+            LogfilePlayer.this.jLabel3.setText("cur: " +frameNumber);
+        }
+        
+        @Override
+        public void logfileOpened(LogSimulator.BlackBoard b, String path) {
+        
+        }
+        
+    }
 }//end class LogfileInspector

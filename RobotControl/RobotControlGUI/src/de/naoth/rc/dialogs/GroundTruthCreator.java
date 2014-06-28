@@ -94,16 +94,16 @@ public class GroundTruthCreator extends AbstractDialog
         jToggleButton3 = new javax.swing.JToggleButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jToggleButton4 = new javax.swing.JToggleButton();
 
         jToggleButton1.setBackground(new java.awt.Color(255, 0, 0));
         jToggleButton1.setSelected(true);
         jToggleButton1.setText("ball");
         jToggleButton1.setBorderPainted(false);
         jToggleButton1.setEnabled(false);
-        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton1ActionPerformed(evt);
+        jToggleButton1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jToggleButton1StateChanged(evt);
             }
         });
 
@@ -146,6 +146,11 @@ public class GroundTruthCreator extends AbstractDialog
         jToggleButton2.setText("ball");
         jToggleButton2.setBorderPainted(false);
         jToggleButton2.setEnabled(false);
+        jToggleButton2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jToggleButton2StateChanged(evt);
+            }
+        });
         jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButton2ActionPerformed(evt);
@@ -200,16 +205,18 @@ public class GroundTruthCreator extends AbstractDialog
         });
 
         jButton1.setText("save");
+        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setText("load");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jToggleButton4.setText("load");
+        jToggleButton4.setEnabled(false);
+        jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jToggleButton4ActionPerformed(evt);
             }
         });
 
@@ -217,25 +224,29 @@ public class GroundTruthCreator extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jToggleButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jRadioButton1)
+                                .addComponent(jRadioButton2, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jRadioButton3, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addGap(2, 2, 2))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jToggleButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jRadioButton4, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButton6, javax.swing.GroupLayout.Alignment.LEADING)))
+                    .addComponent(jCheckBox1)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jRadioButton1)
-                        .addComponent(jRadioButton2, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jRadioButton3, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addGap(2, 2, 2))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToggleButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jRadioButton4, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton6, javax.swing.GroupLayout.Alignment.LEADING)))
-            .addComponent(jCheckBox1)
-            .addComponent(jButton1)
-            .addComponent(jButton2)
+                        .addComponent(jToggleButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(22, 22, 22))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -266,24 +277,11 @@ public class GroundTruthCreator extends AbstractDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(jToggleButton4)
                 .addContainerGap(25, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        ballTopToggle();
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
-    private void ballTopToggle() {
-        if (this.jToggleButton1.getBackground() == Color.red) {
-            this.jToggleButton1.setBackground(Color.green);
-        } else {
-            this.jToggleButton1.setBackground(Color.red);
-        }
-        if (this.jCheckBox1.isSelected()) {      
-            topBall.put(logPerceptListener.currentFrame, jToggleButton1.isSelected());
-        } 
-    }
+   
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
             topGoal.put(logPerceptListener.currentFrame, 1);
     }//GEN-LAST:event_jRadioButton2ActionPerformed
@@ -297,18 +295,9 @@ public class GroundTruthCreator extends AbstractDialog
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-            ballBottomToggle();
+           
     }//GEN-LAST:event_jToggleButton2ActionPerformed
-    private void ballBottomToggle() {
-        if (this.jToggleButton2.getBackground() == Color.red) {
-            this.jToggleButton2.setBackground(Color.green);
-        } else {
-            this.jToggleButton2.setBackground(Color.red);
-        }
-        if (this.jCheckBox1.isSelected()) {
-            bottomBall.put(logPerceptListener.currentFrame, jToggleButton2.isSelected());            
-        }    
-    }
+    
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
             bottomGoal.put(logPerceptListener.currentFrame, 0);
     }//GEN-LAST:event_jRadioButton4ActionPerformed
@@ -377,36 +366,63 @@ public class GroundTruthCreator extends AbstractDialog
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String fileName = LogfilePlayer.getFileName();        
-        fileName = fileName.substring(0,fileName.lastIndexOf(".")+1) + "gts" ;
-        File f = new File(fileName);
-        if (!f.exists()) {
-           JOptionPane.showMessageDialog(null, "No groundTruth for logfile", "Error", JOptionPane.ERROR_MESSAGE);
-           return;
-        }
-        changeGroundTruth = true;
-        ObjectInputStream o;
-        try {
-            o = new ObjectInputStream(new FileInputStream(fileName));
-            topBall = (Map<Integer, Boolean>) o.readObject();
-            bottomBall = (Map<Integer, Boolean>) o.readObject();
-            topGoal = (Map<Integer, Integer>) o.readObject();
-            bottomGoal = (Map<Integer, Integer>) o.readObject();
+    private void jToggleButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton4ActionPerformed
+       if (this.jToggleButton4.isSelected()){
+            String fileName = LogfilePlayer.getFileName();        
+            fileName = fileName.substring(0,fileName.lastIndexOf(".")+1) + "gts" ;
+            File f = new File(fileName);
+            if (!f.exists()) {
+               JOptionPane.showMessageDialog(null, "No groundTruth for logfile", "Error", JOptionPane.ERROR_MESSAGE);
+               return;
+            }
+            this.jToggleButton4.setBackground(Color.green);
+            changeGroundTruth = true;
+            ObjectInputStream o;
+            try {
+                o = new ObjectInputStream(new FileInputStream(fileName));
+                topBall = (Map<Integer, Boolean>) o.readObject();
+                bottomBall = (Map<Integer, Boolean>) o.readObject();
+                topGoal = (Map<Integer, Integer>) o.readObject();
+                bottomGoal = (Map<Integer, Integer>) o.readObject();
 
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "No Groundtruth for this logfile", "Error", JOptionPane.ERROR_MESSAGE);
-            this.jToggleButton3.setSelected(false);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "No Groundtruth for this logfile", "Error", JOptionPane.ERROR_MESSAGE);
+                this.jToggleButton3.setSelected(false);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            this.jToggleButton4.setBackground(Color.lightGray);
+            changeGroundTruth = false;
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jToggleButton4ActionPerformed
+
+    private void jToggleButton1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jToggleButton1StateChanged
+        if (this.jToggleButton1.isSelected()) {
+            this.jToggleButton1.setBackground(Color.green);            
+        } else {
+            this.jToggleButton1.setBackground(Color.red);            
+        }        
+        if (this.jCheckBox1.isSelected()) {      
+            topBall.put(logPerceptListener.currentFrame, jToggleButton1.isSelected());
+        }
+    }//GEN-LAST:event_jToggleButton1StateChanged
+
+    private void jToggleButton2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jToggleButton2StateChanged
+        if (this.jToggleButton2.isSelected()) {
+            this.jToggleButton2.setBackground(Color.green);            
+        } else {
+            this.jToggleButton2.setBackground(Color.red);            
+        }        
+        if (this.jCheckBox1.isSelected()) {      
+            bottomBall.put(logPerceptListener.currentFrame, jToggleButton2.isSelected());
+        }
+    }//GEN-LAST:event_jToggleButton2StateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -419,6 +435,7 @@ public class GroundTruthCreator extends AbstractDialog
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JToggleButton jToggleButton3;
+    private javax.swing.JToggleButton jToggleButton4;
     // End of variables declaration//GEN-END:variables
 class GroundTruthKeyController implements KeyEventPostProcessor 
     {
@@ -431,13 +448,11 @@ class GroundTruthKeyController implements KeyEventPostProcessor
             switch(e.getKeyChar()) {
                 case '9':
                     GroundTruthCreator.this.jToggleButton1.setSelected(
-                                !GroundTruthCreator.this.jToggleButton1.isSelected());
-                    ballTopToggle();
+                            !GroundTruthCreator.this.jToggleButton1.isSelected());                   
                     return true;
                 case '8':
                     GroundTruthCreator.this.jToggleButton2.setSelected(
-                                !GroundTruthCreator.this.jToggleButton2.isSelected());
-                    ballBottomToggle();
+                                !GroundTruthCreator.this.jToggleButton2.isSelected());                    
                     return true;                
                 case '6':
                     topGoal.put(logPerceptListener.currentFrame, 0);
@@ -472,68 +487,98 @@ class GroundTruthKeyController implements KeyEventPostProcessor
 class LogPerceptListener implements LogSimulator.LogSimulatorActionListener 
 {    
    int currentFrame;
-    @Override
+   
+   @Override
    public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {       
-       if (!GroundTruthCreator.this.jToggleButton3.isSelected() || !GroundTruthCreator.this.jCheckBox1.isSelected() || changeGroundTruth) return;
+       if (!GroundTruthCreator.this.jToggleButton3.isSelected() || !GroundTruthCreator.this.jCheckBox1.isSelected()) return;
        try{         
             currentFrame = frameNumber;
             /**************BallPercept******************************************************/
-            byte[] data = b.getRepresentation("BallPercept");
-            Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
-            data = b.getRepresentation("BallPerceptTop");
-            Representations.BallPercept ballPerceptTop = Representations.BallPercept.parseFrom(data);
-            if (ballPercept.getBallWasSeen()) jToggleButton2.setBackground(Color.green);
-            else jToggleButton2.setBackground(Color.red);
-            if (GroundTruthCreator.this.jCheckBox1.isSelected()) {
+            byte[] data; 
+            boolean ballWasSeen;
+            if (changeGroundTruth) {
+               ballWasSeen = bottomBall.get(frameNumber);
+            } else {
+                data = b.getRepresentation("BallPercept");
+                Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
+                ballWasSeen = ballPercept.getBallWasSeen();
+            }          
+            
+            if (ballWasSeen) jToggleButton2.setSelected(true);
+            else jToggleButton2.setSelected(false);
+            if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
                  GroundTruthCreator.this.bottomBall.put(frameNumber,
-                         ballPercept.getBallWasSeen());
+                         ballWasSeen);
             }
             /**************BallPercept******************************************************/
             /**************BallPerceptTop***************************************************/
-            
-            if (ballPerceptTop.getBallWasSeen()) jToggleButton1.setBackground(Color.green);
-            else jToggleButton1.setBackground(Color.red);
-            if (GroundTruthCreator.this.jCheckBox1.isSelected()) {
+            if (changeGroundTruth) {
+                ballWasSeen = topBall.get(frameNumber);
+            } else {
+                data = b.getRepresentation("BallPerceptTop");
+                Representations.BallPercept ballPerceptTop = Representations.BallPercept.parseFrom(data);
+                ballWasSeen = ballPerceptTop.getBallWasSeen();
+            }           
+            if (ballWasSeen) jToggleButton1.setSelected(true);
+            else jToggleButton1.setSelected(false);
+            if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
                  GroundTruthCreator.this.topBall.put(frameNumber,
-                         ballPerceptTop.getBallWasSeen());
+                        ballWasSeen);
             }
             /**************BallPerceptTop***************************************************/
-            /**************GoalPercept***************************************************/           
-            data = b.getRepresentation("GoalPercept");
-            Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
-            int postCount = goalPercept.getPostCount();
+            /**************GoalPercept***************************************************/ 
+            int postCount;
+            if (changeGroundTruth) {
+                postCount = bottomGoal.get(frameNumber);
+            } else {
+                data = b.getRepresentation("GoalPercept");
+                Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
+                postCount = goalPercept.getPostCount();
+            }
+            
             switch (postCount) {
                 case 0:
                     jRadioButton4.setSelected(true);
-                    GroundTruthCreator.this.bottomGoal.put(frameNumber, 0);
                     break;
                 case 1:
                     jRadioButton5.setSelected(true);
-                    GroundTruthCreator.this.bottomGoal.put(frameNumber, 1);
                     break;
                 case 2:
                     jRadioButton6.setSelected(true);
-                    GroundTruthCreator.this.bottomGoal.put(frameNumber, 2);
-                    break;                   
+                    break;
+                default:
+                    jRadioButton4.setSelected(true);
+                    jRadioButton4.setSelected(false);
+            }
+            if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
+                    GroundTruthCreator.this.bottomGoal.put(frameNumber, postCount);
             }
             /**************GoalPercept***************************************************/
             /**************GoalPerceptTop************************************************/
-            data = b.getRepresentation("GoalPerceptTop");
-            Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
-            postCount = goalPerceptTop.getPostCount();
+            if (changeGroundTruth) {
+                postCount = topGoal.get(frameNumber);
+            } else {
+                data = b.getRepresentation("GoalPerceptTop");
+                Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
+                postCount = goalPerceptTop.getPostCount();
+                
+            }
             switch (postCount) {
                 case 0:
                     jRadioButton1.setSelected(true);
-                    GroundTruthCreator.this.topGoal.put(frameNumber, 0);
                     break;
                 case 1:
                     jRadioButton2.setSelected(true);
-                    GroundTruthCreator.this.topGoal.put(frameNumber, 1);
                     break;
                 case 2:
                     jRadioButton3.setSelected(true);
-                    GroundTruthCreator.this.topGoal.put(frameNumber, 2);
-                    break;                   
+                    break;
+                default:
+                    jRadioButton1.setSelected(true);
+                    jRadioButton1.setSelected(false);
+            }
+            if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
+                        GroundTruthCreator.this.topGoal.put(frameNumber, postCount);
             }
             /**************GoalPerceptTop************************************************/           
 
@@ -567,6 +612,7 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
         this.jToggleButton1.setEnabled(enabled);
         this.jToggleButton2.setEnabled(enabled);
         this.jButton1.setEnabled(enabled);
+        this.jToggleButton4.setEnabled(enabled);
     }
 }//end class GroundTruthCreator
 
