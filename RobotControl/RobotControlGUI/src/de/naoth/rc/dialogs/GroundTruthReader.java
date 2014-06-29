@@ -227,6 +227,7 @@ public class GroundTruthReader extends AbstractDialog {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         listModel.clear();
+        missmatches.clear();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
@@ -450,14 +451,14 @@ public class GroundTruthReader extends AbstractDialog {
             writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\r\n");
             writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\r\n");
             writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\r\n");            
-            prmGraphicOutput(writer, "topBallMissed", topMissedBallsInvList);
-            prmGraphicOutput(writer, "topBallFalse", topFalseBallsInvList);
-            prmGraphicOutput(writer, "bottomBallMissed", bottomMissedBallsInvList);
-            prmGraphicOutput(writer, "bottomBallFalse", bottomFalseBallsInvList);
-            prmGraphicOutput(writer, "topGoalPostsMissed", topMissedGPInvList);
-            prmGraphicOutput(writer, "topGoalPostsFalse", topFalseGPInvList);
-            prmGraphicOutput(writer, "bottomGoalPostsMissed", bottomMissedGPInvList);
-            prmGraphicOutput(writer, "bottomGoalPostsFalse", bottomFalseGPInvList);
+            prmGraphicOutput(writer, "Topcamera Ball Missed", topMissedBallsInvList);
+            prmGraphicOutput(writer, "topcamera Ball False", topFalseBallsInvList);
+            prmGraphicOutput(writer, "bottomcamera Ball Missed", bottomMissedBallsInvList);
+            prmGraphicOutput(writer, "bottomcamera Ball False", bottomFalseBallsInvList);
+            prmGraphicOutput(writer, "topcamera Goalposts Missed", topMissedGPInvList);
+            prmGraphicOutput(writer, "topcamera Goalposts False", topFalseGPInvList);
+            prmGraphicOutput(writer, "bottomcamera GoalPosts Missed", bottomMissedGPInvList);
+            prmGraphicOutput(writer, "bottomcamera GoalPosts False", bottomFalseGPInvList);
             writer.close();
         } catch (IOException ex) {
              ex.printStackTrace(System.err);
