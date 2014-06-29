@@ -73,9 +73,9 @@ public:
       PARAMETER_REGISTER(player_repeller_radius) = 2000;
       PARAMETER_REGISTER(player_repeller_strenth) = 1500;
 
-	  PARAMETER_REGISTER(action_sidekick_distance) = 2000;
-      PARAMETER_REGISTER(action_short_kick_distance) = 2500;
-	  PARAMETER_REGISTER(action_long_kick_distance) = 5000;
+      PARAMETER_REGISTER(action_sidekick_distance) = 700;
+      PARAMETER_REGISTER(action_short_kick_distance) = 1000;
+      PARAMETER_REGISTER(action_long_kick_distance) = 2000;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
@@ -106,8 +106,9 @@ public:
   class Action
   {
   public:
-    Action() : potential(-1) {}
-    Action(const Vector2d& target) : target(target), potential(-1) {}
+    Action(ActionModel::ActionId id, const Vector2d& target) : id(id), target(target), potential(-1) {}
+    
+    ActionModel::ActionId id;
     Vector2d target;
     double potential;
   };

@@ -16,22 +16,22 @@ public:
   virtual ~ActionModel() {}
 
   // position of the most interesting point in robot coords
-  enum bestAction
+  enum ActionId
   {
     ball_position,
-	kick_short,
-	kick_long,
-	sidekick_left,
+    kick_short,
+    kick_long,
+    sidekick_left,
     sidekick_right,
-	none
+    none
   };
   
-  bestAction myAction;
+  ActionId myAction;
 
   virtual void print(std::ostream& stream) const
   {
     stream << "ActionModel";
-  }//end print
+  }
 };
 
 

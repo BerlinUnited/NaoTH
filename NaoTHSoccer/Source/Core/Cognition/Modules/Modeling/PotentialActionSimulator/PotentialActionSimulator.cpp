@@ -37,6 +37,9 @@ PotentialActionSimulator::PotentialActionSimulator()
 
 void PotentialActionSimulator::execute()
 {
+  // reset
+  getActionModel().myAction = ActionModel::none;
+
   Vector2d ballRelative = getBallModel().position;
   Vector2d ballRelativePreview = getBallModel().positionPreview;
 
@@ -87,36 +90,30 @@ void PotentialActionSimulator::execute()
   std::vector<Action> action_local;
   action_local.reserve(5);
 
-  action_local.push_back(ballRelativePreview);
-  action_local.push_back(ballRelativePreview + Vector2d(theParameters.action_long_kick_distance, 0));
-  action_local.push_back(ballRelativePreview + Vector2d(theParameters.action_short_kick_distance, 0));
-  action_local.push_back(ballRelativePreview + Vector2d(0, -theParameters.action_sidekick_distance));
-  action_local.push_back(ballRelativePreview + Vector2d(0, theParameters.action_sidekick_distance));
+  action_local.push_back(Action(ActionModel::ball_position, ballRelativePreview));
+  action_local.push_back(Action(ActionModel::kick_long, ballRelativePreview + Vector2d(theParameters.action_long_kick_distance, 0))); // long
+  action_local.push_back(Action(ActionModel::kick_short, ballRelativePreview + Vector2d(theParameters.action_short_kick_distance, 0))); // short
+  action_local.push_back(Action(ActionModel::sidekick_right, ballRelativePreview + Vector2d(0, -theParameters.action_sidekick_distance))); // right
+  action_local.push_back(Action(ActionModel::sidekick_left, ballRelativePreview + Vector2d(0, theParameters.action_sidekick_distance))); // left
 
 
-  int location = -1;
+  int best_action = -1;
   double maximum = std::numeric_limits<double>::min();
 
   for (size_t i = 0 ; i < action_local.size() ; i++ ) 
   {
     Action& action = action_local[i];
-
     action.potential = calculatePotential(action.target, targetPointPreview, obstacles);
 
-    if ( action.potential > maximum || location == -1){
+    if ( action.potential > maximum || best_action == -1){
       maximum = action.potential;
-      location = i;
+      best_action = i;
     }
   }
 
-  if(location == 0)getActionModel().myAction = ActionModel::ball_position;
-  else if(location == 1)getActionModel().myAction = ActionModel::kick_long;
-  else if(location == 2)getActionModel().myAction = ActionModel::kick_short;
-  else if(location == 3)getActionModel().myAction = ActionModel::sidekick_left;
-  else if(location == 4)getActionModel().myAction = ActionModel::sidekick_right;
-  else getActionModel().myAction = ActionModel::none;
-
-  ASSERT(location >= 0);
+  ASSERT(best_action >= 0);
+  getActionModel().myAction = action_local[best_action].id;
+  
 
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:global",
     FIELD_DRAWING_CONTEXT;
@@ -135,7 +132,7 @@ void PotentialActionSimulator::execute()
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("F0F0F0", 1);
-    Vector2d actionGlobal = getRobotPose() * action_local[location].target;
+    Vector2d actionGlobal = getRobotPose() * action_local[best_action].target;
     CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
   
