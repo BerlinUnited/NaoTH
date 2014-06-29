@@ -43,7 +43,7 @@ BEGIN_DECLARE_MODULE(PotentialActionSimulator)
   REQUIRE(PlayersModel)
   REQUIRE(MotionStatus)
   
-  PROVIDE(RawAttackDirection)
+  //PROVIDE(RawAttackDirection)
   PROVIDE(ActionModel)
 END_DECLARE_MODULE(PotentialActionSimulator)
 

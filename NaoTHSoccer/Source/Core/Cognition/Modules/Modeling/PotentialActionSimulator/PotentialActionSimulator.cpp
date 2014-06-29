@@ -41,9 +41,8 @@ PotentialActionSimulator::PotentialActionSimulator()
 
 void PotentialActionSimulator::execute()
 {
-  const Pose2D& robotPose = getRobotPose();
-  Vector2<double> ballRelative = getBallModel().position;
-
+  Vector2d ballRelative = getBallModel().position;
+  Vector2d ballRelativePreview = getBallModel().positionPreview;
 
   // choose the goal model:
   // use the selflocator by default
@@ -64,70 +63,62 @@ void PotentialActionSimulator::execute()
   // calculate the target point to play the ball to based on the 
   // goal model and the ball model 
   Vector2d targetPoint = getGoalTarget(ballRelative, oppGoalModel);
-  // preview
-  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
+  // apply preview
+  Vector2d targetPointPreview = getMotionStatus().plannedMotion.hip / targetPoint;
   // ----------
 
   DEBUG_REQUEST("PotentialActionSimulator:goal_target",
     FIELD_DRAWING_CONTEXT;
 
+    Vector2d targetPointGlobal = getRobotPose() * targetPointPreview;
+    Vector2d leftPostGlobal = getRobotPose() * oppGoalModel.leftPost;
+    Vector2d rightPostGlobal = getRobotPose() * oppGoalModel.rightPost;
+
     PEN("0000FF", 10);
-    CIRCLE((robotPose * oppGoalModel.leftPost).x, (robotPose * oppGoalModel.leftPost).y, 50);
-    CIRCLE((robotPose * oppGoalModel.rightPost).x, (robotPose * oppGoalModel.rightPost).y, 50);
+    CIRCLE(leftPostGlobal.x, leftPostGlobal.y, 50);
+    CIRCLE(rightPostGlobal.x, rightPostGlobal.y, 50);
 
     PEN("FF00FF", 10);
-    CIRCLE((robotPose * targetPoint).x, (robotPose * targetPoint).y, 50);
+    CIRCLE(targetPointGlobal.x, targetPointGlobal.y, 50);
   );
 
   // get valide obstacles
   std::list<Vector2d> obstacles = getValidObstacles();
 
 
-  // calculate the potential field at the ball
-  Vector2d attackDirection = calculatePotentialField(ballRelative, targetPoint, obstacles);
-  getRawAttackDirection().attackDirection = attackDirection;
-
-
   //calculate the actions
-
-  double action_potential[5];
-  //action[0] = my_pos_potential;
-  //action[1] = action_long_kick_potential;
-  //action[2] = action_short_kick_potential;
-  //action[3] = action_sidekick_left_potential;
-  //action[4] = action_sidekick_right_potential;
-
-  //first we get our potential to the goal, to see at the end if we can get our position better then yet
-  Vector2d goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
-  //double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
-
-
-  Vector2d ballPosition;
-
   //calculation for long kick
-  Vector2d action_kicks[5];
-  action_kicks[0] = ballPosition;
-  action_kicks[1] = ballPosition + Vector2d(theParameters.action_long_kick_distance, 0);
-  action_kicks[2] = ballPosition + Vector2d(theParameters.action_short_kick_distance, 0);
-  action_kicks[3] = ballPosition + Vector2d(0, -theParameters.action_sidekick_distance);
-  action_kicks[4] = ballPosition + Vector2d(0, theParameters.action_sidekick_distance);
+  class Action
+  {
+  public:
+    Action(const Vector2d& target) : target(target), potential(-1) {}
+    Vector2d target;
+    double potential;
+  };
+
+  std::vector<Action> action_local;
+  action_local.reserve(5);
+
+  action_local.push_back(ballRelativePreview);
+  action_local.push_back(ballRelativePreview + Vector2d(theParameters.action_long_kick_distance, 0));
+  action_local.push_back(ballRelativePreview + Vector2d(theParameters.action_short_kick_distance, 0));
+  action_local.push_back(ballRelativePreview + Vector2d(0, -theParameters.action_sidekick_distance));
+  action_local.push_back(ballRelativePreview + Vector2d(0, theParameters.action_sidekick_distance));
+
 
   int location = -1;
   double maximum = std::numeric_limits<double>::min();
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("000000", 1);
+  for (size_t i = 0 ; i < action_local.size() ; i++ ) 
+  {
+    Action& action = action_local[i];
 
-  for (int i = 0 ; i < 5 ; i++ ) {
-	Vector2d actionGlobal = robotPose * action_kicks[i];
-	action_potential[i] = calculatePotential(actionGlobal, goal_target, obstacles);
-    if ( action_potential[i] > maximum || location == -1){
-      maximum = action_potential[i];
+    action.potential = calculatePotential(action.target, targetPointPreview, obstacles);
+
+    if ( action.potential > maximum || location == -1){
+      maximum = action.potential;
       location = i;
     }
-
-	CIRCLE(actionGlobal.x, actionGlobal.y, 50);
-	TEXT_DRAWING(actionGlobal.x+100, actionGlobal.y+100, action_potential[i]);
   }
 
   if(location == 0)getActionModel().myAction = ActionModel::ball_position;
@@ -139,55 +130,24 @@ void PotentialActionSimulator::execute()
 
   ASSERT(location >= 0);
 
-  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:my_pos",
+  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:global",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);
 
-    CIRCLE(getRobotPose().translation.x, getRobotPose().translation.y, 50);
-  );
+    for (size_t i = 0 ; i < action_local.size() ; i++ ) 
+    {
+      Action& action = action_local[i];
+      Vector2d actionGlobal = getRobotPose()*action.target;
 
-   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:long_kick",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 1);
-
-	Vector2d actionGlobal = robotPose * action_kicks[1];
-
-    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
-  );
-
-  
-  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:short_kick",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 1);
-
-	Vector2d actionGlobal = robotPose * action_kicks[2];
-
-    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
-  );
- 
-  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_right",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 1);
-
-	Vector2d actionGlobal = robotPose * action_kicks[3];
-
-    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
-  );
-    
-  DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:sidekick_left",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 1);
-
-	Vector2d actionGlobal = robotPose * action_kicks[4];
-
-    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+	    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+	    TEXT_DRAWING(actionGlobal.x+100, actionGlobal.y+100, action.potential);
+    }
   );
 
   DEBUG_REQUEST("PotentialActionSimulator:draw_action_points:best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("F0F0F0", 1);
-	Vector2d actionGlobal = robotPose * action_kicks[location];
-
+    Vector2d actionGlobal = getRobotPose() * action_local[location].target;
     CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
   
@@ -207,43 +167,6 @@ void PotentialActionSimulator::execute()
   //Vector2<double> attackDirectionPreviewHip = getMotionStatus().plannedMotion.hip / attackDirection;
   //Vector2<double> attackDirectionPreviewLFoot = getMotionStatus().plannedMotion.lFoot / attackDirection;
   //Vector2<double> attackDirectionPreviewRFoot = getMotionStatus().plannedMotion.rFoot / attackDirection;
-
-
-  DEBUG_REQUEST("PotentialActionSimulator:attackDirection:local",
-    FIELD_DRAWING_CONTEXT;
-
-    PEN("FFFFFF", 20);
-
-    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
-    targetDir.normalize(200);
-
-    ARROW(
-          getBallModel().positionPreview.x,
-          getBallModel().positionPreview.y,
-          getBallModel().positionPreview.x + targetDir.x,
-          getBallModel().positionPreview.y + targetDir.y
-          );
-  );
-
-  DEBUG_REQUEST("PotentialActionSimulator:attackDirection:global",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 20);
-    TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
-    ROTATION(getRobotPose().rotation);
-
-    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
-    targetDir.normalize(200);
-
-    ARROW(
-          getBallModel().positionPreview.x,
-          getBallModel().positionPreview.y,
-          getBallModel().positionPreview.x + targetDir.x,
-          getBallModel().positionPreview.y + targetDir.y
-          );
-
-    ROTATION(-getRobotPose().rotation);
-    TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
-  );
 
 
   DEBUG_REQUEST("PotentialActionSimulator:goal_field_geometry",
@@ -287,7 +210,7 @@ void PotentialActionSimulator::execute()
   DEBUG_REQUEST("PotentialActionSimulator:draw_potential_field:global",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 5);
-	const double stepX = getFieldInfo().xFieldLength/50.0;
+	  const double stepX = getFieldInfo().xFieldLength/50.0;
     const double stepY = getFieldInfo().yFieldLength/50.0;
 
     Vector2<double> simulatedGlobalBall;
@@ -301,11 +224,11 @@ void PotentialActionSimulator::execute()
       {
         // claculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2<double> simulatedLocalBall = getRobotPose()/simulatedGlobalBall;
         Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
         Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
-		double rad = 5+f.abs()*50;
+		    double rad = 5+f.abs()*50;
 
         // transform it to global coordinates
         //f.normalize(50);
@@ -325,7 +248,7 @@ void PotentialActionSimulator::execute()
     const double stepX = 20;
     const double stepY = 20;
 
-    Vector2<double> simulatedGlobalBall;
+    Vector2d simulatedGlobalBall;
     for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
          simulatedGlobalBall.x <= getFieldInfo().opponentGoalCenter.x + 500;
          simulatedGlobalBall.x += stepX)
@@ -336,13 +259,13 @@ void PotentialActionSimulator::execute()
       {
         // claculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
-        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
-        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
+        Vector2d simulatedLocalBall = getRobotPose()/simulatedGlobalBall;
+        Vector2d target = getGoalTarget(simulatedLocalBall, oppGoalModel);
+        Vector2d f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
         // ATTENTION: since it is a vector and not a point, we apply only the rotation
-        f.rotate(robotPose.rotation);
+        f.rotate(getRobotPose().rotation);
 
         //ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
         SIMPLE_PARTICLE(simulatedGlobalBall.x, simulatedGlobalBall.y, f.angle());
@@ -376,13 +299,13 @@ void PotentialActionSimulator::execute()
 
         // calculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2<double> simulatedLocalBall = getRobotPose()/simulatedGlobalBall;
         Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
         Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
         // ATTENTION: since it is a vector and not a point, we apply only the rotation
-        f.rotate(robotPose.rotation);
+        f.rotate(getRobotPose().rotation);
         f.normalize();
 
 
@@ -391,7 +314,7 @@ void PotentialActionSimulator::execute()
         // apply some random noise
         for(int i = 0; i < trials; i++)
         {
-          Vector2<double> simulatedLocalBall_noise = robotPose/simulatedGlobalBall;
+          Vector2<double> simulatedLocalBall_noise = getRobotPose()/simulatedGlobalBall;
           simulatedLocalBall_noise.x += (Math::random()-0.5)*2.0*noise;
           simulatedLocalBall_noise.y += (Math::random()-0.5)*2.0*noise;
 
@@ -400,7 +323,7 @@ void PotentialActionSimulator::execute()
 
           // transform it to global coordinates
           // ATTENTION: since it is a vector and not a point, we apply only the rotation
-          f_noice.rotate(robotPose.rotation);
+          f_noice.rotate(getRobotPose().rotation);
           f_noice.normalize();
 
           deviation = max(deviation, fabs(Math::toDegrees(Math::normalize(f.angle() - f_noice.angle()))));
