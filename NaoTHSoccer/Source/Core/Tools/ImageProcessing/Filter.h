@@ -10,11 +10,11 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/DataStructures/RingBuffer.h>
 
-template<template<typename V, int SIZE> class F, class T, typename V>
+template<template<typename V, int SIZE> class F, class T, typename V, int SIZE>
 class Filter
 {
 private:
-  static const int SIZE = 5;
+  //static const int SIZE = 5;
   RingBuffer<T, SIZE> pointBuffer;
   RingBuffer<V, SIZE> valueBuffer;
   F<V,SIZE> function;

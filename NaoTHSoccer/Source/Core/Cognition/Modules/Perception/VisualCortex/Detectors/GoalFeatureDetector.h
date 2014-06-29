@@ -72,8 +72,6 @@ private:
       PARAMETER_REGISTER(thresholdUV) = 60;
       PARAMETER_REGISTER(thresholdUVGradient) = 12;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
-      //PARAMETER_REGISTER(thresholdY) = 140;
-      //PARAMETER_REGISTER(colorRegionDeviation) = 2;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);

@@ -107,7 +107,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
     }
     
     BresenhamLineScan scanner(pos, end);
-    Filter<Gauss5x1,Vector2i,double> filter;
+    Filter<Gauss5x1, Vector2i, double, 5> filter;
     
     Vector2i begin;
     bool begin_found = false;
@@ -117,7 +117,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
-      int diffVU = (int) pixel.v - (int) pixel.u;
+      int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
       DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -165,6 +165,8 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         {
           DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks", 
             LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
+            POINT_PX(ColorClasses::red, begin.x, begin.y );
+            POINT_PX(ColorClasses::red, end.x, end.y );
           );
 
           EdgelT<double> edgel;
@@ -201,7 +203,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     }
     
     BresenhamLineScan scanner(pos, end);
-    Filter<Diff5x1,Vector2i,double> filter;
+    Filter<Diff5x1, Vector2i, double, 5> filter;
 
     // initialize the scanner
     Vector2i peak_point_max(pos);
@@ -215,7 +217,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
-      int diffVU = (int) pixel.v - (int) pixel.u;
+      int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
       DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -253,6 +255,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
           DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
             LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
             POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
+            POINT_PX(ColorClasses::red, peak_point_min.x, peak_point_min.y );
           );
           EdgelT<double> edgel;
           edgel.point = Vector2d(peak_point_max + peak_point_min)*0.5;

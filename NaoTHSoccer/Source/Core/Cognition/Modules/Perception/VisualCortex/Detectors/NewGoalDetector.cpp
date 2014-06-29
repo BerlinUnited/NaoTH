@@ -178,7 +178,7 @@ Vector2i NewGoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d&
   Pixel pixel;
   BresenhamLineScan footPointScanner(pos, direction, getImage().cameraInfo);
 
-  Filter<Gauss5x1,Vector2i,double> filter;
+  Filter<Gauss5x1, Vector2i, double, 5> filter;
 
   while(footPointScanner.getNextWithCheck(pos))
   {
