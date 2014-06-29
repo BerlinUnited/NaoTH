@@ -18,10 +18,11 @@ using namespace std;
 PotentialActionSimulator::PotentialActionSimulator()
 {
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:goal_target", "draw goal target", false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:goal_field_geometry","some debug stuff for how the target is calculated", false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:global","draw gloabl action points", false);
 
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:attackDirection:local", "it is what it is", false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:attackDirection:global", "it is what it is", false);
+  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:goal_field_geometry","goal_field_geometry", false);
+
+  
 
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:different_colors","...", false);
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:local","draw local potential field", false);
@@ -31,11 +32,6 @@ PotentialActionSimulator::PotentialActionSimulator()
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_potential_field:sensitivity", "", false);
 
   DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:best_action","best action",false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:my_pos","My Pos",false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:long_kick","Long Kick",false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:short_kick","Short Kick",false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:sidekick_right","Sidekick right",false);
-  DEBUG_REQUEST_REGISTER("PotentialActionSimulator:draw_action_points:sidekick_left","Sidekick left",false);
 }
 
 
