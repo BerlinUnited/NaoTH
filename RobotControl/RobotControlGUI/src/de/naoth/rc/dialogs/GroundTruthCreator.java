@@ -95,6 +95,7 @@ public class GroundTruthCreator extends AbstractDialog
         jCheckBox1 = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         jToggleButton4 = new javax.swing.JToggleButton();
+        jCheckBox2 = new javax.swing.JCheckBox();
 
         jToggleButton1.setBackground(new java.awt.Color(255, 0, 0));
         jToggleButton1.setSelected(true);
@@ -220,33 +221,34 @@ public class GroundTruthCreator extends AbstractDialog
             }
         });
 
+        jCheckBox2.setText("manual change");
+        jCheckBox2.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jToggleButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jRadioButton1)
-                                .addComponent(jRadioButton2, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jRadioButton3, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addGap(2, 2, 2))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jToggleButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jRadioButton4, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton6, javax.swing.GroupLayout.Alignment.LEADING)))
-                    .addComponent(jCheckBox1)
+            .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jToggleButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(22, 22, 22))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jToggleButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jRadioButton1)
+                        .addComponent(jRadioButton2, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jRadioButton3, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addGap(2, 2, 2))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToggleButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jRadioButton4, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButton6, javax.swing.GroupLayout.Alignment.LEADING)))
+            .addComponent(jCheckBox1)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addComponent(jToggleButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jCheckBox2)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,7 +256,9 @@ public class GroundTruthCreator extends AbstractDialog
                 .addComponent(jToggleButton3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -278,7 +282,7 @@ public class GroundTruthCreator extends AbstractDialog
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToggleButton4)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
    
@@ -424,6 +428,7 @@ public class GroundTruthCreator extends AbstractDialog
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
@@ -496,39 +501,44 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             /**************BallPercept******************************************************/
             byte[] data; 
             boolean ballWasSeen;
-            if (changeGroundTruth) {
+            if (GroundTruthCreator.this.jCheckBox2.isSelected()) {
+                ballWasSeen = jToggleButton2.isSelected();
+            } else if (changeGroundTruth) {
                ballWasSeen = bottomBall.get(frameNumber);
             } else {
                 data = b.getRepresentation("BallPercept");
                 Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
                 ballWasSeen = ballPercept.getBallWasSeen();
-            }          
-            
-            if (ballWasSeen) jToggleButton2.setSelected(true);
-            else jToggleButton2.setSelected(false);
+            }             
+            jToggleButton2.setSelected(ballWasSeen);            
             if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
                  GroundTruthCreator.this.bottomBall.put(frameNumber,
                          ballWasSeen);
             }
             /**************BallPercept******************************************************/
             /**************BallPerceptTop***************************************************/
-            if (changeGroundTruth) {
+            if (GroundTruthCreator.this.jCheckBox2.isSelected()) {
+                ballWasSeen = jToggleButton1.isSelected();
+            } else if (changeGroundTruth) {
                 ballWasSeen = topBall.get(frameNumber);
             } else {
                 data = b.getRepresentation("BallPerceptTop");
                 Representations.BallPercept ballPerceptTop = Representations.BallPercept.parseFrom(data);
                 ballWasSeen = ballPerceptTop.getBallWasSeen();
             }           
-            if (ballWasSeen) jToggleButton1.setSelected(true);
-            else jToggleButton1.setSelected(false);
+            jToggleButton1.setSelected(ballWasSeen);
             if (GroundTruthCreator.this.jCheckBox1.isSelected() || !changeGroundTruth) {
                  GroundTruthCreator.this.topBall.put(frameNumber,
                         ballWasSeen);
             }
             /**************BallPerceptTop***************************************************/
             /**************GoalPercept***************************************************/ 
-            int postCount;
-            if (changeGroundTruth) {
+            int postCount=0;
+            if (GroundTruthCreator.this.jCheckBox2.isSelected()) {
+                if (jRadioButton4.isSelected()) postCount=0;
+                else if (jRadioButton5.isSelected()) postCount=1;
+                else if (jRadioButton6.isSelected()) postCount=2;                
+            } else if (changeGroundTruth) {
                 postCount = bottomGoal.get(frameNumber);
             } else {
                 data = b.getRepresentation("GoalPercept");
@@ -555,7 +565,11 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             }
             /**************GoalPercept***************************************************/
             /**************GoalPerceptTop************************************************/
-            if (changeGroundTruth) {
+            if (GroundTruthCreator.this.jCheckBox2.isSelected()) {
+                if (jRadioButton1.isSelected()) postCount=0;
+                else if (jRadioButton2.isSelected()) postCount=1;
+                else if (jRadioButton3.isSelected()) postCount=2;                
+            } else if (changeGroundTruth) {
                 postCount = topGoal.get(frameNumber);
             } else {
                 data = b.getRepresentation("GoalPerceptTop");
@@ -613,6 +627,7 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
         this.jToggleButton2.setEnabled(enabled);
         this.jButton1.setEnabled(enabled);
         this.jToggleButton4.setEnabled(enabled);
+        this.jCheckBox2.setEnabled(enabled);
     }
 }//end class GroundTruthCreator
 
