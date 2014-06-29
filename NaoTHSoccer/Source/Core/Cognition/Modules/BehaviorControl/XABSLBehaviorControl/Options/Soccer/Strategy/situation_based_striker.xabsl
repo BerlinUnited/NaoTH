@@ -1,5 +1,6 @@
 option situation_based_striker 
-{
+{
+
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -107,7 +108,8 @@ option situation_based_striker
     }
     action {
       situation_abortable = true;
-      //situation_sidekick(); //temporär
+      //situation_sidekick();
+ //temporär
     }
   }
 
@@ -129,7 +131,7 @@ option situation_based_striker
   state simLongKick{
     decision{
       else if(action_done)
-        goto search;
+        goto do_kick_with_right_foot;
       else
         stay;
     }
@@ -139,6 +141,20 @@ option situation_based_striker
     }
 
   }
+
+ state do_kick_with_right_foot {
+    decision {
+      else if(action_done)
+        goto search;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      kick_with_foot(foot = right);
+    }
+  }
+
 
   state simShortKick{
     decision{
