@@ -17,6 +17,8 @@ import java.io.ObjectInputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -363,26 +365,16 @@ public class GroundTruthReader extends AbstractDialog {
     public void report() {
         final int intervall = 10;
                int step = 0;       
-        int     topMissedBalls=0, 
-                topFalseBalls=0,
-                topMissedGP=0,
-                topFalseGP=0,
-                bottomMissedBalls=0,
-                bottomFalseBalls=0,
-                bottomMissedGP=0,
-                bottomFalseGP=0,
-                topMissedBallsInv=0, 
-                topFalseBallsInv=0,
-                topNotSeenGPInv=0,
-                topfalseGPInv=0,
-                bottomMissedBallsInv=0,
-                bottomFalseBallsInv=0,
-                bottomMissedGPInv=0,
-                bottomFalseGPInv=0;
-        String topBallString[] = new String[3]; 
-        String bottomBallString[] = new String[3]; 
-        String topGPString[] = new String[3]; 
-        String bottomGPString[] = new String[3]; 
+        int     topMissedBalls=0,topFalseBalls=0, topMissedGP=0, topFalseGP=0,
+                bottomMissedBalls=0,bottomFalseBalls=0, bottomMissedGP=0,bottomFalseGP=0,
+                topMissedBallsInv=0,topFalseBallsInv=0,topMissedGPInv=0, topFalseGPInv=0,
+                bottomMissedBallsInv=0,bottomFalseBallsInv=0, bottomMissedGPInv=0,bottomFalseGPInv=0;
+        
+       List<Integer>  topMissedBallsInvList = new LinkedList<>(),topFalseBallsInvList = new LinkedList<>(),
+               topFalseGPInvList = new LinkedList<>(),topMissedGPInvList = new LinkedList<>(),
+               bottomMissedBallsInvList = new LinkedList<>(), bottomFalseBallsInvList = new LinkedList<>(),
+               bottomMissedGPInvList = new LinkedList<>(), bottomFalseGPInvList = new LinkedList<>();
+      
         int minFrame = GroundTruthReader.this.logSimManager.getMinFrame(),
                 maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
         
@@ -390,14 +382,18 @@ public class GroundTruthReader extends AbstractDialog {
             step++;
             if (step==intervall){
                 step=0;
-                if(topMissedBallsInv==0) {
-                    topBallString[0] +=" ";
-                    
-                }
-                topMissedBallsInv=0; 
+                topMissedBallsInvList.add(topMissedBallsInv);
+                topFalseBallsInvList.add(topFalseBallsInv);
+                bottomMissedBallsInvList.add(bottomMissedBallsInv);
+                bottomFalseBallsInvList.add(bottomFalseBallsInv);
+                topMissedGPInvList.add(topMissedGPInv);
+                topFalseGPInvList.add(topFalseGPInv);
+                bottomMissedGPInvList.add(bottomMissedGPInv);
+                bottomFalseGPInvList.add(bottomFalseGPInv);
+                topMissedBallsInv=0;
                 topFalseBallsInv=0;
-                topNotSeenGPInv=0;
-                topfalseGPInv=0;
+                topMissedGPInv=0;
+                topFalseGPInv=0;
                 bottomMissedBallsInv=0;
                 bottomFalseBallsInv=0;
                 bottomMissedGPInv=0;
@@ -407,41 +403,87 @@ public class GroundTruthReader extends AbstractDialog {
             if (missmatch!=null)
             {
                 if(missmatch.bottomBall!=null) {
-                    if (missmatch.bottomBall) bottomMissedBalls++;
-                    else bottomFalseBalls++;
+                    if (missmatch.bottomBall) {
+                        bottomMissedBalls++;
+                        bottomMissedBallsInv++;
+                    }
+                    else {
+                        bottomFalseBalls++;
+                        bottomFalseBallsInv++;
+                    }
                 }
                 if(missmatch.topBall!=null) {
-                    if (missmatch.topBall) topMissedBalls++;
-                    else topFalseBalls++;
+                    if (missmatch.topBall) {
+                        topMissedBalls++;
+                        topMissedBallsInv++;
+                    }
+                    else {
+                        topFalseBalls++;
+                        topFalseBallsInv++;
+                    }
                 }
                 if(missmatch.bottomGoalGT!=null) {
                     bottomMissedGP += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
                     bottomFalseGP += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
+                    bottomMissedGPInv += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
+                    bottomFalseGPInv += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
                 }
                 if(missmatch.topGoalGT!=null) {
                     topMissedGP += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
                     topFalseGP += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
+                    topMissedGPInv += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
+                    topFalseGPInv += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
                 }
             }
         }
         String fileName = LogfilePlayer.getFileName();
         fileName = fileName.substring(0, fileName.length()-4);
-        fileName += JOptionPane.showInputDialog(null,"Please enter FileEnding","UserInput", JOptionPane.PLAIN_MESSAGE) +".txt";
+        fileName += JOptionPane.showInputDialog(null,"Please enter custom Filename part","UserInput", JOptionPane.PLAIN_MESSAGE) +".txt";
         BufferedWriter writer;
         try {
             File reportFile = new File(fileName);
             writer = new BufferedWriter(new FileWriter(reportFile));
-            writer.write("GroundTruthReportFile: \n");
-            writer.write("TotalMissedBalls: " +(topMissedBalls+bottomMissedBalls) +" TotalFalseBalls: " +(topFalseBalls+bottomFalseBalls) +"\n");
-            writer.write("TopMissedBalls: " +topMissedBalls +" TopFalseBalls: " +topFalseBalls +"\n");
-            writer.write("BottomMissedBalls: " +bottomMissedBalls +" bottomFalseBalls: " +bottomFalseBalls +"\n");          
-            writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\n");
-            writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\n");
-            writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\n");
+            writer.write("GroundTruthReportFile: \r\n");
+            writer.write("TotalMissedBalls: " +(topMissedBalls+bottomMissedBalls) +" TotalFalseBalls: " +(topFalseBalls+bottomFalseBalls) +"\r\n");
+            writer.write("TopMissedBalls: " +topMissedBalls +" TopFalseBalls: " +topFalseBalls +"\r\n");
+            writer.write("BottomMissedBalls: " +bottomMissedBalls +" bottomFalseBalls: " +bottomFalseBalls +"\r\n");          
+            writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\r\n");
+            writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\r\n");
+            writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\r\n");            
+            prmGraphicOutput(writer, "topBallMissed", topMissedBallsInvList);
+            prmGraphicOutput(writer, "topBallFalse", topFalseBallsInvList);
+            prmGraphicOutput(writer, "bottomBallMissed", bottomMissedBallsInvList);
+            prmGraphicOutput(writer, "bottomBallFalse", bottomFalseBallsInvList);
+            prmGraphicOutput(writer, "topGoalPostsMissed", topMissedGPInvList);
+            prmGraphicOutput(writer, "topGoalPostsFalse", topFalseGPInvList);
+            prmGraphicOutput(writer, "bottomGoalPostsMissed", bottomMissedGPInvList);
+            prmGraphicOutput(writer, "bottomGoalPostsFalse", bottomFalseGPInvList);
             writer.close();
         } catch (IOException ex) {
              ex.printStackTrace(System.err);
         }             
+    }
+    
+    public void prmGraphicOutput(BufferedWriter writer,String label, List<Integer> dataList) throws IOException {
+        int dataMax=0;
+        String outSpacer="";
+        for (int data: dataList){
+            if (data>dataMax) dataMax=data;
+        }
+        for (int i=0; i<=dataList.size(); i++) {
+            outSpacer+="-";
+        }
+        outSpacer+="\r\n";
+        writer.write(outSpacer);
+        writer.write(label+":\r\n");
+        for (int i=0; i<=dataMax; i++) {
+            String out="";
+            for (int data: dataList){
+                out += dataMax-i<=data?"*":" ";
+            }
+            writer.write(out+(dataMax-i)+"\r\n");
+        }
+        writer.write(outSpacer);
     }
 
 }//end class GroundTruthCreator
