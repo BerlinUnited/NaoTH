@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.LogSimulator;
+import de.naoth.rc.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
@@ -37,6 +38,7 @@ public class GroundTruthReader extends AbstractDialog {
      private Map<Integer, Integer> topGoal,
             bottomGoal;
      DefaultListModel listModel;
+     private LogSimulatorManager logSimManager;
 
     private class MissmatchSaver{
         int frame;
@@ -89,7 +91,8 @@ public class GroundTruthReader extends AbstractDialog {
     private final GroundTruthReader.LogPerceptListener logPerceptListener = new GroundTruthReader.LogPerceptListener();
 
     public GroundTruthReader() {
-        listModel = new DefaultListModel();
+        this.logSimManager = LogSimulatorManager.getInstance();
+        this.listModel = new DefaultListModel();
         initComponents();
         LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
         
@@ -141,6 +144,12 @@ public class GroundTruthReader extends AbstractDialog {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+        });
+
         jToggleButton3.setText("listen");
         jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -149,6 +158,11 @@ public class GroundTruthReader extends AbstractDialog {
         });
 
         jList1.setModel(listModel);
+        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jList1MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jList1);
 
         jButton1.setText("report");
@@ -213,6 +227,17 @@ public class GroundTruthReader extends AbstractDialog {
         listModel.clear();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMouseClicked
+
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+        if (evt.getClickCount()==2) {
+            MissmatchSaver missmatch = (MissmatchSaver) this.jList1.getSelectedValue();
+            logSimManager.jumpTo(missmatch.frame);
+        }
+    }//GEN-LAST:event_jList1MouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
@@ -223,10 +248,7 @@ public class GroundTruthReader extends AbstractDialog {
     private javax.swing.JToggleButton jToggleButton3;
     // End of variables declaration//GEN-END:variables
 
-    class LogPerceptListener implements LogSimulator.LogSimulatorActionListener {
-        int     minFrame = Integer.MAX_VALUE,
-                maxFrame = 0;
-        
+    class LogPerceptListener implements LogSimulator.LogSimulatorActionListener {      
         @Override
         public void frameChanged(LogSimulator.BlackBoard b, int frameNumber) {
             if (!GroundTruthReader.this.jToggleButton3.isSelected()) {
@@ -238,8 +260,6 @@ public class GroundTruthReader extends AbstractDialog {
                 /**
                  * ************BallPercept*****************************************************
                  */
-                if (minFrame>frameNumber) minFrame=frameNumber;
-                if (maxFrame<frameNumber) maxFrame=frameNumber;
                 byte[]data = b.getRepresentation("BallPercept");
                 Representations.BallPercept ballPercept = Representations.BallPercept.parseFrom(data);
                 Boolean ballHere = bottomBall.get(frameNumber); 
@@ -327,8 +347,10 @@ public class GroundTruthReader extends AbstractDialog {
                 ex.printStackTrace(System.err);
             }
             if (foundMissmatch) {
-                missmatches.put(missmatch.frame, missmatch);               
-                listModel.addElement(missmatch);
+                if (!missmatches.containsKey(missmatch.frame)) {
+                    missmatches.put(missmatch.frame, missmatch);               
+                    listModel.addElement(missmatch);
+                }
             }
         }
 
@@ -361,8 +383,10 @@ public class GroundTruthReader extends AbstractDialog {
         String bottomBallString[] = new String[3]; 
         String topGPString[] = new String[3]; 
         String bottomGPString[] = new String[3]; 
+        int minFrame = GroundTruthReader.this.logSimManager.getMinFrame(),
+                maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
         
-        for (int i=logPerceptListener.minFrame; i<=logPerceptListener.maxFrame; i++){
+        for (int i=minFrame; i<=maxFrame; i++){
             step++;
             if (step==intervall){
                 step=0;
