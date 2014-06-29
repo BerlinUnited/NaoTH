@@ -183,7 +183,7 @@ Vector2i NewGoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d&
   while(footPointScanner.getNextWithCheck(pos))
   {
     IMG_GET(pos.x, pos.y, pixel);
-    int diffVU = (int) pixel.v - (int) pixel.u;
+    int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
     filter.add(pos, diffVU);
 
     //collect some values for statisics of colors
