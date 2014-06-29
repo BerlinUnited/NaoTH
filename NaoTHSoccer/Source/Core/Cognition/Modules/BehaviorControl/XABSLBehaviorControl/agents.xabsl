@@ -130,6 +130,7 @@ include "Options/Test/obstacle_test_agent.xabsl";
 // Test agents (options) Penalty
 include "Options/Test/penalty_kicker_test_agent.xabsl";
 // Test agents (options) ball search
+include "Options/Test/search_ball_test.xabsl";
 include "Options/Test/search_test_agent.xabsl";
 include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";

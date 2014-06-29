@@ -99,7 +99,7 @@ void PotentialActionSimulator::execute()
 
   //first we get our potential to the goal, to see at the end if we can get our position better then yet
   Vector2d goal_target = getGoalTarget(getRobotPose().translation, oppGoalModel);
-  double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
+  //double my_pos_potential = calculatePotential(getRobotPose().translation, goal_target, obstacles);
 
 
   Vector2d ballPosition;

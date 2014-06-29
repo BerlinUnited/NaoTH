@@ -65,7 +65,7 @@ option search_ball
     }
   }
 
-  state finish {
+  target state finish {
     action{
       motion.type = stand;
       head.control_mode = search_for_ball;
