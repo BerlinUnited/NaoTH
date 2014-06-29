@@ -103,6 +103,15 @@ public:
   } theParameters;
 
 
+  class Action
+  {
+  public:
+    Action() : potential(-1) {}
+    Action(const Vector2d& target) : target(target), potential(-1) {}
+    Vector2d target;
+    double potential;
+  };
+
 private:
 
   /**

@@ -84,14 +84,6 @@ void PotentialActionSimulator::execute()
 
   //calculate the actions
   //calculation for long kick
-  class Action
-  {
-  public:
-    Action(const Vector2d& target) : target(target), potential(-1) {}
-    Vector2d target;
-    double potential;
-  };
-
   std::vector<Action> action_local;
   action_local.reserve(5);
 
