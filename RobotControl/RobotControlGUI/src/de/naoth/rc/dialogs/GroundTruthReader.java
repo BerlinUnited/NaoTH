@@ -8,6 +8,7 @@ import de.naoth.rc.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
+import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.apache.commons.collections4.map.LinkedMap;
@@ -97,19 +99,17 @@ public class GroundTruthReader extends AbstractDialog {
         this.listModel = new DefaultListModel();
         initComponents();
         LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
-        
-     // Plugin.genericManagerFactory.getManager(getBallDataCommand).addListener(ballListener);
-        //Plugin.genericManagerFactory.getManager(getBallTopDataCommand).addListener(ballTopListener);
+        missmatches = new LinkedMap<>(); 
 
     }
 
-     private void openFile() {
-        if (!this.jToggleButton3.isSelected()) return;
+     private boolean openFile() {
+       // if (!this.jToggleButton3.isSelected()) return;        
         String fileName = LogfilePlayer.getFileName();
         if (fileName.equals("")) {
-            JOptionPane.showMessageDialog(null, "No opend logfile", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No opened logfile", "Error", JOptionPane.ERROR_MESSAGE);
             this.jToggleButton3.setSelected(false);
-            return;
+            return false;
         }
         fileName = fileName.substring(0, fileName.lastIndexOf(".") + 1) + "gts";
         ObjectInputStream o;
@@ -127,7 +127,8 @@ public class GroundTruthReader extends AbstractDialog {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-        missmatches = new LinkedMap<>();
+        //missmatches = new LinkedMap<>();
+        return true;
     }
 
     /**
@@ -176,6 +177,7 @@ public class GroundTruthReader extends AbstractDialog {
         });
 
         jButton2.setText("clear");
+        jButton2.setEnabled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -214,10 +216,9 @@ public class GroundTruthReader extends AbstractDialog {
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
         if (jToggleButton3.isSelected()) {         
-            openFile();
-            this.jButton1.setEnabled(true);
+            if (openFile()) toogleButtons();
         } else {
-            this.jButton1.setEnabled(false);
+            toogleButtons();
         }
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
@@ -359,12 +360,13 @@ public class GroundTruthReader extends AbstractDialog {
 
         @Override
         public void logfileOpened(LogSimulator.BlackBoard b, String path) {
-            GroundTruthReader.this.openFile();
+            listModel.clear();
+            missmatches.clear();
         }
     }
     
     public void report() {
-        final int intervall = 10;
+        int intervall = 10;
                int step = 0;       
         int     topMissedBalls=0,topFalseBalls=0, topMissedGP=0, topFalseGP=0,
                 bottomMissedBalls=0,bottomFalseBalls=0, bottomMissedGP=0,bottomFalseGP=0,
@@ -378,7 +380,33 @@ public class GroundTruthReader extends AbstractDialog {
       
         int minFrame = GroundTruthReader.this.logSimManager.getMinFrame(),
                 maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
+        /*************************Dialog*********************************/
         
+        JTextField intervallString = new JTextField(intervall);
+        JTextField fileNameAdd = new JTextField();
+        Object[] message = {"EvaluationIntervall", intervallString, 
+                "Please enter custom Filenameaddition", fileNameAdd};
+        JOptionPane pane = new JOptionPane( message, 
+                                        JOptionPane.PLAIN_MESSAGE, 
+                                        JOptionPane.OK_CANCEL_OPTION);
+        boolean badInput = true;
+        while (badInput) {
+            pane.createDialog(null, "ReportDialog").setVisible(true);
+            Object selectedValue = pane.getValue();
+            if(selectedValue instanceof Integer && ((Integer) selectedValue == JOptionPane.CANCEL_OPTION
+                                        || (Integer) selectedValue == null))
+            {
+                return;
+            }            
+            try {
+                intervall = Integer.parseInt(intervallString.getText());  
+                if (intervall<1) throw new NumberFormatException();
+                badInput = false;
+            } catch (NumberFormatException ex) {
+                intervallString.setBackground(Color.red);
+            }
+        }
+        /*************************Dialog*********************************/
         for (int i=minFrame; i<=maxFrame; i++){
             step++;
             if (step==intervall){
@@ -439,7 +467,7 @@ public class GroundTruthReader extends AbstractDialog {
         }
         String fileName = LogfilePlayer.getFileName();
         fileName = fileName.substring(0, fileName.length()-4);
-        fileName += JOptionPane.showInputDialog(null,"Please enter custom Filename part","UserInput", JOptionPane.PLAIN_MESSAGE) +".txt";
+        fileName += fileNameAdd.getText()+".txt";
         BufferedWriter writer;
         try {
             File reportFile = new File(fileName);
@@ -485,6 +513,15 @@ public class GroundTruthReader extends AbstractDialog {
             writer.write(out+(dataMax-i)+"\r\n");
         }
         writer.write(outSpacer);
+    }
+    
+    public void toogleButtons () {
+        boolean enabled = true;
+        if (this.jButton2.isEnabled()) {
+            enabled = false;
+        }                
+        this.jButton2.setEnabled(enabled);
+        this.jButton1.setEnabled(enabled);
     }
 
 }//end class GroundTruthCreator

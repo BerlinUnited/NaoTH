@@ -315,15 +315,12 @@ public class GroundTruthCreator extends AbstractDialog
     }//GEN-LAST:event_jRadioButton6ActionPerformed
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-       /*if (jToggleButton3.isSelected()) {
-          
-                jToggleButton3.setSelected(false);
-                JOptionPane.showMessageDialog(null,"Not connected to Robot", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } else {
-            dispose();
-        }*/
+       String fileName = LogfilePlayer.getFileName();
+        if (fileName.equals("")) {
+            JOptionPane.showMessageDialog(null, "No opened logfile", "Error", JOptionPane.ERROR_MESSAGE);
+            this.jToggleButton3.setSelected(false);
+            return;
+        }
         toggleButtons();
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
