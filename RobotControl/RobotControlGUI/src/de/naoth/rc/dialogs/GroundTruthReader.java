@@ -15,9 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -318,8 +315,7 @@ public class GroundTruthReader extends AbstractDialog {
                 if (goalHere == null) {
                     missmatch.missingFrame = true;
                     foundMissmatch=true; 
-                }
-                if (goalHere != postCount) {
+                } else if (goalHere != postCount) {
                     missmatch.bottomGoalGT = goalHere;
                     missmatch.bottomGoalSeen = postCount;
                     foundMissmatch=true;
@@ -337,8 +333,7 @@ public class GroundTruthReader extends AbstractDialog {
                 if (goalHere == null) {
                     missmatch.missingFrame = true;
                     foundMissmatch=true; 
-                }
-                if (goalHere != postCount) {
+                } else if (goalHere != postCount) {
                     missmatch.topGoalGT = goalHere;
                     missmatch.topGoalSeen = postCount;
                     foundMissmatch=true;
@@ -362,29 +357,35 @@ public class GroundTruthReader extends AbstractDialog {
         public void logfileOpened(LogSimulator.BlackBoard b, String path) {
             listModel.clear();
             missmatches.clear();
+            if (GroundTruthReader.this.jToggleButton3.isSelected()) {
+                GroundTruthReader.this.jToggleButton3.setSelected(false);
+                GroundTruthReader.this.toogleButtons();
+            }
         }
     }
     
     public void report() {
         int intervall = 10;
                int step = 0;       
-        int     topMissedBalls=0,topFalseBalls=0, topMissedGP=0, topFalseGP=0,
+        int     topMissedBalls=0,topFalseBalls=0, topMissedGP=0, topFalseGP=0, 
                 bottomMissedBalls=0,bottomFalseBalls=0, bottomMissedGP=0,bottomFalseGP=0,
-                topMissedBallsInv=0,topFalseBallsInv=0,topMissedGPInv=0, topFalseGPInv=0,
-                bottomMissedBallsInv=0,bottomFalseBallsInv=0, bottomMissedGPInv=0,bottomFalseGPInv=0;
+                topMissedBallsInv=0,topFalseBallsInv=0,topMissedGPInv=0, topFalseGPInv=0, topGTBallsInv=0, topGTGPInv=0,
+                bottomMissedBallsInv=0,bottomFalseBallsInv=0, bottomMissedGPInv=0,bottomFalseGPInv=0, bottomGTBallsInv=0, bottomGTGPInv=0;
+                
         
-       List<Integer>  topMissedBallsInvList = new LinkedList<>(),topFalseBallsInvList = new LinkedList<>(),
-               topFalseGPInvList = new LinkedList<>(),topMissedGPInvList = new LinkedList<>(),
-               bottomMissedBallsInvList = new LinkedList<>(), bottomFalseBallsInvList = new LinkedList<>(),
-               bottomMissedGPInvList = new LinkedList<>(), bottomFalseGPInvList = new LinkedList<>();
+       List<Integer>  topMissedBallsInvList = new LinkedList<>(),topFalseBallsInvList = new LinkedList<>(), topGTBallsInvList = new LinkedList<>(),
+               topFalseGPInvList = new LinkedList<>(),topMissedGPInvList = new LinkedList<>(), topGTGPInvList = new LinkedList<>(),
+               bottomMissedBallsInvList = new LinkedList<>(), bottomFalseBallsInvList = new LinkedList<>(), bottomGTBallsInvList = new LinkedList<>(),
+               bottomMissedGPInvList = new LinkedList<>(), bottomFalseGPInvList = new LinkedList<>(), bottomGTGPInvList = new LinkedList<>();
       
         int minFrame = GroundTruthReader.this.logSimManager.getMinFrame(),
                 maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
         /*************************Dialog*********************************/
         
-        JTextField intervallString = new JTextField(intervall);
+        JTextField intervallTF = new JTextField();
+        intervallTF.setText(String.valueOf(intervall));
         JTextField fileNameAdd = new JTextField();
-        Object[] message = {"EvaluationIntervall", intervallString, 
+        Object[] message = {"EvaluationIntervall", intervallTF, 
                 "Please enter custom Filenameaddition", fileNameAdd};
         JOptionPane pane = new JOptionPane( message, 
                                         JOptionPane.PLAIN_MESSAGE, 
@@ -393,20 +394,35 @@ public class GroundTruthReader extends AbstractDialog {
         while (badInput) {
             pane.createDialog(null, "ReportDialog").setVisible(true);
             Object selectedValue = pane.getValue();
-            if(selectedValue instanceof Integer && ((Integer) selectedValue == JOptionPane.CANCEL_OPTION
-                                        || (Integer) selectedValue == null))
+            if(selectedValue == null || (selectedValue instanceof Integer && (Integer) selectedValue == JOptionPane.CANCEL_OPTION))
             {
                 return;
             }            
             try {
-                intervall = Integer.parseInt(intervallString.getText());  
+                intervall = Integer.parseInt(intervallTF.getText());  
                 if (intervall<1) throw new NumberFormatException();
                 badInput = false;
             } catch (NumberFormatException ex) {
-                intervallString.setBackground(Color.red);
+                intervallTF.setBackground(Color.red);
             }
         }
         /*************************Dialog*********************************/
+        String fileTestName = LogfilePlayer.getFileName();        
+        fileTestName = fileTestName.substring(0,fileTestName.lastIndexOf(".")+1) + "gts" ;
+        File f = new File(fileTestName);
+        if (f.exists()) {
+            Object[] options = {"Yes, please",
+                    "No!!!"};
+            int n = JOptionPane.showOptionDialog(this,
+                "ReportFile already exists override it?",
+                "Question",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);           
+            if (n!=0) return;
+        }
         for (int i=minFrame; i<=maxFrame; i++){
             step++;
             if (step==intervall){
