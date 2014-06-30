@@ -18,12 +18,11 @@ public:
   // position of the most interesting point in robot coords
   enum ActionId
   {
-    ball_position,
+    none,
     kick_short,
     kick_long,
     sidekick_left,
-    sidekick_right,
-    none
+    sidekick_right 
   };
   
   ActionId myAction;

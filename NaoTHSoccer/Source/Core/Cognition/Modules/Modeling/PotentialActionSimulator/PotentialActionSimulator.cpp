@@ -90,7 +90,7 @@ void PotentialActionSimulator::execute()
   std::vector<Action> action_local;
   action_local.reserve(5);
 
-  action_local.push_back(Action(ActionModel::ball_position, ballRelativePreview));
+  action_local.push_back(Action(ActionModel::none, ballRelativePreview));
   action_local.push_back(Action(ActionModel::kick_long, ballRelativePreview + Vector2d(theParameters.action_long_kick_distance, 0))); // long
   action_local.push_back(Action(ActionModel::kick_short, ballRelativePreview + Vector2d(theParameters.action_short_kick_distance, 0))); // short
   action_local.push_back(Action(ActionModel::sidekick_right, ballRelativePreview + Vector2d(0, -theParameters.action_sidekick_distance))); // right
