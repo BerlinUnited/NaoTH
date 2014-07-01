@@ -97,7 +97,6 @@ public class GroundTruthReader extends AbstractDialog {
         initComponents();
         LogSimulator.LogSimulatorManager.getInstance().addListener(logPerceptListener);
         missmatches = new LinkedMap<>(); 
-
     }
 
      private boolean openFile() {
@@ -124,7 +123,6 @@ public class GroundTruthReader extends AbstractDialog {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GroundTruthReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //missmatches = new LinkedMap<>();
         return true;
     }
 
@@ -135,14 +133,514 @@ public class GroundTruthReader extends AbstractDialog {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        buttonGroup2 = new javax.swing.ButtonGroup();
+        reportDialog = new javax.swing.JDialog();
+        reportClose = new javax.swing.JButton();
+        reportSave = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        missedBallsLabel = new javax.swing.JLabel();
+        falseBallsLabel = new javax.swing.JLabel();
+        missedGPLabel = new javax.swing.JLabel();
+        falseGPLabel = new javax.swing.JLabel();
+        mBBottomLabel = new javax.swing.JLabel();
+        mBTotalLabel = new javax.swing.JLabel();
+        mBTopLabel = new javax.swing.JLabel();
+        totalMissedBallsField = new javax.swing.JTextField();
+        topMissedBallsField = new javax.swing.JTextField();
+        bottomMissedBallsField = new javax.swing.JTextField();
+        missedBallsTotalCheckBox = new javax.swing.JCheckBox();
+        missedBallsTopCheckBox = new javax.swing.JCheckBox();
+        missedBallsBottomCheckBox = new javax.swing.JCheckBox();
+        fBTopLabel = new javax.swing.JLabel();
+        fBBottomLabel = new javax.swing.JLabel();
+        fBTotalLabel = new javax.swing.JLabel();
+        totalFalseBallsField = new javax.swing.JTextField();
+        topFalseBallsField = new javax.swing.JTextField();
+        bottomFalseBallsField = new javax.swing.JTextField();
+        falseBallsTotalCheckBox = new javax.swing.JCheckBox();
+        falseBallsTopCheckBox = new javax.swing.JCheckBox();
+        falseBallsBottomCheckBox = new javax.swing.JCheckBox();
+        mGPTotalLabel = new javax.swing.JLabel();
+        mGPTopLabel = new javax.swing.JLabel();
+        mGPBottomLabel = new javax.swing.JLabel();
+        totalMissedGPField = new javax.swing.JTextField();
+        topMissedGPField = new javax.swing.JTextField();
+        bottomMissedGPField = new javax.swing.JTextField();
+        missedGPTotalCheckBox = new javax.swing.JCheckBox();
+        missedGPTopCheckBox = new javax.swing.JCheckBox();
+        missedGPBottomCheckBox = new javax.swing.JCheckBox();
+        fGPTotalLabel = new javax.swing.JLabel();
+        fGPTopLabel = new javax.swing.JLabel();
+        fGPBottomLabel = new javax.swing.JLabel();
+        totalFalseGPField = new javax.swing.JTextField();
+        topFalseGPField = new javax.swing.JTextField();
+        bottomFalseGPField = new javax.swing.JTextField();
+        falseGPTotalCheckBox = new javax.swing.JCheckBox();
+        falseGPTopCheckBox = new javax.swing.JCheckBox();
+        falseGPBottomCheckBox = new javax.swing.JCheckBox();
         jToggleButton3 = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+
+        reportDialog.setTitle("Groundtruth Report");
+        reportDialog.setFocusableWindowState(false);
+        reportDialog.setMaximumSize(new java.awt.Dimension(550, 300));
+        reportDialog.setMinimumSize(new java.awt.Dimension(550, 300));
+        reportDialog.setPreferredSize(new java.awt.Dimension(550, 300));
+        reportDialog.setResizable(false);
+
+        reportClose.setText("Close");
+        reportClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reportCloseActionPerformed(evt);
+            }
+        });
+
+        reportSave.setText("Save");
+        reportSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reportSaveActionPerformed(evt);
+            }
+        });
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        missedBallsLabel.setText("missed Balls");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.ipadx = 7;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel1.add(missedBallsLabel, gridBagConstraints);
+
+        falseBallsLabel.setText("false Balls");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel1.add(falseBallsLabel, gridBagConstraints);
+
+        missedGPLabel.setText("missed Goalposts");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel1.add(missedGPLabel, gridBagConstraints);
+
+        falseGPLabel.setText("false Goalposts");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 9;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel1.add(falseGPLabel, gridBagConstraints);
+
+        mBBottomLabel.setText("bottom:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(mBBottomLabel, gridBagConstraints);
+
+        mBTotalLabel.setText("total:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(mBTotalLabel, gridBagConstraints);
+
+        mBTopLabel.setText("top:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(mBTopLabel, gridBagConstraints);
+
+        totalMissedBallsField.setEditable(false);
+        totalMissedBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        totalMissedBallsField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                totalMissedBallsFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(totalMissedBallsField, gridBagConstraints);
+        totalMissedBallsField.getAccessibleContext().setAccessibleName("");
+
+        topMissedBallsField.setEditable(false);
+        topMissedBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(topMissedBallsField, gridBagConstraints);
+
+        bottomMissedBallsField.setEditable(false);
+        bottomMissedBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(bottomMissedBallsField, gridBagConstraints);
+
+        missedBallsTotalCheckBox.setSelected(true);
+        missedBallsTotalCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                missedBallsTotalCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedBallsTotalCheckBox, gridBagConstraints);
+
+        missedBallsTopCheckBox.setSelected(true);
+        missedBallsTopCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedBallsTopCheckBox, gridBagConstraints);
+
+        missedBallsBottomCheckBox.setSelected(true);
+        missedBallsBottomCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        missedBallsBottomCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                missedBallsBottomCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedBallsBottomCheckBox, gridBagConstraints);
+
+        fBTopLabel.setText("top:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fBTopLabel, gridBagConstraints);
+
+        fBBottomLabel.setText("bottom:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fBBottomLabel, gridBagConstraints);
+
+        fBTotalLabel.setText("total:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fBTotalLabel, gridBagConstraints);
+
+        totalFalseBallsField.setEditable(false);
+        totalFalseBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(totalFalseBallsField, gridBagConstraints);
+
+        topFalseBallsField.setEditable(false);
+        topFalseBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(topFalseBallsField, gridBagConstraints);
+
+        bottomFalseBallsField.setEditable(false);
+        bottomFalseBallsField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(bottomFalseBallsField, gridBagConstraints);
+
+        falseBallsTotalCheckBox.setSelected(true);
+        falseBallsTotalCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                falseBallsTotalCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel1.add(falseBallsTotalCheckBox, gridBagConstraints);
+
+        falseBallsTopCheckBox.setSelected(true);
+        falseBallsTopCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel1.add(falseBallsTopCheckBox, gridBagConstraints);
+
+        falseBallsBottomCheckBox.setSelected(true);
+        falseBallsBottomCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel1.add(falseBallsBottomCheckBox, gridBagConstraints);
+
+        mGPTotalLabel.setText("total:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(mGPTotalLabel, gridBagConstraints);
+
+        mGPTopLabel.setText("top:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(mGPTopLabel, gridBagConstraints);
+
+        mGPBottomLabel.setText("bottom:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(mGPBottomLabel, gridBagConstraints);
+
+        totalMissedGPField.setEditable(false);
+        totalMissedGPField.setBackground(new java.awt.Color(255, 255, 255));
+        totalMissedGPField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                totalMissedGPFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(totalMissedGPField, gridBagConstraints);
+
+        topMissedGPField.setEditable(false);
+        topMissedGPField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(topMissedGPField, gridBagConstraints);
+
+        bottomMissedGPField.setEditable(false);
+        bottomMissedGPField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(bottomMissedGPField, gridBagConstraints);
+
+        missedGPTotalCheckBox.setSelected(true);
+        missedGPTotalCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        missedGPTotalCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                missedGPTotalCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedGPTotalCheckBox, gridBagConstraints);
+
+        missedGPTopCheckBox.setSelected(true);
+        missedGPTopCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedGPTopCheckBox, gridBagConstraints);
+
+        missedGPBottomCheckBox.setSelected(true);
+        missedGPBottomCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(missedGPBottomCheckBox, gridBagConstraints);
+
+        fGPTotalLabel.setText("total:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 9;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fGPTotalLabel, gridBagConstraints);
+
+        fGPTopLabel.setText("top:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 9;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fGPTopLabel, gridBagConstraints);
+
+        fGPBottomLabel.setText("bottom:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 9;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        jPanel1.add(fGPBottomLabel, gridBagConstraints);
+
+        totalFalseGPField.setEditable(false);
+        totalFalseGPField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(totalFalseGPField, gridBagConstraints);
+
+        topFalseGPField.setEditable(false);
+        topFalseGPField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(topFalseGPField, gridBagConstraints);
+
+        bottomFalseGPField.setEditable(false);
+        bottomFalseGPField.setBackground(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 10;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 34;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(bottomFalseGPField, gridBagConstraints);
+
+        falseGPTotalCheckBox.setSelected(true);
+        falseGPTotalCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                falseGPTotalCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 11;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(falseGPTotalCheckBox, gridBagConstraints);
+
+        falseGPTopCheckBox.setSelected(true);
+        falseGPTopCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 11;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(falseGPTopCheckBox, gridBagConstraints);
+
+        falseGPBottomCheckBox.setSelected(true);
+        falseGPBottomCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                updateDisplayModels(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 11;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(falseGPBottomCheckBox, gridBagConstraints);
+
+        javax.swing.GroupLayout reportDialogLayout = new javax.swing.GroupLayout(reportDialog.getContentPane());
+        reportDialog.getContentPane().setLayout(reportDialogLayout);
+        reportDialogLayout.setHorizontalGroup(
+            reportDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportDialogLayout.createSequentialGroup()
+                .addContainerGap(383, Short.MAX_VALUE)
+                .addComponent(reportSave)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(reportClose)
+                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        reportDialogLayout.setVerticalGroup(
+            reportDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportDialogLayout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                .addGroup(reportDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(reportClose)
+                    .addComponent(reportSave))
+                .addContainerGap())
+        );
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -220,7 +718,8 @@ public class GroundTruthReader extends AbstractDialog {
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        report();
+        //this.reportDialog.setVisible(true);
+        report.openReportDialog();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -239,14 +738,104 @@ public class GroundTruthReader extends AbstractDialog {
         }
     }//GEN-LAST:event_jList1MouseClicked
 
+    private void reportSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportSaveActionPerformed
+       report.saveToFile();
+    }//GEN-LAST:event_reportSaveActionPerformed
+
+    private void reportCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportCloseActionPerformed
+        this.reportDialog.setVisible(false);
+    }//GEN-LAST:event_reportCloseActionPerformed
+
+    private void totalMissedBallsFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalMissedBallsFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_totalMissedBallsFieldActionPerformed
+
+    private void totalMissedGPFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalMissedGPFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_totalMissedGPFieldActionPerformed
+
+    private void missedBallsBottomCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_missedBallsBottomCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_missedBallsBottomCheckBoxActionPerformed
+
+    private void missedBallsTotalCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_missedBallsTotalCheckBoxActionPerformed
+        boolean state = this.missedBallsTotalCheckBox.isSelected();
+        this.missedBallsBottomCheckBox.setSelected(state);
+        this.missedBallsTopCheckBox.setSelected(state);
+    }//GEN-LAST:event_missedBallsTotalCheckBoxActionPerformed
+
+    private void updateDisplayModels(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_updateDisplayModels
+        updateDisplayMissmatches();
+    }//GEN-LAST:event_updateDisplayModels
+
+    private void falseBallsTotalCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_falseBallsTotalCheckBoxActionPerformed
+        boolean state = this.falseBallsTotalCheckBox.isSelected();
+        this.falseBallsBottomCheckBox.setSelected(state);
+        this.falseBallsTopCheckBox.setSelected(state);
+    }//GEN-LAST:event_falseBallsTotalCheckBoxActionPerformed
+
+    private void missedGPTotalCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_missedGPTotalCheckBoxActionPerformed
+        boolean state = this.missedGPTotalCheckBox.isSelected();
+        this.missedGPBottomCheckBox.setSelected(state);
+        this.missedGPTopCheckBox.setSelected(state);
+    }//GEN-LAST:event_missedGPTotalCheckBoxActionPerformed
+
+    private void falseGPTotalCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_falseGPTotalCheckBoxActionPerformed
+        boolean state = this.falseGPTotalCheckBox.isSelected();
+        this.falseGPBottomCheckBox.setSelected(state);
+        this.falseGPTopCheckBox.setSelected(state);
+    }//GEN-LAST:event_falseGPTotalCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JTextField bottomFalseBallsField;
+    private javax.swing.JTextField bottomFalseGPField;
+    private javax.swing.JTextField bottomMissedBallsField;
+    private javax.swing.JTextField bottomMissedGPField;
+    private javax.swing.JLabel fBBottomLabel;
+    private javax.swing.JLabel fBTopLabel;
+    private javax.swing.JLabel fBTotalLabel;
+    private javax.swing.JLabel fGPBottomLabel;
+    private javax.swing.JLabel fGPTopLabel;
+    private javax.swing.JLabel fGPTotalLabel;
+    private javax.swing.JCheckBox falseBallsBottomCheckBox;
+    private javax.swing.JLabel falseBallsLabel;
+    private javax.swing.JCheckBox falseBallsTopCheckBox;
+    private javax.swing.JCheckBox falseBallsTotalCheckBox;
+    private javax.swing.JCheckBox falseGPBottomCheckBox;
+    private javax.swing.JLabel falseGPLabel;
+    private javax.swing.JCheckBox falseGPTopCheckBox;
+    private javax.swing.JCheckBox falseGPTotalCheckBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JList jList1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToggleButton jToggleButton3;
+    private javax.swing.JLabel mBBottomLabel;
+    private javax.swing.JLabel mBTopLabel;
+    private javax.swing.JLabel mBTotalLabel;
+    private javax.swing.JLabel mGPBottomLabel;
+    private javax.swing.JLabel mGPTopLabel;
+    private javax.swing.JLabel mGPTotalLabel;
+    private javax.swing.JCheckBox missedBallsBottomCheckBox;
+    private javax.swing.JLabel missedBallsLabel;
+    private javax.swing.JCheckBox missedBallsTopCheckBox;
+    private javax.swing.JCheckBox missedBallsTotalCheckBox;
+    private javax.swing.JCheckBox missedGPBottomCheckBox;
+    private javax.swing.JLabel missedGPLabel;
+    private javax.swing.JCheckBox missedGPTopCheckBox;
+    private javax.swing.JCheckBox missedGPTotalCheckBox;
+    private javax.swing.JButton reportClose;
+    private javax.swing.JDialog reportDialog;
+    private javax.swing.JButton reportSave;
+    private javax.swing.JTextField topFalseBallsField;
+    private javax.swing.JTextField topFalseGPField;
+    private javax.swing.JTextField topMissedBallsField;
+    private javax.swing.JTextField topMissedGPField;
+    private javax.swing.JTextField totalFalseBallsField;
+    private javax.swing.JTextField totalFalseGPField;
+    private javax.swing.JTextField totalMissedBallsField;
+    private javax.swing.JTextField totalMissedGPField;
     // End of variables declaration//GEN-END:variables
 
     class LogPerceptListener implements LogSimulator.LogSimulatorActionListener {      
@@ -347,8 +936,8 @@ public class GroundTruthReader extends AbstractDialog {
             }
             if (foundMissmatch) {
                 if (!missmatches.containsKey(missmatch.frame)) {
-                    missmatches.put(missmatch.frame, missmatch);               
-                    listModel.addElement(missmatch);
+                    missmatches.put(missmatch.frame, missmatch); 
+                    addDisplayMatches(missmatch);
                 }
             }
         }
@@ -364,24 +953,143 @@ public class GroundTruthReader extends AbstractDialog {
         }
     }
     
-    public void report() {
-        int intervall = 10;
-               int step = 0;       
-        int     topMissedBalls=0,topFalseBalls=0, topMissedGP=0, topFalseGP=0, 
-                bottomMissedBalls=0,bottomFalseBalls=0, bottomMissedGP=0,bottomFalseGP=0,
-                topMissedBallsInv=0,topFalseBallsInv=0,topMissedGPInv=0, topFalseGPInv=0, topGTBallsInv=0, topGTGPInv=0,
-                bottomMissedBallsInv=0,bottomFalseBallsInv=0, bottomMissedGPInv=0,bottomFalseGPInv=0, bottomGTBallsInv=0, bottomGTGPInv=0;
+    public class Report {
+        boolean newCalculationNeeded = true;
+        int intervall;
+               int step;       
+        int     topMissedBalls,topFalseBalls, topMissedGP, topFalseGP, 
+                bottomMissedBalls,bottomFalseBalls, bottomMissedGP,bottomFalseGP,
+                topMissedBallsInv,topFalseBallsInv,topMissedGPInv, topFalseGPInv, 
+                bottomMissedBallsInv,bottomFalseBallsInv, bottomMissedGPInv,bottomFalseGPInv;
                 
         
-       List<Integer>  topMissedBallsInvList = new LinkedList<>(),topFalseBallsInvList = new LinkedList<>(), topGTBallsInvList = new LinkedList<>(),
-               topFalseGPInvList = new LinkedList<>(),topMissedGPInvList = new LinkedList<>(), topGTGPInvList = new LinkedList<>(),
-               bottomMissedBallsInvList = new LinkedList<>(), bottomFalseBallsInvList = new LinkedList<>(), bottomGTBallsInvList = new LinkedList<>(),
-               bottomMissedGPInvList = new LinkedList<>(), bottomFalseGPInvList = new LinkedList<>(), bottomGTGPInvList = new LinkedList<>();
+       List<Integer>  topMissedBallsInvList = new LinkedList<>(),topFalseBallsInvList = new LinkedList<>(), 
+               topFalseGPInvList = new LinkedList<>(),topMissedGPInvList = new LinkedList<>(),
+               bottomMissedBallsInvList = new LinkedList<>(), bottomFalseBallsInvList = new LinkedList<>(),
+               bottomMissedGPInvList = new LinkedList<>(), bottomFalseGPInvList = new LinkedList<>();
       
-        int minFrame = GroundTruthReader.this.logSimManager.getMinFrame(),
-                maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
-        /*************************Dialog*********************************/
+        int minFrame,
+                maxFrame;
         
+        public void clearValues() {
+            intervall = 10;
+            step = 0;
+            topFalseGP=topMissedGP=topFalseBalls=topMissedBalls=0;             
+            bottomMissedBalls=bottomFalseBalls=bottomMissedGP=bottomFalseGP=0;
+            topMissedBallsInv=topFalseBallsInv=topMissedGPInv=topFalseGPInv=0; 
+            bottomMissedBallsInv=bottomFalseBallsInv=bottomMissedGPInv=bottomFalseGPInv=0;
+            topMissedBallsInvList.clear(); topFalseBallsInvList.clear(); 
+            topFalseGPInvList.clear(); topMissedGPInvList.clear();
+            bottomMissedBallsInvList.clear(); bottomFalseBallsInvList .clear();
+            bottomMissedGPInvList.clear(); bottomFalseGPInvList.clear();
+            minFrame = GroundTruthReader.this.logSimManager.getMinFrame();
+            maxFrame = GroundTruthReader.this.logSimManager.getMaxFrame();
+        }
+        
+        public void calculateValues () {
+            clearValues();
+            for (int i=minFrame; i<=maxFrame; i++){
+                step++;
+                if (step==intervall){
+                    step=0;
+                    topMissedBallsInvList.add(topMissedBallsInv);
+                    topFalseBallsInvList.add(topFalseBallsInv);
+                    bottomMissedBallsInvList.add(bottomMissedBallsInv);
+                    bottomFalseBallsInvList.add(bottomFalseBallsInv);
+                    topMissedGPInvList.add(topMissedGPInv);
+                    topFalseGPInvList.add(topFalseGPInv);
+                    bottomMissedGPInvList.add(bottomMissedGPInv);
+                    bottomFalseGPInvList.add(bottomFalseGPInv);
+                    topMissedBallsInv=0;
+                    topFalseBallsInv=0;
+                    topMissedGPInv=0;
+                    topFalseGPInv=0;
+                    bottomMissedBallsInv=0;
+                    bottomFalseBallsInv=0;
+                    bottomMissedGPInv=0;
+                    bottomFalseGPInv=0;
+                }
+                MissmatchSaver missmatch = GroundTruthReader.this.missmatches.get(i);
+                if (missmatch!=null)
+                {
+                    if(missmatch.bottomBall!=null) {
+                        if (missmatch.bottomBall) {
+                            bottomMissedBalls++;
+                            bottomMissedBallsInv++;
+                        }
+                        else {
+                            bottomFalseBalls++;
+                            bottomFalseBallsInv++;
+                        }
+                    }
+                    if(missmatch.topBall!=null) {
+                        if (missmatch.topBall) {
+                            topMissedBalls++;
+                            topMissedBallsInv++;
+                        }
+                        else {
+                            topFalseBalls++;
+                            topFalseBallsInv++;
+                        }
+                    }
+                    if(missmatch.bottomGoalGT!=null) {
+                        bottomMissedGP += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
+                        bottomFalseGP += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
+                        bottomMissedGPInv += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
+                        bottomFalseGPInv += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
+                    }
+                    if(missmatch.topGoalGT!=null) {
+                        topMissedGP += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
+                        topFalseGP += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
+                        topMissedGPInv += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
+                        topFalseGPInv += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
+                    }
+                }
+            }
+        }
+        
+        public void prmGraphicOutput(BufferedWriter writer,String label, List<Integer> dataList) throws IOException {
+            int dataMax=0;
+            String outSpacer="";
+            for (int data: dataList){
+                if (data>dataMax) dataMax=data;
+            }
+            for (int i=0; i<=dataList.size(); i++) {
+                outSpacer+="-";
+            }
+            outSpacer+="\r\n";
+            writer.write(outSpacer);
+            writer.write(label+":\r\n");
+            for (int i=0; i<=dataMax; i++) {
+                String out="";
+                for (int data: dataList){
+                    out += dataMax-i<=data?"*":" ";
+                }
+                writer.write(out+(dataMax-i)+"\r\n");
+            }
+            writer.write(outSpacer);
+        }    
+        
+        public void openReportDialog() {
+            if (newCalculationNeeded) {
+                calculateValues();
+                GroundTruthReader.this.totalMissedBallsField.setText(String.valueOf(topMissedBalls+bottomMissedBalls));
+                GroundTruthReader.this.totalFalseBallsField.setText(String.valueOf(topFalseBalls+bottomFalseBalls));
+                GroundTruthReader.this.topMissedBallsField.setText(String.valueOf(topMissedBalls));
+                GroundTruthReader.this.topFalseBallsField.setText(String.valueOf(topFalseBalls));
+                GroundTruthReader.this.bottomMissedBallsField.setText(String.valueOf(bottomMissedBalls));
+                GroundTruthReader.this.bottomFalseBallsField.setText(String.valueOf(bottomFalseBalls));
+                GroundTruthReader.this.totalMissedGPField.setText(String.valueOf(topMissedGP+bottomMissedGP));
+                GroundTruthReader.this.totalFalseGPField.setText(String.valueOf(topFalseGP+bottomFalseGP));
+                GroundTruthReader.this.topMissedGPField.setText(String.valueOf(topMissedGP));
+                GroundTruthReader.this.topFalseGPField.setText(String.valueOf(topFalseGP));
+                GroundTruthReader.this.bottomMissedGPField.setText(String.valueOf(bottomMissedGP));
+                GroundTruthReader.this.bottomFalseGPField.setText(String.valueOf(bottomFalseGP));
+            }            
+            GroundTruthReader.this.reportDialog.setVisible(true);
+        }        
+        public void saveToFile() {
+             /*************************Dialog*********************************/        
         JTextField intervallTF = new JTextField();
         intervallTF.setText(String.valueOf(intervall));
         JTextField fileNameAdd = new JTextField();
@@ -407,13 +1115,14 @@ public class GroundTruthReader extends AbstractDialog {
             }
         }
         /*************************Dialog*********************************/
-        String fileTestName = LogfilePlayer.getFileName();        
-        fileTestName = fileTestName.substring(0,fileTestName.lastIndexOf(".")+1) + "gts" ;
-        File f = new File(fileTestName);
+        String fileName = LogfilePlayer.getFileName();
+        fileName = fileName.substring(0, fileName.length()-4);
+        fileName += fileNameAdd.getText()+".txt";
+        File f = new File(fileName);
         if (f.exists()) {
             Object[] options = {"Yes, please",
                     "No!!!"};
-            int n = JOptionPane.showOptionDialog(this,
+            int n = JOptionPane.showOptionDialog(GroundTruthReader.this,
                 "ReportFile already exists override it?",
                 "Question",
                 JOptionPane.YES_NO_OPTION,
@@ -423,113 +1132,33 @@ public class GroundTruthReader extends AbstractDialog {
                 options[1]);           
             if (n!=0) return;
         }
-        for (int i=minFrame; i<=maxFrame; i++){
-            step++;
-            if (step==intervall){
-                step=0;
-                topMissedBallsInvList.add(topMissedBallsInv);
-                topFalseBallsInvList.add(topFalseBallsInv);
-                bottomMissedBallsInvList.add(bottomMissedBallsInv);
-                bottomFalseBallsInvList.add(bottomFalseBallsInv);
-                topMissedGPInvList.add(topMissedGPInv);
-                topFalseGPInvList.add(topFalseGPInv);
-                bottomMissedGPInvList.add(bottomMissedGPInv);
-                bottomFalseGPInvList.add(bottomFalseGPInv);
-                topMissedBallsInv=0;
-                topFalseBallsInv=0;
-                topMissedGPInv=0;
-                topFalseGPInv=0;
-                bottomMissedBallsInv=0;
-                bottomFalseBallsInv=0;
-                bottomMissedGPInv=0;
-                bottomFalseGPInv=0;
-             }
-            MissmatchSaver missmatch = missmatches.get(i);
-            if (missmatch!=null)
-            {
-                if(missmatch.bottomBall!=null) {
-                    if (missmatch.bottomBall) {
-                        bottomMissedBalls++;
-                        bottomMissedBallsInv++;
-                    }
-                    else {
-                        bottomFalseBalls++;
-                        bottomFalseBallsInv++;
-                    }
-                }
-                if(missmatch.topBall!=null) {
-                    if (missmatch.topBall) {
-                        topMissedBalls++;
-                        topMissedBallsInv++;
-                    }
-                    else {
-                        topFalseBalls++;
-                        topFalseBallsInv++;
-                    }
-                }
-                if(missmatch.bottomGoalGT!=null) {
-                    bottomMissedGP += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
-                    bottomFalseGP += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
-                    bottomMissedGPInv += missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0?missmatch.bottomGoalGT-missmatch.bottomGoalSeen:0;
-                    bottomFalseGPInv += missmatch.bottomGoalSeen-missmatch.bottomGoalGT>0?missmatch.bottomGoalSeen-missmatch.bottomGoalGT:0;
-                }
-                if(missmatch.topGoalGT!=null) {
-                    topMissedGP += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
-                    topFalseGP += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
-                    topMissedGPInv += missmatch.topGoalGT-missmatch.topGoalSeen>0?missmatch.topGoalGT-missmatch.topGoalSeen:0;
-                    topFalseGPInv += missmatch.topGoalSeen-missmatch.topGoalGT>0?missmatch.topGoalSeen-missmatch.topGoalGT:0;
-                }
+            BufferedWriter writer;
+            try {
+                File reportFile = new File(fileName);
+                writer = new BufferedWriter(new FileWriter(reportFile));
+                writer.write("GroundTruthReportFile: \r\n");
+                writer.write("TotalMissedBalls: " +(topMissedBalls+bottomMissedBalls) +" TotalFalseBalls: " +(topFalseBalls+bottomFalseBalls) +"\r\n");
+                writer.write("TopMissedBalls: " +topMissedBalls +" TopFalseBalls: " +topFalseBalls +"\r\n");
+                writer.write("BottomMissedBalls: " +bottomMissedBalls +" bottomFalseBalls: " +bottomFalseBalls +"\r\n");          
+                writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\r\n");
+                writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\r\n");
+                writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\r\n");            
+                prmGraphicOutput(writer, "Topcamera Ball Missed", topMissedBallsInvList);
+                prmGraphicOutput(writer, "topcamera Ball False", topFalseBallsInvList);
+                prmGraphicOutput(writer, "bottomcamera Ball Missed", bottomMissedBallsInvList);
+                prmGraphicOutput(writer, "bottomcamera Ball False", bottomFalseBallsInvList);
+                prmGraphicOutput(writer, "topcamera Goalposts Missed", topMissedGPInvList);
+                prmGraphicOutput(writer, "topcamera Goalposts False", topFalseGPInvList);
+                prmGraphicOutput(writer, "bottomcamera GoalPosts Missed", bottomMissedGPInvList);
+                prmGraphicOutput(writer, "bottomcamera GoalPosts False", bottomFalseGPInvList);
+                writer.close();
+            } catch (IOException ex) {
+                 ex.printStackTrace(System.err);
             }
         }
-        String fileName = LogfilePlayer.getFileName();
-        fileName = fileName.substring(0, fileName.length()-4);
-        fileName += fileNameAdd.getText()+".txt";
-        BufferedWriter writer;
-        try {
-            File reportFile = new File(fileName);
-            writer = new BufferedWriter(new FileWriter(reportFile));
-            writer.write("GroundTruthReportFile: \r\n");
-            writer.write("TotalMissedBalls: " +(topMissedBalls+bottomMissedBalls) +" TotalFalseBalls: " +(topFalseBalls+bottomFalseBalls) +"\r\n");
-            writer.write("TopMissedBalls: " +topMissedBalls +" TopFalseBalls: " +topFalseBalls +"\r\n");
-            writer.write("BottomMissedBalls: " +bottomMissedBalls +" bottomFalseBalls: " +bottomFalseBalls +"\r\n");          
-            writer.write("TotalMissedGoalPosts: " +(topMissedGP+bottomMissedGP) +" TotalFalseGoalPosts: " +(topFalseGP+bottomFalseGP) +"\r\n");
-            writer.write("TopMissedGoalPosts: " +topMissedGP +" TopFalseGoalPosts: " +topFalseGP +"\r\n");
-            writer.write("BottomMissedGoalPosts: " +bottomMissedGP +" BottomFalseGoalPosts: " +bottomFalseGP +"\r\n");            
-            prmGraphicOutput(writer, "Topcamera Ball Missed", topMissedBallsInvList);
-            prmGraphicOutput(writer, "topcamera Ball False", topFalseBallsInvList);
-            prmGraphicOutput(writer, "bottomcamera Ball Missed", bottomMissedBallsInvList);
-            prmGraphicOutput(writer, "bottomcamera Ball False", bottomFalseBallsInvList);
-            prmGraphicOutput(writer, "topcamera Goalposts Missed", topMissedGPInvList);
-            prmGraphicOutput(writer, "topcamera Goalposts False", topFalseGPInvList);
-            prmGraphicOutput(writer, "bottomcamera GoalPosts Missed", bottomMissedGPInvList);
-            prmGraphicOutput(writer, "bottomcamera GoalPosts False", bottomFalseGPInvList);
-            writer.close();
-        } catch (IOException ex) {
-             ex.printStackTrace(System.err);
-        }             
-    }
-    
-    public void prmGraphicOutput(BufferedWriter writer,String label, List<Integer> dataList) throws IOException {
-        int dataMax=0;
-        String outSpacer="";
-        for (int data: dataList){
-            if (data>dataMax) dataMax=data;
-        }
-        for (int i=0; i<=dataList.size(); i++) {
-            outSpacer+="-";
-        }
-        outSpacer+="\r\n";
-        writer.write(outSpacer);
-        writer.write(label+":\r\n");
-        for (int i=0; i<=dataMax; i++) {
-            String out="";
-            for (int data: dataList){
-                out += dataMax-i<=data?"*":" ";
-            }
-            writer.write(out+(dataMax-i)+"\r\n");
-        }
-        writer.write(outSpacer);
-    }
+        
+    }// end Report.class 
+    Report report = new Report();
     
     public void toogleButtons () {
         boolean enabled = true;
@@ -538,6 +1167,42 @@ public class GroundTruthReader extends AbstractDialog {
         }                
         this.jButton2.setEnabled(enabled);
         this.jButton1.setEnabled(enabled);
+    }
+    
+    void updateDisplayMissmatches () {
+        listModel.clear();
+        for (Map.Entry<Integer, MissmatchSaver> entry: missmatches.entrySet()) {
+            MissmatchSaver missmatch = entry.getValue();
+            addDisplayMatches(missmatch);           
+        }
+    }
+    
+    void addDisplayMatches(MissmatchSaver missmatch) {
+        if (missmatch.bottomBall!=null) {
+            if (missmatch.bottomBall && this.missedBallsBottomCheckBox.isSelected() ||
+                    !missmatch.bottomBall && this.falseBallsBottomCheckBox.isSelected()){
+                listModel.addElement(missmatch); 
+                return;
+            }
+        }if (missmatch.topBall!=null) {
+            if  ((missmatch.topBall && this.missedBallsTopCheckBox.isSelected()) ||
+                    !missmatch.topBall && this.falseBallsTopCheckBox.isSelected()){
+                listModel.addElement(missmatch);  
+                return;
+            }
+        } if (missmatch.bottomGoalGT!=null){
+            if ((missmatch.bottomGoalGT-missmatch.bottomGoalSeen>0 && this.missedGPBottomCheckBox.isSelected()) ||
+                   (missmatch.bottomGoalGT-missmatch.bottomGoalSeen<0 && this.falseGPBottomCheckBox.isSelected())) {
+                listModel.addElement(missmatch);
+                return;
+            }
+        }if (missmatch.topGoalGT!=null) {
+            if ((missmatch.topGoalGT-missmatch.topGoalSeen>0 && this.missedGPTopCheckBox.isSelected()) ||
+                   (missmatch.topGoalGT-missmatch.topGoalSeen<0 && this.falseGPTopCheckBox.isSelected())) {
+                listModel.addElement(missmatch);
+                return;
+            }
+        }
     }
 
 }//end class GroundTruthCreator
