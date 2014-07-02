@@ -76,23 +76,24 @@ BroadCaster::~BroadCaster()
   exiting = true;
   g_cond_signal(messageCond); // tell socket thread to exit
 
-  if ( socketThread )
+  if ( socketThread ) {
     g_thread_join(socketThread);
+  }
   g_mutex_free(messageMutex);
   g_cond_free(messageCond);
-  if(broadcastAddress != NULL)
-  {
+
+  if(broadcastAddress != NULL) {
     g_object_unref(broadcastAddress);
   }
 }
 
 void BroadCaster::send(const std::string& data)
 {
-  if ( data.empty() )
+  if ( data.empty() ) {
     return;
+  }
 
-  if ( g_mutex_trylock(messageMutex) )
-  {
+  if ( g_mutex_trylock(messageMutex) ) {
     message = data;
     g_cond_signal(messageCond); // tell socket thread to send
     g_mutex_unlock(messageMutex);
@@ -101,11 +102,11 @@ void BroadCaster::send(const std::string& data)
 
 void BroadCaster::send(std::list<std::string>& msgs)
 {
-  if ( msgs.empty() )
+  if ( msgs.empty() ) {
     return;
+  }
 
-  if ( g_mutex_trylock(messageMutex) )
-  {
+  if ( g_mutex_trylock(messageMutex) ) {
     messages = msgs;
     g_cond_signal(messageCond); // tell socket thread to send
     g_mutex_unlock(messageMutex);
@@ -145,8 +146,9 @@ void BroadCaster::loop()
 void BroadCaster::socketSend(const std::string& data)
 {
 
-  if(broadcastAddress == NULL)
+  if(broadcastAddress == NULL) {
     return;
+  }
 
   GError *error = NULL;
   int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
@@ -159,6 +161,5 @@ void BroadCaster::socketSend(const std::string& data)
   {
     g_warning("broadcast error, sended size = %d", result);
   }
-
 }
 

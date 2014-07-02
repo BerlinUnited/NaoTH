@@ -1,11 +1,11 @@
 /* 
- * File:   NeoLineDetector.h
+ * File:   LineGraphProvider.h
  * Author: Heinrich Mellmann
  *
  */
 
-#ifndef _NeoLineDetector_H_
-#define _NeoLineDetector_H_
+#ifndef _LineGraphProvider_H_
+#define _LineGraphProvider_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -38,9 +38,7 @@
 #include <algorithm>
 #include <set>
 
-#include "EdgelCluster.h"
-
-BEGIN_DECLARE_MODULE(NeoLineDetector)
+BEGIN_DECLARE_MODULE(LineGraphProvider)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(CameraInfo)
@@ -53,14 +51,14 @@ BEGIN_DECLARE_MODULE(NeoLineDetector)
 
   PROVIDE(ProbabilisticQuadCompas)
   PROVIDE(LineGraphPercept)
-END_DECLARE_MODULE(NeoLineDetector)
+END_DECLARE_MODULE(LineGraphProvider)
 
 
-class NeoLineDetector : private NeoLineDetectorBase
+class LineGraphProvider : private LineGraphProviderBase
 {
 public:
-  NeoLineDetector();
-  virtual ~NeoLineDetector();
+  LineGraphProvider();
+  virtual ~LineGraphProvider();
 
   virtual void execute(CameraInfo::CameraID id);
 
@@ -78,23 +76,22 @@ public:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("NeoLineDetector")
+    Parameters() : ParameterList("LineGraphProvider")
     {
-      PARAMETER_REGISTER(x) = 6;
+      PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
+      PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
 
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters() {
+    virtual ~Parameters() {
       DebugParameterList::getInstance().remove(this);
     }
 
-    int x;
-  } theParameters;
-
-private:
-  CameraInfo::CameraID cameraID;
+    double edgelSimThreshold;
+    double quadCompasSmoothingFactor;
+  } parameters;
 
   struct Neighbors {
     Neighbors():left(-1), right(-1), w_left(0), w_right(0){}
@@ -106,10 +103,6 @@ private:
     void reset() {left = right= -1; w_left = w_right = 0; }
   };
   
-  static double edgelSim(const Vector2d& p1, double a1, const Vector2d& p2, double a2);
-  static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);
-  static double segmentSim(const Vector2d& p0, const Vector2d& p1, const Vector2d& q0, const Vector2d& q1);
-
   struct EdgelPair {
     int left;
     int right;
@@ -117,31 +110,26 @@ private:
     EdgelPair(int left, int right, double sim) : left(left), right(right), sim(sim) {}
   };
 
-  struct Compare_double_pair {
-    bool operator() (EdgelPair one, EdgelPair two) { 
-      return one.sim > two.sim;
-    }
-  } compare_double_pair;
+private: // data members
+  CameraInfo::CameraID cameraID;
 
-
-private:
   std::vector<Neighbors> edgelNeighbors;
   std::vector<EdgelPair> edgelPairs;
   std::vector<Vector2d> edgelProjections;
 
-  void calculateNeigbors(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<Neighbors>& neighbors, double threshold) const;
-  void calculatePairs(const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, std::vector<EdgelPair>& edgelPairs, double threshold) const;
+private: // method members
+  static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);
+
   void calculatePairsAndNeigbors(
     const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, 
     std::vector<EdgelPair>& edgelPairs, 
     std::vector<Neighbors>& neighbors, double threshold) const;
 
-  
-  
-  DOUBLE_CAM_REQUIRE(NeoLineDetector,CameraInfo);
-  DOUBLE_CAM_REQUIRE(NeoLineDetector,CameraMatrix);
-  DOUBLE_CAM_REQUIRE(NeoLineDetector,ScanLineEdgelPercept);
+
+  DOUBLE_CAM_REQUIRE(LineGraphProvider,CameraInfo);
+  DOUBLE_CAM_REQUIRE(LineGraphProvider,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(LineGraphProvider,ScanLineEdgelPercept);
 };
 
-#endif  /* _NeoLineDetector_H_ */
+#endif  /* _LineGraphProvider_H_ */
 

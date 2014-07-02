@@ -107,8 +107,8 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
       PARAMETER_REGISTER(footGreenScanSize) = 10;
       PARAMETER_REGISTER(maxFeatureWidthError) = 0.2;
-      PARAMETER_REGISTER(enableFeatureWidthCheck) = 0;
-      PARAMETER_REGISTER(enableGreenCheck) = 0;
+      PARAMETER_REGISTER(enableFeatureWidthCheck) = false;
+      PARAMETER_REGISTER(enableGreenCheck) = false;
 
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
 
@@ -128,10 +128,12 @@ private:
     int maxFeatureDeviation;
     double maxFootScanSquareError;
     int minGoodPoints;
-    double footGreenScanSize; // number of pixels to scan for green below the footpoint
+
+    bool enableGreenCheck;
+    int footGreenScanSize; // number of pixels to scan for green below the footpoint
+    
     double maxFeatureWidthError;
-    int enableFeatureWidthCheck;
-    int enableGreenCheck;
+    bool enableFeatureWidthCheck;
 
     double colorRegionDeviation;
   };

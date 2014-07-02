@@ -140,7 +140,7 @@ public:
       init();
     }
 
-    bool isFull() {return numberOfEntries == n;}
+    bool isFull() const {return numberOfEntries == n;}
 
   protected:
     int n;

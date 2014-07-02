@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "LineDetectorConstParameters.h"
+#include "ClusteredLine.h"
 
 #include "Tools/Math/Line.h"
 #include "Tools/ColorClasses.h"
@@ -25,7 +26,6 @@
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
-#include "Tools/ImageProcessing/ClusteredLine.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
 #include "Representations/Infrastructure/ColoredGrid.h"
@@ -38,7 +38,6 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/LinePercept.h"
-#include "Representations/Perception/ObjectPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 
@@ -66,8 +65,6 @@ BEGIN_DECLARE_MODULE(LineDetector)
 
   PROVIDE(LinePercept)
   PROVIDE(LinePerceptTop)
-  PROVIDE(ObjectPercept)
-  PROVIDE(ObjectPerceptTop)
 END_DECLARE_MODULE(LineDetector)
 
 
@@ -125,7 +122,6 @@ private:
   DOUBLE_CAM_REQUIRE(LineDetector,ScanLineEdgelPercept);
   
   DOUBLE_CAM_PROVIDE(LineDetector,LinePercept);
-  DOUBLE_CAM_PROVIDE(LineDetector,ObjectPercept);
 
 };//end class LineDetector
 

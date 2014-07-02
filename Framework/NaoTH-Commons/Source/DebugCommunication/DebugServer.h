@@ -22,14 +22,24 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
+  // TODO: why is this virtual?
   virtual void start(unsigned short port, bool threaded = false);
- 
-  static void* connection_thread_static(void* ref);
-
+  
+  /** 
+  * Set the time after which the connection should be closed in case of inactivity.
+  * 0 - means the connection never times out.
+  */
+  void setTimeOut(unsigned int t) {
+    comm.setTimeOut(t);
+  }
+  
   void getDebugMessageIn(naoth::DebugMessageIn& buffer);
   void setDebugMessageOut(const naoth::DebugMessageOut& buffer);
 
 private:
+
+  long long lastSendTime;
+  long long lastReceiveTime;
 
   /** Communication interface */
   DebugCommunicator comm;
@@ -47,7 +57,10 @@ private:
   void mainConnection();
   void receiveAll();
   void sendAll();
-  void parseCommand(GString* cmdRaw, std::string& commandName, std::map<std::string, std::string>& arguments);
+
+  void parseCommand(GString* cmdRaw, naoth::DebugMessageIn::Message& command) const;
+
+  static void* connection_thread_static(void* ref);
 
   void disconnect();
   void clearBothQueues();
