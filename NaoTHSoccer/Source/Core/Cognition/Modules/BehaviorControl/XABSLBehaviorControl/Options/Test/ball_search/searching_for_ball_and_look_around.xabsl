@@ -1,0 +1,10 @@
+option searching_for_ball_and_look_around{
+  initial state search{
+    action{
+      basic_play();
+      head.control_mode = search_for_ball_and_look_around;
+
+      head_control();
+    }
+  }
+}

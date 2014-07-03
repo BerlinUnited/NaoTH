@@ -26,11 +26,9 @@ class SoundSymbols: public SoundSymbolsBase
 
 public:
   SoundSymbols()
-    :
-    soundData(getSoundPlayData())
   {
     theInstance = this;
-  };
+  }
   virtual ~SoundSymbols(){}
   
   /** registers the symbols at an engine */
@@ -41,9 +39,6 @@ public:
 private:
 
   static SoundSymbols* theInstance;
-
-  // representations
-  naoth::SoundPlayData& soundData;
 
   // seter and getter
   static void setSoundRequest(int value);

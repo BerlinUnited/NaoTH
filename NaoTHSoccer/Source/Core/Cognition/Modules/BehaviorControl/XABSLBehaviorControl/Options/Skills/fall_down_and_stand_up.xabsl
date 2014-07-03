@@ -11,7 +11,11 @@ option fall_down_and_stand_up
     }      
     action
     {
-      body.ready_to_walk = true;
+      //HACK: body.ready_to_walk = true has to be set outside
+      //body.ready_to_walk = true;
+      // remember the arms position for the case the robot falls backwards
+      // (used by stand up)
+      arm.control_mode_before_fall = arm.control_mode;
     }
   }
   
@@ -28,7 +32,7 @@ option fall_down_and_stand_up
     {
       body.ready_to_walk = false;
       motion.execute_immediately = true;
-      motion.type= dead;
+      motion.type = dead;
     }
   }
 
@@ -62,6 +66,7 @@ option fall_down_and_stand_up
     {
       body.ready_to_walk = false;
       motion.type=stand;
+      arm.control_mode = normal;
     }
   }
 }

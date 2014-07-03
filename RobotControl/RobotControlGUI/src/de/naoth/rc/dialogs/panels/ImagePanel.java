@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * ImagePanel.java
  *
  * Created on 07.03.2013, 19:27:12
@@ -23,22 +18,24 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author admin
+ * @author Heinrich
  */
 public class ImagePanel extends javax.swing.JPanel
 {
     private Image backgroundImage;
     private boolean keepAspectRatio;
     private boolean stretchImage;
+    private boolean showDrawings;
+    
     private final ArrayList<Drawable> drawigs = new ArrayList<Drawable>();
     
-    /** Creates new form ImagePanel */
     public ImagePanel()
     {
         initComponents();
         
         this.keepAspectRatio = true;
         this.stretchImage = true;
+        this.showDrawings = false;
         
         this.fileChooser.setFileFilter(new PNGImageFileFilter());
     }
@@ -53,12 +50,37 @@ public class ImagePanel extends javax.swing.JPanel
 
     public void setKeepAspectRatio(boolean value)
     {
-      this.keepAspectRatio = value;
+      if(this.keepAspectRatio != value) {
+        this.keepAspectRatio = value;
+        this.repaint();
+      }
     }
 
     public void setStretchImage(boolean value)
     {
-      this.stretchImage = value;
+      if(this.stretchImage != value) {
+        this.stretchImage = value;
+        this.repaint();
+      }
+    }
+    
+    public void setShowDrawings(boolean value) {
+      if(this.showDrawings != value) {
+        this.showDrawings = value;
+        this.repaint();
+      }
+    }
+    
+    public boolean isKeepAspectRatio() {
+      return this.keepAspectRatio;
+    }
+    
+    public boolean isStretchImage() {
+      return this.stretchImage;
+    }
+    
+    public boolean isShowDrawings() {
+      return this.showDrawings;
     }
 
     public Image getImage()
@@ -116,15 +138,15 @@ public class ImagePanel extends javax.swing.JPanel
 
         g2d.drawImage(backgroundImage, 0, 0, (int) wImg, (int) hImg, this);
 
-        for (Drawable d : drawigs)
-        {
-          d.draw(g2d);
+        if(this.showDrawings) {
+          for (Drawable d : drawigs) {
+            d.draw(g2d);
+          }
         }
 
         // transform the drawing-pane back (nessesary to draw the other components correct)
         g2d.scale(1.0, 1.0);
         g2d.translate(-(posX + 1), -(posY + 1));
-
     }//end paint
     
     public void saveImage(File file)
@@ -149,13 +171,13 @@ public class ImagePanel extends javax.swing.JPanel
           ImageIO.write(bi, "JPEG", selectedFile);
           ImageIO.write(bi, "gif", selectedFile);
           ImageIO.write(bi, "BMP", selectedFile);
-           */
+          */
         }
         catch (Exception e)
         {
           JOptionPane.showMessageDialog(this,
             e.toString(), "The image could not be written.", JOptionPane.ERROR_MESSAGE);
-        }//end catch
+        }
     }
 
     /** This method is called from within the constructor to

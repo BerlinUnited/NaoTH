@@ -1,0 +1,43 @@
+option search_ball{  
+
+  /*
+  diese option mitreinnehmen?
+      if((vector.abs(y=ball.preview.y,x=ball.preview.x)<250) && (state_time>1500))
+        goto search_ball_close;
+  */
+  
+  initial state search_ball_close {
+    decision {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      striker_search();
+      //search_ball_back_rot();
+    }
+  }
+
+/* Integrated in "striker_search"
+  state search_ball_far {
+    decision {
+      if(action_done || state_time>3000)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball();
+    }
+  }
+*/
+
+  state stand {
+    action{
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+
+    }
+  }
+}

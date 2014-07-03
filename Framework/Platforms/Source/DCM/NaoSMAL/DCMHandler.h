@@ -19,7 +19,6 @@
 #include <alproxies/almemoryproxy.h>
 #include <alproxies/dcmproxy.h>
 
-#include "Tools/SharedMemory.h"
 #include "Tools/IPCData.h"
 
 
@@ -43,8 +42,6 @@ private:
   boost::shared_ptr<AL::ALBroker> pBroker;
   boost::shared_ptr<AL::ALMemoryProxy> al_memory;
   boost::shared_ptr<AL::DCMProxy> al_dcmproxy;
-  // a tool for fast access in Read/Write to some variables of ALMemory
-  AL::ALMemoryFastAccess al_memoryfast;
 
   //Joints
   std::string DCMPath_MotorJointHardness[JointData::numOfJoint];
@@ -143,6 +140,7 @@ public:
   ~DCMHandler();
   void init(boost::shared_ptr<AL::ALBroker> pB);
 
+  void getJointPositionLimits(JointData& jointData);
   std::string getBodyID();
   std::string getBodyNickName();
   int getTime(unsigned int time_delay);

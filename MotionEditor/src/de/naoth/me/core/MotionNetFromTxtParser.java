@@ -64,7 +64,7 @@ public class MotionNetFromTxtParser
    */
   MotionNetFromTxtParser(File file)
   {
-      this.numberOfJoints = 22; 
+      this.numberOfJoints = 22;
       this.JointDefaultConfiguration = new JointDefaultConfiguration();
       setDefaults();
       

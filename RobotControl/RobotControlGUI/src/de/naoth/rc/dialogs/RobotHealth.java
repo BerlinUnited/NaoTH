@@ -26,6 +26,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -90,7 +92,12 @@ public class RobotHealth extends AbstractDialog
       "RAnklePitch",
       "LAnklePitch",
       "RAnkleRoll",
-      "LAnkleRoll" 
+      "LAnkleRoll",
+      
+      "LWristYaw",
+      "RWristYaw",
+      "LHand",
+      "RHand"
   };
   
   private final int joints[] = { // order equals "JointData.h"
@@ -121,7 +128,12 @@ public class RobotHealth extends AbstractDialog
                    260, -850, // RAnklePitch
                   -260, -850, // LAnklePitch
                    260, -1010, // RAnkleRoll
-                  -260, -1010  // LAnkleRoll
+                  -260, -1010, // LAnkleRoll
+                  
+                  -600,  0, // LWristYaw
+                   600,  0, // RWristYaw
+                  -600, -150, // LHand
+                   600, -150, // RHand
       };
   
 
@@ -377,7 +389,7 @@ public class RobotHealth extends AbstractDialog
         private final int step = 3;
         //private final int height = 30;
 
-        private final ArrayList<Double> values = new ArrayList<Double>();
+        private final List<Double> values = Collections.synchronizedList(new ArrayList<Double>());
         
         public MicroPlot(int min, int max) {
             this.min = min;
@@ -405,15 +417,17 @@ public class RobotHealth extends AbstractDialog
             double last = values.get(0);
             int lastX = 0;
             
-            for(Double d: values)
-            {
-                // HACK: invert because of coordinate system
-                double value = -d.doubleValue();
-                g2d.setColor(getColorMix(min, max, (float)value));
-                g2d.drawLine(lastX, (int)last, lastX+step, (int)value);
-                
-                last = value;
-                lastX += step+1;
+            synchronized(values) {
+                for(Double d: values)
+                {
+                    // HACK: invert because of coordinate system
+                    double value = -d.doubleValue();
+                    g2d.setColor(getColorMix(min, max, (float)value));
+                    g2d.drawLine(lastX, (int)last, lastX+step, (int)value);
+
+                    last = value;
+                    lastX += step+1;
+                }
             }
         }
     }//end class MicroPlot

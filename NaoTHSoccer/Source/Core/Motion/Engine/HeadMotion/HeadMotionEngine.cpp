@@ -265,7 +265,8 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
 
   CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrix(
       theKinematicChain,
-      NaoInfo::robotDimensions.cameraTransformation[getHeadMotionRequest().cameraID],
+      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
+      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
       getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
     );
 

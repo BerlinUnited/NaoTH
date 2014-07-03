@@ -69,8 +69,9 @@ void FieldInfo::calculateCrossings()
   yPosLeftSideline =         yLength / 2.0; 
   yPosRightSideline =       -yPosLeftSideline;
 
+  carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
+  ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
 
-  
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);
   crossings[opponentCornerRight].position         = Vector2d(xPosOpponentGroundline, yPosRightSideline);

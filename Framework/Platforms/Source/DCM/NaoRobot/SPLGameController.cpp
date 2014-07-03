@@ -15,9 +15,9 @@ void* socketLoopWrap(void* c)
 }//end motionLoopWrap
 
 SPLGameController::SPLGameController()
-  :exiting(false),
+  :exiting(false), port(GAMECONTROLLER_PORT),
     socket(NULL),
-    broadcastAddress(NULL),
+    gamecontrollerAddress(NULL),
     socketThread(NULL),
     lastGetTime(0),
     dataMutex(NULL),
@@ -37,8 +37,8 @@ SPLGameController::SPLGameController()
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.team = static_cast<uint16>(data.teamNumber);
-    dataOut.player = static_cast<uint16>(data.playerNumber);
+    dataOut.team = static_cast<uint8_t>(data.teamNumber);
+    dataOut.player = static_cast<uint8_t>(data.playerNumber);
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
     if (!g_thread_supported()) {
@@ -71,11 +71,6 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
-
-  string broadcastAddr = NetAddr::getBroadcastAddr("wlan0");
-  GInetAddress* address = g_inet_address_new_from_string(broadcastAddr.c_str());
-  broadcastAddress = g_inet_socket_address_new(address, static_cast<guint16>(port));
-  g_object_unref(address);
 
   return err;
 }
@@ -121,41 +116,24 @@ bool SPLGameController::update()
 {
   std::string header;
   header.assign(dataIn.header, 4);
-  if(header == GAMECONTROLLER_STRUCT_HEADER)
+  if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
-    int teamInfoIndex = -1;
+    bool teamFound = false;
     TeamInfo tinfo;
 
-    bool isRed = true;
-
-    if (dataIn.teams[TEAM_RED].teamNumber == data.teamNumber)
+    for(unsigned int i=0; i < 2; i++)
     {
-      isRed = true;
-    }
-    else if (dataIn.teams[TEAM_BLUE].teamNumber == data.teamNumber)
-    {
-      isRed = false;
-    }
-    else
-    {
-      // no message for us invalidate data
-      return false;
+      if(dataIn.teams[i].teamNumber == data.teamNumber)
+      {
+        tinfo = dataIn.teams[i];
+        teamFound = true;
+        data.teamColor = tinfo.teamColour == TEAM_BLUE ? GameData::blue : GameData::red;
+        break;
+      }
     }
 
-    if(isRed)
-    {
-      tinfo = dataIn.teams[TEAM_RED];
-      teamInfoIndex = TEAM_RED;
-      data.teamColor = GameData::red;
-    }
-    else
-    {
-      tinfo = dataIn.teams[TEAM_BLUE];
-      teamInfoIndex = TEAM_BLUE;
-      data.teamColor = GameData::blue;
-    }
 
-    if (teamInfoIndex >= 0)
+    if(teamFound)
     {
       switch (dataIn.state)
       {
@@ -188,12 +166,12 @@ bool SPLGameController::update()
             || data.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
-          data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+          data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::kick_off_own : GameData::kick_off_opp;
         }
       }
       else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
       {
-        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+        data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
       }
       else if ( dataIn.secondaryState == STATE2_OVERTIME )
       {
@@ -205,7 +183,8 @@ bool SPLGameController::update()
       if(playerNumberForGameController < MAX_NUM_PLAYERS)
       {
         RobotInfo rinfo =
-            dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
+            tinfo.players[playerNumberForGameController];
+
         data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
         data.msecsTillUnpenalised = rinfo.secsTillUnpenalised * 1000;
         if (rinfo.penalty != PENALTY_NONE)
@@ -213,7 +192,13 @@ bool SPLGameController::update()
           data.gameState = GameData::penalized;
         }
       }
+    } // endif teamFound
+    else
+    {
+      // no message for us invalidate data
+      return false;
     }
+
     return true;
   } // end if header correct
   return false;
@@ -241,24 +226,27 @@ SPLGameController::~SPLGameController()
     g_object_unref(socket);
   }
 
-  if(broadcastAddress != NULL)
+  if(gamecontrollerAddress != NULL)
   {
-    g_object_unref(broadcastAddress);
+    g_object_unref(gamecontrollerAddress);
   }
 }
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 {
   GError *error = NULL;
-  gssize result = g_socket_send_to(socket, broadcastAddress, (char*)(&data), sizeof(data), NULL, &error);
-  if ( result != sizeof(data) )
+  if(gamecontrollerAddress != NULL)
   {
-    g_warning("SPLGameController::returnData, sended size = %d", result);
-  }
-  if (error)
-  {
-    g_warning("g_socket_send_to error: %s", error->message);
-    g_error_free(error);
+    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), NULL, &error);
+    if ( result != sizeof(data) )
+    {
+      g_warning("SPLGameController::returnData, sended size = %d", result);
+    }
+    if (error)
+    {
+      g_warning("g_socket_send_to error: %s", error->message);
+      g_error_free(error);
+    }
   }
 }
 
@@ -271,7 +259,24 @@ void SPLGameController::socketLoop()
 
   while(!exiting)
   {
-    int size = g_socket_receive(socket, (char*)(&dataIn), sizeof(RoboCupGameControlData), NULL, NULL);
+    GSocketAddress* receiverAddress = NULL;
+    int size = g_socket_receive_from(socket, &receiverAddress,
+                                     (char*)(&dataIn),
+                                     sizeof(RoboCupGameControlData),
+                                     NULL, NULL);
+
+    if(receiverAddress != NULL)
+    {
+      // construct a proper return address from the receiver
+      GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(receiverAddress));
+      if(gamecontrollerAddress != NULL)
+      {
+        g_object_unref(gamecontrollerAddress);
+      }
+      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(port));
+      g_object_unref(receiverAddress);
+    }
+
     if(size == sizeof(RoboCupGameControlData))
     {
       g_mutex_lock(dataMutex);
@@ -281,11 +286,9 @@ void SPLGameController::socketLoop()
       }
       g_mutex_unlock(dataMutex);
 
-      // TODO: check how we can reliable send back game controller messages
-      // in XX.XX.255.255 broadcasts
-//      g_mutex_lock(returnDataMutex);
-//      sendData(dataOut);
-//      g_mutex_unlock(returnDataMutex);
+      g_mutex_lock(returnDataMutex);
+      sendData(dataOut);
+      g_mutex_unlock(returnDataMutex);
     }
   }
 }

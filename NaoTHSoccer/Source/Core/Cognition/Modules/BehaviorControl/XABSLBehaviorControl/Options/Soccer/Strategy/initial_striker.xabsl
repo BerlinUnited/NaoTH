@@ -17,7 +17,7 @@ option initial_striker{
   state approach_for_kick_off_kick {
 	  decision {
       if(action_done)
-        goto wait;
+        goto do_kick_off_kick;
       else
         stay;
 	  }
@@ -25,23 +25,6 @@ option initial_striker{
 	      go_to_ball_with_foot(right=true, distance=190);
 	  }
   }
-
-  state wait
-  {
-    decision
-    {
-     if (state_time > 1000)
-        goto do_kick_off_kick;
-      else
-        stay;
-     }
-     action
-     {
-       motion.type = stand;
-       head.control_mode = search_for_ball;
-       arm.control_mode = normal;
-     }
-   }
 
   state do_kick_off_kick
   {
@@ -54,15 +37,14 @@ option initial_striker{
     }
     action
     {
-       arm.control_mode = normal;
-       kick_with_foot(right = true);
+       kick_with_foot(foot = right);
        head.control_mode = search_for_ball;
     }
   }
 
   state be_striker{
     action{
-      basic_striker_behavior();
+      situation_based_striker();
     }
   }
     

@@ -69,7 +69,7 @@ class ColorClassesHistograms: public naoth::Printable
     Statistics::HistogramX yHistogram[ColorClasses::numOfColors];
 
   private:
-    Vector2i histSizes;  
+    Vector2i histSizes;
 };
 
 class ColorClassesHistogramsTop : public ColorClassesHistograms{};
@@ -77,7 +77,7 @@ class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 
 class ColorChannelHistograms
 {
-public: 
+public:
   static const int VALUE_COUNT = 256;
 
   inline void increaseChannelValue(const Pixel& pixel)
@@ -94,6 +94,13 @@ public:
     histogramY.clear();
     histogramU.clear();
     histogramV.clear();
+  }
+
+  void calculate()
+  {
+    histogramY.calculate();
+    histogramU.calculate();
+    histogramV.calculate();
   }
 
   ColorChannelHistograms();
@@ -113,7 +120,7 @@ class ColorChannelHistogramsTop: public ColorChannelHistograms{};
 
 class OverTimeHistogram : public naoth::Printable
 {
-public: 
+public:
   PixelT<double> meanEnv;
   PixelT<double> meanImg;
 
@@ -146,5 +153,80 @@ public:
 };
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
+
+class GoalPostHistograms : public ColorChannelHistograms, public naoth::Printable
+{
+public:
+  Vector2d colU;
+  Vector2d colV;
+  bool valid;
+
+  GoalPostHistograms()
+  :
+    colU(255, 255),
+    valid(false)
+  {
+    histogramY.setMaxTotalSum(2560);
+    histogramU.setMaxTotalSum(2560);
+    histogramV.setMaxTotalSum(2560);
+  }
+
+  void calculate()
+  {
+    valid = false;
+    ColorChannelHistograms::calculate();
+    setBorders(3.0);
+  }
+
+  void setBorders(double deviationFactor)
+  {
+    valid = histogramU.sum >= 2 * histogramU.size && histogramV.sum >= 2 * histogramV.size;
+    if(valid)
+    {
+    //.x = low border, .y = high border
+      colU.x = histogramU.median - deviationFactor * histogramU.sigma;
+      colU.y = histogramU.median + deviationFactor * histogramU.sigma;
+      colV.x = histogramV.median - deviationFactor * histogramV.sigma;
+      colV.y = histogramV.median + deviationFactor * histogramV.sigma;
+    }
+  }
+
+  bool isPostColor(Pixel pixel) const
+  {
+    //.x = low border, .y = high border
+    return colU.x < pixel.u && pixel.u < colU.y && colV.x < pixel.v && pixel.v < colV.y;
+  }
+
+   virtual void print(std::ostream& stream) const
+   {
+     stream << "GoalPostHistogram" << std::endl
+            << "=================" << std::endl << std::endl
+            << "histogram U channel" << std::endl
+            << "min        : " << histogramU.min << std::endl
+            << "max        : " << histogramU.max << std::endl
+            << "mean       : " << histogramU.mean << std::endl
+            << "median     : " << histogramU.median << std::endl
+            << "common     : " << histogramU.common << std::endl
+            << "spanWidth  : " << histogramU.spanWidth << std::endl
+            << "sigma      : " << histogramU.sigma << std::endl
+            << "sum        : " << histogramU.sum << std::endl
+            << "maxTotalSum: " << histogramU.maxTotalSum << std::endl
+            << std::endl
+            << "histogramV" << std::endl
+            << "min        : " << histogramV.min << std::endl
+            << "max        : " << histogramV.max << std::endl
+            << "mean       : " << histogramV.mean << std::endl
+            << "median     : " << histogramV.median << std::endl
+            << "common     : " << histogramV.common << std::endl
+            << "spanWidth  : " << histogramV.spanWidth << std::endl
+            << "sigma      : " << histogramV.sigma << std::endl
+            << "sum        : " << histogramV.sum << std::endl
+            << "maxTotalSum: " << histogramV.maxTotalSum
+            << std::endl;
+
+   }
+
+};
+
 #endif  /* _Histogram_H */
 

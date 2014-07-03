@@ -40,20 +40,23 @@ public:
   struct Data
   {
     Data ()
-      : playerNum(0), team(0),
-        ballAge(-1), fallen(-1),
+      : playerNum(0), teamColor(naoth::GameData::numOfTeamColor),
+        ballAge(-1), fallen(false),
+        teamNumber(0),
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
-        isPenalized(false)
+        isPenalized(false),
+        batteryCharge(0.0f),
+        temperature(0.0f),
+        timestamp(0)
     {
-
     }
 
     naoth::FrameInfo frameInfo;
 
     unsigned int playerNum;
-    unsigned int team;
+    naoth::GameData::TeamColor teamColor;
 
     /**
      * @brief Own robot pose
@@ -75,18 +78,20 @@ public:
      */
     Vector2d ballVelocity;
     /**
-     * @brief milliseconds since the robot has been fallen.
-     * -1 if not fallen
+     * @brief true means that the robot is fallen, false means that the robot can play
      */
-    int fallen;
+    bool fallen;
 
     // BEGIN BERLIN UNITED SPECIFIC
-
+    unsigned int teamNumber;
     std::string bodyID;
     unsigned int timeToBall;
     bool wasStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
+    float batteryCharge;
+    float temperature;
+    unsigned long long timestamp;
     // END BERLIN UNITED SPECIFIC
 
   };
@@ -104,6 +109,7 @@ public:
       stream << "From " << i->first << " ["<< d.bodyID <<"]"<< std::endl;
       i->second.frameInfo.print(stream);
       stream << "Message: " << std::endl;
+      stream << "Timestamp" << d.timestamp << std::endl;
       stream << "\tPos (x; y; rotation) = "
              << d.pose.translation.x << "; "
              << d.pose.translation.y << "; "
@@ -115,7 +121,9 @@ public:
       stream << "TimeToBall: "<< d.timeToBall << std::endl;
       stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
-      stream << "fallenDown: " << d.fallen << std::endl;
+      stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
+      stream << "team color: " << naoth::GameData::teamColorToString(d.teamColor) << std::endl;
+      stream << "team number: " << d.teamNumber << std::endl;
       for(unsigned int i=0; i < d.opponents.size(); i++)
       {
         stream << "opponent " << d.opponents[i].playerNum << " : "

@@ -14,20 +14,17 @@
 #include <fstream>
 #include <cstdlib>
 
-
-//
-// This is to suppress the following gcc warning 
-// thrown because by the old version of boost used by naoqi
-// albroker.h and alproxy.h 
-// produce those:
-//   boost/function/function_base.hpp:325: 
-//   warning: dereferencing type-punned pointer will break strict-aliasing rules
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#include <alcommon/alproxy.h>
-
 using namespace naoth;
 using namespace std;
 using namespace AL;
+
+// some low level debugging stuff
+#ifdef DEBUG_SMAL
+#define LNT current_line=__LINE__
+int current_line = 0;
+#else
+#define LNT (void)0
+#endif
 
 
 // this stuff is necessary to register at the DCM
@@ -44,11 +41,9 @@ static void motion_wrapper_post()
   assert(theModule != NULL);
   theModule->motionCallbackPost();
 }
-//
 
-void* shutdownCallback(void* ref)
+void* shutdownCallback(void* /*ref*/)
 {
-
   // play a sound that the user knows we recognized his shutdown request
   system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
 
@@ -63,44 +58,12 @@ void* shutdownCallback(void* ref)
   std::cout << "System shutdown requested" << std::endl;
 
   // await termination
-  while(1)
-  {
+  while(true) {
     sleep(100);
   }
 
   return NULL;
 }//end soundThreadCallback
-
-// some low level debugging stuff
-//#define DEBUG_SMAL
-
-int time_motionCallbackPre = 0;
-int time_motionCallbackPost = 0;
-
-#ifdef DEBUG_SMAL
-#define LNT current_line=__LINE__
-
-int current_line = 0;
-
-void* debug_wrapper(void* ref)
-{
-  while(true)
-  {
-    int c = time_motionCallbackPre;
-    if(c > 500) // longer than 1ms
-      std::cout << "time_motionCallbackPre: " << c << std::endl;
-
-    c = time_motionCallbackPost;
-    if(c > 500) // longer than 1ms
-      std::cout << "time_motionCallbackPost: " << c << std::endl;
-
-    usleep(1000000);
-  }
-  return NULL;
-}//end debug_wrapper
-#else
-#define LNT (void)0
-#endif
 
 
 SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& pName )
@@ -123,18 +86,9 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
 
   // 
   setModuleDescription( 
-	"Nao Shared Memory Abstraction Layer (NaoSMAL)" 
-	"provides access to the HAL functionality of naoqi through shared memory" 
+  "Nao Shared Memory Abstraction Layer (NaoSMAL)" 
+  "provides access to the HAL functionality of naoqi through shared memory" 
   );
-  
-#ifdef DEBUG_SMAL
-  GError* err = NULL;
-  g_thread_create(debug_wrapper, 0, true, &err);
-  if(err)
-  {
-    g_warning("Could not create cognition thread: %s", err->message);
-  }
-#endif
 }
 
 SMALModule::~SMALModule()
@@ -174,11 +128,37 @@ void SMALModule::init()
 
   // save the value to file
   // FIXME: fixed path "Config/nao.info"
-  string staticMemberPath("Config/nao.info");
-  ofstream os(staticMemberPath.c_str());
-  ASSERT(os.good());
-  os<<theBodyID<<"\n"<<theBodyNickName<<endl;
-  os.close();
+  {
+    string staticMemberPath("Config/nao.info");
+    ofstream os(staticMemberPath.c_str());
+    ASSERT(os.good());
+    os<<theBodyID<<"\n"<<theBodyNickName<<endl;
+    os.close();
+  }
+
+  // NOTE: read the joint limits from the dcm and write it to the config
+  theDCMHandler.getJointPositionLimits(theMotorJointData);
+  {
+    ofstream os("Config/private/joints.cfg");
+    ASSERT(os.good());
+    os << "[joints]" << endl << endl;
+    os << "# auto generated joint limits for " << theBodyNickName << endl << endl;
+    for(int i=0;i<JointData::numOfJoint;i++)
+    {
+      double joint_min = theMotorJointData.min[i];
+      double joint_max = theMotorJointData.max[i];
+
+      // NOTE: we convert all the joint limits to degrees to be stored in the config
+      //       except for the hand, because those limits are just {0,1} ~ {close,open}
+      double joint_max_config = (i == JointData::LHand || i == JointData::RHand)?joint_max:Math::toDegrees(joint_max);
+      double joint_min_config = (i == JointData::LHand || i == JointData::RHand)?joint_min:Math::toDegrees(joint_min);
+
+      os << JointData::getJointName((JointData::JointID) i) << "Min = " << joint_min_config << ";" << endl;
+      os << JointData::getJointName((JointData::JointID) i) << "Max = " << joint_max_config << ";" << endl;
+      os << endl;
+    }
+    os.close();
+  }
 
   //key_t semkey = ftok("/dev/null",1);
 
@@ -223,29 +203,40 @@ void SMALModule::init()
 }//end init
 
 
+// we are at the moment shortly before the DCM commands are send to the
+// USB bus, so put the motion execute stuff here
 void SMALModule::motionCallbackPre()
 {
+#ifdef DEBUG_SMAL
   long long start = NaoTime::getSystemTimeInMicroSeconds();
+  counterPre++;
+  if(counterPre == 100) {
+    long long currentPreTime = NaoTime::getSystemTimeInMicroSeconds();
+    long long delta_cycle = (currentPreTime - lastPreTime)/counterPre;
+    long long delta_execTime = time_motionCallbackPreSum/counterPre;
+    std::cout << "[pre]\t" << delta_cycle <<"\t"<< delta_execTime <<std::endl;
+    lastPreTime = NaoTime::getSystemTimeInMicroSeconds();
+    counterPre = 0;
+    time_motionCallbackPreSum = 0;
+  }
+#endif
+
+  static int drop_count = 10;
 
   // update the dcm time: NaoTime + (offset to DCM time)
   dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
 
-  // we are at the moment shortly before the DCM commands are send to the
-  // USB bus, so put the motion execute stuff here
-  static int drop_count = 10;
-
   // what to do when the Controller is dead?
   if(runningEmergencyMotion())
   {
+#ifdef DEBUG_SMAL
     long long stop = NaoTime::getSystemTimeInMicroSeconds();
-    time_motionCallbackPre = (int)(stop - start);
+    time_motionCallbackPreSum = (int)(stop - start);
+#endif
     return;
   }
 
   bool stiffness_set = false;
-
-  //HACK: give the motion a little more time (1ms)
-  usleep(1000);
 
   // get the MotorJointData from the shared memory and put them to the DCM
   if ( naoCommandMotorJointData.swapReading() )
@@ -260,8 +251,9 @@ void SMALModule::motionCallbackPre()
   }
   else
   {
-    if(drop_count == 0)
+    if(drop_count == 0) {
       fprintf(stderr, "libnaoth: dropped comand data.\n");
+  }
 
     // don't count more than 11
     drop_count += (drop_count < 11);
@@ -277,28 +269,44 @@ void SMALModule::motionCallbackPre()
 
   bool leddata_set = false;
 
+  // NOTE: the LEDs are only set if stiffness was not set in this cycle
   // get the LEDData from the shared memory and put them to the DCM
   if(!stiffness_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
     leddata_set = theDCMHandler.setSingleLED(commandData->get(), dcmTime);
-  }//end if
+  }
 
   // get the UltraSoundSendData from the shared memory and put them to the DCM
   if (naoCommandUltraSoundSendData.swapReading() )
   {
     const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
     theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
-  }//end if
+  }
 
+#ifdef DEBUG_SMAL
   long long stop = NaoTime::getSystemTimeInMicroSeconds();
-  time_motionCallbackPre = (int)(stop - start);
+  time_motionCallbackPreSum += (int)(stop - start);
+#endif
 }//end motionCallbackPre
 
 
 void SMALModule::motionCallbackPost()
 {
+#ifdef DEBUG_SMAL
   long long start = NaoTime::getSystemTimeInMicroSeconds();
+  counterPost++;
+  if(counterPost == 100) {
+    long long currentPostTime = NaoTime::getSystemTimeInMicroSeconds();
+    long long delta_cycle = (currentPostTime - lastPostTime)/counterPost;
+    long long delta_execTime = time_motionCallbackPostSum/counterPost;
+    std::cout << "[post]\t" << delta_cycle <<"\t"<< delta_execTime <<std::endl;
+    lastPostTime = NaoTime::getSystemTimeInMicroSeconds();
+    counterPost = 0;
+    time_motionCallbackPostSum = 0;
+  }
+#endif
+
   static int drop_count = 10;
 
   NaoSensorData* sensorData = naoSensorData.writing();
@@ -326,13 +334,10 @@ void SMALModule::motionCallbackPost()
   }
 
   // save the data for the emergency case
-  if(state == DISCONNECTED)
-  {
+  if(state == DISCONNECTED) {
     sensorData->get(theInertialSensorData);
     sensor_data_available = true;
-  }
-  else
-  {
+  } else {
     sensor_data_available = false;
   }
 
@@ -349,18 +354,18 @@ void SMALModule::motionCallbackPost()
       {
         sem_post(sem);
 
-        if(state == DISCONNECTED)
+        if(state == DISCONNECTED) {
           fprintf(stderr, "libnaoth: I think the core is alive.\n");
+    }
 
         drop_count = 0;
         state = CONNECTED;
       }
       else
       {
-        if(drop_count == 0)
+        if(drop_count == 0) {
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
-        else if(drop_count == 10)
-        {
+    } else if(drop_count == 10) {
           fprintf(stderr, "libnaoth: I think the core is dead.\n");
           state = DISCONNECTED;
         }
@@ -373,17 +378,18 @@ void SMALModule::motionCallbackPost()
     {
       fprintf(stderr, "libnaoth: I couldn't get value by sem_getvalue.\n");
     }
-  }//end if
+  }//end if SEM_FAILED
 
-
+#ifdef DEBUG_SMAL
   long long stop = NaoTime::getSystemTimeInMicroSeconds();
-  time_motionCallbackPost = (int)(stop - start);
+  time_motionCallbackPostSum += (int)(stop - start);
+#endif
 }//end motionCallbackPost
 
 
 void SMALModule::exit()
 {
-  cout << "NaoTH is exiting ..."<<endl;
+  cout << "NaoTH is exiting ..." << endl;
 
   // close semaphore
   if(sem != SEM_FAILED)
@@ -427,7 +433,7 @@ void SMALModule::setWarningLED(bool red)
     theLEDData.theMultiLED[i][LEDData::RED] = red ? 1 : 0;
     theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
     theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
-  }//end for
+  }
 
   theDCMHandler.setSingleLED(theLEDData, dcmTime);
 }//end checkWarningState
@@ -443,7 +449,7 @@ bool SMALModule::runningEmergencyMotion()
       // take the last command data
       const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
       initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
-    }//end if
+    }
 
     setWarningLED(shutdown_requested);
   }//end if

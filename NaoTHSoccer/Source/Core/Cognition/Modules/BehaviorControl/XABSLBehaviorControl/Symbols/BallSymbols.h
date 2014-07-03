@@ -39,7 +39,10 @@ class BallSymbols: public BallSymbolsBase
 {
 
 public:
-  BallSymbols() {
+  BallSymbols() 
+    :
+    ballPerceptSeen(false)
+  {
     theInstance = this;
   }
   virtual ~BallSymbols(){}
@@ -65,7 +68,6 @@ private:
 
   Vector2d ballLeftFoot;
   Vector2d ballRightFoot;
-
 
   Vector2d ballPerceptPos;
   bool ballPerceptSeen;

@@ -6,8 +6,8 @@
 * @author Max Risler
 */
 
-#ifndef __MathSymbols_h_
-#define __MathSymbols_h_
+#ifndef _MathSymbols_h_
+#define _MathSymbols_h_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -132,5 +132,5 @@ private:
   double vectorAbsY;
 };
 
-#endif // __MathSymbols_h_
+#endif // _MathSymbols_h_
 

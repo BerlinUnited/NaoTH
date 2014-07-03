@@ -62,13 +62,15 @@
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/HistogramFieldDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/GoalDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/BallDetector.h"
+#include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Deprecated/LineDetector.h"
 #include "Modules/Perception/VisualCortex/ColorClassBasedDetectors/Experimental/RobotDetector.h"
 //Perception - Vision -- Detectors
 #include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
-#include "Modules/Perception/VisualCortex/Detectors/LineDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/LineGraphProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/SuperBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/NeoLineDetector.h"
 
@@ -87,6 +89,7 @@
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
+#include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocatorSimple.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
@@ -182,12 +185,14 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(LineDetector);
   REGISTER_MODULE(NeoLineDetector);
   REGISTER_MODULE(LineClusterProvider);
+  REGISTER_MODULE(LineGraphProvider);
 
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(GradientGoalDetector);
 
   REGISTER_MODULE(BallDetector);
   REGISTER_MODULE(MaximumRedBallDetector);
+  REGISTER_MODULE(SuperBallDetector);
 
   REGISTER_MODULE(RobotDetector);
 
@@ -214,6 +219,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(MonteCarloSelfLocatorSimple);
   REGISTER_MODULE(DummyActiveGoalLocator); // has to be after MonteCarloSelfLocator
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(TeamBallLocator);

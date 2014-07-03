@@ -11,6 +11,7 @@
 GradientSpiderScan::GradientSpiderScan(const Image& theImage, CameraInfo::CameraID camID)
 :
   theImage(theImage),
+  useVUdifference(false),
   cameraID(camID)
 {
   init();
@@ -24,11 +25,6 @@ void GradientSpiderScan::setMaxBeamLength(unsigned int length)
 void GradientSpiderScan::setCurrentGradientThreshold(double threshold)
 {
   currentGradientThreshold = threshold;
-}
-
-void GradientSpiderScan::setCurrentMeanThreshold(double threshold)
-{
-  currentMeanThreshold = threshold;
 }
 
 void GradientSpiderScan::setDynamicThresholdY(double threshold)
@@ -52,12 +48,16 @@ void GradientSpiderScan::setUseVUdifference(bool value)
   useVUdifference = value;
 }
 
+void GradientSpiderScan::setMinChannelValue(double value)
+{
+  minChannelValue = value;
+}
+
 void GradientSpiderScan::init()
 {
   drawScanLines = false;
   max_length_of_beam = 30; //maximum length of the scan line
   currentGradientThreshold = 30; //...
-  currentMeanThreshold = 30; //...
   dynamicThresholdY = 0;
   useDynamicThresholdY = false;
   imageChannelNumber = 2;
@@ -65,6 +65,7 @@ void GradientSpiderScan::init()
   maxNumberOfScans = 15; //maximum number of scanlines ...
   CANVAS_PX(cameraID);
   maxChannelDif = 0.5;
+  minChannelValue = 0.0;
 }
 
 void GradientSpiderScan::setDrawScanLines(bool draw)
@@ -87,6 +88,16 @@ void GradientSpiderScan::scan(const Vector2i& start, ScanPointList& goodPoints, 
   scans.add(start, Vector2i( 2, 2));// to the upper right
   scans.add(start, Vector2i( 2,-2));// to the lower right
   scans.add(start, Vector2i( 0, 2));// up
+  
+  //add more scan lines
+  scans.add(start, Vector2i( 1,-2));
+  scans.add(start, Vector2i( 2,-1));
+  scans.add(start, Vector2i( 2, 1));
+  scans.add(start, Vector2i( 1, 2));
+  scans.add(start, Vector2i(-1, 2));
+  scans.add(start, Vector2i(-2, 1));
+  scans.add(start, Vector2i(-2,-1));
+  scans.add(start, Vector2i(-1,-2));
   
   startPixel = theImage.get(start.x, start.y);
   scan(goodPoints, badPoints, scans);
@@ -184,17 +195,17 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
     Pixel pixel = theImage.get(currentPoint.x, currentPoint.y);
 
     int newJump = 0;
-    int meanJump = 0;
+    //int meanJump = 0;
 
     if(useVUdifference)
     {
       newJump = abs(static_cast<int>(pixel.v - pixel.u - (lastPixel.v - lastPixel.u)));
-      meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v - lastPixel.u));
+      //meanJump = abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.v - lastPixel.u));
     }
     else
     {
       newJump = abs(static_cast<int>(pixel.channels[imageChannelNumber] - lastPixel.channels[imageChannelNumber]));
-      abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
+      //abs(scanPixelBuffer.getAverage() - static_cast<int>(lastPixel.channels[imageChannelNumber]));
   	  //UNUSED: int validateJump = abs(static_cast<int>(pixel.channels[imageChannelValidate] - lastPixel.channels[imageChannelValidate]));
     }
 
@@ -232,8 +243,9 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       }
 
   //      jumpFound = (newJump > currentGradientThreshold && (double) newJump / (double) validateJump > maxChannelDif) || 
-		  jumpFound = newJump > currentGradientThreshold  || 
-                  meanJump > currentMeanThreshold;
+		  jumpFound = newJump > currentGradientThreshold  ||
+                  //if below a minimum, handle it as if jump
+                  minChannelValue >= pixel.channels[imageChannelNumber];
       
       maxJump = newJump;
       borderPoint = currentPoint - direction/2;
@@ -244,7 +256,7 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       //borderPoint = currentPoint;
       borderPointFound = true;
     }
-    else if(! borderPointFound)
+    else if(!borderPointFound)
     {
       if(useVUdifference)
       {
@@ -266,7 +278,7 @@ bool GradientSpiderScan::scanLine(const Vector2i& start, const Vector2i& directi
       else 
       {
         //POINT_PX(ColorClasses::red, (unsigned int)(borderPoint.x), (unsigned int)(borderPoint.y));
-    	  LINE_PX(ColorClasses::green, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
+    	  LINE_PX(ColorClasses::blue, (unsigned int) start.x, (unsigned int) start.y, (unsigned int)(currentPoint.x), (unsigned int)(currentPoint.y));
       }
     }
     lastPixel = pixel;

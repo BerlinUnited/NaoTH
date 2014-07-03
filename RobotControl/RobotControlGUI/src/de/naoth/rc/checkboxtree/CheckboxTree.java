@@ -4,6 +4,7 @@
  */
 package de.naoth.rc.checkboxtree;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class CheckboxTree extends JTree
     this.setRootVisible(false);
     this.setEditable(true);
     this.setShowsRootHandles(true);
+    this.setScrollsOnExpand(true);
     
     
     this.getCellEditor().addCellEditorListener(new CellEditorListener() {
@@ -104,15 +106,15 @@ public class CheckboxTree extends JTree
   
   public void expandPath(String path, char seperator)
   {
-      SelectableTreeNode node = getNode(path,seperator);
-      this.expandPath(new TreePath(new Object[]{rootNode,node}));
+    SelectableTreeNode node = getNode(path,seperator);
+    this.expandPath(new TreePath(new Object[]{rootNode,node}));
   }
   
   public SelectableTreeNode getNode(String path)
   {
     return getNode(path, '/');
   }
-
+  
   public SelectableTreeNode getNode(String path, char seperator)
   {
     String[] nodes = path.split("" + seperator);
@@ -140,6 +142,47 @@ public class CheckboxTree extends JTree
       current = matchingNode;
     }
     return current;
+  }
+  
+  private List<SelectableTreeNode> getNodeTreePath(String path, char seperator)
+  {
+    ArrayList<SelectableTreeNode> list = new ArrayList<>();
+    String[] nodes = path.split("" + seperator);
+    SelectableTreeNode current = rootNode;
+    
+    list.add(current);
+    
+    for(String n : nodes)
+    {
+      SelectableTreeNode matchingNode = null;
+      Enumeration<SelectableTreeNode> childEnum = current.children();
+      while(childEnum.hasMoreElements())
+      {
+        SelectableTreeNode child = childEnum.nextElement();
+
+        if(n.equals(child.getText()))
+        {
+          matchingNode = child;
+          break;
+        }
+      }
+
+      if(matchingNode == null)
+      {
+        return null;
+      }
+
+      current = matchingNode;
+      list.add(current);
+    }
+    
+    return list;
+  }
+  
+  
+  public void selectNode(String path, char seperator)
+  {
+    super.setSelectionPath(new TreePath(getNodeTreePath(path, seperator).toArray()));
   }
 
   public void clear()

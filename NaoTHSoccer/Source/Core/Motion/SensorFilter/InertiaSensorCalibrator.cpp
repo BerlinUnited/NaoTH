@@ -17,6 +17,7 @@ using namespace naoth;
 InertiaSensorCalibrator::InertiaSensorCalibrator()
 {
   DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
+  reset();
 }
 
 // check all request joints' speed, return true if all joints are almost not moving

@@ -28,7 +28,7 @@ MaximumRedBallDetector::MaximumRedBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:markPeakScan", "mark the scanned points in image", false);
   
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:draw_scanlines","..", false);  
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", true);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:second_scan_execute", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_points","",false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:MaximumRedBallDetector:mark_best_matching_points","",false);
 
@@ -46,7 +46,7 @@ void MaximumRedBallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   CANVAS_PX(cameraID);
-
+  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   getBallPercept().reset();
 
   double diff = getOverTimeHistogram().spanWidthEnv.y * 0.35 + 0.5;
@@ -83,22 +83,48 @@ bool MaximumRedBallDetector::findMaximumRedPoint(Vector2i& peakPos)
   poly = getFieldPercept().getValidField();
   Vector2i point;
 
-  int stepSize = cameraID == CameraInfo::Bottom ? params.stepSize * 3 : params.stepSize;
+  int stepSize = params.stepSize;
+    
+  if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(40))
+  {
+    stepSize *= 3;
+  }
+  else if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(10))
+  {
+    stepSize *= 2;
+  }
 
   for(point.y = minY; point.y < (int) getImage().height() - 3 ; point.y += stepSize) {
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSize)
     {
       getImage().get(point.x, point.y, pixel);
+      //double u = (double) pixel.u/0.493;      
+   //  int blue = (int) (1.164* (pixel.y-16) + 0.5);      
       if
       (
         maxRedPeak < pixel.v && 
         poly.isInside_inline(point) && 
         checkIfPixelIsOrange(pixel)
-        && !getBodyContour().isOccupied(point)
+        && !getBodyContour().isOccupied(point) 
+        
       )
       {
-        maxRedPeak = pixel.v;
-        peakPos = point;
+        int blue = 0;
+        int red =  400;
+        int green = 0;
+        if (params.ttUseBallColorPara>0) {
+          blue = (int) (pixel.y + 1.765*(pixel.u-128)+0.5);
+          red =  (int) (pixel.y + 1.400 * (pixel.v -128) + 0.5);
+          green = (int) ((pixel.y - 0.343 * (pixel.u-128) - 0.711 * (pixel.v-128)) + 0.5);
+        }
+        if (blue < params.ttMaxBlue && green < params.ttMaxGreen && red > params.ttMinRed) {
+          DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeak",
+            LINE_PX(ColorClasses::red, point.x-5, point.y, point.x+5, point.y);
+            LINE_PX(ColorClasses::red, point.x, point.y-5, point.x, point.y+5);
+          );
+          maxRedPeak = pixel.v;
+          peakPos = point;
+        }
       }
 
       DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:markPeakScan",
@@ -164,9 +190,15 @@ bool MaximumRedBallDetector::findBall ()
   spiderSearch.setImageColorChannelNumber(2); // scan in the V channel
 	spiderSearch.setCurrentGradientThreshold(params.gradientThreshold);
 	spiderSearch.setDynamicThresholdY(dynamicThresholdY);
-	spiderSearch.setCurrentMeanThreshold(params.meanThreshold);
 	spiderSearch.setMaxBeamLength(params.maxScanlineSteps);
-
+  if(getGoalPostHistograms().valid)
+  {
+    spiderSearch.setMinChannelValue(getGoalPostHistograms().histogramV.median + getGoalPostHistograms().histogramV.sigma);
+  }
+  else
+  {
+    spiderSearch.setMinChannelValue(0);
+  }
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:use_VU_difference",
     spiderSearch.setUseVUdifference(true);
   );
@@ -185,6 +217,11 @@ bool MaximumRedBallDetector::findBall ()
   if(goodPoints.length <= 0) {
     return false;
   }
+
+  //HACK: reject bad scans
+/* if(goodPoints.length + badPoints.length <= 13) {
+    return false;
+  }*/
 
 	for (int i = 0; i < goodPoints.length; i++) {
 		bestPoints.add(goodPoints[i]);
@@ -214,8 +251,9 @@ bool MaximumRedBallDetector::findBall ()
   // display the final points
   DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:mark_best_points",
     for(int i = 0; i < bestPoints.length; i++) {
-      LINE_PX(ColorClasses::red, bestPoints[i].x-2, bestPoints[i].y, bestPoints[i].x-2, bestPoints[i].y);
-      LINE_PX(ColorClasses::red, bestPoints[i].x, bestPoints[i].y-2, bestPoints[i].x, bestPoints[i].y+2);
+      PEN("FF0000", 0.1);
+      LINE(bestPoints[i].x-1, bestPoints[i].y, bestPoints[i].x+1, bestPoints[i].y);
+      LINE(bestPoints[i].x, bestPoints[i].y-1, bestPoints[i].x, bestPoints[i].y+1);
     }
   );
 
@@ -258,25 +296,35 @@ bool MaximumRedBallDetector::getBestModel(const BallPointList& pointList, const 
 		  getFieldInfo().ballRadius,
 		  getBallPercept().bearingBasedOffsetOnField);
 
-		getBallPercept().radiusInImage = radiusBest;
-		getBallPercept().centerInImage = centerBest;
-		getBallPercept().ballWasSeen = projectionOK;
-		getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-		
-    DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
-			CIRCLE_PX(ColorClasses::orange, (int) centerBest.x, (int) centerBest.y, (int) radiusBest);
-		);
-		DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_size_ball_field",
-			estimatePositionBySize();
-		);
+    // HACK: don't take to far balls
+    projectionOK = projectionOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
 
+    // HACK: if the ball center is in image it has to be in the field polygon 
+    Vector2d ballPointToCheck(centerBest.x, centerBest.y - radiusBest);
+    projectionOK = projectionOK && 
+      (getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) && 
+       getFieldPercept().getValidField().isInside(ballPointToCheck));
+
+
+    if(projectionOK) 
+    {
+		  getBallPercept().radiusInImage = radiusBest;
+		  getBallPercept().centerInImage = centerBest;
+		  getBallPercept().ballWasSeen = projectionOK;
+		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+		
+      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball",
+        PEN("FFFF00", 0.1);
+        CIRCLE( (centerBest.x),  (centerBest.y), (radiusBest));	  
+		  );
+    }
     return true;
 	}
 
   return false;
 }
 
-bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2i& start, Vector2d& centerBest, double& radiusBest)
+bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointList, const Vector2i& /*start*/, Vector2d& centerBest, double& radiusBest)
 {
 	int idxBest = -1;
 	int bestCount = 0;
@@ -288,7 +336,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
   	GT_TRACE("MaximumRedBallDetector:1");
   // initialize the first model with all avaliable points
   possibleModells[0].clear();
-	for(int j = 0; j < pointList.length; j++) 
+/*	for(int j = 0; j < pointList.length; j++) 
   {
 		possibleModells[0].add(pointList[j]);
 
@@ -298,7 +346,7 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
     boundingBoxMax.y = max(boundingBoxMax.y, pointList[j].y);
 	}
 
-  double diag2 = (boundingBoxMax - boundingBoxMin).abs2();
+  double diag2 = (boundingBoxMax - boundingBoxMin).abs2();*/
 
 	int firstPoint = -1;
 	int	secondPoint = 1;
@@ -330,12 +378,16 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
 		possibleModells[i].add(pointList[thirdPoint]);
 
     if(Geometry::calculateCircle(possibleModells[i], center, radius))
-	  {
-		  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates",
-			  CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
+	  {	
+      //has the ballModel an acceptable radius?
+      if (radius < params.minRadiusInImage || radius > params.maxRadiusInImage) continue;
+      //check if ballModel contains green then this is no ball
+      if (checkBallForGreen(center, radius)) continue;      
+      DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates",
+        PEN("0000FF", 0.1);        
+			  CIRCLE(center.x, center.y, radius);
 		  );
-
-      // calculate the number of inliers
+      // calculate the number of inliers      
 		  double radiusErrMax =  params.ransacPercentValid * radius;
 		  int count = 0;
       double meanError = 0.0;
@@ -354,13 +406,12 @@ bool MaximumRedBallDetector::getBestBallBruteForce(const BallPointList& pointLis
         meanError /= (double)(pointList.length);
       }
 
-		  if( count*2 >= pointList.length && 
-          (count > bestCount || (count == bestCount && meanError < bestErr) ) &&
-          (Vector2d(start) - center).abs2() <= radius*radius &&
-          radius >= params.minSizeInImage && radius <= params.maxSizeInImage &&
-          diag2 > radius * radius 
-      )
-		  {
+      if(params.minPercentOfPointsUsed  >= (double) count/ (double) pointList.length &&
+          (count > bestCount || (count == bestCount && meanError < bestErr) )// &&
+         // (Vector2d(start) - center).abs2() <= radius*radius //&&
+             //diag2 > radius * radius
+             )
+      {        
 			  centerBest = center;
 			  radiusBest = radius;
 			  bestCount = count;
@@ -437,7 +488,8 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
     if(Geometry::calculateCircle(possibleModells[i], center, radius))
 	  {
 		  DEBUG_REQUEST("Vision:Detectors:MaximumRedBallDetector:draw_ball_candidates",
-			  CIRCLE_PX(ColorClasses::skyblue, (int) center.x, (int) center.y, (int) radius);
+        PEN("0000FF", 0.1);
+			  CIRCLE((int) center.x+0.5, (int) center.y+0.5, (int) radius+0.5);
 		  );
 
       // calculate the number of inliers
@@ -462,7 +514,7 @@ bool MaximumRedBallDetector::getBestBallRansac(const BallPointList& pointList, c
 		  if( count*2 >= pointList.length && 
           (count > bestCount || (count == bestCount && meanError < bestErr) ) &&
           (Vector2d(start) - center).abs2() <= radius*radius &&
-          radius >= params.minSizeInImage && radius <= params.maxSizeInImage &&
+          radius >= params.minRadiusInImage && radius <= params.maxRadiusInImage &&
           diag2 > radius * radius 
       )
 		  {
@@ -514,10 +566,53 @@ Vector2i MaximumRedBallDetector::getCenterOfMass (BallPointList& pointList)
 bool MaximumRedBallDetector::checkIfPixelIsOrange(const Pixel& pixel) 
 {
   return
-    pixel.v > pixel.u + params.maxBlueValue && // check the UV-difference
-    pixel.v > params.maxRedValue &&
+    !getGoalPostHistograms().isPostColor(pixel) && //not within goal color
+    getGoalPostHistograms().colV.y < pixel.v && // at least as red as the goal mean/median red
+    pixel.u < params.maxU && // not more blue than goal
     !getFieldColorPercept().isFieldColor(pixel) && // check green
     pixel.y < dynamicThresholdY; // check too bright (white etc.)
+}
+
+bool MaximumRedBallDetector::checkBallForGreen(Vector2d center, double radius) {
+  Pixel pixel;
+  Vector2i point;
+  point.x =(int) center.x;
+  point.y =(int) center.y + (int)(radius * params.checkBallForGreen + 0.5);
+  setToLastPointInImage(point);
+  getImage().get(point.x, point.y, pixel);
+  if (getFieldColorPercept().isFieldColor(pixel)){
+    return true;
+  }
+  point.x =(int) center.x;
+  point.y =(int) center.y - (int)(radius * params.checkBallForGreen + 0.5);
+  setToLastPointInImage(point);
+  getImage().get(point.x, point.y, pixel);
+  if (getFieldColorPercept().isFieldColor(pixel)){
+    return true;
+  }
+  point.x =(int) center.x + (int)(radius * params.checkBallForGreen + 0.5);;
+  point.y =(int) center.y; 
+  setToLastPointInImage(point);
+  getImage().get(point.x, point.y, pixel);
+  if (getFieldColorPercept().isFieldColor(pixel)){
+    return true;
+  }
+  point.x =(int) center.x - (int)(radius * params.checkBallForGreen + 0.5);;
+  point.y =(int) center.y; 
+  setToLastPointInImage(point);
+  getImage().get(point.x, point.y, pixel);
+  if (getFieldColorPercept().isFieldColor(pixel)){
+    return true;
+  }
+  return false;
+
+}
+
+void MaximumRedBallDetector::setToLastPointInImage(Vector2i& point) {
+  if (point.x < 0 ) point.x = 0;
+  else if (point.x >= (int) getImage().width()) point.x = getImage().width()-1;
+  if (point.y < 0 ) point.y = 0;
+  else if (point.y >=(int) getImage().height()) point.y = getImage().height()-1;
 }
 
 void MaximumRedBallDetector::clearDublicatePoints (BallPointList& ballPoints) 

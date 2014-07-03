@@ -36,8 +36,8 @@ void DebugModify::executeDebugCommand(
     while(iter != valueMap.end())
     {
       outstream << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
-      iter++;
-    }//end while
+      ++iter;
+    }
   }else if(command == "modify:set")
   {
     std::map<std::string, std::string>::const_iterator iter;

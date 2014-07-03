@@ -7,8 +7,6 @@
 #ifndef _ScanLineEdgelPercept_h_
 #define _ScanLineEdgelPercept_h_
 
-#include "Cognition/Modules/Perception/VisualCortex/Detectors/LineDetectorConstParameters.h"
-
 #include "Tools/Math/Vector2.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ColorClasses.h"
@@ -34,8 +32,19 @@ public:
     bool valid;
   };
 
+  class EdgelPair : public EdgelT<double>
+  {
+  public:
+    EdgelPair() : begin(-1), end(-1), id(-1) {}
+    int begin;
+    int end;
+    int id;
+  };
+
   /** */
   std::vector<DoubleEdgel> scanLineEdgels;
+
+  std::vector<EdgelPair> pairs;
   std::vector<Edgel> edgels;
 
   /** */
@@ -44,6 +53,7 @@ public:
   void reset()
   {
     endPoints.clear();
+    pairs.clear();
     edgels.clear();
     scanLineEdgels.clear();
   }

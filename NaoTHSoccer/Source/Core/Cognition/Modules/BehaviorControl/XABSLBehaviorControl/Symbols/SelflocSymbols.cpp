@@ -11,8 +11,8 @@ SelflocSymbols* SelflocSymbols::theInstance = NULL;
 
 void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  engine.registerDecimalInputSymbol("gps.x",&gpsData.data.translation.x);
-  engine.registerDecimalInputSymbol("gps.y",&gpsData.data.translation.y);
+  engine.registerDecimalInputSymbol("gps.x",&getGPSData().data.translation.x);
+  engine.registerDecimalInputSymbol("gps.y",&getGPSData().data.translation.y);
 
   // goal symbols based on self localization
   engine.registerDecimalInputSymbol("goal.opp.x", &oppGoal.center.x);
@@ -38,10 +38,10 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 
 
 
-  engine.registerBooleanInputSymbol("robot_pose.is_valid", &robotPose.isValid);
+  engine.registerBooleanInputSymbol("robot_pose.is_valid", &getRobotPose().isValid);
 
-  engine.registerDecimalInputSymbol("robot_pose.x",&robotPose.translation.x);
-  engine.registerDecimalInputSymbol("robot_pose.y",&robotPose.translation.y);
+  engine.registerDecimalInputSymbol("robot_pose.x",&getRobotPose().translation.x);
+  engine.registerDecimalInputSymbol("robot_pose.y",&getRobotPose().translation.y);
   engine.registerDecimalInputSymbol("robot_pose.rotation",&angleOnField);
 
   engine.registerDecimalInputSymbol("robot_pose.planned.x",&robotPosePlanned.translation.x);
@@ -77,20 +77,20 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 
 void SelflocSymbols::execute()
 {
-  angleOnField = Math::toDegrees(robotPose.rotation);
+  angleOnField = Math::toDegrees(getRobotPose().rotation);
 
-  const GoalModel::Goal& ownGoalModel = selfLocGoalModel.getOwnGoal(compassDirection, fieldInfo);
-  const GoalModel::Goal& oppGoalModel = selfLocGoalModel.getOppGoal(compassDirection, fieldInfo);
+  const GoalModel::Goal& ownGoalModel = getSelfLocGoalModel().getOwnGoal(getCompassDirection(), getFieldInfo());
+  const GoalModel::Goal& oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
   ownGoal = Goal(ownGoalModel.leftPost, ownGoalModel.rightPost);
   oppGoal = Goal(oppGoalModel.leftPost, oppGoalModel.rightPost);
 
-  robotPosePlanned = robotPose + motionStatus.plannedMotion.hip;
+  robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
-}//end update
+}//end execute
 
 double SelflocSymbols::getRel2fieldX()
 {
-  Pose2D result = theInstance->robotPose;
+  Pose2D result = theInstance->getRobotPose();
   Vector2<double> add;
   add.x = theInstance->rel2fieldX_x;
   add.y = theInstance->rel2fieldX_y;
@@ -100,7 +100,7 @@ double SelflocSymbols::getRel2fieldX()
 
 double SelflocSymbols::getRel2fieldY()
 {
-  Pose2D result = theInstance->robotPose;
+  Pose2D result = theInstance->getRobotPose();
   Vector2<double> add;
   add.x = theInstance->rel2fieldY_x;
   add.y = theInstance->rel2fieldY_y;
@@ -110,12 +110,12 @@ double SelflocSymbols::getRel2fieldY()
 
 double SelflocSymbols::getFieldToRelativeX()
 {
-  return (theInstance->robotPose/theInstance->parameterVector).x;
-}//end getFieldToRelativeX
+  return (theInstance->getRobotPose()/theInstance->parameterVector).x;
+}
 
 double SelflocSymbols::getFieldToRelativeY()
 {
-  return (theInstance->robotPose/theInstance->parameterVector).y;
-}//end getFieldToRelativeY
+  return (theInstance->getRobotPose()/theInstance->parameterVector).y;
+}
 
 

@@ -40,20 +40,12 @@ class SelflocSymbols: public SelflocSymbolsBase
 public:
   SelflocSymbols()
   :
-    robotPose(getRobotPose()),
-    selfLocGoalModel(getSelfLocGoalModel()),
-    playerInfo(getPlayerInfo()),
-    gpsData(getGPSData()),
-    motionStatus(getMotionStatus()),
-    compassDirection(getCompassDirection()),
-    fieldInfo(getFieldInfo()),
-
-    angleOnField(Math::toDegrees(robotPose.rotation)),
+    angleOnField(Math::toDegrees(getRobotPose().rotation)),
     rel2fieldX_x(0.0),
     rel2fieldX_y(0.0),
     rel2fieldY_x(0.0),
     rel2fieldY_y(0.0),
-    angleOnFieldPlanned(Math::toDegrees(robotPose.rotation))
+    angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
   {
     theInstance = this;
   };
@@ -99,15 +91,6 @@ private:
   Vector2<double> parameterVector;
 
   static SelflocSymbols* theInstance;
-
-  // representations
-  RobotPose const& robotPose;
-  SelfLocGoalModel const& selfLocGoalModel;
-  PlayerInfo const& playerInfo;
-  GPSData const& gpsData;
-  MotionStatus const& motionStatus;
-  CompassDirection const& compassDirection;
-  FieldInfo const& fieldInfo;
 
   // rotation of robotPose in degrees
   double angleOnField;

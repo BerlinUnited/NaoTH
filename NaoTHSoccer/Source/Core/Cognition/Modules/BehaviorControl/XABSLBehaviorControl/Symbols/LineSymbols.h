@@ -5,8 +5,8 @@
 * Definition of class LineSymbols
 */
 
-#ifndef __LineSymbols_H_
-#define __LineSymbols_H_
+#ifndef _LineSymbols_H_
+#define _LineSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -63,4 +63,4 @@ private:
 
 };//end class LineSymbols
 
-#endif // __LineSymbols_H_
+#endif // _LineSymbols_H_

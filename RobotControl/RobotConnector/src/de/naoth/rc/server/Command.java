@@ -102,4 +102,8 @@ public class Command
     return this;
   }
 
+  @Override
+  public String toString() {
+      return this.name;
+  }
 }

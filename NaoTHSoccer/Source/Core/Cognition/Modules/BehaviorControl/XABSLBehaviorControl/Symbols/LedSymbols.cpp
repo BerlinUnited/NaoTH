@@ -28,13 +28,11 @@ void LedSymbols::registerSymbols(xabsl::Engine& engine)
 }//end registerSymbols
 
 
-
 LedSymbols* LedSymbols::theInstance = NULL;
 
 void LedSymbols::execute()
 {
 }
-
 
 void LedSymbols::setRightEar(double id)
 {
@@ -45,13 +43,10 @@ void LedSymbols::setRightEar(double id)
     int counter = 0;
     for (int i = LEDData::EarRight0; i <= LEDData::EarRight324; i++)
     {
-      if (counter < id)
-      {
-        theInstance->ledRequest.request.theMonoLED[i] = 1.0;
-      }
-      else
-      {
-        theInstance->ledRequest.request.theMonoLED[i] = 0.0;
+      if (counter < id) {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
+      } else {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
       }
       counter++;
     }
@@ -73,13 +68,10 @@ void LedSymbols::setLeftEar(double id)
     int counter = 0;
     for (int i = LEDData::EarLeft0; i <= LEDData::EarLeft324; i++)
     {
-      if (counter < id)
-      {
-        theInstance->ledRequest.request.theMonoLED[i] = 1.0;
-      }
-      else
-      {
-        theInstance->ledRequest.request.theMonoLED[i] = 0.0;
+      if (counter < id) {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
+      } else {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
       }
       counter++;
     }
@@ -98,27 +90,27 @@ void LedSymbols::setEye(LEDData::MultiLEDID from, LEDData::MultiLEDID to, int va
   {
     if(value == 0)
     {
-      ledRequest.request.theMultiLED[i][LEDData::RED] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::GREEN] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::BLUE] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::RED] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::GREEN] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::BLUE] = 0.0;
     }
     if (value == 1) // red
     {
-      ledRequest.request.theMultiLED[i][LEDData::RED] = 1.0;
-      ledRequest.request.theMultiLED[i][LEDData::GREEN] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::BLUE] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::RED] = 1.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::GREEN] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::BLUE] = 0.0;
     }
     else if (value == 2) // green
     {
-      ledRequest.request.theMultiLED[i][LEDData::RED] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::GREEN] = 1.0;
-      ledRequest.request.theMultiLED[i][LEDData::BLUE] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::RED] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::GREEN] = 1.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::BLUE] = 0.0;
     }
     else if (value == 3) // blue
     {
-      ledRequest.request.theMultiLED[i][LEDData::RED] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::GREEN] = 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::BLUE] = 1.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::RED] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::GREEN] = 0.0;
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::BLUE] = 1.0;
     }
     else if (value == 4) // red_green
     {
@@ -126,11 +118,11 @@ void LedSymbols::setEye(LEDData::MultiLEDID from, LEDData::MultiLEDID to, int va
       double green = 1.0;
       double blue = 0.0;
 
-      ledRequest.request.theMultiLED[i][LEDData::RED]
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::RED]
         = (i % 2 == 0) ? red : 0.0;
-      ledRequest.request.theMultiLED[i][LEDData::GREEN]
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::GREEN]
         = (i % 2 == 0) ? 0.0 : green;
-      ledRequest.request.theMultiLED[i][LEDData::BLUE]
+      getBehaviorLEDRequest().request.theMultiLED[i][LEDData::BLUE]
         = (i % 2 == 0) ? blue : 0.0;
     }
   }
@@ -139,10 +131,8 @@ void LedSymbols::setEye(LEDData::MultiLEDID from, LEDData::MultiLEDID to, int va
 void LedSymbols::setLeftEye(int value)
 {
   theInstance->lastREye = value;
-
   theInstance->setEye(LEDData::FaceLeft0, LEDData::FaceLeft315, value);
-    
-}//end setRightEye
+}
 
 int LedSymbols::getRightEye()
 {
@@ -152,10 +142,8 @@ int LedSymbols::getRightEye()
 void LedSymbols::setRightEye(int value)
 {
   theInstance->lastLEye = value;
-
   theInstance->setEye(LEDData::FaceRight0, LEDData::FaceRight315, value);
-  
-}//end setRightEye
+}
 
 int LedSymbols::getLeftEye()
 {

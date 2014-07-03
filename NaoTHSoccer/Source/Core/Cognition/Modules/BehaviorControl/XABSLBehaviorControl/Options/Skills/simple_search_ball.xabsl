@@ -1,6 +1,8 @@
 /** just turning and looking for ball */
 option simple_search_ball
 {
+  enum direction @search_direction;
+
   
   initial state start_turning
   {
@@ -8,7 +10,7 @@ option simple_search_ball
     {
       if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
-      else if ( ball.angle < 0 )
+      else if ( @search_direction == right )
         goto turning_right;
       else
         goto turning_left;
@@ -25,17 +27,23 @@ option simple_search_ball
     {
       if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
-      else
+      else {
         stay;
+      }
     }
     action
     {
-      head.control_mode = search_for_ball;
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;//200*abs(value=sin(angle=(state_time/30)%180));
+      head.motion_type = look_at_world_point;
+      //head.control_mode = search_for_ball;
       search_ball.search_direction = 1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = 90; //deg
+      motion.walk_speed.rot = 20; //deg
       motion.walk.coordinate = hip;
     }
   }
@@ -46,17 +54,23 @@ option simple_search_ball
     {
       if (ball.was_seen || ball.time_since_last_seen < 100)
         goto stand;
-      else
+      else {
         stay;
+      }
     }
     action
-    {
-      head.control_mode = search_for_ball;
+    {    
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = -200;
+      head.point_in_world.z = 0;//200*abs(value=sin(angle=(state_time/30)%180));
+      head.motion_type = look_at_world_point;
+      //head.control_mode = search_for_ball;
       search_ball.search_direction = -1;
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = -90; //deg
+      motion.walk_speed.rot = -20; //deg
       motion.walk.coordinate = hip;
     }
   }

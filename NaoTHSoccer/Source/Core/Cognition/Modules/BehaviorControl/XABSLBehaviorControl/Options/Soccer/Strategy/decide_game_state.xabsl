@@ -22,8 +22,9 @@ option decide_game_state
     {
       game.current_mode = init;
       motion.type = init;
+      arm.control_mode = normal;
       head.control_mode = stay_as_forced;
-      situationStatusOwnHalf = (game.msecsRemaining >= 600000);
+      situationStatusOwnHalf = true;
       last_state_was_penalized = false;
     }
   }
@@ -33,9 +34,12 @@ option decide_game_state
     {
       game.current_mode = ready;
       motion.type = stand;
+      arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      treat_lifted();
       fall_down_and_stand_up();
       last_state_was_penalized = false;
+      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
     }
   }
   
@@ -44,7 +48,10 @@ option decide_game_state
     {
       game.current_mode = set;
       motion.type = stand;
+      arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      treat_lifted();
+      situationStatusOwnHalf = true;
       last_state_was_penalized = false;
     }
   }
@@ -55,7 +62,9 @@ option decide_game_state
     {
       game.current_mode = playing;
       motion.type = stand;
+      arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      treat_lifted();
       fall_down_and_stand_up();
       //achtung: don't set false
       //last_state_was_penalized = false;
@@ -67,6 +76,7 @@ option decide_game_state
     {
       game.current_mode = penalized;
       motion.type = stand;
+      arm.control_mode = normal;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
       situationStatusOwnHalf = true;
       last_state_was_penalized = true;
@@ -78,6 +88,7 @@ option decide_game_state
     {
       game.current_mode = finished;
       motion.type = stand;
+      arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       last_state_was_penalized = false;
     }
@@ -88,6 +99,7 @@ option decide_game_state
     {
       game.current_mode = unknown;
       motion.type = stand;
+      arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       last_state_was_penalized = false;
     }

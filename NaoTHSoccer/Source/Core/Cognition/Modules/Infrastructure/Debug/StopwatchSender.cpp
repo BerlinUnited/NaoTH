@@ -41,23 +41,19 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
 {
   if ("stopwatch" == command)
   {
-    //g_debug("sending stopwatches");
-    const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
-    
-    naothmessages::Stopwatches all;
+    static naothmessages::Stopwatches all;
+    all.Clear();
     //all.mutable_stopwatches()->Reserve(stopwatches.size());
 
-    // collect all values
+    const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
     StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
+
     for (; it != stopwatches.end(); ++it)
     {
-      const std::string& name = it->first;
-      const Stopwatch& item = it->second;
-
       naothmessages::StopwatchItem* s = all.add_stopwatches();
-      s->set_name(name);
-      s->set_time(item.lastValue);
-    }//end for
+      s->set_name(it->first);
+      s->set_time(it->second.lastValue);
+    }
     
     google::protobuf::io::OstreamOutputStream buf(&outstream);
     all.SerializeToZeroCopyStream(&buf);

@@ -1,74 +1,63 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.ExtendedFileChooser;
+import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.dialogs.Tools.PNGImageFileFilter;
 import de.naoth.rc.dialogs.drawings.Canvas;
+import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnImage;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
 import de.naoth.rc.manager.DebugDrawingManager;
-import de.naoth.rc.manager.ImageManager;
+import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
-import de.naoth.rc.manager.SecondaryImageManager;
-import javax.swing.JPanel;
+import de.naoth.rc.manager.ImageManagerTop;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author  thomas
+ * @author  Thomas
+ * @author  Heinrich
  */
-@PluginImplementation
 public class ImageViewer extends AbstractDialog
 {
+    
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<ImageViewer> {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static ImageManagerBottom imageManagerBottom;
+    @InjectPlugin
+    public static ImageManagerTop imageManagerTop;
+    @InjectPlugin
+    public static DebugDrawingManager debugDrawingManager;
+  }//end Plugin
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public ImageManager imageManager;
-  @InjectPlugin
-  public SecondaryImageManager secondaryImageManager;
-  @InjectPlugin
-  public DebugDrawingManager debugDrawingManager;
-  //private ImagePanel imageCanvas;
   private long timestampOfTheLastImage;
-
+  private Drawable fadeOutBox = null;
+  
   // listeners
-  ImageListener imageListener;
-  SecondaryImageListener secondaryListener;
+  ImageListenerBottom imageListenerBottom;
+  ImageListenerTop imageListenerTop;
   DrawingsListener drawingsListener;
 
-  /** Creates new form ImageViewer */
   public ImageViewer()
   {
     initComponents();
     
-    imageCanvas.setVisible(false);
-    secondaryImageCanvas.setVisible(false);
-  }
-
-  @Init
-  @Override
-  public void init()
-  {
-    //this.imagePanel.add(imageCanvas);
-
+    this.imageCanvasBottom.setVisible(false);
+    this.imageCanvasTop.setVisible(false);
+    
     this.timestampOfTheLastImage = 0;
-
     this.drawingsListener = new DrawingsListener();
-    this.imageListener = new ImageListener();
-    this.secondaryListener = new SecondaryImageListener();
-  }//end init
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
-  }//end getPanel
+    this.imageListenerBottom = new ImageListenerBottom();
+    this.imageListenerTop = new ImageListenerTop();
+  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -79,14 +68,15 @@ public class ImageViewer extends AbstractDialog
     private void initComponents() {
 
         imagePanel = new javax.swing.JPanel();
-        secondaryImageCanvas = new de.naoth.rc.dialogs.panels.ImagePanel();
-        imageCanvas = new de.naoth.rc.dialogs.panels.ImagePanel();
+        imageCanvasTop = new de.naoth.rc.dialogs.panels.ImagePanel();
+        imageCanvasBottom = new de.naoth.rc.dialogs.panels.ImagePanel();
         jToolBar1 = new javax.swing.JToolBar();
-        btReceiveImages = new javax.swing.JToggleButton();
-        btReceiveSecondary = new javax.swing.JToggleButton();
+        btReceiveImagesTop = new javax.swing.JToggleButton();
+        btReceiveImagesBottom = new javax.swing.JToggleButton();
         btReceiveDrawings = new javax.swing.JToggleButton();
         cbStretch = new javax.swing.JCheckBox();
         cbPreserveAspectRatio = new javax.swing.JCheckBox();
+        cbFadeOut = new javax.swing.JCheckBox();
         jLabelFPS = new javax.swing.JLabel();
         jLabelResolution = new javax.swing.JLabel();
 
@@ -95,61 +85,61 @@ public class ImageViewer extends AbstractDialog
         imagePanel.setPreferredSize(new java.awt.Dimension(320, 240));
         imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.PAGE_AXIS));
 
-        secondaryImageCanvas.setBackground(java.awt.Color.gray);
-        secondaryImageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        secondaryImageCanvas.setOpaque(false);
+        imageCanvasTop.setBackground(java.awt.Color.gray);
+        imageCanvasTop.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        imageCanvasTop.setOpaque(false);
 
-        javax.swing.GroupLayout secondaryImageCanvasLayout = new javax.swing.GroupLayout(secondaryImageCanvas);
-        secondaryImageCanvas.setLayout(secondaryImageCanvasLayout);
-        secondaryImageCanvasLayout.setHorizontalGroup(
-            secondaryImageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout imageCanvasTopLayout = new javax.swing.GroupLayout(imageCanvasTop);
+        imageCanvasTop.setLayout(imageCanvasTopLayout);
+        imageCanvasTopLayout.setHorizontalGroup(
+            imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 534, Short.MAX_VALUE)
         );
-        secondaryImageCanvasLayout.setVerticalGroup(
-            secondaryImageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        imageCanvasTopLayout.setVerticalGroup(
+            imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 114, Short.MAX_VALUE)
         );
 
-        imagePanel.add(secondaryImageCanvas);
+        imagePanel.add(imageCanvasTop);
 
-        imageCanvas.setBackground(java.awt.Color.gray);
-        imageCanvas.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        imageCanvas.setOpaque(false);
+        imageCanvasBottom.setBackground(java.awt.Color.gray);
+        imageCanvasBottom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        imageCanvasBottom.setOpaque(false);
 
-        javax.swing.GroupLayout imageCanvasLayout = new javax.swing.GroupLayout(imageCanvas);
-        imageCanvas.setLayout(imageCanvasLayout);
-        imageCanvasLayout.setHorizontalGroup(
-            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout imageCanvasBottomLayout = new javax.swing.GroupLayout(imageCanvasBottom);
+        imageCanvasBottom.setLayout(imageCanvasBottomLayout);
+        imageCanvasBottomLayout.setHorizontalGroup(
+            imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 534, Short.MAX_VALUE)
         );
-        imageCanvasLayout.setVerticalGroup(
-            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        imageCanvasBottomLayout.setVerticalGroup(
+            imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 114, Short.MAX_VALUE)
         );
 
-        imagePanel.add(imageCanvas);
+        imagePanel.add(imageCanvasBottom);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        btReceiveImages.setText("Receive Bottom");
-        btReceiveImages.addActionListener(new java.awt.event.ActionListener() {
+        btReceiveImagesTop.setText("Receive Bottom");
+        btReceiveImagesTop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReceiveImagesActionPerformed(evt);
+                btReceiveImagesTopActionPerformed(evt);
             }
         });
-        jToolBar1.add(btReceiveImages);
+        jToolBar1.add(btReceiveImagesTop);
 
-        btReceiveSecondary.setText("Receive Top");
-        btReceiveSecondary.setFocusable(false);
-        btReceiveSecondary.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btReceiveSecondary.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btReceiveSecondary.addActionListener(new java.awt.event.ActionListener() {
+        btReceiveImagesBottom.setText("Receive Top");
+        btReceiveImagesBottom.setFocusable(false);
+        btReceiveImagesBottom.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btReceiveImagesBottom.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btReceiveImagesBottom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReceiveSecondaryActionPerformed(evt);
+                btReceiveImagesBottomActionPerformed(evt);
             }
         });
-        jToolBar1.add(btReceiveSecondary);
+        jToolBar1.add(btReceiveImagesBottom);
 
         btReceiveDrawings.setText("Receive Drawings");
         btReceiveDrawings.setFocusable(false);
@@ -186,6 +176,16 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(cbPreserveAspectRatio);
 
+        cbFadeOut.setText("Fade Out");
+        cbFadeOut.setToolTipText("Fades out the image so the drawings can be seen better.");
+        cbFadeOut.setFocusable(false);
+        cbFadeOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbFadeOutActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbFadeOut);
+
         jLabelFPS.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
         jLabelFPS.setText("FPS");
 
@@ -220,83 +220,91 @@ public class ImageViewer extends AbstractDialog
                     .addComponent(jLabelResolution)))
         );
     }// </editor-fold>//GEN-END:initComponents
-  private void btReceiveImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesActionPerformed
+  private void btReceiveImagesTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesTopActionPerformed
 
-    if (btReceiveImages.isSelected())
+    if (btReceiveImagesTop.isSelected())
     {
-      imageCanvas.setVisible(true);
-      imageManager.addListener(this.imageListener);
+      this.imageCanvasBottom.setVisible(true);
+      Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
     }
     else
     {
-      imageCanvas.setVisible(false);
-      imageManager.removeListener(this.imageListener);
+      this.imageCanvasBottom.setVisible(false);
+      Plugin.imageManagerBottom.removeListener(this.imageListenerBottom);
     }
 
-  }//GEN-LAST:event_btReceiveImagesActionPerformed
+  }//GEN-LAST:event_btReceiveImagesTopActionPerformed
 
   private void cbPreserveAspectRatioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPreserveAspectRatioActionPerformed
-    this.imageCanvas.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
+    this.imageCanvasBottom.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
+    this.imageCanvasTop.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
   }//GEN-LAST:event_cbPreserveAspectRatioActionPerformed
 
   private void cbStretchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStretchActionPerformed
-    this.imageCanvas.setStretchImage(this.cbStretch.isSelected());
+    this.imageCanvasBottom.setStretchImage(this.cbStretch.isSelected());
+    this.imageCanvasTop.setStretchImage(this.cbStretch.isSelected());
   }//GEN-LAST:event_cbStretchActionPerformed
 
   private void btReceiveDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDrawingsActionPerformed
-    if (btReceiveDrawings.isSelected())
-    {
-      if (parent.checkConnected())
-      {
-        debugDrawingManager.addListener(this.drawingsListener);
+      if (this.btReceiveDrawings.isSelected()) {
+          if (Plugin.parent.checkConnected()) {
+              Plugin.debugDrawingManager.addListener(this.drawingsListener);
+              this.imageCanvasBottom.setShowDrawings(true);
+              this.imageCanvasTop.setShowDrawings(true);
+          } else {
+              this.btReceiveImagesTop.setSelected(false);
+          }
+      } else {
+          Plugin.debugDrawingManager.removeListener(this.drawingsListener);
+          this.imageCanvasBottom.setShowDrawings(false);
+          this.imageCanvasTop.setShowDrawings(false);
       }
-      else
-      {
-        btReceiveImages.setSelected(false);
-      }
-    }
-    else
-    {
-      this.debugDrawingManager.removeListener(this.drawingsListener);
-      this.imageCanvas.getDrawingList().clear();
-    }
   }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
-  private void btReceiveSecondaryActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveSecondaryActionPerformed
-  {//GEN-HEADEREND:event_btReceiveSecondaryActionPerformed
+  private void btReceiveImagesBottomActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveImagesBottomActionPerformed
+  {//GEN-HEADEREND:event_btReceiveImagesBottomActionPerformed
     
-    if (btReceiveSecondary.isSelected())
+    if (this.btReceiveImagesBottom.isSelected())
     {
-      secondaryImageCanvas.setVisible(true);
-      secondaryImageManager.addListener(this.secondaryListener);
+      this.imageCanvasTop.setVisible(true);
+      Plugin.imageManagerTop.addListener(this.imageListenerTop);
     }
     else
     {
-      secondaryImageCanvas.setVisible(false);
-      secondaryImageManager.removeListener(this.secondaryListener);
+      this.imageCanvasTop.setVisible(false);
+      Plugin.imageManagerTop.removeListener(this.imageListenerTop);
     }
     
-  }//GEN-LAST:event_btReceiveSecondaryActionPerformed
+  }//GEN-LAST:event_btReceiveImagesBottomActionPerformed
+
+    private void cbFadeOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFadeOutActionPerformed
+        if(this.cbFadeOut.isSelected()) {
+            this.fadeOutBox = new ImageOverlayDrawing(640, 480, new Color(255,255,255,128));
+        } else {
+            this.fadeOutBox = null;
+        }
+    }//GEN-LAST:event_cbFadeOutActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btReceiveDrawings;
-    private javax.swing.JToggleButton btReceiveImages;
-    private javax.swing.JToggleButton btReceiveSecondary;
+    private javax.swing.JToggleButton btReceiveImagesBottom;
+    private javax.swing.JToggleButton btReceiveImagesTop;
+    private javax.swing.JCheckBox cbFadeOut;
     private javax.swing.JCheckBox cbPreserveAspectRatio;
     private javax.swing.JCheckBox cbStretch;
-    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvas;
+    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvasBottom;
+    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvasTop;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JLabel jLabelFPS;
     private javax.swing.JLabel jLabelResolution;
     private javax.swing.JToolBar jToolBar1;
-    private de.naoth.rc.dialogs.panels.ImagePanel secondaryImageCanvas;
     // End of variables declaration//GEN-END:variables
 
 
   private void updateResolution(int x, int y)
   {
     this.jLabelResolution.setText(x + "x" + y);
-  }//end updateResolution
+  }
 
   private void updateFPS()
   {
@@ -305,97 +313,119 @@ public class ImageViewer extends AbstractDialog
     String info = String.format("%4.1f fps", fps);
     this.jLabelFPS.setText(info);
     this.timestampOfTheLastImage = currentTime;
-  }//end updateFPS
+  }
 
   class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
-
-    @Override
-    public void errorOccured(String cause)
-    {
-      //btReceiveDrawings.setSelected(false);
-      debugDrawingManager.removeListener(this);
-    }//end errorOccured
-
     @Override
     public void newObjectReceived(DrawingsContainer objectList)
     {
       if (objectList != null)
       {
-        imageCanvas.getDrawingList().clear();
-        secondaryImageCanvas.getDrawingList().clear();
+        ImageViewer.this.imageCanvasBottom.getDrawingList().clear();
+        ImageViewer.this.imageCanvasTop.getDrawingList().clear();
         
+        // Deprecated
         DrawingCollection drawingCollection = objectList.get(DrawingOnImage.class);
         if (drawingCollection != null) {
-          imageCanvas.getDrawingList().add(drawingCollection);
+          ImageViewer.this.imageCanvasBottom.getDrawingList().add(drawingCollection);
+        }
+        
+        if(ImageViewer.this.fadeOutBox != null) {
+            ImageViewer.this.imageCanvasTop.getDrawingList().add(fadeOutBox);
+            ImageViewer.this.imageCanvasBottom.getDrawingList().add(fadeOutBox);
         }
         
         Canvas canvasTop = objectList.get("ImageTop");
         if (canvasTop != null) {
-          ImageViewer.this.secondaryImageCanvas.getDrawingList().add(canvasTop);
+          ImageViewer.this.imageCanvasTop.getDrawingList().add(canvasTop);
         }
         
         Canvas canvasBottom = objectList.get("ImageBottom");
         if (canvasTop != null) {
-          ImageViewer.this.imageCanvas.getDrawingList().add(canvasBottom);
+          ImageViewer.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
         }
         
         repaint();
-
-      }//end if
+      }
     }//end newObjectReceived
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+      ImageViewer.this.btReceiveDrawings.setSelected(false);
+      ImageViewer.Plugin.debugDrawingManager.removeListener(this);
+    }
   }//end class DrawingsListener
 
-  private class ImageListener implements ObjectListener<JanusImage>
+  private class ImageListenerBottom implements ObjectListener<JanusImage>
   {
-
     @Override
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      
-      imageCanvas.setImage(object.getRgb());
-      imageCanvas.repaint();
+      ImageViewer.this.imageCanvasBottom.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasBottom.repaint();
 
       updateResolution(object.getRgb().getWidth(), object.getRgb().getHeight());
       updateFPS();
-    }//end newObjectReceived
+    }
 
     @Override
     public void errorOccured(String cause)
     {
-      btReceiveImages.setSelected(false);
-      imageManager.removeListener(this);
-      imageCanvas.setVisible(false);
-    }//end errorOccured
+      ImageViewer.this.btReceiveImagesTop.setSelected(false);
+      ImageViewer.this.imageCanvasBottom.setVisible(false);
+      ImageViewer.Plugin.imageManagerBottom.removeListener(this);
+    }
   }//end ImageListener
   
-  private class SecondaryImageListener implements ObjectListener<JanusImage>
+  private class ImageListenerTop implements ObjectListener<JanusImage>
   {
-
     @Override
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      
-      secondaryImageCanvas.setImage(object.getRgb());
-      secondaryImageCanvas.repaint();
-    }//end newObjectReceived
+      ImageViewer.this.imageCanvasTop.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasTop.repaint();
+    }
 
     @Override
     public void errorOccured(String cause)
     {
-      btReceiveSecondary.setSelected(false);
-      secondaryImageManager.removeListener(this);
-      secondaryImageCanvas.setVisible(false);
-    }//end errorOccured
-  }//end ImageListener
+      ImageViewer.this.btReceiveImagesBottom.setSelected(false);
+      ImageViewer.this.imageCanvasTop.setVisible(false);
+      ImageViewer.Plugin.imageManagerTop.removeListener(this);
+    }
+  }//end SecondaryImageListener
+  
+  class ImageOverlayDrawing implements Drawable
+  {
+    private final Color color;
+    private final int width;
+    private final int height;
+    
+    ImageOverlayDrawing(int width, int height, Color color) {
+        this.width = width;
+        this.height = height;
+        this.color = color;
+    }
+            
+    @Override
+    public void draw(Graphics2D g2d) {
+        g2d.setColor(color);
+        g2d.fillRect(0, 0, width, height);
+    }
+  }
 
   @Override
   public void dispose()
   {
-    imageManager.removeListener(this.imageListener);
-    debugDrawingManager.removeListener(this.drawingsListener);
-  }//end dispose
+    Plugin.imageManagerBottom.removeListener(this.imageListenerBottom);
+    Plugin.debugDrawingManager.removeListener(this.drawingsListener);
+    this.btReceiveImagesTop.setSelected(false);
+    this.btReceiveImagesBottom.setSelected(false);
+    this.btReceiveDrawings.setSelected(false);
+  }
 }//end class ImageViewer
 

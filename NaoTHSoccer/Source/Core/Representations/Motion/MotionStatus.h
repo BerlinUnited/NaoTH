@@ -53,7 +53,8 @@ public:
   time(0),
   lastMotion(motion::num_of_motions),
   currentMotion(motion::num_of_motions),
-  currentMotionState(motion::stopped)
+  currentMotionState(motion::stopped),
+  headMotion(HeadMotionRequest::numOfHeadMotion)
   {
   }
 

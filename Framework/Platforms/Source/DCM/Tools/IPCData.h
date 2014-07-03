@@ -54,20 +54,6 @@ public:
   void get(UltraSoundReceiveData& data) const;
   void get(BatteryData& data) const;
 };
-  
-/**
-* 
-*/
-template<class T>
-class Accessor
-{
-public:
-  inline void set(const T& other) { data = other; }
-  inline void get(T& other) { other = data; }
-  inline const T& get() const { return data; }
-private:
-  T data;
-};
 
 }// end namespace naoth
 

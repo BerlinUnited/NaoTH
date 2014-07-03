@@ -17,7 +17,7 @@ option positioning_for_own_kickoff
           stay;
     }
     action {
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       motion.type = stand;
     }
   }
@@ -35,9 +35,27 @@ option positioning_for_own_kickoff
      //x=field.xPosOwnGroundline+Z? da sonst genau auf der Linie steht
       //und das eher so semi cool ist, aber dann sieht er vielleicht nicht ein ball
       //der genau auf der Linie ist
-      go_to_point_with_USOA(x=field.xPosOwnGroundline, y=0, rot=0);
-      head.control_mode = search_for_goal;
+      go_to_point_with_USOA(x=field.xPosOwnGroundline  + 200, y=0, rot=0);
+      //head.control_mode = search_for_goal;
+      head.control_mode = search_for_goal_opp;
       motion.walk.style = stable;
+    }
+  }
+
+  state goto_own_kickoff_position_supporter2
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      
+//go_to_point_with_USOA(x=-2500, y=-900, rot=0);
+      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
+      head.control_mode = look_around;
     }
   }
   
@@ -54,39 +72,7 @@ option positioning_for_own_kickoff
       //go_to_point_with_USOA(x=-500, y=300, rot=-5);
       //300 is the assumed margin of error, should prevent robot from stepping into circle
       go_to_point_with_USOA(x=-300, y=0, rot=0);
-      head.control_mode = search_for_goal;
-    }
-  }
-
-  state goto_own_kickoff_position_supporter
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-2500, y=900, rot=0);
-       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank, rot=10);
-      head.control_mode = search_for_goal;
-    }
-  }
-
-  state goto_own_kickoff_position_supporter2
-  {
-    decision {
-      if(action_done)
-        goto arrived;
-      else
-        stay;
-    }
-    action
-    {
-      //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
     }
   }
 
@@ -102,14 +88,30 @@ option positioning_for_own_kickoff
     {
       //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
       go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=00);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
 
+    }
+  }
+
+  state goto_own_kickoff_position_supporter
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_USOA(x=-2500, y=900, rot=0);
+       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank, rot=10);
+      head.control_mode = look_around;
     }
   }
   
   target state arrived{
     action {
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       motion.type = stand;
     }
   }

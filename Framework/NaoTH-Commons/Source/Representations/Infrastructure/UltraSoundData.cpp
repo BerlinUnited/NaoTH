@@ -7,8 +7,8 @@
 using namespace naoth;
 
 // todo: change this to mm?
-const double UltraSoundReceiveData::MIN_DIST = 0.25;
-const double UltraSoundReceiveData::INVALIDE = 2.55;
+const double UltraSoundReceiveData::MIN_DIST = 0.25 * 1000.0;
+const double UltraSoundReceiveData::INVALIDE = 2.55 * 1000.0;
 
 UltraSoundData::UltraSoundData()
 {
@@ -67,7 +67,7 @@ void Serializer<UltraSoundReceiveData>::deserialize(std::istream& stream, UltraS
   {
     representation.dataLeft[i] = message.dataleft(i);
     representation.dataRight[i] = message.dataright(i);
-  }//end for
+  }
 }//end deserialize
 
 
@@ -81,32 +81,21 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
   {
     message.add_dataleft(representation.dataLeft[i]);
     message.add_dataright(representation.dataRight[i]);
-  }//end for
+  }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }//end serialize
 
 
-
-
-
 UltraSoundSendData::UltraSoundSendData()
 {
-  mode = 1;  
-  ultraSoundTimeStep = 10;
+  mode = 1;
 }
 
 void UltraSoundSendData::setMode(unsigned int _mode)
 {
   mode = _mode;
-
-  // TODO: check, do we need it?
-  if((_mode & 64) == 1) {
-    ultraSoundTimeStep = 100;
-  } else {
-    ultraSoundTimeStep = 10;
-  }
 }
 
 
@@ -115,8 +104,7 @@ void UltraSoundSendData::print(std::ostream& stream) const
   stream 
     << "UltraSoundSendData" << std::endl
     << "---------------------" << std::endl
-    << "mode = " << mode << std::endl
-    << "ultraSoundTimeStep = " << ultraSoundTimeStep << std::endl;
+    << "mode = " << mode << std::endl;
 }
 
 UltraSoundSendData::~UltraSoundSendData()

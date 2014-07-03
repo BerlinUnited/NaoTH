@@ -54,6 +54,8 @@ class ArmMotionRequest;
 class MotionRequest;
 class LinePercept;
 class ScanLineEndPoint;
+class Edgel;
+class EdgelPair;
 class ScanLineEdgelPercept;
 class StepControlStatus;
 class MotionStatus;
@@ -66,6 +68,26 @@ class BUUserTeamMessage;
 class Opponent;
 class CameraMatrixCalibration;
 
+enum TeamColor {
+  blueTeam = 0,
+  redTeam = 1,
+  invalidTeam = 2
+};
+bool TeamColor_IsValid(int value);
+const TeamColor TeamColor_MIN = blueTeam;
+const TeamColor TeamColor_MAX = invalidTeam;
+const int TeamColor_ARRAYSIZE = TeamColor_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* TeamColor_descriptor();
+inline const ::std::string& TeamColor_Name(TeamColor value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    TeamColor_descriptor(), value);
+}
+inline bool TeamColor_Parse(
+    const ::std::string& name, TeamColor* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<TeamColor>(
+    TeamColor_descriptor(), name, value);
+}
 // ===================================================================
 
 class CameraMatrix : public ::google::protobuf::Message {
@@ -700,6 +722,13 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline double speeddirection() const;
   inline void set_speeddirection(double value);
   
+  // required double scale = 6;
+  inline bool has_scale() const;
+  inline void clear_scale();
+  static const int kScaleFieldNumber = 6;
+  inline double scale() const;
+  inline void set_scale(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
  private:
   inline void set_has_stepid();
@@ -712,6 +741,8 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline void clear_has_time();
   inline void set_has_speeddirection();
   inline void clear_has_speeddirection();
+  inline void set_has_scale();
+  inline void clear_has_scale();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -719,10 +750,11 @@ class StepControlRequest : public ::google::protobuf::Message {
   bool moveleftfoot_;
   ::naothmessages::Pose2D* target_;
   double speeddirection_;
+  double scale_;
   ::google::protobuf::uint32 time_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1663,6 +1695,202 @@ class ScanLineEndPoint : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class Edgel : public ::google::protobuf::Message {
+ public:
+  Edgel();
+  virtual ~Edgel();
+  
+  Edgel(const Edgel& from);
+  
+  inline Edgel& operator=(const Edgel& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Edgel& default_instance();
+  
+  void Swap(Edgel* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Edgel* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Edgel& from);
+  void MergeFrom(const Edgel& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.IntVector2 point = 1;
+  inline bool has_point() const;
+  inline void clear_point();
+  static const int kPointFieldNumber = 1;
+  inline const ::naothmessages::IntVector2& point() const;
+  inline ::naothmessages::IntVector2* mutable_point();
+  inline ::naothmessages::IntVector2* release_point();
+  
+  // required .naothmessages.DoubleVector2 direction = 2;
+  inline bool has_direction() const;
+  inline void clear_direction();
+  static const int kDirectionFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& direction() const;
+  inline ::naothmessages::DoubleVector2* mutable_direction();
+  inline ::naothmessages::DoubleVector2* release_direction();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Edgel)
+ private:
+  inline void set_has_point();
+  inline void clear_has_point();
+  inline void set_has_direction();
+  inline void clear_has_direction();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::IntVector2* point_;
+  ::naothmessages::DoubleVector2* direction_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static Edgel* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class EdgelPair : public ::google::protobuf::Message {
+ public:
+  EdgelPair();
+  virtual ~EdgelPair();
+  
+  EdgelPair(const EdgelPair& from);
+  
+  inline EdgelPair& operator=(const EdgelPair& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const EdgelPair& default_instance();
+  
+  void Swap(EdgelPair* other);
+  
+  // implements Message ----------------------------------------------
+  
+  EdgelPair* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const EdgelPair& from);
+  void MergeFrom(const EdgelPair& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required int32 begin = 1;
+  inline bool has_begin() const;
+  inline void clear_begin();
+  static const int kBeginFieldNumber = 1;
+  inline ::google::protobuf::int32 begin() const;
+  inline void set_begin(::google::protobuf::int32 value);
+  
+  // required int32 end = 2;
+  inline bool has_end() const;
+  inline void clear_end();
+  static const int kEndFieldNumber = 2;
+  inline ::google::protobuf::int32 end() const;
+  inline void set_end(::google::protobuf::int32 value);
+  
+  // required int32 id = 3;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 3;
+  inline ::google::protobuf::int32 id() const;
+  inline void set_id(::google::protobuf::int32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.EdgelPair)
+ private:
+  inline void set_has_begin();
+  inline void clear_has_begin();
+  inline void set_has_end();
+  inline void clear_has_end();
+  inline void set_has_id();
+  inline void clear_has_id();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::int32 begin_;
+  ::google::protobuf::int32 end_;
+  ::google::protobuf::int32 id_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static EdgelPair* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class ScanLineEdgelPercept : public ::google::protobuf::Message {
  public:
   ScanLineEdgelPercept();
@@ -1717,6 +1945,30 @@ class ScanLineEdgelPercept : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
+  // repeated .naothmessages.Edgel edgels = 1;
+  inline int edgels_size() const;
+  inline void clear_edgels();
+  static const int kEdgelsFieldNumber = 1;
+  inline const ::naothmessages::Edgel& edgels(int index) const;
+  inline ::naothmessages::Edgel* mutable_edgels(int index);
+  inline ::naothmessages::Edgel* add_edgels();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >&
+      edgels() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >*
+      mutable_edgels();
+  
+  // repeated .naothmessages.EdgelPair pairs = 3;
+  inline int pairs_size() const;
+  inline void clear_pairs();
+  static const int kPairsFieldNumber = 3;
+  inline const ::naothmessages::EdgelPair& pairs(int index) const;
+  inline ::naothmessages::EdgelPair* mutable_pairs(int index);
+  inline ::naothmessages::EdgelPair* add_pairs();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >&
+      pairs() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >*
+      mutable_pairs();
+  
   // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
   inline int endpoints_size() const;
   inline void clear_endpoints();
@@ -1734,10 +1986,12 @@ class ScanLineEdgelPercept : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel > edgels_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair > pairs_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint > endpoints_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -2433,12 +2687,12 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 playernum() const;
   inline void set_playernum(::google::protobuf::uint32 value);
   
-  // optional uint32 team = 2 [default = 0];
-  inline bool has_team() const;
-  inline void clear_team();
-  static const int kTeamFieldNumber = 2;
-  inline ::google::protobuf::uint32 team() const;
-  inline void set_team(::google::protobuf::uint32 value);
+  // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+  inline bool has_teamcolor() const;
+  inline void clear_teamcolor();
+  static const int kTeamColorFieldNumber = 11;
+  inline naothmessages::TeamColor teamcolor() const;
+  inline void set_teamcolor(naothmessages::TeamColor value);
   
   // optional .naothmessages.Pose2D pose = 3;
   inline bool has_pose() const;
@@ -2471,12 +2725,12 @@ class TeamMessage : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_ballvelocity();
   inline ::naothmessages::DoubleVector2* release_ballvelocity();
   
-  // optional int32 fallen = 7 [default = -1];
+  // optional bool fallen = 10 [default = false];
   inline bool has_fallen() const;
   inline void clear_fallen();
-  static const int kFallenFieldNumber = 7;
-  inline ::google::protobuf::int32 fallen() const;
-  inline void set_fallen(::google::protobuf::int32 value);
+  static const int kFallenFieldNumber = 10;
+  inline bool fallen() const;
+  inline void set_fallen(bool value);
   
   // optional .naothmessages.BUUserTeamMessage user = 8;
   inline bool has_user() const;
@@ -2498,8 +2752,8 @@ class TeamMessage : public ::google::protobuf::Message {
  private:
   inline void set_has_playernum();
   inline void clear_has_playernum();
-  inline void set_has_team();
-  inline void clear_has_team();
+  inline void set_has_teamcolor();
+  inline void clear_has_teamcolor();
   inline void set_has_pose();
   inline void clear_has_pose();
   inline void set_has_ballage();
@@ -2518,11 +2772,11 @@ class TeamMessage : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 playernum_;
-  ::google::protobuf::uint32 team_;
+  int teamcolor_;
   ::naothmessages::Pose2D* pose_;
   ::naothmessages::DoubleVector2* ballposition_;
   ::google::protobuf::int32 ballage_;
-  ::google::protobuf::int32 fallen_;
+  bool fallen_;
   ::naothmessages::DoubleVector2* ballvelocity_;
   ::naothmessages::BUUserTeamMessage* user_;
   ::naothmessages::FrameInfo* frameinfo_;
@@ -2637,6 +2891,34 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent >*
       mutable_opponents();
   
+  // optional uint32 teamNumber = 6 [default = 0];
+  inline bool has_teamnumber() const;
+  inline void clear_teamnumber();
+  static const int kTeamNumberFieldNumber = 6;
+  inline ::google::protobuf::uint32 teamnumber() const;
+  inline void set_teamnumber(::google::protobuf::uint32 value);
+  
+  // optional float batteryCharge = 7 [default = 1];
+  inline bool has_batterycharge() const;
+  inline void clear_batterycharge();
+  static const int kBatteryChargeFieldNumber = 7;
+  inline float batterycharge() const;
+  inline void set_batterycharge(float value);
+  
+  // optional float temperature = 8 [default = 0];
+  inline bool has_temperature() const;
+  inline void clear_temperature();
+  static const int kTemperatureFieldNumber = 8;
+  inline float temperature() const;
+  inline void set_temperature(float value);
+  
+  // optional uint64 timestamp = 9 [default = 0];
+  inline bool has_timestamp() const;
+  inline void clear_timestamp();
+  static const int kTimestampFieldNumber = 9;
+  inline ::google::protobuf::uint64 timestamp() const;
+  inline void set_timestamp(::google::protobuf::uint64 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BUUserTeamMessage)
  private:
   inline void set_has_bodyid();
@@ -2647,6 +2929,14 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   inline void clear_has_wasstriker();
   inline void set_has_ispenalized();
   inline void clear_has_ispenalized();
+  inline void set_has_teamnumber();
+  inline void clear_has_teamnumber();
+  inline void set_has_batterycharge();
+  inline void clear_has_batterycharge();
+  inline void set_has_temperature();
+  inline void clear_has_temperature();
+  inline void set_has_timestamp();
+  inline void clear_has_timestamp();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -2656,9 +2946,13 @@ class BUUserTeamMessage : public ::google::protobuf::Message {
   bool wasstriker_;
   bool ispenalized_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Opponent > opponents_;
+  ::google::protobuf::uint32 teamnumber_;
+  float batterycharge_;
+  ::google::protobuf::uint64 timestamp_;
+  float temperature_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3593,6 +3887,28 @@ inline double StepControlRequest::speeddirection() const {
 inline void StepControlRequest::set_speeddirection(double value) {
   set_has_speeddirection();
   speeddirection_ = value;
+}
+
+// required double scale = 6;
+inline bool StepControlRequest::has_scale() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void StepControlRequest::set_has_scale() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void StepControlRequest::clear_has_scale() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void StepControlRequest::clear_scale() {
+  scale_ = 0;
+  clear_has_scale();
+}
+inline double StepControlRequest::scale() const {
+  return scale_;
+}
+inline void StepControlRequest::set_scale(double value) {
+  set_has_scale();
+  scale_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -4652,7 +4968,189 @@ inline void ScanLineEndPoint::set_scanlineid(::google::protobuf::uint32 value) {
 
 // -------------------------------------------------------------------
 
+// Edgel
+
+// required .naothmessages.IntVector2 point = 1;
+inline bool Edgel::has_point() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Edgel::set_has_point() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Edgel::clear_has_point() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Edgel::clear_point() {
+  if (point_ != NULL) point_->::naothmessages::IntVector2::Clear();
+  clear_has_point();
+}
+inline const ::naothmessages::IntVector2& Edgel::point() const {
+  return point_ != NULL ? *point_ : *default_instance_->point_;
+}
+inline ::naothmessages::IntVector2* Edgel::mutable_point() {
+  set_has_point();
+  if (point_ == NULL) point_ = new ::naothmessages::IntVector2;
+  return point_;
+}
+inline ::naothmessages::IntVector2* Edgel::release_point() {
+  clear_has_point();
+  ::naothmessages::IntVector2* temp = point_;
+  point_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.DoubleVector2 direction = 2;
+inline bool Edgel::has_direction() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Edgel::set_has_direction() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Edgel::clear_has_direction() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Edgel::clear_direction() {
+  if (direction_ != NULL) direction_->::naothmessages::DoubleVector2::Clear();
+  clear_has_direction();
+}
+inline const ::naothmessages::DoubleVector2& Edgel::direction() const {
+  return direction_ != NULL ? *direction_ : *default_instance_->direction_;
+}
+inline ::naothmessages::DoubleVector2* Edgel::mutable_direction() {
+  set_has_direction();
+  if (direction_ == NULL) direction_ = new ::naothmessages::DoubleVector2;
+  return direction_;
+}
+inline ::naothmessages::DoubleVector2* Edgel::release_direction() {
+  clear_has_direction();
+  ::naothmessages::DoubleVector2* temp = direction_;
+  direction_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// EdgelPair
+
+// required int32 begin = 1;
+inline bool EdgelPair::has_begin() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void EdgelPair::set_has_begin() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void EdgelPair::clear_has_begin() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void EdgelPair::clear_begin() {
+  begin_ = 0;
+  clear_has_begin();
+}
+inline ::google::protobuf::int32 EdgelPair::begin() const {
+  return begin_;
+}
+inline void EdgelPair::set_begin(::google::protobuf::int32 value) {
+  set_has_begin();
+  begin_ = value;
+}
+
+// required int32 end = 2;
+inline bool EdgelPair::has_end() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void EdgelPair::set_has_end() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void EdgelPair::clear_has_end() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void EdgelPair::clear_end() {
+  end_ = 0;
+  clear_has_end();
+}
+inline ::google::protobuf::int32 EdgelPair::end() const {
+  return end_;
+}
+inline void EdgelPair::set_end(::google::protobuf::int32 value) {
+  set_has_end();
+  end_ = value;
+}
+
+// required int32 id = 3;
+inline bool EdgelPair::has_id() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void EdgelPair::set_has_id() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void EdgelPair::clear_has_id() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void EdgelPair::clear_id() {
+  id_ = 0;
+  clear_has_id();
+}
+inline ::google::protobuf::int32 EdgelPair::id() const {
+  return id_;
+}
+inline void EdgelPair::set_id(::google::protobuf::int32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // ScanLineEdgelPercept
+
+// repeated .naothmessages.Edgel edgels = 1;
+inline int ScanLineEdgelPercept::edgels_size() const {
+  return edgels_.size();
+}
+inline void ScanLineEdgelPercept::clear_edgels() {
+  edgels_.Clear();
+}
+inline const ::naothmessages::Edgel& ScanLineEdgelPercept::edgels(int index) const {
+  return edgels_.Get(index);
+}
+inline ::naothmessages::Edgel* ScanLineEdgelPercept::mutable_edgels(int index) {
+  return edgels_.Mutable(index);
+}
+inline ::naothmessages::Edgel* ScanLineEdgelPercept::add_edgels() {
+  return edgels_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >&
+ScanLineEdgelPercept::edgels() const {
+  return edgels_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Edgel >*
+ScanLineEdgelPercept::mutable_edgels() {
+  return &edgels_;
+}
+
+// repeated .naothmessages.EdgelPair pairs = 3;
+inline int ScanLineEdgelPercept::pairs_size() const {
+  return pairs_.size();
+}
+inline void ScanLineEdgelPercept::clear_pairs() {
+  pairs_.Clear();
+}
+inline const ::naothmessages::EdgelPair& ScanLineEdgelPercept::pairs(int index) const {
+  return pairs_.Get(index);
+}
+inline ::naothmessages::EdgelPair* ScanLineEdgelPercept::mutable_pairs(int index) {
+  return pairs_.Mutable(index);
+}
+inline ::naothmessages::EdgelPair* ScanLineEdgelPercept::add_pairs() {
+  return pairs_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >&
+ScanLineEdgelPercept::pairs() const {
+  return pairs_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::EdgelPair >*
+ScanLineEdgelPercept::mutable_pairs() {
+  return &pairs_;
+}
 
 // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
 inline int ScanLineEdgelPercept::endpoints_size() const {
@@ -5191,26 +5689,27 @@ inline void TeamMessage::set_playernum(::google::protobuf::uint32 value) {
   playernum_ = value;
 }
 
-// optional uint32 team = 2 [default = 0];
-inline bool TeamMessage::has_team() const {
+// optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+inline bool TeamMessage::has_teamcolor() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void TeamMessage::set_has_team() {
+inline void TeamMessage::set_has_teamcolor() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void TeamMessage::clear_has_team() {
+inline void TeamMessage::clear_has_teamcolor() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void TeamMessage::clear_team() {
-  team_ = 0u;
-  clear_has_team();
+inline void TeamMessage::clear_teamcolor() {
+  teamcolor_ = 0;
+  clear_has_teamcolor();
 }
-inline ::google::protobuf::uint32 TeamMessage::team() const {
-  return team_;
+inline naothmessages::TeamColor TeamMessage::teamcolor() const {
+  return static_cast< naothmessages::TeamColor >(teamcolor_);
 }
-inline void TeamMessage::set_team(::google::protobuf::uint32 value) {
-  set_has_team();
-  team_ = value;
+inline void TeamMessage::set_teamcolor(naothmessages::TeamColor value) {
+  GOOGLE_DCHECK(naothmessages::TeamColor_IsValid(value));
+  set_has_teamcolor();
+  teamcolor_ = value;
 }
 
 // optional .naothmessages.Pose2D pose = 3;
@@ -5322,7 +5821,7 @@ inline ::naothmessages::DoubleVector2* TeamMessage::release_ballvelocity() {
   return temp;
 }
 
-// optional int32 fallen = 7 [default = -1];
+// optional bool fallen = 10 [default = false];
 inline bool TeamMessage::has_fallen() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
@@ -5333,13 +5832,13 @@ inline void TeamMessage::clear_has_fallen() {
   _has_bits_[0] &= ~0x00000040u;
 }
 inline void TeamMessage::clear_fallen() {
-  fallen_ = -1;
+  fallen_ = false;
   clear_has_fallen();
 }
-inline ::google::protobuf::int32 TeamMessage::fallen() const {
+inline bool TeamMessage::fallen() const {
   return fallen_;
 }
-inline void TeamMessage::set_fallen(::google::protobuf::int32 value) {
+inline void TeamMessage::set_fallen(bool value) {
   set_has_fallen();
   fallen_ = value;
 }
@@ -5555,6 +6054,94 @@ BUUserTeamMessage::mutable_opponents() {
   return &opponents_;
 }
 
+// optional uint32 teamNumber = 6 [default = 0];
+inline bool BUUserTeamMessage::has_teamnumber() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void BUUserTeamMessage::set_has_teamnumber() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void BUUserTeamMessage::clear_has_teamnumber() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void BUUserTeamMessage::clear_teamnumber() {
+  teamnumber_ = 0u;
+  clear_has_teamnumber();
+}
+inline ::google::protobuf::uint32 BUUserTeamMessage::teamnumber() const {
+  return teamnumber_;
+}
+inline void BUUserTeamMessage::set_teamnumber(::google::protobuf::uint32 value) {
+  set_has_teamnumber();
+  teamnumber_ = value;
+}
+
+// optional float batteryCharge = 7 [default = 1];
+inline bool BUUserTeamMessage::has_batterycharge() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void BUUserTeamMessage::set_has_batterycharge() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void BUUserTeamMessage::clear_has_batterycharge() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void BUUserTeamMessage::clear_batterycharge() {
+  batterycharge_ = 1;
+  clear_has_batterycharge();
+}
+inline float BUUserTeamMessage::batterycharge() const {
+  return batterycharge_;
+}
+inline void BUUserTeamMessage::set_batterycharge(float value) {
+  set_has_batterycharge();
+  batterycharge_ = value;
+}
+
+// optional float temperature = 8 [default = 0];
+inline bool BUUserTeamMessage::has_temperature() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void BUUserTeamMessage::set_has_temperature() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void BUUserTeamMessage::clear_has_temperature() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void BUUserTeamMessage::clear_temperature() {
+  temperature_ = 0;
+  clear_has_temperature();
+}
+inline float BUUserTeamMessage::temperature() const {
+  return temperature_;
+}
+inline void BUUserTeamMessage::set_temperature(float value) {
+  set_has_temperature();
+  temperature_ = value;
+}
+
+// optional uint64 timestamp = 9 [default = 0];
+inline bool BUUserTeamMessage::has_timestamp() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void BUUserTeamMessage::set_has_timestamp() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void BUUserTeamMessage::clear_has_timestamp() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void BUUserTeamMessage::clear_timestamp() {
+  timestamp_ = GOOGLE_ULONGLONG(0);
+  clear_has_timestamp();
+}
+inline ::google::protobuf::uint64 BUUserTeamMessage::timestamp() const {
+  return timestamp_;
+}
+inline void BUUserTeamMessage::set_timestamp(::google::protobuf::uint64 value) {
+  set_has_timestamp();
+  timestamp_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // Opponent
@@ -5648,6 +6235,10 @@ CameraMatrixCalibration::mutable_correctionoffset() {
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< naothmessages::TeamColor>() {
+  return naothmessages::TeamColor_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

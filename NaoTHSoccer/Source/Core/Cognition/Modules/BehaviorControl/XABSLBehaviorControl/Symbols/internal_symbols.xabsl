@@ -36,8 +36,10 @@ namespace internal_symbols("Internal Symbols") {
     look_straight_ahead,
     search_for_ball,
     search_for_goal,
+    search_for_goal_opp,
     look_around,
-    look_at_ball_percept
+    look_at_ball_percept,
+    search_for_ball_and_look_around
   };
 
   enum head.control_mode internal head.control_mode;
@@ -50,6 +52,8 @@ namespace internal_symbols("Internal Symbols") {
   };
 
   enum arm.control_mode internal arm.control_mode;
+  // needed by the get up motion
+  enum arm.control_mode internal arm.control_mode_before_fall;
   
 
   bool internal body.ready_to_walk;
@@ -66,4 +70,6 @@ namespace internal_symbols("Internal Symbols") {
   /** remember attack direction for hysteresis */
   float internal attack.direction.used;
 
+  /** this is used by the situation_based_striker, don't use itanywhere else*/
+  bool internal situation_abortable;
 }

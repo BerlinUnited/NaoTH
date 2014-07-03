@@ -6,6 +6,9 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
+import de.naoth.rc.RobotControl;
+import de.naoth.rc.manager.ModuleStopwatchManager;
+import de.naoth.rc.dialogs.panels.SimpleProgressBar;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.StopwatchManager;
 import java.awt.Color;
@@ -13,11 +16,10 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JProgressBar;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -30,23 +32,23 @@ public class StopwatchViewer extends AbstractDialog
 {
 
   @InjectPlugin
+  public static RobotControl parent;
+  @InjectPlugin
   public StopwatchManager stopwatchManager;
+  @InjectPlugin
+  public ModuleStopwatchManager moduleStopwatchManager;
 
-  private HashMap<String, JProgressBar> progressBars;
-  private HashMap<String, StopwatchEntry> stopwatchEntries;
+  private final HashMap<String, SimpleProgressBar> progressBars = new HashMap<String, SimpleProgressBar>();
+  private final HashMap<String, StopwatchEntry> stopwatchEntries = new HashMap<String, StopwatchEntry>();
 
-  /** Creates new form StopwatchViewer */
+  private final Color normalColor = new Color(100,200,255);
+  private final Color warnColor = new Color(255,150,150);
+  
   public StopwatchViewer()
   {
     initComponents();
-  }
-
-  @Init
-  @Override
-  public void init()
-  {
-    stopwatchEntries = new HashMap<String, StopwatchEntry>();
-    progressBars = new HashMap<String, JProgressBar>();
+    
+    jScrollPane.getVerticalScrollBar().setUnitIncrement(16);
   }
 
 
@@ -59,18 +61,22 @@ public class StopwatchViewer extends AbstractDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane = new javax.swing.JScrollPane();
         jToolBar1 = new javax.swing.JToolBar();
         btShowStopwatch = new javax.swing.JToggleButton();
         btReset = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         cbSortMethod = new javax.swing.JComboBox();
+        cbModulesOnly = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtWarn = new javax.swing.JFormattedTextField();
+        jLabel3 = new javax.swing.JLabel();
+        lblSum = new javax.swing.JLabel();
 
+        panelStopwatches.setBackground(new java.awt.Color(255, 255, 255));
         panelStopwatches.setLayout(new java.awt.GridLayout(0, 1));
-        jScrollPane1.setViewportView(panelStopwatches);
+        jScrollPane.setViewportView(panelStopwatches);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -113,6 +119,16 @@ public class StopwatchViewer extends AbstractDialog
         cbSortMethod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Name", "Average", "Min", "Max" }));
         jToolBar1.add(cbSortMethod);
 
+        cbModulesOnly.setText("modules only");
+        cbModulesOnly.setFocusable(false);
+        cbModulesOnly.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cbModulesOnly.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbModulesOnlyActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbModulesOnly);
+
         jLabel1.setText("warn:");
 
         jLabel2.setText(" ms");
@@ -121,11 +137,15 @@ public class StopwatchViewer extends AbstractDialog
         txtWarn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtWarn.setText("30");
 
+        jLabel3.setText("sum:");
+
+        lblSum.setText("----");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
@@ -133,44 +153,73 @@ public class StopwatchViewer extends AbstractDialog
                 .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
                 .addComponent(jLabel2)
-                .addContainerGap(357, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblSum)
+                .addGap(11, 11, 11))
+            .addComponent(jScrollPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
+                .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
-                    .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(lblSum)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 private void btShowStopwatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btShowStopwatchActionPerformed
 
-  if(btShowStopwatch.isSelected()) {
-    stopwatchManager.addListener(this);
-  } else {
-    stopwatchManager.removeListener(this);
-  }
+  registerListeners();
+   
 }//GEN-LAST:event_btShowStopwatchActionPerformed
+
+private void registerListeners()
+{
+  if (!parent.checkConnected()) {
+      return;
+  }
+      
+  stopwatchManager.removeListener(this);
+  moduleStopwatchManager.removeListener(this);
+  
+  if(btShowStopwatch.isSelected()) 
+  {
+    resetAll();
+    
+    if(cbModulesOnly.isSelected())
+    {
+      moduleStopwatchManager.addListener(this);
+    }
+    else
+    {
+      stopwatchManager.addListener(this);
+    }
+  }
+}
 
 private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
 
+  resetAll();
+}//GEN-LAST:event_btResetActionPerformed
+
+private void resetAll()
+{
   stopwatchEntries.clear();
   progressBars.clear();
 
   panelStopwatches.removeAll();
   GridLayout layout = (GridLayout) panelStopwatches.getLayout();
   layout.setRows(0);
-}//GEN-LAST:event_btResetActionPerformed
+}
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
   panelStopwatches.removeAll();
@@ -229,15 +278,23 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   panelStopwatches.revalidate();
 }//GEN-LAST:event_jButton1ActionPerformed
 
+  private void cbModulesOnlyActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbModulesOnlyActionPerformed
+  {//GEN-HEADEREND:event_cbModulesOnlyActionPerformed
+    registerListeners();
+  }//GEN-LAST:event_cbModulesOnlyActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btReset;
     private javax.swing.JToggleButton btShowStopwatch;
+    private javax.swing.JCheckBox cbModulesOnly;
     private javax.swing.JComboBox cbSortMethod;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel lblSum;
     private final javax.swing.JPanel panelStopwatches = new javax.swing.JPanel();
     private javax.swing.JFormattedTextField txtWarn;
     // End of variables declaration//GEN-END:variables
@@ -253,24 +310,26 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     // get maximum value
     int max = 0;
-    for(String key : sw.keySet())
+    int sum = 0;
+    for(Map.Entry<String, Integer> e : sw.entrySet())
     {
-      max = Math.max(max, sw.get(key).intValue());
-      if(stopwatchEntries.containsKey(key))
+      sum += e.getValue();
+      max = Math.max(max, e.getValue());
+      if(stopwatchEntries.containsKey(e.getKey()))
       {
-        max = Math.max(max, stopwatchEntries.get(key).max);
+        max = Math.max(max, stopwatchEntries.get(e.getKey()).max);
       }
     }//end for
 
     // add components to show result
     for(String key: sw.keySet())
     {
-      int valInt = sw.get(key).intValue();
+      int valInt = sw.get(key);
 
       if(!stopwatchEntries.containsKey(key))
       {
         stopwatchEntries.put(key, new StopwatchEntry(key));
-      }//end if
+      }
 
       StopwatchEntry entry = stopwatchEntries.get(key);
       entry.addValue(valInt);
@@ -279,6 +338,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }//end for
 
     panelStopwatches.revalidate();
+    lblSum.setText(String.format("%4.2f ms", (double) sum / 1000.0));
   }//end newObjectReceived
 
   
@@ -289,23 +349,27 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     {
       GridLayout layout = (GridLayout) panelStopwatches.getLayout();
       layout.setRows(layout.getRows() + 1);
-      JProgressBar bar = new JProgressBar();
-      bar.setStringPainted(true);
-      bar.setBorderPainted(true);
-      progressBars.put(entry.name, bar);
+      
+      SimpleProgressBar bar = new SimpleProgressBar(0,100);
+      //bar.setBorder(new LineBorder(Color.BLACK));
+      bar.setOpaque(false);
+      
       panelStopwatches.add(bar);
+      progressBars.put(entry.name, bar);
     }//end if
 
-    JProgressBar bar = progressBars.get(entry.name);
+    
+    //JProgressBar bar = progressBars.get(entry.name);
+    SimpleProgressBar bar = progressBars.get(entry.name);
     bar.setMaximum(max);
     bar.setMinimum(0);
     bar.setValue(entry.value);
     bar.setString(entry.toString());
 
     if(entry.value >= warn*1000.0) {
-      bar.setForeground(Color.red);
+      bar.setColor(warnColor);
     } else {
-      bar.setForeground(Color.black);
+      bar.setColor(normalColor);
     }
   }//end updateStopwatchEntry
 

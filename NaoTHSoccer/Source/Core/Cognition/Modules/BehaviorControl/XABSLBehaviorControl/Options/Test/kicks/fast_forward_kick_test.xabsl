@@ -1,0 +1,108 @@
+/* Tests sidekick_to_right and sidekick_to_left:
+  Goes to the ball and kicks to the different sides */
+
+option fast_forward_kick_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(ball.time_since_last_seen > 1000)
+      goto search_ball;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball_with_right_foot;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state kick_with_left
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball_with_right_foot;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_with_foot(foot = left);
+      //fast_forward_kick_with_left();
+    }
+  }
+
+  state kick_with_right
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball_with_left_foot;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_with_foot(foot = right);
+      //fast_forward_kick_with_right();
+    }
+  }
+
+  state go_to_ball_with_left_foot
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_with_left;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = false, distance = 180);
+      //go_to_ball(distance = 130);
+    }
+  }
+
+  state go_to_ball_with_right_foot
+  {
+    decision
+    {
+      else if(action_done)
+        goto kick_with_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = true, distance = 180);
+      //go_to_ball(distance = 130);
+    }
+  }
+
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball_with_right_foot;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

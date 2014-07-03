@@ -62,6 +62,8 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
 
+  // needed by the motion editor
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:play_editor_motionnet", "play the motion editor motion", false);
 
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:sound:test", "it is what it is...", false);
 
@@ -153,12 +155,12 @@ void SimpleMotionBehaviorControl::testHead()
   DEBUG_REQUEST("SimpleMotionBehaviorControl:head:goto_angle",
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
 
-    double yaw  = -14;
+    double yaw  = 0;
     MODIFY("SimpleMotionBehaviorControl:head:headYaw_deg",yaw);
-    double pitch = 0;
+    double pitch = -14;
     MODIFY("SimpleMotionBehaviorControl:head:headPitch_deg",pitch);
-    getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(yaw);
-    getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(pitch);
+    getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
+    getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
   );
 
   
@@ -355,6 +357,10 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("ParallelKinematicMotionEngine:motion:parallel_stepper",
     getMotionRequest().id = motion::parallel_stepper;
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:play_editor_motionnet",
+    getMotionRequest().id = motion::play_editor_motionnet;
   );
           
 }//end testMotion

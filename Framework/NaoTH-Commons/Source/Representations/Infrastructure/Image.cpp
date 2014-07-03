@@ -134,7 +134,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
 
   //TODO: deprecated
   if(img.width() != (int)naoth::IMAGE_WIDTH || img.height() != (int)naoth::IMAGE_HEIGHT) {
-	  THROW("Image size doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
+	  THROW("Image size (" << img.width() << "," << img.height() << ") doesn't correspond to the static values IMAGE_WIDTH (" << naoth::IMAGE_WIDTH << ") and IMAGE_HEIGHT (" << naoth::IMAGE_HEIGHT << ").");
   }
 
   // YUV444

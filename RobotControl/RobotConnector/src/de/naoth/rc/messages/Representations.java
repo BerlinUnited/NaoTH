@@ -8,6 +8,78 @@ public final class Representations {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public enum TeamColor
+      implements com.google.protobuf.ProtocolMessageEnum {
+    blueTeam(0, 0),
+    redTeam(1, 1),
+    invalidTeam(2, 2),
+    ;
+    
+    public static final int blueTeam_VALUE = 0;
+    public static final int redTeam_VALUE = 1;
+    public static final int invalidTeam_VALUE = 2;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static TeamColor valueOf(int value) {
+      switch (value) {
+        case 0: return blueTeam;
+        case 1: return redTeam;
+        case 2: return invalidTeam;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<TeamColor>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<TeamColor>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<TeamColor>() {
+            public TeamColor findValueByNumber(int number) {
+              return TeamColor.valueOf(number);
+            }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.getDescriptor().getEnumTypes().get(0);
+    }
+    
+    private static final TeamColor[] VALUES = {
+      blueTeam, redTeam, invalidTeam, 
+    };
+    
+    public static TeamColor valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    
+    private final int index;
+    private final int value;
+    
+    private TeamColor(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    // @@protoc_insertion_point(enum_scope:naothmessages.TeamColor)
+  }
+  
   public interface CameraMatrixOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -3867,6 +3939,10 @@ public final class Representations {
     // required double speedDirection = 5;
     boolean hasSpeedDirection();
     double getSpeedDirection();
+    
+    // required double scale = 6;
+    boolean hasScale();
+    double getScale();
   }
   public static final class StepControlRequest extends
       com.google.protobuf.GeneratedMessage
@@ -3950,12 +4026,23 @@ public final class Representations {
       return speedDirection_;
     }
     
+    // required double scale = 6;
+    public static final int SCALE_FIELD_NUMBER = 6;
+    private double scale_;
+    public boolean hasScale() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public double getScale() {
+      return scale_;
+    }
+    
     private void initFields() {
       stepID_ = 0;
       moveLeftFoot_ = false;
       target_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
       time_ = 0;
       speedDirection_ = 0D;
+      scale_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3979,6 +4066,10 @@ public final class Representations {
         return false;
       }
       if (!hasSpeedDirection()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasScale()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -4008,6 +4099,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeDouble(5, speedDirection_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeDouble(6, scale_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -4036,6 +4130,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(5, speedDirection_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(6, scale_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4176,6 +4274,8 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000008);
         speedDirection_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000010);
+        scale_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -4238,6 +4338,10 @@ public final class Representations {
           to_bitField0_ |= 0x00000010;
         }
         result.speedDirection_ = speedDirection_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.scale_ = scale_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4269,6 +4373,9 @@ public final class Representations {
         if (other.hasSpeedDirection()) {
           setSpeedDirection(other.getSpeedDirection());
         }
+        if (other.hasScale()) {
+          setScale(other.getScale());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4291,6 +4398,10 @@ public final class Representations {
           return false;
         }
         if (!hasSpeedDirection()) {
+          
+          return false;
+        }
+        if (!hasScale()) {
           
           return false;
         }
@@ -4351,6 +4462,11 @@ public final class Representations {
             case 41: {
               bitField0_ |= 0x00000010;
               speedDirection_ = input.readDouble();
+              break;
+            }
+            case 49: {
+              bitField0_ |= 0x00000020;
+              scale_ = input.readDouble();
               break;
             }
           }
@@ -4529,6 +4645,27 @@ public final class Representations {
       public Builder clearSpeedDirection() {
         bitField0_ = (bitField0_ & ~0x00000010);
         speedDirection_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // required double scale = 6;
+      private double scale_ ;
+      public boolean hasScale() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public double getScale() {
+        return scale_;
+      }
+      public Builder setScale(double value) {
+        bitField0_ |= 0x00000020;
+        scale_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearScale() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        scale_ = 0D;
         onChanged();
         return this;
       }
@@ -11352,8 +11489,1103 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.ScanLineEndPoint)
   }
   
+  public interface EdgelOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.IntVector2 point = 1;
+    boolean hasPoint();
+    de.naoth.rc.messages.CommonTypes.IntVector2 getPoint();
+    de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder getPointOrBuilder();
+    
+    // required .naothmessages.DoubleVector2 direction = 2;
+    boolean hasDirection();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getDirection();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getDirectionOrBuilder();
+  }
+  public static final class Edgel extends
+      com.google.protobuf.GeneratedMessage
+      implements EdgelOrBuilder {
+    // Use Edgel.newBuilder() to construct.
+    private Edgel(Builder builder) {
+      super(builder);
+    }
+    private Edgel(boolean noInit) {}
+    
+    private static final Edgel defaultInstance;
+    public static Edgel getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public Edgel getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_Edgel_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_Edgel_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .naothmessages.IntVector2 point = 1;
+    public static final int POINT_FIELD_NUMBER = 1;
+    private de.naoth.rc.messages.CommonTypes.IntVector2 point_;
+    public boolean hasPoint() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.CommonTypes.IntVector2 getPoint() {
+      return point_;
+    }
+    public de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder getPointOrBuilder() {
+      return point_;
+    }
+    
+    // required .naothmessages.DoubleVector2 direction = 2;
+    public static final int DIRECTION_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 direction_;
+    public boolean hasDirection() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getDirection() {
+      return direction_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getDirectionOrBuilder() {
+      return direction_;
+    }
+    
+    private void initFields() {
+      point_ = de.naoth.rc.messages.CommonTypes.IntVector2.getDefaultInstance();
+      direction_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasPoint()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasDirection()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPoint().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getDirection().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, point_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, direction_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, point_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, direction_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.Edgel parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.Edgel prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.EdgelOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_Edgel_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_Edgel_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.Edgel.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPointFieldBuilder();
+          getDirectionFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (pointBuilder_ == null) {
+          point_ = de.naoth.rc.messages.CommonTypes.IntVector2.getDefaultInstance();
+        } else {
+          pointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (directionBuilder_ == null) {
+          direction_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          directionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.Edgel.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.Edgel getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.Edgel.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.Edgel build() {
+        de.naoth.rc.messages.Representations.Edgel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.Edgel buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.Edgel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.Edgel buildPartial() {
+        de.naoth.rc.messages.Representations.Edgel result = new de.naoth.rc.messages.Representations.Edgel(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (pointBuilder_ == null) {
+          result.point_ = point_;
+        } else {
+          result.point_ = pointBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (directionBuilder_ == null) {
+          result.direction_ = direction_;
+        } else {
+          result.direction_ = directionBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.Edgel) {
+          return mergeFrom((de.naoth.rc.messages.Representations.Edgel)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.Edgel other) {
+        if (other == de.naoth.rc.messages.Representations.Edgel.getDefaultInstance()) return this;
+        if (other.hasPoint()) {
+          mergePoint(other.getPoint());
+        }
+        if (other.hasDirection()) {
+          mergeDirection(other.getDirection());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasPoint()) {
+          
+          return false;
+        }
+        if (!hasDirection()) {
+          
+          return false;
+        }
+        if (!getPoint().isInitialized()) {
+          
+          return false;
+        }
+        if (!getDirection().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.CommonTypes.IntVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.IntVector2.newBuilder();
+              if (hasPoint()) {
+                subBuilder.mergeFrom(getPoint());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setPoint(subBuilder.buildPartial());
+              break;
+            }
+            case 18: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasDirection()) {
+                subBuilder.mergeFrom(getDirection());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setDirection(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .naothmessages.IntVector2 point = 1;
+      private de.naoth.rc.messages.CommonTypes.IntVector2 point_ = de.naoth.rc.messages.CommonTypes.IntVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.IntVector2, de.naoth.rc.messages.CommonTypes.IntVector2.Builder, de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder> pointBuilder_;
+      public boolean hasPoint() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.naoth.rc.messages.CommonTypes.IntVector2 getPoint() {
+        if (pointBuilder_ == null) {
+          return point_;
+        } else {
+          return pointBuilder_.getMessage();
+        }
+      }
+      public Builder setPoint(de.naoth.rc.messages.CommonTypes.IntVector2 value) {
+        if (pointBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          point_ = value;
+          onChanged();
+        } else {
+          pointBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setPoint(
+          de.naoth.rc.messages.CommonTypes.IntVector2.Builder builderForValue) {
+        if (pointBuilder_ == null) {
+          point_ = builderForValue.build();
+          onChanged();
+        } else {
+          pointBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergePoint(de.naoth.rc.messages.CommonTypes.IntVector2 value) {
+        if (pointBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              point_ != de.naoth.rc.messages.CommonTypes.IntVector2.getDefaultInstance()) {
+            point_ =
+              de.naoth.rc.messages.CommonTypes.IntVector2.newBuilder(point_).mergeFrom(value).buildPartial();
+          } else {
+            point_ = value;
+          }
+          onChanged();
+        } else {
+          pointBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearPoint() {
+        if (pointBuilder_ == null) {
+          point_ = de.naoth.rc.messages.CommonTypes.IntVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          pointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.IntVector2.Builder getPointBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getPointFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder getPointOrBuilder() {
+        if (pointBuilder_ != null) {
+          return pointBuilder_.getMessageOrBuilder();
+        } else {
+          return point_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.IntVector2, de.naoth.rc.messages.CommonTypes.IntVector2.Builder, de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder> 
+          getPointFieldBuilder() {
+        if (pointBuilder_ == null) {
+          pointBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.IntVector2, de.naoth.rc.messages.CommonTypes.IntVector2.Builder, de.naoth.rc.messages.CommonTypes.IntVector2OrBuilder>(
+                  point_,
+                  getParentForChildren(),
+                  isClean());
+          point_ = null;
+        }
+        return pointBuilder_;
+      }
+      
+      // required .naothmessages.DoubleVector2 direction = 2;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 direction_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> directionBuilder_;
+      public boolean hasDirection() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getDirection() {
+        if (directionBuilder_ == null) {
+          return direction_;
+        } else {
+          return directionBuilder_.getMessage();
+        }
+      }
+      public Builder setDirection(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (directionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          direction_ = value;
+          onChanged();
+        } else {
+          directionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder setDirection(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (directionBuilder_ == null) {
+          direction_ = builderForValue.build();
+          onChanged();
+        } else {
+          directionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeDirection(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (directionBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              direction_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            direction_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(direction_).mergeFrom(value).buildPartial();
+          } else {
+            direction_ = value;
+          }
+          onChanged();
+        } else {
+          directionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearDirection() {
+        if (directionBuilder_ == null) {
+          direction_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          directionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getDirectionBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getDirectionFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getDirectionOrBuilder() {
+        if (directionBuilder_ != null) {
+          return directionBuilder_.getMessageOrBuilder();
+        } else {
+          return direction_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getDirectionFieldBuilder() {
+        if (directionBuilder_ == null) {
+          directionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  direction_,
+                  getParentForChildren(),
+                  isClean());
+          direction_ = null;
+        }
+        return directionBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.Edgel)
+    }
+    
+    static {
+      defaultInstance = new Edgel(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.Edgel)
+  }
+  
+  public interface EdgelPairOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 begin = 1;
+    boolean hasBegin();
+    int getBegin();
+    
+    // required int32 end = 2;
+    boolean hasEnd();
+    int getEnd();
+    
+    // required int32 id = 3;
+    boolean hasId();
+    int getId();
+  }
+  public static final class EdgelPair extends
+      com.google.protobuf.GeneratedMessage
+      implements EdgelPairOrBuilder {
+    // Use EdgelPair.newBuilder() to construct.
+    private EdgelPair(Builder builder) {
+      super(builder);
+    }
+    private EdgelPair(boolean noInit) {}
+    
+    private static final EdgelPair defaultInstance;
+    public static EdgelPair getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public EdgelPair getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_EdgelPair_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_EdgelPair_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required int32 begin = 1;
+    public static final int BEGIN_FIELD_NUMBER = 1;
+    private int begin_;
+    public boolean hasBegin() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getBegin() {
+      return begin_;
+    }
+    
+    // required int32 end = 2;
+    public static final int END_FIELD_NUMBER = 2;
+    private int end_;
+    public boolean hasEnd() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getEnd() {
+      return end_;
+    }
+    
+    // required int32 id = 3;
+    public static final int ID_FIELD_NUMBER = 3;
+    private int id_;
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getId() {
+      return id_;
+    }
+    
+    private void initFields() {
+      begin_ = 0;
+      end_ = 0;
+      id_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasBegin()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEnd()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, begin_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, end_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, id_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, begin_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, end_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, id_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.EdgelPair parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.EdgelPair prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.EdgelPairOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_EdgelPair_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_EdgelPair_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.EdgelPair.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        begin_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        end_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        id_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.EdgelPair.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.EdgelPair getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.EdgelPair.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.EdgelPair build() {
+        de.naoth.rc.messages.Representations.EdgelPair result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.EdgelPair buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.EdgelPair result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.EdgelPair buildPartial() {
+        de.naoth.rc.messages.Representations.EdgelPair result = new de.naoth.rc.messages.Representations.EdgelPair(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.begin_ = begin_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.end_ = end_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.id_ = id_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.EdgelPair) {
+          return mergeFrom((de.naoth.rc.messages.Representations.EdgelPair)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.EdgelPair other) {
+        if (other == de.naoth.rc.messages.Representations.EdgelPair.getDefaultInstance()) return this;
+        if (other.hasBegin()) {
+          setBegin(other.getBegin());
+        }
+        if (other.hasEnd()) {
+          setEnd(other.getEnd());
+        }
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasBegin()) {
+          
+          return false;
+        }
+        if (!hasEnd()) {
+          
+          return false;
+        }
+        if (!hasId()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              begin_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              end_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              id_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 begin = 1;
+      private int begin_ ;
+      public boolean hasBegin() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getBegin() {
+        return begin_;
+      }
+      public Builder setBegin(int value) {
+        bitField0_ |= 0x00000001;
+        begin_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBegin() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        begin_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required int32 end = 2;
+      private int end_ ;
+      public boolean hasEnd() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getEnd() {
+        return end_;
+      }
+      public Builder setEnd(int value) {
+        bitField0_ |= 0x00000002;
+        end_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearEnd() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        end_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required int32 id = 3;
+      private int id_ ;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getId() {
+        return id_;
+      }
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000004;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        id_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.EdgelPair)
+    }
+    
+    static {
+      defaultInstance = new EdgelPair(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.EdgelPair)
+  }
+  
   public interface ScanLineEdgelPerceptOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated .naothmessages.Edgel edgels = 1;
+    java.util.List<de.naoth.rc.messages.Representations.Edgel> 
+        getEdgelsList();
+    de.naoth.rc.messages.Representations.Edgel getEdgels(int index);
+    int getEdgelsCount();
+    java.util.List<? extends de.naoth.rc.messages.Representations.EdgelOrBuilder> 
+        getEdgelsOrBuilderList();
+    de.naoth.rc.messages.Representations.EdgelOrBuilder getEdgelsOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.EdgelPair pairs = 3;
+    java.util.List<de.naoth.rc.messages.Representations.EdgelPair> 
+        getPairsList();
+    de.naoth.rc.messages.Representations.EdgelPair getPairs(int index);
+    int getPairsCount();
+    java.util.List<? extends de.naoth.rc.messages.Representations.EdgelPairOrBuilder> 
+        getPairsOrBuilderList();
+    de.naoth.rc.messages.Representations.EdgelPairOrBuilder getPairsOrBuilder(
+        int index);
     
     // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
     java.util.List<de.naoth.rc.messages.Representations.ScanLineEndPoint> 
@@ -11393,6 +12625,48 @@ public final class Representations {
       return de.naoth.rc.messages.Representations.internal_static_naothmessages_ScanLineEdgelPercept_fieldAccessorTable;
     }
     
+    // repeated .naothmessages.Edgel edgels = 1;
+    public static final int EDGELS_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.messages.Representations.Edgel> edgels_;
+    public java.util.List<de.naoth.rc.messages.Representations.Edgel> getEdgelsList() {
+      return edgels_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Representations.EdgelOrBuilder> 
+        getEdgelsOrBuilderList() {
+      return edgels_;
+    }
+    public int getEdgelsCount() {
+      return edgels_.size();
+    }
+    public de.naoth.rc.messages.Representations.Edgel getEdgels(int index) {
+      return edgels_.get(index);
+    }
+    public de.naoth.rc.messages.Representations.EdgelOrBuilder getEdgelsOrBuilder(
+        int index) {
+      return edgels_.get(index);
+    }
+    
+    // repeated .naothmessages.EdgelPair pairs = 3;
+    public static final int PAIRS_FIELD_NUMBER = 3;
+    private java.util.List<de.naoth.rc.messages.Representations.EdgelPair> pairs_;
+    public java.util.List<de.naoth.rc.messages.Representations.EdgelPair> getPairsList() {
+      return pairs_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Representations.EdgelPairOrBuilder> 
+        getPairsOrBuilderList() {
+      return pairs_;
+    }
+    public int getPairsCount() {
+      return pairs_.size();
+    }
+    public de.naoth.rc.messages.Representations.EdgelPair getPairs(int index) {
+      return pairs_.get(index);
+    }
+    public de.naoth.rc.messages.Representations.EdgelPairOrBuilder getPairsOrBuilder(
+        int index) {
+      return pairs_.get(index);
+    }
+    
     // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
     public static final int ENDPOINTS_FIELD_NUMBER = 2;
     private java.util.List<de.naoth.rc.messages.Representations.ScanLineEndPoint> endPoints_;
@@ -11415,6 +12689,8 @@ public final class Representations {
     }
     
     private void initFields() {
+      edgels_ = java.util.Collections.emptyList();
+      pairs_ = java.util.Collections.emptyList();
       endPoints_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -11422,6 +12698,18 @@ public final class Representations {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      for (int i = 0; i < getEdgelsCount(); i++) {
+        if (!getEdgels(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getPairsCount(); i++) {
+        if (!getPairs(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       for (int i = 0; i < getEndPointsCount(); i++) {
         if (!getEndPoints(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -11435,8 +12723,14 @@ public final class Representations {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      for (int i = 0; i < edgels_.size(); i++) {
+        output.writeMessage(1, edgels_.get(i));
+      }
       for (int i = 0; i < endPoints_.size(); i++) {
         output.writeMessage(2, endPoints_.get(i));
+      }
+      for (int i = 0; i < pairs_.size(); i++) {
+        output.writeMessage(3, pairs_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -11447,9 +12741,17 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
+      for (int i = 0; i < edgels_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, edgels_.get(i));
+      }
       for (int i = 0; i < endPoints_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, endPoints_.get(i));
+      }
+      for (int i = 0; i < pairs_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, pairs_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -11567,6 +12869,8 @@ public final class Representations {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEdgelsFieldBuilder();
+          getPairsFieldBuilder();
           getEndPointsFieldBuilder();
         }
       }
@@ -11576,9 +12880,21 @@ public final class Representations {
       
       public Builder clear() {
         super.clear();
+        if (edgelsBuilder_ == null) {
+          edgels_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          edgelsBuilder_.clear();
+        }
+        if (pairsBuilder_ == null) {
+          pairs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          pairsBuilder_.clear();
+        }
         if (endPointsBuilder_ == null) {
           endPoints_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           endPointsBuilder_.clear();
         }
@@ -11619,10 +12935,28 @@ public final class Representations {
       public de.naoth.rc.messages.Representations.ScanLineEdgelPercept buildPartial() {
         de.naoth.rc.messages.Representations.ScanLineEdgelPercept result = new de.naoth.rc.messages.Representations.ScanLineEdgelPercept(this);
         int from_bitField0_ = bitField0_;
-        if (endPointsBuilder_ == null) {
+        if (edgelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            endPoints_ = java.util.Collections.unmodifiableList(endPoints_);
+            edgels_ = java.util.Collections.unmodifiableList(edgels_);
             bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.edgels_ = edgels_;
+        } else {
+          result.edgels_ = edgelsBuilder_.build();
+        }
+        if (pairsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            pairs_ = java.util.Collections.unmodifiableList(pairs_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.pairs_ = pairs_;
+        } else {
+          result.pairs_ = pairsBuilder_.build();
+        }
+        if (endPointsBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            endPoints_ = java.util.Collections.unmodifiableList(endPoints_);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.endPoints_ = endPoints_;
         } else {
@@ -11643,11 +12977,63 @@ public final class Representations {
       
       public Builder mergeFrom(de.naoth.rc.messages.Representations.ScanLineEdgelPercept other) {
         if (other == de.naoth.rc.messages.Representations.ScanLineEdgelPercept.getDefaultInstance()) return this;
+        if (edgelsBuilder_ == null) {
+          if (!other.edgels_.isEmpty()) {
+            if (edgels_.isEmpty()) {
+              edgels_ = other.edgels_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEdgelsIsMutable();
+              edgels_.addAll(other.edgels_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.edgels_.isEmpty()) {
+            if (edgelsBuilder_.isEmpty()) {
+              edgelsBuilder_.dispose();
+              edgelsBuilder_ = null;
+              edgels_ = other.edgels_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              edgelsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEdgelsFieldBuilder() : null;
+            } else {
+              edgelsBuilder_.addAllMessages(other.edgels_);
+            }
+          }
+        }
+        if (pairsBuilder_ == null) {
+          if (!other.pairs_.isEmpty()) {
+            if (pairs_.isEmpty()) {
+              pairs_ = other.pairs_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensurePairsIsMutable();
+              pairs_.addAll(other.pairs_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.pairs_.isEmpty()) {
+            if (pairsBuilder_.isEmpty()) {
+              pairsBuilder_.dispose();
+              pairsBuilder_ = null;
+              pairs_ = other.pairs_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              pairsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPairsFieldBuilder() : null;
+            } else {
+              pairsBuilder_.addAllMessages(other.pairs_);
+            }
+          }
+        }
         if (endPointsBuilder_ == null) {
           if (!other.endPoints_.isEmpty()) {
             if (endPoints_.isEmpty()) {
               endPoints_ = other.endPoints_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureEndPointsIsMutable();
               endPoints_.addAll(other.endPoints_);
@@ -11660,7 +13046,7 @@ public final class Representations {
               endPointsBuilder_.dispose();
               endPointsBuilder_ = null;
               endPoints_ = other.endPoints_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000004);
               endPointsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getEndPointsFieldBuilder() : null;
@@ -11674,6 +13060,18 @@ public final class Representations {
       }
       
       public final boolean isInitialized() {
+        for (int i = 0; i < getEdgelsCount(); i++) {
+          if (!getEdgels(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getPairsCount(); i++) {
+          if (!getPairs(i).isInitialized()) {
+            
+            return false;
+          }
+        }
         for (int i = 0; i < getEndPointsCount(); i++) {
           if (!getEndPoints(i).isInitialized()) {
             
@@ -11706,10 +13104,22 @@ public final class Representations {
               }
               break;
             }
+            case 10: {
+              de.naoth.rc.messages.Representations.Edgel.Builder subBuilder = de.naoth.rc.messages.Representations.Edgel.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addEdgels(subBuilder.buildPartial());
+              break;
+            }
             case 18: {
               de.naoth.rc.messages.Representations.ScanLineEndPoint.Builder subBuilder = de.naoth.rc.messages.Representations.ScanLineEndPoint.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addEndPoints(subBuilder.buildPartial());
+              break;
+            }
+            case 26: {
+              de.naoth.rc.messages.Representations.EdgelPair.Builder subBuilder = de.naoth.rc.messages.Representations.EdgelPair.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addPairs(subBuilder.buildPartial());
               break;
             }
           }
@@ -11718,13 +13128,385 @@ public final class Representations {
       
       private int bitField0_;
       
+      // repeated .naothmessages.Edgel edgels = 1;
+      private java.util.List<de.naoth.rc.messages.Representations.Edgel> edgels_ =
+        java.util.Collections.emptyList();
+      private void ensureEdgelsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          edgels_ = new java.util.ArrayList<de.naoth.rc.messages.Representations.Edgel>(edgels_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Representations.Edgel, de.naoth.rc.messages.Representations.Edgel.Builder, de.naoth.rc.messages.Representations.EdgelOrBuilder> edgelsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Representations.Edgel> getEdgelsList() {
+        if (edgelsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(edgels_);
+        } else {
+          return edgelsBuilder_.getMessageList();
+        }
+      }
+      public int getEdgelsCount() {
+        if (edgelsBuilder_ == null) {
+          return edgels_.size();
+        } else {
+          return edgelsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Representations.Edgel getEdgels(int index) {
+        if (edgelsBuilder_ == null) {
+          return edgels_.get(index);
+        } else {
+          return edgelsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setEdgels(
+          int index, de.naoth.rc.messages.Representations.Edgel value) {
+        if (edgelsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEdgelsIsMutable();
+          edgels_.set(index, value);
+          onChanged();
+        } else {
+          edgelsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setEdgels(
+          int index, de.naoth.rc.messages.Representations.Edgel.Builder builderForValue) {
+        if (edgelsBuilder_ == null) {
+          ensureEdgelsIsMutable();
+          edgels_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          edgelsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEdgels(de.naoth.rc.messages.Representations.Edgel value) {
+        if (edgelsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEdgelsIsMutable();
+          edgels_.add(value);
+          onChanged();
+        } else {
+          edgelsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addEdgels(
+          int index, de.naoth.rc.messages.Representations.Edgel value) {
+        if (edgelsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEdgelsIsMutable();
+          edgels_.add(index, value);
+          onChanged();
+        } else {
+          edgelsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addEdgels(
+          de.naoth.rc.messages.Representations.Edgel.Builder builderForValue) {
+        if (edgelsBuilder_ == null) {
+          ensureEdgelsIsMutable();
+          edgels_.add(builderForValue.build());
+          onChanged();
+        } else {
+          edgelsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEdgels(
+          int index, de.naoth.rc.messages.Representations.Edgel.Builder builderForValue) {
+        if (edgelsBuilder_ == null) {
+          ensureEdgelsIsMutable();
+          edgels_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          edgelsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllEdgels(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Representations.Edgel> values) {
+        if (edgelsBuilder_ == null) {
+          ensureEdgelsIsMutable();
+          super.addAll(values, edgels_);
+          onChanged();
+        } else {
+          edgelsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearEdgels() {
+        if (edgelsBuilder_ == null) {
+          edgels_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          edgelsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeEdgels(int index) {
+        if (edgelsBuilder_ == null) {
+          ensureEdgelsIsMutable();
+          edgels_.remove(index);
+          onChanged();
+        } else {
+          edgelsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Representations.Edgel.Builder getEdgelsBuilder(
+          int index) {
+        return getEdgelsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Representations.EdgelOrBuilder getEdgelsOrBuilder(
+          int index) {
+        if (edgelsBuilder_ == null) {
+          return edgels_.get(index);  } else {
+          return edgelsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Representations.EdgelOrBuilder> 
+           getEdgelsOrBuilderList() {
+        if (edgelsBuilder_ != null) {
+          return edgelsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(edgels_);
+        }
+      }
+      public de.naoth.rc.messages.Representations.Edgel.Builder addEdgelsBuilder() {
+        return getEdgelsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Representations.Edgel.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Representations.Edgel.Builder addEdgelsBuilder(
+          int index) {
+        return getEdgelsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Representations.Edgel.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Representations.Edgel.Builder> 
+           getEdgelsBuilderList() {
+        return getEdgelsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Representations.Edgel, de.naoth.rc.messages.Representations.Edgel.Builder, de.naoth.rc.messages.Representations.EdgelOrBuilder> 
+          getEdgelsFieldBuilder() {
+        if (edgelsBuilder_ == null) {
+          edgelsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Representations.Edgel, de.naoth.rc.messages.Representations.Edgel.Builder, de.naoth.rc.messages.Representations.EdgelOrBuilder>(
+                  edgels_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          edgels_ = null;
+        }
+        return edgelsBuilder_;
+      }
+      
+      // repeated .naothmessages.EdgelPair pairs = 3;
+      private java.util.List<de.naoth.rc.messages.Representations.EdgelPair> pairs_ =
+        java.util.Collections.emptyList();
+      private void ensurePairsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          pairs_ = new java.util.ArrayList<de.naoth.rc.messages.Representations.EdgelPair>(pairs_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Representations.EdgelPair, de.naoth.rc.messages.Representations.EdgelPair.Builder, de.naoth.rc.messages.Representations.EdgelPairOrBuilder> pairsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Representations.EdgelPair> getPairsList() {
+        if (pairsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(pairs_);
+        } else {
+          return pairsBuilder_.getMessageList();
+        }
+      }
+      public int getPairsCount() {
+        if (pairsBuilder_ == null) {
+          return pairs_.size();
+        } else {
+          return pairsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Representations.EdgelPair getPairs(int index) {
+        if (pairsBuilder_ == null) {
+          return pairs_.get(index);
+        } else {
+          return pairsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setPairs(
+          int index, de.naoth.rc.messages.Representations.EdgelPair value) {
+        if (pairsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePairsIsMutable();
+          pairs_.set(index, value);
+          onChanged();
+        } else {
+          pairsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setPairs(
+          int index, de.naoth.rc.messages.Representations.EdgelPair.Builder builderForValue) {
+        if (pairsBuilder_ == null) {
+          ensurePairsIsMutable();
+          pairs_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          pairsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPairs(de.naoth.rc.messages.Representations.EdgelPair value) {
+        if (pairsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePairsIsMutable();
+          pairs_.add(value);
+          onChanged();
+        } else {
+          pairsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addPairs(
+          int index, de.naoth.rc.messages.Representations.EdgelPair value) {
+        if (pairsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePairsIsMutable();
+          pairs_.add(index, value);
+          onChanged();
+        } else {
+          pairsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addPairs(
+          de.naoth.rc.messages.Representations.EdgelPair.Builder builderForValue) {
+        if (pairsBuilder_ == null) {
+          ensurePairsIsMutable();
+          pairs_.add(builderForValue.build());
+          onChanged();
+        } else {
+          pairsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPairs(
+          int index, de.naoth.rc.messages.Representations.EdgelPair.Builder builderForValue) {
+        if (pairsBuilder_ == null) {
+          ensurePairsIsMutable();
+          pairs_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          pairsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllPairs(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Representations.EdgelPair> values) {
+        if (pairsBuilder_ == null) {
+          ensurePairsIsMutable();
+          super.addAll(values, pairs_);
+          onChanged();
+        } else {
+          pairsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearPairs() {
+        if (pairsBuilder_ == null) {
+          pairs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          pairsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removePairs(int index) {
+        if (pairsBuilder_ == null) {
+          ensurePairsIsMutable();
+          pairs_.remove(index);
+          onChanged();
+        } else {
+          pairsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Representations.EdgelPair.Builder getPairsBuilder(
+          int index) {
+        return getPairsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Representations.EdgelPairOrBuilder getPairsOrBuilder(
+          int index) {
+        if (pairsBuilder_ == null) {
+          return pairs_.get(index);  } else {
+          return pairsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Representations.EdgelPairOrBuilder> 
+           getPairsOrBuilderList() {
+        if (pairsBuilder_ != null) {
+          return pairsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(pairs_);
+        }
+      }
+      public de.naoth.rc.messages.Representations.EdgelPair.Builder addPairsBuilder() {
+        return getPairsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Representations.EdgelPair.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Representations.EdgelPair.Builder addPairsBuilder(
+          int index) {
+        return getPairsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Representations.EdgelPair.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Representations.EdgelPair.Builder> 
+           getPairsBuilderList() {
+        return getPairsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Representations.EdgelPair, de.naoth.rc.messages.Representations.EdgelPair.Builder, de.naoth.rc.messages.Representations.EdgelPairOrBuilder> 
+          getPairsFieldBuilder() {
+        if (pairsBuilder_ == null) {
+          pairsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Representations.EdgelPair, de.naoth.rc.messages.Representations.EdgelPair.Builder, de.naoth.rc.messages.Representations.EdgelPairOrBuilder>(
+                  pairs_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          pairs_ = null;
+        }
+        return pairsBuilder_;
+      }
+      
       // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
       private java.util.List<de.naoth.rc.messages.Representations.ScanLineEndPoint> endPoints_ =
         java.util.Collections.emptyList();
       private void ensureEndPointsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           endPoints_ = new java.util.ArrayList<de.naoth.rc.messages.Representations.ScanLineEndPoint>(endPoints_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000004;
          }
       }
       
@@ -11840,7 +13622,7 @@ public final class Representations {
       public Builder clearEndPoints() {
         if (endPointsBuilder_ == null) {
           endPoints_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           endPointsBuilder_.clear();
@@ -11896,7 +13678,7 @@ public final class Representations {
           endPointsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               de.naoth.rc.messages.Representations.ScanLineEndPoint, de.naoth.rc.messages.Representations.ScanLineEndPoint.Builder, de.naoth.rc.messages.Representations.ScanLineEndPointOrBuilder>(
                   endPoints_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           endPoints_ = null;
@@ -15821,9 +17603,9 @@ public final class Representations {
     boolean hasPlayerNum();
     int getPlayerNum();
     
-    // optional uint32 team = 2 [default = 0];
-    boolean hasTeam();
-    int getTeam();
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    boolean hasTeamColor();
+    de.naoth.rc.messages.Representations.TeamColor getTeamColor();
     
     // optional .naothmessages.Pose2D pose = 3;
     boolean hasPose();
@@ -15844,9 +17626,9 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getBallVelocity();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getBallVelocityOrBuilder();
     
-    // optional int32 fallen = 7 [default = -1];
+    // optional bool fallen = 10 [default = false];
     boolean hasFallen();
-    int getFallen();
+    boolean getFallen();
     
     // optional .naothmessages.BUUserTeamMessage user = 8;
     boolean hasUser();
@@ -15897,14 +17679,14 @@ public final class Representations {
       return playerNum_;
     }
     
-    // optional uint32 team = 2 [default = 0];
-    public static final int TEAM_FIELD_NUMBER = 2;
-    private int team_;
-    public boolean hasTeam() {
+    // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+    public static final int TEAMCOLOR_FIELD_NUMBER = 11;
+    private de.naoth.rc.messages.Representations.TeamColor teamColor_;
+    public boolean hasTeamColor() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public int getTeam() {
-      return team_;
+    public de.naoth.rc.messages.Representations.TeamColor getTeamColor() {
+      return teamColor_;
     }
     
     // optional .naothmessages.Pose2D pose = 3;
@@ -15956,13 +17738,13 @@ public final class Representations {
       return ballVelocity_;
     }
     
-    // optional int32 fallen = 7 [default = -1];
-    public static final int FALLEN_FIELD_NUMBER = 7;
-    private int fallen_;
+    // optional bool fallen = 10 [default = false];
+    public static final int FALLEN_FIELD_NUMBER = 10;
+    private boolean fallen_;
     public boolean hasFallen() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public int getFallen() {
+    public boolean getFallen() {
       return fallen_;
     }
     
@@ -15994,12 +17776,12 @@ public final class Representations {
     
     private void initFields() {
       playerNum_ = 0;
-      team_ = 0;
+      teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
       pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
       ballAge_ = -1;
       ballPosition_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       ballVelocity_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
-      fallen_ = -1;
+      fallen_ = false;
       user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
       frameInfo_ = de.naoth.rc.messages.FrameworkRepresentations.FrameInfo.getDefaultInstance();
     }
@@ -16048,9 +17830,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt32(1, playerNum_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt32(2, team_);
-      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, pose_);
       }
@@ -16063,14 +17842,17 @@ public final class Representations {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeMessage(8, user_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeMessage(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(11, teamColor_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -16084,10 +17866,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, playerNum_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, team_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -16105,10 +17883,6 @@ public final class Representations {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, ballVelocity_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, fallen_);
-      }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, user_);
@@ -16116,6 +17890,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, frameInfo_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, fallen_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(11, teamColor_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16248,7 +18030,7 @@ public final class Representations {
         super.clear();
         playerNum_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        team_ = 0;
+        teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
         bitField0_ = (bitField0_ & ~0x00000002);
         if (poseBuilder_ == null) {
           pose_ = de.naoth.rc.messages.CommonTypes.Pose2D.getDefaultInstance();
@@ -16270,7 +18052,7 @@ public final class Representations {
           ballVelocityBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        fallen_ = -1;
+        fallen_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
         if (userBuilder_ == null) {
           user_ = de.naoth.rc.messages.Representations.BUUserTeamMessage.getDefaultInstance();
@@ -16329,7 +18111,7 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.team_ = team_;
+        result.teamColor_ = teamColor_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -16397,8 +18179,8 @@ public final class Representations {
         if (other.hasPlayerNum()) {
           setPlayerNum(other.getPlayerNum());
         }
-        if (other.hasTeam()) {
-          setTeam(other.getTeam());
+        if (other.hasTeamColor()) {
+          setTeamColor(other.getTeamColor());
         }
         if (other.hasPose()) {
           mergePose(other.getPose());
@@ -16487,11 +18269,6 @@ public final class Representations {
               playerNum_ = input.readUInt32();
               break;
             }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              team_ = input.readUInt32();
-              break;
-            }
             case 26: {
               de.naoth.rc.messages.CommonTypes.Pose2D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder();
               if (hasPose()) {
@@ -16524,11 +18301,6 @@ public final class Representations {
               setBallVelocity(subBuilder.buildPartial());
               break;
             }
-            case 56: {
-              bitField0_ |= 0x00000040;
-              fallen_ = input.readInt32();
-              break;
-            }
             case 66: {
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder subBuilder = de.naoth.rc.messages.Representations.BUUserTeamMessage.newBuilder();
               if (hasUser()) {
@@ -16545,6 +18317,22 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setFrameInfo(subBuilder.buildPartial());
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000040;
+              fallen_ = input.readBool();
+              break;
+            }
+            case 88: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.Representations.TeamColor value = de.naoth.rc.messages.Representations.TeamColor.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(11, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                teamColor_ = value;
+              }
               break;
             }
           }
@@ -16574,23 +18362,26 @@ public final class Representations {
         return this;
       }
       
-      // optional uint32 team = 2 [default = 0];
-      private int team_ ;
-      public boolean hasTeam() {
+      // optional .naothmessages.TeamColor teamColor = 11 [default = blueTeam];
+      private de.naoth.rc.messages.Representations.TeamColor teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
+      public boolean hasTeamColor() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public int getTeam() {
-        return team_;
+      public de.naoth.rc.messages.Representations.TeamColor getTeamColor() {
+        return teamColor_;
       }
-      public Builder setTeam(int value) {
+      public Builder setTeamColor(de.naoth.rc.messages.Representations.TeamColor value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
         bitField0_ |= 0x00000002;
-        team_ = value;
+        teamColor_ = value;
         onChanged();
         return this;
       }
-      public Builder clearTeam() {
+      public Builder clearTeamColor() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        team_ = 0;
+        teamColor_ = de.naoth.rc.messages.Representations.TeamColor.blueTeam;
         onChanged();
         return this;
       }
@@ -16886,15 +18677,15 @@ public final class Representations {
         return ballVelocityBuilder_;
       }
       
-      // optional int32 fallen = 7 [default = -1];
-      private int fallen_ = -1;
+      // optional bool fallen = 10 [default = false];
+      private boolean fallen_ ;
       public boolean hasFallen() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public int getFallen() {
+      public boolean getFallen() {
         return fallen_;
       }
-      public Builder setFallen(int value) {
+      public Builder setFallen(boolean value) {
         bitField0_ |= 0x00000040;
         fallen_ = value;
         onChanged();
@@ -16902,7 +18693,7 @@ public final class Representations {
       }
       public Builder clearFallen() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        fallen_ = -1;
+        fallen_ = false;
         onChanged();
         return this;
       }
@@ -17126,6 +18917,22 @@ public final class Representations {
         getOpponentsOrBuilderList();
     de.naoth.rc.messages.Representations.OpponentOrBuilder getOpponentsOrBuilder(
         int index);
+    
+    // optional uint32 teamNumber = 6 [default = 0];
+    boolean hasTeamNumber();
+    int getTeamNumber();
+    
+    // optional float batteryCharge = 7 [default = 1];
+    boolean hasBatteryCharge();
+    float getBatteryCharge();
+    
+    // optional float temperature = 8 [default = 0];
+    boolean hasTemperature();
+    float getTemperature();
+    
+    // optional uint64 timestamp = 9 [default = 0];
+    boolean hasTimestamp();
+    long getTimestamp();
   }
   public static final class BUUserTeamMessage extends
       com.google.protobuf.GeneratedMessage
@@ -17239,12 +19046,56 @@ public final class Representations {
       return opponents_.get(index);
     }
     
+    // optional uint32 teamNumber = 6 [default = 0];
+    public static final int TEAMNUMBER_FIELD_NUMBER = 6;
+    private int teamNumber_;
+    public boolean hasTeamNumber() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getTeamNumber() {
+      return teamNumber_;
+    }
+    
+    // optional float batteryCharge = 7 [default = 1];
+    public static final int BATTERYCHARGE_FIELD_NUMBER = 7;
+    private float batteryCharge_;
+    public boolean hasBatteryCharge() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public float getBatteryCharge() {
+      return batteryCharge_;
+    }
+    
+    // optional float temperature = 8 [default = 0];
+    public static final int TEMPERATURE_FIELD_NUMBER = 8;
+    private float temperature_;
+    public boolean hasTemperature() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public float getTemperature() {
+      return temperature_;
+    }
+    
+    // optional uint64 timestamp = 9 [default = 0];
+    public static final int TIMESTAMP_FIELD_NUMBER = 9;
+    private long timestamp_;
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public long getTimestamp() {
+      return timestamp_;
+    }
+    
     private void initFields() {
       bodyID_ = "unknown";
       timeToBall_ = 0;
       wasStriker_ = false;
       isPenalized_ = false;
       opponents_ = java.util.Collections.emptyList();
+      teamNumber_ = 0;
+      batteryCharge_ = 1F;
+      temperature_ = 0F;
+      timestamp_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -17279,6 +19130,18 @@ public final class Representations {
       for (int i = 0; i < opponents_.size(); i++) {
         output.writeMessage(5, opponents_.get(i));
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(6, teamNumber_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeFloat(7, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeFloat(8, temperature_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt64(9, timestamp_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -17307,6 +19170,22 @@ public final class Representations {
       for (int i = 0; i < opponents_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, opponents_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, teamNumber_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(7, batteryCharge_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(8, temperature_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(9, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -17447,6 +19326,14 @@ public final class Representations {
         } else {
           opponentsBuilder_.clear();
         }
+        teamNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        batteryCharge_ = 1F;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        temperature_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        timestamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -17510,6 +19397,22 @@ public final class Representations {
         } else {
           result.opponents_ = opponentsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.teamNumber_ = teamNumber_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.batteryCharge_ = batteryCharge_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.temperature_ = temperature_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.timestamp_ = timestamp_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -17563,6 +19466,18 @@ public final class Representations {
               opponentsBuilder_.addAllMessages(other.opponents_);
             }
           }
+        }
+        if (other.hasTeamNumber()) {
+          setTeamNumber(other.getTeamNumber());
+        }
+        if (other.hasBatteryCharge()) {
+          setBatteryCharge(other.getBatteryCharge());
+        }
+        if (other.hasTemperature()) {
+          setTemperature(other.getTemperature());
+        }
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -17625,6 +19540,26 @@ public final class Representations {
               de.naoth.rc.messages.Representations.Opponent.Builder subBuilder = de.naoth.rc.messages.Representations.Opponent.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addOpponents(subBuilder.buildPartial());
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              teamNumber_ = input.readUInt32();
+              break;
+            }
+            case 61: {
+              bitField0_ |= 0x00000040;
+              batteryCharge_ = input.readFloat();
+              break;
+            }
+            case 69: {
+              bitField0_ |= 0x00000080;
+              temperature_ = input.readFloat();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              timestamp_ = input.readUInt64();
               break;
             }
           }
@@ -17916,6 +19851,90 @@ public final class Representations {
           opponents_ = null;
         }
         return opponentsBuilder_;
+      }
+      
+      // optional uint32 teamNumber = 6 [default = 0];
+      private int teamNumber_ ;
+      public boolean hasTeamNumber() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getTeamNumber() {
+        return teamNumber_;
+      }
+      public Builder setTeamNumber(int value) {
+        bitField0_ |= 0x00000020;
+        teamNumber_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTeamNumber() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        teamNumber_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional float batteryCharge = 7 [default = 1];
+      private float batteryCharge_ = 1F;
+      public boolean hasBatteryCharge() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public float getBatteryCharge() {
+        return batteryCharge_;
+      }
+      public Builder setBatteryCharge(float value) {
+        bitField0_ |= 0x00000040;
+        batteryCharge_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBatteryCharge() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        batteryCharge_ = 1F;
+        onChanged();
+        return this;
+      }
+      
+      // optional float temperature = 8 [default = 0];
+      private float temperature_ ;
+      public boolean hasTemperature() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public float getTemperature() {
+        return temperature_;
+      }
+      public Builder setTemperature(float value) {
+        bitField0_ |= 0x00000080;
+        temperature_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTemperature() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        temperature_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint64 timestamp = 9 [default = 0];
+      private long timestamp_ ;
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      public Builder setTimestamp(long value) {
+        bitField0_ |= 0x00000100;
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        timestamp_ = 0L;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.BUUserTeamMessage)
@@ -19054,6 +21073,16 @@ public final class Representations {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_ScanLineEndPoint_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_Edgel_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_Edgel_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_EdgelPair_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_EdgelPair_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_ScanLineEdgelPercept_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -19144,91 +21173,102 @@ public final class Representations {
       "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022" +
       "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO" +
       "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepContr" +
+      "ector2\022\022\n\ncoordinate\030\n \001(\r\"\226\001\n\022StepContr" +
       "olRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoo" +
       "t\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmessages.",
       "Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005" +
-      " \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r" +
-      "\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.na" +
-      "othmessages.Pose2D\0226\n\013stepControl\030\004 \001(\0132" +
-      "!.naothmessages.StepControlRequest\022%\n\006of" +
-      "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic" +
-      "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa" +
-      "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001" +
-      "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\213" +
-      "\001\n\014GraspRequest\0223\n\rgraspingPoint\030\001 \002(\0132\034",
-      ".naothmessages.DoubleVector3\022\025\n\rgrasping" +
-      "State\030\002 \002(\r\022\026\n\016graspDistState\030\003 \002(\r\022\027\n\017g" +
-      "raspStiffState\030\004 \002(\r\"\336\003\n\020ArmMotionReques" +
-      "t\022\n\n\002id\030\001 \002(\r\0227\n\021lShoulderPosition\030\002 \001(\013" +
-      "2\034.naothmessages.DoubleVector2\0228\n\022lShoul" +
-      "derStiffness\030\003 \001(\0132\034.naothmessages.Doubl" +
-      "eVector2\0224\n\016lElbowPosition\030\004 \001(\0132\034.naoth" +
-      "messages.DoubleVector2\0225\n\017lElbowStiffnes" +
-      "s\030\005 \001(\0132\034.naothmessages.DoubleVector2\0227\n" +
-      "\021rShoulderPosition\030\006 \001(\0132\034.naothmessages",
-      ".DoubleVector2\0228\n\022rShoulderStiffness\030\007 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\0224\n\016rElb" +
-      "owPosition\030\010 \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\0225\n\017rElbowStiffness\030\t \001(\0132\034.naothm" +
-      "essages.DoubleVector2\"\370\002\n\rMotionRequest\022" +
-      "\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(" +
-      "\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessages.W" +
-      "alkRequest\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013ki" +
-      "ckRequest\030\006 \001(\0132\032.naothmessages.KickRequ" +
-      "est\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrateFoo",
-      "tTouchDetector\030\010 \001(\010\022\034\n\024cognitionFrameNu" +
-      "mber\030\t \001(\r\0221\n\014graspRequest\030\n \001(\0132\033.naoth" +
-      "messages.GraspRequest\0229\n\020armMotionReques" +
-      "t\030\013 \001(\0132\037.naothmessages.ArmMotionRequest" +
-      "\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothm" +
-      "essages.FieldLineSegment\0222\n\rintersection" +
-      "s\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022" +
-      "middleCircleCenter\030\003 \001(\0132\034.naothmessages" +
-      ".DoubleVector2\"\254\001\n\020ScanLineEndPoint\022-\n\np" +
-      "osInImage\030\001 \002(\0132\031.naothmessages.IntVecto",
-      "r2\0220\n\nposOnField\030\002 \002(\0132\034.naothmessages.D" +
-      "oubleVector2\022#\n\005color\030\003 \002(\0162\024.naothmessa" +
-      "ges.Color\022\022\n\nScanLineID\030\004 \002(\r\"J\n\024ScanLin" +
-      "eEdgelPercept\0222\n\tendPoints\030\002 \003(\0132\037.naoth" +
-      "messages.ScanLineEndPoint\"9\n\021StepControl" +
-      "Status\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002" +
-      " \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nl" +
-      "astMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022" +
-      "\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionState" +
-      "\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.",
-      "naothmessages.Pose2D\0225\n\026plannedMotionRig" +
-      "htFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020p" +
-      "lannedMotionHip\030\010 \002(\0132\025.naothmessages.Po" +
-      "se2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothm" +
-      "essages.StepControlStatus\"3\n\014OdometryDat" +
-      "a\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"\320" +
-      "\001\n\017CalibrationData\022:\n\024inertialSensorOffs" +
-      "et\030\001 \001(\0132\034.naothmessages.DoubleVector2\0226" +
-      "\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessages" +
-      ".DoubleVector2\0225\n\017accSensorOffset\030\003 \001(\0132",
-      "\034.naothmessages.DoubleVector3\022\022\n\ncalibra" +
-      "ted\030\004 \002(\010\"B\n\rInertialModel\0221\n\013orientatio" +
-      "n\030\001 \001(\0132\034.naothmessages.DoubleVector2\"A\n" +
-      "\025TeamMessageCollection\022(\n\004data\030\001 \003(\0132\032.n" +
-      "aothmessages.TeamMessage\"\307\002\n\013TeamMessage" +
-      "\022\024\n\tplayerNum\030\001 \001(\r:\0010\022\017\n\004team\030\002 \001(\r:\0010\022" +
-      "#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose2D\022\023\n\007" +
-      "ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030\005 \001(\0132" +
-      "\034.naothmessages.DoubleVector2\0222\n\014ballVel" +
-      "ocity\030\006 \001(\0132\034.naothmessages.DoubleVector",
-      "2\022\022\n\006fallen\030\007 \001(\005:\002-1\022.\n\004user\030\010 \001(\0132 .na" +
-      "othmessages.BUUserTeamMessage\022+\n\tframeIn" +
-      "fo\030\t \001(\0132\030.naothmessages.FrameInfo\"\243\001\n\021B" +
-      "UUserTeamMessage\022\027\n\006bodyID\030\001 \001(\t:\007unknow" +
-      "n\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStriker\030\003 \001(" +
-      "\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005false\022*\n\t" +
-      "opponents\030\005 \003(\0132\027.naothmessages.Opponent" +
-      "\"L\n\010Opponent\022\024\n\tplayerNum\030\001 \002(\005:\0010\022*\n\013po" +
-      "seOnField\030\002 \001(\0132\025.naothmessages.Pose2D\"Q" +
-      "\n\027CameraMatrixCalibration\0226\n\020correctionO",
-      "ffset\030\001 \003(\0132\034.naothmessages.DoubleVector" +
-      "2B\026\n\024de.naoth.rc.messages"
+      " \002(\001\022\r\n\005scale\030\006 \002(\001\"\272\001\n\013WalkRequest\022\022\n\nc" +
+      "oordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006ta" +
+      "rget\030\003 \002(\0132\025.naothmessages.Pose2D\0226\n\013ste" +
+      "pControl\030\004 \001(\0132!.naothmessages.StepContr" +
+      "olRequest\022%\n\006offset\030\005 \002(\0132\025.naothmessage" +
+      "s.Pose2D\"{\n\013KickRequest\022/\n\tkickPoint\030\001 \002" +
+      "(\0132\034.naothmessages.DoubleVector3\022\025\n\rkick" +
+      "Direction\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfin" +
+      "ishKick\030\004 \002(\010\"\213\001\n\014GraspRequest\0223\n\rgraspi",
+      "ngPoint\030\001 \002(\0132\034.naothmessages.DoubleVect" +
+      "or3\022\025\n\rgraspingState\030\002 \002(\r\022\026\n\016graspDistS" +
+      "tate\030\003 \002(\r\022\027\n\017graspStiffState\030\004 \002(\r\"\336\003\n\020" +
+      "ArmMotionRequest\022\n\n\002id\030\001 \002(\r\0227\n\021lShoulde" +
+      "rPosition\030\002 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor2\0228\n\022lShoulderStiffness\030\003 \001(\0132\034.naot" +
+      "hmessages.DoubleVector2\0224\n\016lElbowPositio" +
+      "n\030\004 \001(\0132\034.naothmessages.DoubleVector2\0225\n" +
+      "\017lElbowStiffness\030\005 \001(\0132\034.naothmessages.D" +
+      "oubleVector2\0227\n\021rShoulderPosition\030\006 \001(\0132",
+      "\034.naothmessages.DoubleVector2\0228\n\022rShould" +
+      "erStiffness\030\007 \001(\0132\034.naothmessages.Double" +
+      "Vector2\0224\n\016rElbowPosition\030\010 \001(\0132\034.naothm" +
+      "essages.DoubleVector2\0225\n\017rElbowStiffness" +
+      "\030\t \001(\0132\034.naothmessages.DoubleVector2\"\370\002\n" +
+      "\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r" +
+      "\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032." +
+      "naothmessages.WalkRequest\022\026\n\016starndardSt" +
+      "and\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothme" +
+      "ssages.KickRequest\022\023\n\013standHeight\030\007 \001(\001\022",
+      "\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n\024c" +
+      "ognitionFrameNumber\030\t \001(\r\0221\n\014graspReques" +
+      "t\030\n \001(\0132\033.naothmessages.GraspRequest\0229\n\020" +
+      "armMotionRequest\030\013 \001(\0132\037.naothmessages.A" +
+      "rmMotionRequest\"\253\001\n\013LinePercept\022.\n\005lines" +
+      "\030\001 \003(\0132\037.naothmessages.FieldLineSegment\022" +
+      "2\n\rintersections\030\002 \003(\0132\033.naothmessages.I" +
+      "ntersection\0228\n\022middleCircleCenter\030\003 \001(\0132" +
+      "\034.naothmessages.DoubleVector2\"\254\001\n\020ScanLi" +
+      "neEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.naothme",
+      "ssages.IntVector2\0220\n\nposOnField\030\002 \002(\0132\034." +
+      "naothmessages.DoubleVector2\022#\n\005color\030\003 \002" +
+      "(\0162\024.naothmessages.Color\022\022\n\nScanLineID\030\004" +
+      " \002(\r\"b\n\005Edgel\022(\n\005point\030\001 \002(\0132\031.naothmess" +
+      "ages.IntVector2\022/\n\tdirection\030\002 \002(\0132\034.nao" +
+      "thmessages.DoubleVector2\"3\n\tEdgelPair\022\r\n" +
+      "\005begin\030\001 \002(\005\022\013\n\003end\030\002 \002(\005\022\n\n\002id\030\003 \002(\005\"\231\001" +
+      "\n\024ScanLineEdgelPercept\022$\n\006edgels\030\001 \003(\0132\024" +
+      ".naothmessages.Edgel\022\'\n\005pairs\030\003 \003(\0132\030.na" +
+      "othmessages.EdgelPair\0222\n\tendPoints\030\002 \003(\013",
+      "2\037.naothmessages.ScanLineEndPoint\"9\n\021Ste" +
+      "pControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveab" +
+      "leFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 " +
+      "\002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion" +
+      "\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMot" +
+      "ionState\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030" +
+      "\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026plannedM" +
+      "otionRightFoot\030\007 \002(\0132\025.naothmessages.Pos" +
+      "e2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.naothmes" +
+      "sages.Pose2D\022;\n\021stepControlStatus\030\t \001(\0132",
+      " .naothmessages.StepControlStatus\"3\n\014Odo" +
+      "metryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages." +
+      "Pose2D\"\320\001\n\017CalibrationData\022:\n\024inertialSe" +
+      "nsorOffset\030\001 \001(\0132\034.naothmessages.DoubleV" +
+      "ector2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naoth" +
+      "messages.DoubleVector2\0225\n\017accSensorOffse" +
+      "t\030\003 \001(\0132\034.naothmessages.DoubleVector3\022\022\n" +
+      "\ncalibrated\030\004 \002(\010\"B\n\rInertialModel\0221\n\013or" +
+      "ientation\030\001 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor2\"A\n\025TeamMessageCollection\022(\n\004data\030\001",
+      " \003(\0132\032.naothmessages.TeamMessage\"\360\002\n\013Tea" +
+      "mMessage\022\024\n\tplayerNum\030\001 \001(\r:\0010\0225\n\tteamCo" +
+      "lor\030\013 \001(\0162\030.naothmessages.TeamColor:\010blu" +
+      "eTeam\022#\n\004pose\030\003 \001(\0132\025.naothmessages.Pose" +
+      "2D\022\023\n\007ballAge\030\004 \001(\005:\002-1\0222\n\014ballPosition\030" +
+      "\005 \001(\0132\034.naothmessages.DoubleVector2\0222\n\014b" +
+      "allVelocity\030\006 \001(\0132\034.naothmessages.Double" +
+      "Vector2\022\025\n\006fallen\030\n \001(\010:\005false\022.\n\004user\030\010" +
+      " \001(\0132 .naothmessages.BUUserTeamMessage\022+" +
+      "\n\tframeInfo\030\t \001(\0132\030.naothmessages.FrameI",
+      "nfo\"\202\002\n\021BUUserTeamMessage\022\027\n\006bodyID\030\001 \001(" +
+      "\t:\007unknown\022\022\n\ntimeToBall\030\002 \001(\r\022\031\n\nwasStr" +
+      "iker\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005" +
+      "false\022*\n\topponents\030\005 \003(\0132\027.naothmessages" +
+      ".Opponent\022\025\n\nteamNumber\030\006 \001(\r:\0010\022\030\n\rbatt" +
+      "eryCharge\030\007 \001(\002:\0011\022\026\n\013temperature\030\010 \001(\002:" +
+      "\0010\022\024\n\ttimestamp\030\t \001(\004:\0010\"L\n\010Opponent\022\024\n\t" +
+      "playerNum\030\001 \002(\005:\0010\022*\n\013poseOnField\030\002 \001(\0132" +
+      "\025.naothmessages.Pose2D\"Q\n\027CameraMatrixCa" +
+      "libration\0226\n\020correctionOffset\030\001 \003(\0132\034.na",
+      "othmessages.DoubleVector2*7\n\tTeamColor\022\014" +
+      "\n\010blueTeam\020\000\022\013\n\007redTeam\020\001\022\017\n\013invalidTeam" +
+      "\020\002B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -19272,7 +21312,7 @@ public final class Representations {
           internal_static_naothmessages_StepControlRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlRequest_descriptor,
-              new java.lang.String[] { "StepID", "MoveLeftFoot", "Target", "Time", "SpeedDirection", },
+              new java.lang.String[] { "StepID", "MoveLeftFoot", "Target", "Time", "SpeedDirection", "Scale", },
               de.naoth.rc.messages.Representations.StepControlRequest.class,
               de.naoth.rc.messages.Representations.StepControlRequest.Builder.class);
           internal_static_naothmessages_WalkRequest_descriptor =
@@ -19331,16 +21371,32 @@ public final class Representations {
               new java.lang.String[] { "PosInImage", "PosOnField", "Color", "ScanLineID", },
               de.naoth.rc.messages.Representations.ScanLineEndPoint.class,
               de.naoth.rc.messages.Representations.ScanLineEndPoint.Builder.class);
-          internal_static_naothmessages_ScanLineEdgelPercept_descriptor =
+          internal_static_naothmessages_Edgel_descriptor =
             getDescriptor().getMessageTypes().get(12);
+          internal_static_naothmessages_Edgel_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_Edgel_descriptor,
+              new java.lang.String[] { "Point", "Direction", },
+              de.naoth.rc.messages.Representations.Edgel.class,
+              de.naoth.rc.messages.Representations.Edgel.Builder.class);
+          internal_static_naothmessages_EdgelPair_descriptor =
+            getDescriptor().getMessageTypes().get(13);
+          internal_static_naothmessages_EdgelPair_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_EdgelPair_descriptor,
+              new java.lang.String[] { "Begin", "End", "Id", },
+              de.naoth.rc.messages.Representations.EdgelPair.class,
+              de.naoth.rc.messages.Representations.EdgelPair.Builder.class);
+          internal_static_naothmessages_ScanLineEdgelPercept_descriptor =
+            getDescriptor().getMessageTypes().get(14);
           internal_static_naothmessages_ScanLineEdgelPercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_ScanLineEdgelPercept_descriptor,
-              new java.lang.String[] { "EndPoints", },
+              new java.lang.String[] { "Edgels", "Pairs", "EndPoints", },
               de.naoth.rc.messages.Representations.ScanLineEdgelPercept.class,
               de.naoth.rc.messages.Representations.ScanLineEdgelPercept.Builder.class);
           internal_static_naothmessages_StepControlStatus_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_naothmessages_StepControlStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlStatus_descriptor,
@@ -19348,7 +21404,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.StepControlStatus.class,
               de.naoth.rc.messages.Representations.StepControlStatus.Builder.class);
           internal_static_naothmessages_MotionStatus_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_naothmessages_MotionStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionStatus_descriptor,
@@ -19356,7 +21412,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.MotionStatus.class,
               de.naoth.rc.messages.Representations.MotionStatus.Builder.class);
           internal_static_naothmessages_OdometryData_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_naothmessages_OdometryData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_OdometryData_descriptor,
@@ -19364,7 +21420,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.OdometryData.class,
               de.naoth.rc.messages.Representations.OdometryData.Builder.class);
           internal_static_naothmessages_CalibrationData_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CalibrationData_descriptor,
@@ -19372,7 +21428,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.CalibrationData.class,
               de.naoth.rc.messages.Representations.CalibrationData.Builder.class);
           internal_static_naothmessages_InertialModel_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_naothmessages_InertialModel_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_InertialModel_descriptor,
@@ -19380,7 +21436,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.InertialModel.class,
               de.naoth.rc.messages.Representations.InertialModel.Builder.class);
           internal_static_naothmessages_TeamMessageCollection_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(20);
           internal_static_naothmessages_TeamMessageCollection_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_TeamMessageCollection_descriptor,
@@ -19388,23 +21444,23 @@ public final class Representations {
               de.naoth.rc.messages.Representations.TeamMessageCollection.class,
               de.naoth.rc.messages.Representations.TeamMessageCollection.Builder.class);
           internal_static_naothmessages_TeamMessage_descriptor =
-            getDescriptor().getMessageTypes().get(19);
+            getDescriptor().getMessageTypes().get(21);
           internal_static_naothmessages_TeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_TeamMessage_descriptor,
-              new java.lang.String[] { "PlayerNum", "Team", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", },
+              new java.lang.String[] { "PlayerNum", "TeamColor", "Pose", "BallAge", "BallPosition", "BallVelocity", "Fallen", "User", "FrameInfo", },
               de.naoth.rc.messages.Representations.TeamMessage.class,
               de.naoth.rc.messages.Representations.TeamMessage.Builder.class);
           internal_static_naothmessages_BUUserTeamMessage_descriptor =
-            getDescriptor().getMessageTypes().get(20);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_naothmessages_BUUserTeamMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BUUserTeamMessage_descriptor,
-              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", },
+              new java.lang.String[] { "BodyID", "TimeToBall", "WasStriker", "IsPenalized", "Opponents", "TeamNumber", "BatteryCharge", "Temperature", "Timestamp", },
               de.naoth.rc.messages.Representations.BUUserTeamMessage.class,
               de.naoth.rc.messages.Representations.BUUserTeamMessage.Builder.class);
           internal_static_naothmessages_Opponent_descriptor =
-            getDescriptor().getMessageTypes().get(21);
+            getDescriptor().getMessageTypes().get(23);
           internal_static_naothmessages_Opponent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_Opponent_descriptor,
@@ -19412,7 +21468,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.Opponent.class,
               de.naoth.rc.messages.Representations.Opponent.Builder.class);
           internal_static_naothmessages_CameraMatrixCalibration_descriptor =
-            getDescriptor().getMessageTypes().get(22);
+            getDescriptor().getMessageTypes().get(24);
           internal_static_naothmessages_CameraMatrixCalibration_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraMatrixCalibration_descriptor,

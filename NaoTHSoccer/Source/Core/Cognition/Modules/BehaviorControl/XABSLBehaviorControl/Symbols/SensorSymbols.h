@@ -41,11 +41,12 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
-  PROVIDE(Path)
   REQUIRE(Image)
   REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
+
+  PROVIDE(Path)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -53,19 +54,6 @@ class SensorSymbols: public SensorSymbolsBase
 public:
 
   SensorSymbols()
-  :
-    ultraSoundReceiveData(getUltraSoundReceiveData()),
-    gyrometerData(getGyrometerData()),
-    inertialSensorData(getInertialSensorData()),
-    irreceiveData(getIRReceiveData()),
-    batteryData(getBatteryData()),
-    frameInfo(getFrameInfo()),
-    bodyState(getBodyState()),
-    obstacleModel(getObstacleModel()),
-    collisionModel(getCollisionModel()),
-    radarGrid(getRadarGrid()),
-    path(getPath()),
-    image(getImage())
   {
     theInstance = this;
   }
@@ -79,19 +67,6 @@ public:
   virtual ~SensorSymbols();
 
 private:
-  UltraSoundReceiveData const& ultraSoundReceiveData;
-  GyrometerData const& gyrometerData;
-  InertialSensorData const& inertialSensorData;
-  IRReceiveData const& irreceiveData;
-  BatteryData const& batteryData;
-  FrameInfo const& frameInfo;
-  BodyState const& bodyState;
-  ObstacleModel const& obstacleModel;
-  CollisionModel const& collisionModel;
-  RadarGrid const& radarGrid;
-  Path& path;
-  Image const& image;
-
   static SensorSymbols* theInstance;
 
   //get-method
@@ -106,7 +81,7 @@ private:
   static double getObstacleDistanceLeft();
   static double getObstacleDistanceRight();
   static double getBlockedTime();
-
+  static double getFootStateTime();
   static double getTargetPointX();
   static double getTargetPointY();
 
