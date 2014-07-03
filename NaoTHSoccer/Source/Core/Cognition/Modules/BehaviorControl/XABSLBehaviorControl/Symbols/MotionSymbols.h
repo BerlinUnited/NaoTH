@@ -38,7 +38,8 @@ public:
     walkStyle(normal),
     stepControlFoot(none),
     stepControlRequestTime(0),
-    stepControlRequestSpeedDirection(0)
+    stepControlRequestSpeedDirection(0),
+    stepControlScale(1.0)
   {
     theInstance = this;
   }

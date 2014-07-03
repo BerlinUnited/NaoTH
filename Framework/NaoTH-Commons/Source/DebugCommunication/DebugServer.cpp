@@ -20,8 +20,11 @@
 using namespace naoth;
 
 DebugServer::DebugServer()
-  : connectionThread(NULL),
-    abort(false)
+  : 
+  lastSendTime(0),
+  lastReceiveTime(0),
+  connectionThread(NULL),
+  abort(false)
 {
   m_executing = g_mutex_new();
   m_abort = g_mutex_new();

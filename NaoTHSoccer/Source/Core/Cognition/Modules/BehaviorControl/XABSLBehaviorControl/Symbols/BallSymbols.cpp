@@ -101,8 +101,6 @@ void BallSymbols::execute()
   );
 
 
-
-
   ballPerceptSeen = false;
 
   if(theInstance->getBallPercept().ballWasSeen) {

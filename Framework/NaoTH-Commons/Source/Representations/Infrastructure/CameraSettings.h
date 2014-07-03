@@ -18,7 +18,6 @@ namespace naoth
 
   class CameraSettings : public Printable
   {
-    private:
     public:
       /* don't change order of enumerations
        * because it reflects the order of execution
