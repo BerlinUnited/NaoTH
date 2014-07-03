@@ -67,6 +67,14 @@ public class DeployUtils
       File dst = new File(deployPath, cfg.configPath());
       File src = new File(cfg.localConfigPath());
       copyFiles(parent, src, dst);
+      
+      // the "private" folder should always be empty
+      File privateFolder = new File(dst, "private");
+      deleteDir(privateFolder);
+      if(!privateFolder.mkdir())
+      {
+        parent.actionError("Could not create empty \"private\" folder");
+      }
     }
     
     return true;

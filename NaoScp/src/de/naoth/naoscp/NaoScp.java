@@ -197,7 +197,7 @@ public class NaoScp extends NaoScpMainFrame
         String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
         programPath = programPath.replace("file:", "");
         //path replacement if NaoScp is being started from console directly
-        programPath = programPath.replace("/NaoScp/dist/NaoScp_2.jar!/de/naoth/naoscp/NaoScp.class", "");
+        programPath = programPath.replace("/NaoScp/dist/NaoScp.jar!/de/naoth/naoscp/NaoScp.class", "");
         //path replacement if NaoScp is started from IDE (Netbeans)
         programPath = programPath.replace("/NaoScp/build/classes/de/naoth/naoscp/NaoScp.class", "") + "/NaoTHSoccer";
         File ProgramDir = new File(programPath);
@@ -814,8 +814,6 @@ public class NaoScp extends NaoScpMainFrame
     jDirChooser.setEnabled(enable);
     jSchemeBox.setEnabled(enable);
 
-    lblTeamCommLAN.setEnabled(enable);
-    lblTeamCommWLAN.setEnabled(enable);
     jTeamCommPort.setEnabled(enable);
     jTeamNumber.setEnabled(enable);
 
@@ -1338,7 +1336,7 @@ public class NaoScp extends NaoScpMainFrame
             bodyIdToPlayerNumber.put(name, number);
             
             final MaskFormatter formatter = new MaskFormatter(name+": *");
-            formatter.setValidCharacters("12345");
+            formatter.setValidCharacters("1234567890");
             formatter.setPlaceholderCharacter(Character.forDigit(number, 10));
             
             final JFormattedTextField input = new JFormattedTextField(formatter);
@@ -1993,10 +1991,6 @@ public class NaoScp extends NaoScpMainFrame
         wlanKey = new javax.swing.JPasswordField();
         jSettingsPanel2 = new javax.swing.JPanel();
         jLabel24 = new javax.swing.JLabel();
-        lblTeamCommWLAN = new javax.swing.JTextField();
-        jLabel25 = new javax.swing.JLabel();
-        lblTeamCommLAN = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
         jTeamCommPort = new javax.swing.JTextField();
         jLabel27 = new javax.swing.JLabel();
         sshUser = new javax.swing.JTextField();
@@ -2459,37 +2453,10 @@ public class NaoScp extends NaoScpMainFrame
         jLabel22.setText("Broadcast");
 
         subnetFieldLAN.setText("10.0.0");
-        subnetFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                subnetFieldLANActionPerformed(evt);
-            }
-        });
 
         netmaskFieldLAN.setText("255.255.255.0");
-        netmaskFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                netmaskFieldLANActionPerformed(evt);
-            }
-        });
 
         broadcastFieldLAN.setText("10.0.0.255");
-        broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                broadcastFieldLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldLANInputMethodTextChanged(evt);
-            }
-        });
-        broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                broadcastFieldLANKeyPressed(evt);
-            }
-        });
 
         jLabel14.setText("WLAN:");
 
@@ -2500,51 +2467,10 @@ public class NaoScp extends NaoScpMainFrame
         jLabel23.setText("Broadcast");
 
         subnetFieldWLAN.setText("192.168.4");
-        subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                subnetFieldWLANActionPerformed(evt);
-            }
-        });
 
         netmaskFieldWLAN.setText("255.255.255.0");
-        netmaskFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                netmaskFieldWLANActionPerformed(evt);
-            }
-        });
 
         broadcastFieldWLAN.setText("192.168.4.255");
-        broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                broadcastFieldWLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldWLANCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldWLANInputMethodTextChanged(evt);
-            }
-        });
-        broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                broadcastFieldWLANPropertyChange(evt);
-            }
-        });
-        broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                broadcastFieldWLANKeyTyped(evt);
-            }
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                broadcastFieldWLANKeyPressed(evt);
-            }
-        });
-        broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
-            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
-                broadcastFieldWLANVetoableChange(evt);
-            }
-        });
 
         radioWPA.setBackground(new java.awt.Color(204, 204, 255));
         radioWPA.setSelected(true);
@@ -2556,21 +2482,11 @@ public class NaoScp extends NaoScpMainFrame
         jLabel5.setText("SSID");
 
         wlanSSID.setText("SPL_Field_B");
-        wlanSSID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                wlanSSIDActionPerformed(evt);
-            }
-        });
 
         jLabel9.setText("WLAN Key");
 
         wlanKey.setText("SPLRC2012");
         wlanKey.setEchoChar('\u0000');
-        wlanKey.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                wlanKeyActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jSettingsPanel1Layout = new javax.swing.GroupLayout(jSettingsPanel1);
         jSettingsPanel1.setLayout(jSettingsPanel1Layout);
@@ -2677,37 +2593,12 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel24.setText("TeamComm:");
 
-        lblTeamCommWLAN.setEditable(false);
-        lblTeamCommWLAN.setText("192.168.4.255");
-        lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lblTeamCommWLANActionPerformed(evt);
-            }
-        });
-
-        jLabel25.setText("/");
-
-        lblTeamCommLAN.setEditable(false);
-        lblTeamCommLAN.setText("10.0.0.255");
-        lblTeamCommLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lblTeamCommLANActionPerformed(evt);
-            }
-        });
-
-        jLabel26.setText(":");
-
         jTeamCommPort.setColumns(10);
         jTeamCommPort.setText("10400");
 
         jLabel27.setText("ssh:");
 
         sshUser.setText("nao");
-        sshUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sshUserActionPerformed(evt);
-            }
-        });
 
         jLabel28.setText(":");
 
@@ -2718,11 +2609,6 @@ public class NaoScp extends NaoScpMainFrame
 
         sshRootUser.setEditable(false);
         sshRootUser.setText("root");
-        sshRootUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sshRootUserActionPerformed(evt);
-            }
-        });
 
         jLabel30.setText(":");
 
@@ -2739,15 +2625,8 @@ public class NaoScp extends NaoScpMainFrame
                     .addGroup(jSettingsPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel24)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel25)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                        .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                        .addGap(221, 221, 221))
                     .addGroup(jSettingsPanel2Layout.createSequentialGroup()
                         .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jSettingsPanel2Layout.createSequentialGroup()
@@ -2774,10 +2653,6 @@ public class NaoScp extends NaoScpMainFrame
                 .addContainerGap()
                 .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTeamCommWLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTeamCommLAN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jSettingsPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -3189,86 +3064,6 @@ public class NaoScp extends NaoScpMainFrame
         }
     }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
 
-    private void sshRootUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshRootUserActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sshRootUserActionPerformed
-
-    private void sshUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sshUserActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sshUserActionPerformed
-
-    private void lblTeamCommLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lblTeamCommLANActionPerformed
-
-    private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommWLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lblTeamCommWLANActionPerformed
-
-    private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanKeyActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_wlanKeyActionPerformed
-
-    private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanSSIDActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_wlanSSIDActionPerformed
-
-    private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_broadcastFieldWLANVetoableChange
-
-    }//GEN-LAST:event_broadcastFieldWLANVetoableChange
-
-    private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyPressed
-        lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-    }//GEN-LAST:event_broadcastFieldWLANKeyPressed
-
-    private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyTyped
-
-    }//GEN-LAST:event_broadcastFieldWLANKeyTyped
-
-    private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_broadcastFieldWLANPropertyChange
-
-    }//GEN-LAST:event_broadcastFieldWLANPropertyChange
-
-    private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
-
-    }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
-
-    private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
-
-    }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
-
-    private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldWLANActionPerformed
-        lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
-    }//GEN-LAST:event_broadcastFieldWLANActionPerformed
-
-    private void netmaskFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldWLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_netmaskFieldWLANActionPerformed
-
-    private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_subnetFieldWLANActionPerformed
-
-    private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldLANKeyPressed
-        lblTeamCommLAN.setText(broadcastFieldLAN.getText());
-    }//GEN-LAST:event_broadcastFieldLANKeyPressed
-
-    private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
-
-    }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
-
-    private void broadcastFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_broadcastFieldLANActionPerformed
-
-    private void netmaskFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmaskFieldLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_netmaskFieldLANActionPerformed
-
-    private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldLANActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_subnetFieldLANActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane actionsTab;
     private javax.swing.JTextField broadcastFieldLAN;
@@ -3311,8 +3106,6 @@ public class NaoScp extends NaoScpMainFrame
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
@@ -3335,8 +3128,6 @@ public class NaoScp extends NaoScpMainFrame
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextField jTeamCommPort;
     private javax.swing.JTextField jTeamNumber;
-    private javax.swing.JTextField lblTeamCommLAN;
-    private javax.swing.JTextField lblTeamCommWLAN;
     private javax.swing.JTextPane logTextPane;
     private javax.swing.JList lstNaos;
     private javax.swing.JTabbedPane mainTab;

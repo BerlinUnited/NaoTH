@@ -50,7 +50,7 @@ public class FileUtils
     if(dir.isDirectory())
     {
       File fileList[] = dir.listFiles();
-      for(int index = 0; index < fileList.length; index ++)
+      for(int index = 0; index < fileList.length; index++)
       {
         File file = fileList[index];
         deleteDir(file);

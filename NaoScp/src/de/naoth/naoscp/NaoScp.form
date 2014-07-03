@@ -892,27 +892,16 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="10.0.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="netmaskFieldLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="255.255.255.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="netmaskFieldLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="10.0.0.255"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldLANActionPerformed"/>
-                        <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldLANInputMethodTextChanged"/>
-                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldLANKeyPressed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel14">
                       <Properties>
@@ -938,31 +927,16 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="192.168.4"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldWLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="netmaskFieldWLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="255.255.255.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="netmaskFieldWLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldWLANActionPerformed"/>
-                        <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANInputMethodTextChanged"/>
-                        <EventHandler event="caretPositionChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANCaretPositionChanged"/>
-                        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANPropertyChange"/>
-                        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyTyped"/>
-                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyPressed"/>
-                        <EventHandler event="vetoableChange" listener="java.beans.VetoableChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANVetoableChange"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JRadioButton" name="radioWPA">
                       <Properties>
@@ -990,9 +964,6 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="SPL_Field_B"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanSSIDActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel9">
                       <Properties>
@@ -1004,9 +975,6 @@
                         <Property name="text" type="java.lang.String" value="SPLRC2012"/>
                         <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
-                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -1026,15 +994,8 @@
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lblTeamCommWLAN" min="-2" pref="100" max="-2" attributes="3"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel25" min="-2" max="-2" attributes="1"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lblTeamCommLAN" min="-2" pref="97" max="-2" attributes="3"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel26" min="-2" pref="4" max="-2" attributes="1"/>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jTeamCommPort" pref="0" max="32767" attributes="3"/>
+                                      <EmptySpace min="-2" pref="221" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1070,10 +1031,6 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel24" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
-                                  <Component id="lblTeamCommWLAN" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel25" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
-                                  <Component id="lblTeamCommLAN" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel26" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
                                   <Component id="jTeamCommPort" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -1101,34 +1058,6 @@
                         <Property name="text" type="java.lang.String" value="TeamComm:"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="lblTeamCommWLAN">
-                      <Properties>
-                        <Property name="editable" type="boolean" value="false"/>
-                        <Property name="text" type="java.lang.String" value="192.168.4.255"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lblTeamCommWLANActionPerformed"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel25">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="/"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JTextField" name="lblTeamCommLAN">
-                      <Properties>
-                        <Property name="editable" type="boolean" value="false"/>
-                        <Property name="text" type="java.lang.String" value="10.0.0.255"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lblTeamCommLANActionPerformed"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel26">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value=":"/>
-                      </Properties>
-                    </Component>
                     <Component class="javax.swing.JTextField" name="jTeamCommPort">
                       <Properties>
                         <Property name="columns" type="int" value="10"/>
@@ -1144,9 +1073,6 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="nao"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sshUserActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel28">
                       <Properties>
@@ -1169,9 +1095,6 @@
                         <Property name="editable" type="boolean" value="false"/>
                         <Property name="text" type="java.lang.String" value="root"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sshRootUserActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel30">
                       <Properties>
