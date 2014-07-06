@@ -13,6 +13,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/SituationStatus.h"
+#include "Representations/Modeling/ActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
 
@@ -29,6 +30,8 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
+  REQUIRE(ActionModel)
+
   PROVIDE(SituationStatus)
 END_DECLARE_MODULE(StrategySymbols)
 
@@ -50,6 +53,7 @@ public:
     soccerStrategy(getSoccerStrategy()),
     motionStatus(getMotionStatus()),
     compassDirection(getCompassDirection()),
+	actionModel(getActionModel()),
 
     goalKickPlayer(0.0),
     goalKickPositionLeft(false),
@@ -81,6 +85,7 @@ private:
   SoccerStrategy const& soccerStrategy;
   MotionStatus const& motionStatus;
   CompassDirection const& compassDirection;
+  ActionModel const& actionModel;
 
   // calculate the best foot to approach the ball with
   // true if the right foot ich choosen, false else
@@ -175,6 +180,9 @@ private:
     /** The parameter "circlex.robot.x" and "circley.robot.x" of the functions "circlex" and "circley" */
     Vector2<double> robot_pose;
   } cycle;
+
+
+  static int getBestAction();
 
 };//end class StrategySymbols
 

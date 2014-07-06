@@ -93,12 +93,23 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
+  engine.registerEnumElement("attack.action_type", "attack.action_type.ball_position", 0);
+  engine.registerEnumElement("attack.action_type", "attack.action_type.kick_short", 1);
+  engine.registerEnumElement("attack.action_type", "attack.action_type.kick_long", 2);
+  engine.registerEnumElement("attack.action_type", "attack.action_type.sidekick_left", 3);
+  engine.registerEnumElement("attack.action_type", "attack.action_type.sidekick_right", 4);
+  engine.registerEnumElement("attack.action_type", "attack.action_type.none", 5);
+
+  engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
+
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
  
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
 
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
+
+
 
 
   //testArrangeRobots();
@@ -826,3 +837,7 @@ double StrategySymbols::circleY()
    //ASSERT(!Math::isNan(target_y));
    return target_y;
 }//end circleY
+
+int StrategySymbols::getBestAction(){
+   return theInstance->getActionModel().myAction;
+}

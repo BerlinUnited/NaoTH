@@ -1,5 +1,6 @@
 option situation_based_striker 
-{
+{
+
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -29,7 +30,7 @@ option situation_based_striker
     }
     action{
       situation_abortable = true;
-      striker_search();
+      search_ball();
     }
   }
 
@@ -39,7 +40,7 @@ option situation_based_striker
       else if(action_done && state_time > 1000)
       {
         if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
-          goto sidekick;
+          goto sidekick;  
 	      else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
 	               || abs(value=attack.direction.preview)<12)
 	        goto attack;
@@ -67,7 +68,7 @@ option situation_based_striker
         goto attack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
               ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
-        goto sidekick;
+        goto sidekick;  
       else
         stay;
     }

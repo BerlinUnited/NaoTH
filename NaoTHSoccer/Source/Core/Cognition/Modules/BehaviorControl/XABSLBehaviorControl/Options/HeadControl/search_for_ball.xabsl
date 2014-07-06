@@ -7,8 +7,7 @@ option search_for_ball
   {
     decision 
     {
-	    if((ball.time_since_last_seen < 3000 || 
-	       @force_ball_model_check) && 
+	    if((ball.time_since_last_seen < 3000 || @force_ball_model_check) && 
 	       abs(value=ball.angle) < 60)
 	      goto try_to_look_at_the_old_ball;
 	    else if(ball.angle > 0)
@@ -33,9 +32,9 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -127,7 +126,7 @@ option search_for_ball
     {
       if (ball.time_since_last_seen > 3000)
       {
-        if(ball.y>0)// I've seen the ball for a while => look at the old model
+        if( ball.y > 0 )// I've seen the ball for a while => look at the old model
           goto search_for_ball_left;
         else
           goto search_for_ball_right;
@@ -138,9 +137,9 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.x * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.point_in_world.y = ball.y * 250 / vector.abs(x=ball.x, y=ball.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -151,7 +150,7 @@ option search_for_ball
     {
       if (state_time > 1000) // I waited long enough...
       {
-        if(ball.time_since_last_seen < 100) // I still can see the ball => lok at the model
+        if(ball.time_since_last_seen < 100) // I still can see the ball => look at the model
           goto look_at_ball;
         else
           goto search_for_ball_right; // I cannt see the ball anymore, must have been a mirage => go back, where I came from
@@ -162,9 +161,9 @@ option search_for_ball
     action
     {
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = ball.percept.x * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
-      head.point_in_world.y = ball.percept.y * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.x = ball.percept.x * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.y = ball.percept.y * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.z = ball.radius;
     }
   }
 }
