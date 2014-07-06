@@ -79,3 +79,4 @@ RobotControl/RobotConnector/src/de/naoth/rc/messages
 trace.dump.*
 cognition.stopwatch.dump
 projectconfig.user.lua
+/XabslEditor/
