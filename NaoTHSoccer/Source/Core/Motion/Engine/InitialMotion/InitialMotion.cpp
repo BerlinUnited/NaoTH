@@ -61,6 +61,14 @@ InitialMotion::InitialMotion()
 
   freeStiffness[JointData::LHipPitch] = 0.1;
   freeStiffness[JointData::RHipPitch] = 0.1;
+
+  //HACK: turn off the hands
+  freeStiffness[JointData::LHand] = -1;
+  safeStiffness[JointData::LHand] = -1;
+  maxStiffness[JointData::LHand] = -1;
+  freeStiffness[JointData::RHand] = -1;
+  safeStiffness[JointData::RHand] = -1;
+  maxStiffness[JointData::RHand] = -1;
 }
 
 void InitialMotion::execute()

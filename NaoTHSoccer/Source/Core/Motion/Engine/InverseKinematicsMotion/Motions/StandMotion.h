@@ -87,6 +87,9 @@ public:
       for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
         getMotorJointData().stiffness[i] = stiffness;
       }
+      // HACK: turn off the hands
+      getMotorJointData().stiffness[JointData::LHand] = -1;
+      getMotorJointData().stiffness[JointData::RHand] = -1;
     }
   }//end calculateTrajectory
 

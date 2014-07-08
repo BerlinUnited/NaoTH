@@ -343,10 +343,12 @@ void Walk::manageSteps(const WalkRequest& req)
     theFootStepPlanner.updateParameters(getEngine().getParameters());
 
     // set the stiffness for walking
-    for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
-    {
+    for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++) {
       getMotorJointData().stiffness[i] = theWalkParameters.general.stiffness;
     }
+    // HACK: turn off the hands
+    getMotorJointData().stiffness[JointData::LHand] = -1;
+    getMotorJointData().stiffness[JointData::RHand] = -1;
   }// if ( stepBuffer.empty() )
 
 
