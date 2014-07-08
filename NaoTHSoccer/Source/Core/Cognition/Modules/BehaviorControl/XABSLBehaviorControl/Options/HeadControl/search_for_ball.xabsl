@@ -45,9 +45,8 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if(state_time>2000)
+      else if(state_time > 2000)
         goto search_for_ball_left_high;
-        //goto search_for_ball_left;
       else
        stay;
     }
@@ -66,7 +65,7 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if(state_time>2000)
+      else if(state_time > 2000)
         goto search_for_ball_right;
       else
        stay;
@@ -86,7 +85,7 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if(state_time>2000)
+      else if(state_time > 2000)
         goto search_for_ball_left;
       else
        stay;
@@ -106,7 +105,7 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
-      else if(state_time>2000)
+      else if(state_time > 2000)
         goto search_for_ball_right_high;
       else
        stay;
@@ -126,7 +125,7 @@ option search_for_ball
     {
       if (ball.time_since_last_seen > 3000)
       {
-        if( ball.y > 0 )// I've seen the ball for a while => look at the old model
+        if( ball.y > 0 )
           goto search_for_ball_left;
         else
           goto search_for_ball_right;
