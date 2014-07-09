@@ -11,7 +11,7 @@ enum direction @search_direction;
 	initial state start {
 	
 	  decision {
-	    else if(state_time>500 )
+	    else if(state_time > 1000 )
 	    {
 	      if (@search_direction == right)
 	        goto turn_right_first;
