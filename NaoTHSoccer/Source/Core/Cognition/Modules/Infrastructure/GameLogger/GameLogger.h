@@ -7,11 +7,13 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
 #include <Representations/Modeling/BehaviorStateSparse.h>
+#include <Representations/Modeling/PlayerInfo.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo)
   REQUIRE(BehaviorStateSparse)
   REQUIRE(BehaviorStateComplete)
 END_DECLARE_MODULE(GameLogger)
@@ -28,6 +30,9 @@ private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
   // treshold is reached.
   LogfileManager < 30 > logfileManager;
+
+  unsigned int lastCompleteFrameNumber;
+  bool ignore_init_state;
 };
 
 #endif // GAMELOGGER_H

@@ -69,7 +69,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
 XABSLBehaviorControl::~XABSLBehaviorControl()
 {
   delete theEngine;
-}//end XABSLBehaviorControl
+}
 
 
 void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string agent)
@@ -105,14 +105,18 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   }
   std::cout << "[XABSLBehaviorControl] current agent is set to \"" << theEngine->getSelectedAgentName() << "\"" << std::endl;
 
-  if(!theErrorHandler.errorsOccurred) {
+  if(!theErrorHandler.errorsOccurred) 
+  {
     inputDecimalBuffer.clear();
     inputBooleanBuffer.clear();
     inputEnumBuffer.clear();
     outputDecimalBuffer.clear();
     outputBooleanBuffer.clear();
     outputEnumBuffer.clear();
+
     fillRegisteredBehavior(getBehaviorStateComplete().state);
+    getBehaviorStateComplete().state.set_framenumber(getFrameInfo().getFrameNumber());
+    std::cout << "[XABSLBehaviorControl] " << getBehaviorStateComplete().state.IsInitialized() << " - " << getBehaviorStateComplete().state.framenumber() << "\n";
   }
 }//end reloadBehaviorFromFile
 
@@ -130,15 +134,15 @@ void XABSLBehaviorControl::execute()
     updateOutputSymbols();
     //cout << "test " << getMotionStatus().motionRequest << endl;
 
-  // TODO: only update sparse behavior status on some kind of request (or make it configurable)
-  // update the behavior status
-  STOPWATCH_START("XABSLBehaviorControl:fillBehaviorStatusSparse");
-  getBehaviorStateSparse().state.Clear();
-  fillActiveOptionsSparse(getBehaviorStateSparse().state);
-  //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
-  fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
-  getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
-  STOPWATCH_STOP("XABSLBehaviorControl:fillBehaviorStatusSparse");
+    // TODO: only update sparse behavior status on some kind of request (or make it configurable)
+    // update the behavior status
+    STOPWATCH_START("XABSLBehaviorControl:fillBehaviorStatusSparse");
+    getBehaviorStateSparse().state.Clear();
+    fillActiveOptionsSparse(getBehaviorStateSparse().state);
+    //fillRegisteredSymbolsSparse(getBehaviorStatus().status_sparse);
+    fillRegisteredSymbolsSparserer(getBehaviorStateSparse().state);
+    getBehaviorStateSparse().state.set_framenumber(getFrameInfo().getFrameNumber());
+    STOPWATCH_STOP("XABSLBehaviorControl:fillBehaviorStatusSparse");
 
     draw();
   }//end if
