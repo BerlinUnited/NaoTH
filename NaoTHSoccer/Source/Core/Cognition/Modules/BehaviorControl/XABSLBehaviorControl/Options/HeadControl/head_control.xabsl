@@ -72,7 +72,7 @@ option head_control
   {
     action
     {
-      head.camera.id = Bottom;
+      head.camera.id = Top;
       look_around();
     }
   }
