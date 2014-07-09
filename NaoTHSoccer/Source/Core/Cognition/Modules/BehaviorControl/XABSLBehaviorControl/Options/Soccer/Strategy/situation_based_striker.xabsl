@@ -14,7 +14,7 @@ option situation_based_striker
   initial state idle {
     decision {
       else
-        stay;
+        goto search;
     }
     action {
       situation_abortable = true;
