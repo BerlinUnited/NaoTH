@@ -19,7 +19,6 @@
 #include <alproxies/almemoryproxy.h>
 #include <alproxies/dcmproxy.h>
 
-#include "Tools/SharedMemory.h"
 #include "Tools/IPCData.h"
 
 

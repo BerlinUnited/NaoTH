@@ -9,10 +9,9 @@ CameraSettings::CameraSettings()
 {
   data[CameraSelection] = CameraInfo::Bottom;
   
-  for(int i=0;i<numOfCameraSetting;i++)
-  {
+  for(int i=0;i<numOfCameraSetting;i++) {
     data[i] = 0;
-  }//end for
+  }
 }
 
 CameraSettings::~CameraSettings()
@@ -48,10 +47,9 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
 
 void CameraSettings::print(ostream& stream) const
 {
-  for(int i = 0; i < numOfCameraSetting; i++)
-  {
+  for(int i = 0; i < numOfCameraSetting; i++) {
      stream << getCameraSettingsName((CameraSettingID)i) << " = " << data[i] << ";" << endl;
-  }//end for
+  }
 }//end print
 
 
@@ -59,10 +57,9 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
 : ParameterList(configName),
   queryCameraSettings(false)
 {
-  for(int i=0;i<numOfCameraSetting;i++)
-  {
+  for(int i=0;i<numOfCameraSetting;i++) {
     registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
-  }//end for
+  }
 
   syncWithConfig();
 }

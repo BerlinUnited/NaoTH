@@ -22,7 +22,7 @@ public:
   unsigned int timeOfLastEvent;
   bool isPressed;
 
-  ButtonEvent() : eventState(NONE), timeOfLastEvent(0) {}
+  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), isPressed(false) {}
   void operator=(EventType id) { eventState = id; }
   bool operator==(EventType id) const { return this->eventState == id; }
 

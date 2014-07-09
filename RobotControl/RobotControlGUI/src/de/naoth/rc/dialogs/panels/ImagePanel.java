@@ -25,6 +25,8 @@ public class ImagePanel extends javax.swing.JPanel
     private Image backgroundImage;
     private boolean keepAspectRatio;
     private boolean stretchImage;
+    private boolean showDrawings;
+    
     private final ArrayList<Drawable> drawigs = new ArrayList<Drawable>();
     
     public ImagePanel()
@@ -33,6 +35,7 @@ public class ImagePanel extends javax.swing.JPanel
         
         this.keepAspectRatio = true;
         this.stretchImage = true;
+        this.showDrawings = false;
         
         this.fileChooser.setFileFilter(new PNGImageFileFilter());
     }
@@ -59,6 +62,25 @@ public class ImagePanel extends javax.swing.JPanel
         this.stretchImage = value;
         this.repaint();
       }
+    }
+    
+    public void setShowDrawings(boolean value) {
+      if(this.showDrawings != value) {
+        this.showDrawings = value;
+        this.repaint();
+      }
+    }
+    
+    public boolean isKeepAspectRatio() {
+      return this.keepAspectRatio;
+    }
+    
+    public boolean isStretchImage() {
+      return this.stretchImage;
+    }
+    
+    public boolean isShowDrawings() {
+      return this.showDrawings;
     }
 
     public Image getImage()
@@ -116,8 +138,10 @@ public class ImagePanel extends javax.swing.JPanel
 
         g2d.drawImage(backgroundImage, 0, 0, (int) wImg, (int) hImg, this);
 
-        for (Drawable d : drawigs) {
-          d.draw(g2d);
+        if(this.showDrawings) {
+          for (Drawable d : drawigs) {
+            d.draw(g2d);
+          }
         }
 
         // transform the drawing-pane back (nessesary to draw the other components correct)

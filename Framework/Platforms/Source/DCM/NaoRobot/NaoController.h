@@ -53,8 +53,8 @@ public:
   virtual string getHeadNickName() const { return theHeadNickName; }
   
   // camera stuff
-  void get(Image& data){ theBottomCameraHandler.get(data); }
-  void get(ImageTop& data){ theTopCameraHandler.get(data); }
+  void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
+  void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);

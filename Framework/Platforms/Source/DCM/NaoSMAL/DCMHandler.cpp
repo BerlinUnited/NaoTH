@@ -1,10 +1,9 @@
 
 
-
 #include "DCMHandler.h"
 
-#include <Tools/NaoInfo.h>
-#include <Tools/NaoTime.h>
+//#include <Tools/NaoInfo.h>
+//#include <Tools/NaoTime.h>
 
 using namespace naoth;
 using namespace std;

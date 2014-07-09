@@ -96,7 +96,6 @@ private:
   Vector2d ballLeftFoot;
   Vector2d ballRightFoot;
 
-
   Vector2d ballPerceptPos;
   bool ballPerceptSeen;
 

@@ -5,6 +5,7 @@ import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.drawings.Canvas;
+import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnImage;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
@@ -12,6 +13,8 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.ImageManagerTop;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -36,6 +39,7 @@ public class ImageViewer extends AbstractDialog
   }//end Plugin
 
   private long timestampOfTheLastImage;
+  private Drawable fadeOutBox = null;
   
   // listeners
   ImageListenerBottom imageListenerBottom;
@@ -72,6 +76,7 @@ public class ImageViewer extends AbstractDialog
         btReceiveDrawings = new javax.swing.JToggleButton();
         cbStretch = new javax.swing.JCheckBox();
         cbPreserveAspectRatio = new javax.swing.JCheckBox();
+        cbFadeOut = new javax.swing.JCheckBox();
         jLabelFPS = new javax.swing.JLabel();
         jLabelResolution = new javax.swing.JLabel();
 
@@ -171,6 +176,16 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(cbPreserveAspectRatio);
 
+        cbFadeOut.setText("Fade Out");
+        cbFadeOut.setToolTipText("Fades out the image so the drawings can be seen better.");
+        cbFadeOut.setFocusable(false);
+        cbFadeOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbFadeOutActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbFadeOut);
+
         jLabelFPS.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
         jLabelFPS.setText("FPS");
 
@@ -234,12 +249,15 @@ public class ImageViewer extends AbstractDialog
       if (this.btReceiveDrawings.isSelected()) {
           if (Plugin.parent.checkConnected()) {
               Plugin.debugDrawingManager.addListener(this.drawingsListener);
+              this.imageCanvasBottom.setShowDrawings(true);
+              this.imageCanvasTop.setShowDrawings(true);
           } else {
               this.btReceiveImagesTop.setSelected(false);
           }
       } else {
           Plugin.debugDrawingManager.removeListener(this.drawingsListener);
-          this.imageCanvasBottom.getDrawingList().clear();
+          this.imageCanvasBottom.setShowDrawings(false);
+          this.imageCanvasTop.setShowDrawings(false);
       }
   }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
@@ -259,10 +277,19 @@ public class ImageViewer extends AbstractDialog
     
   }//GEN-LAST:event_btReceiveImagesBottomActionPerformed
 
+    private void cbFadeOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFadeOutActionPerformed
+        if(this.cbFadeOut.isSelected()) {
+            this.fadeOutBox = new ImageOverlayDrawing(640, 480, new Color(255,255,255,128));
+        } else {
+            this.fadeOutBox = null;
+        }
+    }//GEN-LAST:event_cbFadeOutActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JToggleButton btReceiveImagesBottom;
     private javax.swing.JToggleButton btReceiveImagesTop;
+    private javax.swing.JCheckBox cbFadeOut;
     private javax.swing.JCheckBox cbPreserveAspectRatio;
     private javax.swing.JCheckBox cbStretch;
     private de.naoth.rc.dialogs.panels.ImagePanel imageCanvasBottom;
@@ -298,9 +325,15 @@ public class ImageViewer extends AbstractDialog
         ImageViewer.this.imageCanvasBottom.getDrawingList().clear();
         ImageViewer.this.imageCanvasTop.getDrawingList().clear();
         
+        // Deprecated
         DrawingCollection drawingCollection = objectList.get(DrawingOnImage.class);
         if (drawingCollection != null) {
           ImageViewer.this.imageCanvasBottom.getDrawingList().add(drawingCollection);
+        }
+        
+        if(ImageViewer.this.fadeOutBox != null) {
+            ImageViewer.this.imageCanvasTop.getDrawingList().add(fadeOutBox);
+            ImageViewer.this.imageCanvasBottom.getDrawingList().add(fadeOutBox);
         }
         
         Canvas canvasTop = objectList.get("ImageTop");
@@ -365,6 +398,25 @@ public class ImageViewer extends AbstractDialog
       ImageViewer.Plugin.imageManagerTop.removeListener(this);
     }
   }//end SecondaryImageListener
+  
+  class ImageOverlayDrawing implements Drawable
+  {
+    private final Color color;
+    private final int width;
+    private final int height;
+    
+    ImageOverlayDrawing(int width, int height, Color color) {
+        this.width = width;
+        this.height = height;
+        this.color = color;
+    }
+            
+    @Override
+    public void draw(Graphics2D g2d) {
+        g2d.setColor(color);
+        g2d.fillRect(0, 0, width, height);
+    }
+  }
 
   @Override
   public void dispose()

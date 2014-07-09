@@ -42,6 +42,7 @@ public:
     stepControlFoot(none),
     stepControlRequestTime(0),
     stepControlRequestSpeedDirection(0),
+    stepControlScale(1.0),
     actionPerformed(-1)
   {
     theInstance = this;
