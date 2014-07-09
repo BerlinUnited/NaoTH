@@ -22,6 +22,9 @@ void LedSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("set_right_ear", &setRightEar, &getRightEar);
   engine.registerDecimalOutputSymbol("set_left_ear", &setLeftEar, &getLeftEar);
 
+  engine.registerDecimalOutputSymbol("set_right_head", &setRightHead, &getRightHead);
+  engine.registerDecimalOutputSymbol("set_left_head", &setLeftHead, &getLeftHead);
+
   engine.registerEnumeratedOutputSymbol("set_right_eye", "eyeLED", &setRightEye, &getRightEye);
   engine.registerEnumeratedOutputSymbol("set_left_eye", "eyeLED", &setLeftEye, &getLeftEye);
 
@@ -32,6 +35,59 @@ LedSymbols* LedSymbols::theInstance = NULL;
 
 void LedSymbols::execute()
 {
+}
+
+
+void LedSymbols::setRightHead(double id)
+{
+
+  if (id <= 6)
+  {
+
+    theInstance->lastRHead = id;
+    int counter = 0;
+    for (int i = LEDData::HeadRearRight0; i <= LEDData::HeadFrontRight1; i++)
+    {
+      if (counter < id) {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
+      } else {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
+      }
+      counter++;
+    }
+  }
+
+}//end setRightHead
+
+double LedSymbols::getRightHead()
+{
+  return theInstance->lastRHead;
+}
+
+void LedSymbols::setLeftHead(double id)
+{
+
+  if (id <= 6)
+  {
+
+    theInstance->lastLHead = id;
+    int counter = 0;
+    for (int i = LEDData::HeadRearLeft0; i <= LEDData::HeadFrontLeft1; i++)
+    {
+      if (counter < id) {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
+      } else {
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
+      }
+      counter++;
+    }
+  }
+
+}//end setRightHead
+
+double LedSymbols::getLeftHead()
+{
+  return theInstance->lastLHead;
 }
 
 void LedSymbols::setRightEar(double id)
