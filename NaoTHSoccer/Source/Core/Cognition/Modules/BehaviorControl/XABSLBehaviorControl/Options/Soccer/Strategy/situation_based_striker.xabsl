@@ -7,7 +7,7 @@ option situation_based_striker
       goto idle;
     else if(situation_abortable && ball.time_since_last_seen > 1500)
       goto search;
-    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 210)
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
       goto goto_ball;
   }
 
@@ -37,7 +37,8 @@ option situation_based_striker
   state goto_ball {
     decision{
 
-      else if(action_done && state_time > 1000)
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
       {
         if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
           goto sidekick;  
