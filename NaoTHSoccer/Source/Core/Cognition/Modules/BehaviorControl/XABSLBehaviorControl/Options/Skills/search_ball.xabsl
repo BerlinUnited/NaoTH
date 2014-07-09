@@ -1,15 +1,23 @@
 option search_ball
 {  
 
+  // stop first
   initial state start
   {
     decision {
-      if(ball.preview.y > 0)
-        goto search_ball_rot_left;
+      if(executed_motion.type == stand)
+      {
+	      if(ball.preview.y > 0)
+	        goto search_ball_rot_left;
+	      else
+	        goto search_ball_rot_right;
+      }
       else
-        goto search_ball_rot_right;
+        stay;
     }
     action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
     }
   }
   
