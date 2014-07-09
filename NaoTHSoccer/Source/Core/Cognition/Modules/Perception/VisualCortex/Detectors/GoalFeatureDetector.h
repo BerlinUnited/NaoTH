@@ -69,6 +69,7 @@ private:
       PARAMETER_REGISTER(numberOfScanlines) = 5;
       PARAMETER_REGISTER(scanlinesDistance) = 6;
 
+      PARAMETER_REGISTER(useColorFeatures) = true;
       PARAMETER_REGISTER(thresholdUV) = 60;
       PARAMETER_REGISTER(thresholdUVGradient) = 12;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
@@ -83,17 +84,17 @@ private:
 
     int numberOfScanlines;
     int scanlinesDistance;
+
+    bool useColorFeatures;
     int thresholdUV;
     int thresholdUVGradient;
 
     double thresholdFeatureGradient;
-    //int thresholdY;
-    //double colorRegionDeviation;
   };
 
 
 private:
-  Parameters params;
+  Parameters parameters;
 
   void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
   void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);

@@ -34,10 +34,9 @@ GoalFeatureDetector::GoalFeatureDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_scanlines","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_response","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:draw_difference","..", false);
-  DEBUG_REQUEST_REGISTER("Vision:Detectors:GoalFeatureDetector:useColorFeatures","..", false);
 
-  getGoalFeaturePercept().reset(params.numberOfScanlines);
-  getGoalFeaturePerceptTop().reset(params.numberOfScanlines);
+  getGoalFeaturePercept().reset(parameters.numberOfScanlines);
+  getGoalFeaturePerceptTop().reset(parameters.numberOfScanlines);
 }
 
 
@@ -54,14 +53,14 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
   // calculate the startpoint for the scanlines based on the horizon
   // NOTE: this point doesn't have to be at the edge of the image
   Vector2d c = (p2+p1)*0.5;
-  int offsetY = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
+  int offsetY = parameters.numberOfScanlines * parameters.scanlinesDistance / 2 + 2;
   int y = (int)(c.y - offsetY + 0.5);
   int yc = Math::clamp(y, 0, (int)(getImage().height())-1-2*offsetY);
   Vector2d start(c.x, yc);
 
   // adjust the vectors if the parameters change
-  if((int)getGoalFeaturePercept().edgel_features.size() != params.numberOfScanlines) {
-    getGoalFeaturePercept().edgel_features.resize(params.numberOfScanlines);
+  if((int)getGoalFeaturePercept().edgel_features.size() != parameters.numberOfScanlines) {
+    getGoalFeaturePercept().edgel_features.resize(parameters.numberOfScanlines);
   }
 
   // clear the old features
@@ -69,18 +68,11 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
      getGoalFeaturePercept().edgel_features[i].clear();
   }
 
-  bool useColor = false;
-  DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:useColorFeatures",
-    useColor = true;
-  );
   //find feature that are candidates for goal posts along scanlines 
-  if(!useColor)
-  {
-    findfeaturesDiff(horizonDirection, start);
-  }
-  else
-  {
+  if(parameters.useColorFeatures) {
     findfeaturesColor(horizonDirection, start);
+  } else {
+    findfeaturesDiff(horizonDirection, start);
   }
 
   return true;
@@ -92,12 +84,12 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
   const Vector2i frameUpperLeft(0,0);
   const Vector2i frameLowerRight(getImage().width()-1, getImage().height()-1);
 
-  for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
+  for(int scanId = 0; scanId < parameters.numberOfScanlines; scanId++)
   {
     std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
     
     // adjust the start and end point for this scanline
-    Vector2i pos((int) start.x, start.y + params.scanlinesDistance*scanId);
+    Vector2i pos((int) start.x, start.y + parameters.scanlinesDistance*scanId);
     Vector2i end;
     Math::Line scanLine(pos, scanDir);
     Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, scanLine, pos, end);
@@ -131,7 +123,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
       if(!begin_found)
       {
 
-        if(filter.value() > params.thresholdUV)
+        if(filter.value() > parameters.thresholdUV)
         {
           begin = filter.point();
           DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
@@ -146,7 +138,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         }
       }
 
-      if(begin_found && filter.value() + jump*0.5 < params.thresholdUV)
+      if(begin_found && filter.value() + jump*0.5 < parameters.thresholdUV)
       {
         const Vector2i& end = filter.point();
         DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
@@ -161,7 +153,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markGradients", 
           LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
         );
-        if(fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
+        if(fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient) 
         {
           DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks", 
             LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
@@ -188,12 +180,12 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
   const Vector2i frameUpperLeft(0,0);
   const Vector2i frameLowerRight(getImage().width()-1, getImage().height()-1);
 
-  for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
+  for(int scanId = 0; scanId < parameters.numberOfScanlines; scanId++)
   {
     std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
 
     // adjust the start and end point for this scanline
-    Vector2i pos((int) start.x, start.y + params.scanlinesDistance*scanId);
+    Vector2i pos((int) start.x, start.y + parameters.scanlinesDistance*scanId);
     Vector2i end;
     Math::Line scanLine(pos, scanDir);
     Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, scanLine, pos, end);
@@ -208,8 +200,8 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     // initialize the scanner
     Vector2i peak_point_max(pos);
     Vector2i peak_point_min(pos);
-    MaximumScan<Vector2i,double> positiveScan(peak_point_max, params.thresholdUVGradient);
-    MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdUVGradient);
+    MaximumScan<Vector2i,double> positiveScan(peak_point_max, parameters.thresholdUVGradient);
+    MaximumScan<Vector2i,double> negativeScan(peak_point_min, parameters.thresholdUVGradient);
 
     bool begin_found = false;
 
@@ -250,7 +242,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
           POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
         );
         // double edgel
-        if(begin_found && fabs(gradientBegin*gradientEnd) > params.thresholdFeatureGradient) 
+        if(begin_found && fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient) 
         {
           DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:markPeaks",
             LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
