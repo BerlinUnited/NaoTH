@@ -41,7 +41,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
-import javax.jws.Oneway;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -53,7 +52,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -813,7 +811,7 @@ public class BehaviorViewer extends AbstractDialog
           Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
           
           behaviorParser = new XABSLProtoParser();
-          currentBehavior =  behaviorParser.parse(status);
+          currentBehavior = behaviorParser.parse(status);
         }
         catch(InvalidProtocolBufferException ex)
         {
