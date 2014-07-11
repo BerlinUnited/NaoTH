@@ -20,7 +20,6 @@
 // basic info
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 // motion / kinematics
@@ -53,8 +52,7 @@
 BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo) // only for visualization of the pose
-  REQUIRE(GameData)
+  REQUIRE(PlayerInfo)
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)

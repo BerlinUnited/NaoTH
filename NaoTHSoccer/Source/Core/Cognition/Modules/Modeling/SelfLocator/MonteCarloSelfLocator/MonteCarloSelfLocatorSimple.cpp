@@ -137,7 +137,7 @@ void MonteCarloSelfLocatorSimple::execute()
       updateBySensors(theSampleSet);
 
       if(parameters.updateBySituation) {
-        if(getGameData().gameState == GameData::set) {
+        if(getPlayerInfo().gameData.gameState == GameData::set) {
           updateByOwnHalf(theSampleSet);
         } else {
           updateByStartPositions(theSampleSet);
@@ -179,7 +179,7 @@ void MonteCarloSelfLocatorSimple::execute()
       updateBySensors(theSampleSet);
 
       if(parameters.updateBySituation) {
-        if(getGameData().gameState == GameData::set) {
+        if(getPlayerInfo().gameData.gameState == GameData::set) {
           updateByOwnHalf(theSampleSet);
         }
       }
@@ -245,7 +245,7 @@ void MonteCarloSelfLocatorSimple::execute()
 
 void MonteCarloSelfLocatorSimple::resetLocator()
 {
-  if(parameters.resetOwnHalf && getGameData().gameState == GameData::set) {
+  if(parameters.resetOwnHalf && getPlayerInfo().gameData.gameState == GameData::set) {
     initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
   } else {
     initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
