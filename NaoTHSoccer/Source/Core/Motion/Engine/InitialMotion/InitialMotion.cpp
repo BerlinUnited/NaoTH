@@ -179,14 +179,14 @@ void InitialMotion::moveToInitialPose()
 
 void InitialMotion::freeJoint(bool freely)
 {
-  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
+  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond() * 10;
   if (freely)
   {
     setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, stiffDelta);
   }
   else
   {
-    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta*2) ) {
+    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta) ) {
       initStatus = Finish;
     }
   }

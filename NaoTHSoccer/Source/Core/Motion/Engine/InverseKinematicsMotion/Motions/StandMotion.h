@@ -27,6 +27,7 @@
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/CalibrationData.h>
 #include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
   REQUIRE(GyrometerData)
+  REQUIRE(CalibrationData)
   REQUIRE(KinematicChainSensor)
   REQUIRE(MotionStatus)
 
@@ -104,15 +106,16 @@ public:
 
     calculateTrajectory(getMotionRequest());
 
-    time += getRobotInfo().basicTimeStep;
     double t = std::min(time / totalTime, 1.0);
     double k = 0.5*(1.0-cos(t*Math::pi));
+    time += getRobotInfo().basicTimeStep;
 
     InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
     bool solved = false;
     InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
-    if(getEngine().getParameters().stand.enableStabilization)
+    if(getCalibrationData().calibrated && 
+       getEngine().getParameters().stand.enableStabilization)
     {
       getEngine().rotationStabilize(
         getRobotInfo(),
@@ -124,12 +127,13 @@ public:
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
     
+    /*
     getEngine().gotoArms(
         getMotionStatus(),
         getInertialModel(),
         getRobotInfo(),
         c, getMotorJointData().position);
-
+    */
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
     PLOT("Stand:hip:z",c.hip.translation.z);

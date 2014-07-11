@@ -32,7 +32,7 @@ option basic_play
   // to ensure that the robot stands before doing anything
   state stand {
     decision {
-      if(executed_motion.type == stand)
+      if(executed_motion.type == stand && executed_motion.time > 1000)
         goto play;
       else
         stay;

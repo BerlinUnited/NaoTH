@@ -81,6 +81,7 @@ void Walk::execute()
     // move arms
     //getEngine().autoArms(c, getMotorJointData().position);
 
+    /*
     if(getEngine().getParameters().arm.takeBack) {
       getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
     } else {
@@ -90,6 +91,7 @@ void Walk::execute()
         getRobotInfo(),
         c, getMotorJointData().position);
     }
+    */
 	
     // force the hip joint
     if (getMotorJointData().position[JointData::LHipRoll] < 0) {
