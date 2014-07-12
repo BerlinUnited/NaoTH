@@ -54,17 +54,21 @@ void NaoSensorData::get(FSRData& data) const
 
 void NaoSensorData::get(AccelerometerData& data) const
 {
-  //forum of Aldebaran scale = g/56.0
-  //experiments Nao36 scale = g/60.0
-  //wrong sign in Aldebaran
-  static float scale_acc = static_cast<float>(Math::g/60.0);
-
   data.rawData.x = sensorsValue[theAccelerometerDataIndex + 0];
   data.rawData.y = sensorsValue[theAccelerometerDataIndex + 1];
   data.rawData.z = sensorsValue[theAccelerometerDataIndex + 2];
 
+  data.data.x = sensorsValue[theAccelerometerDataIndex + 3];
+  data.data.y = sensorsValue[theAccelerometerDataIndex + 4];
+  data.data.z = sensorsValue[theAccelerometerDataIndex + 5];
+
+  //forum of Aldebaran scale = g/56.0
+  //experiments Nao36 scale = g/60.0
+  //wrong sign in Aldebaran
+  //static float scale_acc = static_cast<float>(Math::g/60.0);
   //0.1532289 = 9.80665/64
-  data.data = data.rawData * scale_acc;//* 0.1532289;
+  //data.data = data.rawData * scale_acc;//* 0.1532289;
+  
   //TODO: why?
   data.data.y *= -1; 
 }//end AccelerometerData
