@@ -242,8 +242,11 @@ private: // workers
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
+  // A-Priori knowledge based on the game state
   void updateByStartPositions(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
+  void updateByGoalBox(SampleSet& sampleSet) const;
+
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 

@@ -138,7 +138,11 @@ void MonteCarloSelfLocatorSimple::execute()
 
       if(parameters.updateBySituation) {
         if(getPlayerInfo().gameData.gameState == GameData::set) {
-          updateByOwnHalf(theSampleSet);
+          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
+            updateByGoalBox(theSampleSet);
+          } else {
+            updateByOwnHalf(theSampleSet);
+          }
         } else {
           updateByStartPositions(theSampleSet);
         }
@@ -473,7 +477,7 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
 
 void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 {
-  for(unsigned int s=0; s < sampleSet.size(); s++)
+  for(size_t s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
 
@@ -490,6 +494,35 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
     PEN("000000", 30);
     const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
     const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  );
+}
+
+void MonteCarloSelfLocatorSimple::updateByGoalBox(SampleSet& sampleSet) const
+{
+  static const Geometry::Rect2d ownGoalBox(
+    getFieldInfo().ownGoalPostLeft - Vector2d(100, 100), 
+    getFieldInfo().ownGoalPostRight + Vector2d(getFieldInfo().xPenaltyAreaLength + 100, 100));
+
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!ownGoalBox.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+
+    double angleDiff = Math::normalize(sample.rotation - 0);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
+  }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = ownGoalBox.min();
+    const Vector2d& fieldMax = ownGoalBox.max();
     BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
