@@ -801,8 +801,8 @@ void protobuf_AddDesc_Representations_2eproto() {
     "metryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages."
     "Pose2D\"\320\001\n\017CalibrationData\022:\n\024inertialSe"
     "nsorOffset\030\001 \001(\0132\034.naothmessages.DoubleV"
-    "ector2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naoth"
-    "messages.DoubleVector2\0225\n\017accSensorOffse"
+    "ector2\0226\n\020gyroSensorOffset\030\005 \001(\0132\034.naoth"
+    "messages.DoubleVector3\0225\n\017accSensorOffse"
     "t\030\003 \001(\0132\034.naothmessages.DoubleVector3\022\022\n"
     "\ncalibrated\030\004 \002(\010\"B\n\rInertialModel\0221\n\013or"
     "ientation\030\001 \001(\0132\034.naothmessages.DoubleVe"
@@ -7882,7 +7882,7 @@ CalibrationData::CalibrationData()
 
 void CalibrationData::InitAsDefaultInstance() {
   inertialsensoroffset_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
-  gyrosensoroffset_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+  gyrosensoroffset_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
   accsensoroffset_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
 }
 
@@ -7939,7 +7939,7 @@ void CalibrationData::Clear() {
       if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector2::Clear();
     }
     if (has_gyrosensoroffset()) {
-      if (gyrosensoroffset_ != NULL) gyrosensoroffset_->::naothmessages::DoubleVector2::Clear();
+      if (gyrosensoroffset_ != NULL) gyrosensoroffset_->::naothmessages::DoubleVector3::Clear();
     }
     if (has_accsensoroffset()) {
       if (accsensoroffset_ != NULL) accsensoroffset_->::naothmessages::DoubleVector3::Clear();
@@ -7962,20 +7962,6 @@ bool CalibrationData::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_inertialsensoroffset()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_gyroSensorOffset;
-        break;
-      }
-      
-      // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_gyroSensorOffset:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_gyrosensoroffset()));
         } else {
           goto handle_uninterpreted;
         }
@@ -8009,6 +7995,20 @@ bool CalibrationData::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(42)) goto parse_gyroSensorOffset;
+        break;
+      }
+      
+      // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_gyroSensorOffset:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_gyrosensoroffset()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -8037,12 +8037,6 @@ void CalibrationData::SerializeWithCachedSizes(
       1, this->inertialsensoroffset(), output);
   }
   
-  // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
-  if (has_gyrosensoroffset()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->gyrosensoroffset(), output);
-  }
-  
   // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
   if (has_accsensoroffset()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
@@ -8052,6 +8046,12 @@ void CalibrationData::SerializeWithCachedSizes(
   // required bool calibrated = 4;
   if (has_calibrated()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->calibrated(), output);
+  }
+  
+  // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
+  if (has_gyrosensoroffset()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->gyrosensoroffset(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -8069,13 +8069,6 @@ void CalibrationData::SerializeWithCachedSizes(
         1, this->inertialsensoroffset(), target);
   }
   
-  // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
-  if (has_gyrosensoroffset()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->gyrosensoroffset(), target);
-  }
-  
   // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
   if (has_accsensoroffset()) {
     target = ::google::protobuf::internal::WireFormatLite::
@@ -8086,6 +8079,13 @@ void CalibrationData::SerializeWithCachedSizes(
   // required bool calibrated = 4;
   if (has_calibrated()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->calibrated(), target);
+  }
+  
+  // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
+  if (has_gyrosensoroffset()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->gyrosensoroffset(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -8106,7 +8106,7 @@ int CalibrationData::ByteSize() const {
           this->inertialsensoroffset());
     }
     
-    // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+    // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
     if (has_gyrosensoroffset()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -8156,7 +8156,7 @@ void CalibrationData::MergeFrom(const CalibrationData& from) {
       mutable_inertialsensoroffset()->::naothmessages::DoubleVector2::MergeFrom(from.inertialsensoroffset());
     }
     if (from.has_gyrosensoroffset()) {
-      mutable_gyrosensoroffset()->::naothmessages::DoubleVector2::MergeFrom(from.gyrosensoroffset());
+      mutable_gyrosensoroffset()->::naothmessages::DoubleVector3::MergeFrom(from.gyrosensoroffset());
     }
     if (from.has_accsensoroffset()) {
       mutable_accsensoroffset()->::naothmessages::DoubleVector3::MergeFrom(from.accsensoroffset());

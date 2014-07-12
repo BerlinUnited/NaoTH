@@ -61,8 +61,8 @@ void InertiaSensorCalibrator::execute()
   MODIFY("InertiaSensorCalibrator:inertialBiasMeasurementNoise.y", inertialBiasMeasurementNoise.y);
 
   // gyro params
-  static const Vector2d gyroBiasProcessNoise(0.05f, 0.05f);
-  static const Vector2d gyroBiasMeasurementNoise(0.01f, 0.01f); // stand
+  static const Vector3d gyroBiasProcessNoise(0.05f, 0.05f, 0.05f);
+  static const Vector3d gyroBiasMeasurementNoise(0.01f, 0.01f, 0.01f); // stand
   //static const Vector2d gyroBiasWalkMeasurementNoise(0.1f, 0.1f);
 
 
@@ -214,7 +214,7 @@ void InertiaSensorCalibrator::execute()
   if(!calibrated)
   {
     getCalibrationData().accSensorOffset = Vector3d();
-    getCalibrationData().gyroSensorOffset = Vector2d();
+    getCalibrationData().gyroSensorOffset = Vector3d();
     getCalibrationData().inertialSensorOffset = Vector2d();
   }
   else
