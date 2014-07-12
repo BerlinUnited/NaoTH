@@ -28,6 +28,7 @@
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Infrastructure/CalibrationData.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(RobotInfo)
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(InertialModel)
   REQUIRE(InertialSensorData)
   REQUIRE(GyrometerData)
+  REQUIRE(CalibrationData)
   REQUIRE(KinematicChainSensor)
   REQUIRE(MotionStatus)
 
@@ -109,12 +111,17 @@ public:
     bool solved = false;
     InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
-    if(getEngine().getParameters().stand.enableStabilization)
+    if(getCalibrationData().calibrated && getEngine().getParameters().stand.enableStabilization)
     {
+      /*
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
         getInertialSensorData(),
+        c.hip);*/
+      getEngine().rotationStabilize(
+        getGyrometerData(),
+        getRobotInfo().getBasicTimeStepInSecond(),
         c.hip);
     }
 

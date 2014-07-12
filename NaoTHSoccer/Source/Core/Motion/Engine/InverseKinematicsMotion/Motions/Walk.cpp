@@ -65,12 +65,18 @@ void Walk::execute()
 
 
     // apply online stabilization
-    if(theWalkParameters.stabilization.rotationStabilize)
+    if(getCalibrationData().calibrated && theWalkParameters.stabilization.rotationStabilize)
     {
+      /*
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
         getInertialSensorData(),
+        c.hip);*/
+      
+      getEngine().rotationStabilize(
+        getGyrometerData(),
+        getRobotInfo().getBasicTimeStepInSecond(),
         c.hip);
     }
 
@@ -390,6 +396,7 @@ void Walk::manageSteps(const WalkRequest& req)
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
       if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize ) {
         adaptStepSize(step.footStep);
+        currentComErrorBuffer.clear();
       }
       updateParameters(step, req.character);
     }
@@ -808,6 +815,7 @@ void Walk::calculateError()
   
   currentComError = requested_com - observed_com;
   com_errors.add(currentComError.abs2());
+  currentComErrorBuffer.add(currentComError);
 
   PLOT("Walk:comErr:x", currentComError.x);
   PLOT("Walk:comErr:y", currentComError.y);
@@ -885,6 +893,7 @@ Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 
 void Walk::adaptStepSize(FootStep& step) const
 {
+  /*
   Vector3d comRef, comObs;
 
   if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
@@ -905,12 +914,14 @@ void Walk::adaptStepSize(FootStep& step) const
   PLOT("Walk:adaptStepSize:comErr.x",comErr.x);
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
   PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
-
+  */
   double k = -1;
   MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);
 
-  Vector3d comErrG = step.supFoot().rotation * currentComError;
+  if(currentComErrorBuffer.size() > 0) {
+    Vector3d comErrG = step.supFoot().rotation * currentComErrorBuffer.getAverage();
 
-  step.footEnd().translation.x += comErrG.x * k;
-  step.footEnd().translation.y += comErrG.y * k;
+    step.footEnd().translation.x += comErrG.x * k;
+    step.footEnd().translation.y += comErrG.y * k;
+  }
 }//end adaptStepSize

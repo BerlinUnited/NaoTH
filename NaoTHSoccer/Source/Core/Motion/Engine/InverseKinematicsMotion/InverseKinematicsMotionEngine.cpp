@@ -288,6 +288,51 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
 
 bool InverseKinematicsMotionEngine::rotationStabilize(
+  const GyrometerData& theGyrometerData,
+  double timeDelta,
+  Pose3D& hip)
+{
+  const double alpha = 0.5;
+  static Vector2d filteredGyro = theGyrometerData.data;
+  filteredGyro = filteredGyro * (1.0f - alpha) + theGyrometerData.data * alpha;
+
+  //
+  //const double gyroPGain = 0.01;
+  //const double gyroDGain = 0.0001;
+
+  const double observerMeasurementDelay = 40;
+  const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
+
+  static RingBuffer<double, 10> buffer;
+  static double lastGyroErrorY = 0.0f;
+  static RotationMatrix lastBodyRotationMatrix = hip.rotation;
+
+  const RotationMatrix relativeRotation = hip.rotation.invert() * lastBodyRotationMatrix;
+  lastBodyRotationMatrix = hip.rotation;
+
+  const double command = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
+  buffer.add(command);
+
+  if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
+  {
+    const double errorY = buffer[frameDelay] / timeDelta - filteredGyro.y;
+    const double errorDerivative = (errorY - lastGyroErrorY) / timeDelta;
+
+    double correctionY = getParameters().walk.stabilization.rotationP.y * errorY + 
+                         getParameters().walk.stabilization.rotationD.y * errorDerivative;
+
+    const double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+    hip.translate(0, 0, -height);
+    hip.rotateY(correctionY);
+    hip.translate(0, 0, height);
+
+    lastGyroErrorY = errorY;
+  }
+
+  return true;
+}
+
+bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
   Pose3D& hip)

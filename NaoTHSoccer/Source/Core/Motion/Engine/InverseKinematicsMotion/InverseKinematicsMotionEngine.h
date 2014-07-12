@@ -121,6 +121,11 @@ public:
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
 
+  bool rotationStabilize(
+    const GyrometerData& theGyrometerData,
+    double timeDelta,
+    Pose3D& hip);
+
   /**
    * PID stabilizer controlling the feet of the robot directly
    */
