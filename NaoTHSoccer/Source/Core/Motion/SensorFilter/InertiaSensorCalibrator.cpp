@@ -138,9 +138,9 @@ void InertiaSensorCalibrator::execute()
     }
 
     // restart collecting
-    accValues.init();
-    gyroValues.init();
-    inertialValues.init();
+    accValues.clear();
+    gyroValues.clear();
+    inertialValues.clear();
     collectionStartTime = 0;
 
     // look if there are any useful buffered collections

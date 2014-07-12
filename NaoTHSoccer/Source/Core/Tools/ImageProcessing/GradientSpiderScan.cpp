@@ -77,7 +77,7 @@ void GradientSpiderScan::scan(const Vector2i& start, ScanPointList& goodPoints, 
 {
   Scans scans; //a list of scans to perform
 
-  scanPixelBuffer.init();
+  scanPixelBuffer.clear();
 
   //add the standard scan lines
   scans.add(start, Vector2i( 0,-2));// down
