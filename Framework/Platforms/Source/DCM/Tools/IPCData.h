@@ -27,9 +27,9 @@ namespace naoth
 const unsigned int theSensorJointDataIndex = 0;
 const unsigned int theFSRDataIndex = theSensorJointDataIndex + 4 * (JointData::numOfJoint - 1); // RHipYawPitch and LHipYawPitch are the same joint
 const unsigned int theAccelerometerDataIndex = theFSRDataIndex + FSRData::numOfFSR;
-const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + 3; // 3 Axes acc
+const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + 3 + 3; // acc: 3 axes raw + 2 axes m.s-2
 const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + 3 + 3 + 1; // gyro: 3 axes raw + 3 axes rad-s + ref value 
-const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // 2 axes inertial
+const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // inertial: 2 axes
 const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
 const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
 const unsigned int thBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundData::numOfUSEcho; // 
