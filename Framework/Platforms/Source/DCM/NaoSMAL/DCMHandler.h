@@ -59,10 +59,10 @@ private:
   std::string DCMPath_FSR[FSRData::numOfFSR];
 
   //Accelerometer
-  std::string DCMPath_Accelerometer[3];
+  std::string DCMPath_Accelerometer[3+3];
 
   //Gyrometer
-  std::string DCMPath_Gyrometer[2+1];
+  std::string DCMPath_Gyrometer[3+3+1];
 
   //Inertial Sensors
   std::string DCMPath_InertialSensor[2];

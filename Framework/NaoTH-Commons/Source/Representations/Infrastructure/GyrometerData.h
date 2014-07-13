@@ -10,7 +10,7 @@
 #include <string>
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "Tools/Math/Vector2.h"
+#include "Tools/Math/Vector3.h"
 
 
 namespace naoth
@@ -25,9 +25,9 @@ namespace naoth
     // the GyrRef provided by the robot (what is it for?)
     double ref;
     // raw data as provided by the sensors
-    Vector2d rawData;
+    Vector3d rawData;
     // rawData scaled to radian/s
-    Vector2d data;
+    Vector3d data;
 
     virtual void print(std::ostream& stream) const;
   };

@@ -255,15 +255,15 @@ void InverseKinematicsMotionEngine::feetStabilize(
   double (&position)[naoth::JointData::numOfJoint])
 {
   const Vector2d& inertial = theInertialModel.orientation;
-  const Vector2d& gyro = theGyrometerData.data;
+  const Vector3d& gyro = theGyrometerData.data;
 
   
 
   // HACK: small filter...
-  static Vector2<double> lastGyro = gyro;
-  Vector2<double> filteredGyro = (lastGyro+gyro)*0.5;
+  static Vector3d lastGyro = gyro;
+  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
 
-  Vector2<double> weight;
+  Vector2d weight;
   weight.x = 
       getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
     + getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
@@ -345,11 +345,11 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   PLOT("rotationStabilize:hip:y", Math::toDegrees(hip.rotation.getYAngle()));
 
   const Vector2d& inertial = theInertialModel.orientation;
-  const Vector2d& gyro = theGyrometerData.data;
+  const Vector3d& gyro = theGyrometerData.data;
 
   // HACK: small filter...
-  static Vector2d lastGyro = gyro;
-  Vector2d filteredGyro = (lastGyro+gyro)*0.5;
+  static Vector3d lastGyro = gyro;
+  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
 
   PLOT("rotationStabilize:gyro:x", Math::toDegrees(lastGyro.x));
   PLOT("rotationStabilize:gyro:y", Math::toDegrees(lastGyro.y));
