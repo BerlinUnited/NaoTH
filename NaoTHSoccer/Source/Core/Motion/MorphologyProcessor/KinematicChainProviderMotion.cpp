@@ -1,8 +1,8 @@
 
 
-#include "ForwardKinematics.h"
-
 #include "KinematicChainProviderMotion.h"
+
+#include "ForwardKinematics.h"
 #include <Tools/NaoInfo.h>
 
 KinematicChainProviderMotion::KinematicChainProviderMotion()

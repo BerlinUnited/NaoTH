@@ -39,6 +39,7 @@ void PreviewController::setHeight(double height)
   
   if ( parameterHeight != newHeight )
   {
+    std::cout << "[PreviewController] change height from " << parameterHeight << " to " << newHeight << std::endl;
     parameterHeight = newHeight;
 
     double z = parameterHeight * 0.001; // height in m

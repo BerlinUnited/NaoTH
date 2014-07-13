@@ -53,23 +53,20 @@ public:
   {
   }
 
-  void execute(){} // dummy
+  virtual void execute(){} // dummy
 
   
   InverseKinematic::HipFeetPose getHipFeetPoseBasedOnSensor() const;
-  
   InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnSensor() const;
 
   InverseKinematic::HipFeetPose getHipFeetPoseBasedOnModel() const;
-
   InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnModel() const;
 
   InverseKinematic::HipFeetPose getCurrentHipFeetPose() const;
-
   InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
-  
   InverseKinematic::ZMPFeetPose getPlannedZMPFeetPose() const;
-  
+
+
   template<typename T>
   T interpolate(const T& sp, const T& tp, double t) const 
   {

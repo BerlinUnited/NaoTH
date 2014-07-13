@@ -160,7 +160,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   // copy the requested values for the head and arm joints
   const double *sj = theMotorJointData.position;
   double *j = theInverseKinematics.theJointData.position;
-  for (int i = JointData::HeadPitch; i <= JointData::LElbowYaw; i++)
+  for (int i = 0; i <= JointData::numOfJoint; i++)
   {
     j[i] = sj[i];
   }
@@ -293,7 +293,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   Pose3D& hip)
 {
   const double alpha = 0.5;
-  static Vector2d filteredGyro = theGyrometerData.data;
+  static Vector3d filteredGyro = theGyrometerData.data;
   filteredGyro = filteredGyro * (1.0f - alpha) + theGyrometerData.data * alpha;
 
   //
@@ -315,7 +315,8 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
 
   if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
   {
-    const double errorY = buffer[frameDelay] / timeDelta - filteredGyro.y;
+    const double requestedVelocityY = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+    const double errorY = requestedVelocityY - filteredGyro.y;
     const double errorDerivative = (errorY - lastGyroErrorY) / timeDelta;
 
     double correctionY = getParameters().walk.stabilization.rotationP.y * errorY + 
@@ -461,7 +462,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
 void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const
 {
   const double* l = theInverseKinematics.theJointData.position;
-  for (int i = JointData::RHipYawPitch; i < JointData::numOfJoint; i++)
+  for (int i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; i++)
   {
     position[i] = l[i];
   }

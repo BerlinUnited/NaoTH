@@ -65,15 +65,23 @@ public:
   {
     // standing
     if ( isStopped()
-        || fabs(height - motionRequest.standHeight) > 1
-        || standardStand != motionRequest.standardStand ) {
+        || height != motionRequest.standHeight // requested height changed
+        || standardStand != motionRequest.standardStand ) 
+    {
       standardStand = motionRequest.standardStand;
-      // init pose
       height = motionRequest.standHeight;
-      double comHeight = (motionRequest.standHeight < 0.0) ? getEngine().getParameters().walk.hip.comHeight : motionRequest.standHeight;
+
+      // init pose
+      double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : motionRequest.standHeight;
       comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
+      
       startPose = getEngine().getCurrentCoMFeetPose();
       targetPose = getStandPose(comHeight, standardStand);
+
+	  // HACK: don't do anything if after walk
+      if(getMotionStatus().lastMotion == motion::walk) {
+        targetPose = startPose;
+      }
 
       targetPose.localInCoM();
       startPose.localInCoM();
@@ -81,12 +89,12 @@ public:
       double speed = getEngine().getParameters().stand.speed;
       double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
       double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
-      double distMax = (distLeft > distRight) ? distLeft : distRight;
+      double distMax = std::max(distLeft, distRight);
       totalTime = distMax / speed;
       time = 0;
 
       // set stiffness
-      for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+      for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
         getMotorJointData().stiffness[i] = stiffness;
       }
     }
@@ -95,7 +103,7 @@ public:
 
   void execute()
   {
-    if ( time > totalTime && getMotionRequest().id != getId() )
+    if ( time >= totalTime && getMotionRequest().id != getId() )
     {
       setCurrentState(motion::stopped);
       return;
@@ -103,11 +111,14 @@ public:
 
     calculateTrajectory(getMotionRequest());
 
-    time += getRobotInfo().basicTimeStep;
-    double t = std::min(time / totalTime, 1.0);
-    double k = 0.5*(1.0-cos(t*Math::pi));
+    double k = 1.0;
 
+    if(totalTime > 0 && time < totalTime) {
+      time = std::min(time + getRobotInfo().basicTimeStep, totalTime);
+      k = 0.5*(1.0-cos(time/totalTime*Math::pi));
+    }
     InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
+
     bool solved = false;
     InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
@@ -138,33 +149,6 @@ public:
     PLOT("Stand:hip:y",c.hip.translation.y);
     PLOT("Stand:hip:z",c.hip.translation.z);
 
-
-    { // DEBUG
-    Vector3d comRef, comObs;
-
-    if ( p.feet.left.translation.z > p.feet.right.translation.z )
-    {
-      comRef = p.feet.right.invert() * p.com.translation;
-      const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
-      comObs = foot.invert() * getKinematicChainSensor().CoM;
-    }
-    else
-    {
-      comRef = p.feet.left.invert() * p.com.translation;
-      const Pose3D& foot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
-      comObs = foot.invert() * getKinematicChainSensor().CoM;
-    }
-
-    Vector3d comErr = comRef - comObs;
-
-    PLOT("Stand:comErr.x",comErr.x);
-    PLOT("Stand:comErr.y",comErr.y);
-    PLOT("Stand:comErr.z",comErr.z);
-    }
-
-
-    //if(theParameters.stand.stabilizeNeural)
-    //  theEngine.feetStabilize(getMotorJointData().position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
     setCurrentState(motion::running);

@@ -465,7 +465,8 @@ CoMFeetPose Walk::executeStep()
   Vector3d com;
   if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() )
   {
-    return getEngine().getCurrentCoMFeetPose();
+    //return getEngine().getCurrentCoMFeetPose();
+    return theCoMFeetPose;
   }
 
   PLOT("Walk:executeStep:com.x", com.x);
