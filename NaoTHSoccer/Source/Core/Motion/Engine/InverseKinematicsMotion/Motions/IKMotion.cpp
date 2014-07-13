@@ -29,7 +29,7 @@ CoMFeetPose IKMotion::getStandPose(double comHeight, bool standard) const
   {
     CoMFeetPose p;
     p.com.translation = Vector3d(getEngine().getParameters().hipOffsetX, 0, comHeight);
-    p.com.rotation = RotationMatrix::getRotationY(getEngine().getParameters().bodyPitchOffset);
+    p.com.rotation = RotationMatrix::getRotationY(Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
     double footY = NaoInfo::HipOffsetY + getEngine().getParameters().footOffsetY;
     p.feet.left.translation = Vector3d(0, footY, 0);
     p.feet.right.translation = Vector3d(0, -footY, 0);
@@ -43,7 +43,7 @@ CoMFeetPose IKMotion::getStandPose(double comHeight, bool standard) const
     targetPose.feet.right.rotation = RotationMatrix::getRotationZ(angZ);
     targetPose.com.translation.z = comHeight;
     targetPose.com.rotation = RotationMatrix::getRotationZ(angZ*0.5);
-    targetPose.com.rotation.rotateY(getEngine().getParameters().bodyPitchOffset);
+    targetPose.com.rotation.rotateY(Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
     return targetPose;
   }
 }//end getStandPose
