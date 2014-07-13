@@ -100,6 +100,7 @@ void InertiaSensorCalibrator::execute()
     accZBias.predict(0.0, Math::sqr(accBiasProcessNoise.z * timeDiff));
     gyroXBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.x * timeDiff));
     gyroYBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.y * timeDiff));
+    gyroZBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.z * timeDiff));
   }
 
 
@@ -164,6 +165,7 @@ void InertiaSensorCalibrator::execute()
           accZBias.init(collection.accAvg.z, Math::sqr(accBiasMeasurementNoise.z));
           gyroXBias.init(collection.gyroAvg.x, Math::sqr(gyroBiasMeasurementNoise.x));
           gyroYBias.init(collection.gyroAvg.y, Math::sqr(gyroBiasMeasurementNoise.y));
+          gyroZBias.init(collection.gyroAvg.z, Math::sqr(gyroBiasMeasurementNoise.z));
         }
         else
         {
@@ -174,6 +176,7 @@ void InertiaSensorCalibrator::execute()
           accZBias.update(collection.accAvg.z, Math::sqr(accBiasMeasurementNoise.z));
           gyroXBias.update(collection.gyroAvg.x, Math::sqr(gyroBiasMeasurementNoise.x));
           gyroYBias.update(collection.gyroAvg.y, Math::sqr(gyroBiasMeasurementNoise.y));
+          gyroZBias.update(collection.gyroAvg.z, Math::sqr(gyroBiasMeasurementNoise.z));
         }
       }
       collections.removeFirst();
@@ -228,6 +231,7 @@ void InertiaSensorCalibrator::execute()
 
     getCalibrationData().gyroSensorOffset.x = gyroXBias.value;
     getCalibrationData().gyroSensorOffset.y = gyroYBias.value;
+    getCalibrationData().gyroSensorOffset.z = gyroZBias.value;
   }
 
   getCalibrationData().calibrated = calibrated;
@@ -237,6 +241,7 @@ void InertiaSensorCalibrator::execute()
 
   PLOT("InertiaSensorCalibrator:gyroOffset.x", getCalibrationData().gyroSensorOffset.x);
   PLOT("InertiaSensorCalibrator:gyroOffset.y", getCalibrationData().gyroSensorOffset.y);
+  PLOT("InertiaSensorCalibrator:gyroOffset.z", getCalibrationData().gyroSensorOffset.z);
 
   PLOT("InertiaSensorCalibrator:accOffset.x", getCalibrationData().accSensorOffset.x);
   PLOT("InertiaSensorCalibrator:accOffset.y", getCalibrationData().accSensorOffset.y);
