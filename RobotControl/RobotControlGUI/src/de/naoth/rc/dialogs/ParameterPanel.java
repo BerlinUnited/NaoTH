@@ -232,7 +232,7 @@ private void listParameters()
       jToggleButtonRefresh.setSelected(false);
     }
   }//end refresh
-
+  
   private void sendCommand(Command command)
   {
     commandToExecute = command;

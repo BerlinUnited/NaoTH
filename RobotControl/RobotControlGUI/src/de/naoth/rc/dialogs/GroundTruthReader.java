@@ -39,7 +39,7 @@ public class GroundTruthReader extends AbstractDialog {
      private Map<Integer, Integer> topGoal,
             bottomGoal;
      DefaultListModel listModel;
-     private LogSimulatorManager logSimManager;
+     private final LogSimulatorManager logSimManager;
 
     private class MissmatchSaver{
         int frame;
@@ -187,9 +187,10 @@ public class GroundTruthReader extends AbstractDialog {
 
         reportDialog.setTitle("Groundtruth Report");
         reportDialog.setFocusableWindowState(false);
-        reportDialog.setMaximumSize(new java.awt.Dimension(550, 300));
-        reportDialog.setMinimumSize(new java.awt.Dimension(550, 300));
-        reportDialog.setPreferredSize(new java.awt.Dimension(550, 300));
+        reportDialog.setLocationByPlatform(true);
+        reportDialog.setMaximumSize(new java.awt.Dimension(500, 300));
+        reportDialog.setMinimumSize(new java.awt.Dimension(500, 300));
+        reportDialog.setPreferredSize(new java.awt.Dimension(500, 300));
         reportDialog.setResizable(false);
 
         reportClose.setText("Close");
@@ -635,7 +636,7 @@ public class GroundTruthReader extends AbstractDialog {
             reportDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportDialogLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(reportDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(reportClose)
                     .addComponent(reportSave))

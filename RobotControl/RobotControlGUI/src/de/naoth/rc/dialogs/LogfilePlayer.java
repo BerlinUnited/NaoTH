@@ -13,6 +13,7 @@ import de.naoth.rc.LogSimulator;
 import de.naoth.rc.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.server.ResponseListener;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.KeyEventPostProcessor;
@@ -45,7 +46,7 @@ public class LogfilePlayer extends AbstractDialog
   private final LogPerceptListener logPerceptListener = new LogPerceptListener();
   
   LogSimulatorManager logSimulator = null;
-  LogFileAutoPlay logFileAutoPlayer = null;
+  LogfileAutoPlayer logFileAutoPlayer = null;
   private boolean autoSliderChange = false;
   private int minFrame;
   private int maxFrame;
@@ -92,7 +93,7 @@ public class LogfilePlayer extends AbstractDialog
             }
             
             // stop the player first if necessary
-            if((new String("awsdrlp")).indexOf(e.getKeyChar()) >= 0)
+            if(("awsdrlp").indexOf(e.getKeyChar()) >= 0)
             {
                 if (logFileAutoPlayer != null) 
                 {
@@ -125,11 +126,11 @@ public class LogfilePlayer extends AbstractDialog
                     LogfilePlayer.this.logSimulator.jumpTo(logSimulator.getCurrentFrame());
                     return true;
                 case 'p':                    
-                    logFileAutoPlayer = new LogFileAutoPlay(LogfilePlayer.this);
+                    logFileAutoPlayer = new LogfileAutoPlayer();
                     logFileAutoPlayer.start();
                     return true;
                 case 'l':
-                    logFileAutoPlayer = new LogFileAutoPlay(LogfilePlayer.this, true);
+                    logFileAutoPlayer = new LogfileAutoPlayer(true);
                     logFileAutoPlayer.start();
                     return true;
             }
@@ -314,7 +315,7 @@ public class LogfilePlayer extends AbstractDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(logSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)))
         );
@@ -397,7 +398,7 @@ public class LogfilePlayer extends AbstractDialog
         if (verifyStringInt(jTextField2.getText())) {
             jTextField2.setBackground(Color.white);
             if (logFileAutoPlayer == null) {            
-                logFileAutoPlayer = new LogFileAutoPlay(this, Integer.parseInt(jTextField2.getText()));
+                logFileAutoPlayer = new LogfileAutoPlayer(Integer.parseInt(jTextField2.getText()));
                 logFileAutoPlayer.start();
             }
             else {
@@ -458,74 +459,14 @@ public class LogfilePlayer extends AbstractDialog
     // End of variables declaration//GEN-END:variables
 
     
-  private class LogFileAutoPlay extends Thread {
-      LogSimulatorManager logSimulator;
-      LogfilePlayer logfilePlayer;
-      long stopTime;
-      boolean loop;
-      int currentFrame; 
-      
-      boolean isRunning = true;
-      
-      LogFileAutoPlay (LogfilePlayer logfilePlayer) {
-          this.logfilePlayer = logfilePlayer;
-          this.logSimulator = this.logfilePlayer.logSimulator;
-          this.stopTime = 33;
-          this.currentFrame = this.logSimulator.getCurrentFrame();          
-          this.loop = false;
-      }
-      LogFileAutoPlay (LogfilePlayer logfilePlayer, boolean loop) {
-          this.logfilePlayer = logfilePlayer;
-          this.logSimulator = this.logfilePlayer.logSimulator;         
-          this.currentFrame = this.logSimulator.getCurrentFrame();          
-          this.loop = loop;
-      }
-      LogFileAutoPlay (LogfilePlayer logfilePlayer, int stopTime) {
-          this.logfilePlayer = logfilePlayer;
-          this.logSimulator = this.logfilePlayer.logSimulator;
-          this.stopTime = stopTime;
-          this.currentFrame = this.logSimulator.getCurrentFrame();         
-          this.loop = false;
-      }    
-      
-      @Override
-      public void run () {
-
-            while (isRunning) 
-            {
-                if (currentFrame < logSimulator.getMaxFrame()) {
-                    logSimulator.stepForward();                        
-                    currentFrame++;                                        
-                 }
-                 else {
-                     if (loop) {
-                         logSimulator.jumpToBegin();
-                         currentFrame = this.logSimulator.getMinFrame();
-                     } else {
-                         break;                        
-                     }
-                 }
-                
-                 try {
-                    LogFileAutoPlay.sleep(stopTime);
-                 } catch (InterruptedException ex ) {
-                     break;
-                 }
-            }
-      }
-      
-      public void stopPlay() {
-          this.isRunning = false;
-      }
-  }  
+  
  
   
   
     public boolean verifyStringInt(String text) {         
           try {
-              int value = new Integer(text);
-              if (value>=0) return true; 
-              else return false;
+              int value = Integer.parseInt(text);
+              return value>=0;
           } catch (NumberFormatException e) {
               return false;
           }
