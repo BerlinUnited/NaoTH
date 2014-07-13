@@ -72,6 +72,7 @@ private:
   // gyro
   Kalman<double> gyroXBias; /**< The calibration bias of gyroX. */
   Kalman<double> gyroYBias; /**< The calibration bias of gyroY. */
+  Kalman<double> gyroZBias; /**< The calibration bias of gyroZ. */
 
   bool calibrated; /**< Whether the filters are initialized. */
   unsigned int lastTime; /**< The time of the previous iteration. */
