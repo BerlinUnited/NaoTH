@@ -310,8 +310,8 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   const RotationMatrix relativeRotation = hip.rotation.invert() * lastBodyRotationMatrix;
   lastBodyRotationMatrix = hip.rotation;
 
-  const double command = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
-  buffer.add(command);
+  const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
+  buffer.add(rotationY);
 
   if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
   {
