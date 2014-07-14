@@ -16,6 +16,9 @@ option battery {
     action {
       set_left_ear = 
         min(value0=10.0,value1=platform.battery*10);
+
+      set_right_ear = 
+        min(value0=10.0,value1=platform.battery*10);
     }
   }
 
@@ -35,6 +38,7 @@ option battery {
     action
     {
       set_left_ear = 0;
+      set_right_ear = 0;
       //sound.request = (state_time == 0 || platform.battery == 0) 
       //  ? battery_low : off;
     }
