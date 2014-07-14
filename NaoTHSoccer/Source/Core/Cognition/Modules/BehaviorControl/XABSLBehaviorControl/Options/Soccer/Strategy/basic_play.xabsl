@@ -98,6 +98,8 @@ option basic_play
           
       set_left_eye = ball.was_seen ? green : off;   
 
+      set_head = (robot_pose.x < 0) ? 12 : 6;
+
       //set ear
       battery();
     }
