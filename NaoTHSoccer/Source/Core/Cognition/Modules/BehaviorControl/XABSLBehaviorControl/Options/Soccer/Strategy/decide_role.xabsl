@@ -56,8 +56,15 @@ option decide_role
       ball_was_outside_circle = true;
       situation_based_striker();
      // basic_striker_behavior();
-      set_left_ear = platform.frameNumber % 10;
-      set_right_ear = platform.frameNumber % 10;
+
+      //blinking
+      set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_head = (platform.frameNumber % 3 == 0) ? 12 : 0;
+      //for rotating
+      //set_left_ear = platform.frameNumber % 10;
+      //set_right_ear = platform.frameNumber % 10;
+      //set_head = platform.frameNumber % 13;
     }
   }
 
