@@ -184,7 +184,11 @@ void MonteCarloSelfLocatorSimple::execute()
 
       if(parameters.updateBySituation) {
         if(getPlayerInfo().gameData.gameState == GameData::set) {
-          updateByOwnHalf(theSampleSet);
+          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
+            updateByGoalBox(theSampleSet);
+          } else {
+            updateByOwnHalf(theSampleSet);
+          }
         }
       }
 
@@ -503,8 +507,8 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 void MonteCarloSelfLocatorSimple::updateByGoalBox(SampleSet& sampleSet) const
 {
   static const Geometry::Rect2d ownGoalBox(
-    getFieldInfo().ownGoalPostLeft - Vector2d(100, 100), 
-    getFieldInfo().ownGoalPostRight + Vector2d(getFieldInfo().xPenaltyAreaLength + 100, 100));
+    Vector2d(getFieldInfo().xPosOwnGroundline, getFieldInfo().yPosRightPenaltyArea) - Vector2d(200, 200), 
+    Vector2d(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yPosLeftPenaltyArea) + Vector2d(200, 200));
 
   for(size_t s=0; s < sampleSet.size(); s++)
   {
