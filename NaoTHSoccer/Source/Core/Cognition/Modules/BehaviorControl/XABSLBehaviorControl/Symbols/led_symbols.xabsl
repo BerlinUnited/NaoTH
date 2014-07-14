@@ -15,6 +15,10 @@ namespace led_symbols("Led Symbols") {
   float output set_right_ear;
   /** values 0-9 possible */
   float output set_left_ear; 
+
+  /** values 0-11 possible */
+  float output set_head;
+  
   enum eyeLED output set_right_eye;
   enum eyeLED output set_left_eye;  
 }

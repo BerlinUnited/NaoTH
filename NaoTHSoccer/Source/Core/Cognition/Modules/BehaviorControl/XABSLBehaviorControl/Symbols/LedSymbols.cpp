@@ -22,8 +22,7 @@ void LedSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("set_right_ear", &setRightEar, &getRightEar);
   engine.registerDecimalOutputSymbol("set_left_ear", &setLeftEar, &getLeftEar);
 
-  engine.registerDecimalOutputSymbol("set_right_head", &setRightHead, &getRightHead);
-  engine.registerDecimalOutputSymbol("set_left_head", &setLeftHead, &getLeftHead);
+  engine.registerDecimalOutputSymbol("set_head", &setHead, &getHead);
 
   engine.registerEnumeratedOutputSymbol("set_right_eye", "eyeLED", &setRightEye, &getRightEye);
   engine.registerEnumeratedOutputSymbol("set_left_eye", "eyeLED", &setLeftEye, &getLeftEye);
@@ -37,16 +36,15 @@ void LedSymbols::execute()
 {
 }
 
-
-void LedSymbols::setRightHead(double id)
+void LedSymbols::setHead(double id)
 {
 
-  if (id <= 6)
+  if (id <= 12)
   {
 
-    theInstance->lastRHead = id;
+    theInstance->lastHead = id;
     int counter = 0;
-    for (int i = LEDData::HeadRearRight0; i <= LEDData::HeadFrontRight1; i++)
+    for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
     {
       if (counter < id) {
         theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
@@ -57,43 +55,17 @@ void LedSymbols::setRightHead(double id)
     }
   }
 
-}//end setRightHead
+}//end setHead
 
-double LedSymbols::getRightHead()
+double LedSymbols::getHead()
 {
-  return theInstance->lastRHead;
-}
-
-void LedSymbols::setLeftHead(double id)
-{
-
-  if (id <= 6)
-  {
-
-    theInstance->lastLHead = id;
-    int counter = 0;
-    for (int i = LEDData::HeadRearLeft0; i <= LEDData::HeadFrontLeft1; i++)
-    {
-      if (counter < id) {
-        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
-      } else {
-        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
-      }
-      counter++;
-    }
-  }
-
-}//end setRightHead
-
-double LedSymbols::getLeftHead()
-{
-  return theInstance->lastLHead;
+  return theInstance->lastHead;
 }
 
 void LedSymbols::setRightEar(double id)
 {
-
-  if (id <= 10)
+  id = floor(id + 0.5);
+  if (id <= 10.0)
   {
     theInstance->lastREar = id;
     int counter = 0;
@@ -117,6 +89,7 @@ double LedSymbols::getRightEar()
 
 void LedSymbols::setLeftEar(double id)
 {
+
   id = floor(id + 0.5);
   if (id <= 10.0)
   {
