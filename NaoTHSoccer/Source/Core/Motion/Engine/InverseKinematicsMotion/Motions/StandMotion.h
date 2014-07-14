@@ -130,10 +130,12 @@ public:
         getGroundContactModel(),
         getInertialSensorData(),
         c.hip);*/
+
+      c.localInLeftFoot();
       getEngine().rotationStabilize(
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
-        c.hip);
+        c);
     }
 
     getEngine().solveHipFeetIK(c);

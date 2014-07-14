@@ -121,7 +121,7 @@ public:
   bool rotationStabilize(
     const GyrometerData& theGyrometerData,
     double timeDelta,
-    Pose3D& hip);
+    InverseKinematic::HipFeetPose& p);
 
   /**
    * PID stabilizer controlling the feet of the robot directly

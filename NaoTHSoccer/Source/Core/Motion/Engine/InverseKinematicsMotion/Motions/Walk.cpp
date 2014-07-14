@@ -74,10 +74,18 @@ void Walk::execute()
         getInertialSensorData(),
         c.hip);*/
       
+      if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) {
+        c.localInRightFoot();
+      } else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) {
+        c.localInLeftFoot();
+      } else {
+        c.localInHip();
+      }
+      
       getEngine().rotationStabilize(
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
-        c.hip);
+        c);
     }
 
     getEngine().solveHipFeetIK(c);
@@ -916,13 +924,22 @@ void Walk::adaptStepSize(FootStep& step) const
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
   PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
   */
-  double k = -1;
-  MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);
+  double kP = -1;
+  MODIFY("Walk:adaptStepSize:adaptStepSizeKP", kP);
+  double kD = 0;
+  MODIFY("Walk:adaptStepSize:adaptStepSizeKD", kD);
 
-  if(currentComErrorBuffer.size() > 0) {
-    Vector3d comErrG = step.supFoot().rotation * currentComErrorBuffer.getAverage();
+  Vector3d error = currentComErrorBuffer.getAverage();
+  static Vector3d lastError = error;
 
-    step.footEnd().translation.x += comErrG.x * k;
-    step.footEnd().translation.y += comErrG.y * k;
+  if(currentComErrorBuffer.size() > 0) 
+  {
+    Vector3d correction = error*kP + (error - lastError)*kD;
+    Vector3d comErrG = step.supFoot().rotation * correction;
+
+    step.footEnd().translation.x += correction.x;
+    step.footEnd().translation.y += correction.y;
+
+    lastError = error;
   }
 }//end adaptStepSize

@@ -290,11 +290,12 @@ void InverseKinematicsMotionEngine::feetStabilize(
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const GyrometerData& theGyrometerData,
   double timeDelta,
-  Pose3D& hip)
+  InverseKinematic::HipFeetPose& p)
 {
   const double alpha = 0.5;
-  static Vector3d filteredGyro = theGyrometerData.data;
-  filteredGyro = filteredGyro * (1.0f - alpha) + theGyrometerData.data * alpha;
+  Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
+  static Vector2d filteredGyro = gyro;
+  filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
   //
   //const double gyroPGain = 0.01;
@@ -303,31 +304,33 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   const double observerMeasurementDelay = 40;
   const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
 
-  static RingBuffer<double, 10> buffer;
-  static double lastGyroErrorY = 0.0f;
-  static RotationMatrix lastBodyRotationMatrix = hip.rotation;
+  static RingBuffer<Vector2d, 10> buffer;
+  static Vector2d lastGyroError;
+  static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
 
-  const RotationMatrix relativeRotation = hip.rotation.invert() * lastBodyRotationMatrix;
-  lastBodyRotationMatrix = hip.rotation;
+  const RotationMatrix relativeRotation = p.hip.rotation.invert() * lastBodyRotationMatrix;
+  lastBodyRotationMatrix = p.hip.rotation;
 
   const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
-  buffer.add(rotationY);
+  buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
   if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
   {
-    const double requestedVelocityY = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
-    const double errorY = requestedVelocityY - filteredGyro.y;
-    const double errorDerivative = (errorY - lastGyroErrorY) / timeDelta;
+    const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+    const Vector2d error = requestedVelocity - filteredGyro;
+    const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationP.y * errorY + 
-                         getParameters().walk.stabilization.rotationD.y * errorDerivative;
+    double correctionY = getParameters().walk.stabilization.rotationP.y * error.y + 
+                         getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
 
-    const double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
-    hip.translate(0, 0, -height);
-    hip.rotateY(correctionY);
-    hip.translate(0, 0, height);
+    double correctionX = getParameters().walk.stabilization.rotationP.x * error.x + 
+                         getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
 
-    lastGyroErrorY = errorY;
+    p.localInHip();
+    p.hip.rotateX(correctionX);
+    p.hip.rotateY(correctionY);
+
+    lastGyroError = error;
   }
 
   return true;
