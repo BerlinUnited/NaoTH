@@ -924,17 +924,15 @@ void Walk::adaptStepSize(FootStep& step) const
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
   PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
   */
-  double kP = -1;
-  MODIFY("Walk:adaptStepSize:adaptStepSizeKP", kP);
-  double kD = 0;
-  MODIFY("Walk:adaptStepSize:adaptStepSizeKD", kD);
 
   Vector3d error = currentComErrorBuffer.getAverage();
   static Vector3d lastError = error;
 
   if(currentComErrorBuffer.size() > 0) 
   {
-    Vector3d correction = error*kP + (error - lastError)*kD;
+    Vector3d correction = error*theWalkParameters.stabilization.dynamicStepsizeP + 
+                          (error - lastError)*theWalkParameters.stabilization.dynamicStepsizeD;
+
     Vector3d comErrG = step.supFoot().rotation * correction;
 
     step.footEnd().translation.x += correction.x;

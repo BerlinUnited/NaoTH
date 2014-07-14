@@ -102,6 +102,8 @@ public:
 
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
+      double dynamicStepsizeP;
+      double dynamicStepsizeD;
     } stabilization;
   } walk;
 
