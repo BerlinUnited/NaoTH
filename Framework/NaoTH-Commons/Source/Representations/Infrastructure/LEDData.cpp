@@ -67,18 +67,18 @@ string LEDData::getLEDName(MonoLEDID led)
     case EarLeft288: return string("EarLeft288");
     case EarLeft324: return string("EarLeft324");
 
+    case HeadFrontLeft0: return string("HeadFrontLeft0");
+    case HeadFrontLeft1: return string("HeadFrontLeft1");
+    case HeadFrontRight0: return string("HeadFrontRight0");
+    case HeadFrontRight1: return string("HeadFrontRight1");
+    case HeadMiddleLeft0: return string("HeadMiddleLeft0");
+    case HeadMiddleRight0: return string("HeadMiddleRight0");
     case HeadRearLeft0: return string("HeadRearLeft0");
     case HeadRearLeft1: return string("HeadRearLeft1");
     case HeadRearLeft2: return string("HeadRearLeft2");
-    case HeadMiddleLeft0: return string("HeadMiddleLeft0");
-    case HeadFrontLeft0: return string("HeadFrontLeft0");
-    case HeadFrontLeft1: return string("HeadFrontLeft1");
     case HeadRearRight0: return string("HeadRearRight0");
     case HeadRearRight1: return string("HeadRearRight1");
     case HeadRearRight2: return string("HeadRearRight2");
-    case HeadMiddleRight0: return string("HeadMiddleRight0");
-    case HeadFrontRight0: return string("HeadFrontRight0");
-    case HeadFrontRight1: return string("HeadFrontRight1");
 
     default: return string("Unknown MonoLED");
   }//end switch
