@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   LEDData.h
  * Author: Martin Martius
  *
@@ -40,18 +40,18 @@ namespace naoth
       EarLeft288,
       EarLeft324,
 
+      HeadFrontLeft0,
+      HeadFrontLeft1,
+      HeadFrontRight0,
+      HeadFrontRight1,
+      HeadMiddleLeft0,
+      HeadMiddleRight0,
       HeadRearLeft0,
       HeadRearLeft1,
       HeadRearLeft2,
-      HeadMiddleLeft0,
-      HeadFrontLeft0,
-      HeadFrontLeft1,
       HeadRearRight0,
       HeadRearRight1,
       HeadRearRight2,
-      HeadMiddleRight0,
-      HeadFrontRight0,
-      HeadFrontRight1,
 
       numOfMonoLED
     };
