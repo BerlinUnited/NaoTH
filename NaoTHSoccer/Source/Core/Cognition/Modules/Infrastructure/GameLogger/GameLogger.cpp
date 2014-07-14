@@ -33,7 +33,6 @@ void GameLogger::execute()
     if( (getPlayerInfo().gameData.gameState != GameData::initial || !ignore_init_state) && 
         getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber())
     {
-      std::cout << "caboom" << endl;
       std::stringstream& streamBehavior = logfileManager.log(getFrameInfo().getFrameNumber(), "BehaviorStateSparse");
       Serializer<BehaviorStateSparse>::serialize(getBehaviorStateSparse(), streamBehavior);
     }
