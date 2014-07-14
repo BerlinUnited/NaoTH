@@ -26,6 +26,8 @@
 
 #include "Representations/Modeling/AttentionModel.h"
 
+#include "Representations/Infrastructure/LEDRequest.h"
+
 BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
   REQUIRE(FrameInfo)
   REQUIRE(BallPercept)
@@ -38,6 +40,7 @@ BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(SoundPlayData)
+  PROVIDE(BehaviorLEDRequest)
 END_DECLARE_MODULE(SimpleMotionBehaviorControl)
 
 class SimpleMotionBehaviorControl: public SimpleMotionBehaviorControlBase
@@ -51,6 +54,7 @@ public:
 private:
   void testHead();
   void testMotion();
+  void testLED();
 
 };//end class ImageProcessor
 
