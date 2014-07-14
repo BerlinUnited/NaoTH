@@ -14,6 +14,8 @@ import de.naoth.rc.dialogs.behaviorviewer.model.Symbol;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.dialogs.behaviorviewer.XABSLProtoParser;
+import de.naoth.rc.dialogs.drawings.Robot;
+import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -76,6 +78,8 @@ public class BehaviorViewer extends AbstractDialog
       public static SwingCommandExecutor commandExecutor;
       @InjectPlugin
       public static LogFileEventManager logFileEventManager;
+      @InjectPlugin
+      public static DrawingEventManager drawingEventManager;
   }//end Plugin
   
 
@@ -216,7 +220,9 @@ public class BehaviorViewer extends AbstractDialog
 
         @Override
         public void errorOccured(String cause) {
-            
+            frameList.addListSelectionListener(behaviorFrameListener);
+            Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this);
+            btReceiveLogData.setEnabled(true);
         }
   }
   
@@ -329,6 +335,22 @@ public class BehaviorViewer extends AbstractDialog
     }//end if
   }//end showFrame
 
+ private void drawStuff(XABSLBehaviorFrame frame)
+ {
+     try
+    {
+     double robot_x = Double.parseDouble(getSymbolValue(frame, "robot_pose.x"));
+     double robot_y = Double.parseDouble(getSymbolValue(frame, "robot_pose.y"));
+     double robot_r = Double.parseDouble(getSymbolValue(frame, "robot_pose.rotation"));
+     
+     Robot robot = new Robot(robot_x, robot_y, robot_r/180.0*Math.PI);
+     
+     Plugin.drawingEventManager.fireDrawingEvent(robot);
+    }catch(Exception ex)
+    {
+        Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+    }
+ }
   
   private void drawFrameOnFieldGlobal(XABSLBehaviorFrame frame)
   {
@@ -473,6 +495,7 @@ public class BehaviorViewer extends AbstractDialog
     this.frameList.setSelectedIndex(listModel.getSize()-1);
     //this.frameList.revalidate();
     
+    drawStuff(status);
     showFrame(status);
     
   }//end addFrame
@@ -506,7 +529,7 @@ public class BehaviorViewer extends AbstractDialog
         jToolBar2 = new javax.swing.JToolBar();
         btAddWatch = new javax.swing.JButton();
         behaviorTreePanel = new de.naoth.rc.dialogs.behaviorviewer.BehaviorTreePanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        frameListPanel = new javax.swing.JScrollPane();
         frameList = new javax.swing.JList();
 
         symbolChooser.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -558,7 +581,7 @@ public class BehaviorViewer extends AbstractDialog
         });
         jToolBar1.add(btReceive);
 
-        btReceiveLogData.setText("Receive");
+        btReceiveLogData.setText("Receive Log");
         btReceiveLogData.setFocusable(false);
         btReceiveLogData.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btReceiveLogData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -646,13 +669,13 @@ public class BehaviorViewer extends AbstractDialog
 
         drawingPanel.add(jSplitPane, java.awt.BorderLayout.CENTER);
 
-        jScrollPane2.setBorder(javax.swing.BorderFactory.createLineBorder(jToolBar1.getBackground()));
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(90, 132));
+        frameListPanel.setBorder(javax.swing.BorderFactory.createLineBorder(jToolBar1.getBackground()));
+        frameListPanel.setPreferredSize(new java.awt.Dimension(90, 132));
 
         frameList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(frameList);
+        frameListPanel.setViewportView(frameList);
 
-        drawingPanel.add(jScrollPane2, java.awt.BorderLayout.WEST);
+        drawingPanel.add(frameListPanel, java.awt.BorderLayout.WEST);
 
         add(drawingPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -673,10 +696,12 @@ public class BehaviorViewer extends AbstractDialog
         
         // make the list of frames not clickable
         this.frameList.removeListSelectionListener(behaviorFrameListener);
+        btReceiveLogData.setEnabled(false);
       }
       else
       {
         btReceive.setSelected(false);
+        btReceiveLogData.setEnabled(true);
       }
     }
     else
@@ -684,6 +709,7 @@ public class BehaviorViewer extends AbstractDialog
       this.frameList.addListSelectionListener(behaviorFrameListener);
       //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
       Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
+      btReceiveLogData.setEnabled(true);
     }
 
 }//GEN-LAST:event_btReceiveActionPerformed
@@ -792,10 +818,14 @@ public class BehaviorViewer extends AbstractDialog
     private void btReceiveLogDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveLogDataActionPerformed
         if(btReceiveLogData.isSelected())
         {
+            //frameListPanel.setVisible(false);
+            btReceive.setEnabled(false);
             Plugin.logFileEventManager.addListener(logBehaviorListener);
         }
         else
         {
+            //frameListPanel.setVisible(true);
+            btReceive.setEnabled(true);
             Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
@@ -1014,9 +1044,9 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JCheckBox cbOnlyOptions;
     private javax.swing.JPanel drawingPanel;
     private javax.swing.JList frameList;
+    private javax.swing.JScrollPane frameListPanel;
     private javax.swing.JPanel inputSymbolsBoxPanel;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane;
