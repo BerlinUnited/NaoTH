@@ -38,11 +38,30 @@ void Walk::execute()
       theCoMFeetPose = executeStep();
     }
 
-    // buffer the pose
-    commandPoseBuffer.add(theCoMFeetPose);
+    if(!stepBuffer.empty()) 
+    {
+      // HACK:
+      CoMFeetPose tmp(theCoMFeetPose);
+      if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) 
+      {
+        tmp.localInRightFoot();
+        theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.left.translation.z;
+        theCoMFeetPose.com.rotateX( theWalkParameters.hip.comRotationOffsetX *tmp.feet.left.translation.z );
+      } 
+      else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) 
+      {
+        tmp.localInLeftFoot();
+        theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.right.translation.z;
+        theCoMFeetPose.com.rotateX( -theWalkParameters.hip.comRotationOffsetX*tmp.feet.right.translation.z );
+      }
+
+      // buffer the pose
+      commandFootIdBuffer.add(stepBuffer.front().footStep.liftingFoot());
+      commandPoseBuffer.add(theCoMFeetPose);
+    }
 
     bool solved = false;
-    HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, true);
+    HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, false);
 
     PLOT("Walk:com.solved", solved);
     PLOT("Walk:c:hip.z",c.hip.translation.z);
@@ -340,12 +359,11 @@ void Walk::manageSteps(const WalkRequest& req)
   {
     std::cout << "walk start" << std::endl;
     theCoMFeetPose = getEngine().getCurrentCoMFeetPose();
-    ZMPFeetPose currentZMP = getEngine().getPlannedZMPFeetPose();
-    
-    // TODO: why in the left foot?!
-    currentZMP.localInLeftFoot(); 
 
+    ZMPFeetPose currentZMP = getEngine().getPlannedZMPFeetPose();
+    currentZMP.localInLeftFoot(); // TODO: why in the left foot?!
     currentZMP.zmp.translation.z = theWalkParameters.hip.comHeight;
+
     Step zeroStep;
     updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
@@ -801,14 +819,14 @@ void Walk::calculateError()
   Vector3d observed_com;
 
   // if right support
-  if(expectedCoMFeetPose.feet.left.translation.z > expectedCoMFeetPose.feet.right.translation.z)
+  if(commandFootIdBuffer[index] == FootStep::LEFT)
   {
     const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
     requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
-    footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
     observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   else
@@ -818,7 +836,7 @@ void Walk::calculateError()
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
-    footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
     observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   
@@ -925,19 +943,18 @@ void Walk::adaptStepSize(FootStep& step) const
   PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
   */
 
-  Vector3d error = currentComErrorBuffer.getAverage();
-  static Vector3d lastError = error;
-
   if(currentComErrorBuffer.size() > 0) 
   {
-    Vector3d correctionOffset = error*theWalkParameters.stabilization.dynamicStepsizeP + 
-                          (error - lastError)*theWalkParameters.stabilization.dynamicStepsizeD;
+    Vector3d errorCoM = currentComErrorBuffer.getAverage();
+    static Vector3d lastCoMError = errorCoM;
+    
+    Vector3d comCorrection = errorCoM*theWalkParameters.stabilization.dynamicStepsizeP + 
+                          (errorCoM - lastCoMError)*theWalkParameters.stabilization.dynamicStepsizeD;
 
-    Vector3d stepCorrection = step.supFoot().rotation * correctionOffset;
-
+    Vector3d stepCorrection = step.supFoot().rotation * comCorrection;
     step.footEnd().translation.x += stepCorrection.x;
     step.footEnd().translation.y += stepCorrection.y;
 
-    lastError = error;
+    lastCoMError = errorCoM;
   }
 }//end adaptStepSize

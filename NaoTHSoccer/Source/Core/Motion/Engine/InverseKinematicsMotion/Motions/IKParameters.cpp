@@ -31,6 +31,8 @@ IKParameters::IKParameters()
 
   // hip trajectory geometry
   PARAMETER_REGISTER(walk.hip.comHeight) = 260;
+  PARAMETER_REGISTER(walk.hip.comHeightOffset) = 0.18;
+  PARAMETER_REGISTER(walk.hip.comRotationOffsetX) = 0;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 

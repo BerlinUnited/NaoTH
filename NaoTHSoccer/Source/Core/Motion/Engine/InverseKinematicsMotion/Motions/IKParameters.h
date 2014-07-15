@@ -45,6 +45,8 @@ public:
     struct Hip
     {
       double comHeight;
+      double comHeightOffset;
+      double comRotationOffsetX;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;

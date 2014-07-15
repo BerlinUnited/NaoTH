@@ -95,6 +95,13 @@ public:
     bool& solved, 
     bool fix_height/*=false*/);
 
+  void controlCenterOfMassCool(
+    const MotorJointData& theMotorJointData,
+    const InverseKinematic::CoMFeetPose& target,
+    InverseKinematic::HipFeetPose& result,
+    bool leftFootSupport,
+    bool& sloved,
+    bool fix_height);
 
   unsigned int contorlZMPlength() const { return static_cast<unsigned int> (thePreviewController.previewSteps()); }
 

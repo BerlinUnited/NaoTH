@@ -233,6 +233,9 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     result.hip.translation += u;
   }//end for
   
+  // use the last best result
+  result.hip.translation = theCoMControlResult;
+
   if(!sloved) {
     std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
   }
@@ -247,6 +250,135 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   
   return result;
 }//end controlCenterOfMass
+
+
+// TODO: check the parameter sloved
+void InverseKinematicsMotionEngine::controlCenterOfMassCool(
+  const MotorJointData& theMotorJointData,
+  const CoMFeetPose& target,
+  HipFeetPose& result,
+  bool leftFootSupport,
+  bool& sloved,
+  bool fix_height)
+{
+  // requested com in the coordinates of the support foot
+  Vector3d refCoM;
+  KinematicChain::LinkID baseLink;
+  if ( leftFootSupport ) {
+    baseLink = KinematicChain::LFoot;
+    refCoM = target.feet.left.invert() * target.com.translation;
+  } else {
+    baseLink = KinematicChain::RFoot;
+    refCoM = target.feet.right.invert() * target.com.translation;
+  }
+
+  // set the supporting foot as the origin
+  theInverseKinematics.theKinematicChain.getLink(baseLink).M = Pose3D(0, 0, NaoInfo::FootHeight);
+
+  // copy the current motor joints as a stating configuration
+  for (int i = 0; i < JointData::numOfJoint; i++) {
+    theInverseKinematics.theJointData.position[i] = theMotorJointData.position[i];
+  }
+
+  // initialize the result with the requested com-feet pose
+  /*
+  HipFeetPose result;
+  result.feet = target.feet;
+  result.hip = target.com;
+  result.localInHip();
+  */
+  
+  //lastCoMControlResult = result.hip.translation;
+  // reuse results from last calculation for the starting value
+  //result.hip.translation = theCoMControlResult;// + (refCoM - lastCoMControlTarget);
+  //lastCoMControlTarget = refCoM;
+
+  double bestError = std::numeric_limits<double>::max();
+  int i = 0; // iteration
+  double max_iter = 15; // max number of iretations
+  double max_error = 1e-8; // threshold
+
+  // step control parameter
+  double step = 1;
+  double alpha = 0.5;
+  double max_step = 1;
+  Vector3d tmpResult = result.hip.translation;
+  
+  sloved = false;
+  for (; i < max_iter; i++)
+  {
+    // calculate the joints fulfilling the result
+    solveHipFeetIK(result);
+
+    // calculate the kinematic chain and the com
+    Kinematics::ForwardKinematics::updateKinematicChainFrom(theInverseKinematics.theKinematicChain, baseLink);
+    theInverseKinematics.theKinematicChain.updateCoM();
+    const Vector3d& obsCoM = theInverseKinematics.theKinematicChain.CoM;
+
+    // calculate error
+    Vector3d e = refCoM - obsCoM;
+    double error = e.x * e.x + e.y * e.y + e.z * e.z*(!fix_height);
+
+    // adjust step size
+    if (bestError < error)
+    {
+      // the error becoms bigger, reset
+      result.hip.translation = tmpResult;
+      step *= alpha; // make smaller steps
+    } else {
+      bestError = error;
+      tmpResult = result.hip.translation;
+      step *= (1.0 + alpha); // make bigger steps
+    }
+    step = Math::clamp(step, max_error, max_step);
+
+    // convergence
+    if (bestError < max_error /*&& i > 0*/)
+    {
+      assert(result.hip.translation.x == tmpResult.x && 
+             result.hip.translation.y == tmpResult.y &&
+             result.hip.translation.z == tmpResult.z);
+      sloved = true;
+      break;
+    }
+
+    // calculate the update
+    Vector3d u = e * step;
+
+    // clampt the update
+    double maxAdjustment = 50;
+    MODIFY("IK_COM_CTR_MAX", maxAdjustment);
+
+    u.x = Math::clamp(e.x * step, -maxAdjustment, maxAdjustment);
+    u.y = Math::clamp(e.y * step, -maxAdjustment, maxAdjustment);
+    u.z = Math::clamp(e.z * step, -maxAdjustment, maxAdjustment)*(!fix_height);
+
+    result.hip.translation += u;
+  }//end for
+  
+  // use the last best result
+  result.hip.translation = tmpResult;
+
+  if(!sloved) {
+    std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
+  }
+
+  if ( bestError > 1 ) {
+    std::cerr<<"Warning: can not control CoM @ "<<bestError<<std::endl;
+  }
+
+  if( i >= max_iter ) {
+    std::cerr<<"Warning: maximum iterations reached @ "<<bestError<<std::endl;
+  }
+  
+  PLOT("NeoWalk:CalculatedCoM:x", theInverseKinematics.theKinematicChain.CoM.x);
+  PLOT("NeoWalk:CalculatedCoM:y", theInverseKinematics.theKinematicChain.CoM.y);
+  PLOT("NeoWalk:CalculatedCoM:z", theInverseKinematics.theKinematicChain.CoM.z);
+
+  PLOT("NeoWalk:error", bestError);
+  //std::cout << i << std::endl;
+
+}//end controlCenterOfMassCool
 
 
 void InverseKinematicsMotionEngine::feetStabilize(

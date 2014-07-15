@@ -184,6 +184,7 @@ private:
   // a buffer of CoMFeetPoses requested in the past
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
+  RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
 
 };
 
