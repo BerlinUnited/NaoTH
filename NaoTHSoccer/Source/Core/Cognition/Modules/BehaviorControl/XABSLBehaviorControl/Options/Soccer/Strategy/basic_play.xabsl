@@ -19,7 +19,7 @@ option basic_play
 
       //set LED stuff
       // make head player number
-      set_head = game.player_number%7;
+      set_head = game.player_number%7; //mod to pretend higher ID
       
       set_right_eye = 
           goal.own.was_seen ? blue 
@@ -92,13 +92,13 @@ option basic_play
       //set LED stuff
       // make here some initializations
    
-      set_right_eye = off;
-      //    goal.own.was_seen ? blue 
-      //    : (goal.opp.was_seen ? red : off );
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
           
       set_left_eye = ball.was_seen ? green : off;   
 
-      set_head = (robot_pose.x < 0) ? 6 : 3;
+      set_head = (robot_pose.x < 0) ? 3 : 6;
 
       //set ear
       battery();
