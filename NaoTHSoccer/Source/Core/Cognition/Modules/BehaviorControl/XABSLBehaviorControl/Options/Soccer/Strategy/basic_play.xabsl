@@ -19,7 +19,7 @@ option basic_play
 
       //set LED stuff
       // make head player number
-      set_head = game.player_number*2;
+      set_head = game.player_number%7;
       
       set_right_eye = 
           goal.own.was_seen ? blue 
@@ -98,7 +98,7 @@ option basic_play
           
       set_left_eye = ball.was_seen ? green : off;   
 
-      set_head = (robot_pose.x < 0) ? 12 : 6;
+      set_head = (robot_pose.x < 0) ? 6 : 3;
 
       //set ear
       battery();

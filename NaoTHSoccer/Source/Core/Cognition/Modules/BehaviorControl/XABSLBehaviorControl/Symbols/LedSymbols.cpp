@@ -39,20 +39,45 @@ void LedSymbols::execute()
 void LedSymbols::setHead(double id)
 {
 
-  if (id <= 12)
-  {
+  if (id <= 6 && theInstance->lastHead != id) {
+
+    for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
+
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
+
+    }
+
+    switch((int)id) {
+        case 6: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft1] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontRight1] = 1.0;
+        }
+        case 5: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontRight0] = 1.0;
+        }
+        case 4: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadMiddleLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadMiddleRight0] = 1.0;
+        }
+        case 3: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight0] = 1.0;
+        }
+        case 2: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft1] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight1] = 1.0;
+        }
+        case 1: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft2] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight2] = 1.0;
+        }
+        case 0:
+        default:
+            break;
+    }
 
     theInstance->lastHead = id;
-    int counter = 0;
-    for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++)
-    {
-      if (counter < id) {
-        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
-      } else {
-        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
-      }
-      counter++;
-    }
   }
 
 }//end setHead
