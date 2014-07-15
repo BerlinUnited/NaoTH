@@ -930,13 +930,13 @@ void Walk::adaptStepSize(FootStep& step) const
 
   if(currentComErrorBuffer.size() > 0) 
   {
-    Vector3d correction = error*theWalkParameters.stabilization.dynamicStepsizeP + 
+    Vector3d correctionOffset = error*theWalkParameters.stabilization.dynamicStepsizeP + 
                           (error - lastError)*theWalkParameters.stabilization.dynamicStepsizeD;
 
-    Vector3d comErrG = step.supFoot().rotation * correction;
+    Vector3d stepCorrection = step.supFoot().rotation * correctionOffset;
 
-    step.footEnd().translation.x += correction.x;
-    step.footEnd().translation.y += correction.y;
+    step.footEnd().translation.x += stepCorrection.x;
+    step.footEnd().translation.y += stepCorrection.y;
 
     lastError = error;
   }
