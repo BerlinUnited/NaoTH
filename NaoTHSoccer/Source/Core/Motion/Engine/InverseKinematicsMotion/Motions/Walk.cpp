@@ -38,6 +38,29 @@ void Walk::execute()
       theCoMFeetPose = executeStep();
     }
 
+    // plot planned trajectory
+    PLOT("Walk:theCoMFeetPose:com:x",theCoMFeetPose.com.translation.x);
+    PLOT("Walk:theCoMFeetPose:com:y",theCoMFeetPose.com.translation.y);
+    PLOT("Walk:theCoMFeetPose:com:z",theCoMFeetPose.com.translation.z);
+
+    PLOT("Walk:theCoMFeetPose:feet.left:x",theCoMFeetPose.feet.left.translation.x);
+    PLOT("Walk:theCoMFeetPose:feet.left:y",theCoMFeetPose.feet.left.translation.y);
+    PLOT("Walk:theCoMFeetPose:feet.left:z",theCoMFeetPose.feet.left.translation.z);
+
+    PLOT("Walk:theCoMFeetPose:feet.right:x",theCoMFeetPose.feet.right.translation.x);
+    PLOT("Walk:theCoMFeetPose:feet.right:y",theCoMFeetPose.feet.right.translation.y);
+    PLOT("Walk:theCoMFeetPose:feet.right:z",theCoMFeetPose.feet.right.translation.z);
+
+    PLOT("Walk:theCoMFeetPose:feet.left:rotationX",theCoMFeetPose.feet.left.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:feet.left:rotationY",theCoMFeetPose.feet.left.rotation.getYAngle());
+
+    PLOT("Walk:theCoMFeetPose:feet.right:rotationX",theCoMFeetPose.feet.right.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:feet.right:rotationY",theCoMFeetPose.feet.right.rotation.getYAngle());
+
+    PLOT("Walk:theCoMFeetPose:com:rotationX",theCoMFeetPose.com.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:com:rotationY",theCoMFeetPose.com.rotation.getYAngle());
+    PLOT("Walk:theCoMFeetPose:com:rotationZ",theCoMFeetPose.com.rotation.getZAngle());
+
     if(!stepBuffer.empty()) 
     {
       // HACK:
@@ -47,12 +70,16 @@ void Walk::execute()
         tmp.localInRightFoot();
         theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.left.translation.z;
         theCoMFeetPose.com.rotateX( theWalkParameters.hip.comRotationOffsetX *tmp.feet.left.translation.z );
+
+        PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
       } 
       else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) 
       {
         tmp.localInLeftFoot();
         theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.right.translation.z;
         theCoMFeetPose.com.rotateX( -theWalkParameters.hip.comRotationOffsetX*tmp.feet.right.translation.z );
+
+        PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
       }
 
       // buffer the pose
@@ -68,19 +95,6 @@ void Walk::execute()
 
     PLOT("Walk:theCoMFeetPose:left_diff",c.feet.left.translation.y - c.hip.translation.y-50);
     PLOT("Walk:theCoMFeetPose:right_diff",c.feet.right.translation.y - c.hip.translation.y+50);
-
-    // plot planned trajectory
-    PLOT("Walk:theCoMFeetPose:com:x",theCoMFeetPose.com.translation.x);
-    PLOT("Walk:theCoMFeetPose:com:y",theCoMFeetPose.com.translation.y);
-    PLOT("Walk:theCoMFeetPose:com:z",theCoMFeetPose.com.translation.z);
-
-    PLOT("Walk:theCoMFeetPose:feet.left:x",theCoMFeetPose.feet.left.translation.x);
-    PLOT("Walk:theCoMFeetPose:feet.left:y",theCoMFeetPose.feet.left.translation.y);
-    PLOT("Walk:theCoMFeetPose:feet.left:z",theCoMFeetPose.feet.left.translation.z);
-
-    PLOT("Walk:theCoMFeetPose:feet.right:x",theCoMFeetPose.feet.right.translation.x);
-    PLOT("Walk:theCoMFeetPose:feet.right:y",theCoMFeetPose.feet.right.translation.y);
-    PLOT("Walk:theCoMFeetPose:feet.right:z",theCoMFeetPose.feet.right.translation.z);
 
 
     // apply online stabilization
@@ -106,6 +120,16 @@ void Walk::execute()
         getRobotInfo().getBasicTimeStepInSecond(),
         c);
     }
+
+    PLOT("Walk:HipFeetPose:hip:rotationX",c.hip.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:hip:rotationY",c.hip.rotation.getYAngle());
+    PLOT("Walk:HipFeetPose:hip:rotationZ",c.hip.rotation.getZAngle());
+
+    PLOT("Walk:HipFeetPose:feet.right:rotationX",c.feet.right.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:feet.right:rotationY",c.feet.right.rotation.getYAngle());
+
+    PLOT("Walk:HipFeetPose:feet.left:rotationX",c.feet.left.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:feet.left:rotationY",c.feet.left.rotation.getYAngle());
 
     getEngine().solveHipFeetIK(c);
 
@@ -364,6 +388,7 @@ void Walk::manageSteps(const WalkRequest& req)
     currentZMP.localInLeftFoot(); // TODO: why in the left foot?!
     currentZMP.zmp.translation.z = theWalkParameters.hip.comHeight;
 
+
     Step zeroStep;
     updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
@@ -420,6 +445,9 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+      PLOT("Walk:step.footStep.rotY", step.footStep.end().left.rotation.getYAngle());
+      PLOT("Walk:step.footStep.rotX", step.footStep.end().left.rotation.getXAngle());
+
       if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize ) {
         adaptStepSize(step.footStep);
         currentComErrorBuffer.clear();
@@ -613,8 +641,9 @@ CoMFeetPose Walk::executeStep()
   }
 
   result.com.translation = com;
-  result.com.rotation = calculateBodyRotation(result.feet ,executingStep.bodyPitchOffset);
-
+  //result.localInLeftFoot();
+  result.com.rotation = calculateBodyRotation(result.feet, executingStep.bodyPitchOffset);
+  
   executingStep.executingCycle++;
   if ( executingStep.executingCycle >= executingStep.numberOfCyclePerFootStep )
   {
@@ -631,16 +660,8 @@ CoMFeetPose Walk::executeStep()
 
 RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) const
 {
-  double rAng = feet.left.rotation.getZAngle();
-  double lAng = feet.right.rotation.getZAngle();
-  double bodyRotation = Math::calculateMeanAngle(rAng, lAng);
-  if (fabs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
-  {
-    bodyRotation = Math::normalizeAngle(bodyRotation + Math::pi);
-  }
-  RotationMatrix rot = RotationMatrix::getRotationZ(bodyRotation);
-  rot.rotateY(pitch);
-  return rot;
+  double bodyAngleZ = Math::meanAngle(feet.left.rotation.getZAngle(), feet.right.rotation.getZAngle());
+  return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
 }
 
 void Walk::walk(const WalkRequest& req)
@@ -813,7 +834,7 @@ void Walk::calculateError()
 
   int observerMeasurementDelay = 40;
   int index = std::min(int(observerMeasurementDelay / 10 - 0.5), int(commandPoseBuffer.size() - 1));
-  const InverseKinematic::CoMFeetPose& expectedCoMFeetPose = commandPoseBuffer[index];
+  InverseKinematic::CoMFeetPose expectedCoMFeetPose = commandPoseBuffer[index];
 
   Vector3d requested_com;
   Vector3d observed_com;
@@ -821,8 +842,10 @@ void Walk::calculateError()
   // if right support
   if(commandFootIdBuffer[index] == FootStep::LEFT)
   {
-    const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
-    requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
+    //const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
+    //requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInRightFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
@@ -831,8 +854,10 @@ void Walk::calculateError()
   }
   else
   {
-    const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
-    requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
+    //const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
+    //requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInLeftFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
@@ -872,6 +897,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
     Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
+
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;

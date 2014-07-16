@@ -79,10 +79,9 @@ public:
       targetPose = getStandPose(comHeight, standardStand);
 
 	    // HACK: don't do anything if after walk
-      /*
       if(getMotionStatus().lastMotion == motion::walk) {
         targetPose = startPose;
-      }*/
+      }
 
       targetPose.localInCoM();
       startPose.localInCoM();
@@ -121,14 +120,16 @@ public:
     InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
 
     bool solved = false;
-    //InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+    InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
 
+    /*
     InverseKinematic::HipFeetPose c;
     c.hip = p.com;
     c.hip.translation = Vector3d();
     c.feet = p.feet;
 
     getEngine().controlCenterOfMassCool(getMotorJointData(), p, c, true, solved, false);
+    */
 
     if(getCalibrationData().calibrated && getEngine().getParameters().stand.enableStabilization)
     {

@@ -155,7 +155,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   
   // reuse results from last calculation for the starting value
   result.hip.translation = theCoMControlResult;
-
+  //result.hip.translation.z -= 35;
 
   // copy the requested values for the head and arm joints
   const double *sj = theMotorJointData.position;
@@ -165,16 +165,15 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     j[i] = sj[i];
   }
 
-
   double bestError = std::numeric_limits<double>::max();
   int i = 0; // iteration
   double max_iter = 15; // max number of iretations
-  double max_error = 1e-8; // threshold
+  double max_error = 1e-3; //1e-8; // threshold
 
   // step control parameter
   double step = 1;
   double alpha = 0.5;
-  double max_step = 1;
+  double max_step = 2;
   
   for (; i < max_iter; i++)
   {
@@ -209,11 +208,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
       assert(result.hip.translation.x == theCoMControlResult.x && 
              result.hip.translation.y == theCoMControlResult.y &&
              result.hip.translation.z == theCoMControlResult.z);
-	  sloved = true;
+	    sloved = true;
       break;
     }
 
-    
     // calculate the update
     Vector3d u = e * step;
 
@@ -229,12 +227,13 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
     u.y = Math::clamp(e.y * step, -maxAdjustment, maxAdjustment);
     u.z = Math::clamp(e.z * step, -maxAdjustment, maxAdjustment)*(!fix_height);
 
-
     result.hip.translation += u;
   }//end for
   
   // use the last best result
   result.hip.translation = theCoMControlResult;
+
+  std::cout << "steps " << i << std::endl;
 
   if(!sloved) {
     std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
@@ -428,10 +427,6 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
   static Vector2d filteredGyro = gyro;
   filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
-
-  //
-  //const double gyroPGain = 0.01;
-  //const double gyroDGain = 0.0001;
 
   const double observerMeasurementDelay = 40;
   const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
