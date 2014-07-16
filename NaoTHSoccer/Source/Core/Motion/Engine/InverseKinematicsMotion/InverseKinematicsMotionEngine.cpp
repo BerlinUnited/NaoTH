@@ -90,7 +90,12 @@ HipFeetPose InverseKinematicsMotionEngine::getCurrentHipFeetPose() const
 
 CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
 {
-  if (getSensorJointData().isLegStiffnessOn())
+  // if was controlled in the last frame
+  if(getFrameInfo().getFrameNumber() == lastCoMFeetControlFrameInfo.getFrameNumber() + 1)
+  {
+    return getlastControlledCoMFeetPose();
+  }
+  else if (getSensorJointData().isLegStiffnessOn())
   {
     return getCoMFeetPoseBasedOnModel();
   }
@@ -120,6 +125,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   bool& sloved, 
   bool fix_height)
 {
+  // save in case another motion wants to know it
+  lastCoMFeetControlPose = p;
+  lastCoMFeetControlFrameInfo = getFrameInfo();
+
   // copy initial values
   HipFeetPose result;
   result.feet = p.feet;
@@ -233,7 +242,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   // use the last best result
   result.hip.translation = theCoMControlResult;
 
-  std::cout << "steps " << i << std::endl;
+  //std::cout << "steps " << i << std::endl;
 
   if(!sloved) {
     std::cerr<<"Warning: control com was not solved @ "<<bestError<<std::endl;
@@ -260,6 +269,10 @@ void InverseKinematicsMotionEngine::controlCenterOfMassCool(
   bool& sloved,
   bool fix_height)
 {
+  // save in case another motion wants to know it
+  lastCoMFeetControlPose = target;
+  lastCoMFeetControlFrameInfo = getFrameInfo();
+
   // requested com in the coordinates of the support foot
   Vector3d refCoM;
   KinematicChain::LinkID baseLink;

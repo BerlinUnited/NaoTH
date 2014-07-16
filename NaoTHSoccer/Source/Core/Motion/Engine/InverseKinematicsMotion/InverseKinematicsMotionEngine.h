@@ -28,6 +28,7 @@
 #include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
+  REQUIRE(FrameInfo)
   REQUIRE(KinematicChainSensor)
   REQUIRE(KinematicChainMotor)
   REQUIRE(SensorJointData)
@@ -66,6 +67,9 @@ public:
   InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
   InverseKinematic::ZMPFeetPose getPlannedZMPFeetPose() const;
 
+  const InverseKinematic::CoMFeetPose& getlastControlledCoMFeetPose() const {
+    return lastCoMFeetControlPose;
+  }
 
   template<typename T>
   T interpolate(const T& sp, const T& tp, double t) const 
@@ -199,6 +203,8 @@ private:
   Kinematics::InverseKinematics theInverseKinematics;
   
   Vector3d theCoMControlResult; // save CoM control result to be reused
+  InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
+  FrameInfo lastCoMFeetControlFrameInfo;
 
   PreviewController thePreviewController;
   Vector3d thePreviewControlCoM;

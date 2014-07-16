@@ -103,12 +103,6 @@ public:
 
   void execute()
   {
-    if ( time >= totalTime && getMotionRequest().id != getId() )
-    {
-      setCurrentState(motion::stopped);
-      return;
-    }
-
     calculateTrajectory(getMotionRequest());
 
     double k = 1.0;
@@ -162,7 +156,13 @@ public:
 
 
     turnOffStiffnessWhenJointIsOutOfRange();
-    setCurrentState(motion::running);
+    
+    if ( time >= totalTime && getMotionRequest().id != getId() ) {
+      setCurrentState(motion::stopped);
+      return;
+    } else {
+      setCurrentState(motion::running);
+    }
   }//end execute
 
 private:
