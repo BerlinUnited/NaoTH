@@ -72,8 +72,8 @@ public:
 
   virtual void execute()
   {
-     execute(CameraInfo::Top);
-     execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
   }
  
 private:
@@ -113,48 +113,6 @@ private:
 
   } params;
 
-  template<typename T, typename V>
-class MaximumScan
-{
-private:
-  V threshhold;
-  V value_max;
-
-  // results of the scan
-  T& peakMax;
-  bool maximum;
-
-public:
-
-  MaximumScan(T& peakMax, V threshhold)
-    : threshhold(threshhold),
-      value_max(threshhold),
-      peakMax(peakMax),
-      maximum(false)
-  {
-  }
-
-  inline bool addValue(const T& point, V value)
-  {
-    if(maximum) {
-      value_max = threshhold;
-      maximum = false;
-    }
-
-    if(value > value_max)
-    {
-      value_max = value;
-      peakMax = point;
-    } else if(value_max > threshhold && value < threshhold) {
-      maximum = true;
-    }
-
-    return maximum;
-  }
-
-  inline bool isMax() { return maximum; }
-  inline V maxValue() { return value_max; }
-};
 
 private:
   inline bool isOrange(const Pixel& pixel) const {
@@ -169,8 +127,7 @@ private:
   bool scanForEdges(const Vector2i& start, const Vector2d& direction, Vector2i& endpoint);
   int ckecknearBall(const Vector2i& start, Vector2d& center, double& radius);
   void calculateBallPercept(const Vector2i& center, double radius);
-  bool calculateCircle( const std::vector<Vector2i>& ballPoints, Vector2d& center, double& radius );
-
+  
 private: //data members
   std::vector<Vector2i> listOfRedPoints;
 
