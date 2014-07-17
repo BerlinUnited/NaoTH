@@ -90,8 +90,7 @@ private:
       PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetV) = 100;
       PARAMETER_REGISTER(mitUVDifference) = 50;
-      PARAMETER_REGISTER(orange_thresh) = 50;
-      PARAMETER_REGISTER(minGreenPoints) = 2;
+      PARAMETER_REGISTER(thresholdGradientUV) = 6;
       
 
       syncWithConfig();
@@ -108,8 +107,7 @@ private:
     int minOffsetToGoalV;
     int minOffsetV;
     int mitUVDifference;
-    int orange_thresh;
-    int minGreenPoints;
+    int thresholdGradientUV;
 
   } params;
 
@@ -123,9 +121,9 @@ private:
       pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
   }
 
-  bool findMaximumRedPoint(Vector2i& peakPos);
-  bool scanForEdges(const Vector2i& start, const Vector2d& direction, Vector2i& endpoint);
-  int ckecknearBall(const Vector2i& start, Vector2d& center, double& radius);
+  bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
+  bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
+  bool spiderScan(const Vector2i& start, Vector2d& center, double& radius);
   void calculateBallPercept(const Vector2i& center, double radius);
   
 private: //data members

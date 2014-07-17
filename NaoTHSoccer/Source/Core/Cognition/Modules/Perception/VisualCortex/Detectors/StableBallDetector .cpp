@@ -28,6 +28,7 @@ StableBallDetector::StableBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:markPeak", "mark found maximum red peak in image", false);
 
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:drawScanlines", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:drawScanEndPoints", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:draw_ball","..", false);  
 }
@@ -42,8 +43,8 @@ void StableBallDetector::execute(CameraInfo::CameraID id)
 
 
   // STEP 1: find the starting point for the search
-	Vector2i start;
-  if(!findMaximumRedPoint(start) || listOfRedPoints.empty()) {
+  listOfRedPoints.clear();
+  if(!findMaximumRedPoint(listOfRedPoints) || listOfRedPoints.empty()) {
     return;
   }
 
@@ -57,13 +58,14 @@ void StableBallDetector::execute(CameraInfo::CameraID id)
     const Vector2i& point = listOfRedPoints[i];
 
     // the point is within the previously calculated ball
-    if(radius > 0 && radius*radius > (center - Vector2d(point)).abs2()) {
-      continue;
-    }
+    //if(radius > 0 && radius*radius > (center - Vector2d(point)).abs2()) {
+    //  continue;
+    //}
 
-    if(ckecknearBall(point, center, radius) >= params.minGreenPoints && radius > 0) {
+    if(spiderScan(point, center, radius) && radius > 0) {
       ballFound = true;
-      break;
+      calculateBallPercept(center, radius);
+      //break;
     }
   }
 
@@ -76,12 +78,12 @@ void StableBallDetector::execute(CameraInfo::CameraID id)
 
     calculateBallPercept(betterCenter, betterRadius);
     */
-    calculateBallPercept(center, radius);
+    //calculateBallPercept(center, radius);
   }
 }
 
 
-bool StableBallDetector::findMaximumRedPoint(Vector2i& peakPos)
+bool StableBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
@@ -120,13 +122,12 @@ bool StableBallDetector::findMaximumRedPoint(Vector2i& peakPos)
     stepSizeAdjusted *= 2;
   }
 
-  listOfRedPoints.clear();
-
   int maxRedPeak = getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
   Vector2i point;
   Pixel pixel;
+  Vector2i redPeak;
 
-  for(point.y = minY; point.y < (int) getImage().height() - 3; point.y += stepSizeAdjusted) {
+  for(point.y = (int) (getImage().height() - 3); point.y > minY; point.y -= stepSizeAdjusted) {
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSizeAdjusted)
     {
       getImage().get(point.x, point.y, pixel);
@@ -147,8 +148,8 @@ bool StableBallDetector::findMaximumRedPoint(Vector2i& peakPos)
         //if(ckecknearBall(point) > 1) 
         {
           maxRedPeak = (int)pixel.v;
-          peakPos = point;
-          listOfRedPoints.push_back(point);
+          redPeak = point;
+          points.push_back(point);
         }
       }
 
@@ -166,9 +167,9 @@ bool StableBallDetector::findMaximumRedPoint(Vector2i& peakPos)
   }
 
   DEBUG_REQUEST("Vision:Detectors:StableBallDetector:markPeak",
-    LINE_PX(ColorClasses::skyblue, peakPos.x-10, peakPos.y, peakPos.x+10, peakPos.y);
-    LINE_PX(ColorClasses::skyblue, peakPos.x, peakPos.y-10, peakPos.x, peakPos.y+10);
-    CIRCLE_PX(ColorClasses::white, peakPos.x, peakPos.y, 5);
+    LINE_PX(ColorClasses::skyblue, redPeak.x-10, redPeak.y, redPeak.x+10, redPeak.y);
+    LINE_PX(ColorClasses::skyblue, redPeak.x, redPeak.y-10, redPeak.x, redPeak.y+10);
+    CIRCLE_PX(ColorClasses::white, redPeak.x, redPeak.y, 5);
   );
 
   // maxRedPeak is larger than its initial value
@@ -176,30 +177,22 @@ bool StableBallDetector::findMaximumRedPoint(Vector2i& peakPos)
 }
 
 
-int StableBallDetector::ckecknearBall(const Vector2i& start, Vector2d& center, double& radius)
+bool StableBallDetector::spiderScan(const Vector2i& start, Vector2d& center, double& radius)
 {
-  int green = 0;
-  Vector2i endPoint;
+  //int green = 0;
+  //Vector2i endPoint;
   static std::vector<Vector2i> endPoints;
   endPoints.clear();
 
-  if(scanForEdges(start, Vector2d(1,0), endPoint))
-    endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(-1,0), endPoint))
-  endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(0,1), endPoint))
-  endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(0,-1), endPoint))
-  endPoints.push_back(endPoint);
+  scanForEdges(start, Vector2d(1,0), endPoints);
+  scanForEdges(start, Vector2d(-1,0), endPoints);
+  scanForEdges(start, Vector2d(0,1), endPoints);
+  scanForEdges(start, Vector2d(0,-1), endPoints);
 
-  if(scanForEdges(start, Vector2d(1,1).normalize(), endPoint))
-  endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(-1,1).normalize(), endPoint))
-  endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(-1,1).normalize(), endPoint))
-  endPoints.push_back(endPoint);
-  if(scanForEdges(start, Vector2d(-1,-1).normalize(), endPoint))
-  endPoints.push_back(endPoint);
+  scanForEdges(start, Vector2d(1,1).normalize(), endPoints);
+  scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
+  scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
+  scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
 
   // ... just in case ;)
   //ASSERT(endPoints.size() == 8);
@@ -221,46 +214,62 @@ int StableBallDetector::ckecknearBall(const Vector2i& start, Vector2d& center, d
   radius = sqrt(radiusBuffer.getAverage());
   */
 
-  for(size_t i = 0; i < endPoints.size(); i++) {
-    POINT_PX(ColorClasses::red, endPoints[i].x, endPoints[i].y);
-  }
-  Geometry::calculateCircle(endPoints, center, radius);
-
-  return 7;
+  DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanEndPoints",
+    for(size_t i = 0; i < endPoints.size(); i++) {
+      POINT_PX(ColorClasses::red, endPoints[i].x, endPoints[i].y);
+    }
+  );
+  
+  return Geometry::calculateCircle(endPoints, center, radius);
 }
 
-bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, Vector2i& endpoint)
+bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
 {
   Vector2i point(start);
   BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
 
   // initialize the scanner
-  double t_edge = 6;
-  MODIFY("StableBallDetector:t_edge", t_edge);
-
   //Vector2i peak_point_max(start);
   Vector2i peak_point_min(start);
   //MaximumScan<Vector2i,double> positiveScan(peak_point_max, (int)t_edge);
-  MaximumScan<Vector2i,double> negativeScan(peak_point_min, (int)t_edge);
+  MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdGradientUV);
 
-  //Filter<Diff5x1, Vector2i, double, 5> filter;
+  Filter<Prewitt3x1, Vector2i, double, 3> filter;
 
   Pixel pixel;
-  getImage().get(point.x, point.y, pixel);
-  int f_last = (int)pixel.v - (int)pixel.u; // scan the first point
-  Vector2i lastPoint(point);
-  Vector2i lastBallPoint;
-  bool edgeFound = false;
+  //getImage().get(point.x, point.y, pixel);
+  //int f_last = (int)pixel.v - (int)pixel.u; // scan the first point
+  //Vector2i lastBallPoint;
+  //bool edgeFound = false;
 
-  //int max_length = 3;
+  double stepLength = 0;
+  Vector2i lastPoint(point); // needed for step length
+
+  //int max_length = 6;
   //int i = 0;
-  while(scanner.getNextWithCheck(point) && scanner.getNextWithCheck(point) /*&& i < max_length*/)
+  while(scanner.getNextWithCheck(point))// && scanner.getNextWithCheck(point) /*&& i < max_length*/)
   {
     getImage().get(point.x, point.y, pixel);
     int f_y = (int)pixel.v - (int)pixel.u;
-    double g = (f_y - f_last) / Vector2d(point - lastPoint).abs();
-    f_last = f_y;
-    lastPoint = point;
+    //double g = (f_y - f_last) / Vector2d(point - lastPoint).abs();
+    //f_last = f_y;
+    //lastPoint = point;
+
+    // hack
+    /*
+    if(pixel.v < getFieldColorPercept().range.getMax().v) 
+      i++;
+    else
+      i = 0;
+      */
+
+    filter.add(point, f_y);
+    if(!filter.ready()) {
+      stepLength += Vector2d(point - lastPoint).abs();
+      lastPoint = point;
+      ASSERT(stepLength > 0);
+      continue;
+    }
 
     DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanlines",
       POINT_PX(ColorClasses::blue, point.x, point.y);
@@ -290,24 +299,17 @@ bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dir
     */
 
     // end found
-    if(negativeScan.add(point, -g))
+    if(negativeScan.add(filter.point(), -filter.value()/stepLength))
     {
       DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanlines",
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
-      lastBallPoint = peak_point_min;
-      edgeFound = true;
-      break;
+      points.push_back(peak_point_min);
+      return true;
     }
   }//end while
 
-  if(edgeFound) {
-    endpoint = lastBallPoint;
-  } else {
-    endpoint = point;
-  }
-
-  return edgeFound; //getFieldColorPercept().isFieldColor(pixel);
+  return false; //getFieldColorPercept().isFieldColor(pixel);
 }//end scanForEdges
 
 
