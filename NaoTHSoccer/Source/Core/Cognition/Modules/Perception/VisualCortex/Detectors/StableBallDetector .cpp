@@ -179,8 +179,6 @@ bool StableBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) cons
 
 bool StableBallDetector::spiderScan(const Vector2i& start, Vector2d& center, double& radius)
 {
-  //int green = 0;
-  //Vector2i endPoint;
   static std::vector<Vector2i> endPoints;
   endPoints.clear();
 
@@ -193,10 +191,6 @@ bool StableBallDetector::spiderScan(const Vector2i& start, Vector2d& center, dou
   scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
   scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
   scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
-
-  // ... just in case ;)
-  //ASSERT(endPoints.size() == 8);
-
 
   /*
   Vector2d sum;
@@ -229,32 +223,22 @@ bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dir
   BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
 
   // initialize the scanner
-  //Vector2i peak_point_max(start);
   Vector2i peak_point_min(start);
-  //MaximumScan<Vector2i,double> positiveScan(peak_point_max, (int)t_edge);
   MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdGradientUV);
 
   Filter<Prewitt3x1, Vector2i, double, 3> filter;
 
   Pixel pixel;
-  //getImage().get(point.x, point.y, pixel);
-  //int f_last = (int)pixel.v - (int)pixel.u; // scan the first point
-  //Vector2i lastBallPoint;
-  //bool edgeFound = false;
-
   double stepLength = 0;
   Vector2i lastPoint(point); // needed for step length
 
   //int max_length = 6;
   //int i = 0;
-  while(scanner.getNextWithCheck(point))// && scanner.getNextWithCheck(point) /*&& i < max_length*/)
+  while(scanner.getNextWithCheck(point)) // i < max_length*/)
   {
     getImage().get(point.x, point.y, pixel);
     int f_y = (int)pixel.v - (int)pixel.u;
-    //double g = (f_y - f_last) / Vector2d(point - lastPoint).abs();
-    //f_last = f_y;
-    //lastPoint = point;
-
+    
     // hack
     /*
     if(pixel.v < getFieldColorPercept().range.getMax().v) 
@@ -265,6 +249,7 @@ bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dir
 
     filter.add(point, f_y);
     if(!filter.ready()) {
+      // assume the step length is constant, so we only calculate it in the starting phase of the filter
       stepLength += Vector2d(point - lastPoint).abs();
       lastPoint = point;
       ASSERT(stepLength > 0);
@@ -275,30 +260,8 @@ bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& dir
       POINT_PX(ColorClasses::blue, point.x, point.y);
     );
 
-    /*
-    if(!isOrange(pixel)) {
-      i++;
-    } else {
-      i = 0;
-      lastBallPoint = point;
-      edgeFound = true;
-    }
-    */
-
-    /*
-    // begin found
-    if(positiveScan.add(point, g))
-    {
-      DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanlines",
-        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
-      );
-      lastBallPoint = point;
-      edgeFound = true;
-      break;
-    }
-    */
-
-    // end found
+    // jum down found
+    // NOTE: we scale the filter value with the stepLength to acount for diagonal scans
     if(negativeScan.add(filter.point(), -filter.value()/stepLength))
     {
       DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanlines",
