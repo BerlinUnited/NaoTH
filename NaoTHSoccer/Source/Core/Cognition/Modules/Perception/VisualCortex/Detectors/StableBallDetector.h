@@ -123,11 +123,15 @@ private:
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
   bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
-  bool spiderScan(const Vector2i& start, Vector2d& center, double& radius);
+  void spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
+  double estimatedBallRadius(const Vector2i& point) const;
+  
   void calculateBallPercept(const Vector2i& center, double radius);
+  void estimateCiscleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;
   
 private: //data members
   std::vector<Vector2i> listOfRedPoints;
+  std::vector<Vector2i> ballEndPoints;
 
 private:
   // double cam stuff

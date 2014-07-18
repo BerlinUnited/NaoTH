@@ -30,6 +30,7 @@ StableBallDetector::StableBallDetector()
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:drawScanlines", "", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:drawScanEndPoints", "", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:draw_ball_estimated","..", false);
   DEBUG_REQUEST_REGISTER("Vision:Detectors:StableBallDetector:draw_ball","..", false);  
 }
 
@@ -58,11 +59,23 @@ void StableBallDetector::execute(CameraInfo::CameraID id)
     const Vector2i& point = listOfRedPoints[i];
 
     // the point is within the previously calculated ball
-    //if(radius > 0 && radius*radius > (center - Vector2d(point)).abs2()) {
-    //  continue;
-    //}
+    if(radius > 0 && radius*radius*2 > (center - Vector2d(point)).abs2()) {
+      continue;
+    }
 
-    if(spiderScan(point, center, radius) && radius > 0) {
+    double estimatedRadius = estimatedBallRadius(point);
+    
+    DEBUG_REQUEST("Vision:Detectors:StableBallDetector:draw_ball_estimated",
+      if(estimatedRadius > 0) {
+        CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
+      }
+    );
+
+    ballEndPoints.clear();
+    spiderScan(point, ballEndPoints);
+
+    if(Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
+    {
       ballFound = true;
       calculateBallPercept(center, radius);
       //break;
@@ -177,11 +190,8 @@ bool StableBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) cons
 }
 
 
-bool StableBallDetector::spiderScan(const Vector2i& start, Vector2d& center, double& radius)
+void StableBallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const
 {
-  static std::vector<Vector2i> endPoints;
-  endPoints.clear();
-
   scanForEdges(start, Vector2d(1,0), endPoints);
   scanForEdges(start, Vector2d(-1,0), endPoints);
   scanForEdges(start, Vector2d(0,1), endPoints);
@@ -192,29 +202,11 @@ bool StableBallDetector::spiderScan(const Vector2i& start, Vector2d& center, dou
   scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
   scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
 
-  /*
-  Vector2d sum;
-  for(size_t i = 0; i < endPoints.size(); i++) {
-    sum += endPoints[i];
-  }
-  
-  center = sum/((double)endPoints.size());
-
-  RingBufferWithSum<double, 8> radiusBuffer;
-  for(size_t i = 0; i < endPoints.size(); i++) {
-    radiusBuffer.add((center - Vector2d(endPoints[i])).abs2());
-  }
-
-  radius = sqrt(radiusBuffer.getAverage());
-  */
-
   DEBUG_REQUEST("Vision:Detectors:StableBallDetector:drawScanEndPoints",
     for(size_t i = 0; i < endPoints.size(); i++) {
       POINT_PX(ColorClasses::red, endPoints[i].x, endPoints[i].y);
     }
   );
-  
-  return Geometry::calculateCircle(endPoints, center, radius);
 }
 
 bool StableBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
@@ -303,9 +295,50 @@ void StableBallDetector::calculateBallPercept(const Vector2i& center, double rad
 		  getBallPercept().centerInImage = center;
 		  getBallPercept().ballWasSeen = projectionOK;
 		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-		
+
       DEBUG_REQUEST("Vision:Detectors:StableBallDetector:draw_ball",
         CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
 		  );
     }
+}
+
+double StableBallDetector::estimatedBallRadius(const Vector2i& point) const
+{
+  Vector2d pointOnField;
+  if(!CameraGeometry::imagePixelToFieldCoord(
+		  getCameraMatrix(), 
+		  getImage().cameraInfo,
+		  point.x, 
+		  point.y, 
+		  getFieldInfo().ballRadius,
+		  pointOnField))
+  {
+    return -1;
+  }
+
+  Vector3d d = getCameraMatrix()*Vector3d(pointOnField.x, pointOnField.y, getFieldInfo().ballRadius);
+  double cameraBallDistance = d.abs();
+  if(cameraBallDistance > getFieldInfo().ballRadius) {
+    double a = asin(getFieldInfo().ballRadius / d.abs());
+    return a / getImage().cameraInfo.getOpeningAngleHeight() * getImage().cameraInfo.resolutionHeight;
+  }
+  
+  return -1;
+}
+
+void StableBallDetector::estimateCiscleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const
+{
+  Vector2d sum;
+  for(size_t i = 0; i < endPoints.size(); i++) {
+    sum += endPoints[i];
+  }
+  
+  center = sum/((double)endPoints.size());
+
+  RingBufferWithSum<double, 8> radiusBuffer;
+  for(size_t i = 0; i < endPoints.size(); i++) {
+    radiusBuffer.add((center - Vector2d(endPoints[i])).abs2());
+  }
+
+  radius = sqrt(radiusBuffer.getAverage());
 }
