@@ -7,6 +7,7 @@ package de.naoth.naoscp;
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
 import java.io.*;
+import javax.swing.JProgressBar;
 
 /**
  *
@@ -16,15 +17,15 @@ abstract class SshSetupCopier extends SshCopier
 {
   protected String mode;
 
-  SshSetupCopier(NaoScpConfig config, String sNaoNo, String mode)
+  SshSetupCopier(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String mode)
   {
-    super(config, "0", sNaoNo);
+    super(config, progressBar, "0", sNaoNo);
     this.mode = mode;
   }
 
-  SshSetupCopier(NaoScpConfig config, String Ip, String sNaoNo, String mode)
+  SshSetupCopier(NaoScpConfig config, JProgressBar progressBar, String Ip, String sNaoNo, String mode)
   {
-    super(config, Ip, "0", sNaoNo);
+    super(config, progressBar, Ip, "0", sNaoNo);
     this.mode = mode;
   }
 
