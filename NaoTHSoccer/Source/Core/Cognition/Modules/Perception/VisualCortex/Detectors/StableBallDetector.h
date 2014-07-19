@@ -88,7 +88,7 @@ private:
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
       PARAMETER_REGISTER(minOffsetToGoalV) = 10;
-      PARAMETER_REGISTER(minOffsetV) = 100;
+      PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(thresholdGradientUV) = 6;
       
@@ -103,10 +103,12 @@ private:
     }
 
 	  int stepSize;
+
     int minOffsetToFieldY;
+    int minOffsetToFieldV;
     int minOffsetToGoalV;
-    int minOffsetV;
     int mitUVDifference;
+    
     int thresholdGradientUV;
 
   } params;
@@ -116,8 +118,8 @@ private:
   inline bool isOrange(const Pixel& pixel) const {
     return
       pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
-      pixel.v > pixel.u + params.mitUVDifference && // y-u hat to be high (this filter out the jerseys)
-      pixel.v > params.minOffsetV &&
+      pixel.v > pixel.u + params.mitUVDifference && // y-u has to be high (this filter out the jerseys)
+      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV &&
       pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
   }
 
