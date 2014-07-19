@@ -8,7 +8,6 @@
 */
 
 #include "Geometry.h"
-#include "Tools/Math/Matrix_nxn.h"
 
 double Geometry::angleTo(const Pose2D& from, const Vector2<double>& to)
 {
