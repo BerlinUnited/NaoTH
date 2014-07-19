@@ -9,7 +9,7 @@
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
-
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 BodyStateProvider::BodyStateProvider()
 {
@@ -23,6 +23,9 @@ void BodyStateProvider::execute()
 
   // ... :)
   updateTheFootState();
+  PLOT("BodyStateProvider:standByLeftFoot", getBodyState().standByLeftFoot);
+  PLOT("BodyStateProvider:standByRightFoot", getBodyState().standByRightFoot);
+  PLOT("BodyStateProvider:foot_state_time", getFrameInfo().getTimeSince(getBodyState().foot_state_time));
 
   // 
   updateTheLegTemperature();
