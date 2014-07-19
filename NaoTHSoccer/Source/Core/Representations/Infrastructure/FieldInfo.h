@@ -90,6 +90,7 @@ public:
 
   Geometry::Rect2d carpetRect;
   Geometry::Rect2d ownHalfRect;
+  Geometry::Rect2d oppHalfRect;
 
   enum LineCrossingsId
   {
