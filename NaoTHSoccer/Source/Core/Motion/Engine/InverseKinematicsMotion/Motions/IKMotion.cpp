@@ -28,11 +28,11 @@ CoMFeetPose IKMotion::getStandPose(double comHeight, bool standard) const
   if ( standard )
   {
     CoMFeetPose p;
-    p.com.translation = Vector3<double>(getEngine().getParameters().hipOffsetX, 0, comHeight);
+    p.com.translation = Vector3d(getEngine().getParameters().hipOffsetX, 0, comHeight);
     p.com.rotation = RotationMatrix::getRotationY(Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
     double footY = NaoInfo::HipOffsetY + getEngine().getParameters().footOffsetY;
-    p.feet.left.translation = Vector3<double>(0, footY, 0);
-    p.feet.right.translation = Vector3<double>(0, -footY, 0);
+    p.feet.left.translation = Vector3d(0, footY, 0);
+    p.feet.right.translation = Vector3d(0, -footY, 0);
     return p;
   }
   else

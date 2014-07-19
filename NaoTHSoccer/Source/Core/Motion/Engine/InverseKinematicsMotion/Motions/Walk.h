@@ -28,7 +28,7 @@
 #include "Representations/Modeling/SupportPolygon.h"
 #include <Representations/Infrastructure/JointData.h>
 #include "Representations/Motion/MotionStatus.h"
-
+#include "Representations/Infrastructure/CalibrationData.h"
 
 BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(RobotInfo)
@@ -41,6 +41,7 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(InertialSensorData)
   REQUIRE(SupportPolygon)
   REQUIRE(SensorJointData)
+  REQUIRE(CalibrationData)
 
   REQUIRE(InverseKinematicsMotionEngineService)
   
@@ -173,7 +174,8 @@ private:
 
   // observe the com error
   RingBufferWithSum<double, 100> com_errors;
-  Vector3<double> currentComError;
+  Vector3d currentComError;
+  RingBufferWithSum<Vector3d, 100> currentComErrorBuffer;
 
   //
   RingBufferWithSum<Vector2<double>, 100> corrections;
@@ -182,6 +184,7 @@ private:
   // a buffer of CoMFeetPoses requested in the past
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
+  RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
 
 };
 

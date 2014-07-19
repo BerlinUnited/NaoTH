@@ -15794,10 +15794,10 @@ public final class Representations {
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getInertialSensorOffset();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder();
     
-    // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+    // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
     boolean hasGyroSensorOffset();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset();
-    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3 getGyroSensorOffset();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGyroSensorOffsetOrBuilder();
     
     // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
     boolean hasAccSensorOffset();
@@ -15850,16 +15850,16 @@ public final class Representations {
       return inertialSensorOffset_;
     }
     
-    // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
-    public static final int GYROSENSOROFFSET_FIELD_NUMBER = 2;
-    private de.naoth.rc.messages.CommonTypes.DoubleVector2 gyroSensorOffset_;
+    // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
+    public static final int GYROSENSOROFFSET_FIELD_NUMBER = 5;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector3 gyroSensorOffset_;
     public boolean hasGyroSensorOffset() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset() {
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3 getGyroSensorOffset() {
       return gyroSensorOffset_;
     }
-    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder() {
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGyroSensorOffsetOrBuilder() {
       return gyroSensorOffset_;
     }
     
@@ -15888,7 +15888,7 @@ public final class Representations {
     
     private void initFields() {
       inertialSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
-      gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       accSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       calibrated_ = false;
     }
@@ -15929,14 +15929,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, inertialSensorOffset_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, gyroSensorOffset_);
-      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, accSensorOffset_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBool(4, calibrated_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(5, gyroSensorOffset_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -15951,10 +15951,6 @@ public final class Representations {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, inertialSensorOffset_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, gyroSensorOffset_);
-      }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, accSensorOffset_);
@@ -15962,6 +15958,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, calibrated_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, gyroSensorOffset_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16097,7 +16097,7 @@ public final class Representations {
         }
         bitField0_ = (bitField0_ & ~0x00000001);
         if (gyroSensorOffsetBuilder_ == null) {
-          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
         } else {
           gyroSensorOffsetBuilder_.clear();
         }
@@ -16266,15 +16266,6 @@ public final class Representations {
               setInertialSensorOffset(subBuilder.buildPartial());
               break;
             }
-            case 18: {
-              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
-              if (hasGyroSensorOffset()) {
-                subBuilder.mergeFrom(getGyroSensorOffset());
-              }
-              input.readMessage(subBuilder, extensionRegistry);
-              setGyroSensorOffset(subBuilder.buildPartial());
-              break;
-            }
             case 26: {
               de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder();
               if (hasAccSensorOffset()) {
@@ -16287,6 +16278,15 @@ public final class Representations {
             case 32: {
               bitField0_ |= 0x00000008;
               calibrated_ = input.readBool();
+              break;
+            }
+            case 42: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder();
+              if (hasGyroSensorOffset()) {
+                subBuilder.mergeFrom(getGyroSensorOffset());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setGyroSensorOffset(subBuilder.buildPartial());
               break;
             }
           }
@@ -16385,21 +16385,21 @@ public final class Representations {
         return inertialSensorOffsetBuilder_;
       }
       
-      // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
-      private de.naoth.rc.messages.CommonTypes.DoubleVector2 gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector3 gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> gyroSensorOffsetBuilder_;
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> gyroSensorOffsetBuilder_;
       public boolean hasGyroSensorOffset() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset() {
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3 getGyroSensorOffset() {
         if (gyroSensorOffsetBuilder_ == null) {
           return gyroSensorOffset_;
         } else {
           return gyroSensorOffsetBuilder_.getMessage();
         }
       }
-      public Builder setGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+      public Builder setGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
         if (gyroSensorOffsetBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -16413,7 +16413,7 @@ public final class Representations {
         return this;
       }
       public Builder setGyroSensorOffset(
-          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+          de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
         if (gyroSensorOffsetBuilder_ == null) {
           gyroSensorOffset_ = builderForValue.build();
           onChanged();
@@ -16423,12 +16423,12 @@ public final class Representations {
         bitField0_ |= 0x00000002;
         return this;
       }
-      public Builder mergeGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+      public Builder mergeGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
         if (gyroSensorOffsetBuilder_ == null) {
           if (((bitField0_ & 0x00000002) == 0x00000002) &&
-              gyroSensorOffset_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+              gyroSensorOffset_ != de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
             gyroSensorOffset_ =
-              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(gyroSensorOffset_).mergeFrom(value).buildPartial();
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder(gyroSensorOffset_).mergeFrom(value).buildPartial();
           } else {
             gyroSensorOffset_ = value;
           }
@@ -16441,7 +16441,7 @@ public final class Representations {
       }
       public Builder clearGyroSensorOffset() {
         if (gyroSensorOffsetBuilder_ == null) {
-          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
           onChanged();
         } else {
           gyroSensorOffsetBuilder_.clear();
@@ -16449,12 +16449,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getGyroSensorOffsetBuilder() {
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder getGyroSensorOffsetBuilder() {
         bitField0_ |= 0x00000002;
         onChanged();
         return getGyroSensorOffsetFieldBuilder().getBuilder();
       }
-      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder() {
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGyroSensorOffsetOrBuilder() {
         if (gyroSensorOffsetBuilder_ != null) {
           return gyroSensorOffsetBuilder_.getMessageOrBuilder();
         } else {
@@ -16462,11 +16462,11 @@ public final class Representations {
         }
       }
       private com.google.protobuf.SingleFieldBuilder<
-          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> 
           getGyroSensorOffsetFieldBuilder() {
         if (gyroSensorOffsetBuilder_ == null) {
           gyroSensorOffsetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+              de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder>(
                   gyroSensorOffset_,
                   getParentForChildren(),
                   isClean());
@@ -21240,8 +21240,8 @@ public final class Representations {
       "metryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages." +
       "Pose2D\"\320\001\n\017CalibrationData\022:\n\024inertialSe" +
       "nsorOffset\030\001 \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naoth" +
-      "messages.DoubleVector2\0225\n\017accSensorOffse" +
+      "ector2\0226\n\020gyroSensorOffset\030\005 \001(\0132\034.naoth" +
+      "messages.DoubleVector3\0225\n\017accSensorOffse" +
       "t\030\003 \001(\0132\034.naothmessages.DoubleVector3\022\022\n" +
       "\ncalibrated\030\004 \002(\010\"B\n\rInertialModel\0221\n\013or" +
       "ientation\030\001 \001(\0132\034.naothmessages.DoubleVe" +

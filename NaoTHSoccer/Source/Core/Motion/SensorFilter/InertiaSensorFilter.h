@@ -99,20 +99,28 @@ private:
     * @param value The flat vector to add.
     * @return A new object after the calculation.
     */
-    State operator+(const Vector2<V>& value) const;
+    State operator+(const Vector2<V>& value) const {
+      return State(*this) += value;
+    }
 
     /**
     * Adds some world rotation given as angle axis.
     * @param value The flat vector to add.
     * @return A reference this object after the calculation.
     */
-    State& operator+=(const Vector2<V>& value);
+    State& operator+=(const Vector2<V>& value) {
+      rotation *= RotationMatrix(rotation.invert() * Vector3<V>(value.x, value.y, V()));
+      return *this;
+    }
 
     /**
     * Calculates a flat difference vector of two states.
     * @return The difference.
     */
-    Vector2<V> operator-(const State& other) const;
+    Vector2<V> operator-(const State& other) const {
+      const Vector3<V>& rotDiff(other.rotation * ((const RotationMatrix&)(other.rotation.invert() * rotation)).getAngleAxis());
+      return Vector2<V>(rotDiff.x, rotDiff.y);
+    }
   };
 
   Parameters p; /**< The parameters of this module. */

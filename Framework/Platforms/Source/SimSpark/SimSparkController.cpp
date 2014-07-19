@@ -1301,7 +1301,7 @@ void SimSparkController::get(GameData& data)
 void SimSparkController::updateInertialSensor()
 {
   // calculate inertial sensor data by gyrometer
-  const Vector2<double>& gyrometer = theGyroData.data;
+  const Vector3d& gyrometer = theGyroData.data;
   static double oldGyroX = gyrometer.x;
   static double oldGyroY = gyrometer.y;
   theInertialSensorData.data.x += ((gyrometer.x+oldGyroX) * 0.5 * theStepTime);

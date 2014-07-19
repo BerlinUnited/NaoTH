@@ -21,7 +21,7 @@ public:
   CalibrationData() : calibrated(false) {}
 
   Vector2d inertialSensorOffset;
-  Vector2d gyroSensorOffset;
+  Vector3d gyroSensorOffset;
   Vector3d accSensorOffset;
 
   // is true, when valid offsets are avaliable
