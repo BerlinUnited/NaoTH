@@ -27,6 +27,7 @@
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/CalibrationData.h>
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 
@@ -97,6 +98,9 @@ public:
       for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
         getMotorJointData().stiffness[i] = stiffness;
       }
+      // HACK: turn off the hands
+      getMotorJointData().stiffness[JointData::LHand] = -1;
+      getMotorJointData().stiffness[JointData::RHand] = -1;
     }
   }//end calculateTrajectory
 
@@ -144,12 +148,13 @@ public:
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
     
+    /*
     getEngine().gotoArms(
         getMotionStatus(),
         getInertialModel(),
         getRobotInfo(),
         c, getMotorJointData().position);
-
+    */
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
     PLOT("Stand:hip:z",c.hip.translation.z);

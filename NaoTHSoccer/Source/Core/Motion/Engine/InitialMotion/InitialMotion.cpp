@@ -61,6 +61,14 @@ InitialMotion::InitialMotion()
 
   freeStiffness[JointData::LHipPitch] = 0.1;
   freeStiffness[JointData::RHipPitch] = 0.1;
+
+  //HACK: turn off the hands
+  freeStiffness[JointData::LHand] = -1;
+  safeStiffness[JointData::LHand] = -1;
+  maxStiffness[JointData::LHand] = -1;
+  freeStiffness[JointData::RHand] = -1;
+  safeStiffness[JointData::RHand] = -1;
+  maxStiffness[JointData::RHand] = -1;
 }
 
 void InitialMotion::execute()
@@ -171,14 +179,14 @@ void InitialMotion::moveToInitialPose()
 
 void InitialMotion::freeJoint(bool freely)
 {
-  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
+  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond() * 10;
   if (freely)
   {
     setStiffness(getMotorJointData(), getSensorJointData(), freeStiffness, stiffDelta);
   }
   else
   {
-    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta*2) ) {
+    if ( setStiffness(getMotorJointData(), getSensorJointData(), maxStiffness, stiffDelta) ) {
       initStatus = Finish;
     }
   }

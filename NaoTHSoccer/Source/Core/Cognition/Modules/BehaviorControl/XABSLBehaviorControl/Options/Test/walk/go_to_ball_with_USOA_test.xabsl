@@ -25,7 +25,7 @@ option go_to_ball_with_USOA_test{
   {
 	  decision
 	  { 
-	    else if(action_done)
+	    else if(action_done && vector.abs(x=ball.preview.x, y=ball.preview.y) < 210)
 	      goto done;
 	    else
 	      stay;

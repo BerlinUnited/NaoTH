@@ -3,44 +3,48 @@ option go_to_ball_with_USOA
 {
   float @distance;
 
-  initial state go
+  initial target state go
   {
     decision
     {
-      if (obstacle.ultrasound.blockedtime > 100)
+      if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
       {
-	      if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance) 
-	            &&(obstacle.ultrasound.distance <400))
-	          goto approach_carefully;
-	      else if(obstacle.ultrasound.left.distance < 400)
-	          goto avoid_left;
-	      else if(obstacle.ultrasound.right.distance < 400)
-	          goto avoid_right;
-        else
-          stay;
+	      if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+          goto approach_carefully;
+	      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+          goto avoid_left;
+	      else
+          goto avoid_right;
       }
-      else if(action_done)
-        goto finish;
       else
         stay;
     }
     action 
     {
-      go_to_ball(distance=@distance);
+      //go_to_ball(distance=@distance);
+      head.control_mode = search_for_ball;
+
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0; 
     }
   }
 
   state avoid_left
   {
     decision
-    { if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)&&
-            (obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
-        goto approach_carefully;
-      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
+    { 
+      if(state_time < 1000)
+        stay;
+      else if(obstacle.ultrasound.distance > 400)
         goto go;
-      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance 
-              && state_time > 1000
-              && obstacle.ultrasound.blockedtime > 100)
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+        goto approach_carefully;
+      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance)
         goto avoid_right;
       else
         stay;
@@ -48,15 +52,14 @@ option go_to_ball_with_USOA
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = walk;
       
+      motion.type = walk;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -100;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
-
     }
   }
 
@@ -64,14 +67,14 @@ option go_to_ball_with_USOA
   state avoid_right
   {
     decision
-    { if ((vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
-            && (obstacle.ultrasound.distance<400) && obstacle.ultrasound.blockedtime > 100)
-        goto approach_carefully;
-      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
+    { 
+      if(state_time < 1000)
+        stay;
+      else if(obstacle.ultrasound.distance > 400)
         goto go;
-      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance 
-              && state_time > 1000
-              && obstacle.ultrasound.blockedtime > 100)
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+        goto approach_carefully;
+      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
        goto avoid_left;
       else
         stay;
@@ -79,26 +82,24 @@ option go_to_ball_with_USOA
     action 
     {
       head.control_mode = search_for_ball;
-      motion.type = walk;
       
+      motion.type = walk;
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 100;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
-
     }
   }
 
-  state approach_carefully{
+  target state approach_carefully 
+  {
     decision{
-      if (action_done)
-        goto finish;
-      else if (obstacle.ultrasound.distance > 400)
+      if (obstacle.ultrasound.distance > 400)
         goto go;
-      else if ((vector.abs(x=ball.preview.x, y=ball.preview.y) > obstacle.ultrasound.distance)
-              && obstacle.ultrasound.blockedtime > 100){
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) > obstacle.ultrasound.distance)
+      {
         if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
            goto avoid_left;
         else
@@ -109,27 +110,16 @@ option go_to_ball_with_USOA
     }
 
     action{
-      go_to_ball(distance=@distance);
-      motion.walk.style = stable;
-    }
-  }
-
-  target state finish{
-    decision
-    {
-      if (abs(value = (ball.percept.x - @distance - ball.radius)) > 30
-        || abs(value = ball.percept.y) > 30
-        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 40)
-        goto go;
-      else
-        stay;
-    }
-    action
-    {
-      motion.type = stand;
+      //go_to_ball(distance=@distance);
       head.control_mode = search_for_ball;
+
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = stable;
+      
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
-
-  
 }

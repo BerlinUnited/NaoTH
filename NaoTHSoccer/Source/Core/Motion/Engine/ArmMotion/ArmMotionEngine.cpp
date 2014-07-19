@@ -19,14 +19,7 @@ using namespace naoth;
 using namespace std;
 
 ArmMotionEngine::ArmMotionEngine()
-   //*** :
-   //*** theBlackBoard(MotionBlackBoard::getInstance()),
-   //*** getMotorJointData()(MotionBlackBoard::getInstance().getMotorJointData()),
-   //*** theSensorJointData(MotionBlackBoard::getInstance().theSensorJointData),
-   //*** theMotionStatus(MotionBlackBoard::getInstance().theMotionStatus)
 {
-    //theKinematicChain.init(theJointData, Platform::getInstance().theMassConfig);
-    //theKinematicChain.init(theJointData);
 }
 
 void ArmMotionEngine::execute()
@@ -416,7 +409,8 @@ bool ArmMotionEngine::armsOnBack()
 bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint])
 {
   double max_deviation = 0.0;
-  double max_speed = Math::fromDegrees(theArmMotionParams.maxJointSpeed) * getRobotInfo().getBasicTimeStepInSecond();
+  //double max_speed = Math::fromDegrees(theArmMotionParams.maxJointSpeed) * getRobotInfo().getBasicTimeStepInSecond();
+  double max_speed = Math::fromDegrees(getEngine().getParameters().arm.maxSpeed) * getRobotInfo().getBasicTimeStepInSecond();
 
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
   {
@@ -425,7 +419,7 @@ bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint]
 
     // HACK: move the Yaw joints faster than the others (needed by the armsOnBack motion)
     if(i == JointData::RElbowYaw || i == JointData::LElbowYaw) {
-      s = Math::clamp(s, -max_speed*4, max_speed*4);
+      s = Math::clamp(s, -max_speed*2, max_speed*2);
     } else {
       s = Math::clamp(s, -max_speed, max_speed);
     }

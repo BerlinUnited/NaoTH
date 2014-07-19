@@ -138,6 +138,7 @@ void Walk::execute()
     // move arms
     //getEngine().autoArms(c, getMotorJointData().position);
 
+    /*
     if(getEngine().getParameters().arm.takeBack) {
       getEngine().armsOnBack(getRobotInfo(), c, getMotorJointData().position);
     } else {
@@ -147,6 +148,7 @@ void Walk::execute()
         getRobotInfo(),
         c, getMotorJointData().position);
     }
+    */
 	
     // force the hip joint
     if (getMotorJointData().position[JointData::LHipRoll] < 0) {
@@ -400,10 +402,12 @@ void Walk::manageSteps(const WalkRequest& req)
     theFootStepPlanner.updateParameters(getEngine().getParameters());
 
     // set the stiffness for walking
-    for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
-    {
+    for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++) {
       getMotorJointData().stiffness[i] = theWalkParameters.general.stiffness;
     }
+    // HACK: turn off the hands
+    getMotorJointData().stiffness[JointData::LHand] = -1;
+    getMotorJointData().stiffness[JointData::RHand] = -1;
   }// if ( stepBuffer.empty() )
 
 

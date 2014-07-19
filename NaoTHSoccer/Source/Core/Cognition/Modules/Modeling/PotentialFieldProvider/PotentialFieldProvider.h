@@ -101,16 +101,16 @@ private:
     * @param oppGoalModel Relative coordinates of the opponent goal.
     * @return Target point.
     */
-  Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const;
+  Vector2d getGoalTarget(const Vector2d& point, const GoalModel::Goal& oppGoalModel) const;
 
   /**
     */
-  Vector2<double> getGoalTargetOld(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const;
+  Vector2d getGoalTargetOld(const Vector2d& point, const GoalModel::Goal& oppGoalModel) const;
 
   /** 
     * Calculate the list of valide obstacles (opponents, teammates)
     */
-  std::list<Vector2<double> > getValidObstacles() const;
+  std::list<Vector2d > getValidObstacles() const;
 
 
   // TODO: following methods should be made more universal and moved to a toolbox 
@@ -125,10 +125,10 @@ private:
     * @return A vector describing the attack direction to the target point as represented by the potential field.
     *         The vector is in relative coordinates (same coordinate system as point and targetPoint)
     */
-  Vector2<double> calculatePotentialField(
-        const Vector2<double>& point, 
-        const Vector2<double>& targetPoint,
-        const std::list<Vector2<double> >& obstacles) const;
+  Vector2d calculatePotentialField(
+        const Vector2d& point, 
+        const Vector2d& targetPoint,
+        const std::list<Vector2d >& obstacles) const;
 
   /**
     * Global field pointing to the point p with axponential strenth depending on the distance.
@@ -136,7 +136,7 @@ private:
     * @param p position of the attractor
     * @return potential vector at the point x 
     */
-  Vector2<double> globalExponentialAttractor( const Vector2<double>& p, const Vector2<double>& x ) const;
+  Vector2d globalExponentialAttractor( const Vector2d& p, const Vector2d& x ) const;
 
   /**
     * A repeller produces a round fild around a point which 'pushes' away.
@@ -147,7 +147,7 @@ private:
     * @param p position of the repeller
     * @return potential vector at the point x 
     */
-  Vector2<double> compactExponentialRepeller( const Vector2<double>& p, const Vector2<double>& x ) const;
+  Vector2d compactExponentialRepeller( const Vector2d& p, const Vector2d& x ) const;
 
 };
 

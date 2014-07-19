@@ -43,7 +43,7 @@ public:
 
   bool ownHalf; //force selflocator to locate in own half (e.g. after penalized)
   bool oppHalf; //force selflocator to locate in opp half (e.g. for debugging attacksituations)
-  bool reactiveBallModelNeeded;
+  bool reactiveBallModelNeeded; // NOTE: deprecated
   virtual void print(std::ostream& stream) const;
 
 };

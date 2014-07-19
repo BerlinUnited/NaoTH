@@ -191,5 +191,8 @@ namespace motion_symbols("Motion Symbols") {
   float output motion.walk.step_control.time [ms];
   float output motion.walk.step_control.speed_direction [deg];
   float output motion.walk.step_control.scale; // time scale the trajectory (0..1] 1: normal step trajectory
+
+  bool output motion.dribble;
+  bool input motion.dribble.action_done;
  }
   

@@ -1,8 +1,6 @@
 /** Symbols for accessing all strategy relevant information */
 namespace strategy("Strategy Symbols") {
-  //Experimental
   
-
   /**  */
   float input attention.mi_point.x;
   float input attention.mi_point.y;
@@ -46,44 +44,25 @@ namespace strategy("Strategy Symbols") {
   /** */
   float input penalty_goalie.pos.y;
 
-  /** set piece */
-  float input setpiece.pose.x;
-  float input setpiece.pose.y;
-  bool  input setpiece.participation;
-  //float input setpiece.goalKickPlayer;
-  //bool  output setpiece.goalKickPositionLeft;
-
-  /** target-x-position of a circleway between two points with enddirection to a certain point*/
-	float input circlex
-	(
-		float x;
-		float y;
-		float robot.x;
-		float robot.y;
-		float directionx;
-		float directiony;
-	);
-	
-	/** target-y-position of a circleway between two points with enddirection to a certain point*/
-	float input circley
-	(
-		float x;
-		float y;
-		float robot.x;
-		float robot.y;
-		float directionx;
-		float directiony;
-	);
-
   /** formation */
   float input soccer_strategy.formation.x;
   float input soccer_strategy.formation.y;
 
   /** information for selflocator */
   bool output situationStatusOwnHalf; //true = own half, false = unknown!!!
-  //bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
+  bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
 
-  /** Information for the ball model */
-  bool output reactiveBallModelNeeded;  
+  enum attack.action_type
+  {
+    ball_position,
+    kick_short,
+    kick_long,
+    sidekick_left,
+    sidekick_right,
+    none
+  };
+
+  enum attack.action_type input attack.best_action;
+
 }
   

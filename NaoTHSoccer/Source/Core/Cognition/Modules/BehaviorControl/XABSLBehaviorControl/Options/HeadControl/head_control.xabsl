@@ -44,9 +44,8 @@ option head_control
   {
     action
     {
-      head.motion_type = look_straight_ahead;
-      // this is for the double cap use
       head.camera.id = Top;
+      head.motion_type = look_straight_ahead;
     }
   }
   
@@ -55,7 +54,7 @@ option head_control
     action
     {
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check = false);
+      search_for_ball(force_ball_model_check = false, look_around=true);
     }
   }
 
@@ -63,8 +62,9 @@ option head_control
   {
     action
     {
-      search_for_ball_and_look_around();
+      //search_for_ball_and_look_around();
       head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check=false, look_around=true);
     }
   }
 
@@ -72,8 +72,8 @@ option head_control
   {
     action
     {
+      head.camera.id = Top;
       look_around();
-      head.camera.id = Bottom;
     }
   }
 
@@ -81,8 +81,8 @@ option head_control
   {
     action
     {
-      search_for_goal(own=true,opp=true);
       head.camera.id = Top;
+      search_for_goal(own=true,opp=true);
     }
   }
 
@@ -90,8 +90,8 @@ option head_control
   {
     action
     {
-      search_for_goal(own=false,opp=true);
       head.camera.id = Top;
+      search_for_goal(own=false,opp=true);
     }
   }
 
@@ -100,8 +100,8 @@ option head_control
   {
 	  action 
 	  {
-      look_at_ball_percept();
       head.camera.id = Bottom;
+      look_at_ball_percept();
 	  }
 	}
 

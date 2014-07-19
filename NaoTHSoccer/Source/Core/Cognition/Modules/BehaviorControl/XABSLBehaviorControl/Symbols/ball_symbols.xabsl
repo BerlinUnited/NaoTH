@@ -29,6 +29,8 @@ namespace ball_symbols("Ball Symbols") {
   /** Time since the ball is seen in ms*/
   float input ball.time_seen "ms";
   
+  /** a filtered version of ball.was_seen*/
+  bool input ball.know_where_itis;
 
   /** relative ball position to the robot based on a current percept*/
   float input ball.percept.x "mm";

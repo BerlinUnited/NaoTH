@@ -8,6 +8,7 @@
 #include "BallSymbols.h"
 
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugModify.h>
 #include <Tools/Debug/DebugBufferedOutput.h>
 
 void BallSymbols::registerSymbols(xabsl::Engine& engine)
@@ -19,6 +20,8 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
   engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
+
+  engine.registerBooleanInputSymbol("ball.know_where_itis", &ball_know_where_itis);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -109,7 +112,18 @@ void BallSymbols::execute()
   } else if(theInstance->getBallPerceptTop().ballWasSeen) {
     ballPerceptPos = getBallPerceptTop().bearingBasedOffsetOnField;
     ballPerceptSeen = true;
-  } 
+  }
+
+
+  {
+    ball_seen_filter.setParameter(parameters.ball_seen_filter.g0, parameters.ball_seen_filter.g1);
+    ball_seen_filter.update(ballPerceptSeen);
+
+    PLOT("XABSL:BallSymbols:ball_seen_likelihood", ball_seen_filter.value());
+
+    // hysteresis
+    ball_know_where_itis = ball_seen_filter.value() > (ball_know_where_itis?0.3:0.7);
+  }
 }//end update
 
 

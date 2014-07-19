@@ -19,11 +19,14 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Modeling/BallModel.h"
 
 BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(MotionStatus)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
+
+  REQUIRE(BallModel)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
@@ -39,7 +42,8 @@ public:
     stepControlFoot(none),
     stepControlRequestTime(0),
     stepControlRequestSpeedDirection(0),
-    stepControlScale(1.0)
+    stepControlScale(1.0),
+    actionPerformed(-1)
   {
     theInstance = this;
   }
@@ -124,11 +128,15 @@ private:
 
   static std::string getStepControlFootName(StepControlFoot i);
 
+  static bool dribbleG();
+  static void dribble(bool v);
+
   StepControlFoot stepControlFoot;
   double stepControlRequestTime;
   Pose2D stepControlRequestTarget;
   double stepControlRequestSpeedDirection;
   double stepControlScale;
+  int actionPerformed;
 };//end class MotionSymbols
 
 #endif // _MotionSymbols_H_

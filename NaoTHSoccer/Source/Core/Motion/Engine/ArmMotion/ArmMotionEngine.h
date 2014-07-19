@@ -6,8 +6,8 @@
 * Declaration of class ArmMotionEngine
 */
 
-#ifndef _ArmMotionEngine_H
-#define	_ArmMotionEngine_H
+#ifndef _ArmMotionEngine_H_
+#define	_ArmMotionEngine_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -16,24 +16,18 @@
 
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
-//#include <Representations/Infrastructure/CameraInfo.h>
-//#include "Representations/Modeling/InertialModel.h"
-//#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
-//#include <Representations/Perception/CameraMatrix.h>
-//#include "Representations/Motion/MotionStatus.h"
+
+#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 BEGIN_DECLARE_MODULE(ArmMotionEngine)
   REQUIRE(RobotInfo)
-  //REQUIRE(CameraInfo)
-  //REQUIRE(InertialModel)
-  //REQUIRE(KinematicChainSensor)
   REQUIRE(MotionRequest)
   REQUIRE(SensorJointData)
-  //REQUIRE(CameraMatrix)
 
-  //PROVIDE(MotionStatus)
+  REQUIRE(InverseKinematicsMotionEngineService)
+
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(ArmMotionEngine)
 
@@ -41,10 +35,8 @@ END_DECLARE_MODULE(ArmMotionEngine)
 class ArmMotionEngine: private ArmMotionEngineBase
 {
 public:
-  /** constructor */
   ArmMotionEngine();
-//***  ArmMotionEngine(MotionBlackBoard& theBlackBoard);
-  ~ArmMotionEngine(){};
+  ~ArmMotionEngine(){}
 
   void execute();
 
@@ -72,16 +64,10 @@ private:
   ArmMotionParams theArmMotionParams;
 
 private:
-  //const MotionBlackBoard& theBlackBoard;
-
   naoth::MotorJointData theMotorJointDataOld;
   naoth::JointData theJointData;
 
   naoth::SensorJointData theSensorJointData;
-
-  //MotionStatus& theMotionStatus;
-  // KinematicChain theKinematicChain;
-
 
   double max_velocity_deg_in_second;
   double max_velocity;
@@ -114,7 +100,12 @@ private:
 
 
   bool moveToJoints(const double (&position)[JointData::numOfJoint]);
+
+  inline InverseKinematicsMotionEngine& getEngine() const
+  {
+    return getInverseKinematicsMotionEngineService().getEngine();
+  }
 };
 
-#endif	/* _ArmMotionEngine_H */
+#endif	/* _ArmMotionEngine_H_ */
 

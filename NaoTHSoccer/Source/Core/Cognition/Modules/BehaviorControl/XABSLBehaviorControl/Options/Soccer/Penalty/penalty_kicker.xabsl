@@ -7,12 +7,7 @@ option penalty_kicker
     decision
     {
       if(ball.was_seen && state_time > 3000)
-        //Uncomment this if approaching fails: goto approach_ball
-        //Comment the following to deactivate the slight approach curves
-        if (random > 0.5)
-          goto approach_ball_offset_right;
-        else
-          goto approach_ball_offset_left;
+        goto approach_ball_right;
       else
         stay;
     }
@@ -24,71 +19,19 @@ option penalty_kicker
   }
 
 
-  state approach_ball_offset_left
-  {
-    decision
-    {
-      if (ball.preview.right_foot.x < 500)
-        goto approach_ball;
-      else
-        stay;
-    }
-    action
-    {
-      motion.type = walk;
-      motion.walk.style = stable;
-      motion.walk.coordinate = right_foot;
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 500 - ball.radius);
-      motion.walk_speed.y = ball.preview.right_foot.y + 250;
-      motion.walk_speed.rot = 0.25*atan2(y = ball.preview.right_foot.y + 250, x = ball.preview.right_foot.x - 500);
-      
-      head.control_mode = search_for_ball;
-    }
-  }
 
-  state approach_ball_offset_right
+  state approach_ball_right
   {
     decision
     {
-      if (ball.preview.right_foot.x < 500)
-        goto approach_ball;
+      if (action_done)
+        goto do_kick;
       else
         stay;
     }
     action
     {
-      motion.type = walk;
-      motion.walk.style = stable;
-      motion.walk.coordinate = right_foot;
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - 500 - ball.radius);
-      motion.walk_speed.y = ball.preview.right_foot.y - 100;
-      motion.walk_speed.rot = 0.25*atan2(y = ball.preview.right_foot.y - 125, x = ball.preview.right_foot.x - 500);
-      
-      head.control_mode = search_for_ball;
-    }
-  }
-
-  state approach_ball
-  {
-    decision
-    {
-      if (abs(value = (ball.preview.right_foot.x - 120 - ball.radius)) < 25
-        && abs(value = ball.preview.right_foot.y) < 10
-        && atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 10)
-        goto prepare_kick;
-      else
-        stay;
-    }
-    action
-    {
-      motion.type = walk;
-      motion.walk.style = stable;
-      motion.walk.coordinate = right_foot;
-      motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - 120 - ball.radius);
-      motion.walk_speed.y = ball.preview.right_foot.y;
-      motion.walk_speed.rot = atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x);
-      
-      head.control_mode = search_for_ball;
+      go_to_ball_with_foot(right=true, distance=160);      
     }
   }
 
@@ -96,15 +39,8 @@ option penalty_kicker
   {
     decision
     {
-      if(state_time > 3000)
-      {
-        if( abs(value = (ball.preview.right_foot.x - 120 - ball.radius)) > 35
-          || abs(value = ball.preview.right_foot.y) > 30
-          || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 25)
-          goto approach_ball;
-        else
-          goto wait;
-      }
+      if(state_time > 1000)
+        goto do_kick;
       else
         stay;
     }
@@ -112,22 +48,10 @@ option penalty_kicker
     {
       motion.type = stand;
       head.control_mode = search_for_ball;
+      arm.control_mode = normal;
     }
   }
 
-  state wait
-  {
-    decision
-    {
-      if (state_time > 4000)
-        goto do_kick;
-      else
-        stay;
-     }
-     action
-     {
-     }
-   }
 
   state do_kick
   {
@@ -143,9 +67,9 @@ option penalty_kicker
       situation.abortable = false;
       kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
+      arm.control_mode = normal;
     }
   }
-
 
   target state finished
   {
@@ -157,6 +81,7 @@ option penalty_kicker
     {
       motion.type = stand;
       head.control_mode = look_straight_ahead;
+      arm.control_mode = normal;
     }
   }
 
