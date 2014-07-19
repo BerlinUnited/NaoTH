@@ -93,7 +93,8 @@ void MonteCarloSelfLocatorSimple::execute()
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (motion_not_ok || body_not_upright)) {
+    if(parameters.treatInitState && (motion_not_ok || body_not_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
+    {
       state = BLIND;
     }
   }
@@ -136,23 +137,39 @@ void MonteCarloSelfLocatorSimple::execute()
       theSampleSet.resetLikelihood();
       updateBySensors(theSampleSet);
 
-      if(parameters.updateBySituation) {
-        if(getPlayerInfo().gameData.gameState == GameData::set) {
+      // use prior knowledge
+      if(parameters.updateBySituation) 
+      {
+        if(getSituationStatus().oppHalf) 
+        {
+          updateByOppHalf(theSampleSet);
+        } 
+        else if(getPlayerInfo().gameData.gameState == GameData::set) 
+        {
           if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
             updateByGoalBox(theSampleSet);
           } else {
-            updateByOwnHalf(theSampleSet);
+            updateByOwnHalfLookingForward(theSampleSet);
           }
-        } else {
+        } // check if the game controller was alive in the last 10s ~ 300frames
+        else if(getPlayerInfo().gameData.frameNumber > 0 && 
+                getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
+        {
           updateByStartPositions(theSampleSet);
         }
+        else
+        {
+          updateByOwnHalf(theSampleSet);
+        }
       }
+
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
       updateStatistics(theSampleSet);
 
       resampleMH(theSampleSet);
+      //resampleMHOld(theSampleSet);
 
       // estimate the state
       canopyClustering.cluster(mhBackendSet);
@@ -172,7 +189,6 @@ void MonteCarloSelfLocatorSimple::execute()
       DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
         mhBackendSet.drawImportance();
       );
-
       break;
     }
     case TRACKING:
@@ -183,11 +199,12 @@ void MonteCarloSelfLocatorSimple::execute()
       updateBySensors(theSampleSet);
 
       if(parameters.updateBySituation) {
-        if(getPlayerInfo().gameData.gameState == GameData::set) {
+        if(getPlayerInfo().gameData.gameState == GameData::set) 
+        {
           if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
             updateByGoalBox(theSampleSet);
           } else {
-            updateByOwnHalf(theSampleSet);
+            updateByOwnHalfLookingForward(theSampleSet);
           }
         }
       }
@@ -479,7 +496,7 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
   );
 }
 
-void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
+void MonteCarloSelfLocatorSimple::updateByOwnHalfLookingForward(SampleSet& sampleSet) const
 {
   for(size_t s=0; s < sampleSet.size(); s++)
   {
@@ -495,9 +512,53 @@ void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
+    PEN("ff0000", 30);
+    const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
+    const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  );
+}
+
+void MonteCarloSelfLocatorSimple::updateByOwnHalf(SampleSet& sampleSet) const
+{
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+  }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
     PEN("000000", 30);
     const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
     const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  );
+}
+
+void MonteCarloSelfLocatorSimple::updateByOppHalf(SampleSet& sampleSet) const
+{
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!getFieldInfo().oppHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+  }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = getFieldInfo().oppHalfRect.min();
+    const Vector2d& fieldMax = getFieldInfo().oppHalfRect.max();
     BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);

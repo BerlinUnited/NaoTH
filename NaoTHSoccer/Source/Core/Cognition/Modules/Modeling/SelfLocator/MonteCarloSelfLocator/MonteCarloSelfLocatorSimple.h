@@ -20,6 +20,7 @@
 // basic info
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 // motion / kinematics
@@ -53,6 +54,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(GameData)
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
@@ -244,7 +246,9 @@ private: // workers
 
   // A-Priori knowledge based on the game state
   void updateByStartPositions(SampleSet& sampleSet) const;
+  void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
+  void updateByOppHalf(SampleSet& sampleSet) const;
   void updateByGoalBox(SampleSet& sampleSet) const;
 
   void updateByOldPose(SampleSet& sampleSet) const;
