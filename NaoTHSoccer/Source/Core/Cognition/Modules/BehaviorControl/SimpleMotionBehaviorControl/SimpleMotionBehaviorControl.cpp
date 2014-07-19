@@ -67,6 +67,11 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
 
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:sound:test", "it is what it is...", false);
 
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:led:HeadFrontLeft0", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:led:HeadFrontLeft1", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:led:HeadMiddleRight0", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:led:HeadRearRight2", "it is what it is...", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:led:all", "it is what it is...", false);
 
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_dance", "parallel dance test", false);
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_stepper", "parallel stepper test", false);
@@ -87,6 +92,7 @@ void SimpleMotionBehaviorControl::execute()
 
   testMotion();
 
+  testLED();
 
   getSoundPlayData().soundFile = "";
   DEBUG_REQUEST("SimpleMotionBehaviorControl:sound:test",
@@ -101,7 +107,6 @@ void SimpleMotionBehaviorControl::execute()
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
 
 }//end execute
-
 
 void SimpleMotionBehaviorControl::testHead() 
 {
@@ -364,4 +369,37 @@ void SimpleMotionBehaviorControl::testMotion()
   );
           
 }//end testMotion
+
+
+void SimpleMotionBehaviorControl::testLED() {
+
+    //init LEDs
+    for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
+        getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
+    }
+
+    //set LEDS
+    DEBUG_REQUEST("SimpleMotionBehaviorControl:led:HeadFrontLeft0",
+          getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft0] = 1.0;
+    );
+
+    DEBUG_REQUEST("SimpleMotionBehaviorControl:led:HeadFrontLeft1",
+          getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft1] = 1.0;
+    );
+
+    DEBUG_REQUEST("SimpleMotionBehaviorControl:led:HeadMiddleRight0",
+          getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadMiddleRight0] = 1.0;
+    );
+
+    DEBUG_REQUEST("SimpleMotionBehaviorControl:led:HeadRearRight2",
+          getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight2] = 1.0;
+    );
+
+    DEBUG_REQUEST("SimpleMotionBehaviorControl:led:all",
+        for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
+            getBehaviorLEDRequest().request.theMonoLED[i] = 1.0;
+        }
+    );
+
+} //testLED
 

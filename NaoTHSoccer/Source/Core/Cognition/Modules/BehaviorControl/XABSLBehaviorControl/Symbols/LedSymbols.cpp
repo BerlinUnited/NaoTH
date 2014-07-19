@@ -22,6 +22,8 @@ void LedSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("set_right_ear", &setRightEar, &getRightEar);
   engine.registerDecimalOutputSymbol("set_left_ear", &setLeftEar, &getLeftEar);
 
+  engine.registerDecimalOutputSymbol("set_head", &setHead, &getHead);
+
   engine.registerEnumeratedOutputSymbol("set_right_eye", "eyeLED", &setRightEye, &getRightEye);
   engine.registerEnumeratedOutputSymbol("set_left_eye", "eyeLED", &setLeftEye, &getLeftEye);
 
@@ -34,10 +36,61 @@ void LedSymbols::execute()
 {
 }
 
-void LedSymbols::setRightEar(double id)
+void LedSymbols::setHead(double id)
 {
 
-  if (id <= 10)
+  if (id <= 6 && theInstance->lastHead != id) {
+
+    for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
+
+        theInstance->getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
+
+    }
+
+    switch((int)id) {
+        case 6: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft1] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontRight1] = 1.0;
+        }
+        case 5: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadFrontRight0] = 1.0;
+        }
+        case 4: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadMiddleLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadMiddleRight0] = 1.0;
+        }
+        case 3: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft0] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight0] = 1.0;
+        }
+        case 2: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft1] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight1] = 1.0;
+        }
+        case 1: {
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearLeft2] = 1.0;
+            theInstance->getBehaviorLEDRequest().request.theMonoLED[LEDData::HeadRearRight2] = 1.0;
+        }
+        case 0:
+        default:
+            break;
+    }
+
+    theInstance->lastHead = id;
+  }
+
+}//end setHead
+
+double LedSymbols::getHead()
+{
+  return theInstance->lastHead;
+}
+
+void LedSymbols::setRightEar(double id)
+{
+  id = floor(id + 0.5);
+  if (id <= 10.0)
   {
     theInstance->lastREar = id;
     int counter = 0;
@@ -61,6 +114,7 @@ double LedSymbols::getRightEar()
 
 void LedSymbols::setLeftEar(double id)
 {
+
   id = floor(id + 0.5);
   if (id <= 10.0)
   {
