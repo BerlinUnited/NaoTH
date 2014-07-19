@@ -150,7 +150,7 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Component id="actionsTab" alignment="0" max="32767" attributes="0"/>
+                      <Component id="actionsTab" alignment="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -166,7 +166,7 @@
                               </Group>
                               <Component id="jSettingsPanel" alignment="0" min="-2" max="-2" attributes="1"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="22" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -375,14 +375,15 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
-                                      <Component id="btWriteToStick" alignment="0" pref="556" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
                                           <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          <EmptySpace min="0" pref="374" max="32767" attributes="0"/>
                                       </Group>
+                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
                                   </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btWriteToStick" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -393,10 +394,11 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="playerNumbersPanel" min="-2" pref="23" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="btWriteToStick" pref="61" max="32767" attributes="0"/>
+                                      <Component id="playerNumbersPanel" max="32767" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btWriteToStick" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -422,8 +424,9 @@
                             </Property>
                           </Properties>
 
-                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
-                            <Property name="axis" type="int" value="0"/>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                            <Property name="columns" type="int" value="0"/>
+                            <Property name="rows" type="int" value="2"/>
                           </Layout>
                         </Container>
                       </SubComponents>
@@ -522,7 +525,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamNumber">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="2"/>
+                        <Property name="text" type="java.lang.String" value="4"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -687,12 +690,11 @@
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="cbRebootSystem" max="32767" attributes="0"/>
                               <Component id="jButtonSetRobotNetwork" max="32767" attributes="0"/>
-                              <Component id="jButtonInitRobotSystem" alignment="1" pref="196" max="32767" attributes="1"/>
-                              <Component id="jButtonSaveNetworkConfig" pref="196" max="32767" attributes="0"/>
+                              <Component id="jButtonInitRobotSystem" alignment="1" max="32767" attributes="1"/>
+                              <Component id="jButtonSaveNetworkConfig" max="32767" attributes="0"/>
                               <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="196" max="32767" attributes="0"/>
+                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="164" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -701,17 +703,10 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbRebootSystem" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane3" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                                  <Component id="jSettingsPanel1" max="32767" attributes="1"/>
-                              </Group>
+                          <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jSettingsPanel1" max="32767" attributes="1"/>
+                              <Component id="jScrollPane3" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -758,35 +753,40 @@
                                                   <Component id="jLabel22" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="1" attributes="0">
-                                                  <Component id="subnetFieldLAN" alignment="0" pref="116" max="32767" attributes="1"/>
-                                                  <Component id="netmaskFieldLAN" alignment="0" pref="116" max="32767" attributes="1"/>
-                                                  <Component id="broadcastFieldLAN" alignment="0" pref="116" max="32767" attributes="1"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" attributes="0">
-                                                          <Group type="102" attributes="0">
-                                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                                  <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                                  <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                              </Group>
-                                                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                                                          </Group>
-                                                          <Group type="102" alignment="1" attributes="0">
-                                                              <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
-                                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                                          </Group>
+                                                          <Component id="subnetFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="netmaskFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="broadcastFieldLAN" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="wlanSSID" alignment="0" max="32767" attributes="1"/>
                                                       </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
                                                       <Group type="103" groupAlignment="0" attributes="0">
-                                                          <Component id="broadcastFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
-                                                          <Component id="subnetFieldWLAN" max="32767" attributes="1"/>
-                                                          <Component id="netmaskFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
-                                                          <Component id="radioWPA" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                                                          <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                          <Group type="102" alignment="0" attributes="0">
+                                                              <Group type="103" groupAlignment="1" attributes="0">
+                                                                  <Group type="102" attributes="0">
+                                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                                          <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                                          <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                                      </Group>
+                                                                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                                                  </Group>
+                                                                  <Group type="102" alignment="1" attributes="0">
+                                                                      <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
+                                                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                                  </Group>
+                                                              </Group>
+                                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                                  <Component id="broadcastFieldWLAN" alignment="0" max="32767" attributes="1"/>
+                                                                  <Component id="subnetFieldWLAN" max="32767" attributes="1"/>
+                                                                  <Component id="netmaskFieldWLAN" alignment="0" pref="0" max="32767" attributes="1"/>
+                                                              </Group>
+                                                          </Group>
                                                       </Group>
                                                   </Group>
+                                                  <Component id="wlanKey" alignment="0" max="32767" attributes="3"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -794,24 +794,19 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <EmptySpace min="84" pref="84" max="84" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="wlanKey" alignment="0" pref="318" max="32767" attributes="3"/>
-                                                  <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="wlanSSID" pref="86" max="32767" attributes="1"/>
-                                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                                      <Component id="radioWEP" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace min="-2" pref="168" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
-                                          </Group>
-                                          <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="221" max="-2" attributes="0"/>
+                                              <Component id="radioWEP" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="radioWPA" min="-2" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
+                                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="13" pref="13" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -867,7 +862,7 @@
                                   <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="wlanKey" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="17" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -897,27 +892,16 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="10.0.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="netmaskFieldLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="255.255.255.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="netmaskFieldLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="10.0.0.255"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldLANActionPerformed"/>
-                        <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldLANInputMethodTextChanged"/>
-                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldLANKeyPressed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel14">
                       <Properties>
@@ -943,31 +927,16 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="192.168.4"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldWLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="netmaskFieldWLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="255.255.255.0"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="netmaskFieldWLANActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldWLANActionPerformed"/>
-                        <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANInputMethodTextChanged"/>
-                        <EventHandler event="caretPositionChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANCaretPositionChanged"/>
-                        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANPropertyChange"/>
-                        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyTyped"/>
-                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyPressed"/>
-                        <EventHandler event="vetoableChange" listener="java.beans.VetoableChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANVetoableChange"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JRadioButton" name="radioWPA">
                       <Properties>
@@ -995,9 +964,6 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="SPL_Field_B"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanSSIDActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel9">
                       <Properties>
@@ -1007,10 +973,8 @@
                     <Component class="javax.swing.JPasswordField" name="wlanKey">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="SPLRC2012"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
-                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -1030,7 +994,8 @@
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTeamCommPort" max="32767" attributes="3"/>
+                                      <Component id="jTeamCommPort" pref="0" max="32767" attributes="3"/>
+                                      <EmptySpace min="-2" pref="221" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1051,8 +1016,8 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="sshPassword" pref="252" max="32767" attributes="3"/>
-                                          <Component id="sshRootPassword" alignment="0" pref="252" max="32767" attributes="3"/>
+                                          <Component id="sshPassword" max="32767" attributes="3"/>
+                                          <Component id="sshRootPassword" alignment="0" max="32767" attributes="3"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -1095,6 +1060,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamCommPort">
                       <Properties>
+                        <Property name="columns" type="int" value="10"/>
                         <Property name="text" type="java.lang.String" value="10400"/>
                       </Properties>
                     </Component>
@@ -1107,9 +1073,6 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="nao"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sshUserActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel28">
                       <Properties>
@@ -1119,6 +1082,7 @@
                     <Component class="javax.swing.JPasswordField" name="sshPassword">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="nao"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel29">
@@ -1131,9 +1095,6 @@
                         <Property name="editable" type="boolean" value="false"/>
                         <Property name="text" type="java.lang.String" value="root"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sshRootUserActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel30">
                       <Properties>
@@ -1143,6 +1104,7 @@
                     <Component class="javax.swing.JPasswordField" name="sshRootPassword">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="root"/>
+                        <Property name="echoChar" type="char" value="\u0000" containsInvalidXMLChars="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1194,11 +1156,6 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JCheckBox" name="cbRebootSystem">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="reboot OS"/>
-                  </Properties>
-                </Component>
                 <Component class="javax.swing.JButton" name="jButtonRemoteKernelVideoReload">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Reload kernel video module"/>
