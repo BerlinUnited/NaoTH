@@ -16,6 +16,9 @@
 #include <Tools/SynchronizedFileWriter.h>
 #include <PlatformInterface/Platform.h>
 
+//TODO: remove this
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 Debug::Debug() : cognitionLogger("CognitionLog")
 {   
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
@@ -40,6 +43,9 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
 
+  REGISTER_DEBUG_COMMAND("behavior:state", "send the XABSL options and symbols state", this);
+  REGISTER_DEBUG_COMMAND("behavior:state_sparse", "send only the an update of the XABSL options and symbols state", this);
+
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -54,6 +60,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:com", "Visualize the kinematic chain in the 3D viewer", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+
 
   // HACK: initialize the both canvases
   DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
@@ -239,6 +246,14 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       g_usleep(500000);
 
     }
+  }
+  else if(command == "behavior:state")
+  {
+    naoth::Serializer<BehaviorStateComplete>::serialize(getBehaviorStateComplete(), outstream);
+  }
+  else if(command == "behavior:state_sparse")
+  {
+    naoth::Serializer<BehaviorStateSparse>::serialize(getBehaviorStateSparse(), outstream);
   }
 }
 

@@ -22,6 +22,8 @@ import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2013;
 import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
 import de.naoth.rc.dialogs.drawings.RadarDrawing;
 import de.naoth.rc.dialogs.drawings.StrokePlot;
+import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ObjectListener;
@@ -66,6 +68,8 @@ public class FieldViewer extends AbstractDialog
       public static ImageManagerBottom imageManager;
       @InjectPlugin
       public static TeamCommDrawingManager teamCommDrawingManager;
+      @InjectPlugin
+      public static DrawingEventManager drawingEventManager;
   }//end Plugin
   
   private Drawable backgroundDrawing;
@@ -106,6 +110,22 @@ public class FieldViewer extends AbstractDialog
     
     this.fieldCanvas.setToolTipText("");
     canvasExport = this.fieldCanvas;
+    
+    Plugin.drawingEventManager.addListener(new DrawingListener() {
+        @Override
+        public void newDrawing(Drawable drawing) {
+            if(drawing != null)
+            {
+              if(!btCollectDrawings.isSelected())
+              {
+                resetView();
+              }
+              
+              fieldCanvas.getDrawingList().add(drawing);
+              FieldViewer.this.repaint();
+            }
+        }
+    });
   }
 
   
