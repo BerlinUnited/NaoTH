@@ -107,12 +107,19 @@ void Walk::execute()
         getInertialSensorData(),
         c.hip);*/
       
-      if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) {
-        c.localInRightFoot();
-      } else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) {
-        c.localInLeftFoot();
-      } else {
-        c.localInHip();
+      if(!stepBuffer.empty()) 
+      {
+        if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) {
+          c.localInRightFoot();
+        } else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) {
+          c.localInLeftFoot();
+        } else {
+          c.localInHip();
+        }
+      }
+      else
+      {
+        c.localInLeftFoot(); // NOTE: the same as the stand
       }
       
       getEngine().rotationStabilize(
