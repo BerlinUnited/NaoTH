@@ -88,9 +88,11 @@ public class LogfilePlayer extends AbstractDialog
         @Override
         public boolean postProcessKeyEvent(KeyEvent e) {
             
-            if(e.getID() != KeyEvent.KEY_PRESSED) {
+            if(e.getID() != KeyEvent.KEY_PRESSED || !LogfilePlayer.this.isEnabled()) {
                 return false;
             }
+            
+           
             
             // stop the player first if necessary
             if(("awsdrlp").indexOf(e.getKeyChar()) >= 0)
@@ -108,19 +110,15 @@ public class LogfilePlayer extends AbstractDialog
             switch(e.getKeyChar()) {
                 case 'd':
                     LogfilePlayer.this.logSimulator.stepForward();
-                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'a':
                     LogfilePlayer.this.logSimulator.stepBack();
-                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSimulator.getCurrentFrame()+1);
                     return true;
                 case 'w':
                     LogfilePlayer.this.logSimulator.jumpToBegin();
-                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMinimum());                
                     return true;
                 case 's':
                     LogfilePlayer.this.logSimulator.jumpToEnd();
-                    //LogfilePlayer.this.logSlider.setValue(LogfilePlayer.this.logSlider.getMaximum());  
                     return true;
                 case 'r':
                     LogfilePlayer.this.logSimulator.jumpTo(logSimulator.getCurrentFrame());
@@ -551,5 +549,26 @@ public class LogfilePlayer extends AbstractDialog
         
         }
         
+        public void lockInterface() {
+            LogfilePlayer.this.setEnabled(false);
+            LogfilePlayer.this.setButtons(false);
+            
+            
+        }
+        
+        public void unLockInterface() {
+            LogfilePlayer.this.setEnabled(true);
+            LogfilePlayer.this.setButtons(true);
+        }
+    }
+    
+    void setButtons (boolean enabled) {
+        this.logSlider.setEnabled(enabled);
+        this.openButton.setEnabled(enabled);
+        this.jButton2.setEnabled(enabled);
+        this.jButton3.setEnabled(enabled);
+        this.jButton4.setEnabled(enabled);
+        this.jTextField1.setEnabled(enabled);
+        this.jTextField2.setEnabled(enabled);
     }
 }//end class LogfileInspector

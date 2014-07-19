@@ -98,6 +98,10 @@ public class LogSimulator {
             listeners.remove(l);
         }
         
+        public synchronized List<LogSimulatorActionListener> getListener() {
+            return new ArrayList<>(listeners);
+        }
+        
         // open file
         public synchronized void openLogFile(String path) {
             this.logSimulator.openLogFile(path);
