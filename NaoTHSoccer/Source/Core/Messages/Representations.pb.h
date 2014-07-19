@@ -2405,13 +2405,13 @@ class CalibrationData : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_inertialsensoroffset();
   inline ::naothmessages::DoubleVector2* release_inertialsensoroffset();
   
-  // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+  // optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
   inline bool has_gyrosensoroffset() const;
   inline void clear_gyrosensoroffset();
-  static const int kGyroSensorOffsetFieldNumber = 2;
-  inline const ::naothmessages::DoubleVector2& gyrosensoroffset() const;
-  inline ::naothmessages::DoubleVector2* mutable_gyrosensoroffset();
-  inline ::naothmessages::DoubleVector2* release_gyrosensoroffset();
+  static const int kGyroSensorOffsetFieldNumber = 5;
+  inline const ::naothmessages::DoubleVector3& gyrosensoroffset() const;
+  inline ::naothmessages::DoubleVector3* mutable_gyrosensoroffset();
+  inline ::naothmessages::DoubleVector3* release_gyrosensoroffset();
   
   // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
   inline bool has_accsensoroffset() const;
@@ -2442,7 +2442,7 @@ class CalibrationData : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::naothmessages::DoubleVector2* inertialsensoroffset_;
-  ::naothmessages::DoubleVector2* gyrosensoroffset_;
+  ::naothmessages::DoubleVector3* gyrosensoroffset_;
   ::naothmessages::DoubleVector3* accsensoroffset_;
   bool calibrated_;
   
@@ -5521,7 +5521,7 @@ inline ::naothmessages::DoubleVector2* CalibrationData::release_inertialsensorof
   return temp;
 }
 
-// optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+// optional .naothmessages.DoubleVector3 gyroSensorOffset = 5;
 inline bool CalibrationData::has_gyrosensoroffset() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -5532,20 +5532,20 @@ inline void CalibrationData::clear_has_gyrosensoroffset() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void CalibrationData::clear_gyrosensoroffset() {
-  if (gyrosensoroffset_ != NULL) gyrosensoroffset_->::naothmessages::DoubleVector2::Clear();
+  if (gyrosensoroffset_ != NULL) gyrosensoroffset_->::naothmessages::DoubleVector3::Clear();
   clear_has_gyrosensoroffset();
 }
-inline const ::naothmessages::DoubleVector2& CalibrationData::gyrosensoroffset() const {
+inline const ::naothmessages::DoubleVector3& CalibrationData::gyrosensoroffset() const {
   return gyrosensoroffset_ != NULL ? *gyrosensoroffset_ : *default_instance_->gyrosensoroffset_;
 }
-inline ::naothmessages::DoubleVector2* CalibrationData::mutable_gyrosensoroffset() {
+inline ::naothmessages::DoubleVector3* CalibrationData::mutable_gyrosensoroffset() {
   set_has_gyrosensoroffset();
-  if (gyrosensoroffset_ == NULL) gyrosensoroffset_ = new ::naothmessages::DoubleVector2;
+  if (gyrosensoroffset_ == NULL) gyrosensoroffset_ = new ::naothmessages::DoubleVector3;
   return gyrosensoroffset_;
 }
-inline ::naothmessages::DoubleVector2* CalibrationData::release_gyrosensoroffset() {
+inline ::naothmessages::DoubleVector3* CalibrationData::release_gyrosensoroffset() {
   clear_has_gyrosensoroffset();
-  ::naothmessages::DoubleVector2* temp = gyrosensoroffset_;
+  ::naothmessages::DoubleVector3* temp = gyrosensoroffset_;
   gyrosensoroffset_ = NULL;
   return temp;
 }

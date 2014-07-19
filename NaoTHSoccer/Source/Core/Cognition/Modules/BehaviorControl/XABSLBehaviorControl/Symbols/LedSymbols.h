@@ -32,6 +32,7 @@ public:
     theInstance = this;
     lastREar = 0.0;
     lastLEar = 0.0;
+    lastHead = 0.0;
     lastREye = 0;
     lastLEye = 0;
   };
@@ -52,16 +53,19 @@ private:
 
   static void setRightEar(double id);
   static void setLeftEar(double id);
+  static void setHead(double id);
   static void setRightEye(int value);
   static void setLeftEye(int value);
 
   double lastREar;
   double lastLEar;
+  double lastHead;
   int lastREye;
   int lastLEye;
 
   static double getRightEar();
   static double getLeftEar();
+  static double getHead();
   static int getRightEye();
   static int getLeftEye();
 

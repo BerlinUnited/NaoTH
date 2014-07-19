@@ -32,6 +32,9 @@ BEGIN_DECLARE_MODULE(MotionEngine)
 
   PROVIDE(MotionLock) // it's unlocked if a motion is forced
 
+  // HACK:
+  PROVIDE(KinematicChainMotor)
+
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(MotionStatus)

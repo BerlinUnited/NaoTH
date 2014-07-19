@@ -8,7 +8,6 @@
 */
 
 #include "Geometry.h"
-#include "Tools/Math/Matrix_nxn.h"
 
 double Geometry::angleTo(const Pose2D& from, const Vector2<double>& to)
 {
@@ -157,95 +156,97 @@ bool Geometry::getIntersectionPointsOfLineAndRectangle(
     x = (A^tA)^(-1)A^tB
 **********************************************************************************/
 
-
-bool Geometry::calculateCircle( const PointList<20>& pointList, Vector2d& center, double& radius )
-{
-  if (pointList.length < 3)
-    return false;
-  
-  /********************************************************
-   * create the matrix M := A^tA and the vector v := A^tB
-   ********************************************************/
-
-  double Mx = 0.0;   // \sum_{k=1}^n x_k
-  double My = 0.0;   // \sum_{k=1}^n y_k
-  double Mxx = 0.0;  // \sum_{k=1}^n x_k^2
-  double Myy = 0.0;  // \sum_{k=1}^n y_k^2
-  double Mxy = 0.0;  // \sum_{k=1}^n y_k * x_k
-  double Mz = 0.0;   // \sum_{k=1}^n (y_k^2 + x_k^2) = Myy + Mxx
-  double Mxz = 0.0;  // \sum_{k=1}^n x_k*(y_k^2 + x_k^2)
-  double Myz = 0.0;  // \sum_{k=1}^n y_k*(y_k^2 + x_k^2)
-  double n = pointList.length;
-
-  // calculate the entries for A^tA and A^tB
-  for (int i = 0; i < n; ++i)
-  {
-    double x = pointList[i].x;
-    double y = pointList[i].y;
-    double xx = x*x;
-    double yy = y*y;
-    double z = xx + yy;
-    
-    Mx += x;
-    My += y;
-    Mxx += xx;
-    Myy += yy;
-    Mxy += x*y;
-    Mz += z;
-    Mxz += x*z;
-    Myz += y*z;
-  }//end for
-  
-  try
-  {
-    // create the matrix M := A^tA
-    Matrix_nxn<double, 3> M;
-    double Matrix[9] = 
-    {
-        Mxx, Mxy, Mx,
-        Mxy, Myy, My,
-        Mx , My , n
-    };
-    M = Matrix;
-    
-    // create the vector v := A^tB
-    Vector_n<double, 3> v;
-    
-    v[0] = -Mxz;
-    v[1] = -Myz;
-    v[2] = -Mz;
-
-
-    /********************************************************
-     * solve the Problem Mx = v <=> (A^tA)x = A^tB
-     ********************************************************/
-    Vector_n<double, 3> x;
-    x = M.solve(v);
-    
-    center.x = -x[0] * 0.5;
-    center.y = -x[1] * 0.5;
-    
-
-    double tmpWurzel = x[0]*x[0]/4.0 + x[1]*x[1]/4.0 - x[2];
-    
-    if (tmpWurzel < 0.0)
-      return false;
-    
-    radius = sqrt(tmpWurzel);
-  
-  }
-  catch (MVException)
-  {
-    return false;
-  }
-  catch (...)
-  {
-    //OUTPUT(idText, text, "Unknown exception in BallDetector::calculateCircle");
-    return false;
-  }
-  
-  return true;
-}//end calculateCircle
+//
+//bool Geometry::calculateCircle( const PointList<20>& pointList, Vector2d& center, double& radius )
+//{
+//  if (pointList.length < 3) {
+//    return false;
+//  }
+//  
+//  /********************************************************
+//   * create the matrix M := A^tA and the vector v := A^tB
+//   ********************************************************/
+//
+//  double Mx = 0.0;   // \sum_{k=1}^n x_k
+//  double My = 0.0;   // \sum_{k=1}^n y_k
+//  double Mxx = 0.0;  // \sum_{k=1}^n x_k^2
+//  double Myy = 0.0;  // \sum_{k=1}^n y_k^2
+//  double Mxy = 0.0;  // \sum_{k=1}^n y_k * x_k
+//  double Mz = 0.0;   // \sum_{k=1}^n (y_k^2 + x_k^2) = Myy + Mxx
+//  double Mxz = 0.0;  // \sum_{k=1}^n x_k*(y_k^2 + x_k^2)
+//  double Myz = 0.0;  // \sum_{k=1}^n y_k*(y_k^2 + x_k^2)
+//  double n = pointList.size();
+//
+//  // calculate the entries for A^tA and A^tB
+//  for (int i = 0; i < n; ++i)
+//  {
+//    double x = pointList[i].x;
+//    double y = pointList[i].y;
+//    double xx = x*x;
+//    double yy = y*y;
+//    double z = xx + yy;
+//    
+//    Mx += x;
+//    My += y;
+//    Mxx += xx;
+//    Myy += yy;
+//    Mxy += x*y;
+//    Mz += z;
+//    Mxz += x*z;
+//    Myz += y*z;
+//  }//end for
+//  
+//  try
+//  {
+//    // create the matrix M := A^tA
+//    Matrix_nxn<double, 3> M;
+//    double Matrix[9] = 
+//    {
+//        Mxx, Mxy, Mx,
+//        Mxy, Myy, My,
+//        Mx , My , n
+//    };
+//    M = Matrix;
+//    
+//    // create the vector v := A^tB
+//    Vector_n<double, 3> v;
+//    
+//    v[0] = -Mxz;
+//    v[1] = -Myz;
+//    v[2] = -Mz;
+//
+//
+//    /********************************************************
+//     * solve the Problem Mx = v <=> (A^tA)x = A^tB
+//     ********************************************************/
+//    Vector_n<double, 3> x;
+//    x = M.solve(v);
+//    
+//    center.x = -x[0] * 0.5;
+//    center.y = -x[1] * 0.5;
+//    
+//
+//    double tmpWurzel = x[0]*x[0]/4.0 + x[1]*x[1]/4.0 - x[2];
+//    
+//    if (tmpWurzel < 0.0) {
+//      return false;
+//    }
+//    
+//    radius = sqrt(tmpWurzel);
+//
+//  }
+//  catch (MVException)
+//  {
+//    return false;
+//  }
+//  catch (...)
+//  {
+//    //OUTPUT(idText, text, "Unknown exception in BallDetector::calculateCircle");
+//    return false;
+//  }
+//  
+//  return true;
+//}//end calculateCircle
 
 
 

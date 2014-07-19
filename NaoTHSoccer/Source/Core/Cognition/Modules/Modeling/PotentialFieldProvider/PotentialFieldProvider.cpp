@@ -36,8 +36,7 @@ PotentialFieldProvider::PotentialFieldProvider()
 void PotentialFieldProvider::execute()
 {
   const Pose2D& robotPose = getRobotPose();
-  Vector2<double> ballRelative = getBallModel().position;
-
+  Vector2d ballRelative = getBallModel().position;
 
   // choose the goal model:
   // use the selflocator by default
@@ -57,10 +56,7 @@ void PotentialFieldProvider::execute()
 
   // calculate the target point to play the ball to based on the 
   // goal model and the ball model 
-  Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
-  // preview
-  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
-  // ----------
+  Vector2d targetPoint = getGoalTarget(ballRelative, oppGoalModel);
 
   DEBUG_REQUEST("PotentialFieldProvider:goal_target",
     FIELD_DRAWING_CONTEXT;
@@ -74,11 +70,11 @@ void PotentialFieldProvider::execute()
   );
 
   // get valide obstacles
-  std::list<Vector2<double> > obstacles = getValidObstacles();
+  std::list<Vector2d> obstacles = getValidObstacles();
 
 
   // calculate the potential field at the ball
-  Vector2<double> attackDirection = calculatePotentialField(ballRelative, targetPoint, obstacles);
+  Vector2d attackDirection = calculatePotentialField(ballRelative, targetPoint, obstacles);
   getRawAttackDirection().attackDirection = attackDirection;
 
 
@@ -95,9 +91,9 @@ void PotentialFieldProvider::execute()
   // so for now it is much easier to calculate the previews in the behavior
   // (check StrategySymbols for this)
   //
-  //Vector2<double> attackDirectionPreviewHip = getMotionStatus().plannedMotion.hip / attackDirection;
-  //Vector2<double> attackDirectionPreviewLFoot = getMotionStatus().plannedMotion.lFoot / attackDirection;
-  //Vector2<double> attackDirectionPreviewRFoot = getMotionStatus().plannedMotion.rFoot / attackDirection;
+  //Vector2d attackDirectionPreviewHip    = Vector2d(attackDirection).rotate(getMotionStatus().plannedMotion.hip.rotation);
+  //Vector2d attackDirectionPreviewLFoot  = Vector2d(attackDirection).rotate(getMotionStatus().plannedMotion.lFoot.rotation);
+  //Vector2d attackDirectionPreviewRFoot  = Vector2d(attackDirection).rotate(getMotionStatus().plannedMotion.rFoot.rotation);
 
 
   DEBUG_REQUEST("PotentialFieldProvider:attackDirection:local",
@@ -105,7 +101,7 @@ void PotentialFieldProvider::execute()
 
     PEN("FFFFFF", 20);
 
-    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
+    Vector2d targetDir = getRawAttackDirection().attackDirection;
     targetDir.normalize(200);
 
     ARROW(
@@ -122,7 +118,7 @@ void PotentialFieldProvider::execute()
     TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
     ROTATION(getRobotPose().rotation);
 
-    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
+    Vector2d targetDir = getRawAttackDirection().attackDirection;
     targetDir.normalize(200);
 
     ARROW(
@@ -141,8 +137,8 @@ void PotentialFieldProvider::execute()
     FIELD_DRAWING_CONTEXT;
 
     GoalModel::Goal gt = getSelfLocGoalModel().goal;
-    Vector2<double> ball;
-    Vector2<double> goalTarget = getGoalTarget(ball, gt);
+    Vector2d ball;
+    Vector2d goalTarget = getGoalTarget(ball, gt);
 
     PEN("0000FF", 10);
     CIRCLE(gt.leftPost.x, gt.leftPost.y, 50);
@@ -162,8 +158,8 @@ void PotentialFieldProvider::execute()
     {
       for (double y = getFieldInfo().yPosRightSideline; y <= getFieldInfo().yPosLeftSideline; y += step)
       {
-        Vector2<double> ball = getRobotPose()/Vector2<double>(x,y);
-        Vector2<double> f = calculatePotentialField(ball, targetPoint, obstacles);
+        Vector2d ball = getRobotPose()/Vector2d(x,y);
+        Vector2d f = calculatePotentialField(ball, targetPoint, obstacles);
         f.normalize(200);
         f += ball;
         ARROW(ball.x, ball.y, f.x, f.y);
@@ -179,7 +175,7 @@ void PotentialFieldProvider::execute()
     const double stepX = getFieldInfo().xFieldLength/50.0;
     const double stepY = getFieldInfo().yFieldLength/50.0;
 
-    Vector2<double> simulatedGlobalBall;
+    Vector2d simulatedGlobalBall;
     for (simulatedGlobalBall.x = -getFieldInfo().xFieldLength/2.0;
          simulatedGlobalBall.x <= getFieldInfo().xFieldLength/2.0;
          simulatedGlobalBall.x += stepX)
@@ -190,9 +186,9 @@ void PotentialFieldProvider::execute()
       {
         // claculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
-        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
-        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
+        Vector2d simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2d target = getGoalTarget(simulatedLocalBall, oppGoalModel);
+        Vector2d f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
         f.normalize(50);
@@ -212,7 +208,7 @@ void PotentialFieldProvider::execute()
     const double stepX = 20;
     const double stepY = 20;
 
-    Vector2<double> simulatedGlobalBall;
+    Vector2d simulatedGlobalBall;
     for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
          simulatedGlobalBall.x <= getFieldInfo().opponentGoalCenter.x + 500;
          simulatedGlobalBall.x += stepX)
@@ -223,9 +219,9 @@ void PotentialFieldProvider::execute()
       {
         // claculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
-        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
-        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
+        Vector2d simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2d target = getGoalTarget(simulatedLocalBall, oppGoalModel);
+        Vector2d f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
         // ATTENTION: since it is a vector and not a point, we apply only the rotation
@@ -238,7 +234,6 @@ void PotentialFieldProvider::execute()
   );
 
 
-
   DEBUG_REQUEST("PotentialFieldProvider:draw_potential_field:sensitivity",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
@@ -249,7 +244,7 @@ void PotentialFieldProvider::execute()
     const double noise = 25; // mm
     const double trials = 10;
     
-    Vector2<double> simulatedGlobalBall;
+    Vector2d simulatedGlobalBall;
     for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
          simulatedGlobalBall.x <= getFieldInfo().opponentGoalCenter.x + 500;
          simulatedGlobalBall.x += stepX)
@@ -261,9 +256,9 @@ void PotentialFieldProvider::execute()
 
         // claculate the local attack direction for the current 
         // robots position and current obstacles
-        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
-        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
-        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
+        Vector2d simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2d target = getGoalTarget(simulatedLocalBall, oppGoalModel);
+        Vector2d f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
         // ATTENTION: since it is a vector and not a point, we apply only the rotation
@@ -275,12 +270,12 @@ void PotentialFieldProvider::execute()
         // apply some random noise
         for(int i = 0; i < trials; i++)
         {
-          Vector2<double> simulatedLocalBall_noise = robotPose/simulatedGlobalBall;
+          Vector2d simulatedLocalBall_noise = robotPose/simulatedGlobalBall;
           simulatedLocalBall_noise.x += (Math::random()-0.5)*2.0*noise;
           simulatedLocalBall_noise.y += (Math::random()-0.5)*2.0*noise;
 
-          //Vector2<double> target_noice = getGoalTarget(simulatedLocalBall_noise, oppGoalModel);
-          Vector2<double> f_noice = calculatePotentialField(simulatedLocalBall_noise, target, obstacles);
+          //Vector2d target_noice = getGoalTarget(simulatedLocalBall_noise, oppGoalModel);
+          Vector2d f_noice = calculatePotentialField(simulatedLocalBall_noise, target, obstacles);
 
           // transform it to global coordinates
           // ATTENTION: since it is a vector and not a point, we apply only the rotation
@@ -290,7 +285,6 @@ void PotentialFieldProvider::execute()
           deviation = max(deviation, fabs(Math::toDegrees(Math::normalize(f.angle() - f_noice.angle()))));
         }
 
-
         //ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
         //SIMPLE_PARTICLE(simulatedGlobalBall.x, simulatedGlobalBall.y, f.angle());
 
@@ -298,13 +292,11 @@ void PotentialFieldProvider::execute()
       }
     }
   );
-  
-  
 }//end execute
 
-list<Vector2<double> > PotentialFieldProvider::getValidObstacles() const
+list<Vector2d > PotentialFieldProvider::getValidObstacles() const
 {
-  std::list<Vector2<double> > result;
+  std::list<Vector2d > result;
 
   // opponents
   for (vector<PlayersModel::Player>::const_iterator iter =
@@ -332,32 +324,30 @@ list<Vector2<double> > PotentialFieldProvider::getValidObstacles() const
 } //end getValidOpponents
 
 
-Vector2<double> PotentialFieldProvider::calculatePotentialField(
-    const Vector2<double>& point, 
-    const Vector2<double>& targetPoint,
-    const list<Vector2<double> > &obstacles) const
+Vector2d PotentialFieldProvider::calculatePotentialField(
+    const Vector2d& point, 
+    const Vector2d& targetPoint,
+    const list<Vector2d> &obstacles) const
 {
   // we are attracted to the target point
-  Vector2<double> fieldF = globalExponentialAttractor(targetPoint, point);
+  Vector2d fieldF = globalExponentialAttractor(targetPoint, point);
 
   // we are repelled by the opponents
-  Vector2<double> playerF;
-  for (list<Vector2<double> >::const_iterator iter =
+  Vector2d playerF;
+  for (list<Vector2d >::const_iterator iter =
        obstacles.begin(); iter != obstacles.end(); ++iter)
   {
     playerF -= compactExponentialRepeller(*iter, point);
   }
 
-  if (!obstacles.empty())
-  {
-    // my self
-    playerF -= compactExponentialRepeller(Vector2<double>(0, 0), point);
+  // my self
+  if (!obstacles.empty()) {
+    playerF -= compactExponentialRepeller(Vector2d(0, 0), point);
   }
 
   // TODO: remove magic normalization
   double ff = fieldF.abs() * 0.8;
-  if ( playerF.abs() > ff)
-  {
+  if ( playerF.abs() > ff) {
     playerF.normalize(ff);
   }
 
@@ -365,30 +355,30 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(
 }//end calculatePotentialField
 
 
-Vector2<double> PotentialFieldProvider::globalExponentialAttractor(const Vector2<double>& p, const Vector2<double>& x) const
+Vector2d PotentialFieldProvider::globalExponentialAttractor(const Vector2d& p, const Vector2d& x) const
 {
   const double alpha = theParameters.goal_attractor_strength; //-0.001;
 
-  Vector2<double> v = p - x;
+  Vector2d v = p - x;
   double d = v.abs();
   
   return v.normalize() * exp(alpha * d);
-}//end globalExponentialAttractor
+}
 
-Vector2<double> PotentialFieldProvider::compactExponentialRepeller(const Vector2<double>& p, const Vector2<double>& x) const
+Vector2d PotentialFieldProvider::compactExponentialRepeller(const Vector2d& p, const Vector2d& x) const
 {
   const double a = theParameters.player_repeller_strenth; //1500; 
   const double d = theParameters.player_repeller_radius; //2000;
 
-  Vector2<double> v = p - x;
+  Vector2d v = p - x;
   double t = v.abs();
-  if ( t >= d-100 ) return Vector2<double>();
+  if ( t >= d-100 ) return Vector2d();
 
   return v.normalize() * exp(a / d - a / (d - t));
-}//end compactExponentialRepeller
+}
 
 
-Vector2<double> PotentialFieldProvider::getGoalTargetOld(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
+Vector2d PotentialFieldProvider::getGoalTargetOld(const Vector2d& point, const GoalModel::Goal& oppGoalModel) const
 {
   double postOffset = 100.0;
   double goalLineOffset = 100.0;
@@ -397,13 +387,13 @@ Vector2<double> PotentialFieldProvider::getGoalTargetOld(const Vector2<double>& 
 
 
   // relative vector from one post to another
-  Vector2<double> leftPost2RightPost = oppGoalModel.rightPost - oppGoalModel.leftPost;
-  Vector2<double> rightPost2LeftPost = oppGoalModel.leftPost - oppGoalModel.rightPost;
+  Vector2d leftPost2RightPost = oppGoalModel.rightPost - oppGoalModel.leftPost;
+  Vector2d rightPost2LeftPost = oppGoalModel.leftPost - oppGoalModel.rightPost;
 
   // the endpoints of our line are a shortened version of the goal line
-  Vector2<double> leftEndpoint = oppGoalModel.leftPost
+  Vector2d leftEndpoint = oppGoalModel.leftPost
       + leftPost2RightPost.normalize(postOffset);
-  Vector2<double> rightEndpoint = oppGoalModel.rightPost
+  Vector2d rightEndpoint = oppGoalModel.rightPost
       + rightPost2LeftPost.normalize(postOffset);
 
   DEBUG_REQUEST("PotentialFieldProvider:goal_target",
@@ -417,10 +407,10 @@ Vector2<double> PotentialFieldProvider::getGoalTargetOld(const Vector2<double>& 
   Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
 
   // project the point on the goal line
-  Vector2<double> target = goalLine.projection(point);
+  Vector2d target = goalLine.projection(point);
 
   // a normal vector ponting from the goal towards the field
-  Vector2<double> goalNormal = leftPost2RightPost.rotateRight();
+  Vector2d goalNormal = leftPost2RightPost.rotateRight();
 
   // get distance between point and target point
   double dist = (target-point).abs();
@@ -441,7 +431,7 @@ Vector2<double> PotentialFieldProvider::getGoalTargetOld(const Vector2<double>& 
   return target;
 }//end getGoalTarget
 
-Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
+Vector2d PotentialFieldProvider::getGoalTarget(const Vector2d& point, const GoalModel::Goal& oppGoalModel) const
 {
   // for debug reasons
   DEBUG_REQUEST("PotentialFieldProvider:getGoalTargetOld",
@@ -449,22 +439,22 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
   );
 
   // normalized vector from left post to the right
-  const Vector2<double> leftToRight((oppGoalModel.rightPost - oppGoalModel.leftPost).normalize());
+  const Vector2d leftToRight((oppGoalModel.rightPost - oppGoalModel.leftPost).normalize());
 
   // a normal vector ponting from the goal towards the field
-  Vector2<double> goalNormal(leftToRight);
+  Vector2d goalNormal(leftToRight);
   goalNormal.rotateRight();
 
 
   // the endpoints of our line are a shortened version of the goal line
-  Vector2<double> leftEndpoint = oppGoalModel.leftPost + leftToRight * theParameters.goal_post_offset;
-  Vector2<double> rightEndpoint = oppGoalModel.rightPost - leftToRight * theParameters.goal_post_offset;
+  Vector2d leftEndpoint = oppGoalModel.leftPost + leftToRight * theParameters.goal_post_offset;
+  Vector2d rightEndpoint = oppGoalModel.rightPost - leftToRight * theParameters.goal_post_offset;
 
   // this is the goalline we are shooting for
   Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
 
   // project the point on the goal line
-  Vector2<double> target = goalLine.projection(point);
+  Vector2d target = goalLine.projection(point);
 
   // this is the cos of the angle between the vectors (leftEndpoint-point) and (rightEndpoint-point)
   // simple linear algebra: <l-p,r-p>/(||l-p||*||r-p||)

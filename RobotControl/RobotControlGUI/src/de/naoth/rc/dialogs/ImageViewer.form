@@ -185,6 +185,16 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbPreserveAspectRatioActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="cbFadeOut">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Fade Out"/>
+            <Property name="toolTipText" type="java.lang.String" value="Fades out the image so the drawings can be seen better."/>
+            <Property name="focusable" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbFadeOutActionPerformed"/>
+          </Events>
+        </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JLabel" name="jLabelFPS">

@@ -72,6 +72,7 @@ private:
   // gyro
   Kalman<double> gyroXBias; /**< The calibration bias of gyroX. */
   Kalman<double> gyroYBias; /**< The calibration bias of gyroY. */
+  Kalman<double> gyroZBias; /**< The calibration bias of gyroZ. */
 
   bool calibrated; /**< Whether the filters are initialized. */
   unsigned int lastTime; /**< The time of the previous iteration. */
@@ -82,7 +83,7 @@ private:
 
   RingBufferWithSum<Vector2d, 300> inertialValues; /**< Ringbuffer for collecting the acceleration sensor values of one walking phase or 1 sec. */
   RingBufferWithSum<Vector3d, 300> accValues; /**< Ringbuffer for collecting the acceleration sensor values of one walking phase or 1 sec. */
-  RingBufferWithSum<Vector2d, 300> gyroValues; /**< Ringbuffer for collecting the gyro sensor values of one walking phase or 1 sec. */
+  RingBufferWithSum<Vector3d, 300> gyroValues; /**< Ringbuffer for collecting the gyro sensor values of one walking phase or 1 sec. */
 
 
   /**
@@ -93,7 +94,7 @@ private:
   public:
     Vector2d inertialAvg; /**< The average of acceleration sensor readings of one walking phase or 1 sec. */
     Vector3d accAvg; /**< The average of acceleration sensor readings of one walking phase or 1 sec. */
-    Vector2d gyroAvg; /**< The average of gyro sensor eadings of one walking phase or 1 sec. */
+    Vector3d gyroAvg; /**< The average of gyro sensor eadings of one walking phase or 1 sec. */
     unsigned int timeStamp; /**< When this collection was created. */
 
     /**
@@ -102,7 +103,7 @@ private:
     Collection(
       const Vector2d& inertialAvg, 
       const Vector3d& accAvg, 
-      const Vector2d& gyroAvg, 
+      const Vector3d& gyroAvg, 
       unsigned int timeStamp) 
       :
       inertialAvg(inertialAvg),

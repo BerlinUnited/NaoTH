@@ -139,6 +139,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("motion.kick.finish", &getMotionRequest().kickRequest.finishKick);
   engine.registerEnumeratedOutputSymbol("motion.kick.foot", "direction", (int*)&getMotionRequest().kickRequest.kickFoot);
 
+  // dribble
+  engine.registerBooleanOutputSymbol("motion.dribble", &dribble, &dribbleG);
+  engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
 }//end registerSymbols
 
 void MotionSymbols::execute()
@@ -147,7 +150,7 @@ void MotionSymbols::execute()
   // TODO: maybe better just to create new once?
   getMotionRequest().reset();
   getHeadMotionRequest().reset();
-} //end update
+}
 
 void MotionSymbols::updateOutputSymbols()
 {
@@ -313,4 +316,42 @@ string MotionSymbols::getStepControlFootName(StepControlFoot i)
   default: ASSERT(false); break;
   }
   return "unknown";
+}
+
+bool MotionSymbols::dribbleG() 
+{
+  return ((theInstance->actionPerformed) == theInstance->getMotionStatus().stepControl.stepID);
+}
+
+void MotionSymbols::dribble(bool v)
+{
+  const Vector2d& ball = theInstance->getBallModel().positionPreviewInRFoot;
+  Pose2D& motionTarget = theInstance->getMotionRequest().walkRequest.target;
+  
+  double offsetX = 190;
+  double offsetY = 20;
+
+  if(ball.x - offsetX < 30 && fabs(ball.y - offsetY) < 30 )
+  {
+    theInstance->stepControlRequestTarget.translation.x = 500;
+    theInstance->stepControlRequestTarget.translation.y = 100;
+    theInstance->stepControlRequestTarget.rotation = 0;
+
+    theInstance->stepControlRequestTime = 300;
+    theInstance->stepControlRequestSpeedDirection = 90;
+    theInstance->stepControlFoot = right;
+
+    theInstance->getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+    theInstance->walkStyle = fast;
+
+    theInstance->getMotionRequest().id = motion::walk;
+    theInstance->actionPerformed = theInstance->getMotionStatus().stepControl.stepID;
+  }
+  else
+  {
+    motionTarget.translation.x = ball.x - offsetX;    motionTarget.translation.y = ball.y - offsetY;    motionTarget.rotation = (ball.abs() > 250) ? ball.angle() : 0;
+    theInstance->getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;    theInstance->walkStyle = stable;
+
+    theInstance->getMotionRequest().id = motion::walk;
+  }
 }

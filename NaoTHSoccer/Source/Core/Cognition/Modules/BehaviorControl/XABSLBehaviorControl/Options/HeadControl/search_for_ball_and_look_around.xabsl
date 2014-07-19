@@ -1,27 +1,27 @@
 /** Scan mode for looking at the ball/searching for the ball */
 option search_for_ball_and_look_around
 {
-  initial state look_around_state{
+  initial state look_at_ball {
     decision{
-      if ( (vector.abs(x=ball.preview.x, y=ball.preview.y) < 1000) || (state_time > 3000) )
-        goto look_at_ball;
-      else 
-        stay; 
-    }
-    action{
-      look_around();
-    }
-  }
-  
-  state look_at_ball{
-    decision{
-      if ( (vector.abs(x=ball.preview.x, y=ball.preview.y) > 1100) && (state_time > 2000) )
+      if ( state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1000 )
         goto look_around_state;
       else 
         stay; 
     }
     action{
       search_for_ball(force_ball_model_check = false);
+    }
+  }
+
+  state look_around_state {
+    decision{
+      if ( state_time > 2500 )
+        goto look_at_ball;
+      else 
+        stay; 
+    }
+    action{
+      look_around();
     }
   }
 }

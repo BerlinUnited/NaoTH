@@ -28,7 +28,7 @@ option go_to_ball
       motion.walk.style = normal;
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance - ball.radius)), value1=0);
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 
@@ -53,7 +53,7 @@ option go_to_ball
 
       motion.walk_speed.x = 0.7*(ball.preview.x - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
     }
   }
 }

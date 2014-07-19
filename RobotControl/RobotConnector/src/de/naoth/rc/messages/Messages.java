@@ -6159,6 +6159,10982 @@ public final class Messages {
     // @@protoc_insertion_point(class_scope:naothmessages.Plots)
   }
   
+  public interface XABSLSymbolOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 id = 1 [default = -1];
+    boolean hasId();
+    int getId();
+    
+    // required .naothmessages.XABSLSymbol.SymbolType type = 2 [default = Unknown];
+    boolean hasType();
+    de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType getType();
+    
+    // optional string name = 3;
+    boolean hasName();
+    String getName();
+    
+    // optional double decimalValue = 11;
+    boolean hasDecimalValue();
+    double getDecimalValue();
+    
+    // optional bool boolValue = 12;
+    boolean hasBoolValue();
+    boolean getBoolValue();
+    
+    // optional int32 enumValue = 13;
+    boolean hasEnumValue();
+    int getEnumValue();
+    
+    // optional int32 enumTypeId = 14;
+    boolean hasEnumTypeId();
+    int getEnumTypeId();
+  }
+  public static final class XABSLSymbol extends
+      com.google.protobuf.GeneratedMessage
+      implements XABSLSymbolOrBuilder {
+    // Use XABSLSymbol.newBuilder() to construct.
+    private XABSLSymbol(Builder builder) {
+      super(builder);
+    }
+    private XABSLSymbol(boolean noInit) {}
+    
+    private static final XABSLSymbol defaultInstance;
+    public static XABSLSymbol getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public XABSLSymbol getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLSymbol_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLSymbol_fieldAccessorTable;
+    }
+    
+    public enum SymbolType
+        implements com.google.protobuf.ProtocolMessageEnum {
+      Decimal(0, 0),
+      Boolean(1, 1),
+      Enum(2, 2),
+      Unknown(3, 3),
+      ;
+      
+      public static final int Decimal_VALUE = 0;
+      public static final int Boolean_VALUE = 1;
+      public static final int Enum_VALUE = 2;
+      public static final int Unknown_VALUE = 3;
+      
+      
+      public final int getNumber() { return value; }
+      
+      public static SymbolType valueOf(int value) {
+        switch (value) {
+          case 0: return Decimal;
+          case 1: return Boolean;
+          case 2: return Enum;
+          case 3: return Unknown;
+          default: return null;
+        }
+      }
+      
+      public static com.google.protobuf.Internal.EnumLiteMap<SymbolType>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static com.google.protobuf.Internal.EnumLiteMap<SymbolType>
+          internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<SymbolType>() {
+              public SymbolType findValueByNumber(int number) {
+                return SymbolType.valueOf(number);
+              }
+            };
+      
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(index);
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.XABSLSymbol.getDescriptor().getEnumTypes().get(0);
+      }
+      
+      private static final SymbolType[] VALUES = {
+        Decimal, Boolean, Enum, Unknown, 
+      };
+      
+      public static SymbolType valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        return VALUES[desc.getIndex()];
+      }
+      
+      private final int index;
+      private final int value;
+      
+      private SymbolType(int index, int value) {
+        this.index = index;
+        this.value = value;
+      }
+      
+      // @@protoc_insertion_point(enum_scope:naothmessages.XABSLSymbol.SymbolType)
+    }
+    
+    private int bitField0_;
+    // required int32 id = 1 [default = -1];
+    public static final int ID_FIELD_NUMBER = 1;
+    private int id_;
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getId() {
+      return id_;
+    }
+    
+    // required .naothmessages.XABSLSymbol.SymbolType type = 2 [default = Unknown];
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType type_;
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType getType() {
+      return type_;
+    }
+    
+    // optional string name = 3;
+    public static final int NAME_FIELD_NUMBER = 3;
+    private java.lang.Object name_;
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional double decimalValue = 11;
+    public static final int DECIMALVALUE_FIELD_NUMBER = 11;
+    private double decimalValue_;
+    public boolean hasDecimalValue() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public double getDecimalValue() {
+      return decimalValue_;
+    }
+    
+    // optional bool boolValue = 12;
+    public static final int BOOLVALUE_FIELD_NUMBER = 12;
+    private boolean boolValue_;
+    public boolean hasBoolValue() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public boolean getBoolValue() {
+      return boolValue_;
+    }
+    
+    // optional int32 enumValue = 13;
+    public static final int ENUMVALUE_FIELD_NUMBER = 13;
+    private int enumValue_;
+    public boolean hasEnumValue() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public int getEnumValue() {
+      return enumValue_;
+    }
+    
+    // optional int32 enumTypeId = 14;
+    public static final int ENUMTYPEID_FIELD_NUMBER = 14;
+    private int enumTypeId_;
+    public boolean hasEnumTypeId() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public int getEnumTypeId() {
+      return enumTypeId_;
+    }
+    
+    private void initFields() {
+      id_ = -1;
+      type_ = de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType.Unknown;
+      name_ = "";
+      decimalValue_ = 0D;
+      boolValue_ = false;
+      enumValue_ = 0;
+      enumTypeId_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeDouble(11, decimalValue_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(12, boolValue_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeInt32(13, enumValue_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeInt32(14, enumTypeId_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(11, decimalValue_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(12, boolValue_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(13, enumValue_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(14, enumTypeId_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLSymbol parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLSymbol prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLSymbol_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLSymbol_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        id_ = -1;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType.Unknown;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        decimalValue_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        boolValue_ = false;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        enumValue_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        enumTypeId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.XABSLSymbol.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLSymbol getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLSymbol build() {
+        de.naoth.rc.messages.Messages.XABSLSymbol result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.XABSLSymbol buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.XABSLSymbol result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLSymbol buildPartial() {
+        de.naoth.rc.messages.Messages.XABSLSymbol result = new de.naoth.rc.messages.Messages.XABSLSymbol(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.decimalValue_ = decimalValue_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.boolValue_ = boolValue_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.enumValue_ = enumValue_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.enumTypeId_ = enumTypeId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.XABSLSymbol) {
+          return mergeFrom((de.naoth.rc.messages.Messages.XABSLSymbol)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLSymbol other) {
+        if (other == de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (other.hasName()) {
+          setName(other.getName());
+        }
+        if (other.hasDecimalValue()) {
+          setDecimalValue(other.getDecimalValue());
+        }
+        if (other.hasBoolValue()) {
+          setBoolValue(other.getBoolValue());
+        }
+        if (other.hasEnumValue()) {
+          setEnumValue(other.getEnumValue());
+        }
+        if (other.hasEnumTypeId()) {
+          setEnumTypeId(other.getEnumTypeId());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType value = de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                type_ = value;
+              }
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              name_ = input.readBytes();
+              break;
+            }
+            case 89: {
+              bitField0_ |= 0x00000008;
+              decimalValue_ = input.readDouble();
+              break;
+            }
+            case 96: {
+              bitField0_ |= 0x00000010;
+              boolValue_ = input.readBool();
+              break;
+            }
+            case 104: {
+              bitField0_ |= 0x00000020;
+              enumValue_ = input.readInt32();
+              break;
+            }
+            case 112: {
+              bitField0_ |= 0x00000040;
+              enumTypeId_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 id = 1 [default = -1];
+      private int id_ = -1;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getId() {
+        return id_;
+      }
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = -1;
+        onChanged();
+        return this;
+      }
+      
+      // required .naothmessages.XABSLSymbol.SymbolType type = 2 [default = Unknown];
+      private de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType type_ = de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType.Unknown;
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType getType() {
+        return type_;
+      }
+      public Builder setType(de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = de.naoth.rc.messages.Messages.XABSLSymbol.SymbolType.Unknown;
+        onChanged();
+        return this;
+      }
+      
+      // optional string name = 3;
+      private java.lang.Object name_ = "";
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      void setName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000004;
+        name_ = value;
+        onChanged();
+      }
+      
+      // optional double decimalValue = 11;
+      private double decimalValue_ ;
+      public boolean hasDecimalValue() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public double getDecimalValue() {
+        return decimalValue_;
+      }
+      public Builder setDecimalValue(double value) {
+        bitField0_ |= 0x00000008;
+        decimalValue_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearDecimalValue() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        decimalValue_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // optional bool boolValue = 12;
+      private boolean boolValue_ ;
+      public boolean hasBoolValue() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public boolean getBoolValue() {
+        return boolValue_;
+      }
+      public Builder setBoolValue(boolean value) {
+        bitField0_ |= 0x00000010;
+        boolValue_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBoolValue() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        boolValue_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 enumValue = 13;
+      private int enumValue_ ;
+      public boolean hasEnumValue() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getEnumValue() {
+        return enumValue_;
+      }
+      public Builder setEnumValue(int value) {
+        bitField0_ |= 0x00000020;
+        enumValue_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearEnumValue() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        enumValue_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 enumTypeId = 14;
+      private int enumTypeId_ ;
+      public boolean hasEnumTypeId() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public int getEnumTypeId() {
+        return enumTypeId_;
+      }
+      public Builder setEnumTypeId(int value) {
+        bitField0_ |= 0x00000040;
+        enumTypeId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearEnumTypeId() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        enumTypeId_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.XABSLSymbol)
+    }
+    
+    static {
+      defaultInstance = new XABSLSymbol(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.XABSLSymbol)
+  }
+  
+  public interface XABSLActiveOptionSparseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 id = 1 [default = -1];
+    boolean hasId();
+    int getId();
+    
+    // optional int64 timeOfExecution = 3 [default = 0];
+    boolean hasTimeOfExecution();
+    long getTimeOfExecution();
+    
+    // optional int32 activeState = 4;
+    boolean hasActiveState();
+    int getActiveState();
+    
+    // optional int64 stateTime = 5;
+    boolean hasStateTime();
+    long getStateTime();
+    
+    // repeated double decimalParameters = 6;
+    java.util.List<java.lang.Double> getDecimalParametersList();
+    int getDecimalParametersCount();
+    double getDecimalParameters(int index);
+    
+    // repeated bool booleanParameters = 7;
+    java.util.List<java.lang.Boolean> getBooleanParametersList();
+    int getBooleanParametersCount();
+    boolean getBooleanParameters(int index);
+    
+    // repeated int32 enumeratedParameters = 8;
+    java.util.List<java.lang.Integer> getEnumeratedParametersList();
+    int getEnumeratedParametersCount();
+    int getEnumeratedParameters(int index);
+    
+    // repeated .naothmessages.XABSLActionSparse activeSubActions = 9;
+    java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> 
+        getActiveSubActionsList();
+    de.naoth.rc.messages.Messages.XABSLActionSparse getActiveSubActions(int index);
+    int getActiveSubActionsCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+        getActiveSubActionsOrBuilderList();
+    de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveSubActionsOrBuilder(
+        int index);
+  }
+  public static final class XABSLActiveOptionSparse extends
+      com.google.protobuf.GeneratedMessage
+      implements XABSLActiveOptionSparseOrBuilder {
+    // Use XABSLActiveOptionSparse.newBuilder() to construct.
+    private XABSLActiveOptionSparse(Builder builder) {
+      super(builder);
+    }
+    private XABSLActiveOptionSparse(boolean noInit) {}
+    
+    private static final XABSLActiveOptionSparse defaultInstance;
+    public static XABSLActiveOptionSparse getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public XABSLActiveOptionSparse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActiveOptionSparse_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActiveOptionSparse_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required int32 id = 1 [default = -1];
+    public static final int ID_FIELD_NUMBER = 1;
+    private int id_;
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getId() {
+      return id_;
+    }
+    
+    // optional int64 timeOfExecution = 3 [default = 0];
+    public static final int TIMEOFEXECUTION_FIELD_NUMBER = 3;
+    private long timeOfExecution_;
+    public boolean hasTimeOfExecution() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public long getTimeOfExecution() {
+      return timeOfExecution_;
+    }
+    
+    // optional int32 activeState = 4;
+    public static final int ACTIVESTATE_FIELD_NUMBER = 4;
+    private int activeState_;
+    public boolean hasActiveState() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getActiveState() {
+      return activeState_;
+    }
+    
+    // optional int64 stateTime = 5;
+    public static final int STATETIME_FIELD_NUMBER = 5;
+    private long stateTime_;
+    public boolean hasStateTime() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public long getStateTime() {
+      return stateTime_;
+    }
+    
+    // repeated double decimalParameters = 6;
+    public static final int DECIMALPARAMETERS_FIELD_NUMBER = 6;
+    private java.util.List<java.lang.Double> decimalParameters_;
+    public java.util.List<java.lang.Double>
+        getDecimalParametersList() {
+      return decimalParameters_;
+    }
+    public int getDecimalParametersCount() {
+      return decimalParameters_.size();
+    }
+    public double getDecimalParameters(int index) {
+      return decimalParameters_.get(index);
+    }
+    
+    // repeated bool booleanParameters = 7;
+    public static final int BOOLEANPARAMETERS_FIELD_NUMBER = 7;
+    private java.util.List<java.lang.Boolean> booleanParameters_;
+    public java.util.List<java.lang.Boolean>
+        getBooleanParametersList() {
+      return booleanParameters_;
+    }
+    public int getBooleanParametersCount() {
+      return booleanParameters_.size();
+    }
+    public boolean getBooleanParameters(int index) {
+      return booleanParameters_.get(index);
+    }
+    
+    // repeated int32 enumeratedParameters = 8;
+    public static final int ENUMERATEDPARAMETERS_FIELD_NUMBER = 8;
+    private java.util.List<java.lang.Integer> enumeratedParameters_;
+    public java.util.List<java.lang.Integer>
+        getEnumeratedParametersList() {
+      return enumeratedParameters_;
+    }
+    public int getEnumeratedParametersCount() {
+      return enumeratedParameters_.size();
+    }
+    public int getEnumeratedParameters(int index) {
+      return enumeratedParameters_.get(index);
+    }
+    
+    // repeated .naothmessages.XABSLActionSparse activeSubActions = 9;
+    public static final int ACTIVESUBACTIONS_FIELD_NUMBER = 9;
+    private java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> activeSubActions_;
+    public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> getActiveSubActionsList() {
+      return activeSubActions_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+        getActiveSubActionsOrBuilderList() {
+      return activeSubActions_;
+    }
+    public int getActiveSubActionsCount() {
+      return activeSubActions_.size();
+    }
+    public de.naoth.rc.messages.Messages.XABSLActionSparse getActiveSubActions(int index) {
+      return activeSubActions_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveSubActionsOrBuilder(
+        int index) {
+      return activeSubActions_.get(index);
+    }
+    
+    private void initFields() {
+      id_ = -1;
+      timeOfExecution_ = 0L;
+      activeState_ = 0;
+      stateTime_ = 0L;
+      decimalParameters_ = java.util.Collections.emptyList();;
+      booleanParameters_ = java.util.Collections.emptyList();;
+      enumeratedParameters_ = java.util.Collections.emptyList();;
+      activeSubActions_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getActiveSubActionsCount(); i++) {
+        if (!getActiveSubActions(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(3, timeOfExecution_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(4, activeState_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt64(5, stateTime_);
+      }
+      for (int i = 0; i < decimalParameters_.size(); i++) {
+        output.writeDouble(6, decimalParameters_.get(i));
+      }
+      for (int i = 0; i < booleanParameters_.size(); i++) {
+        output.writeBool(7, booleanParameters_.get(i));
+      }
+      for (int i = 0; i < enumeratedParameters_.size(); i++) {
+        output.writeInt32(8, enumeratedParameters_.get(i));
+      }
+      for (int i = 0; i < activeSubActions_.size(); i++) {
+        output.writeMessage(9, activeSubActions_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, timeOfExecution_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, activeState_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(5, stateTime_);
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDecimalParametersList().size();
+        size += dataSize;
+        size += 1 * getDecimalParametersList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 1 * getBooleanParametersList().size();
+        size += dataSize;
+        size += 1 * getBooleanParametersList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < enumeratedParameters_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(enumeratedParameters_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getEnumeratedParametersList().size();
+      }
+      for (int i = 0; i < activeSubActions_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, activeSubActions_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActiveOptionSparse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLActiveOptionSparse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActiveOptionSparse_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActiveOptionSparse_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getActiveSubActionsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        id_ = -1;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        timeOfExecution_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        activeState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        stateTime_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        decimalParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        booleanParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        enumeratedParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        if (activeSubActionsBuilder_ == null) {
+          activeSubActions_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+        } else {
+          activeSubActionsBuilder_.clear();
+        }
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse build() {
+        de.naoth.rc.messages.Messages.XABSLActiveOptionSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.XABSLActiveOptionSparse buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.XABSLActiveOptionSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse buildPartial() {
+        de.naoth.rc.messages.Messages.XABSLActiveOptionSparse result = new de.naoth.rc.messages.Messages.XABSLActiveOptionSparse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.timeOfExecution_ = timeOfExecution_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.activeState_ = activeState_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.stateTime_ = stateTime_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          decimalParameters_ = java.util.Collections.unmodifiableList(decimalParameters_);
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.decimalParameters_ = decimalParameters_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          booleanParameters_ = java.util.Collections.unmodifiableList(booleanParameters_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.booleanParameters_ = booleanParameters_;
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          enumeratedParameters_ = java.util.Collections.unmodifiableList(enumeratedParameters_);
+          bitField0_ = (bitField0_ & ~0x00000040);
+        }
+        result.enumeratedParameters_ = enumeratedParameters_;
+        if (activeSubActionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+            activeSubActions_ = java.util.Collections.unmodifiableList(activeSubActions_);
+            bitField0_ = (bitField0_ & ~0x00000080);
+          }
+          result.activeSubActions_ = activeSubActions_;
+        } else {
+          result.activeSubActions_ = activeSubActionsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.XABSLActiveOptionSparse) {
+          return mergeFrom((de.naoth.rc.messages.Messages.XABSLActiveOptionSparse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLActiveOptionSparse other) {
+        if (other == de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasTimeOfExecution()) {
+          setTimeOfExecution(other.getTimeOfExecution());
+        }
+        if (other.hasActiveState()) {
+          setActiveState(other.getActiveState());
+        }
+        if (other.hasStateTime()) {
+          setStateTime(other.getStateTime());
+        }
+        if (!other.decimalParameters_.isEmpty()) {
+          if (decimalParameters_.isEmpty()) {
+            decimalParameters_ = other.decimalParameters_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureDecimalParametersIsMutable();
+            decimalParameters_.addAll(other.decimalParameters_);
+          }
+          onChanged();
+        }
+        if (!other.booleanParameters_.isEmpty()) {
+          if (booleanParameters_.isEmpty()) {
+            booleanParameters_ = other.booleanParameters_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureBooleanParametersIsMutable();
+            booleanParameters_.addAll(other.booleanParameters_);
+          }
+          onChanged();
+        }
+        if (!other.enumeratedParameters_.isEmpty()) {
+          if (enumeratedParameters_.isEmpty()) {
+            enumeratedParameters_ = other.enumeratedParameters_;
+            bitField0_ = (bitField0_ & ~0x00000040);
+          } else {
+            ensureEnumeratedParametersIsMutable();
+            enumeratedParameters_.addAll(other.enumeratedParameters_);
+          }
+          onChanged();
+        }
+        if (activeSubActionsBuilder_ == null) {
+          if (!other.activeSubActions_.isEmpty()) {
+            if (activeSubActions_.isEmpty()) {
+              activeSubActions_ = other.activeSubActions_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+            } else {
+              ensureActiveSubActionsIsMutable();
+              activeSubActions_.addAll(other.activeSubActions_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.activeSubActions_.isEmpty()) {
+            if (activeSubActionsBuilder_.isEmpty()) {
+              activeSubActionsBuilder_.dispose();
+              activeSubActionsBuilder_ = null;
+              activeSubActions_ = other.activeSubActions_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+              activeSubActionsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getActiveSubActionsFieldBuilder() : null;
+            } else {
+              activeSubActionsBuilder_.addAllMessages(other.activeSubActions_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getActiveSubActionsCount(); i++) {
+          if (!getActiveSubActions(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              timeOfExecution_ = input.readInt64();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000004;
+              activeState_ = input.readInt32();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000008;
+              stateTime_ = input.readInt64();
+              break;
+            }
+            case 49: {
+              ensureDecimalParametersIsMutable();
+              decimalParameters_.add(input.readDouble());
+              break;
+            }
+            case 50: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addDecimalParameters(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 56: {
+              ensureBooleanParametersIsMutable();
+              booleanParameters_.add(input.readBool());
+              break;
+            }
+            case 58: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addBooleanParameters(input.readBool());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 64: {
+              ensureEnumeratedParametersIsMutable();
+              enumeratedParameters_.add(input.readInt32());
+              break;
+            }
+            case 66: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addEnumeratedParameters(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 74: {
+              de.naoth.rc.messages.Messages.XABSLActionSparse.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLActionSparse.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addActiveSubActions(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 id = 1 [default = -1];
+      private int id_ = -1;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getId() {
+        return id_;
+      }
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = -1;
+        onChanged();
+        return this;
+      }
+      
+      // optional int64 timeOfExecution = 3 [default = 0];
+      private long timeOfExecution_ ;
+      public boolean hasTimeOfExecution() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public long getTimeOfExecution() {
+        return timeOfExecution_;
+      }
+      public Builder setTimeOfExecution(long value) {
+        bitField0_ |= 0x00000002;
+        timeOfExecution_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTimeOfExecution() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        timeOfExecution_ = 0L;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 activeState = 4;
+      private int activeState_ ;
+      public boolean hasActiveState() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getActiveState() {
+        return activeState_;
+      }
+      public Builder setActiveState(int value) {
+        bitField0_ |= 0x00000004;
+        activeState_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearActiveState() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        activeState_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int64 stateTime = 5;
+      private long stateTime_ ;
+      public boolean hasStateTime() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public long getStateTime() {
+        return stateTime_;
+      }
+      public Builder setStateTime(long value) {
+        bitField0_ |= 0x00000008;
+        stateTime_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStateTime() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        stateTime_ = 0L;
+        onChanged();
+        return this;
+      }
+      
+      // repeated double decimalParameters = 6;
+      private java.util.List<java.lang.Double> decimalParameters_ = java.util.Collections.emptyList();;
+      private void ensureDecimalParametersIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          decimalParameters_ = new java.util.ArrayList<java.lang.Double>(decimalParameters_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDecimalParametersList() {
+        return java.util.Collections.unmodifiableList(decimalParameters_);
+      }
+      public int getDecimalParametersCount() {
+        return decimalParameters_.size();
+      }
+      public double getDecimalParameters(int index) {
+        return decimalParameters_.get(index);
+      }
+      public Builder setDecimalParameters(
+          int index, double value) {
+        ensureDecimalParametersIsMutable();
+        decimalParameters_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addDecimalParameters(double value) {
+        ensureDecimalParametersIsMutable();
+        decimalParameters_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllDecimalParameters(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDecimalParametersIsMutable();
+        super.addAll(values, decimalParameters_);
+        onChanged();
+        return this;
+      }
+      public Builder clearDecimalParameters() {
+        decimalParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      
+      // repeated bool booleanParameters = 7;
+      private java.util.List<java.lang.Boolean> booleanParameters_ = java.util.Collections.emptyList();;
+      private void ensureBooleanParametersIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          booleanParameters_ = new java.util.ArrayList<java.lang.Boolean>(booleanParameters_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+      public java.util.List<java.lang.Boolean>
+          getBooleanParametersList() {
+        return java.util.Collections.unmodifiableList(booleanParameters_);
+      }
+      public int getBooleanParametersCount() {
+        return booleanParameters_.size();
+      }
+      public boolean getBooleanParameters(int index) {
+        return booleanParameters_.get(index);
+      }
+      public Builder setBooleanParameters(
+          int index, boolean value) {
+        ensureBooleanParametersIsMutable();
+        booleanParameters_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addBooleanParameters(boolean value) {
+        ensureBooleanParametersIsMutable();
+        booleanParameters_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllBooleanParameters(
+          java.lang.Iterable<? extends java.lang.Boolean> values) {
+        ensureBooleanParametersIsMutable();
+        super.addAll(values, booleanParameters_);
+        onChanged();
+        return this;
+      }
+      public Builder clearBooleanParameters() {
+        booleanParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      
+      // repeated int32 enumeratedParameters = 8;
+      private java.util.List<java.lang.Integer> enumeratedParameters_ = java.util.Collections.emptyList();;
+      private void ensureEnumeratedParametersIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          enumeratedParameters_ = new java.util.ArrayList<java.lang.Integer>(enumeratedParameters_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+      public java.util.List<java.lang.Integer>
+          getEnumeratedParametersList() {
+        return java.util.Collections.unmodifiableList(enumeratedParameters_);
+      }
+      public int getEnumeratedParametersCount() {
+        return enumeratedParameters_.size();
+      }
+      public int getEnumeratedParameters(int index) {
+        return enumeratedParameters_.get(index);
+      }
+      public Builder setEnumeratedParameters(
+          int index, int value) {
+        ensureEnumeratedParametersIsMutable();
+        enumeratedParameters_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addEnumeratedParameters(int value) {
+        ensureEnumeratedParametersIsMutable();
+        enumeratedParameters_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllEnumeratedParameters(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureEnumeratedParametersIsMutable();
+        super.addAll(values, enumeratedParameters_);
+        onChanged();
+        return this;
+      }
+      public Builder clearEnumeratedParameters() {
+        enumeratedParameters_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
+      
+      // repeated .naothmessages.XABSLActionSparse activeSubActions = 9;
+      private java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> activeSubActions_ =
+        java.util.Collections.emptyList();
+      private void ensureActiveSubActionsIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          activeSubActions_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLActionSparse>(activeSubActions_);
+          bitField0_ |= 0x00000080;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> activeSubActionsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> getActiveSubActionsList() {
+        if (activeSubActionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(activeSubActions_);
+        } else {
+          return activeSubActionsBuilder_.getMessageList();
+        }
+      }
+      public int getActiveSubActionsCount() {
+        if (activeSubActionsBuilder_ == null) {
+          return activeSubActions_.size();
+        } else {
+          return activeSubActionsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse getActiveSubActions(int index) {
+        if (activeSubActionsBuilder_ == null) {
+          return activeSubActions_.get(index);
+        } else {
+          return activeSubActionsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setActiveSubActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeSubActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.set(index, value);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setActiveSubActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeSubActionsBuilder_ == null) {
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addActiveSubActions(de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeSubActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.add(value);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addActiveSubActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeSubActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.add(index, value);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addActiveSubActions(
+          de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeSubActionsBuilder_ == null) {
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.add(builderForValue.build());
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addActiveSubActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeSubActionsBuilder_ == null) {
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllActiveSubActions(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLActionSparse> values) {
+        if (activeSubActionsBuilder_ == null) {
+          ensureActiveSubActionsIsMutable();
+          super.addAll(values, activeSubActions_);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearActiveSubActions() {
+        if (activeSubActionsBuilder_ == null) {
+          activeSubActions_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeActiveSubActions(int index) {
+        if (activeSubActionsBuilder_ == null) {
+          ensureActiveSubActionsIsMutable();
+          activeSubActions_.remove(index);
+          onChanged();
+        } else {
+          activeSubActionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder getActiveSubActionsBuilder(
+          int index) {
+        return getActiveSubActionsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveSubActionsOrBuilder(
+          int index) {
+        if (activeSubActionsBuilder_ == null) {
+          return activeSubActions_.get(index);  } else {
+          return activeSubActionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+           getActiveSubActionsOrBuilderList() {
+        if (activeSubActionsBuilder_ != null) {
+          return activeSubActionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(activeSubActions_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder addActiveSubActionsBuilder() {
+        return getActiveSubActionsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder addActiveSubActionsBuilder(
+          int index) {
+        return getActiveSubActionsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse.Builder> 
+           getActiveSubActionsBuilderList() {
+        return getActiveSubActionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+          getActiveSubActionsFieldBuilder() {
+        if (activeSubActionsBuilder_ == null) {
+          activeSubActionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder>(
+                  activeSubActions_,
+                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  getParentForChildren(),
+                  isClean());
+          activeSubActions_ = null;
+        }
+        return activeSubActionsBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.XABSLActiveOptionSparse)
+    }
+    
+    static {
+      defaultInstance = new XABSLActiveOptionSparse(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.XABSLActiveOptionSparse)
+  }
+  
+  public interface XABSLActionSparseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
+    boolean hasType();
+    de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType getType();
+    
+    // optional .naothmessages.XABSLSymbol symbol = 3;
+    boolean hasSymbol();
+    de.naoth.rc.messages.Messages.XABSLSymbol getSymbol();
+    de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getSymbolOrBuilder();
+    
+    // optional .naothmessages.XABSLActiveOptionSparse option = 4;
+    boolean hasOption();
+    de.naoth.rc.messages.Messages.XABSLActiveOptionSparse getOption();
+    de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder getOptionOrBuilder();
+  }
+  public static final class XABSLActionSparse extends
+      com.google.protobuf.GeneratedMessage
+      implements XABSLActionSparseOrBuilder {
+    // Use XABSLActionSparse.newBuilder() to construct.
+    private XABSLActionSparse(Builder builder) {
+      super(builder);
+    }
+    private XABSLActionSparse(boolean noInit) {}
+    
+    private static final XABSLActionSparse defaultInstance;
+    public static XABSLActionSparse getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public XABSLActionSparse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActionSparse_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActionSparse_fieldAccessorTable;
+    }
+    
+    public enum ActionType
+        implements com.google.protobuf.ProtocolMessageEnum {
+      Option(0, 0),
+      BasicBehavior(1, 1),
+      SymbolAssignement(2, 2),
+      Unknown(3, 3),
+      ;
+      
+      public static final int Option_VALUE = 0;
+      public static final int BasicBehavior_VALUE = 1;
+      public static final int SymbolAssignement_VALUE = 2;
+      public static final int Unknown_VALUE = 3;
+      
+      
+      public final int getNumber() { return value; }
+      
+      public static ActionType valueOf(int value) {
+        switch (value) {
+          case 0: return Option;
+          case 1: return BasicBehavior;
+          case 2: return SymbolAssignement;
+          case 3: return Unknown;
+          default: return null;
+        }
+      }
+      
+      public static com.google.protobuf.Internal.EnumLiteMap<ActionType>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static com.google.protobuf.Internal.EnumLiteMap<ActionType>
+          internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ActionType>() {
+              public ActionType findValueByNumber(int number) {
+                return ActionType.valueOf(number);
+              }
+            };
+      
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(index);
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.XABSLActionSparse.getDescriptor().getEnumTypes().get(0);
+      }
+      
+      private static final ActionType[] VALUES = {
+        Option, BasicBehavior, SymbolAssignement, Unknown, 
+      };
+      
+      public static ActionType valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        return VALUES[desc.getIndex()];
+      }
+      
+      private final int index;
+      private final int value;
+      
+      private ActionType(int index, int value) {
+        this.index = index;
+        this.value = value;
+      }
+      
+      // @@protoc_insertion_point(enum_scope:naothmessages.XABSLActionSparse.ActionType)
+    }
+    
+    private int bitField0_;
+    // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType type_;
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType getType() {
+      return type_;
+    }
+    
+    // optional .naothmessages.XABSLSymbol symbol = 3;
+    public static final int SYMBOL_FIELD_NUMBER = 3;
+    private de.naoth.rc.messages.Messages.XABSLSymbol symbol_;
+    public boolean hasSymbol() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.Messages.XABSLSymbol getSymbol() {
+      return symbol_;
+    }
+    public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getSymbolOrBuilder() {
+      return symbol_;
+    }
+    
+    // optional .naothmessages.XABSLActiveOptionSparse option = 4;
+    public static final int OPTION_FIELD_NUMBER = 4;
+    private de.naoth.rc.messages.Messages.XABSLActiveOptionSparse option_;
+    public boolean hasOption() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse getOption() {
+      return option_;
+    }
+    public de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder getOptionOrBuilder() {
+      return option_;
+    }
+    
+    private void initFields() {
+      type_ = de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType.Unknown;
+      symbol_ = de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance();
+      option_ = de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasSymbol()) {
+        if (!getSymbol().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasOption()) {
+        if (!getOption().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(3, symbol_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(4, option_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, type_.getNumber());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, symbol_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, option_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.XABSLActionSparse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.XABSLActionSparse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActionSparse_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLActionSparse_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.XABSLActionSparse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getSymbolFieldBuilder();
+          getOptionFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        type_ = de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType.Unknown;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (symbolBuilder_ == null) {
+          symbol_ = de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance();
+        } else {
+          symbolBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (optionBuilder_ == null) {
+          option_ = de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance();
+        } else {
+          optionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.XABSLActionSparse.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActionSparse getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActionSparse build() {
+        de.naoth.rc.messages.Messages.XABSLActionSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.XABSLActionSparse buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.XABSLActionSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.XABSLActionSparse buildPartial() {
+        de.naoth.rc.messages.Messages.XABSLActionSparse result = new de.naoth.rc.messages.Messages.XABSLActionSparse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (symbolBuilder_ == null) {
+          result.symbol_ = symbol_;
+        } else {
+          result.symbol_ = symbolBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (optionBuilder_ == null) {
+          result.option_ = option_;
+        } else {
+          result.option_ = optionBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.XABSLActionSparse) {
+          return mergeFrom((de.naoth.rc.messages.Messages.XABSLActionSparse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.XABSLActionSparse other) {
+        if (other == de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance()) return this;
+        if (other.hasType()) {
+          setType(other.getType());
+        }
+        if (other.hasSymbol()) {
+          mergeSymbol(other.getSymbol());
+        }
+        if (other.hasOption()) {
+          mergeOption(other.getOption());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasType()) {
+          
+          return false;
+        }
+        if (hasSymbol()) {
+          if (!getSymbol().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasOption()) {
+          if (!getOption().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType value = de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                type_ = value;
+              }
+              break;
+            }
+            case 26: {
+              de.naoth.rc.messages.Messages.XABSLSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder();
+              if (hasSymbol()) {
+                subBuilder.mergeFrom(getSymbol());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setSymbol(subBuilder.buildPartial());
+              break;
+            }
+            case 34: {
+              de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.newBuilder();
+              if (hasOption()) {
+                subBuilder.mergeFrom(getOption());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOption(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .naothmessages.XABSLActionSparse.ActionType type = 2 [default = Unknown];
+      private de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType type_ = de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType.Unknown;
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType getType() {
+        return type_;
+      }
+      public Builder setType(de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = de.naoth.rc.messages.Messages.XABSLActionSparse.ActionType.Unknown;
+        onChanged();
+        return this;
+      }
+      
+      // optional .naothmessages.XABSLSymbol symbol = 3;
+      private de.naoth.rc.messages.Messages.XABSLSymbol symbol_ = de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> symbolBuilder_;
+      public boolean hasSymbol() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbol getSymbol() {
+        if (symbolBuilder_ == null) {
+          return symbol_;
+        } else {
+          return symbolBuilder_.getMessage();
+        }
+      }
+      public Builder setSymbol(de.naoth.rc.messages.Messages.XABSLSymbol value) {
+        if (symbolBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          symbol_ = value;
+          onChanged();
+        } else {
+          symbolBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder setSymbol(
+          de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
+        if (symbolBuilder_ == null) {
+          symbol_ = builderForValue.build();
+          onChanged();
+        } else {
+          symbolBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeSymbol(de.naoth.rc.messages.Messages.XABSLSymbol value) {
+        if (symbolBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              symbol_ != de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance()) {
+            symbol_ =
+              de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder(symbol_).mergeFrom(value).buildPartial();
+          } else {
+            symbol_ = value;
+          }
+          onChanged();
+        } else {
+          symbolBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearSymbol() {
+        if (symbolBuilder_ == null) {
+          symbol_ = de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance();
+          onChanged();
+        } else {
+          symbolBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbol.Builder getSymbolBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getSymbolFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getSymbolOrBuilder() {
+        if (symbolBuilder_ != null) {
+          return symbolBuilder_.getMessageOrBuilder();
+        } else {
+          return symbol_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
+          getSymbolFieldBuilder() {
+        if (symbolBuilder_ == null) {
+          symbolBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder>(
+                  symbol_,
+                  getParentForChildren(),
+                  isClean());
+          symbol_ = null;
+        }
+        return symbolBuilder_;
+      }
+      
+      // optional .naothmessages.XABSLActiveOptionSparse option = 4;
+      private de.naoth.rc.messages.Messages.XABSLActiveOptionSparse option_ = de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActiveOptionSparse, de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder> optionBuilder_;
+      public boolean hasOption() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse getOption() {
+        if (optionBuilder_ == null) {
+          return option_;
+        } else {
+          return optionBuilder_.getMessage();
+        }
+      }
+      public Builder setOption(de.naoth.rc.messages.Messages.XABSLActiveOptionSparse value) {
+        if (optionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          option_ = value;
+          onChanged();
+        } else {
+          optionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder setOption(
+          de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder builderForValue) {
+        if (optionBuilder_ == null) {
+          option_ = builderForValue.build();
+          onChanged();
+        } else {
+          optionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder mergeOption(de.naoth.rc.messages.Messages.XABSLActiveOptionSparse value) {
+        if (optionBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              option_ != de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance()) {
+            option_ =
+              de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.newBuilder(option_).mergeFrom(value).buildPartial();
+          } else {
+            option_ = value;
+          }
+          onChanged();
+        } else {
+          optionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder clearOption() {
+        if (optionBuilder_ == null) {
+          option_ = de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.getDefaultInstance();
+          onChanged();
+        } else {
+          optionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder getOptionBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getOptionFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder getOptionOrBuilder() {
+        if (optionBuilder_ != null) {
+          return optionBuilder_.getMessageOrBuilder();
+        } else {
+          return option_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActiveOptionSparse, de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder> 
+          getOptionFieldBuilder() {
+        if (optionBuilder_ == null) {
+          optionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.XABSLActiveOptionSparse, de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActiveOptionSparseOrBuilder>(
+                  option_,
+                  getParentForChildren(),
+                  isClean());
+          option_ = null;
+        }
+        return optionBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.XABSLActionSparse)
+    }
+    
+    static {
+      defaultInstance = new XABSLActionSparse(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.XABSLActionSparse)
+  }
+  
+  public interface SymbolValueListOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+    java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> 
+        getDecimalList();
+    de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol getDecimal(int index);
+    int getDecimalCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder> 
+        getDecimalOrBuilderList();
+    de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder getDecimalOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+    java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> 
+        getBooleanList();
+    de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol getBoolean(int index);
+    int getBooleanCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder> 
+        getBooleanOrBuilderList();
+    de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder getBooleanOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+    java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> 
+        getEnumeratedList();
+    de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol getEnumerated(int index);
+    int getEnumeratedCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder> 
+        getEnumeratedOrBuilderList();
+    de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder getEnumeratedOrBuilder(
+        int index);
+  }
+  public static final class SymbolValueList extends
+      com.google.protobuf.GeneratedMessage
+      implements SymbolValueListOrBuilder {
+    // Use SymbolValueList.newBuilder() to construct.
+    private SymbolValueList(Builder builder) {
+      super(builder);
+    }
+    private SymbolValueList(boolean noInit) {}
+    
+    private static final SymbolValueList defaultInstance;
+    public static SymbolValueList getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public SymbolValueList getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_fieldAccessorTable;
+    }
+    
+    public interface DoubleSymbolOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required int32 id = 1 [default = -1];
+      boolean hasId();
+      int getId();
+      
+      // optional string name = 2;
+      boolean hasName();
+      String getName();
+      
+      // optional double value = 3;
+      boolean hasValue();
+      double getValue();
+    }
+    public static final class DoubleSymbol extends
+        com.google.protobuf.GeneratedMessage
+        implements DoubleSymbolOrBuilder {
+      // Use DoubleSymbol.newBuilder() to construct.
+      private DoubleSymbol(Builder builder) {
+        super(builder);
+      }
+      private DoubleSymbol(boolean noInit) {}
+      
+      private static final DoubleSymbol defaultInstance;
+      public static DoubleSymbol getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public DoubleSymbol getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_DoubleSymbol_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_DoubleSymbol_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required int32 id = 1 [default = -1];
+      public static final int ID_FIELD_NUMBER = 1;
+      private int id_;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getId() {
+        return id_;
+      }
+      
+      // optional string name = 2;
+      public static final int NAME_FIELD_NUMBER = 2;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional double value = 3;
+      public static final int VALUE_FIELD_NUMBER = 3;
+      private double value_;
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public double getValue() {
+        return value_;
+      }
+      
+      private void initFields() {
+        id_ = -1;
+        name_ = "";
+        value_ = 0D;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeInt32(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeDouble(3, value_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeDoubleSize(3, value_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_DoubleSymbol_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_DoubleSymbol_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          id_ = -1;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          value_ = 0D;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol build() {
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol buildPartial() {
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol result = new de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.id_ = id_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.value_ = value_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol) {
+            return mergeFrom((de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol other) {
+          if (other == de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.getDefaultInstance()) return this;
+          if (other.hasId()) {
+            setId(other.getId());
+          }
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (other.hasValue()) {
+            setValue(other.getValue());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                bitField0_ |= 0x00000001;
+                id_ = input.readInt32();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                name_ = input.readBytes();
+                break;
+              }
+              case 25: {
+                bitField0_ |= 0x00000004;
+                value_ = input.readDouble();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required int32 id = 1 [default = -1];
+        private int id_ = -1;
+        public boolean hasId() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public int getId() {
+          return id_;
+        }
+        public Builder setId(int value) {
+          bitField0_ |= 0x00000001;
+          id_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          id_ = -1;
+          onChanged();
+          return this;
+        }
+        
+        // optional string name = 2;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+        }
+        
+        // optional double value = 3;
+        private double value_ ;
+        public boolean hasValue() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        public double getValue() {
+          return value_;
+        }
+        public Builder setValue(double value) {
+          bitField0_ |= 0x00000004;
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearValue() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          value_ = 0D;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.SymbolValueList.DoubleSymbol)
+      }
+      
+      static {
+        defaultInstance = new DoubleSymbol(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList.DoubleSymbol)
+    }
+    
+    public interface BooleanSymbolOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required int32 id = 1 [default = -1];
+      boolean hasId();
+      int getId();
+      
+      // optional string name = 2;
+      boolean hasName();
+      String getName();
+      
+      // optional bool value = 3;
+      boolean hasValue();
+      boolean getValue();
+    }
+    public static final class BooleanSymbol extends
+        com.google.protobuf.GeneratedMessage
+        implements BooleanSymbolOrBuilder {
+      // Use BooleanSymbol.newBuilder() to construct.
+      private BooleanSymbol(Builder builder) {
+        super(builder);
+      }
+      private BooleanSymbol(boolean noInit) {}
+      
+      private static final BooleanSymbol defaultInstance;
+      public static BooleanSymbol getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public BooleanSymbol getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_BooleanSymbol_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_BooleanSymbol_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required int32 id = 1 [default = -1];
+      public static final int ID_FIELD_NUMBER = 1;
+      private int id_;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getId() {
+        return id_;
+      }
+      
+      // optional string name = 2;
+      public static final int NAME_FIELD_NUMBER = 2;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional bool value = 3;
+      public static final int VALUE_FIELD_NUMBER = 3;
+      private boolean value_;
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public boolean getValue() {
+        return value_;
+      }
+      
+      private void initFields() {
+        id_ = -1;
+        name_ = "";
+        value_ = false;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeInt32(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeBool(3, value_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(3, value_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_BooleanSymbol_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_BooleanSymbol_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          id_ = -1;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          value_ = false;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol build() {
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol buildPartial() {
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol result = new de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.id_ = id_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.value_ = value_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol) {
+            return mergeFrom((de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol other) {
+          if (other == de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.getDefaultInstance()) return this;
+          if (other.hasId()) {
+            setId(other.getId());
+          }
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (other.hasValue()) {
+            setValue(other.getValue());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                bitField0_ |= 0x00000001;
+                id_ = input.readInt32();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                name_ = input.readBytes();
+                break;
+              }
+              case 24: {
+                bitField0_ |= 0x00000004;
+                value_ = input.readBool();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required int32 id = 1 [default = -1];
+        private int id_ = -1;
+        public boolean hasId() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public int getId() {
+          return id_;
+        }
+        public Builder setId(int value) {
+          bitField0_ |= 0x00000001;
+          id_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          id_ = -1;
+          onChanged();
+          return this;
+        }
+        
+        // optional string name = 2;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+        }
+        
+        // optional bool value = 3;
+        private boolean value_ ;
+        public boolean hasValue() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        public boolean getValue() {
+          return value_;
+        }
+        public Builder setValue(boolean value) {
+          bitField0_ |= 0x00000004;
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearValue() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          value_ = false;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.SymbolValueList.BooleanSymbol)
+      }
+      
+      static {
+        defaultInstance = new BooleanSymbol(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList.BooleanSymbol)
+    }
+    
+    public interface EnumSymbolOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required int32 id = 1 [default = -1];
+      boolean hasId();
+      int getId();
+      
+      // optional string name = 2;
+      boolean hasName();
+      String getName();
+      
+      // optional int32 value = 13;
+      boolean hasValue();
+      int getValue();
+      
+      // optional int32 typeId = 14;
+      boolean hasTypeId();
+      int getTypeId();
+    }
+    public static final class EnumSymbol extends
+        com.google.protobuf.GeneratedMessage
+        implements EnumSymbolOrBuilder {
+      // Use EnumSymbol.newBuilder() to construct.
+      private EnumSymbol(Builder builder) {
+        super(builder);
+      }
+      private EnumSymbol(boolean noInit) {}
+      
+      private static final EnumSymbol defaultInstance;
+      public static EnumSymbol getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public EnumSymbol getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required int32 id = 1 [default = -1];
+      public static final int ID_FIELD_NUMBER = 1;
+      private int id_;
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getId() {
+        return id_;
+      }
+      
+      // optional string name = 2;
+      public static final int NAME_FIELD_NUMBER = 2;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // optional int32 value = 13;
+      public static final int VALUE_FIELD_NUMBER = 13;
+      private int value_;
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getValue() {
+        return value_;
+      }
+      
+      // optional int32 typeId = 14;
+      public static final int TYPEID_FIELD_NUMBER = 14;
+      private int typeId_;
+      public boolean hasTypeId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getTypeId() {
+        return typeId_;
+      }
+      
+      private void initFields() {
+        id_ = -1;
+        name_ = "";
+        value_ = 0;
+        typeId_ = 0;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeInt32(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeInt32(13, value_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeInt32(14, typeId_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(1, id_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(13, value_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(14, typeId_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          id_ = -1;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          value_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          typeId_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000008);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol build() {
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol buildPartial() {
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol result = new de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.id_ = id_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.value_ = value_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
+          }
+          result.typeId_ = typeId_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol) {
+            return mergeFrom((de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol other) {
+          if (other == de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.getDefaultInstance()) return this;
+          if (other.hasId()) {
+            setId(other.getId());
+          }
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (other.hasValue()) {
+            setValue(other.getValue());
+          }
+          if (other.hasTypeId()) {
+            setTypeId(other.getTypeId());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasId()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                bitField0_ |= 0x00000001;
+                id_ = input.readInt32();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                name_ = input.readBytes();
+                break;
+              }
+              case 104: {
+                bitField0_ |= 0x00000004;
+                value_ = input.readInt32();
+                break;
+              }
+              case 112: {
+                bitField0_ |= 0x00000008;
+                typeId_ = input.readInt32();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required int32 id = 1 [default = -1];
+        private int id_ = -1;
+        public boolean hasId() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public int getId() {
+          return id_;
+        }
+        public Builder setId(int value) {
+          bitField0_ |= 0x00000001;
+          id_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          id_ = -1;
+          onChanged();
+          return this;
+        }
+        
+        // optional string name = 2;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          name_ = value;
+          onChanged();
+        }
+        
+        // optional int32 value = 13;
+        private int value_ ;
+        public boolean hasValue() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        public int getValue() {
+          return value_;
+        }
+        public Builder setValue(int value) {
+          bitField0_ |= 0x00000004;
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearValue() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          value_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // optional int32 typeId = 14;
+        private int typeId_ ;
+        public boolean hasTypeId() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        public int getTypeId() {
+          return typeId_;
+        }
+        public Builder setTypeId(int value) {
+          bitField0_ |= 0x00000008;
+          typeId_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearTypeId() {
+          bitField0_ = (bitField0_ & ~0x00000008);
+          typeId_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.SymbolValueList.EnumSymbol)
+      }
+      
+      static {
+        defaultInstance = new EnumSymbol(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList.EnumSymbol)
+    }
+    
+    // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+    public static final int DECIMAL_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> decimal_;
+    public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> getDecimalList() {
+      return decimal_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder> 
+        getDecimalOrBuilderList() {
+      return decimal_;
+    }
+    public int getDecimalCount() {
+      return decimal_.size();
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol getDecimal(int index) {
+      return decimal_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder getDecimalOrBuilder(
+        int index) {
+      return decimal_.get(index);
+    }
+    
+    // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+    public static final int BOOLEAN_FIELD_NUMBER = 2;
+    private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> boolean_;
+    public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> getBooleanList() {
+      return boolean_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder> 
+        getBooleanOrBuilderList() {
+      return boolean_;
+    }
+    public int getBooleanCount() {
+      return boolean_.size();
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol getBoolean(int index) {
+      return boolean_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder getBooleanOrBuilder(
+        int index) {
+      return boolean_.get(index);
+    }
+    
+    // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+    public static final int ENUMERATED_FIELD_NUMBER = 3;
+    private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> enumerated_;
+    public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> getEnumeratedList() {
+      return enumerated_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder> 
+        getEnumeratedOrBuilderList() {
+      return enumerated_;
+    }
+    public int getEnumeratedCount() {
+      return enumerated_.size();
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol getEnumerated(int index) {
+      return enumerated_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder getEnumeratedOrBuilder(
+        int index) {
+      return enumerated_.get(index);
+    }
+    
+    private void initFields() {
+      decimal_ = java.util.Collections.emptyList();
+      boolean_ = java.util.Collections.emptyList();
+      enumerated_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getDecimalCount(); i++) {
+        if (!getDecimal(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getBooleanCount(); i++) {
+        if (!getBoolean(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getEnumeratedCount(); i++) {
+        if (!getEnumerated(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < decimal_.size(); i++) {
+        output.writeMessage(1, decimal_.get(i));
+      }
+      for (int i = 0; i < boolean_.size(); i++) {
+        output.writeMessage(2, boolean_.get(i));
+      }
+      for (int i = 0; i < enumerated_.size(); i++) {
+        output.writeMessage(3, enumerated_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (int i = 0; i < decimal_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, decimal_.get(i));
+      }
+      for (int i = 0; i < boolean_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, boolean_.get(i));
+      }
+      for (int i = 0; i < enumerated_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, enumerated_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.SymbolValueList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.SymbolValueList prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.SymbolValueListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_SymbolValueList_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.SymbolValueList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getDecimalFieldBuilder();
+          getBooleanFieldBuilder();
+          getEnumeratedFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (decimalBuilder_ == null) {
+          decimal_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          decimalBuilder_.clear();
+        }
+        if (booleanBuilder_ == null) {
+          boolean_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          booleanBuilder_.clear();
+        }
+        if (enumeratedBuilder_ == null) {
+          enumerated_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          enumeratedBuilder_.clear();
+        }
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.SymbolValueList.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.SymbolValueList getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.SymbolValueList build() {
+        de.naoth.rc.messages.Messages.SymbolValueList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.SymbolValueList buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.SymbolValueList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.SymbolValueList buildPartial() {
+        de.naoth.rc.messages.Messages.SymbolValueList result = new de.naoth.rc.messages.Messages.SymbolValueList(this);
+        int from_bitField0_ = bitField0_;
+        if (decimalBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            decimal_ = java.util.Collections.unmodifiableList(decimal_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.decimal_ = decimal_;
+        } else {
+          result.decimal_ = decimalBuilder_.build();
+        }
+        if (booleanBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            boolean_ = java.util.Collections.unmodifiableList(boolean_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.boolean_ = boolean_;
+        } else {
+          result.boolean_ = booleanBuilder_.build();
+        }
+        if (enumeratedBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            enumerated_ = java.util.Collections.unmodifiableList(enumerated_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.enumerated_ = enumerated_;
+        } else {
+          result.enumerated_ = enumeratedBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.SymbolValueList) {
+          return mergeFrom((de.naoth.rc.messages.Messages.SymbolValueList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.SymbolValueList other) {
+        if (other == de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) return this;
+        if (decimalBuilder_ == null) {
+          if (!other.decimal_.isEmpty()) {
+            if (decimal_.isEmpty()) {
+              decimal_ = other.decimal_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureDecimalIsMutable();
+              decimal_.addAll(other.decimal_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.decimal_.isEmpty()) {
+            if (decimalBuilder_.isEmpty()) {
+              decimalBuilder_.dispose();
+              decimalBuilder_ = null;
+              decimal_ = other.decimal_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              decimalBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getDecimalFieldBuilder() : null;
+            } else {
+              decimalBuilder_.addAllMessages(other.decimal_);
+            }
+          }
+        }
+        if (booleanBuilder_ == null) {
+          if (!other.boolean_.isEmpty()) {
+            if (boolean_.isEmpty()) {
+              boolean_ = other.boolean_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureBooleanIsMutable();
+              boolean_.addAll(other.boolean_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.boolean_.isEmpty()) {
+            if (booleanBuilder_.isEmpty()) {
+              booleanBuilder_.dispose();
+              booleanBuilder_ = null;
+              boolean_ = other.boolean_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              booleanBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getBooleanFieldBuilder() : null;
+            } else {
+              booleanBuilder_.addAllMessages(other.boolean_);
+            }
+          }
+        }
+        if (enumeratedBuilder_ == null) {
+          if (!other.enumerated_.isEmpty()) {
+            if (enumerated_.isEmpty()) {
+              enumerated_ = other.enumerated_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureEnumeratedIsMutable();
+              enumerated_.addAll(other.enumerated_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.enumerated_.isEmpty()) {
+            if (enumeratedBuilder_.isEmpty()) {
+              enumeratedBuilder_.dispose();
+              enumeratedBuilder_ = null;
+              enumerated_ = other.enumerated_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              enumeratedBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEnumeratedFieldBuilder() : null;
+            } else {
+              enumeratedBuilder_.addAllMessages(other.enumerated_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getDecimalCount(); i++) {
+          if (!getDecimal(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getBooleanCount(); i++) {
+          if (!getBoolean(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getEnumeratedCount(); i++) {
+          if (!getEnumerated(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addDecimal(subBuilder.buildPartial());
+              break;
+            }
+            case 18: {
+              de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addBoolean(subBuilder.buildPartial());
+              break;
+            }
+            case 26: {
+              de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addEnumerated(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // repeated .naothmessages.SymbolValueList.DoubleSymbol decimal = 1;
+      private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> decimal_ =
+        java.util.Collections.emptyList();
+      private void ensureDecimalIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          decimal_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol>(decimal_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder> decimalBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> getDecimalList() {
+        if (decimalBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(decimal_);
+        } else {
+          return decimalBuilder_.getMessageList();
+        }
+      }
+      public int getDecimalCount() {
+        if (decimalBuilder_ == null) {
+          return decimal_.size();
+        } else {
+          return decimalBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol getDecimal(int index) {
+        if (decimalBuilder_ == null) {
+          return decimal_.get(index);
+        } else {
+          return decimalBuilder_.getMessage(index);
+        }
+      }
+      public Builder setDecimal(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol value) {
+        if (decimalBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDecimalIsMutable();
+          decimal_.set(index, value);
+          onChanged();
+        } else {
+          decimalBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setDecimal(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder builderForValue) {
+        if (decimalBuilder_ == null) {
+          ensureDecimalIsMutable();
+          decimal_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          decimalBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addDecimal(de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol value) {
+        if (decimalBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDecimalIsMutable();
+          decimal_.add(value);
+          onChanged();
+        } else {
+          decimalBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addDecimal(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol value) {
+        if (decimalBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDecimalIsMutable();
+          decimal_.add(index, value);
+          onChanged();
+        } else {
+          decimalBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addDecimal(
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder builderForValue) {
+        if (decimalBuilder_ == null) {
+          ensureDecimalIsMutable();
+          decimal_.add(builderForValue.build());
+          onChanged();
+        } else {
+          decimalBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addDecimal(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder builderForValue) {
+        if (decimalBuilder_ == null) {
+          ensureDecimalIsMutable();
+          decimal_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          decimalBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllDecimal(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol> values) {
+        if (decimalBuilder_ == null) {
+          ensureDecimalIsMutable();
+          super.addAll(values, decimal_);
+          onChanged();
+        } else {
+          decimalBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearDecimal() {
+        if (decimalBuilder_ == null) {
+          decimal_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          decimalBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeDecimal(int index) {
+        if (decimalBuilder_ == null) {
+          ensureDecimalIsMutable();
+          decimal_.remove(index);
+          onChanged();
+        } else {
+          decimalBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder getDecimalBuilder(
+          int index) {
+        return getDecimalFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder getDecimalOrBuilder(
+          int index) {
+        if (decimalBuilder_ == null) {
+          return decimal_.get(index);  } else {
+          return decimalBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder> 
+           getDecimalOrBuilderList() {
+        if (decimalBuilder_ != null) {
+          return decimalBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(decimal_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder addDecimalBuilder() {
+        return getDecimalFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder addDecimalBuilder(
+          int index) {
+        return getDecimalFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder> 
+           getDecimalBuilderList() {
+        return getDecimalFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder> 
+          getDecimalFieldBuilder() {
+        if (decimalBuilder_ == null) {
+          decimalBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbolOrBuilder>(
+                  decimal_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          decimal_ = null;
+        }
+        return decimalBuilder_;
+      }
+      
+      // repeated .naothmessages.SymbolValueList.BooleanSymbol boolean = 2;
+      private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> boolean_ =
+        java.util.Collections.emptyList();
+      private void ensureBooleanIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          boolean_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol>(boolean_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder> booleanBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> getBooleanList() {
+        if (booleanBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(boolean_);
+        } else {
+          return booleanBuilder_.getMessageList();
+        }
+      }
+      public int getBooleanCount() {
+        if (booleanBuilder_ == null) {
+          return boolean_.size();
+        } else {
+          return booleanBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol getBoolean(int index) {
+        if (booleanBuilder_ == null) {
+          return boolean_.get(index);
+        } else {
+          return booleanBuilder_.getMessage(index);
+        }
+      }
+      public Builder setBoolean(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol value) {
+        if (booleanBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBooleanIsMutable();
+          boolean_.set(index, value);
+          onChanged();
+        } else {
+          booleanBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setBoolean(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder builderForValue) {
+        if (booleanBuilder_ == null) {
+          ensureBooleanIsMutable();
+          boolean_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          booleanBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addBoolean(de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol value) {
+        if (booleanBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBooleanIsMutable();
+          boolean_.add(value);
+          onChanged();
+        } else {
+          booleanBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addBoolean(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol value) {
+        if (booleanBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBooleanIsMutable();
+          boolean_.add(index, value);
+          onChanged();
+        } else {
+          booleanBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addBoolean(
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder builderForValue) {
+        if (booleanBuilder_ == null) {
+          ensureBooleanIsMutable();
+          boolean_.add(builderForValue.build());
+          onChanged();
+        } else {
+          booleanBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addBoolean(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder builderForValue) {
+        if (booleanBuilder_ == null) {
+          ensureBooleanIsMutable();
+          boolean_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          booleanBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllBoolean(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol> values) {
+        if (booleanBuilder_ == null) {
+          ensureBooleanIsMutable();
+          super.addAll(values, boolean_);
+          onChanged();
+        } else {
+          booleanBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearBoolean() {
+        if (booleanBuilder_ == null) {
+          boolean_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          booleanBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeBoolean(int index) {
+        if (booleanBuilder_ == null) {
+          ensureBooleanIsMutable();
+          boolean_.remove(index);
+          onChanged();
+        } else {
+          booleanBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder getBooleanBuilder(
+          int index) {
+        return getBooleanFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder getBooleanOrBuilder(
+          int index) {
+        if (booleanBuilder_ == null) {
+          return boolean_.get(index);  } else {
+          return booleanBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder> 
+           getBooleanOrBuilderList() {
+        if (booleanBuilder_ != null) {
+          return booleanBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(boolean_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder addBooleanBuilder() {
+        return getBooleanFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder addBooleanBuilder(
+          int index) {
+        return getBooleanFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder> 
+           getBooleanBuilderList() {
+        return getBooleanFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder> 
+          getBooleanFieldBuilder() {
+        if (booleanBuilder_ == null) {
+          booleanBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbolOrBuilder>(
+                  boolean_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          boolean_ = null;
+        }
+        return booleanBuilder_;
+      }
+      
+      // repeated .naothmessages.SymbolValueList.EnumSymbol enumerated = 3;
+      private java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> enumerated_ =
+        java.util.Collections.emptyList();
+      private void ensureEnumeratedIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          enumerated_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol>(enumerated_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder> enumeratedBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> getEnumeratedList() {
+        if (enumeratedBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(enumerated_);
+        } else {
+          return enumeratedBuilder_.getMessageList();
+        }
+      }
+      public int getEnumeratedCount() {
+        if (enumeratedBuilder_ == null) {
+          return enumerated_.size();
+        } else {
+          return enumeratedBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol getEnumerated(int index) {
+        if (enumeratedBuilder_ == null) {
+          return enumerated_.get(index);
+        } else {
+          return enumeratedBuilder_.getMessage(index);
+        }
+      }
+      public Builder setEnumerated(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol value) {
+        if (enumeratedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumeratedIsMutable();
+          enumerated_.set(index, value);
+          onChanged();
+        } else {
+          enumeratedBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setEnumerated(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder builderForValue) {
+        if (enumeratedBuilder_ == null) {
+          ensureEnumeratedIsMutable();
+          enumerated_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          enumeratedBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEnumerated(de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol value) {
+        if (enumeratedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumeratedIsMutable();
+          enumerated_.add(value);
+          onChanged();
+        } else {
+          enumeratedBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addEnumerated(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol value) {
+        if (enumeratedBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumeratedIsMutable();
+          enumerated_.add(index, value);
+          onChanged();
+        } else {
+          enumeratedBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addEnumerated(
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder builderForValue) {
+        if (enumeratedBuilder_ == null) {
+          ensureEnumeratedIsMutable();
+          enumerated_.add(builderForValue.build());
+          onChanged();
+        } else {
+          enumeratedBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEnumerated(
+          int index, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder builderForValue) {
+        if (enumeratedBuilder_ == null) {
+          ensureEnumeratedIsMutable();
+          enumerated_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          enumeratedBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllEnumerated(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol> values) {
+        if (enumeratedBuilder_ == null) {
+          ensureEnumeratedIsMutable();
+          super.addAll(values, enumerated_);
+          onChanged();
+        } else {
+          enumeratedBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearEnumerated() {
+        if (enumeratedBuilder_ == null) {
+          enumerated_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          enumeratedBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeEnumerated(int index) {
+        if (enumeratedBuilder_ == null) {
+          ensureEnumeratedIsMutable();
+          enumerated_.remove(index);
+          onChanged();
+        } else {
+          enumeratedBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder getEnumeratedBuilder(
+          int index) {
+        return getEnumeratedFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder getEnumeratedOrBuilder(
+          int index) {
+        if (enumeratedBuilder_ == null) {
+          return enumerated_.get(index);  } else {
+          return enumeratedBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder> 
+           getEnumeratedOrBuilderList() {
+        if (enumeratedBuilder_ != null) {
+          return enumeratedBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(enumerated_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder addEnumeratedBuilder() {
+        return getEnumeratedFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder addEnumeratedBuilder(
+          int index) {
+        return getEnumeratedFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder> 
+           getEnumeratedBuilderList() {
+        return getEnumeratedFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder> 
+          getEnumeratedFieldBuilder() {
+        if (enumeratedBuilder_ == null) {
+          enumeratedBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder, de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbolOrBuilder>(
+                  enumerated_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          enumerated_ = null;
+        }
+        return enumeratedBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.SymbolValueList)
+    }
+    
+    static {
+      defaultInstance = new SymbolValueList(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.SymbolValueList)
+  }
+  
+  public interface BehaviorStateSparseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional string agent = 1;
+    boolean hasAgent();
+    String getAgent();
+    
+    // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+    java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> 
+        getActiveRootActionsList();
+    de.naoth.rc.messages.Messages.XABSLActionSparse getActiveRootActions(int index);
+    int getActiveRootActionsCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+        getActiveRootActionsOrBuilderList();
+    de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveRootActionsOrBuilder(
+        int index);
+    
+    // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+    boolean hasInputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder();
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+    boolean hasOutputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder();
+    
+    // optional uint32 frameNumber = 5;
+    boolean hasFrameNumber();
+    int getFrameNumber();
+    
+    // optional string errorMessage = 6;
+    boolean hasErrorMessage();
+    String getErrorMessage();
+  }
+  public static final class BehaviorStateSparse extends
+      com.google.protobuf.GeneratedMessage
+      implements BehaviorStateSparseOrBuilder {
+    // Use BehaviorStateSparse.newBuilder() to construct.
+    private BehaviorStateSparse(Builder builder) {
+      super(builder);
+    }
+    private BehaviorStateSparse(boolean noInit) {}
+    
+    private static final BehaviorStateSparse defaultInstance;
+    public static BehaviorStateSparse getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public BehaviorStateSparse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // optional string agent = 1;
+    public static final int AGENT_FIELD_NUMBER = 1;
+    private java.lang.Object agent_;
+    public boolean hasAgent() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getAgent() {
+      java.lang.Object ref = agent_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          agent_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getAgentBytes() {
+      java.lang.Object ref = agent_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        agent_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+    public static final int ACTIVEROOTACTIONS_FIELD_NUMBER = 2;
+    private java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> activeRootActions_;
+    public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> getActiveRootActionsList() {
+      return activeRootActions_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+        getActiveRootActionsOrBuilderList() {
+      return activeRootActions_;
+    }
+    public int getActiveRootActionsCount() {
+      return activeRootActions_.size();
+    }
+    public de.naoth.rc.messages.Messages.XABSLActionSparse getActiveRootActions(int index) {
+      return activeRootActions_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveRootActionsOrBuilder(
+        int index) {
+      return activeRootActions_.get(index);
+    }
+    
+    // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+    public static final int INPUTSYMBOLLIST_FIELD_NUMBER = 10;
+    private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_;
+    public boolean hasInputSymbolList() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList() {
+      return inputSymbolList_;
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder() {
+      return inputSymbolList_;
+    }
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+    public static final int OUTPUTSYMBOLLIST_FIELD_NUMBER = 11;
+    private de.naoth.rc.messages.Messages.SymbolValueList outputSymbolList_;
+    public boolean hasOutputSymbolList() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList() {
+      return outputSymbolList_;
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder() {
+      return outputSymbolList_;
+    }
+    
+    // optional uint32 frameNumber = 5;
+    public static final int FRAMENUMBER_FIELD_NUMBER = 5;
+    private int frameNumber_;
+    public boolean hasFrameNumber() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getFrameNumber() {
+      return frameNumber_;
+    }
+    
+    // optional string errorMessage = 6;
+    public static final int ERRORMESSAGE_FIELD_NUMBER = 6;
+    private java.lang.Object errorMessage_;
+    public boolean hasErrorMessage() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getErrorMessage() {
+      java.lang.Object ref = errorMessage_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          errorMessage_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getErrorMessageBytes() {
+      java.lang.Object ref = errorMessage_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        errorMessage_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    private void initFields() {
+      agent_ = "";
+      activeRootActions_ = java.util.Collections.emptyList();
+      inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      frameNumber_ = 0;
+      errorMessage_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getActiveRootActionsCount(); i++) {
+        if (!getActiveRootActions(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasInputSymbolList()) {
+        if (!getInputSymbolList().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasOutputSymbolList()) {
+        if (!getOutputSymbolList().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getAgentBytes());
+      }
+      for (int i = 0; i < activeRootActions_.size(); i++) {
+        output.writeMessage(2, activeRootActions_.get(i));
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt32(5, frameNumber_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(6, getErrorMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(10, inputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(11, outputSymbolList_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getAgentBytes());
+      }
+      for (int i = 0; i < activeRootActions_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, activeRootActions_.get(i));
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, frameNumber_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getErrorMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, inputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, outputSymbolList_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateSparse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateSparse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.BehaviorStateSparseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.BehaviorStateSparse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getActiveRootActionsFieldBuilder();
+          getInputSymbolListFieldBuilder();
+          getOutputSymbolListFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        agent_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (activeRootActionsBuilder_ == null) {
+          activeRootActions_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          activeRootActionsBuilder_.clear();
+        }
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+        } else {
+          inputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+        } else {
+          outputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        frameNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        errorMessage_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateSparse.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateSparse.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse build() {
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.BehaviorStateSparse buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateSparse buildPartial() {
+        de.naoth.rc.messages.Messages.BehaviorStateSparse result = new de.naoth.rc.messages.Messages.BehaviorStateSparse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.agent_ = agent_;
+        if (activeRootActionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            activeRootActions_ = java.util.Collections.unmodifiableList(activeRootActions_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.activeRootActions_ = activeRootActions_;
+        } else {
+          result.activeRootActions_ = activeRootActionsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (inputSymbolListBuilder_ == null) {
+          result.inputSymbolList_ = inputSymbolList_;
+        } else {
+          result.inputSymbolList_ = inputSymbolListBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (outputSymbolListBuilder_ == null) {
+          result.outputSymbolList_ = outputSymbolList_;
+        } else {
+          result.outputSymbolList_ = outputSymbolListBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.frameNumber_ = frameNumber_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.errorMessage_ = errorMessage_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateSparse) {
+          return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateSparse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateSparse other) {
+        if (other == de.naoth.rc.messages.Messages.BehaviorStateSparse.getDefaultInstance()) return this;
+        if (other.hasAgent()) {
+          setAgent(other.getAgent());
+        }
+        if (activeRootActionsBuilder_ == null) {
+          if (!other.activeRootActions_.isEmpty()) {
+            if (activeRootActions_.isEmpty()) {
+              activeRootActions_ = other.activeRootActions_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureActiveRootActionsIsMutable();
+              activeRootActions_.addAll(other.activeRootActions_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.activeRootActions_.isEmpty()) {
+            if (activeRootActionsBuilder_.isEmpty()) {
+              activeRootActionsBuilder_.dispose();
+              activeRootActionsBuilder_ = null;
+              activeRootActions_ = other.activeRootActions_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              activeRootActionsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getActiveRootActionsFieldBuilder() : null;
+            } else {
+              activeRootActionsBuilder_.addAllMessages(other.activeRootActions_);
+            }
+          }
+        }
+        if (other.hasInputSymbolList()) {
+          mergeInputSymbolList(other.getInputSymbolList());
+        }
+        if (other.hasOutputSymbolList()) {
+          mergeOutputSymbolList(other.getOutputSymbolList());
+        }
+        if (other.hasFrameNumber()) {
+          setFrameNumber(other.getFrameNumber());
+        }
+        if (other.hasErrorMessage()) {
+          setErrorMessage(other.getErrorMessage());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getActiveRootActionsCount(); i++) {
+          if (!getActiveRootActions(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasInputSymbolList()) {
+          if (!getInputSymbolList().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasOutputSymbolList()) {
+          if (!getOutputSymbolList().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              agent_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              de.naoth.rc.messages.Messages.XABSLActionSparse.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLActionSparse.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addActiveRootActions(subBuilder.buildPartial());
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              frameNumber_ = input.readUInt32();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              errorMessage_ = input.readBytes();
+              break;
+            }
+            case 82: {
+              de.naoth.rc.messages.Messages.SymbolValueList.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.newBuilder();
+              if (hasInputSymbolList()) {
+                subBuilder.mergeFrom(getInputSymbolList());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setInputSymbolList(subBuilder.buildPartial());
+              break;
+            }
+            case 90: {
+              de.naoth.rc.messages.Messages.SymbolValueList.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.newBuilder();
+              if (hasOutputSymbolList()) {
+                subBuilder.mergeFrom(getOutputSymbolList());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOutputSymbolList(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional string agent = 1;
+      private java.lang.Object agent_ = "";
+      public boolean hasAgent() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getAgent() {
+        java.lang.Object ref = agent_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          agent_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setAgent(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        agent_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearAgent() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        agent_ = getDefaultInstance().getAgent();
+        onChanged();
+        return this;
+      }
+      void setAgent(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        agent_ = value;
+        onChanged();
+      }
+      
+      // repeated .naothmessages.XABSLActionSparse activeRootActions = 2;
+      private java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> activeRootActions_ =
+        java.util.Collections.emptyList();
+      private void ensureActiveRootActionsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          activeRootActions_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLActionSparse>(activeRootActions_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> activeRootActionsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse> getActiveRootActionsList() {
+        if (activeRootActionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(activeRootActions_);
+        } else {
+          return activeRootActionsBuilder_.getMessageList();
+        }
+      }
+      public int getActiveRootActionsCount() {
+        if (activeRootActionsBuilder_ == null) {
+          return activeRootActions_.size();
+        } else {
+          return activeRootActionsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse getActiveRootActions(int index) {
+        if (activeRootActionsBuilder_ == null) {
+          return activeRootActions_.get(index);
+        } else {
+          return activeRootActionsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setActiveRootActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeRootActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.set(index, value);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setActiveRootActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeRootActionsBuilder_ == null) {
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addActiveRootActions(de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeRootActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.add(value);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addActiveRootActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse value) {
+        if (activeRootActionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.add(index, value);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addActiveRootActions(
+          de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeRootActionsBuilder_ == null) {
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.add(builderForValue.build());
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addActiveRootActions(
+          int index, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder builderForValue) {
+        if (activeRootActionsBuilder_ == null) {
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllActiveRootActions(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLActionSparse> values) {
+        if (activeRootActionsBuilder_ == null) {
+          ensureActiveRootActionsIsMutable();
+          super.addAll(values, activeRootActions_);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearActiveRootActions() {
+        if (activeRootActionsBuilder_ == null) {
+          activeRootActions_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeActiveRootActions(int index) {
+        if (activeRootActionsBuilder_ == null) {
+          ensureActiveRootActionsIsMutable();
+          activeRootActions_.remove(index);
+          onChanged();
+        } else {
+          activeRootActionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder getActiveRootActionsBuilder(
+          int index) {
+        return getActiveRootActionsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder getActiveRootActionsOrBuilder(
+          int index) {
+        if (activeRootActionsBuilder_ == null) {
+          return activeRootActions_.get(index);  } else {
+          return activeRootActionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+           getActiveRootActionsOrBuilderList() {
+        if (activeRootActionsBuilder_ != null) {
+          return activeRootActionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(activeRootActions_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder addActiveRootActionsBuilder() {
+        return getActiveRootActionsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.XABSLActionSparse.Builder addActiveRootActionsBuilder(
+          int index) {
+        return getActiveRootActionsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.XABSLActionSparse.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.XABSLActionSparse.Builder> 
+           getActiveRootActionsBuilderList() {
+        return getActiveRootActionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder> 
+          getActiveRootActionsFieldBuilder() {
+        if (activeRootActionsBuilder_ == null) {
+          activeRootActionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.XABSLActionSparse, de.naoth.rc.messages.Messages.XABSLActionSparse.Builder, de.naoth.rc.messages.Messages.XABSLActionSparseOrBuilder>(
+                  activeRootActions_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          activeRootActions_ = null;
+        }
+        return activeRootActionsBuilder_;
+      }
+      
+      // optional .naothmessages.SymbolValueList inputSymbolList = 10;
+      private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> inputSymbolListBuilder_;
+      public boolean hasInputSymbolList() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList() {
+        if (inputSymbolListBuilder_ == null) {
+          return inputSymbolList_;
+        } else {
+          return inputSymbolListBuilder_.getMessage();
+        }
+      }
+      public Builder setInputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (inputSymbolListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          inputSymbolList_ = value;
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder setInputSymbolList(
+          de.naoth.rc.messages.Messages.SymbolValueList.Builder builderForValue) {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = builderForValue.build();
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder mergeInputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (inputSymbolListBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              inputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
+            inputSymbolList_ =
+              de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(inputSymbolList_).mergeFrom(value).buildPartial();
+          } else {
+            inputSymbolList_ = value;
+          }
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder clearInputSymbolList() {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.Builder getInputSymbolListBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getInputSymbolListFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder() {
+        if (inputSymbolListBuilder_ != null) {
+          return inputSymbolListBuilder_.getMessageOrBuilder();
+        } else {
+          return inputSymbolList_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> 
+          getInputSymbolListFieldBuilder() {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolListBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder>(
+                  inputSymbolList_,
+                  getParentForChildren(),
+                  isClean());
+          inputSymbolList_ = null;
+        }
+        return inputSymbolListBuilder_;
+      }
+      
+      // optional .naothmessages.SymbolValueList outputSymbolList = 11;
+      private de.naoth.rc.messages.Messages.SymbolValueList outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> outputSymbolListBuilder_;
+      public boolean hasOutputSymbolList() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList() {
+        if (outputSymbolListBuilder_ == null) {
+          return outputSymbolList_;
+        } else {
+          return outputSymbolListBuilder_.getMessage();
+        }
+      }
+      public Builder setOutputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (outputSymbolListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          outputSymbolList_ = value;
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder setOutputSymbolList(
+          de.naoth.rc.messages.Messages.SymbolValueList.Builder builderForValue) {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = builderForValue.build();
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder mergeOutputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (outputSymbolListBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              outputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
+            outputSymbolList_ =
+              de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(outputSymbolList_).mergeFrom(value).buildPartial();
+          } else {
+            outputSymbolList_ = value;
+          }
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder clearOutputSymbolList() {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.Builder getOutputSymbolListBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getOutputSymbolListFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder() {
+        if (outputSymbolListBuilder_ != null) {
+          return outputSymbolListBuilder_.getMessageOrBuilder();
+        } else {
+          return outputSymbolList_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> 
+          getOutputSymbolListFieldBuilder() {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolListBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder>(
+                  outputSymbolList_,
+                  getParentForChildren(),
+                  isClean());
+          outputSymbolList_ = null;
+        }
+        return outputSymbolListBuilder_;
+      }
+      
+      // optional uint32 frameNumber = 5;
+      private int frameNumber_ ;
+      public boolean hasFrameNumber() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getFrameNumber() {
+        return frameNumber_;
+      }
+      public Builder setFrameNumber(int value) {
+        bitField0_ |= 0x00000010;
+        frameNumber_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFrameNumber() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        frameNumber_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string errorMessage = 6;
+      private java.lang.Object errorMessage_ = "";
+      public boolean hasErrorMessage() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public String getErrorMessage() {
+        java.lang.Object ref = errorMessage_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          errorMessage_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setErrorMessage(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        errorMessage_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearErrorMessage() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        errorMessage_ = getDefaultInstance().getErrorMessage();
+        onChanged();
+        return this;
+      }
+      void setErrorMessage(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        errorMessage_ = value;
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateSparse)
+    }
+    
+    static {
+      defaultInstance = new BehaviorStateSparse(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateSparse)
+  }
+  
+  public interface BehaviorStateCompleteOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> 
+        getEnumerationsList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index);
+    int getEnumerationsCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
+        getEnumerationsOrBuilderList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> 
+        getOptionsList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index);
+    int getOptionsCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
+        getOptionsOrBuilderList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+    java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> 
+        getAgentsList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index);
+    int getAgentsCount();
+    java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
+        getAgentsOrBuilderList();
+    de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
+        int index);
+    
+    // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+    boolean hasInputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder();
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+    boolean hasOutputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList();
+    de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder();
+    
+    // optional uint32 frameNumber = 15;
+    boolean hasFrameNumber();
+    int getFrameNumber();
+  }
+  public static final class BehaviorStateComplete extends
+      com.google.protobuf.GeneratedMessage
+      implements BehaviorStateCompleteOrBuilder {
+    // Use BehaviorStateComplete.newBuilder() to construct.
+    private BehaviorStateComplete(Builder builder) {
+      super(builder);
+    }
+    private BehaviorStateComplete(boolean noInit) {}
+    
+    private static final BehaviorStateComplete defaultInstance;
+    public static BehaviorStateComplete getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public BehaviorStateComplete getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
+    }
+    
+    public interface EnumTypeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string name = 1;
+      boolean hasName();
+      String getName();
+      
+      // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+      java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> 
+          getElementsList();
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index);
+      int getElementsCount();
+      java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
+          getElementsOrBuilderList();
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
+          int index);
+    }
+    public static final class EnumType extends
+        com.google.protobuf.GeneratedMessage
+        implements EnumTypeOrBuilder {
+      // Use EnumType.newBuilder() to construct.
+      private EnumType(Builder builder) {
+        super(builder);
+      }
+      private EnumType(boolean noInit) {}
+      
+      private static final EnumType defaultInstance;
+      public static EnumType getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public EnumType getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
+      }
+      
+      public interface ElementOrBuilder
+          extends com.google.protobuf.MessageOrBuilder {
+        
+        // required int32 value = 1;
+        boolean hasValue();
+        int getValue();
+        
+        // required string name = 2;
+        boolean hasName();
+        String getName();
+      }
+      public static final class Element extends
+          com.google.protobuf.GeneratedMessage
+          implements ElementOrBuilder {
+        // Use Element.newBuilder() to construct.
+        private Element(Builder builder) {
+          super(builder);
+        }
+        private Element(boolean noInit) {}
+        
+        private static final Element defaultInstance;
+        public static Element getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public Element getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
+        }
+        
+        private int bitField0_;
+        // required int32 value = 1;
+        public static final int VALUE_FIELD_NUMBER = 1;
+        private int value_;
+        public boolean hasValue() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public int getValue() {
+          return value_;
+        }
+        
+        // required string name = 2;
+        public static final int NAME_FIELD_NUMBER = 2;
+        private java.lang.Object name_;
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            return (String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            String s = bs.toStringUtf8();
+            if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+              name_ = s;
+            }
+            return s;
+          }
+        }
+        private com.google.protobuf.ByteString getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        
+        private void initFields() {
+          value_ = 0;
+          name_ = "";
+        }
+        private byte memoizedIsInitialized = -1;
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized != -1) return isInitialized == 1;
+          
+          if (!hasValue()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+          if (!hasName()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+          memoizedIsInitialized = 1;
+          return true;
+        }
+        
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          getSerializedSize();
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            output.writeInt32(1, value_);
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            output.writeBytes(2, getNameBytes());
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeInt32Size(1, value_);
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(2, getNameBytes());
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        private static final long serialVersionUID = 0L;
+        @java.lang.Override
+        protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
+          return super.writeReplace();
+        }
+        
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return Builder.create(); }
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element prototype) {
+          return newBuilder().mergeFrom(prototype);
+        }
+        public Builder toBuilder() { return newBuilder(this); }
+        
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder>
+           implements de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
+          }
+          
+          protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
+          }
+          
+          // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+          
+          private Builder(BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            }
+          }
+          private static Builder create() {
+            return new Builder();
+          }
+          
+          public Builder clear() {
+            super.clear();
+            value_ = 0;
+            bitField0_ = (bitField0_ & ~0x00000001);
+            name_ = "";
+            bitField0_ = (bitField0_ & ~0x00000002);
+            return this;
+          }
+          
+          public Builder clone() {
+            return create().mergeFrom(buildPartial());
+          }
+          
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDescriptor();
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getDefaultInstanceForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance();
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element build() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+          
+          private de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return result;
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element buildPartial() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element(this);
+            int from_bitField0_ = bitField0_;
+            int to_bitField0_ = 0;
+            if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+              to_bitField0_ |= 0x00000001;
+            }
+            result.value_ = value_;
+            if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+              to_bitField0_ |= 0x00000002;
+            }
+            result.name_ = name_;
+            result.bitField0_ = to_bitField0_;
+            onBuilt();
+            return result;
+          }
+          
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element) {
+              return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element other) {
+            if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance()) return this;
+            if (other.hasValue()) {
+              setValue(other.getValue());
+            }
+            if (other.hasName()) {
+              setName(other.getName());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          public final boolean isInitialized() {
+            if (!hasValue()) {
+              
+              return false;
+            }
+            if (!hasName()) {
+              
+              return false;
+            }
+            return true;
+          }
+          
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    onChanged();
+                    return this;
+                  }
+                  break;
+                }
+                case 8: {
+                  bitField0_ |= 0x00000001;
+                  value_ = input.readInt32();
+                  break;
+                }
+                case 18: {
+                  bitField0_ |= 0x00000002;
+                  name_ = input.readBytes();
+                  break;
+                }
+              }
+            }
+          }
+          
+          private int bitField0_;
+          
+          // required int32 value = 1;
+          private int value_ ;
+          public boolean hasValue() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
+          }
+          public int getValue() {
+            return value_;
+          }
+          public Builder setValue(int value) {
+            bitField0_ |= 0x00000001;
+            value_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearValue() {
+            bitField0_ = (bitField0_ & ~0x00000001);
+            value_ = 0;
+            onChanged();
+            return this;
+          }
+          
+          // required string name = 2;
+          private java.lang.Object name_ = "";
+          public boolean hasName() {
+            return ((bitField0_ & 0x00000002) == 0x00000002);
+          }
+          public String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof String)) {
+              String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (String) ref;
+            }
+          }
+          public Builder setName(String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearName() {
+            bitField0_ = (bitField0_ & ~0x00000002);
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          void setName(com.google.protobuf.ByteString value) {
+            bitField0_ |= 0x00000002;
+            name_ = value;
+            onChanged();
+          }
+          
+          // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.EnumType.Element)
+        }
+        
+        static {
+          defaultInstance = new Element(true);
+          defaultInstance.initFields();
+        }
+        
+        // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType.Element)
+      }
+      
+      private int bitField0_;
+      // required string name = 1;
+      public static final int NAME_FIELD_NUMBER = 1;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+      public static final int ELEMENTS_FIELD_NUMBER = 2;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> elements_;
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> getElementsList() {
+        return elements_;
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
+          getElementsOrBuilderList() {
+        return elements_;
+      }
+      public int getElementsCount() {
+        return elements_.size();
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index) {
+        return elements_.get(index);
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
+          int index) {
+        return elements_.get(index);
+      }
+      
+      private void initFields() {
+        name_ = "";
+        elements_ = java.util.Collections.emptyList();
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        for (int i = 0; i < getElementsCount(); i++) {
+          if (!getElements(i).isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getNameBytes());
+        }
+        for (int i = 0; i < elements_.size(); i++) {
+          output.writeMessage(2, elements_.get(i));
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getNameBytes());
+        }
+        for (int i = 0; i < elements_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, elements_.get(i));
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getElementsFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (elementsBuilder_ == null) {
+            elements_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            elementsBuilder_.clear();
+          }
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.name_ = name_;
+          if (elementsBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+              elements_ = java.util.Collections.unmodifiableList(elements_);
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.elements_ = elements_;
+          } else {
+            result.elements_ = elementsBuilder_.build();
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance()) return this;
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (elementsBuilder_ == null) {
+            if (!other.elements_.isEmpty()) {
+              if (elements_.isEmpty()) {
+                elements_ = other.elements_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureElementsIsMutable();
+                elements_.addAll(other.elements_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.elements_.isEmpty()) {
+              if (elementsBuilder_.isEmpty()) {
+                elementsBuilder_.dispose();
+                elementsBuilder_ = null;
+                elements_ = other.elements_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                elementsBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getElementsFieldBuilder() : null;
+              } else {
+                elementsBuilder_.addAllMessages(other.elements_);
+              }
+            }
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            
+            return false;
+          }
+          for (int i = 0; i < getElementsCount(); i++) {
+            if (!getElements(i).isInitialized()) {
+              
+              return false;
+            }
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                name_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.newBuilder();
+                input.readMessage(subBuilder, extensionRegistry);
+                addElements(subBuilder.buildPartial());
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string name = 1;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+        }
+        
+        // repeated .naothmessages.BehaviorStateComplete.EnumType.Element elements = 2;
+        private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> elements_ =
+          java.util.Collections.emptyList();
+        private void ensureElementsIsMutable() {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+            elements_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element>(elements_);
+            bitField0_ |= 0x00000002;
+           }
+        }
+        
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> elementsBuilder_;
+        
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> getElementsList() {
+          if (elementsBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(elements_);
+          } else {
+            return elementsBuilder_.getMessageList();
+          }
+        }
+        public int getElementsCount() {
+          if (elementsBuilder_ == null) {
+            return elements_.size();
+          } else {
+            return elementsBuilder_.getCount();
+          }
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element getElements(int index) {
+          if (elementsBuilder_ == null) {
+            return elements_.get(index);
+          } else {
+            return elementsBuilder_.getMessage(index);
+          }
+        }
+        public Builder setElements(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
+          if (elementsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureElementsIsMutable();
+            elements_.set(index, value);
+            onChanged();
+          } else {
+            elementsBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        public Builder setElements(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
+          if (elementsBuilder_ == null) {
+            ensureElementsIsMutable();
+            elements_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            elementsBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addElements(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
+          if (elementsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureElementsIsMutable();
+            elements_.add(value);
+            onChanged();
+          } else {
+            elementsBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        public Builder addElements(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element value) {
+          if (elementsBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureElementsIsMutable();
+            elements_.add(index, value);
+            onChanged();
+          } else {
+            elementsBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        public Builder addElements(
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
+          if (elementsBuilder_ == null) {
+            ensureElementsIsMutable();
+            elements_.add(builderForValue.build());
+            onChanged();
+          } else {
+            elementsBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addElements(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder builderForValue) {
+          if (elementsBuilder_ == null) {
+            ensureElementsIsMutable();
+            elements_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            elementsBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addAllElements(
+            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element> values) {
+          if (elementsBuilder_ == null) {
+            ensureElementsIsMutable();
+            super.addAll(values, elements_);
+            onChanged();
+          } else {
+            elementsBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        public Builder clearElements() {
+          if (elementsBuilder_ == null) {
+            elements_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+          } else {
+            elementsBuilder_.clear();
+          }
+          return this;
+        }
+        public Builder removeElements(int index) {
+          if (elementsBuilder_ == null) {
+            ensureElementsIsMutable();
+            elements_.remove(index);
+            onChanged();
+          } else {
+            elementsBuilder_.remove(index);
+          }
+          return this;
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder getElementsBuilder(
+            int index) {
+          return getElementsFieldBuilder().getBuilder(index);
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder getElementsOrBuilder(
+            int index) {
+          if (elementsBuilder_ == null) {
+            return elements_.get(index);  } else {
+            return elementsBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
+             getElementsOrBuilderList() {
+          if (elementsBuilder_ != null) {
+            return elementsBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(elements_);
+          }
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder addElementsBuilder() {
+          return getElementsFieldBuilder().addBuilder(
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance());
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder addElementsBuilder(
+            int index) {
+          return getElementsFieldBuilder().addBuilder(
+              index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.getDefaultInstance());
+        }
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder> 
+             getElementsBuilderList() {
+          return getElementsFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder> 
+            getElementsFieldBuilder() {
+          if (elementsBuilder_ == null) {
+            elementsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.ElementOrBuilder>(
+                    elements_,
+                    ((bitField0_ & 0x00000002) == 0x00000002),
+                    getParentForChildren(),
+                    isClean());
+            elements_ = null;
+          }
+          return elementsBuilder_;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.EnumType)
+      }
+      
+      static {
+        defaultInstance = new EnumType(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.EnumType)
+    }
+    
+    public interface OptionOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string name = 1;
+      boolean hasName();
+      String getName();
+      
+      // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+      java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> 
+          getStatesList();
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index);
+      int getStatesCount();
+      java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
+          getStatesOrBuilderList();
+      de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
+          int index);
+      
+      // repeated .naothmessages.XABSLSymbol parameters = 2;
+      java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> 
+          getParametersList();
+      de.naoth.rc.messages.Messages.XABSLSymbol getParameters(int index);
+      int getParametersCount();
+      java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
+          getParametersOrBuilderList();
+      de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getParametersOrBuilder(
+          int index);
+    }
+    public static final class Option extends
+        com.google.protobuf.GeneratedMessage
+        implements OptionOrBuilder {
+      // Use Option.newBuilder() to construct.
+      private Option(Builder builder) {
+        super(builder);
+      }
+      private Option(boolean noInit) {}
+      
+      private static final Option defaultInstance;
+      public static Option getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public Option getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
+      }
+      
+      public interface StateOrBuilder
+          extends com.google.protobuf.MessageOrBuilder {
+        
+        // required string name = 1;
+        boolean hasName();
+        String getName();
+        
+        // optional bool target = 2;
+        boolean hasTarget();
+        boolean getTarget();
+      }
+      public static final class State extends
+          com.google.protobuf.GeneratedMessage
+          implements StateOrBuilder {
+        // Use State.newBuilder() to construct.
+        private State(Builder builder) {
+          super(builder);
+        }
+        private State(boolean noInit) {}
+        
+        private static final State defaultInstance;
+        public static State getDefaultInstance() {
+          return defaultInstance;
+        }
+        
+        public State getDefaultInstanceForType() {
+          return defaultInstance;
+        }
+        
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
+        }
+        
+        private int bitField0_;
+        // required string name = 1;
+        public static final int NAME_FIELD_NUMBER = 1;
+        private java.lang.Object name_;
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            return (String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            String s = bs.toStringUtf8();
+            if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+              name_ = s;
+            }
+            return s;
+          }
+        }
+        private com.google.protobuf.ByteString getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        
+        // optional bool target = 2;
+        public static final int TARGET_FIELD_NUMBER = 2;
+        private boolean target_;
+        public boolean hasTarget() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public boolean getTarget() {
+          return target_;
+        }
+        
+        private void initFields() {
+          name_ = "";
+          target_ = false;
+        }
+        private byte memoizedIsInitialized = -1;
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized != -1) return isInitialized == 1;
+          
+          if (!hasName()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+          memoizedIsInitialized = 1;
+          return true;
+        }
+        
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          getSerializedSize();
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            output.writeBytes(1, getNameBytes());
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            output.writeBool(2, target_);
+          }
+          getUnknownFields().writeTo(output);
+        }
+        
+        private int memoizedSerializedSize = -1;
+        public int getSerializedSize() {
+          int size = memoizedSerializedSize;
+          if (size != -1) return size;
+        
+          size = 0;
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBytesSize(1, getNameBytes());
+          }
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(2, target_);
+          }
+          size += getUnknownFields().getSerializedSize();
+          memoizedSerializedSize = size;
+          return size;
+        }
+        
+        private static final long serialVersionUID = 0L;
+        @java.lang.Override
+        protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
+          return super.writeReplace();
+        }
+        
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return newBuilder().mergeFrom(data, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          Builder builder = newBuilder();
+          if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+            return builder.buildParsed();
+          } else {
+            return null;
+          }
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input).buildParsed();
+        }
+        public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return newBuilder().mergeFrom(input, extensionRegistry)
+                   .buildParsed();
+        }
+        
+        public static Builder newBuilder() { return Builder.create(); }
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State prototype) {
+          return newBuilder().mergeFrom(prototype);
+        }
+        public Builder toBuilder() { return newBuilder(this); }
+        
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessage.Builder<Builder>
+           implements de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
+          }
+          
+          protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
+          }
+          
+          // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+          
+          private Builder(BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            }
+          }
+          private static Builder create() {
+            return new Builder();
+          }
+          
+          public Builder clear() {
+            super.clear();
+            name_ = "";
+            bitField0_ = (bitField0_ & ~0x00000001);
+            target_ = false;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            return this;
+          }
+          
+          public Builder clone() {
+            return create().mergeFrom(buildPartial());
+          }
+          
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDescriptor();
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getDefaultInstanceForType() {
+            return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance();
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State build() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+          
+          private de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State buildParsed()
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(
+                result).asInvalidProtocolBufferException();
+            }
+            return result;
+          }
+          
+          public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State buildPartial() {
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State(this);
+            int from_bitField0_ = bitField0_;
+            int to_bitField0_ = 0;
+            if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+              to_bitField0_ |= 0x00000001;
+            }
+            result.name_ = name_;
+            if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+              to_bitField0_ |= 0x00000002;
+            }
+            result.target_ = target_;
+            result.bitField0_ = to_bitField0_;
+            onBuilt();
+            return result;
+          }
+          
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State) {
+              return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+          
+          public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State other) {
+            if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance()) return this;
+            if (other.hasName()) {
+              setName(other.getName());
+            }
+            if (other.hasTarget()) {
+              setTarget(other.getTarget());
+            }
+            this.mergeUnknownFields(other.getUnknownFields());
+            return this;
+          }
+          
+          public final boolean isInitialized() {
+            if (!hasName()) {
+              
+              return false;
+            }
+            return true;
+          }
+          
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder(
+                this.getUnknownFields());
+            while (true) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                default: {
+                  if (!parseUnknownField(input, unknownFields,
+                                         extensionRegistry, tag)) {
+                    this.setUnknownFields(unknownFields.build());
+                    onChanged();
+                    return this;
+                  }
+                  break;
+                }
+                case 10: {
+                  bitField0_ |= 0x00000001;
+                  name_ = input.readBytes();
+                  break;
+                }
+                case 16: {
+                  bitField0_ |= 0x00000002;
+                  target_ = input.readBool();
+                  break;
+                }
+              }
+            }
+          }
+          
+          private int bitField0_;
+          
+          // required string name = 1;
+          private java.lang.Object name_ = "";
+          public boolean hasName() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
+          }
+          public String getName() {
+            java.lang.Object ref = name_;
+            if (!(ref instanceof String)) {
+              String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+              name_ = s;
+              return s;
+            } else {
+              return (String) ref;
+            }
+          }
+          public Builder setName(String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+            name_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearName() {
+            bitField0_ = (bitField0_ & ~0x00000001);
+            name_ = getDefaultInstance().getName();
+            onChanged();
+            return this;
+          }
+          void setName(com.google.protobuf.ByteString value) {
+            bitField0_ |= 0x00000001;
+            name_ = value;
+            onChanged();
+          }
+          
+          // optional bool target = 2;
+          private boolean target_ ;
+          public boolean hasTarget() {
+            return ((bitField0_ & 0x00000002) == 0x00000002);
+          }
+          public boolean getTarget() {
+            return target_;
+          }
+          public Builder setTarget(boolean value) {
+            bitField0_ |= 0x00000002;
+            target_ = value;
+            onChanged();
+            return this;
+          }
+          public Builder clearTarget() {
+            bitField0_ = (bitField0_ & ~0x00000002);
+            target_ = false;
+            onChanged();
+            return this;
+          }
+          
+          // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Option.State)
+        }
+        
+        static {
+          defaultInstance = new State(true);
+          defaultInstance.initFields();
+        }
+        
+        // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option.State)
+      }
+      
+      private int bitField0_;
+      // required string name = 1;
+      public static final int NAME_FIELD_NUMBER = 1;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+      public static final int STATES_FIELD_NUMBER = 3;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> states_;
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> getStatesList() {
+        return states_;
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
+          getStatesOrBuilderList() {
+        return states_;
+      }
+      public int getStatesCount() {
+        return states_.size();
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index) {
+        return states_.get(index);
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
+          int index) {
+        return states_.get(index);
+      }
+      
+      // repeated .naothmessages.XABSLSymbol parameters = 2;
+      public static final int PARAMETERS_FIELD_NUMBER = 2;
+      private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> parameters_;
+      public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getParametersList() {
+        return parameters_;
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
+          getParametersOrBuilderList() {
+        return parameters_;
+      }
+      public int getParametersCount() {
+        return parameters_.size();
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbol getParameters(int index) {
+        return parameters_.get(index);
+      }
+      public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getParametersOrBuilder(
+          int index) {
+        return parameters_.get(index);
+      }
+      
+      private void initFields() {
+        name_ = "";
+        states_ = java.util.Collections.emptyList();
+        parameters_ = java.util.Collections.emptyList();
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        for (int i = 0; i < getStatesCount(); i++) {
+          if (!getStates(i).isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        for (int i = 0; i < getParametersCount(); i++) {
+          if (!getParameters(i).isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getNameBytes());
+        }
+        for (int i = 0; i < parameters_.size(); i++) {
+          output.writeMessage(2, parameters_.get(i));
+        }
+        for (int i = 0; i < states_.size(); i++) {
+          output.writeMessage(3, states_.get(i));
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getNameBytes());
+        }
+        for (int i = 0; i < parameters_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, parameters_.get(i));
+        }
+        for (int i = 0; i < states_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, states_.get(i));
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Option parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+            getStatesFieldBuilder();
+            getParametersFieldBuilder();
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (statesBuilder_ == null) {
+            states_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            statesBuilder_.clear();
+          }
+          if (parametersBuilder_ == null) {
+            parameters_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            parametersBuilder_.clear();
+          }
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.Option buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Option(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.name_ = name_;
+          if (statesBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+              states_ = java.util.Collections.unmodifiableList(states_);
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.states_ = states_;
+          } else {
+            result.states_ = statesBuilder_.build();
+          }
+          if (parametersBuilder_ == null) {
+            if (((bitField0_ & 0x00000004) == 0x00000004)) {
+              parameters_ = java.util.Collections.unmodifiableList(parameters_);
+              bitField0_ = (bitField0_ & ~0x00000004);
+            }
+            result.parameters_ = parameters_;
+          } else {
+            result.parameters_ = parametersBuilder_.build();
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Option) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Option)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance()) return this;
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (statesBuilder_ == null) {
+            if (!other.states_.isEmpty()) {
+              if (states_.isEmpty()) {
+                states_ = other.states_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureStatesIsMutable();
+                states_.addAll(other.states_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.states_.isEmpty()) {
+              if (statesBuilder_.isEmpty()) {
+                statesBuilder_.dispose();
+                statesBuilder_ = null;
+                states_ = other.states_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                statesBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getStatesFieldBuilder() : null;
+              } else {
+                statesBuilder_.addAllMessages(other.states_);
+              }
+            }
+          }
+          if (parametersBuilder_ == null) {
+            if (!other.parameters_.isEmpty()) {
+              if (parameters_.isEmpty()) {
+                parameters_ = other.parameters_;
+                bitField0_ = (bitField0_ & ~0x00000004);
+              } else {
+                ensureParametersIsMutable();
+                parameters_.addAll(other.parameters_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.parameters_.isEmpty()) {
+              if (parametersBuilder_.isEmpty()) {
+                parametersBuilder_.dispose();
+                parametersBuilder_ = null;
+                parameters_ = other.parameters_;
+                bitField0_ = (bitField0_ & ~0x00000004);
+                parametersBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getParametersFieldBuilder() : null;
+              } else {
+                parametersBuilder_.addAllMessages(other.parameters_);
+              }
+            }
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            
+            return false;
+          }
+          for (int i = 0; i < getStatesCount(); i++) {
+            if (!getStates(i).isInitialized()) {
+              
+              return false;
+            }
+          }
+          for (int i = 0; i < getParametersCount(); i++) {
+            if (!getParameters(i).isInitialized()) {
+              
+              return false;
+            }
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                name_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                de.naoth.rc.messages.Messages.XABSLSymbol.Builder subBuilder = de.naoth.rc.messages.Messages.XABSLSymbol.newBuilder();
+                input.readMessage(subBuilder, extensionRegistry);
+                addParameters(subBuilder.buildPartial());
+                break;
+              }
+              case 26: {
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.newBuilder();
+                input.readMessage(subBuilder, extensionRegistry);
+                addStates(subBuilder.buildPartial());
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string name = 1;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+        }
+        
+        // repeated .naothmessages.BehaviorStateComplete.Option.State states = 3;
+        private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> states_ =
+          java.util.Collections.emptyList();
+        private void ensureStatesIsMutable() {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+            states_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State>(states_);
+            bitField0_ |= 0x00000002;
+           }
+        }
+        
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> statesBuilder_;
+        
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> getStatesList() {
+          if (statesBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(states_);
+          } else {
+            return statesBuilder_.getMessageList();
+          }
+        }
+        public int getStatesCount() {
+          if (statesBuilder_ == null) {
+            return states_.size();
+          } else {
+            return statesBuilder_.getCount();
+          }
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State getStates(int index) {
+          if (statesBuilder_ == null) {
+            return states_.get(index);
+          } else {
+            return statesBuilder_.getMessage(index);
+          }
+        }
+        public Builder setStates(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
+          if (statesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureStatesIsMutable();
+            states_.set(index, value);
+            onChanged();
+          } else {
+            statesBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        public Builder setStates(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
+          if (statesBuilder_ == null) {
+            ensureStatesIsMutable();
+            states_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            statesBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addStates(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
+          if (statesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureStatesIsMutable();
+            states_.add(value);
+            onChanged();
+          } else {
+            statesBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        public Builder addStates(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State value) {
+          if (statesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureStatesIsMutable();
+            states_.add(index, value);
+            onChanged();
+          } else {
+            statesBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        public Builder addStates(
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
+          if (statesBuilder_ == null) {
+            ensureStatesIsMutable();
+            states_.add(builderForValue.build());
+            onChanged();
+          } else {
+            statesBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addStates(
+            int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder builderForValue) {
+          if (statesBuilder_ == null) {
+            ensureStatesIsMutable();
+            states_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            statesBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addAllStates(
+            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State> values) {
+          if (statesBuilder_ == null) {
+            ensureStatesIsMutable();
+            super.addAll(values, states_);
+            onChanged();
+          } else {
+            statesBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        public Builder clearStates() {
+          if (statesBuilder_ == null) {
+            states_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+          } else {
+            statesBuilder_.clear();
+          }
+          return this;
+        }
+        public Builder removeStates(int index) {
+          if (statesBuilder_ == null) {
+            ensureStatesIsMutable();
+            states_.remove(index);
+            onChanged();
+          } else {
+            statesBuilder_.remove(index);
+          }
+          return this;
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder getStatesBuilder(
+            int index) {
+          return getStatesFieldBuilder().getBuilder(index);
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder getStatesOrBuilder(
+            int index) {
+          if (statesBuilder_ == null) {
+            return states_.get(index);  } else {
+            return statesBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
+             getStatesOrBuilderList() {
+          if (statesBuilder_ != null) {
+            return statesBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(states_);
+          }
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder addStatesBuilder() {
+          return getStatesFieldBuilder().addBuilder(
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance());
+        }
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder addStatesBuilder(
+            int index) {
+          return getStatesFieldBuilder().addBuilder(
+              index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.getDefaultInstance());
+        }
+        public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder> 
+             getStatesBuilderList() {
+          return getStatesFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder> 
+            getStatesFieldBuilder() {
+          if (statesBuilder_ == null) {
+            statesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.StateOrBuilder>(
+                    states_,
+                    ((bitField0_ & 0x00000002) == 0x00000002),
+                    getParentForChildren(),
+                    isClean());
+            states_ = null;
+          }
+          return statesBuilder_;
+        }
+        
+        // repeated .naothmessages.XABSLSymbol parameters = 2;
+        private java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> parameters_ =
+          java.util.Collections.emptyList();
+        private void ensureParametersIsMutable() {
+          if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+            parameters_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.XABSLSymbol>(parameters_);
+            bitField0_ |= 0x00000004;
+           }
+        }
+        
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> parametersBuilder_;
+        
+        public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol> getParametersList() {
+          if (parametersBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(parameters_);
+          } else {
+            return parametersBuilder_.getMessageList();
+          }
+        }
+        public int getParametersCount() {
+          if (parametersBuilder_ == null) {
+            return parameters_.size();
+          } else {
+            return parametersBuilder_.getCount();
+          }
+        }
+        public de.naoth.rc.messages.Messages.XABSLSymbol getParameters(int index) {
+          if (parametersBuilder_ == null) {
+            return parameters_.get(index);
+          } else {
+            return parametersBuilder_.getMessage(index);
+          }
+        }
+        public Builder setParameters(
+            int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
+          if (parametersBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParametersIsMutable();
+            parameters_.set(index, value);
+            onChanged();
+          } else {
+            parametersBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        public Builder setParameters(
+            int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
+          if (parametersBuilder_ == null) {
+            ensureParametersIsMutable();
+            parameters_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            parametersBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addParameters(de.naoth.rc.messages.Messages.XABSLSymbol value) {
+          if (parametersBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParametersIsMutable();
+            parameters_.add(value);
+            onChanged();
+          } else {
+            parametersBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        public Builder addParameters(
+            int index, de.naoth.rc.messages.Messages.XABSLSymbol value) {
+          if (parametersBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureParametersIsMutable();
+            parameters_.add(index, value);
+            onChanged();
+          } else {
+            parametersBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        public Builder addParameters(
+            de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
+          if (parametersBuilder_ == null) {
+            ensureParametersIsMutable();
+            parameters_.add(builderForValue.build());
+            onChanged();
+          } else {
+            parametersBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addParameters(
+            int index, de.naoth.rc.messages.Messages.XABSLSymbol.Builder builderForValue) {
+          if (parametersBuilder_ == null) {
+            ensureParametersIsMutable();
+            parameters_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            parametersBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        public Builder addAllParameters(
+            java.lang.Iterable<? extends de.naoth.rc.messages.Messages.XABSLSymbol> values) {
+          if (parametersBuilder_ == null) {
+            ensureParametersIsMutable();
+            super.addAll(values, parameters_);
+            onChanged();
+          } else {
+            parametersBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        public Builder clearParameters() {
+          if (parametersBuilder_ == null) {
+            parameters_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000004);
+            onChanged();
+          } else {
+            parametersBuilder_.clear();
+          }
+          return this;
+        }
+        public Builder removeParameters(int index) {
+          if (parametersBuilder_ == null) {
+            ensureParametersIsMutable();
+            parameters_.remove(index);
+            onChanged();
+          } else {
+            parametersBuilder_.remove(index);
+          }
+          return this;
+        }
+        public de.naoth.rc.messages.Messages.XABSLSymbol.Builder getParametersBuilder(
+            int index) {
+          return getParametersFieldBuilder().getBuilder(index);
+        }
+        public de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder getParametersOrBuilder(
+            int index) {
+          if (parametersBuilder_ == null) {
+            return parameters_.get(index);  } else {
+            return parametersBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        public java.util.List<? extends de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
+             getParametersOrBuilderList() {
+          if (parametersBuilder_ != null) {
+            return parametersBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(parameters_);
+          }
+        }
+        public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addParametersBuilder() {
+          return getParametersFieldBuilder().addBuilder(
+              de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
+        }
+        public de.naoth.rc.messages.Messages.XABSLSymbol.Builder addParametersBuilder(
+            int index) {
+          return getParametersFieldBuilder().addBuilder(
+              index, de.naoth.rc.messages.Messages.XABSLSymbol.getDefaultInstance());
+        }
+        public java.util.List<de.naoth.rc.messages.Messages.XABSLSymbol.Builder> 
+             getParametersBuilderList() {
+          return getParametersFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder> 
+            getParametersFieldBuilder() {
+          if (parametersBuilder_ == null) {
+            parametersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                de.naoth.rc.messages.Messages.XABSLSymbol, de.naoth.rc.messages.Messages.XABSLSymbol.Builder, de.naoth.rc.messages.Messages.XABSLSymbolOrBuilder>(
+                    parameters_,
+                    ((bitField0_ & 0x00000004) == 0x00000004),
+                    getParentForChildren(),
+                    isClean());
+            parameters_ = null;
+          }
+          return parametersBuilder_;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Option)
+      }
+      
+      static {
+        defaultInstance = new Option(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Option)
+    }
+    
+    public interface AgentOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string name = 1;
+      boolean hasName();
+      String getName();
+      
+      // required string rootOption = 2;
+      boolean hasRootOption();
+      String getRootOption();
+    }
+    public static final class Agent extends
+        com.google.protobuf.GeneratedMessage
+        implements AgentOrBuilder {
+      // Use Agent.newBuilder() to construct.
+      private Agent(Builder builder) {
+        super(builder);
+      }
+      private Agent(boolean noInit) {}
+      
+      private static final Agent defaultInstance;
+      public static Agent getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public Agent getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required string name = 1;
+      public static final int NAME_FIELD_NUMBER = 1;
+      private java.lang.Object name_;
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // required string rootOption = 2;
+      public static final int ROOTOPTION_FIELD_NUMBER = 2;
+      private java.lang.Object rootOption_;
+      public boolean hasRootOption() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getRootOption() {
+        java.lang.Object ref = rootOption_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            rootOption_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getRootOptionBytes() {
+        java.lang.Object ref = rootOption_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          rootOption_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      private void initFields() {
+        name_ = "";
+        rootOption_ = "";
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasRootOption()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getRootOptionBytes());
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getRootOptionBytes());
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
+        }
+        
+        // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          rootOption_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDescriptor();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getDefaultInstanceForType() {
+          return de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance();
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent build() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent buildPartial() {
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent result = new de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.rootOption_ = rootOption_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent) {
+            return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent other) {
+          if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance()) return this;
+          if (other.hasName()) {
+            setName(other.getName());
+          }
+          if (other.hasRootOption()) {
+            setRootOption(other.getRootOption());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            
+            return false;
+          }
+          if (!hasRootOption()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                name_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                rootOption_ = input.readBytes();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string name = 1;
+        private java.lang.Object name_ = "";
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            name_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        void setName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+        }
+        
+        // required string rootOption = 2;
+        private java.lang.Object rootOption_ = "";
+        public boolean hasRootOption() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public String getRootOption() {
+          java.lang.Object ref = rootOption_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            rootOption_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setRootOption(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          rootOption_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearRootOption() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          rootOption_ = getDefaultInstance().getRootOption();
+          onChanged();
+          return this;
+        }
+        void setRootOption(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000002;
+          rootOption_ = value;
+          onChanged();
+        }
+        
+        // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete.Agent)
+      }
+      
+      static {
+        defaultInstance = new Agent(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete.Agent)
+    }
+    
+    private int bitField0_;
+    // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+    public static final int ENUMERATIONS_FIELD_NUMBER = 10;
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> enumerations_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> getEnumerationsList() {
+      return enumerations_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
+        getEnumerationsOrBuilderList() {
+      return enumerations_;
+    }
+    public int getEnumerationsCount() {
+      return enumerations_.size();
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index) {
+      return enumerations_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
+        int index) {
+      return enumerations_.get(index);
+    }
+    
+    // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+    public static final int OPTIONS_FIELD_NUMBER = 11;
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> options_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> getOptionsList() {
+      return options_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
+        getOptionsOrBuilderList() {
+      return options_;
+    }
+    public int getOptionsCount() {
+      return options_.size();
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index) {
+      return options_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
+        int index) {
+      return options_.get(index);
+    }
+    
+    // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+    public static final int AGENTS_FIELD_NUMBER = 12;
+    private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> agents_;
+    public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> getAgentsList() {
+      return agents_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
+        getAgentsOrBuilderList() {
+      return agents_;
+    }
+    public int getAgentsCount() {
+      return agents_.size();
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index) {
+      return agents_.get(index);
+    }
+    public de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
+        int index) {
+      return agents_.get(index);
+    }
+    
+    // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+    public static final int INPUTSYMBOLLIST_FIELD_NUMBER = 13;
+    private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_;
+    public boolean hasInputSymbolList() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList() {
+      return inputSymbolList_;
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder() {
+      return inputSymbolList_;
+    }
+    
+    // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+    public static final int OUTPUTSYMBOLLIST_FIELD_NUMBER = 14;
+    private de.naoth.rc.messages.Messages.SymbolValueList outputSymbolList_;
+    public boolean hasOutputSymbolList() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList() {
+      return outputSymbolList_;
+    }
+    public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder() {
+      return outputSymbolList_;
+    }
+    
+    // optional uint32 frameNumber = 15;
+    public static final int FRAMENUMBER_FIELD_NUMBER = 15;
+    private int frameNumber_;
+    public boolean hasFrameNumber() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getFrameNumber() {
+      return frameNumber_;
+    }
+    
+    private void initFields() {
+      enumerations_ = java.util.Collections.emptyList();
+      options_ = java.util.Collections.emptyList();
+      agents_ = java.util.Collections.emptyList();
+      inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      frameNumber_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getEnumerationsCount(); i++) {
+        if (!getEnumerations(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getOptionsCount(); i++) {
+        if (!getOptions(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getAgentsCount(); i++) {
+        if (!getAgents(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasInputSymbolList()) {
+        if (!getInputSymbolList().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasOutputSymbolList()) {
+        if (!getOutputSymbolList().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < enumerations_.size(); i++) {
+        output.writeMessage(10, enumerations_.get(i));
+      }
+      for (int i = 0; i < options_.size(); i++) {
+        output.writeMessage(11, options_.get(i));
+      }
+      for (int i = 0; i < agents_.size(); i++) {
+        output.writeMessage(12, agents_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(13, inputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(14, outputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(15, frameNumber_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      for (int i = 0; i < enumerations_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, enumerations_.get(i));
+      }
+      for (int i = 0; i < options_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, options_.get(i));
+      }
+      for (int i = 0; i < agents_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(12, agents_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(13, inputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, outputSymbolList_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(15, frameNumber_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Messages.BehaviorStateComplete parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Messages.BehaviorStateComplete prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Messages.BehaviorStateCompleteOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Messages.BehaviorStateComplete.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEnumerationsFieldBuilder();
+          getOptionsFieldBuilder();
+          getAgentsFieldBuilder();
+          getInputSymbolListFieldBuilder();
+          getOutputSymbolListFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (enumerationsBuilder_ == null) {
+          enumerations_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          enumerationsBuilder_.clear();
+        }
+        if (optionsBuilder_ == null) {
+          options_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          optionsBuilder_.clear();
+        }
+        if (agentsBuilder_ == null) {
+          agents_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          agentsBuilder_.clear();
+        }
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+        } else {
+          inputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+        } else {
+          outputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        frameNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateComplete.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Messages.BehaviorStateComplete.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete build() {
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Messages.BehaviorStateComplete buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete buildPartial() {
+        de.naoth.rc.messages.Messages.BehaviorStateComplete result = new de.naoth.rc.messages.Messages.BehaviorStateComplete(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (enumerationsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            enumerations_ = java.util.Collections.unmodifiableList(enumerations_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.enumerations_ = enumerations_;
+        } else {
+          result.enumerations_ = enumerationsBuilder_.build();
+        }
+        if (optionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            options_ = java.util.Collections.unmodifiableList(options_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.options_ = options_;
+        } else {
+          result.options_ = optionsBuilder_.build();
+        }
+        if (agentsBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            agents_ = java.util.Collections.unmodifiableList(agents_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.agents_ = agents_;
+        } else {
+          result.agents_ = agentsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (inputSymbolListBuilder_ == null) {
+          result.inputSymbolList_ = inputSymbolList_;
+        } else {
+          result.inputSymbolList_ = inputSymbolListBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (outputSymbolListBuilder_ == null) {
+          result.outputSymbolList_ = outputSymbolList_;
+        } else {
+          result.outputSymbolList_ = outputSymbolListBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.frameNumber_ = frameNumber_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Messages.BehaviorStateComplete) {
+          return mergeFrom((de.naoth.rc.messages.Messages.BehaviorStateComplete)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Messages.BehaviorStateComplete other) {
+        if (other == de.naoth.rc.messages.Messages.BehaviorStateComplete.getDefaultInstance()) return this;
+        if (enumerationsBuilder_ == null) {
+          if (!other.enumerations_.isEmpty()) {
+            if (enumerations_.isEmpty()) {
+              enumerations_ = other.enumerations_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEnumerationsIsMutable();
+              enumerations_.addAll(other.enumerations_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.enumerations_.isEmpty()) {
+            if (enumerationsBuilder_.isEmpty()) {
+              enumerationsBuilder_.dispose();
+              enumerationsBuilder_ = null;
+              enumerations_ = other.enumerations_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              enumerationsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEnumerationsFieldBuilder() : null;
+            } else {
+              enumerationsBuilder_.addAllMessages(other.enumerations_);
+            }
+          }
+        }
+        if (optionsBuilder_ == null) {
+          if (!other.options_.isEmpty()) {
+            if (options_.isEmpty()) {
+              options_ = other.options_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureOptionsIsMutable();
+              options_.addAll(other.options_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.options_.isEmpty()) {
+            if (optionsBuilder_.isEmpty()) {
+              optionsBuilder_.dispose();
+              optionsBuilder_ = null;
+              options_ = other.options_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              optionsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getOptionsFieldBuilder() : null;
+            } else {
+              optionsBuilder_.addAllMessages(other.options_);
+            }
+          }
+        }
+        if (agentsBuilder_ == null) {
+          if (!other.agents_.isEmpty()) {
+            if (agents_.isEmpty()) {
+              agents_ = other.agents_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureAgentsIsMutable();
+              agents_.addAll(other.agents_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.agents_.isEmpty()) {
+            if (agentsBuilder_.isEmpty()) {
+              agentsBuilder_.dispose();
+              agentsBuilder_ = null;
+              agents_ = other.agents_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              agentsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getAgentsFieldBuilder() : null;
+            } else {
+              agentsBuilder_.addAllMessages(other.agents_);
+            }
+          }
+        }
+        if (other.hasInputSymbolList()) {
+          mergeInputSymbolList(other.getInputSymbolList());
+        }
+        if (other.hasOutputSymbolList()) {
+          mergeOutputSymbolList(other.getOutputSymbolList());
+        }
+        if (other.hasFrameNumber()) {
+          setFrameNumber(other.getFrameNumber());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getEnumerationsCount(); i++) {
+          if (!getEnumerations(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getOptionsCount(); i++) {
+          if (!getOptions(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getAgentsCount(); i++) {
+          if (!getAgents(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasInputSymbolList()) {
+          if (!getInputSymbolList().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasOutputSymbolList()) {
+          if (!getOutputSymbolList().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 82: {
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addEnumerations(subBuilder.buildPartial());
+              break;
+            }
+            case 90: {
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addOptions(subBuilder.buildPartial());
+              break;
+            }
+            case 98: {
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder subBuilder = de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addAgents(subBuilder.buildPartial());
+              break;
+            }
+            case 106: {
+              de.naoth.rc.messages.Messages.SymbolValueList.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.newBuilder();
+              if (hasInputSymbolList()) {
+                subBuilder.mergeFrom(getInputSymbolList());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setInputSymbolList(subBuilder.buildPartial());
+              break;
+            }
+            case 114: {
+              de.naoth.rc.messages.Messages.SymbolValueList.Builder subBuilder = de.naoth.rc.messages.Messages.SymbolValueList.newBuilder();
+              if (hasOutputSymbolList()) {
+                subBuilder.mergeFrom(getOutputSymbolList());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOutputSymbolList(subBuilder.buildPartial());
+              break;
+            }
+            case 120: {
+              bitField0_ |= 0x00000020;
+              frameNumber_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // repeated .naothmessages.BehaviorStateComplete.EnumType enumerations = 10;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> enumerations_ =
+        java.util.Collections.emptyList();
+      private void ensureEnumerationsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          enumerations_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType>(enumerations_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> enumerationsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> getEnumerationsList() {
+        if (enumerationsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(enumerations_);
+        } else {
+          return enumerationsBuilder_.getMessageList();
+        }
+      }
+      public int getEnumerationsCount() {
+        if (enumerationsBuilder_ == null) {
+          return enumerations_.size();
+        } else {
+          return enumerationsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType getEnumerations(int index) {
+        if (enumerationsBuilder_ == null) {
+          return enumerations_.get(index);
+        } else {
+          return enumerationsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setEnumerations(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
+        if (enumerationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumerationsIsMutable();
+          enumerations_.set(index, value);
+          onChanged();
+        } else {
+          enumerationsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setEnumerations(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
+        if (enumerationsBuilder_ == null) {
+          ensureEnumerationsIsMutable();
+          enumerations_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          enumerationsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEnumerations(de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
+        if (enumerationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumerationsIsMutable();
+          enumerations_.add(value);
+          onChanged();
+        } else {
+          enumerationsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addEnumerations(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType value) {
+        if (enumerationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEnumerationsIsMutable();
+          enumerations_.add(index, value);
+          onChanged();
+        } else {
+          enumerationsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addEnumerations(
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
+        if (enumerationsBuilder_ == null) {
+          ensureEnumerationsIsMutable();
+          enumerations_.add(builderForValue.build());
+          onChanged();
+        } else {
+          enumerationsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addEnumerations(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder builderForValue) {
+        if (enumerationsBuilder_ == null) {
+          ensureEnumerationsIsMutable();
+          enumerations_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          enumerationsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllEnumerations(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType> values) {
+        if (enumerationsBuilder_ == null) {
+          ensureEnumerationsIsMutable();
+          super.addAll(values, enumerations_);
+          onChanged();
+        } else {
+          enumerationsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearEnumerations() {
+        if (enumerationsBuilder_ == null) {
+          enumerations_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          enumerationsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeEnumerations(int index) {
+        if (enumerationsBuilder_ == null) {
+          ensureEnumerationsIsMutable();
+          enumerations_.remove(index);
+          onChanged();
+        } else {
+          enumerationsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder getEnumerationsBuilder(
+          int index) {
+        return getEnumerationsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder getEnumerationsOrBuilder(
+          int index) {
+        if (enumerationsBuilder_ == null) {
+          return enumerations_.get(index);  } else {
+          return enumerationsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
+           getEnumerationsOrBuilderList() {
+        if (enumerationsBuilder_ != null) {
+          return enumerationsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(enumerations_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder addEnumerationsBuilder() {
+        return getEnumerationsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder addEnumerationsBuilder(
+          int index) {
+        return getEnumerationsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder> 
+           getEnumerationsBuilderList() {
+        return getEnumerationsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder> 
+          getEnumerationsFieldBuilder() {
+        if (enumerationsBuilder_ == null) {
+          enumerationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumTypeOrBuilder>(
+                  enumerations_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          enumerations_ = null;
+        }
+        return enumerationsBuilder_;
+      }
+      
+      // repeated .naothmessages.BehaviorStateComplete.Option options = 11;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> options_ =
+        java.util.Collections.emptyList();
+      private void ensureOptionsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          options_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option>(options_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> optionsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> getOptionsList() {
+        if (optionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(options_);
+        } else {
+          return optionsBuilder_.getMessageList();
+        }
+      }
+      public int getOptionsCount() {
+        if (optionsBuilder_ == null) {
+          return options_.size();
+        } else {
+          return optionsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option getOptions(int index) {
+        if (optionsBuilder_ == null) {
+          return options_.get(index);
+        } else {
+          return optionsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setOptions(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
+        if (optionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOptionsIsMutable();
+          options_.set(index, value);
+          onChanged();
+        } else {
+          optionsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setOptions(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
+        if (optionsBuilder_ == null) {
+          ensureOptionsIsMutable();
+          options_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          optionsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addOptions(de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
+        if (optionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOptionsIsMutable();
+          options_.add(value);
+          onChanged();
+        } else {
+          optionsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addOptions(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option value) {
+        if (optionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOptionsIsMutable();
+          options_.add(index, value);
+          onChanged();
+        } else {
+          optionsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addOptions(
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
+        if (optionsBuilder_ == null) {
+          ensureOptionsIsMutable();
+          options_.add(builderForValue.build());
+          onChanged();
+        } else {
+          optionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addOptions(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder builderForValue) {
+        if (optionsBuilder_ == null) {
+          ensureOptionsIsMutable();
+          options_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          optionsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllOptions(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Option> values) {
+        if (optionsBuilder_ == null) {
+          ensureOptionsIsMutable();
+          super.addAll(values, options_);
+          onChanged();
+        } else {
+          optionsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearOptions() {
+        if (optionsBuilder_ == null) {
+          options_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          optionsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeOptions(int index) {
+        if (optionsBuilder_ == null) {
+          ensureOptionsIsMutable();
+          options_.remove(index);
+          onChanged();
+        } else {
+          optionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder getOptionsBuilder(
+          int index) {
+        return getOptionsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder getOptionsOrBuilder(
+          int index) {
+        if (optionsBuilder_ == null) {
+          return options_.get(index);  } else {
+          return optionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
+           getOptionsOrBuilderList() {
+        if (optionsBuilder_ != null) {
+          return optionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(options_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder addOptionsBuilder() {
+        return getOptionsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder addOptionsBuilder(
+          int index) {
+        return getOptionsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder> 
+           getOptionsBuilderList() {
+        return getOptionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder> 
+          getOptionsFieldBuilder() {
+        if (optionsBuilder_ == null) {
+          optionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option, de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.OptionOrBuilder>(
+                  options_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          options_ = null;
+        }
+        return optionsBuilder_;
+      }
+      
+      // repeated .naothmessages.BehaviorStateComplete.Agent agents = 12;
+      private java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> agents_ =
+        java.util.Collections.emptyList();
+      private void ensureAgentsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          agents_ = new java.util.ArrayList<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent>(agents_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> agentsBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> getAgentsList() {
+        if (agentsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(agents_);
+        } else {
+          return agentsBuilder_.getMessageList();
+        }
+      }
+      public int getAgentsCount() {
+        if (agentsBuilder_ == null) {
+          return agents_.size();
+        } else {
+          return agentsBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent getAgents(int index) {
+        if (agentsBuilder_ == null) {
+          return agents_.get(index);
+        } else {
+          return agentsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setAgents(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
+        if (agentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAgentsIsMutable();
+          agents_.set(index, value);
+          onChanged();
+        } else {
+          agentsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setAgents(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
+        if (agentsBuilder_ == null) {
+          ensureAgentsIsMutable();
+          agents_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          agentsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAgents(de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
+        if (agentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAgentsIsMutable();
+          agents_.add(value);
+          onChanged();
+        } else {
+          agentsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addAgents(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent value) {
+        if (agentsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAgentsIsMutable();
+          agents_.add(index, value);
+          onChanged();
+        } else {
+          agentsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addAgents(
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
+        if (agentsBuilder_ == null) {
+          ensureAgentsIsMutable();
+          agents_.add(builderForValue.build());
+          onChanged();
+        } else {
+          agentsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAgents(
+          int index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder builderForValue) {
+        if (agentsBuilder_ == null) {
+          ensureAgentsIsMutable();
+          agents_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          agentsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllAgents(
+          java.lang.Iterable<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent> values) {
+        if (agentsBuilder_ == null) {
+          ensureAgentsIsMutable();
+          super.addAll(values, agents_);
+          onChanged();
+        } else {
+          agentsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearAgents() {
+        if (agentsBuilder_ == null) {
+          agents_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          agentsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeAgents(int index) {
+        if (agentsBuilder_ == null) {
+          ensureAgentsIsMutable();
+          agents_.remove(index);
+          onChanged();
+        } else {
+          agentsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder getAgentsBuilder(
+          int index) {
+        return getAgentsFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder getAgentsOrBuilder(
+          int index) {
+        if (agentsBuilder_ == null) {
+          return agents_.get(index);  } else {
+          return agentsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
+           getAgentsOrBuilderList() {
+        if (agentsBuilder_ != null) {
+          return agentsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(agents_);
+        }
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder addAgentsBuilder() {
+        return getAgentsFieldBuilder().addBuilder(
+            de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder addAgentsBuilder(
+          int index) {
+        return getAgentsFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder> 
+           getAgentsBuilderList() {
+        return getAgentsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder> 
+          getAgentsFieldBuilder() {
+        if (agentsBuilder_ == null) {
+          agentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent, de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder, de.naoth.rc.messages.Messages.BehaviorStateComplete.AgentOrBuilder>(
+                  agents_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          agents_ = null;
+        }
+        return agentsBuilder_;
+      }
+      
+      // optional .naothmessages.SymbolValueList inputSymbolList = 13;
+      private de.naoth.rc.messages.Messages.SymbolValueList inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> inputSymbolListBuilder_;
+      public boolean hasInputSymbolList() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList getInputSymbolList() {
+        if (inputSymbolListBuilder_ == null) {
+          return inputSymbolList_;
+        } else {
+          return inputSymbolListBuilder_.getMessage();
+        }
+      }
+      public Builder setInputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (inputSymbolListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          inputSymbolList_ = value;
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder setInputSymbolList(
+          de.naoth.rc.messages.Messages.SymbolValueList.Builder builderForValue) {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = builderForValue.build();
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder mergeInputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (inputSymbolListBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              inputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
+            inputSymbolList_ =
+              de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(inputSymbolList_).mergeFrom(value).buildPartial();
+          } else {
+            inputSymbolList_ = value;
+          }
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder clearInputSymbolList() {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+          onChanged();
+        } else {
+          inputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.Builder getInputSymbolListBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getInputSymbolListFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getInputSymbolListOrBuilder() {
+        if (inputSymbolListBuilder_ != null) {
+          return inputSymbolListBuilder_.getMessageOrBuilder();
+        } else {
+          return inputSymbolList_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> 
+          getInputSymbolListFieldBuilder() {
+        if (inputSymbolListBuilder_ == null) {
+          inputSymbolListBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder>(
+                  inputSymbolList_,
+                  getParentForChildren(),
+                  isClean());
+          inputSymbolList_ = null;
+        }
+        return inputSymbolListBuilder_;
+      }
+      
+      // optional .naothmessages.SymbolValueList outputSymbolList = 14;
+      private de.naoth.rc.messages.Messages.SymbolValueList outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> outputSymbolListBuilder_;
+      public boolean hasOutputSymbolList() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList getOutputSymbolList() {
+        if (outputSymbolListBuilder_ == null) {
+          return outputSymbolList_;
+        } else {
+          return outputSymbolListBuilder_.getMessage();
+        }
+      }
+      public Builder setOutputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (outputSymbolListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          outputSymbolList_ = value;
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder setOutputSymbolList(
+          de.naoth.rc.messages.Messages.SymbolValueList.Builder builderForValue) {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = builderForValue.build();
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder mergeOutputSymbolList(de.naoth.rc.messages.Messages.SymbolValueList value) {
+        if (outputSymbolListBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              outputSymbolList_ != de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance()) {
+            outputSymbolList_ =
+              de.naoth.rc.messages.Messages.SymbolValueList.newBuilder(outputSymbolList_).mergeFrom(value).buildPartial();
+          } else {
+            outputSymbolList_ = value;
+          }
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder clearOutputSymbolList() {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolList_ = de.naoth.rc.messages.Messages.SymbolValueList.getDefaultInstance();
+          onChanged();
+        } else {
+          outputSymbolListBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueList.Builder getOutputSymbolListBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getOutputSymbolListFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Messages.SymbolValueListOrBuilder getOutputSymbolListOrBuilder() {
+        if (outputSymbolListBuilder_ != null) {
+          return outputSymbolListBuilder_.getMessageOrBuilder();
+        } else {
+          return outputSymbolList_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder> 
+          getOutputSymbolListFieldBuilder() {
+        if (outputSymbolListBuilder_ == null) {
+          outputSymbolListBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Messages.SymbolValueList, de.naoth.rc.messages.Messages.SymbolValueList.Builder, de.naoth.rc.messages.Messages.SymbolValueListOrBuilder>(
+                  outputSymbolList_,
+                  getParentForChildren(),
+                  isClean());
+          outputSymbolList_ = null;
+        }
+        return outputSymbolListBuilder_;
+      }
+      
+      // optional uint32 frameNumber = 15;
+      private int frameNumber_ ;
+      public boolean hasFrameNumber() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getFrameNumber() {
+        return frameNumber_;
+      }
+      public Builder setFrameNumber(int value) {
+        bitField0_ |= 0x00000020;
+        frameNumber_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFrameNumber() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        frameNumber_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.BehaviorStateComplete)
+    }
+    
+    static {
+      defaultInstance = new BehaviorStateComplete(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStateComplete)
+  }
+  
   public interface XABSLParameterOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -14542,6 +25518,76 @@ public final class Messages {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_Plots_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_XABSLSymbol_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_XABSLSymbol_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_XABSLActiveOptionSparse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_XABSLActiveOptionSparse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_XABSLActionSparse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_XABSLActionSparse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_SymbolValueList_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_SymbolValueList_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_SymbolValueList_DoubleSymbol_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_SymbolValueList_DoubleSymbol_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_SymbolValueList_BooleanSymbol_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_SymbolValueList_BooleanSymbol_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateSparse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_Option_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_XABSLParameter_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14626,49 +25672,103 @@ public final class Messages {
       ".naothmessages.DoubleVector2\"a\n\005Plots\022&\n" +
       "\005plots\030\001 \003(\0132\027.naothmessages.PlotItem\0220\n" +
       "\013plotstrokes\030\002 \003(\0132\033.naothmessages.PlotS" +
-      "troke2D\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t" +
-      ":\007unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages." +
-      "XABSLParameter.ParamType:\007Unknown\022\024\n\014dec" +
-      "imalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\ten",
-      "umValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022" +
-      "\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013" +
-      "XABSLAction\022<\n\004type\030\001 \001(\0162%.naothmessage" +
-      "s.XABSLAction.ActionType:\007Unknown\022\025\n\004nam" +
-      "e\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(" +
-      "\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005" +
-      " \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages" +
-      ".XABSLParameter\0224\n\020activeSubActions\030\007 \003(" +
-      "\0132\032.naothmessages.XABSLAction\022\024\n\014decimal" +
-      "Value\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumVa",
-      "lue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\r" +
-      "BasicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002" +
-      "\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputS" +
-      "ymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016BehaviorStatus\022" +
-      "\r\n\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(" +
-      "\0132\032.naothmessages.XABSLAction\0223\n\014inputSy" +
-      "mbols\030\003 \003(\0132\035.naothmessages.XABSLParamet" +
-      "er\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessage" +
-      "s.XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\022\024\n" +
-      "\014errorMessage\030\006 \001(\t\"k\n\006Module\022\014\n\004name\030\001 ",
-      "\002(\t\022\033\n\023usedRepresentations\030\002 \003(\t\022\037\n\027prov" +
-      "idedRepresentations\030\003 \003(\t\022\025\n\006active\030\004 \001(" +
-      "\010:\005false\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132" +
-      "\025.naothmessages.Module\"\213\001\n\017FeatureKeyPoi" +
-      "nt\022\'\n\002pt\030\001 \002(\0132\033.naothmessages.FloatVect" +
-      "or2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010resp" +
-      "onse\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006" +
-      " \002(\005\"\331\001\n\026FeatureDetectionResult\022\026\n\016grayS" +
-      "caleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.nao" +
-      "thmessages.FeatureKeyPoint\0224\n\013descriptor",
-      "s\030\003 \003(\0132\037.naothmessages.SingleDescriptor" +
-      "\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n\027numberOfF" +
-      "eatureElements\030\005 \001(\005:\00264\"\035\n\020SingleDescri" +
-      "ptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030" +
-      "\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naothmessages.S" +
-      "ingleDescriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n" +
-      "\014FeatureTable\022,\n\007classes\030\001 \003(\0132\033.naothme" +
-      "ssages.FeatureClass\022#\n\027numberOfFeatureEl" +
-      "ements\030\002 \001(\005:\00264B\026\n\024de.naoth.rc.messages"
+      "troke2D\"\370\001\n\013XABSLSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022" +
+      "<\n\004type\030\002 \002(\0162%.naothmessages.XABSLSymbo" +
+      "l.SymbolType:\007Unknown\022\014\n\004name\030\003 \001(\t\022\024\n\014d" +
+      "ecimalValue\030\013 \001(\001\022\021\n\tboolValue\030\014 \001(\010\022\021\n\t",
+      "enumValue\030\r \001(\005\022\022\n\nenumTypeId\030\016 \001(\005\"=\n\nS" +
+      "ymbolType\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004E" +
+      "num\020\002\022\013\n\007Unknown\020\003\"\375\001\n\027XABSLActiveOption" +
+      "Sparse\022\016\n\002id\030\001 \002(\005:\002-1\022\032\n\017timeOfExecutio" +
+      "n\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\005\022\021\n\tstate" +
+      "Time\030\005 \001(\003\022\031\n\021decimalParameters\030\006 \003(\001\022\031\n" +
+      "\021booleanParameters\030\007 \003(\010\022\034\n\024enumeratedPa" +
+      "rameters\030\010 \003(\005\022:\n\020activeSubActions\030\t \003(\013" +
+      "2 .naothmessages.XABSLActionSparse\"\214\002\n\021X" +
+      "ABSLActionSparse\022B\n\004type\030\002 \002(\0162+.naothme",
+      "ssages.XABSLActionSparse.ActionType:\007Unk" +
+      "nown\022*\n\006symbol\030\003 \001(\0132\032.naothmessages.XAB" +
+      "SLSymbol\0226\n\006option\030\004 \001(\0132&.naothmessages" +
+      ".XABSLActiveOptionSparse\"O\n\nActionType\022\n" +
+      "\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\025\n\021SymbolA" +
+      "ssignement\020\002\022\013\n\007Unknown\020\003\"\223\003\n\017SymbolValu" +
+      "eList\022<\n\007decimal\030\001 \003(\0132+.naothmessages.S" +
+      "ymbolValueList.DoubleSymbol\022=\n\007boolean\030\002" +
+      " \003(\0132,.naothmessages.SymbolValueList.Boo" +
+      "leanSymbol\022=\n\nenumerated\030\003 \003(\0132).naothme",
+      "ssages.SymbolValueList.EnumSymbol\032;\n\014Dou" +
+      "bleSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022" +
+      "\r\n\005value\030\003 \001(\001\032<\n\rBooleanSymbol\022\016\n\002id\030\001 " +
+      "\002(\005:\002-1\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\010\032I\n\n" +
+      "EnumSymbol\022\016\n\002id\030\001 \002(\005:\002-1\022\014\n\004name\030\002 \001(\t" +
+      "\022\r\n\005value\030\r \001(\005\022\016\n\006typeId\030\016 \001(\005\"\377\001\n\023Beha" +
+      "viorStateSparse\022\r\n\005agent\030\001 \001(\t\022;\n\021active" +
+      "RootActions\030\002 \003(\0132 .naothmessages.XABSLA" +
+      "ctionSparse\0227\n\017inputSymbolList\030\n \001(\0132\036.n" +
+      "aothmessages.SymbolValueList\0228\n\020outputSy",
+      "mbolList\030\013 \001(\0132\036.naothmessages.SymbolVal" +
+      "ueList\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014errorMess" +
+      "age\030\006 \001(\t\"\310\005\n\025BehaviorStateComplete\022C\n\014e" +
+      "numerations\030\n \003(\0132-.naothmessages.Behavi" +
+      "orStateComplete.EnumType\022<\n\007options\030\013 \003(" +
+      "\0132+.naothmessages.BehaviorStateComplete." +
+      "Option\022:\n\006agents\030\014 \003(\0132*.naothmessages.B" +
+      "ehaviorStateComplete.Agent\0227\n\017inputSymbo" +
+      "lList\030\r \001(\0132\036.naothmessages.SymbolValueL" +
+      "ist\0228\n\020outputSymbolList\030\016 \001(\0132\036.naothmes",
+      "sages.SymbolValueList\022\023\n\013frameNumber\030\017 \001" +
+      "(\r\032\211\001\n\010EnumType\022\014\n\004name\030\001 \002(\t\022G\n\010element" +
+      "s\030\002 \003(\01325.naothmessages.BehaviorStateCom" +
+      "plete.EnumType.Element\032&\n\007Element\022\r\n\005val" +
+      "ue\030\001 \002(\005\022\014\n\004name\030\002 \002(\t\032\260\001\n\006Option\022\014\n\004nam" +
+      "e\030\001 \002(\t\022A\n\006states\030\003 \003(\01321.naothmessages." +
+      "BehaviorStateComplete.Option.State\022.\n\npa" +
+      "rameters\030\002 \003(\0132\032.naothmessages.XABSLSymb" +
+      "ol\032%\n\005State\022\014\n\004name\030\001 \002(\t\022\016\n\006target\030\002 \001(" +
+      "\010\032)\n\005Agent\022\014\n\004name\030\001 \002(\t\022\022\n\nrootOption\030\002",
+      " \002(\t\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007u" +
+      "nknown\022>\n\004type\030\002 \001(\0162\'.naothmessages.XAB" +
+      "SLParameter.ParamType:\007Unknown\022\024\n\014decima" +
+      "lValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumV" +
+      "alue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007" +
+      "Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XAB" +
+      "SLAction\022<\n\004type\030\001 \001(\0162%.naothmessages.X" +
+      "ABSLAction.ActionType:\007Unknown\022\025\n\004name\030\002" +
+      " \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\001" +
+      "0\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001(",
+      "\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages.XA" +
+      "BSLParameter\0224\n\020activeSubActions\030\007 \003(\0132\032" +
+      ".naothmessages.XABSLAction\022\024\n\014decimalVal" +
+      "ue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue" +
+      "\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBas" +
+      "icBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n" +
+      "\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputSymb" +
+      "ol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016BehaviorStatus\022\r\n\005" +
+      "agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032" +
+      ".naothmessages.XABSLAction\0223\n\014inputSymbo",
+      "ls\030\003 \003(\0132\035.naothmessages.XABSLParameter\022" +
+      "4\n\routputSymbols\030\004 \003(\0132\035.naothmessages.X" +
+      "ABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\022\024\n\014er" +
+      "rorMessage\030\006 \001(\t\"k\n\006Module\022\014\n\004name\030\001 \002(\t" +
+      "\022\033\n\023usedRepresentations\030\002 \003(\t\022\037\n\027provide" +
+      "dRepresentations\030\003 \003(\t\022\025\n\006active\030\004 \001(\010:\005" +
+      "false\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132\025.n" +
+      "aothmessages.Module\"\213\001\n\017FeatureKeyPoint\022" +
+      "\'\n\002pt\030\001 \002(\0132\033.naothmessages.FloatVector2" +
+      "\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010respons",
+      "e\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006 \002(" +
+      "\005\"\331\001\n\026FeatureDetectionResult\022\026\n\016grayScal" +
+      "eImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.naothm" +
+      "essages.FeatureKeyPoint\0224\n\013descriptors\030\003" +
+      " \003(\0132\037.naothmessages.SingleDescriptor\022\031\n" +
+      "\021namesForKeyPoints\030\004 \003(\t\022#\n\027numberOfFeat" +
+      "ureElements\030\005 \001(\005:\00264\"\035\n\020SingleDescripto" +
+      "r\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030\001 \002" +
+      "(\t\0220\n\007samples\030\002 \003(\0132\037.naothmessages.Sing" +
+      "leDescriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n\014Fe",
+      "atureTable\022,\n\007classes\030\001 \003(\0132\033.naothmessa" +
+      "ges.FeatureClass\022#\n\027numberOfFeatureEleme" +
+      "nts\030\002 \001(\005:\00264B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14747,8 +25847,120 @@ public final class Messages {
               new java.lang.String[] { "Plots", "Plotstrokes", },
               de.naoth.rc.messages.Messages.Plots.class,
               de.naoth.rc.messages.Messages.Plots.Builder.class);
-          internal_static_naothmessages_XABSLParameter_descriptor =
+          internal_static_naothmessages_XABSLSymbol_descriptor =
             getDescriptor().getMessageTypes().get(9);
+          internal_static_naothmessages_XABSLSymbol_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_XABSLSymbol_descriptor,
+              new java.lang.String[] { "Id", "Type", "Name", "DecimalValue", "BoolValue", "EnumValue", "EnumTypeId", },
+              de.naoth.rc.messages.Messages.XABSLSymbol.class,
+              de.naoth.rc.messages.Messages.XABSLSymbol.Builder.class);
+          internal_static_naothmessages_XABSLActiveOptionSparse_descriptor =
+            getDescriptor().getMessageTypes().get(10);
+          internal_static_naothmessages_XABSLActiveOptionSparse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_XABSLActiveOptionSparse_descriptor,
+              new java.lang.String[] { "Id", "TimeOfExecution", "ActiveState", "StateTime", "DecimalParameters", "BooleanParameters", "EnumeratedParameters", "ActiveSubActions", },
+              de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.class,
+              de.naoth.rc.messages.Messages.XABSLActiveOptionSparse.Builder.class);
+          internal_static_naothmessages_XABSLActionSparse_descriptor =
+            getDescriptor().getMessageTypes().get(11);
+          internal_static_naothmessages_XABSLActionSparse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_XABSLActionSparse_descriptor,
+              new java.lang.String[] { "Type", "Symbol", "Option", },
+              de.naoth.rc.messages.Messages.XABSLActionSparse.class,
+              de.naoth.rc.messages.Messages.XABSLActionSparse.Builder.class);
+          internal_static_naothmessages_SymbolValueList_descriptor =
+            getDescriptor().getMessageTypes().get(12);
+          internal_static_naothmessages_SymbolValueList_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_SymbolValueList_descriptor,
+              new java.lang.String[] { "Decimal", "Boolean", "Enumerated", },
+              de.naoth.rc.messages.Messages.SymbolValueList.class,
+              de.naoth.rc.messages.Messages.SymbolValueList.Builder.class);
+          internal_static_naothmessages_SymbolValueList_DoubleSymbol_descriptor =
+            internal_static_naothmessages_SymbolValueList_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_SymbolValueList_DoubleSymbol_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_SymbolValueList_DoubleSymbol_descriptor,
+              new java.lang.String[] { "Id", "Name", "Value", },
+              de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.class,
+              de.naoth.rc.messages.Messages.SymbolValueList.DoubleSymbol.Builder.class);
+          internal_static_naothmessages_SymbolValueList_BooleanSymbol_descriptor =
+            internal_static_naothmessages_SymbolValueList_descriptor.getNestedTypes().get(1);
+          internal_static_naothmessages_SymbolValueList_BooleanSymbol_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_SymbolValueList_BooleanSymbol_descriptor,
+              new java.lang.String[] { "Id", "Name", "Value", },
+              de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.class,
+              de.naoth.rc.messages.Messages.SymbolValueList.BooleanSymbol.Builder.class);
+          internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor =
+            internal_static_naothmessages_SymbolValueList_descriptor.getNestedTypes().get(2);
+          internal_static_naothmessages_SymbolValueList_EnumSymbol_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_SymbolValueList_EnumSymbol_descriptor,
+              new java.lang.String[] { "Id", "Name", "Value", "TypeId", },
+              de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.class,
+              de.naoth.rc.messages.Messages.SymbolValueList.EnumSymbol.Builder.class);
+          internal_static_naothmessages_BehaviorStateSparse_descriptor =
+            getDescriptor().getMessageTypes().get(13);
+          internal_static_naothmessages_BehaviorStateSparse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateSparse_descriptor,
+              new java.lang.String[] { "Agent", "ActiveRootActions", "InputSymbolList", "OutputSymbolList", "FrameNumber", "ErrorMessage", },
+              de.naoth.rc.messages.Messages.BehaviorStateSparse.class,
+              de.naoth.rc.messages.Messages.BehaviorStateSparse.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_descriptor =
+            getDescriptor().getMessageTypes().get(14);
+          internal_static_naothmessages_BehaviorStateComplete_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_descriptor,
+              new java.lang.String[] { "Enumerations", "Options", "Agents", "InputSymbolList", "OutputSymbolList", "FrameNumber", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor,
+              new java.lang.String[] { "Name", "Elements", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_EnumType_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_EnumType_Element_descriptor,
+              new java.lang.String[] { "Value", "Name", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.EnumType.Element.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Option_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(1);
+          internal_static_naothmessages_BehaviorStateComplete_Option_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_Option_descriptor,
+              new java.lang.String[] { "Name", "States", "Parameters", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_Option_descriptor.getNestedTypes().get(0);
+          internal_static_naothmessages_BehaviorStateComplete_Option_State_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_Option_State_descriptor,
+              new java.lang.String[] { "Name", "Target", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Option.State.Builder.class);
+          internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor =
+            internal_static_naothmessages_BehaviorStateComplete_descriptor.getNestedTypes().get(2);
+          internal_static_naothmessages_BehaviorStateComplete_Agent_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_BehaviorStateComplete_Agent_descriptor,
+              new java.lang.String[] { "Name", "RootOption", },
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.class,
+              de.naoth.rc.messages.Messages.BehaviorStateComplete.Agent.Builder.class);
+          internal_static_naothmessages_XABSLParameter_descriptor =
+            getDescriptor().getMessageTypes().get(15);
           internal_static_naothmessages_XABSLParameter_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_XABSLParameter_descriptor,
@@ -14756,7 +25968,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.XABSLParameter.class,
               de.naoth.rc.messages.Messages.XABSLParameter.Builder.class);
           internal_static_naothmessages_XABSLAction_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_naothmessages_XABSLAction_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_XABSLAction_descriptor,
@@ -14764,7 +25976,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.XABSLAction.class,
               de.naoth.rc.messages.Messages.XABSLAction.Builder.class);
           internal_static_naothmessages_BehaviorStatus_descriptor =
-            getDescriptor().getMessageTypes().get(11);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_naothmessages_BehaviorStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BehaviorStatus_descriptor,
@@ -14772,7 +25984,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.BehaviorStatus.class,
               de.naoth.rc.messages.Messages.BehaviorStatus.Builder.class);
           internal_static_naothmessages_Module_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_naothmessages_Module_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_Module_descriptor,
@@ -14780,7 +25992,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.Module.class,
               de.naoth.rc.messages.Messages.Module.Builder.class);
           internal_static_naothmessages_ModuleList_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_naothmessages_ModuleList_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_ModuleList_descriptor,
@@ -14788,7 +26000,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.ModuleList.class,
               de.naoth.rc.messages.Messages.ModuleList.Builder.class);
           internal_static_naothmessages_FeatureKeyPoint_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(20);
           internal_static_naothmessages_FeatureKeyPoint_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FeatureKeyPoint_descriptor,
@@ -14796,7 +26008,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.FeatureKeyPoint.class,
               de.naoth.rc.messages.Messages.FeatureKeyPoint.Builder.class);
           internal_static_naothmessages_FeatureDetectionResult_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(21);
           internal_static_naothmessages_FeatureDetectionResult_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FeatureDetectionResult_descriptor,
@@ -14804,7 +26016,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.FeatureDetectionResult.class,
               de.naoth.rc.messages.Messages.FeatureDetectionResult.Builder.class);
           internal_static_naothmessages_SingleDescriptor_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_naothmessages_SingleDescriptor_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_SingleDescriptor_descriptor,
@@ -14812,7 +26024,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.SingleDescriptor.class,
               de.naoth.rc.messages.Messages.SingleDescriptor.Builder.class);
           internal_static_naothmessages_FeatureClass_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(23);
           internal_static_naothmessages_FeatureClass_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FeatureClass_descriptor,
@@ -14820,7 +26032,7 @@ public final class Messages {
               de.naoth.rc.messages.Messages.FeatureClass.class,
               de.naoth.rc.messages.Messages.FeatureClass.Builder.class);
           internal_static_naothmessages_FeatureTable_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(24);
           internal_static_naothmessages_FeatureTable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FeatureTable_descriptor,

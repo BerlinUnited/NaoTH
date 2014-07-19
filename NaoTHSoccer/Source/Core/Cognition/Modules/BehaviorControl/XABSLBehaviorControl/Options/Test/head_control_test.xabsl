@@ -1,0 +1,29 @@
+option head_control_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto search;
+      else
+        stay;
+    }
+    action {}
+  }
+
+  state search {
+    decision {
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}

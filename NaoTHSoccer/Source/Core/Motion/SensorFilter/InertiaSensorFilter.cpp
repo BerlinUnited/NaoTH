@@ -215,24 +215,6 @@ void InertiaSensorFilter::covOfSigmaPoints()
   cov *= 0.5f;
 }
 
-template <class V> InertiaSensorFilter::State<V> InertiaSensorFilter::State<V>::operator+(const Vector2<V>& value) const
-{
-  return State(*this) += value;
-}
-
-template <class V> InertiaSensorFilter::State<V>& InertiaSensorFilter::State<V>::operator+=(const Vector2<V>& value)
-{
-  rotation *= RotationMatrix(rotation.invert() * Vector3<V>(value.x, value.y, V()));
-  return *this;
-}
-
-template <class V> Vector2<V> InertiaSensorFilter::State<V>::operator-(const State<V>& other) const
-{
-  const Vector3<V>& rotDiff(other.rotation * ((const RotationMatrix&)(other.rotation.invert() * rotation)).getAngleAxis());
-  return Vector2<V>(rotDiff.x, rotDiff.y);
-}
-
-
 void InertiaSensorFilter::cholOfCov()
 {
   // improved symmetry

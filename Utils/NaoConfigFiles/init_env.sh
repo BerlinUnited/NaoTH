@@ -15,6 +15,15 @@ else
     echo "set_dev_video exists";
 fi
 
+# copy the video driver
+kernel_name=$(uname -r)
+video_driver_path=/lib/modules/$kernel_name/kernel/drivers/media/video/mt9m114.ko
+if [ -f video_driver_path ]  
+then
+  mv $video_driver_path $video_driver_path.bak
+fi
+cp ./kernel/drivers/media/video/mt9m114.ko $video_driver_path
+
 # Cognition Common
 if [ ! -f /etc/init.d/cognition-common ]  
 then
@@ -59,10 +68,10 @@ else
 fi
 
 # brainwashinit
-if [ -f ./usr/bin/brainwash ]
+if [ -f ./bin/brainwash ]
 then
     echo "adding start script brainwash";
-    cp -f ./usr/bin/brainwash /usr/bin/brainwash;
+    cp -f ./bin/brainwash /usr/bin/brainwash;
     chown root:root /usr/bin/brainwash;
     chmod 755 /usr/bin/brainwash;
 else

@@ -18,21 +18,24 @@ option basic_play
       battery();
 
       //set LED stuff
-      // make here some initializations
-      set_right_ear = game.player_number*3+1; // show player number
+      // make head player number
+      set_head = game.player_number%7; //mod to pretend higher ID
+      
       set_right_eye = 
           goal.own.was_seen ? blue 
           : (goal.opp.was_seen ? red : off );
           
       set_left_eye = ball.was_seen ? green : off;   
+
     }
+
   }
 
   // this is part of the initial precedure
   // to ensure that the robot stands before doing anything
   state stand {
     decision {
-      if(executed_motion.type == stand)
+      if(executed_motion.type == stand && executed_motion.time > 1000)
         goto play;
       else
         stay;
@@ -88,13 +91,16 @@ option basic_play
 
       //set LED stuff
       // make here some initializations
-      set_right_ear = game.player_number*3+1; // show player number
-      set_right_eye = off;
-      //    goal.own.was_seen ? blue 
-      //    : (goal.opp.was_seen ? red : off );
+   
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
           
       set_left_eye = ball.was_seen ? green : off;   
 
+      set_head = (robot_pose.x < 0) ? 3 : 6;
+
+      //set ear
       battery();
     }
   }

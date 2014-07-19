@@ -23,12 +23,12 @@ template <class C, int n> class RingBufferWithSum
 {
   public:
     /** Constructor */
-    RingBufferWithSum() {init();}
+    RingBufferWithSum() { clear(); }
 
     /**
      * initializes the RingBufferWithSum
      */
-    void init () {current = n - 1; numberOfEntries = 0; sum = C();}
+    void clear () {current = n - 1; numberOfEntries = 0; sum = C();}
 
     /**
      * adds an entry to the buffer
@@ -44,11 +44,11 @@ template <class C, int n> class RingBufferWithSum
       buffer[current] = value;
     }
 
-    C getSum() {
+    C getSum() const {
       return sum;
     }
 
-    C getMinimum()
+    C getMinimum() const
     {
       // Return 0 if buffer is empty
       if (0==numberOfEntries) return C();
@@ -65,7 +65,7 @@ template <class C, int n> class RingBufferWithSum
      * returns the average value of all entries
      * \return the average value
      */
-    C getAverage()
+    C getAverage() const
     {
       // Return 0 if buffer is empty
       if (0==numberOfEntries) return C();
@@ -73,7 +73,7 @@ template <class C, int n> class RingBufferWithSum
     }
 
     // copied from AustinVilla 2012
-    C getMedian() 
+    C getMedian() const
     {
       C temp[n];
       memcpy(temp,buffer,n * sizeof(C));

@@ -25,8 +25,8 @@ option go_to_ball_with_foot
   {
     decision
     {
-      if ( (ball.preview.right_foot.x - @distance - ball.radius) < 30
-        && abs(value = ball.preview.right_foot.y) < 30)
+      if ( (ball.preview.right_foot.x - @distance - ball.radius) < 20
+        && abs(value = ball.preview.right_foot.y) < 20)
         //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_right_foot_done;
       else
@@ -51,8 +51,8 @@ option go_to_ball_with_foot
   {
     decision
     {
-      if ( (ball.preview.left_foot.x - @distance - ball.radius) < 30
-        && abs(value = ball.preview.left_foot.y) < 30)
+      if ( (ball.preview.left_foot.x - @distance - ball.radius) < 20
+        && abs(value = ball.preview.left_foot.y) < 20)
         //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_left_foot_done;
       else
@@ -76,9 +76,9 @@ option go_to_ball_with_foot
   {
     decision
     {
-      if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 40
-        || abs(value = ball.preview.right_foot.y) > 40
-        || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
+      if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 30
+        || abs(value = ball.preview.right_foot.y) > 30)
+        //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_right_foot;
       else
         stay;
@@ -101,9 +101,9 @@ option go_to_ball_with_foot
   {
     decision
     {
-      if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) > 40
-        || abs(value = ball.preview.left_foot.y) > 40
-        || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
+      if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) > 30
+        || abs(value = ball.preview.left_foot.y) > 30)
+        //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_left_foot;
       else
         stay;

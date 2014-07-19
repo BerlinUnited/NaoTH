@@ -9,22 +9,29 @@
 #ifndef _SMALModule_H_
 #define _SMALModule_H_
 
-#include <alcommon/almodule.h>
-
-#include "Tools/NaoTime.h"
 #include "Tools/IPCData.h"
+#include "Tools/NaoTime.h"
+#include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
 #include "DCMHandler.h"
 
+#include <alcommon/almodule.h>
+
+//
+// This is to suppress the following gcc warning 
+// thrown because by the old version of boost used by naoqi
+// albroker.h and alproxy.h 
+// produce those:
+//   boost/function/function_base.hpp:325: 
+//   warning: dereferencing type-punned pointer will break strict-aliasing rules
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#include <alcommon/alproxy.h>
+
 #define SMAL_VERSION "42"
 
-namespace AL
-{
-  // This is a forward declaration of AL:ALBroker which
-  // avoids including <alcommon/albroker.h> in this header
-  class ALBroker;
-}
+// NOTE: enables the low level debugging 
+//#define DEBUG_SMAL
 
 namespace naoth
 {
@@ -33,14 +40,7 @@ class SMALModule : public AL::ALModule
 {
 public:
     
-  /**
-  * Default Constructor.
-  */
   SMALModule(boost::shared_ptr<AL::ALBroker> pBroker, const std::string& pName );
-
-  /**
-  * Destructor.
-  */
   ~SMALModule();
   
   std::string version();
@@ -65,7 +65,25 @@ private:
   // interface for the interaction with the DCM
   DCMHandler theDCMHandler;
   
+#ifdef DEBUG_SMAL
+  // -- DEBUG: measure average execution times of the callbacks
+  // motionCallbackPre and motionCallbackPost
+  //
+  // Number of runs 
+  int counterPre;
+  int counterPost;
   
+  // last time the average time was calculated
+  // measures the time of the call cycle
+  long long lastPreTime;
+  long long lastPostTime;
+  
+  // measure the time consumed by the functions body
+  int time_motionCallbackPreSum;
+  int time_motionCallbackPostSum;
+  // -- DEBUG: END
+#endif
+ 
   //
   void setWarningLED(bool red=false);
   //

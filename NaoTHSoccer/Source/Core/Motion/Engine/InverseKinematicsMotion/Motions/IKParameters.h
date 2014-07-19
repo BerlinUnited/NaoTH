@@ -45,6 +45,8 @@ public:
     struct Hip
     {
       double comHeight;
+      double comHeightOffset;
+      double comRotationOffsetX;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;
@@ -102,6 +104,8 @@ public:
 
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
+      double dynamicStepsizeP;
+      double dynamicStepsizeD;
     } stabilization;
   } walk;
 

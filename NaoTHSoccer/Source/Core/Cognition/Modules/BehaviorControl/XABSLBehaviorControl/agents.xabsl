@@ -1,7 +1,7 @@
-/*** 
+/***
   Title: NaoTH Soccer
   Platform: Aldebaran Nao V3.2~4 (RoboCup edition).
-  Software-Environment: NaoTH2013
+  Software-Environment: NaoTH 2014
 */
 
 // Symbols
@@ -27,8 +27,6 @@ include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
-include "Options/HeadControl/search_before_passive.xabsl";
-include "Options/HeadControl/striker_search.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
@@ -37,6 +35,7 @@ include "Options/Skills/take_arms_back.xabsl";
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/treat_lifted.xabsl";
+include "Options/Skills/move_around_ball.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
@@ -60,7 +59,8 @@ include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
-include "Options/Skills/move_around_ball.xabsl";
+include "Options/Skills/striker_search.xabsl";
+include "Options/Skills/search_before_passive.xabsl";
 
 // Debug
 include "Options/Debug/battery.xabsl";
@@ -130,6 +130,7 @@ include "Options/Test/obstacle_test_agent.xabsl";
 // Test agents (options) Penalty
 include "Options/Test/penalty_kicker_test_agent.xabsl";
 // Test agents (options) ball search
+include "Options/Test/search_ball_test.xabsl";
 include "Options/Test/search_test_agent.xabsl";
 include "Options/Test/search_ball_back_rot_test_agent.xabsl";
 include "Options/Test/simple_search_ball_test_agent.xabsl";
@@ -168,11 +169,15 @@ include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
+
+include "Options/Test/agent_test_dribble.xabsl";
+include "Options/Test/test_dribble.xabsl";
+
 // Test options Penalty
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
-include "Options/Test/ball_search/simple_search_ball_test.xabsl";
+include "Options/Test/ball_search/simple_search_ball_test.xabsl";
 
 // Test arms
 include "Options/Test/arm_back_test.xabsl";
@@ -189,6 +194,9 @@ include "Options/Test/test_benji_lv1.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
 
+
+include "Options/Test/head_test_agent.xabsl";
+include "Options/Test/head_control_test.xabsl";
 
 
 /** The soccer competition agent */
@@ -230,6 +238,7 @@ agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ba
 agent goto_ball_with_foot_and_USOA_test_agent("go_to_ball_with_foot_and_USOA_test_agent", go_to_ball_with_foot_and_USOA_test_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
+agent agent_test_dribble("agent_test_dribble", agent_test_dribble);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
@@ -240,4 +249,4 @@ agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_b
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
-
+agent head_test_agent("head_test_agent", head_test_agent);

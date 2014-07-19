@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/OpenCV/OpenCVGrayScaleImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
@@ -67,10 +68,13 @@
 //Perception - Vision -- Detectors
 #include "Modules/Perception/VisualCortex/Detectors/FieldDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/ScanLineEdgelDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/NewGoalDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/GoalFeatureDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/GradientGoalDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/LineGraphProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/MaximumRedBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/SuperBallDetector.h"
+#include "Modules/Perception/VisualCortex/Detectors/StableBallDetector.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/LineClusterProvider.h"
 #include "Modules/Perception/VisualCortex/Detectors/Experimental/NeoLineDetector.h"
 
@@ -94,6 +98,7 @@
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
+#include "Modules/Modeling/PotentialActionSimulator/PotentialActionSimulator.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
 #include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
@@ -188,11 +193,14 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(LineGraphProvider);
 
   REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GoalFeatureDetector);
+  REGISTER_MODULE(NewGoalDetector);
   REGISTER_MODULE(GradientGoalDetector);
 
   REGISTER_MODULE(BallDetector);
   REGISTER_MODULE(MaximumRedBallDetector);
   REGISTER_MODULE(SuperBallDetector);
+  REGISTER_MODULE(StableBallDetector);
 
   REGISTER_MODULE(RobotDetector);
 
@@ -225,6 +233,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
   REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(PotentialActionSimulator);
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);
@@ -248,6 +257,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(Debug);
+  REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(RoboViz);
   REGISTER_MODULE(StopwatchSender);
   REGISTER_MODULE(DebugExecutor);

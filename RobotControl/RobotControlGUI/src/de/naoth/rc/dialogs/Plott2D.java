@@ -30,7 +30,6 @@ import info.monitorenter.gui.chart.pointpainters.APointPainter;
 import info.monitorenter.gui.chart.rangepolicies.ARangePolicy;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
-import info.monitorenter.gui.util.ColorIterator;
 import info.monitorenter.util.Range;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -66,14 +65,14 @@ public class Plott2D  extends AbstractDialog
   public PlotDataManager plotDataManager;
 
   
-  private int maxNumberOfValues = 5000;
-  private int numberOfValues = maxNumberOfValues;
+  private final int maxNumberOfValues = 5000;
+  private final int numberOfValues = maxNumberOfValues;
   
-  private ColorIterator colorIterator = new ColorIterator();
-  private APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
+  //private final ColorIterator colorIterator = new ColorIterator();
+  private final APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
 
-  private Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
-  private Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
+  private final Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
+  private final Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
     /** Creates new form SimpleValuePlotter */
     public Plott2D() {
@@ -417,7 +416,7 @@ public class Plott2D  extends AbstractDialog
       synchronized(this)
       {
         clearTracePoints();
-      }//end synchronized
+      }
   }//GEN-LAST:event_btClearDataActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -586,18 +585,13 @@ private void clearTracePoints()
   @Override
   public void dispose()
   {
+    btReceiveData.setSelected(false);
     plotDataManager.removeListener(this);
   }
 
-  @Override
-  public JPanel getPanel() {
-    return this;
-  }
-
-
   private int currentColorIndex = 0;
-  private int colorDarkness = 200;
-  private Color colorArray[] = new Color[]
+  private final int colorDarkness = 200;
+  private final Color colorArray[] = new Color[]
   {
     new Color(0,0,colorDarkness),
     new Color(0,colorDarkness,0),

@@ -5,46 +5,46 @@ option look_around
     decision{
       // find a close point to start the lookaround
       if(head.yaw > 0){
-        goto bottom_left;
+        goto look_left;
       }else{
-        goto bottom_right;
+        goto look_right;
       }
     }
     action{}
   }
 
-  state bottom_left
+  state look_left
   {
     decision
     {
       if (state_time > 1200)
-        goto bottom_right;
+        goto look_right;
       else 
         stay;
     }
     action
     {
-      head.point_in_world.x = 150;
-      head.point_in_world.y = 300;
-      head.point_in_world.z = 0;
+      head.point_in_world.x = 300;
+      head.point_in_world.y = 600;
+      head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;
     }
   }
   
-  state bottom_right
+  state look_right
   {
     decision
     {
       if (state_time > 1200)
-        goto bottom_left;
+        goto look_left;
       else 
         stay;
     }
     action
     {
-      head.point_in_world.x = 150;
-      head.point_in_world.y = -300;
-      head.point_in_world.z = 0;
+      head.point_in_world.x = 300;
+      head.point_in_world.y = -600;
+      head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;
     }
   }

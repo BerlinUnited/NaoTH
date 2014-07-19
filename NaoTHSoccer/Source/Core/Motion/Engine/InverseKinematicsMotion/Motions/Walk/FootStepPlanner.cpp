@@ -52,10 +52,24 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
   Pose3D& footEnd = footStep.footEnd();
   footEnd = footStep.supFoot();
 
+  Pose2D footEnd2D = reduceDimen(footEnd);
+
   switch ( footStep.liftingFoot() )
   {
     case FootStep::RIGHT:
     {
+      footEnd2D.rotate(-lastOffset.rotation);
+      footEnd2D.translate(-lastOffset.translation.x, -lastOffset.translation.y);
+
+      // calculate footstep for the RIGHT foot
+      footEnd2D.translate(step.translation.x, -theFootOffsetY + min(0.0, step.translation.y));
+      footEnd2D.rotate(min(theMaxTurnInner, step.rotation)); // TODO: restriction here
+      footEnd2D.translate(0, -theFootOffsetY);
+
+      footEnd2D.rotate(-offset.rotation);
+      footEnd2D.translate(-offset.translation.x, -offset.translation.y);
+
+      /*
       footEnd.rotateZ(-lastOffset.rotation);
       footEnd.translate(-lastOffset.translation.x, -lastOffset.translation.y, 0);
 
@@ -66,10 +80,22 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 
       footEnd.rotateZ(-offset.rotation);
       footEnd.translate(-offset.translation.x, -offset.translation.y, 0);
+      */
       break;
     }
     case FootStep::LEFT:
     {
+      footEnd2D.rotate(lastOffset.rotation);
+      footEnd2D.translate(lastOffset.translation.x, lastOffset.translation.y);
+
+      footEnd2D.translate(step.translation.x, theFootOffsetY + max(0.0, step.translation.y));
+      footEnd2D.rotate(max(-theMaxTurnInner, step.rotation)); // TODO: restriction here
+      footEnd2D.translate(0, theFootOffsetY);
+
+      footEnd2D.rotate(offset.rotation);
+      footEnd2D.translate(offset.translation.x, offset.translation.y);
+
+      /*
       footEnd.rotateZ(lastOffset.rotation);
       footEnd.translate(lastOffset.translation.x, lastOffset.translation.y, 0);
 
@@ -79,10 +105,15 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 
       footEnd.rotateZ(offset.rotation);
       footEnd.translate(offset.translation.x, offset.translation.y, 0);
+      */
       break;
     }
   default: ASSERT(false);
   }//end switch
+
+  footEnd.translation = Vector3d(footEnd2D.translation.x, footEnd2D.translation.y, 0.0);
+  footEnd.rotation = RotationMatrix::getRotationZ(footEnd2D.rotation);
+
 }//end addStep
 
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)

@@ -7,7 +7,7 @@ package de.naoth.naoscp;
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
 import java.io.*;
-import javax.swing.SwingUtilities;
+import javax.swing.JProgressBar;
 
 /**
  *
@@ -15,14 +15,14 @@ import javax.swing.SwingUtilities;
  */
 abstract class SshCopier extends SshWorker
 {   
-  public SshCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
+  public SshCopier(NaoScpConfig config, JProgressBar progressBar, String sNaoNo, String sNaoByte)
   {
-    super(config, sNaoNo, sNaoByte);
+    super(config, progressBar, sNaoNo, sNaoByte);
   }
 
-  public SshCopier(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
+  public SshCopier(NaoScpConfig config, JProgressBar progressBar, String Ip, String sNaoNo, String sNaoByte)
   {
-    super(config, Ip, sNaoNo, sNaoByte);
+    super(config, progressBar, Ip, sNaoNo, sNaoByte);
   }
 
   protected Boolean exec() throws JSchException, InterruptedException
@@ -161,7 +161,7 @@ abstract class SshCopier extends SshWorker
               config.remoteLibPath() + "libnaosmal.so",
               new FileOutputStream(config.localDeployInPath() + "/libnaosmal.so")
                     ,
-              new ProgressMonitor(config.progressBar)
+              new ProgressMonitor(this.progressBar)
             );
           }
         }
@@ -179,7 +179,7 @@ abstract class SshCopier extends SshWorker
             (
               config.remoteLibPath() + "comment.cfg",
               new FileOutputStream(config.localDeployInPath() + "/comment.cfg"),
-              new ProgressMonitor(config.progressBar)
+              new ProgressMonitor(this.progressBar)
             );
           }
         }
@@ -199,7 +199,7 @@ abstract class SshCopier extends SshWorker
               config.remoteBinPath() + "naoth",
               new FileOutputStream(config.localDeployInPath() + "/naoth")
                     ,
-              new ProgressMonitor(config.progressBar)
+              new ProgressMonitor(this.progressBar)
             );
 
           }
@@ -287,7 +287,7 @@ abstract class SshCopier extends SshWorker
         ChannelSftp c = (ChannelSftp) channel;
 
         String localLibPath = config.localLibPath();
-        String localBinPath = config.localBinPath();
+        String localBinPath = config.localDeployBinPath();
         String localConfigPath = config.localConfigDeployOutPath();
 
         if(config.backupIsSelected)

@@ -23,7 +23,26 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if (state_time > 2000)
+      if (fall_down_state != upright)
+        goto wait_before_stand_up;
+      else if (state_time > 2000)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type = dead;
+    }
+  }
+
+  state wait_before_stand_up
+  {
+    decision
+    {
+      if (state_time > 500)
         goto stand_up;
       else 
         stay;

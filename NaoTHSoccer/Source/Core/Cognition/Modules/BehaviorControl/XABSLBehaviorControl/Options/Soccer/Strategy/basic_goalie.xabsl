@@ -21,21 +21,21 @@ option basic_goalie
 
   state go_to_strategy_point
   {
-       decision 
+     decision 
+     {
+       else if (ball.distance < 1500 && ball.time_since_last_seen < 1000
+               && robot_pose.planned.x < -4000)
+         goto clear_ball;
+       else if (action_done)
        {
-         else if (ball.distance < 1500 && ball.time_since_last_seen < 1000
-                 && robot_pose.planned.x < -4000)
-           goto clear_ball;
-         else if (action_done)
-         {
-           goto stand_and_look_at_ball;
-         } else 
-           stay;
-       }
-       action {
-         go_to_point(x=field.xPosOwnGroundline + 200, y=0,rot=0);
-         head.control_mode = search_for_goal;
-       }
+         goto stand_and_look_at_ball;
+       } else 
+         stay;
+     }
+     action {
+       go_to_point(x=field.xPosOwnGroundline + 200, y=0,rot=0);
+       head.control_mode = search_for_goal;
+     }
   }
 
   state stand_and_look_at_ball {
@@ -52,12 +52,12 @@ option basic_goalie
 	}  
 
 
-  state  clear_ball {   
+  state clear_ball {   
    decision {
        else if (action_done 
            || (ball.distance > 1500 && ball.time_since_last_seen < 1000)
            || (ball.time_since_last_seen > 2000)
-           || robot_pose.planned.x > -3000) 
+           || robot_pose.planned.x > field.xPosOwnPenaltyArea + 1000)
        {
          goto go_to_strategy_point;
        }
@@ -65,8 +65,9 @@ option basic_goalie
      }
      action {
        team.is_playing_as_striker = true;
-       basic_striker_behavior();
+       //basic_striker_behavior();
+       situation_based_striker();
      }
-}
+  }
   
 }

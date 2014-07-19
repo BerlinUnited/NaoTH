@@ -134,10 +134,10 @@ option play_soccer
         goto ready;
       else if (game.current_mode == set)
         goto set;
-	    else if(team.calc_if_is_striker)
-	      stay;
+	    else if(action_done || !team.calc_if_is_striker)
+	      goto play;
 	    else
-	      goto play; 
+	      stay; 
 	  }
 	  action {
 	    initial_striker();

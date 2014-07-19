@@ -11,11 +11,13 @@
 
 package de.naoth.rc.dialogs;
 
+import de.naoth.rc.logmanager.LogDataFrame;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.MessageOrBuilder;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
+import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector;
@@ -24,6 +26,7 @@ import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
 import de.naoth.rc.messages.FrameworkRepresentations.JointData;
 import de.naoth.rc.messages.FrameworkRepresentations.SensorJointData;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.server.ResponseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.DataInputStream;
@@ -55,6 +58,8 @@ public class LogfileInspector extends AbstractDialog
   public RobotControl parent;
   @InjectPlugin
   public ImageManagerBottom imageManager;
+  @InjectPlugin
+  public LogFileEventManager logFileEventManager;
   
   private HashMap<Integer, Integer> framePosition;
   private ArrayList<LogFileFrame> frameList;
@@ -319,7 +324,10 @@ public class LogfileInspector extends AbstractDialog
         System.out.println(frame.number + " - " + frame.position);
         try
         {
-          readFrame(frame, new BasicReader(this.raf));
+          HashMap<String,LogDataFrame> f = readFrame(frame, new BasicReader(this.raf));
+          if(logFileEventManager != null) {
+            logFileEventManager.fireLogFrameEvent(f.values(), frame.number);
+          }
         }catch(IOException e)
         {
           System.err.println("Couldn't read the a frame: " + e);
@@ -418,7 +426,7 @@ public class LogfileInspector extends AbstractDialog
     }//end parseLogFile
 
     
-  void readFrame(LogFileFrame frame, BasicReader is) throws IOException
+  private HashMap<String,LogDataFrame> readFrame(LogFileFrame frame, BasicReader is) throws IOException
   {
     // jump to the begin of the frame
     is.seek(frame.position);
@@ -426,6 +434,8 @@ public class LogfileInspector extends AbstractDialog
     int numberOfReadBytes = 0;
 
     jTextArea1.setText("Frame " + frame.number + "\n");
+    
+    HashMap<String,LogDataFrame> currentFrame = new HashMap<>();
     
     while(numberOfReadBytes < frame.size)
     {
@@ -443,32 +453,14 @@ public class LogfileInspector extends AbstractDialog
 
       jTextArea1.append(currentName + "\n");
       
-      // read data
-      if(currentName.equals("Image"))
-      {
-        byte[] buffer = new byte[currentSize];
-        int data = 0;
-        while(data < currentSize)
-        {
-          data += is.read(buffer);
-        }
-        //imageManager.handleResponse(buffer, imageManager.getCurrentCommand());
-        ImageManagerImpl im = new ImageManagerImpl();
-        JanusImage janusImage = im.convertByteArrayToType(buffer);
-        this.imageCanvas.setImage(janusImage.getRgb());
-      }
-      else
-      {
-        // skip the data
-        int data = 0;
-        while(data < currentSize)
-        {
-          data += is.skip(currentSize);
-        }
-      }
-
-      numberOfReadBytes += currentSize;
+      byte[] buffer = new byte[currentSize];
+      numberOfReadBytes += is.read(buffer);
+      
+      LogDataFrame logDataFrame = new LogDataFrame(frameNumber, currentName, buffer);
+      currentFrame.put(currentName, logDataFrame);
     }//end while
+    
+    return currentFrame;
   }//end readFrame
   
 
@@ -502,20 +494,6 @@ public class LogfileInspector extends AbstractDialog
 
     return result;
   }//end readInt
-
-
-  class LogDataFrame
-  {
-    final int number;
-    final String name;
-    final byte[] data;
-
-    public LogDataFrame(int number, String name, byte[] data) {
-      this.number = number;
-      this.name = name;
-      this.data = data;
-    }
-  }//end LFrame
 
 
 
@@ -602,9 +580,9 @@ public class LogfileInspector extends AbstractDialog
       {
         try
         {
-          this.stringBuilder.append(logDataFrame.number);
+          this.stringBuilder.append(logDataFrame.getNumber());
           
-          SensorJointData sensorJointData = SensorJointData.parseFrom(logDataFrame.data);
+          SensorJointData sensorJointData = SensorJointData.parseFrom(logDataFrame.getData());
           
 
           for(int i = JointID.RShoulderRoll.ordinal(); i <= JointID.LElbowYaw.ordinal(); i++ )
@@ -634,7 +612,7 @@ public class LogfileInspector extends AbstractDialog
       {
         try
         {
-          SensorJointData jointData = SensorJointData.parseFrom(logMotorDataFrame.data);
+          SensorJointData jointData = SensorJointData.parseFrom(logMotorDataFrame.getData());
 
           for(int i = JointID.RShoulderRoll.ordinal(); i <= JointID.LElbowYaw.ordinal(); i++ )
           {
@@ -748,13 +726,13 @@ public class LogfileInspector extends AbstractDialog
               if(msgClass == null) continue;
               
               
-              Method parseMethod = msgClass.getMethod("parseFrom", dataFrame.data.getClass());
+              Method parseMethod = msgClass.getMethod("parseFrom", dataFrame.getData().getClass());
               
               if(parseMethod == null) continue;
               
               
               MessageOrBuilder message = 
-                (MessageOrBuilder)(parseMethod.invoke(this, new Object[] {dataFrame.data}));
+                (MessageOrBuilder)(parseMethod.invoke(this, new Object[] {dataFrame.getData()}));
               
               for(com.google.protobuf.Descriptors.FieldDescriptor key: message.getAllFields().keySet())
               {
@@ -838,21 +816,21 @@ public class LogfileInspector extends AbstractDialog
 
         if(imageFrame != null)
         {
-            FrameInfo frameInfo = FrameInfo.parseFrom(infoFrame.data); 
+            FrameInfo frameInfo = FrameInfo.parseFrom(infoFrame.getData()); 
             
             // create a file
             File outFile = new File("image_export/"+file_name+"/bottom/"+frameInfo.getFrameNumber()+".png");
             outFile.mkdirs();
             
             ImageManagerImpl im = new ImageManagerImpl();
-            JanusImage janusImage = im.convertByteArrayToType(imageFrame.data);
+            JanusImage janusImage = im.convertByteArrayToType(imageFrame.getData());
             ImageIO.write(janusImage.getRgb(), "PNG", outFile);
             
             File outFileTop = new File("image_export/"+file_name+"/top/"+frameInfo.getFrameNumber()+".png");
             outFileTop.mkdirs();
             
             ImageManagerImpl imTop = new ImageManagerImpl();
-            JanusImage janusImageTop = imTop.convertByteArrayToType(imageTopFrame.data);
+            JanusImage janusImageTop = imTop.convertByteArrayToType(imageTopFrame.getData());
             ImageIO.write(janusImageTop.getRgb(), "PNG", outFileTop);
         }
         else
@@ -942,22 +920,22 @@ public class LogfileInspector extends AbstractDialog
         if(sensorJointFrame != null || motorJointFrame != null)
         {
 
-          SensorJointData sensorJointData = SensorJointData.parseFrom(sensorJointFrame.data);
-          JointData motorJointData = JointData.parseFrom(motorJointFrame.data);
+          SensorJointData sensorJointData = SensorJointData.parseFrom(sensorJointFrame.getData());
+          JointData motorJointData = JointData.parseFrom(motorJointFrame.getData());
 
           if(frameInfoFrame != null)
           {
-            FrameInfo frameInfo = FrameInfo.parseFrom(frameInfoFrame.data);
+            FrameInfo frameInfo = FrameInfo.parseFrom(frameInfoFrame.getData());
             this.stringBuilder.append(frameInfo.getTime()*1e-3);
           }
           else
           {
-            if(tmp == -1) tmp = sensorJointFrame.number;
-            this.stringBuilder.append((sensorJointFrame.number - tmp)*1e-3); // time
+            if(tmp == -1) tmp = sensorJointFrame.getNumber();
+            this.stringBuilder.append((sensorJointFrame.getNumber() - tmp)*1e-3); // time
           }
           
           this.stringBuilder.append(separator)
-                            .append(sensorJointFrame.number);
+                            .append(sensorJointFrame.getNumber());
           
           //sensorJointData
           for(int i = 0; i < JointID.values().length; i++ )
@@ -1085,8 +1063,8 @@ public class LogfileInspector extends AbstractDialog
 
         if(logDataFrame != null || syncDataFrame != null)
         {
-          DoubleVector serialSensorData = DoubleVector.parseFrom(logDataFrame.data);
-          DoubleVector serialSensorSync = DoubleVector.parseFrom(syncDataFrame.data);
+          DoubleVector serialSensorData = DoubleVector.parseFrom(logDataFrame.getData());
+          DoubleVector serialSensorSync = DoubleVector.parseFrom(syncDataFrame.getData());
 
           if(serialSensorSync.getV(0) == 0.0) return;
           
@@ -1096,8 +1074,8 @@ public class LogfileInspector extends AbstractDialog
               this.headerGenerated = true;
           }//end if
 
-          if(tmp == -1) tmp = logDataFrame.number;
-          this.stringBuilder.append((logDataFrame.number - tmp)*1e-3); // frame number
+          if(tmp == -1) tmp = logDataFrame.getNumber();
+          this.stringBuilder.append((logDataFrame.getNumber() - tmp)*1e-3); // frame number
           //this.stringBuilder.append(separator).append(serialSensorSync.getV(0));
           
           for(int i = 0; i < serialSensorData.getVCount(); i+=6)
@@ -1128,8 +1106,8 @@ public class LogfileInspector extends AbstractDialog
         if(sensorJointFrame != null || motorJointFrame != null)
         {
 
-          SensorJointData sensorJointData = SensorJointData.parseFrom(sensorJointFrame.data);
-          SensorJointData motorJointData = SensorJointData.parseFrom(motorJointFrame.data);
+          SensorJointData sensorJointData = SensorJointData.parseFrom(sensorJointFrame.getData());
+          SensorJointData motorJointData = SensorJointData.parseFrom(motorJointFrame.getData());
 
           //sensorJointData
           for(int i = 0; i < JointID.values().length; i++ )

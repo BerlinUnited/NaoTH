@@ -49,6 +49,14 @@ struct buffer
  *
  * @author Thomas Krause
  *
+ * NOTE (Settings issues):
+ * In general, it seems that the camera settings are preserved after the camera was started once.
+ * Exposure is a special case - while the setting value itself is preserved, it seems to be 
+ * NOT applied internaly at the start of the camera. So we have to reset it every time.
+ * Exposure setting is ONLY applied if the new value is different from the current one. 
+ * This is why we have to change it in the "HACK (exposure)".
+ * 
+ * There are also some driver issues, see "HACK (FadeToBlack and Sharpness)"
  */
 
 namespace naoth {
@@ -57,11 +65,9 @@ class V4lCameraHandler
 {
 public:
   V4lCameraHandler();
-  virtual ~V4lCameraHandler();
+  ~V4lCameraHandler();
 
-  void init(std::string camDevice = "/dev/video1",
-            CameraInfo::CameraID camID = CameraInfo::Bottom,
-            bool blockingMode = true);
+  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
 
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
@@ -72,11 +78,9 @@ public:
   void setAllCameraParams(const CameraSettings &data);
 
 private:
-
-  int xioctl(int fd, int request, void* arg);
-  bool hasIOError(int errOccured, int errNo, bool exitByIOError);
   void initIDMapping();
   void openDevice(bool blockingMode);
+
   void initDevice();
   void initMMap();
   void initUP(unsigned int buffer_size);
@@ -86,6 +90,7 @@ private:
   int readFrameMMaP();
   int readFrameUP();
   int readFrameRead();
+
   void stopCapturing();
   void uninitDevice();
   void closeDevice();
@@ -94,7 +99,11 @@ private:
   bool setSingleCameraParameter(int id, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-  std::string getErrnoDescription(int err);
+
+  // tools
+  int xioctl(int fd, int request, void* arg) const;
+  bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
+  std::string getErrnoDescription(int err) const;
 
   typedef enum
   {
@@ -128,9 +137,10 @@ private:
   bool bufferSwitched;
   bool blockingCaptureModeEnabled;
 
+
   int csConst[CameraSettings::numOfCameraSetting];
-  int allowedTolerance[CameraSettings::numOfCameraSetting];
-  int waitTime[CameraSettings::numOfCameraSetting];
+  unsigned long long lastCameraSettingTimestamp;
+
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
 
