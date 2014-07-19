@@ -14,6 +14,7 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
 #include "Tools/Math/PointList.h"
+#include "Tools/Math/Matrix_nxn.h"
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
