@@ -259,7 +259,6 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
 
   // test: extract chains from neighbors
   CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  size_t k = 0;
   for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
