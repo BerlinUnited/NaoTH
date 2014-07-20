@@ -106,7 +106,14 @@ void Walk::execute()
         getGroundContactModel(),
         getInertialSensorData(),
         c.hip);*/
-      
+
+      /*
+      getEngine().rotationStabilize(
+        getInertialModel(),
+        getGyrometerData(),
+        c.hip);
+      */
+
       if(!stepBuffer.empty()) 
       {
         if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) {
