@@ -6,6 +6,7 @@ import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.LogSimulator;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.CommonTypes;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -540,7 +542,10 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             } else {
                 data = b.getRepresentation("GoalPercept");
                 Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
-                postCount = goalPercept.getPostCount();
+                List<CommonTypes.GoalPost> goalPosts = goalPercept.getPostList();
+                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                    if (goalPost.hasPositionReliable()) postCount++;
+                }
             }
             
             switch (postCount) {
@@ -571,7 +576,11 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             } else {
                 data = b.getRepresentation("GoalPerceptTop");
                 Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
-                postCount = goalPerceptTop.getPostCount();
+                List<CommonTypes.GoalPost> goalPosts = goalPerceptTop.getPostList();
+                postCount = 0;
+                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                    if (goalPost.hasPositionReliable()) postCount++;
+                }
                 
             }
             switch (postCount) {

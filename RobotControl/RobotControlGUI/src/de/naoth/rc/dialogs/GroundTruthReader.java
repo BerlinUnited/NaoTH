@@ -7,6 +7,7 @@ import de.naoth.rc.LogSimulator;
 import de.naoth.rc.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.CommonTypes;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.io.BufferedWriter;
@@ -900,7 +901,11 @@ public class GroundTruthReader extends AbstractDialog {
                  */
                 data = b.getRepresentation("GoalPercept");
                 Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
-                int postCount = goalPercept.getPostCount();
+                List<CommonTypes.GoalPost> goalPosts = goalPercept.getPostList();
+                int postCount = 0;
+                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                    if (goalPost.hasPositionReliable()) postCount++;
+                }
                 Integer goalHere = bottomGoal.get(frameNumber);
                 if (goalHere == null) {
                     missmatch.missingFrame = true;
@@ -918,7 +923,11 @@ public class GroundTruthReader extends AbstractDialog {
                  */
                 data = b.getRepresentation("GoalPerceptTop");
                 Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
-                postCount = goalPerceptTop.getPostCount();
+                goalPosts = goalPerceptTop.getPostList();
+                postCount = 0;
+                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                    if (goalPost.hasPositionReliable()) postCount++;
+                }
                 goalHere = topGoal.get(frameNumber);
                 if (goalHere == null) {
                     missmatch.missingFrame = true;
