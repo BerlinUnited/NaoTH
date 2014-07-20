@@ -52,11 +52,22 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerOutput<DebugMessageOut>(*this);
 }
 
+void Simulator::open(const std::string& filePath) 
+{
+  logFileScanner.open(filePath);
+  lastFrameTime = 0;
+  //simulatedTime = 0;
+  //simulatedFrameNumber = 0;
+
+  jumpToBegin();
+}
+
 void Simulator::init()
 {  
   lastFrameTime = 0;
   simulatedTime = 0;
   theDebugServer.start(5401, true);
+  theDebugServer.setTimeOut(0);
 }
 
 void Simulator::printRepresentations()
@@ -106,8 +117,6 @@ void Simulator::printCurrentLineInfo()
   // output some informations about the current frame
   if(!backendMode) {
     cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
-  } else {
-    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << endl;
   }
 }//end printCurrentLineInfo
 
@@ -272,7 +281,7 @@ void Simulator::jumpTo(unsigned int position)
   } else {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
-    if(!backendMode) printCurrentLineInfo();
+    if(!backendMode) { printCurrentLineInfo(); }
   }
 }//end jumpTo
 

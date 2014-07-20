@@ -208,7 +208,7 @@ public class MessageServer extends AbstractMessageServer {
         }
 
         if (listener == null || command == null) {
-            throw new IllegalArgumentException("A valid command is required.");
+            throw new IllegalArgumentException("A valid command or listener is required.");
         }
 
         this.pendingCommandsList.add(new SingleExecEntry(listener, command));
