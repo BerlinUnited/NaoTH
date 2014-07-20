@@ -16,7 +16,12 @@ public class LogSimulator {
     */
     
     public LogSimulator() {
-        System.loadLibrary("logsimulator");
+        try {
+            System.loadLibrary("logsimulator");
+        }
+        catch (UnsatisfiedLinkError ex) {
+            ex.printStackTrace();
+        }
     }
 
     public native void stepForward();
