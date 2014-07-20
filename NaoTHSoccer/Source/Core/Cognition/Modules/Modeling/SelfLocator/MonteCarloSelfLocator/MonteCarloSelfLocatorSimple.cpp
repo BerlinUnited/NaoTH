@@ -171,6 +171,8 @@ void MonteCarloSelfLocatorSimple::execute()
       resampleMH(theSampleSet);
       //resampleMHOld(theSampleSet);
 
+      sensorResetBySensingGoalModel(theSampleSet, theSampleSet.size() - 1);
+
       // estimate the state
       canopyClustering.cluster(mhBackendSet);
     
