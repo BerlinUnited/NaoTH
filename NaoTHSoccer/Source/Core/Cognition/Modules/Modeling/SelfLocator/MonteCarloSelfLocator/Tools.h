@@ -48,10 +48,24 @@ inline void initializeSampleSet(const Geometry::Rect2d& rect, SampleSet& sampleS
   }
 }
 
+inline void initializeSampleSetFixedRotation(const Geometry::Rect2d& rect, double angle, SampleSet& sampleSet)
+{
+  double likelihood = 1.0/static_cast<double>(sampleSet.size());
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    Sample& sample = sampleSet[i];
+    sample.translation.x = Math::random(rect.min().x, rect.max().x);
+    sample.translation.y = Math::random(rect.min().y, rect.max().y);
+    sample.rotation = angle;
+    sample.likelihood = likelihood;
+  }
+}
+
 inline double computeAngleWeight( double measured, double expected, double standardDeviation)
 { 
   double diff = Math::normalize(expected - measured);
-  return Math::gaussianProbability(diff, standardDeviation);
+  //return Math::gaussianProbability(diff, standardDeviation);
+  return std::max(exp(-0.5 * Math::sqr(diff / standardDeviation)), 1e-6);
 }
 
 
@@ -62,7 +76,8 @@ inline double computeDistanceWeight( double measured, double expected, double ca
   const double expectedDistanceAsAngle = atan2(expected, cameraHeight);
 
   double diff = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
-  return Math::gaussianProbability(diff, standardDeviation);
+  //double result = Math::gaussianProbability(diff, standardDeviation);
+  return std::max(exp(-0.5 * Math::sqr(diff / standardDeviation)), 1e-6);
 }
 
 }

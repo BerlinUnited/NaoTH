@@ -250,8 +250,8 @@ public:
     }
 
     inline bool inside(const Vector2d& p) const {
-       return maximum.x >= p.x && p.x >= -minimum.x &&
-              maximum.y >= p.y && p.y >= -minimum.y;
+       return maximum.x >= p.x && p.x >= minimum.x &&
+              maximum.y >= p.y && p.y >= minimum.y;
     }
 
     inline const Vector2d& min() const { return minimum; }

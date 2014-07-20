@@ -18,38 +18,44 @@ class SampleSet
 public:
   SampleSet(unsigned int n = 100)
     :
-    samples(n),
-    numberOfParticles(n)
+    samples(n)
   {
   }
 
   ~SampleSet() {}
 
-  std::vector<Sample> samples;
-
   /** 
-   * sort the particles according to their likelihood
-   * with quicksort
-   */
+  * sort the particles according to their likelihood
+  * with quicksort
+  */
   void sort(bool descending = true);
 
   /** 
-   * normalize the likelihoods of patricle so thay sum up to 1
-   */
+  * normalize the likelihoods of patricle so thay sum up to 1
+  */
   void normalize(double offset = 0.0);
 
   /** 
-   * reset the likelihoods of patricle to 1/numberOfParticles
-   */
+  * reset the likelihoods of patricle to 1/numberOfParticles
+  */
   void resetLikelihood();
 
-  /**
-   * Access operator.
-   * @param index The index of the sample to access.
-   */
-  inline Sample& operator[](int index) {return samples[index];}
+  /** 
+  * set the likelihood to th given value for every particle
+  */
+  void setLikelihood(double v);
 
-  inline unsigned int size() const { return numberOfParticles; }
+  /**
+  * Access operator.
+  * @param index The index of the sample to access.
+  */
+  inline Sample& operator[](int index) {return samples[index];}
+  inline Sample& operator[](size_t index) {return samples[index];}
+
+  /**
+  * yeah, guess what it does ...
+  */
+  inline size_t size() const { return samples.size(); }
 
   /**
    * Constant access operator.
@@ -59,15 +65,16 @@ public:
 
   const Sample& getMostLikelySample() const;
   Sample meanOfLargestCluster(Moments2<2>& moments) const;
+  Sample meanOfCluster(Moments2<2>& moments, int idx) const;
 
   // TODO: move it out of here
   void drawCluster(unsigned int clusterId) const;
   void drawImportance(bool arrows = true) const;
 
 private:
-  void quicksort(int d, int low, int high);
+  std::vector<Sample> samples;
 
-  unsigned int numberOfParticles;
+  void quicksort(int d, int low, int high);
 };
 
 #endif //_SampleSet_h_

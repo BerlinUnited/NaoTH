@@ -53,7 +53,7 @@
 BEGIN_DECLARE_MODULE(MonteCarloSelfLocatorSimple)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo) // only for visualization of the pose
+  REQUIRE(PlayerInfo)
   REQUIRE(GameData)
 
   REQUIRE(OdometryData)
@@ -89,6 +89,8 @@ public:
 private: // local types
 
   enum State {
+    BLIND, // no sensory information is processed but the state is monitored
+    KIDNAPPED, // robot is lifted up 
     LOCALIZE,
     TRACKING
   } state;
@@ -128,6 +130,10 @@ private: // local types
       PARAMETER_REGISTER(resetOwnHalf) = false;
       PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
       PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
+      
+      PARAMETER_REGISTER(updateBySituation) = true;
+      PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
+      PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
@@ -165,6 +171,10 @@ private: // local types
     bool resetOwnHalf;
     double downWeightFactorOwnHalf;
     double maxTimeForLiftUp;
+
+    bool updateBySituation;
+    double startPositionsSigmaDistance;
+    double startPositionsSigmaAngle;
 
     bool resampleSUS;
     bool resampleGT07;
@@ -234,12 +244,18 @@ private: // workers
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
+  // A-Priori knowledge based on the game state
   void updateByStartPositions(SampleSet& sampleSet) const;
+  void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
+  void updateByOppHalf(SampleSet& sampleSet) const;
+  void updateByGoalBox(SampleSet& sampleSet) const;
+
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 
   void updateStatistics(SampleSet& sampleSet);
+  void resetLocator();
 
   void resampleSimple(SampleSet& sampleSet, int number) const;
   void resampleMH(SampleSet& sampleSet);
