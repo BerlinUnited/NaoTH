@@ -23,6 +23,8 @@ using namespace mcsl;
 MonteCarloSelfLocatorSimple::MonteCarloSelfLocatorSimple() 
   :
   state(LOCALIZE),
+  lastState(LOCALIZE),
+  islocalized(false),
   theSampleSet(100),
   canopyClustering(parameters.thresholdCanopy)
 {
@@ -122,12 +124,19 @@ void MonteCarloSelfLocatorSimple::execute()
     {
       resetLocator();
       state = LOCALIZE;
+      islocalized = false;
+      lastState = KIDNAPPED;
       break;
     }
     case BLIND:
     {
       /* do nothing */
-      state = LOCALIZE;
+      if(!islocalized) {
+        state = LOCALIZE;
+      } else {
+        state = TRACKING;
+      }
+      lastState = BLIND;
       break;
     }
     case LOCALIZE:
@@ -138,7 +147,7 @@ void MonteCarloSelfLocatorSimple::execute()
       updateBySensors(theSampleSet);
 
       // use prior knowledge
-      if(parameters.updateBySituation) 
+      if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
         if(getSituationStatus().oppHalf) 
         {
@@ -191,6 +200,9 @@ void MonteCarloSelfLocatorSimple::execute()
       DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
         mhBackendSet.drawImportance();
       );
+
+      islocalized = true;
+      lastState = LOCALIZE;
       break;
     }
     case TRACKING:
@@ -228,6 +240,7 @@ void MonteCarloSelfLocatorSimple::execute()
         theSampleSet.drawImportance();
       );
 
+      lastState = TRACKING;
       break;
     }
     default: assert(false); // should never be here

@@ -93,7 +93,10 @@ private: // local types
     KIDNAPPED, // robot is lifted up 
     LOCALIZE,
     TRACKING
-  } state;
+  } state, lastState;
+
+  // NOTE: indecates whether the robot is localized
+  bool islocalized;
 
   class Parameters: public ParameterList
   {
