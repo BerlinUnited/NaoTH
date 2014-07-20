@@ -31,7 +31,7 @@
 
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(MotionStatus)
-  REQUIRE(OdometryData)
+  PROVIDE(OdometryData)
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 
@@ -69,6 +69,24 @@ public:
   Motion();
   virtual ~Motion();
 
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("MotionParameters")
+    {
+      PARAMETER_REGISTER(gyrometerOdometry) = false;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    bool gyrometerOdometry;
+
+    virtual ~Parameters() {
+      DebugParameterList::getInstance().remove(this);
+    }
+  } parameters;
 
   /**
   *
