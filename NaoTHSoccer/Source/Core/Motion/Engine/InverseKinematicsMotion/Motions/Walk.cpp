@@ -130,6 +130,7 @@ void Walk::execute()
       }
       
       getEngine().rotationStabilize(
+        getInertialModel(),
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
         c);

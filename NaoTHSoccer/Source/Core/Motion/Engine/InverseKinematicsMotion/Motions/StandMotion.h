@@ -136,6 +136,7 @@ public:
 
       c.localInLeftFoot();
       getEngine().rotationStabilize(
+        getInertialModel(),
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
         c);
