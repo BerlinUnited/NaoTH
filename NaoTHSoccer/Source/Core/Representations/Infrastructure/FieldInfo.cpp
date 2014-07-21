@@ -196,6 +196,35 @@ void FieldInfo::createLinesTable()
     crossings[opponentGoalTCrossingLeft].position
     );
 
+  // white goal box is recognized as lines (opp goal)
+  fieldLinesTable.addLine(
+    opponentGoalPostLeft,
+    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y)
+    );
+  fieldLinesTable.addLine(
+    opponentGoalPostRight,
+    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
+    );
+  fieldLinesTable.addLine(
+    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y),
+    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
+    );
+
+  // white goal box is recognized as lines (own goal)
+  fieldLinesTable.addLine(
+    ownGoalPostLeft,
+    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y)
+    );
+  fieldLinesTable.addLine(
+    ownGoalPostRight,
+    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
+    );
+  fieldLinesTable.addLine(
+    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y),
+    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
+    );
+
+
   // center circle approximated by sequence of lines
   double numberOfSegments = 12;
   double angleStep = Math::pi2 / numberOfSegments;
