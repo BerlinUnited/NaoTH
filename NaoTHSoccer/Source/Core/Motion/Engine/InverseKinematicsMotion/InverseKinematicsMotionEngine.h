@@ -130,6 +130,7 @@ public:
   
 
   bool rotationStabilize(
+    const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
     double timeDelta,
     InverseKinematic::HipFeetPose& p);

@@ -432,6 +432,7 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
 
 bool InverseKinematicsMotionEngine::rotationStabilize(
+  const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
   double timeDelta,
   InverseKinematic::HipFeetPose& p)
@@ -460,11 +461,15 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
     const Vector2d error = requestedVelocity - filteredGyro;
     const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationP.y * error.y + 
+    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y + 
                          getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationP.x * error.x + 
+    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x + 
                          getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+
+    const Vector2d& inertial = theInertialModel.orientation;
+    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
+    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
 
     p.localInHip();
     p.hip.rotateX(correctionX);
@@ -506,7 +511,6 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   weight.y = 
       getParameters().walk.stabilization.rotationP.y * inertial.y
     + getParameters().walk.stabilization.rotationD.y * filteredGyro.y;
-
 
   double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
       //theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;

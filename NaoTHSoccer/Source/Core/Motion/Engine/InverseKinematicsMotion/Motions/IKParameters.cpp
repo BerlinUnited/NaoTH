@@ -67,6 +67,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationD.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationD.y) = 0;
 
