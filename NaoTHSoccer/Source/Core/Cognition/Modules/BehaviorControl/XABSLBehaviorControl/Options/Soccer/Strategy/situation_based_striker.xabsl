@@ -92,6 +92,21 @@ option situation_based_striker
     }
   }
 
+  state sidekick_stable {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+      motion.walk.style = stable;
+    }
+  }
+
+
   state attack {
     decision{
       else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))

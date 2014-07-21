@@ -20,7 +20,7 @@ option situation_sidekick
         stay;
     }
     action {
-      go_to_ball_with_foot(right = true, distance = 130);
+      go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
     }
   }
 
@@ -32,7 +32,7 @@ option situation_sidekick
         stay;
     }
     action {
-      go_to_ball_with_foot(right = false, distance = 130);
+      go_to_ball_with_foot(right = false, distance = 130, offset.y=-20);
     }
   }
 
