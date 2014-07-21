@@ -9,6 +9,9 @@ option kick_with_foot_test_agent {
 
       kick_with_foot_test();
       
+      // control the arms
+      arms_control();
+
       // control head movement according to value of head.control_mode
       head_control();
     }

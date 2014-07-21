@@ -64,7 +64,7 @@ option fast_forward_kick
     decision
     {
       if(state_time > 300 && executed_motion.step_control.right_movable)
-        goto short_freeze;
+        goto finished; //short_freeze;
       else
         stay;
     }
@@ -117,10 +117,11 @@ option fast_forward_kick
     action
     {
       motion.type = stand; // walk besser?
+      motion.walk.stop_with_stand = true;
     
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
-
+      
       //loook at percept
       head.control_mode = look_at_ball_percept;
     }
