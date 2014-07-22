@@ -24,7 +24,7 @@ option basic_goalie
      decision 
      {
        else if (ball.distance < 1500 && ball.time_since_last_seen < 1000
-               && robot_pose.planned.x < -4000)
+               && ball.position.field.x < -4000)
          goto clear_ball;
        else if (action_done)
        {
@@ -33,7 +33,8 @@ option basic_goalie
          stay;
      }
      action {
-       go_to_point(x=field.xPosOwnGroundline + 200, y=0,rot=0);
+       //go_to_point(x=field.xPosOwnGroundline + 200, y=0,rot=0);
+       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200, y=0,rot=0);
        head.control_mode = search_for_goal;
      }
   }

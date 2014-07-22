@@ -8,7 +8,7 @@ option decide_and_go_to_passive_position
 
   initial state idle {
 	  decision {
-      else if (action_done)
+      else if (state_time > 10000 && action_done) // search for maximum 10s
         goto check_player_number;
       else
         stay;
