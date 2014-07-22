@@ -64,6 +64,9 @@ public:
   void jumpTo(unsigned int position);
   void play(bool loop = false);
 
+  int getCurrentFrame() { return *currentFrame; }
+  int getMinFrame() { return *(logFileScanner.begin());}
+  int getMaxFrame() { return *(logFileScanner.last());}
   
   /////////////////////// get ///////////////////////
   template<class T> void generalGet(T& data, std::string name) const;
@@ -104,6 +107,7 @@ public:
   //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////
+  void open(const std::string& filePath);
   virtual void init();
   
   const LogFileScanner::Frame& getRepresentations() {

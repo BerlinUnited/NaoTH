@@ -1638,9 +1638,9 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
     for (int y = 0; y < ySize; y++)
     {
       Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      sampleSet.samples[idx].translation = point;
-      sampleSet.samples[idx].rotation = getRobotPose().rotation;
-      sampleSet.samples[idx].likelihood = 1.0;
+      sampleSet[idx].translation = point;
+      sampleSet[idx].rotation = getRobotPose().rotation;
+      sampleSet[idx].likelihood = 1.0;
       idx++;
     }//end for
   }//end for
@@ -1652,9 +1652,9 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
   for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
-      maxValue = max(maxValue, sampleSet.samples[idx++].likelihood);
-    }//end for
-  }//end for
+      maxValue = max(maxValue, sampleSet[idx++].likelihood);
+    }
+  }
 
   if(maxValue == 0) return;
 
@@ -1664,10 +1664,10 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
     {
       Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
-      double t = sampleSet.samples[idx++].likelihood / maxValue;
+      double t = sampleSet[idx++].likelihood / maxValue;
       DebugDrawings::Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-    }//end for
-  }//end for
+    }
+  }
 }//end draw_closest_points

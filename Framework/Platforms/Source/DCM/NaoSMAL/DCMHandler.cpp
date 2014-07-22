@@ -170,13 +170,23 @@ void DCMHandler::initAccelerometer()
   DCMPath_Accelerometer[0] = "Device/SubDeviceList/InertialSensor/AccX/Sensor/Value";
   DCMPath_Accelerometer[1] = "Device/SubDeviceList/InertialSensor/AccY/Sensor/Value";
   DCMPath_Accelerometer[2] = "Device/SubDeviceList/InertialSensor/AccZ/Sensor/Value";
+
+  DCMPath_Accelerometer[3] = "Device/SubDeviceList/InertialSensor/AccelerometerX/Sensor/Value";
+  DCMPath_Accelerometer[4] = "Device/SubDeviceList/InertialSensor/AccelerometerY/Sensor/Value";
+  DCMPath_Accelerometer[5] = "Device/SubDeviceList/InertialSensor/AccelerometerZ/Sensor/Value";
 }//end initAccelerometer
 
 void DCMHandler::initGyrometer()
 {
   DCMPath_Gyrometer[0] = "Device/SubDeviceList/InertialSensor/GyrX/Sensor/Value";
   DCMPath_Gyrometer[1] = "Device/SubDeviceList/InertialSensor/GyrY/Sensor/Value";
-  DCMPath_Gyrometer[2] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
+  DCMPath_Gyrometer[2] = "Device/SubDeviceList/InertialSensor/GyrZ/Sensor/Value";
+
+  DCMPath_Gyrometer[3] = "Device/SubDeviceList/InertialSensor/GyroscopeX/Sensor/Value";
+  DCMPath_Gyrometer[4] = "Device/SubDeviceList/InertialSensor/GyroscopeY/Sensor/Value";
+  DCMPath_Gyrometer[5] = "Device/SubDeviceList/InertialSensor/GyroscopeZ/Sensor/Value";
+
+  DCMPath_Gyrometer[6] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
 }//end initGyrometer
 
 void DCMHandler::initInertialSensor()
@@ -348,14 +358,14 @@ void DCMHandler::initAllSensorData()
 
   //AccelerometerData
   ASSERT(theAccelerometerDataIndex == currentIndex);
-  for(int i=0;i<3;i++)
+  for(int i=0;i<3+3;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_Accelerometer[i];
   }
 
   //GyrometerData
   ASSERT(theGyrometerDataIndex == currentIndex);
-  for(int i=0;i<3;i++)
+  for(int i=0;i<3+3+1;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_Gyrometer[i];
   }

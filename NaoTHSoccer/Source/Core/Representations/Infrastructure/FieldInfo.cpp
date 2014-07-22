@@ -71,6 +71,7 @@ void FieldInfo::calculateCrossings()
 
   carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
   ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
+  oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
 
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);
@@ -194,6 +195,35 @@ void FieldInfo::createLinesTable()
     crossings[opponentPenaltyCornerLeft].position,
     crossings[opponentGoalTCrossingLeft].position
     );
+
+  // white goal box is recognized as lines (opp goal)
+  fieldLinesTable.addLine(
+    opponentGoalPostLeft,
+    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y)
+    );
+  fieldLinesTable.addLine(
+    opponentGoalPostRight,
+    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
+    );
+  fieldLinesTable.addLine(
+    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y),
+    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
+    );
+
+  // white goal box is recognized as lines (own goal)
+  fieldLinesTable.addLine(
+    ownGoalPostLeft,
+    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y)
+    );
+  fieldLinesTable.addLine(
+    ownGoalPostRight,
+    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
+    );
+  fieldLinesTable.addLine(
+    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y),
+    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
+    );
+
 
   // center circle approximated by sequence of lines
   double numberOfSegments = 12;

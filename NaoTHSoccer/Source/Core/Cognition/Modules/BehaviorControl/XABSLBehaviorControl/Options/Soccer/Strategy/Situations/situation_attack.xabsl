@@ -25,7 +25,7 @@ option situation_attack
         stay;
     }
     action{
-      go_to_ball_with_foot(right=true, distance=190);
+      go_to_ball_with_foot(right=true, distance=170);
       motion.walk.style = normal;
     }
   }
@@ -69,7 +69,7 @@ option situation_attack
         stay;
     }
     action{
-      go_to_ball_with_foot(right=false, distance=190);
+      go_to_ball_with_foot(right=false, distance=170);
       motion.walk.style = normal;
     }
   }

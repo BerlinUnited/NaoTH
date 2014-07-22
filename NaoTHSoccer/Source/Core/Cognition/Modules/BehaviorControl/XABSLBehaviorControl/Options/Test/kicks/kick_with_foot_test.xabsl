@@ -14,7 +14,7 @@ option kick_with_foot_test
     decision
     {
       else if(game.current_mode == playing)
-        goto go_to_ball_right;
+        goto goto_ball;
       else
         stay;
     }
@@ -23,6 +23,56 @@ option kick_with_foot_test
     }
   }
 
+  state search {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision{
+
+      else if(ball.time_since_last_seen > 1500)
+        goto search;
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        goto attack;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+
+
+  state attack {
+    decision{
+      else if(ball.time_since_last_seen > 1500)
+        goto search;
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      situation_attack();
+    }
+  }
+  
+
+/*
   state kick_right
   {
     decision
@@ -67,7 +117,7 @@ option kick_with_foot_test
     }
     action 
     {
-      go_to_ball_with_foot(right = true, distance = 180);
+      go_to_ball_with_foot(right = true, distance = 160);
     }
   }
 
@@ -84,7 +134,7 @@ state go_to_ball_left
     }
     action 
     {
-      go_to_ball_with_foot(right = false, distance = 180);
+      go_to_ball_with_foot(right = false, distance = 160);
     }
   }
 
@@ -140,4 +190,5 @@ state go_to_ball_left
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
+  */
 }

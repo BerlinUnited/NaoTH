@@ -94,7 +94,6 @@ option sidekick
       motion.walk.coordinate = hip;
       motion.walk.step_control.foot = none;
     }
-  
   }
 
   target state finished
@@ -105,8 +104,12 @@ option sidekick
     }
     action
     {
-      motion.type = stand;
-    
+      //motion.type = stand;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
@@ -114,5 +117,4 @@ option sidekick
       head.control_mode = look_at_ball_percept;
     }
   }
-
 }

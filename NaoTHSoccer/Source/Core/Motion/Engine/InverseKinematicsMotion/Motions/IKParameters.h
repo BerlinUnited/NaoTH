@@ -45,6 +45,8 @@ public:
     struct Hip
     {
       double comHeight;
+      double comHeightOffset;
+      double comRotationOffsetX;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;
@@ -98,10 +100,13 @@ public:
       Vector2d stabilizeFeetD;
 
       Vector2d rotationP;
+      Vector2d rotationVelocityP;
       Vector2d rotationD;
 
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
+      double dynamicStepsizeP;
+      double dynamicStepsizeD;
     } stabilization;
   } walk;
 

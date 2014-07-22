@@ -28,6 +28,7 @@
 #include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
+  REQUIRE(FrameInfo)
   REQUIRE(KinematicChainSensor)
   REQUIRE(KinematicChainMotor)
   REQUIRE(SensorJointData)
@@ -53,23 +54,23 @@ public:
   {
   }
 
-  void execute(){} // dummy
+  virtual void execute(){} // dummy
 
   
   InverseKinematic::HipFeetPose getHipFeetPoseBasedOnSensor() const;
-  
   InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnSensor() const;
 
   InverseKinematic::HipFeetPose getHipFeetPoseBasedOnModel() const;
-
   InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnModel() const;
 
   InverseKinematic::HipFeetPose getCurrentHipFeetPose() const;
-
   InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
-  
   InverseKinematic::ZMPFeetPose getPlannedZMPFeetPose() const;
-  
+
+  const InverseKinematic::CoMFeetPose& getlastControlledCoMFeetPose() const {
+    return lastCoMFeetControlPose;
+  }
+
   template<typename T>
   T interpolate(const T& sp, const T& tp, double t) const 
   {
@@ -98,6 +99,13 @@ public:
     bool& solved, 
     bool fix_height/*=false*/);
 
+  void controlCenterOfMassCool(
+    const MotorJointData& theMotorJointData,
+    const InverseKinematic::CoMFeetPose& target,
+    InverseKinematic::HipFeetPose& result,
+    bool leftFootSupport,
+    bool& sloved,
+    bool fix_height);
 
   unsigned int contorlZMPlength() const { return static_cast<unsigned int> (thePreviewController.previewSteps()); }
 
@@ -120,6 +128,12 @@ public:
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
+
+  bool rotationStabilize(
+    const InertialModel& theInertialModel,
+    const GyrometerData& theGyrometerData,
+    double timeDelta,
+    InverseKinematic::HipFeetPose& p);
 
   /**
    * PID stabilizer controlling the feet of the robot directly
@@ -190,6 +204,8 @@ private:
   Kinematics::InverseKinematics theInverseKinematics;
   
   Vector3d theCoMControlResult; // save CoM control result to be reused
+  InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
+  FrameInfo lastCoMFeetControlFrameInfo;
 
   PreviewController thePreviewController;
   Vector3d thePreviewControlCoM;

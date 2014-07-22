@@ -374,7 +374,7 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void errorOccured(String cause)
     {
-      ImageViewer.this.btReceiveImagesTop.setSelected(false);
+      ImageViewer.this.btReceiveImagesBottom.setSelected(false);
       ImageViewer.this.imageCanvasBottom.setVisible(false);
       ImageViewer.Plugin.imageManagerBottom.removeListener(this);
     }
@@ -393,7 +393,7 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void errorOccured(String cause)
     {
-      ImageViewer.this.btReceiveImagesBottom.setSelected(false);
+      ImageViewer.this.btReceiveImagesTop.setSelected(false);
       ImageViewer.this.imageCanvasTop.setVisible(false);
       ImageViewer.Plugin.imageManagerTop.removeListener(this);
     }

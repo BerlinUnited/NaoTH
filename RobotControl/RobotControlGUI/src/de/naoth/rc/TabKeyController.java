@@ -42,8 +42,9 @@ public class TabKeyController implements KeyEventPostProcessor
             return false;
         }
         
-        if(traversingList.size() <= 1) return false;
-        
+        if(traversingList.size() <= 1) { 
+            return false;
+        }
         
         if(  e.getKeyCode() == KeyEvent.VK_TAB &&
             (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK)
@@ -79,7 +80,9 @@ public class TabKeyController implements KeyEventPostProcessor
                     if(next instanceof AbstractCDockable){
                         ((AbstractCDockable)next).toFront();
                     }
-                }       
+                }
+                
+                return true;
             }
         }
         
@@ -97,10 +100,12 @@ public class TabKeyController implements KeyEventPostProcessor
                 removed = false;
                 idx = 0;
             }
+            
+            return true;
         }
         
         //System.out.println(e);
-        return true;
+        return false;
     }
     
     

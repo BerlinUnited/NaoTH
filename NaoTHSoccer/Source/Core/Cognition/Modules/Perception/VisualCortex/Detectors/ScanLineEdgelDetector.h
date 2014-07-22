@@ -9,11 +9,6 @@
 
 #include <ModuleFramework/Module.h>
 
-// Tools
-#include "Tools/ImageProcessing/Edgel.h"
-#include "Tools/ColorClasses.h"
-#include <Tools/Math/Vector2.h>
-
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
@@ -24,9 +19,14 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
+// Tools
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/DoubleCamHelpers.h"
+#include "Tools/ImageProcessing/Edgel.h"
+#include "Tools/ImageProcessing/MaximumScan.h"
+#include "Tools/ColorClasses.h"
+#include <Tools/Math/Vector2.h>
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(FrameInfo)
@@ -46,50 +46,6 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   PROVIDE(ScanLineEdgelPercept)
   PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
-
-
-template<typename T, typename V>
-class MaximumScan
-{
-private:
-  V threshhold;
-  V value_max;
-
-  // results of the scan
-  T& peakMax;
-  bool maximum;
-
-public:
-
-  MaximumScan(T& peakMax, V threshhold)
-    : threshhold(threshhold),
-      value_max(threshhold),
-      peakMax(peakMax),
-      maximum(false)
-  {
-  }
-
-  inline bool addValue(const T& point, V value)
-  {
-    if(maximum) {
-      value_max = threshhold;
-      maximum = false;
-    }
-
-    if(value > value_max)
-    {
-      value_max = value;
-      peakMax = point;
-    } else if(value_max > threshhold && value < threshhold) {
-      maximum = true;
-    }
-
-    return maximum;
-  }
-
-  inline bool isMax() { return maximum; }
-  inline V maxValue() { return value_max; }
-};
 
 
 class ScanLineEdgelDetector : private ScanLineEdgelDetectorBase

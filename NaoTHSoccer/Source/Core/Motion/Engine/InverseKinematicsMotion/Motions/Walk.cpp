@@ -38,18 +38,6 @@ void Walk::execute()
       theCoMFeetPose = executeStep();
     }
 
-    // buffer the pose
-    commandPoseBuffer.add(theCoMFeetPose);
-
-    bool solved = false;
-    HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, true);
-
-    PLOT("Walk:com.solved", solved);
-    PLOT("Walk:c:hip.z",c.hip.translation.z);
-
-    PLOT("Walk:theCoMFeetPose:left_diff",c.feet.left.translation.y - c.hip.translation.y-50);
-    PLOT("Walk:theCoMFeetPose:right_diff",c.feet.right.translation.y - c.hip.translation.y+50);
-
     // plot planned trajectory
     PLOT("Walk:theCoMFeetPose:com:x",theCoMFeetPose.com.translation.x);
     PLOT("Walk:theCoMFeetPose:com:y",theCoMFeetPose.com.translation.y);
@@ -63,16 +51,100 @@ void Walk::execute()
     PLOT("Walk:theCoMFeetPose:feet.right:y",theCoMFeetPose.feet.right.translation.y);
     PLOT("Walk:theCoMFeetPose:feet.right:z",theCoMFeetPose.feet.right.translation.z);
 
+    PLOT("Walk:theCoMFeetPose:feet.left:rotationX",theCoMFeetPose.feet.left.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:feet.left:rotationY",theCoMFeetPose.feet.left.rotation.getYAngle());
+
+    PLOT("Walk:theCoMFeetPose:feet.right:rotationX",theCoMFeetPose.feet.right.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:feet.right:rotationY",theCoMFeetPose.feet.right.rotation.getYAngle());
+
+    PLOT("Walk:theCoMFeetPose:com:rotationX",theCoMFeetPose.com.rotation.getXAngle());
+    PLOT("Walk:theCoMFeetPose:com:rotationY",theCoMFeetPose.com.rotation.getYAngle());
+    PLOT("Walk:theCoMFeetPose:com:rotationZ",theCoMFeetPose.com.rotation.getZAngle());
+
+    if(!stepBuffer.empty()) 
+    {
+      // HACK:
+      CoMFeetPose tmp(theCoMFeetPose);
+      if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) 
+      {
+        tmp.localInRightFoot();
+        theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.left.translation.z;
+        theCoMFeetPose.com.rotateX( theWalkParameters.hip.comRotationOffsetX *tmp.feet.left.translation.z );
+
+        PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
+      } 
+      else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) 
+      {
+        tmp.localInLeftFoot();
+        theCoMFeetPose.com.translation.z += theWalkParameters.hip.comHeightOffset * tmp.feet.right.translation.z;
+        theCoMFeetPose.com.rotateX( -theWalkParameters.hip.comRotationOffsetX*tmp.feet.right.translation.z );
+
+        PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
+      }
+
+      // buffer the pose
+      commandFootIdBuffer.add(stepBuffer.front().footStep.liftingFoot());
+      commandPoseBuffer.add(theCoMFeetPose);
+    }
+
+    bool solved = false;
+    HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, false);
+
+    PLOT("Walk:com.solved", solved);
+    PLOT("Walk:c:hip.z",c.hip.translation.z);
+
+    PLOT("Walk:theCoMFeetPose:left_diff",c.feet.left.translation.y - c.hip.translation.y-50);
+    PLOT("Walk:theCoMFeetPose:right_diff",c.feet.right.translation.y - c.hip.translation.y+50);
+
 
     // apply online stabilization
-    if(theWalkParameters.stabilization.rotationStabilize)
+    if(getCalibrationData().calibrated && theWalkParameters.stabilization.rotationStabilize)
     {
+      /*
       getEngine().rotationStabilize(
         getRobotInfo(),
         getGroundContactModel(),
         getInertialSensorData(),
+        c.hip);*/
+
+      /*
+      getEngine().rotationStabilize(
+        getInertialModel(),
+        getGyrometerData(),
         c.hip);
+      */
+
+      if(!stepBuffer.empty()) 
+      {
+        if(stepBuffer.front().footStep.liftingFoot() == FootStep::LEFT) {
+          c.localInRightFoot();
+        } else if(stepBuffer.front().footStep.liftingFoot() == FootStep::RIGHT) {
+          c.localInLeftFoot();
+        } else {
+          c.localInHip();
+        }
+      }
+      else
+      {
+        c.localInLeftFoot(); // NOTE: the same as the stand
+      }
+      
+      getEngine().rotationStabilize(
+        getInertialModel(),
+        getGyrometerData(),
+        getRobotInfo().getBasicTimeStepInSecond(),
+        c);
     }
+
+    PLOT("Walk:HipFeetPose:hip:rotationX",c.hip.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:hip:rotationY",c.hip.rotation.getYAngle());
+    PLOT("Walk:HipFeetPose:hip:rotationZ",c.hip.rotation.getZAngle());
+
+    PLOT("Walk:HipFeetPose:feet.right:rotationX",c.feet.right.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:feet.right:rotationY",c.feet.right.rotation.getYAngle());
+
+    PLOT("Walk:HipFeetPose:feet.left:rotationX",c.feet.left.rotation.getXAngle());
+    PLOT("Walk:HipFeetPose:feet.left:rotationY",c.feet.left.rotation.getYAngle());
 
     getEngine().solveHipFeetIK(c);
 
@@ -149,12 +221,12 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 
 
   const Vector2d& inertial = getInertialModel().orientation;
-  const Vector2d& gyro = getGyrometerData().data;
+  const Vector3d& gyro = getGyrometerData().data;
 
 
   // HACK: small filter...
-  static Vector2d lastGyro = gyro;
-  Vector2d filteredGyro = (lastGyro+gyro)*0.5;
+  static Vector3d lastGyro = gyro;
+  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
 
   Vector2d weight;
   weight.x = 
@@ -328,12 +400,12 @@ void Walk::manageSteps(const WalkRequest& req)
   {
     std::cout << "walk start" << std::endl;
     theCoMFeetPose = getEngine().getCurrentCoMFeetPose();
-    ZMPFeetPose currentZMP = getEngine().getPlannedZMPFeetPose();
-    
-    // TODO: why in the left foot?!
-    currentZMP.localInLeftFoot(); 
 
+    ZMPFeetPose currentZMP = getEngine().getPlannedZMPFeetPose();
+    currentZMP.localInLeftFoot(); // TODO: why in the left foot?!
     currentZMP.zmp.translation.z = theWalkParameters.hip.comHeight;
+
+
     Step zeroStep;
     updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
@@ -392,8 +464,12 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+      PLOT("Walk:step.footStep.rotY", step.footStep.end().left.rotation.getYAngle());
+      PLOT("Walk:step.footStep.rotX", step.footStep.end().left.rotation.getXAngle());
+
       if ( !isStopping && theWalkParameters.stabilization.dynamicStepsize ) {
         adaptStepSize(step.footStep);
+        currentComErrorBuffer.clear();
       }
       updateParameters(step, req.character);
     }
@@ -462,7 +538,8 @@ CoMFeetPose Walk::executeStep()
   Vector3d com;
   if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() )
   {
-    return getEngine().getCurrentCoMFeetPose();
+    //return getEngine().getCurrentCoMFeetPose();
+    return theCoMFeetPose;
   }
 
   PLOT("Walk:executeStep:com.x", com.x);
@@ -583,8 +660,9 @@ CoMFeetPose Walk::executeStep()
   }
 
   result.com.translation = com;
-  result.com.rotation = calculateBodyRotation(result.feet ,executingStep.bodyPitchOffset);
-
+  //result.localInLeftFoot();
+  result.com.rotation = calculateBodyRotation(result.feet, executingStep.bodyPitchOffset);
+  
   executingStep.executingCycle++;
   if ( executingStep.executingCycle >= executingStep.numberOfCyclePerFootStep )
   {
@@ -601,16 +679,8 @@ CoMFeetPose Walk::executeStep()
 
 RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) const
 {
-  double rAng = feet.left.rotation.getZAngle();
-  double lAng = feet.right.rotation.getZAngle();
-  double bodyRotation = Math::calculateMeanAngle(rAng, lAng);
-  if (fabs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
-  {
-    bodyRotation = Math::normalizeAngle(bodyRotation + Math::pi);
-  }
-  RotationMatrix rot = RotationMatrix::getRotationZ(bodyRotation);
-  rot.rotateY(pitch);
-  return rot;
+  double bodyAngleZ = Math::meanAngle(feet.left.rotation.getZAngle(), feet.right.rotation.getZAngle());
+  return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
 }
 
 void Walk::walk(const WalkRequest& req)
@@ -783,35 +853,40 @@ void Walk::calculateError()
 
   int observerMeasurementDelay = 40;
   int index = std::min(int(observerMeasurementDelay / 10 - 0.5), int(commandPoseBuffer.size() - 1));
-  const InverseKinematic::CoMFeetPose& expectedCoMFeetPose = commandPoseBuffer[index];
+  InverseKinematic::CoMFeetPose expectedCoMFeetPose = commandPoseBuffer[index];
 
   Vector3d requested_com;
   Vector3d observed_com;
 
   // if right support
-  if(expectedCoMFeetPose.feet.left.translation.z > expectedCoMFeetPose.feet.right.translation.z)
+  if(commandFootIdBuffer[index] == FootStep::LEFT)
   {
-    const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
-    requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
+    //const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
+    //requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInRightFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
-    footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
     observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   else
   {
-    const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
-    requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
+    //const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
+    //requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInLeftFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
 
     Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
     footObs.translate(0, 0, -NaoInfo::FootHeight);
-    footObs.rotation = RotationMatrix(); // assume the foot is flat on the ground
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
     observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
   
   currentComError = requested_com - observed_com;
   com_errors.add(currentComError.abs2());
+  currentComErrorBuffer.add(currentComError);
 
   PLOT("Walk:comErr:x", currentComError.x);
   PLOT("Walk:comErr:y", currentComError.y);
@@ -841,6 +916,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
     Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
+
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;
@@ -889,6 +965,7 @@ Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 
 void Walk::adaptStepSize(FootStep& step) const
 {
+  /*
   Vector3d comRef, comObs;
 
   if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
@@ -909,12 +986,20 @@ void Walk::adaptStepSize(FootStep& step) const
   PLOT("Walk:adaptStepSize:comErr.x",comErr.x);
   PLOT("Walk:adaptStepSize:comErr.y",comErr.y);
   PLOT("Walk:adaptStepSize:comErr.z",comErr.z);
+  */
 
-  double k = -1;
-  MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);
+  if(currentComErrorBuffer.size() > 0) 
+  {
+    Vector3d errorCoM = currentComErrorBuffer.getAverage();
+    static Vector3d lastCoMError = errorCoM;
+    
+    Vector3d comCorrection = errorCoM*theWalkParameters.stabilization.dynamicStepsizeP + 
+                          (errorCoM - lastCoMError)*theWalkParameters.stabilization.dynamicStepsizeD;
 
-  Vector3d comErrG = step.supFoot().rotation * currentComError;
+    Vector3d stepCorrection = step.supFoot().rotation * comCorrection;
+    step.footEnd().translation.x += stepCorrection.x;
+    step.footEnd().translation.y += stepCorrection.y;
 
-  step.footEnd().translation.x += comErrG.x * k;
-  step.footEnd().translation.y += comErrG.y * k;
+    lastCoMError = errorCoM;
+  }
 }//end adaptStepSize

@@ -55,8 +55,15 @@ option decide_role
       team.is_playing_as_striker = true;
       ball_was_outside_circle = true;
       situation_based_striker();
-      set_left_ear = platform.frameNumber % 10;
-      set_right_ear = platform.frameNumber % 10;
+      
+      //blinking
+      set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_head = (platform.frameNumber % 3 == 0) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
+      //for rotating
+      //set_left_ear = platform.frameNumber % 10;
+      //set_right_ear = platform.frameNumber % 10;
+      //set_head = platform.frameNumber % 13;
     }
   }
 

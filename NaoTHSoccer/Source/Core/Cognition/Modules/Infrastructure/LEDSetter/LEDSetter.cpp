@@ -25,12 +25,12 @@ void LEDSetter::execute()
   else
   {
     // head LEDs from behavior
-    copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+    copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::HeadRearRight2);
     copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
   }
   // feet and chest button and head from GameController
   copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
-  copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
+  //copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
 
 } // end execute
 

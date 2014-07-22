@@ -254,13 +254,11 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
   */
 
 
-  //std::vector<int> cluster(getScanLineEdgelPercept().pairs.size(),-1);
-  //std::vector<EdgelCluster> lines;
+  std::vector<int> cluster(getScanLineEdgelPercept().pairs.size(),-1);
+  std::vector<EdgelCluster> lines;
 
-  /*
   // test: extract chains from neighbors
   CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  size_t k = 0;
   for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
   {
     const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
@@ -279,42 +277,42 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     //PEN(DebugDrawings::Color((unsigned int)idx),1);
     //CIRCLE( edgel.point.x, edgel.point.y, 3+radius);
 
-    int i_right = neighbors[i].right;
+    int i_right = edgelNeighbors[i].right;
     while(i_right != -1 && cluster[i_right] == -1)
     {
       const ScanLineEdgelPercept::EdgelPair& edgel_one = getScanLineEdgelPercept().pairs[i_right];
 
       //CIRCLE( edgel_one.point.x, edgel_one.point.y, 3+radius);
-      if(neighbors[i_right].w_right > threshold) {
+      if(edgelNeighbors[i_right].w_right > threshold) {
         cluster[i_right] = k;
         lines[k].add(edgel_one);
         lines[k].inside_the_field = lines[k].inside_the_field || getScanLineEdgelPercept().endPoints[edgel_one.id].posInImage.y < edgel_one.point.y;
 
-        i_right = neighbors[i_right].right;
+        i_right = edgelNeighbors[i_right].right;
       } else {
         break;
       }
     }
 
-    int i_left = neighbors[i].left;
+    int i_left = edgelNeighbors[i].left;
     while(i_left != -1 && cluster[i_left] == -1)
     {
       const ScanLineEdgelPercept::EdgelPair& edgel_one = getScanLineEdgelPercept().pairs[i_left];
 
       //CIRCLE( edgel_one.point.x, edgel_one.point.y, 3+radius);
 
-      if(neighbors[i_left].w_left > threshold) {
+      if(edgelNeighbors[i_left].w_left > threshold) {
         cluster[i_left] = k;
         lines[k].add(edgel_one);
         lines[k].inside_the_field = lines[k].inside_the_field || getScanLineEdgelPercept().endPoints[edgel_one.id].posInImage.y < edgel_one.point.y;
 
-        i_left = neighbors[i_left].left;
+        i_left = edgelNeighbors[i_left].left;
       } else {
         break;
       }
     }
   }
-  */
+  
   
   /*
   // test: cluster the pairs
@@ -509,13 +507,14 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       }
     }
   }
-
+  
 
   DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:edgel_cluster",
     for(size_t i = 0; i < lines.size(); i++) {
       if(lines[i].inside_the_field && !line_deleted[i]){ lines[i].getLine(); lines[i].draw(); }
     }
   );
+  */
 
   DEBUG_REQUEST("Vision:Detectors:NeoLineDetector:draw_lines",
     for(size_t i = 0; i < lines.size(); i++) 
@@ -529,7 +528,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       LINE_PX((ColorClasses::Color) (idx), p0.x,p0.y, p1.x, p1.y);
     }
   );
-  */
+  
 }//end execute
 
 double NeoLineDetector::edgelSim(const Vector2d& p1, double a1, const Vector2d& p2, double a2)

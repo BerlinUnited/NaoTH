@@ -31,6 +31,8 @@ IKParameters::IKParameters()
 
   // hip trajectory geometry
   PARAMETER_REGISTER(walk.hip.comHeight) = 260;
+  PARAMETER_REGISTER(walk.hip.comHeightOffset) = 0.18;
+  PARAMETER_REGISTER(walk.hip.comRotationOffsetX) = 0;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
@@ -65,6 +67,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;
+  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationD.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationD.y) = 0;
 
@@ -75,6 +79,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.y) = -0.3;
 
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsize) = true;
+  PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeP) = -1;
+  PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeD) = 0.5;
 
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;

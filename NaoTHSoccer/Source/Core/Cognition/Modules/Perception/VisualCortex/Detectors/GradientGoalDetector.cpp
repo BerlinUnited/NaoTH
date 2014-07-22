@@ -265,9 +265,9 @@ void GradientGoalDetector::findFeatureCandidates(const Vector2d& scanDir, const 
   int y = start;
   for(int aktIdx = 0; aktIdx < params.numberOfScanlines; aktIdx++)
   {
-    valueBuffer.init();
-    valueBufferY.init();
-    pointBuffer.init();
+    valueBuffer.clear();
+    valueBufferY.clear();
+    pointBuffer.clear();
     isCandidate = false;
     y += params.scanlinesDistance;
     Vector2i pos((int) p1.x + 2, y);
@@ -665,8 +665,8 @@ void GradientGoalDetector::scanForTopPoints(GoalPercept::GoalPost& post, Vector2
 
   // clear everything
   pointBuffer.clear();
-  valueBuffer.init();
-  valueBufferY.init();
+  valueBuffer.clear();
+  valueBufferY.clear();
 
   while(footPointScanner.getNextWithCheck(pos))
   {

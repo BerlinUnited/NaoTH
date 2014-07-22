@@ -22,11 +22,11 @@ void GameController::execute()
   readHeadButtons();
   readButtons();
 
+  // TODO: what about the getGameData().frameNumber? it seems to be never set
   if ( getGameData().valid ) {
     getPlayerInfo().gameData = getGameData();
+    getPlayerInfo().gameData.frameNumber = getFrameInfo().getFrameNumber();
   }
-  getPlayerInfo().gameData.frameNumber = getFrameInfo().getFrameNumber();
-
 
   DEBUG_REQUEST("gamecontroller:initial",
     getPlayerInfo().gameData.gameState = GameData::initial;

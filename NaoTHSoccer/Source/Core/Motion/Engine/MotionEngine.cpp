@@ -8,6 +8,8 @@
 #include "ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
 #include "KeyFrameMotion/KeyFrameMotionEngine.h"
 
+#include "Motion/MorphologyProcessor/ForwardKinematics.h"
+
 MotionEngine::MotionEngine()
 {
   theEmptyMotion = registerModule<EmptyMotion>("EmptyMotion");
@@ -74,6 +76,10 @@ void MotionEngine::execute()
   // stabilization of the walk depends on the head position
   // cf. InverseKinematicsMotionEngine::controlCenterOfMass(...)
   theHeadMotionEngine->execute();
+
+  // HACK: update the kinematic chain to include the head motion
+  Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
+  getKinematicChainMotor().updateCoM();
 
   // select a new motion if necessary
   selectMotion();

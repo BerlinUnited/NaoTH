@@ -181,6 +181,21 @@ void Motion::processSensorData()
   theOdometryCalculator->execute();
 
 
+  // NOTE: highly experimental
+  static double rotationGyroZ = 0.0;
+  if(getCalibrationData().calibrated) {
+    rotationGyroZ -= getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+  } else {
+    rotationGyroZ = 0.0;
+  }
+
+  PLOT("Motion:rotationZ", rotationGyroZ);
+
+  if(parameters.gyrometerOdometry) {
+    getOdometryData().rotation = rotationGyroZ;
+  }
+  
+
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
 
@@ -216,9 +231,11 @@ void Motion::debugPlots()
   // plotting sensor data
   PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);
   PLOT("Motion:GyrometerData:data:y", getGyrometerData().data.y);
+  PLOT("Motion:GyrometerData:data:z", getGyrometerData().data.z);
 
   PLOT("Motion:GyrometerData:rawData:x", getGyrometerData().rawData.x);
   PLOT("Motion:GyrometerData:rawData:y", getGyrometerData().rawData.y);
+  PLOT("Motion:GyrometerData:rawData:z", getGyrometerData().rawData.z);
   PLOT("Motion:GyrometerData:ref", getGyrometerData().ref);
 
   PLOT("Motion:AccelerometerData:x", getAccelerometerData().data.x);

@@ -8,7 +8,8 @@ option play_soccer
             game.current_mode != ready &&
             game.current_mode != set)
       goto idle;
-  }  
+  }
+  
 
   initial state idle{
     decision{
@@ -141,6 +142,7 @@ option play_soccer
 	  }
 	  action {
 	    initial_striker();
+   		team.is_playing_as_striker = true;
 	  }
   }
 
