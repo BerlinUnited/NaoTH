@@ -1,0 +1,50 @@
+option go_to_ball_in_fight
+{
+  float @distance [mm]; 
+  initial state go_to_ball_right_foot
+  {
+    decision
+    {
+      if ( (ball.preview.x - @distance - ball.radius) < 20
+        && abs(value = ball.preview.y) < 20)
+        goto go_to_ball_right_foot_done;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      
+      //motion.walk_speed.x = ((abs(value=ball.preview.right_foot.y) > 20) ? -abs(value=ball.preview.right_foot.y) : 0) + ball.preview.right_foot.x - @distance - ball.radius;
+      motion.walk_speed.x = ball.preview.x - abs(value=ball.preview.y) - @distance - ball.radius;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  target state go_to_ball_right_foot_done
+  {
+    decision
+    {
+      if (abs(value = (ball.preview.x - @distance - ball.radius)) > 30
+        || abs(value = ball.preview.y) > 30)
+        goto go_to_ball_right_foot;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = ball.preview.x - abs(value=ball.preview.y) - @distance - ball.radius;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = 0;
+    }
+  }
+ }

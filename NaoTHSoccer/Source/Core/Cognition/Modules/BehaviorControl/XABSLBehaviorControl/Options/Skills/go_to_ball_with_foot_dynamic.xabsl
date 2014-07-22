@@ -2,7 +2,7 @@
   Note: No rotation with less then 25 cm distance! 
   Parameter @distance for the distance foot-ball (use 120 as default)**/
 
-option go_to_ball_with_foot
+option go_to_ball_with_foot_dynamic
 {
   bool @right;
   float @distance [mm];
@@ -42,7 +42,7 @@ option go_to_ball_with_foot
       motion.walk.style = normal;
       
       //motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - abs(value=(ball.preview.right_foot.y + @offset.y)) - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.right_foot.y + @offset.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
     }
@@ -67,7 +67,7 @@ option go_to_ball_with_foot
       motion.walk.style = normal;
       
       //motion.walk_speed.x = ((vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.left_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.left_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.x = 0.7*(ball.preview.left_foot.x - abs(value=(ball.preview.left_foot.y - @offset.y)) - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.left_foot.y - @offset.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
     }
@@ -92,7 +92,7 @@ option go_to_ball_with_foot
       motion.walk.style = normal;
 
       //motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - abs(value=(ball.preview.right_foot.y + @offset.y)) - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.right_foot.y + @offset.y;
       motion.walk_speed.rot = 0;
     }
@@ -117,7 +117,7 @@ option go_to_ball_with_foot
       motion.walk.style = normal;
 
       //motion.walk_speed.x = 0.5*(ball.preview.left_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.left_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.x = 0.7*(ball.preview.left_foot.x - abs(value=(ball.preview.left_foot.y - @offset.y)) - @distance - ball.radius);
       motion.walk_speed.y = ball.preview.left_foot.y - @offset.y;
       motion.walk_speed.rot = 0;
     }
