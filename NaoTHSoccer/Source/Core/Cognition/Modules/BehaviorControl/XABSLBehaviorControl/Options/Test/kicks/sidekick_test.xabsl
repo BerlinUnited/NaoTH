@@ -3,6 +3,74 @@
 
 option sidekick_test
 {
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state search {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision {
+
+      else if(ball.time_since_last_seen > 1500)
+        goto search;
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        goto sidekick;
+      }
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+
+
+  state sidekick {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_sidekick();
+    }
+  }
+
+
+/*
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -101,4 +169,5 @@ option sidekick_test
       motion.type = stand;
     }
   }
+  */
 }

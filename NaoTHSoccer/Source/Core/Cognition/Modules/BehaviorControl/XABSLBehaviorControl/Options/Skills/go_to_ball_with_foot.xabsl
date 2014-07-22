@@ -6,6 +6,8 @@ option go_to_ball_with_foot
 {
   bool @right;
   float @distance [mm];
+  float @offset.y [mm];
+
 
   initial state decide_foot
   {
@@ -26,7 +28,7 @@ option go_to_ball_with_foot
     decision
     {
       if ( (ball.preview.right_foot.x - @distance - ball.radius) < 20
-        && abs(value = ball.preview.right_foot.y) < 20)
+        && abs(value = ball.preview.right_foot.y + @offset.y) < 20)
         //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_right_foot_done;
       else
@@ -37,13 +39,12 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
-      motion.walk.style = stable;
+      motion.walk.style = normal;
       
       //motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
-      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.y = ball.preview.right_foot.y + @offset.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
-      
     }
   }
 
@@ -52,7 +53,7 @@ option go_to_ball_with_foot
     decision
     {
       if ( (ball.preview.left_foot.x - @distance - ball.radius) < 20
-        && abs(value = ball.preview.left_foot.y) < 20)
+        && abs(value = ball.preview.left_foot.y - @offset.y) < 20)
         //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
         goto go_to_ball_left_foot_done;
       else
@@ -63,11 +64,11 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
-      motion.walk.style = stable;
+      motion.walk.style = normal;
       
       //motion.walk_speed.x = ((vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.left_foot.x - @distance - ball.radius);
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.left_foot.x - @distance - ball.radius)), value1=0);
-      motion.walk_speed.y = ball.preview.left_foot.y;
+      motion.walk_speed.y = ball.preview.left_foot.y - @offset.y;
       motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
     }
   }
@@ -77,7 +78,7 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.right_foot.y) > 30)
+        || abs(value = ball.preview.right_foot.y + @offset.y) > 30)
         //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_right_foot;
       else
@@ -88,11 +89,11 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = right_foot;
-      motion.walk.style = stable;
+      motion.walk.style = normal;
 
       //motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - @distance - ball.radius);
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
-      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.y = ball.preview.right_foot.y + @offset.y;
       motion.walk_speed.rot = 0;
     }
   }
@@ -102,7 +103,7 @@ option go_to_ball_with_foot
     decision
     {
       if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.left_foot.y) > 30)
+        || abs(value = ball.preview.left_foot.y - @offset.y) > 30)
         //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_left_foot;
       else
@@ -113,11 +114,11 @@ option go_to_ball_with_foot
       head.control_mode = search_for_ball_and_look_around;
       motion.type = walk;
       motion.walk.coordinate = left_foot;
-      motion.walk.style = stable;
+      motion.walk.style = normal;
 
       //motion.walk_speed.x = 0.5*(ball.preview.left_foot.x - @distance - ball.radius);
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.left_foot.x - @distance - ball.radius)), value1=0);
-      motion.walk_speed.y = ball.preview.left_foot.y;
+      motion.walk_speed.y = ball.preview.left_foot.y - @offset.y;
       motion.walk_speed.rot = 0;
     }
   }
