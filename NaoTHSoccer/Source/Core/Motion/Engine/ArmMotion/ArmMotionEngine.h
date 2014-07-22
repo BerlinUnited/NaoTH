@@ -49,6 +49,11 @@ private:
       PARAMETER_REGISTER(maxJointSpeed) = 60;
       PARAMETER_REGISTER(armStiffness) = 0.3;
 
+      PARAMETER_REGISTER(armsOnBack.shoulderRoll) = 10;
+      PARAMETER_REGISTER(armsOnBack.shoulderPitch) = 119;
+      PARAMETER_REGISTER(armsOnBack.elbowRoll) = 60;
+      PARAMETER_REGISTER(armsOnBack.elbowYaw) = 25;
+
       syncWithConfig();
       DebugParameterList::getInstance().add(this);
     }
@@ -56,6 +61,13 @@ private:
     ~ArmMotionParams() {
       DebugParameterList::getInstance().remove(this);
     }
+
+    struct ArmsOnBack {
+      double shoulderRoll;
+      double shoulderPitch;
+      double elbowRoll;
+      double elbowYaw;
+    } armsOnBack;
 
     double maxJointSpeed;
     double armStiffness;
