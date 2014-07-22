@@ -20,7 +20,11 @@ FootStepPlanner::FootStepPlanner()
   theFootOffsetY(0.0),
   theMaxChangeTurn(0.0),
   theMaxChangeX(0.0),
-  theMaxChangeY(0.0)
+  theMaxChangeY(0.0),
+
+  theMaxCtrlTurn(0.0),
+  theMaxCtrlLength(0.0),
+  theMaxCtrlWidth(0.0)
 {
 }
 
@@ -373,6 +377,7 @@ void FootStepPlanner::restrictStepChange(Pose2D& step, const Pose2D& lastStep) c
   change.translation.x = Math::clamp(change.translation.x, -maxX, maxX);
   change.translation.y = Math::clamp(change.translation.y, -maxY, maxY);
   change.rotation = Math::clamp(change.rotation, -maxT, maxT);
+
   step.translation = lastStep.translation + change.translation;
   step.rotation = Math::normalizeAngle(lastStep.rotation + change.rotation);
 }
