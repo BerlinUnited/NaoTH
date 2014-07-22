@@ -39,6 +39,7 @@ include "Options/Skills/move_around_ball.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
+include "Options/Skills/go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 include "Options/Skills/go_to_ball_in_fight.xabsl";
