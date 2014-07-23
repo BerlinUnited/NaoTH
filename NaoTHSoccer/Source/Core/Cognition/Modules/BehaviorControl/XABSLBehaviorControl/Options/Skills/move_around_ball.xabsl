@@ -37,7 +37,7 @@ option move_around_ball
       motion.type = walk;
       motion.walk_speed.rot = atan2(y=ball.preview.y, x=ball.preview.x);
       motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
-      motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=0, max=45)), min=100, max=100) * cos(angle=motion.walk_speed.rot);
+      motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=0, max=45)), min=0, max=100) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = hip;
       head.control_mode = search_for_ball;
     }
@@ -49,7 +49,7 @@ option move_around_ball
       motion.type = walk;
       motion.walk_speed.rot = atan2(y=ball.preview.y, x=ball.preview.x);
       motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
-      motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=-45, max=0)), min=-100, max=-100) * cos(angle=motion.walk_speed.rot);
+      motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=-45, max=0)), min=-100, max=0) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = hip;
       head.control_mode = search_for_ball;
     }

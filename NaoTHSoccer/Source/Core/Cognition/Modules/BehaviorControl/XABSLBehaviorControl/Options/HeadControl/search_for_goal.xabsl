@@ -8,7 +8,7 @@ option search_for_goal
 
   initial state look_straight_ahead {
     decision {
-      if (state_time > 1500)
+      if (state_time > 1000)
         goto try_to_look_at_the_old_goal;
       else
         stay;
