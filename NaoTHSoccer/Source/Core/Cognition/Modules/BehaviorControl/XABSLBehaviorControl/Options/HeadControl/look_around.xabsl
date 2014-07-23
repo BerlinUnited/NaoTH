@@ -24,8 +24,8 @@ option look_around
     }
     action
     {
-      head.point_in_world.x = 300;
-      head.point_in_world.y = 600;
+      head.point_in_world.x = 3000;
+      head.point_in_world.y = 6000;
       head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;
     }
@@ -42,8 +42,8 @@ option look_around
     }
     action
     {
-      head.point_in_world.x = 300;
-      head.point_in_world.y = -600;
+      head.point_in_world.x = 3000;
+      head.point_in_world.y = -6000;
       head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;
     }
