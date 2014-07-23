@@ -38,6 +38,7 @@ option decide_and_go_to_passive_position
     }
   }
 
+  // 3
   state goto_passive_position_striker {
     decision {
       else if(action_done)
@@ -47,12 +48,14 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2, 
+        //x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2, 
+        x  = field.centerCircleRadius,
         y  = field.yPosLeftPenaltyArea, 
         rot= 0);
     }
   }
 
+  // 5
   state goto_passive_position_supporter {
     decision {
       else if(action_done)
@@ -63,7 +66,8 @@ option decide_and_go_to_passive_position
     action {
     //go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
       go_to_and_keep_passive_position(
-        x = field.xPosOppPenaltyMark, 
+        //x = field.xPosOppPenaltyMark, 
+        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
         y = field.yPosRightFlank, 
         rot = 140);
     }
