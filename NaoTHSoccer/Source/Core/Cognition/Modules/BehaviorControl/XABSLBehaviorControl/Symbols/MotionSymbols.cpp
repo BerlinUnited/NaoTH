@@ -320,10 +320,10 @@ string MotionSymbols::getStepControlFootName(StepControlFoot i)
 
 bool MotionSymbols::dribbleG() 
 {
-  return ((theInstance->actionPerformed) == theInstance->getMotionStatus().stepControl.stepID);
+  return ((theInstance->actionPerformed) == (int)(theInstance->getMotionStatus().stepControl.stepID));
 }
 
-void MotionSymbols::dribble(bool v)
+void MotionSymbols::dribble(bool /*dummy*/)
 {
   const Vector2d& ball = theInstance->getBallModel().positionPreviewInRFoot;
   Pose2D& motionTarget = theInstance->getMotionRequest().walkRequest.target;

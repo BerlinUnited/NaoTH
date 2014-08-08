@@ -62,6 +62,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
+    stream << "nothing" << std::endl;
     //stream << "angleToSeenGoal=" << angleToSeenGoal << std::endl;
     //stream << "goalCentroid=" << goalCentroid << std::endl;
     //stream << "horizonScan=" << (horizonScan?"true":"false") << std::endl;
