@@ -1,5 +1,5 @@
 /**
-* @file PotentialActionSimulator.h
+* @file PotentialActionSimulator.cpp
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Implementation of class PotentialActionSimulator
@@ -107,7 +107,7 @@ void PotentialActionSimulator::execute()
 
     if ( action.potential > maximum || best_action == -1){
       maximum = action.potential;
-      best_action = i;
+      best_action = (int)i;
     }
   }
 
