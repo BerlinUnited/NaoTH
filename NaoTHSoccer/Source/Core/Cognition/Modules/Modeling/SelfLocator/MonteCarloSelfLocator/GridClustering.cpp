@@ -103,7 +103,7 @@ void GridClustering::draw_grid(const FieldInfo& fieldInfo)
 
 
   DEBUG_REQUEST("MCSL:draw_best_cells",
-    double size = sampleSet.size();
+    double size = (double)sampleSet.size();
     for (int j = 0; j < CountGrid2D::GRID_X_PRECISION; j++)
     {  
       for (int i = 0; i < CountGrid2D::GRID_Y_PRECISION; i++)
