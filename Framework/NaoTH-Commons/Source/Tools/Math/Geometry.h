@@ -7,8 +7,8 @@
 * Declaration of the class Geometry
 */
 
-#ifndef __Geometry_h__
-#define __Geometry_h__
+#ifndef _Geometry_h_
+#define _Geometry_h_
 
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Common.h"
@@ -161,7 +161,7 @@ public:
     double Mz = 0.0;   // \sum_{k=1}^n (y_k^2 + x_k^2) = Myy + Mxx
     double Mxz = 0.0;  // \sum_{k=1}^n x_k*(y_k^2 + x_k^2)
     double Myz = 0.0;  // \sum_{k=1}^n y_k*(y_k^2 + x_k^2)
-    double n = pointList.size();
+    double n = (double)pointList.size();
 
     // calculate the entries for A^tA and A^tB
     for (int i = 0; i < n; ++i)
@@ -180,7 +180,7 @@ public:
       Mz += z;
       Mxz += x*z;
       Myz += y*z;
-    }//end for
+    }
   
     try
     {
