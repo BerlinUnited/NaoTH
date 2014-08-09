@@ -266,8 +266,8 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
     if(cluster[i] != -1) { continue; }
 
     size_t k = lines.size();
-    lines.push_back(EdgelCluster(k));
-    cluster[i] = k;
+    lines.push_back(EdgelCluster((int)k));
+    cluster[i] = (int)k;
     lines[k].add(edgel);
     lines[k].inside_the_field = lines[k].inside_the_field || getScanLineEdgelPercept().endPoints[edgel.id].posInImage.y < edgel.point.y;
 
@@ -284,7 +284,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
 
       //CIRCLE( edgel_one.point.x, edgel_one.point.y, 3+radius);
       if(edgelNeighbors[i_right].w_right > threshold) {
-        cluster[i_right] = k;
+        cluster[i_right] = (int)k;
         lines[k].add(edgel_one);
         lines[k].inside_the_field = lines[k].inside_the_field || getScanLineEdgelPercept().endPoints[edgel_one.id].posInImage.y < edgel_one.point.y;
 
@@ -302,7 +302,7 @@ void NeoLineDetector::execute(CameraInfo::CameraID id)
       //CIRCLE( edgel_one.point.x, edgel_one.point.y, 3+radius);
 
       if(edgelNeighbors[i_left].w_left > threshold) {
-        cluster[i_left] = k;
+        cluster[i_left] = (int)k;
         lines[k].add(edgel_one);
         lines[k].inside_the_field = lines[k].inside_the_field || getScanLineEdgelPercept().endPoints[edgel_one.id].posInImage.y < edgel_one.point.y;
 
