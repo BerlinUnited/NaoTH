@@ -190,7 +190,7 @@ void MonteCarloSelfLocatorSimple::execute()
 
       unsigned localize_time = getFrameInfo().getTimeSince(localize_start);
 
-      if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*mhBackendSet.size()) {
+      if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*(double)mhBackendSet.size()) {
         theSampleSet = mhBackendSet; // todo: implement swap
         state = TRACKING;
       }
@@ -228,7 +228,7 @@ void MonteCarloSelfLocatorSimple::execute()
       updateStatistics(theSampleSet);
 
       if(parameters.resampleSUS) {
-        resampleSUS(theSampleSet, theSampleSet.size());
+        resampleSUS(theSampleSet, (int)theSampleSet.size());
       }
       if(parameters.resampleGT07) {
         resampleGT07(theSampleSet, true);
@@ -254,7 +254,7 @@ void MonteCarloSelfLocatorSimple::execute()
   ************************************/
 
   DEBUG_REQUEST("MCSLS:resample_sus",
-    resampleSUS(theSampleSet, theSampleSet.size());
+    resampleSUS(theSampleSet, (int)theSampleSet.size());
   );
 
   DEBUG_REQUEST("MCSLS:resample_gt", 
@@ -266,7 +266,7 @@ void MonteCarloSelfLocatorSimple::execute()
   );
   
   DEBUG_REQUEST("MCSLS:resample_simple", 
-    resampleSimple(theSampleSet, (int)(theSampleSet.size() - effective_number_of_samples+0.5));
+    resampleSimple(theSampleSet, (int)((double)theSampleSet.size() - effective_number_of_samples + 0.5));
   );
 
   DEBUG_REQUEST("MCSLS:draw_sensor_belief",
@@ -649,8 +649,8 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
     avg += sampleSet[i].likelihood;
     cross_entropy -= log(sampleSet[i].likelihood);
   }
-  avg /= sampleSet.size();
-  cross_entropy /= sampleSet.size();
+  avg /= (double)sampleSet.size();
+  cross_entropy /= (double)sampleSet.size();
   PLOT("MonteCarloSelfLocatorSimple:w_average",avg);
   PLOT("MonteCarloSelfLocatorSimple:cross_entropy",avg);
 
@@ -708,7 +708,7 @@ void MonteCarloSelfLocatorSimple::resampleSimple(SampleSet& sampleSet, int numbe
   std::sort(idx.begin(), idx.end(), COMP(sampleSet));
   */
 
-  double threshold = 1.0/sampleSet.size();
+  double threshold = 1.0/(double)sampleSet.size();
 
   int k = 0;
   for(size_t i = 0; i < sampleSet.size() && i < 10; i++) {
@@ -824,7 +824,7 @@ int MonteCarloSelfLocatorSimple::resampleSUS(SampleSet& sampleSet, int n) const
     }
   }
 
-  return j;
+  return (int)j;
 }
 
 void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise) const
@@ -844,7 +844,7 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
 
   for(m = 0; m < sampleSet.size(); m++)
   {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
+    sum += oldSampleSet[m].likelihood * (double)oldSampleSet.size();
 
     // select the particle to copy
     while(count < sum && count < oldSampleSet.size())
@@ -869,7 +869,7 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
   // fill up by copying random samples (shouldn't happen)
   while (n < sampleSet.size()) 
   {
-    int i = Math::random(sampleSet.size());
+    int i = Math::random((int)sampleSet.size());
     sampleSet[n++] = sampleSet[i];
   }
 }

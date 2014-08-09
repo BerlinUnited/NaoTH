@@ -40,7 +40,7 @@ inline void createRandomSample(const Geometry::Rect2d& rect, Sample& sample)
 inline void initializeSampleSet(const Geometry::Rect2d& rect, SampleSet& sampleSet)
 {
   double likelihood = 1.0/static_cast<double>(sampleSet.size());
-  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  for (size_t i = 0; i < sampleSet.size(); i++)
   {
     Sample& sample = sampleSet[i];
     createRandomSample(rect, sample);
@@ -51,7 +51,7 @@ inline void initializeSampleSet(const Geometry::Rect2d& rect, SampleSet& sampleS
 inline void initializeSampleSetFixedRotation(const Geometry::Rect2d& rect, double angle, SampleSet& sampleSet)
 {
   double likelihood = 1.0/static_cast<double>(sampleSet.size());
-  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  for (size_t i = 0; i < sampleSet.size(); i++)
   {
     Sample& sample = sampleSet[i];
     sample.translation.x = Math::random(rect.min().x, rect.max().x);
