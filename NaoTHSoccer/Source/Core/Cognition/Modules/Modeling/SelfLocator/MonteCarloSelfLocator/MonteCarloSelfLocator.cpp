@@ -111,7 +111,7 @@ void MonteCarloSelfLocator::resample(SampleSet& sampleSet)
 
   for (size_t j = 0; j < sampleSet.size()-numberOfPartiklesToResample; j++)
   {
-    int index = (int)(Math::random()*(sampleSet.size()-1)+0.5);
+    int index = (int)(Math::random()*((double)sampleSet.size()-1.0)+0.5);
     sampleSet[sampleSet.size()-1-j] = newSampleSet[index];
   }//end for
 
@@ -883,7 +883,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
   for(m = 0; m < sampleSet.size(); m++)
   {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
+    sum += oldSampleSet[m].likelihood * (double)oldSampleSet.size();
 
     // select the particle to copy
     while(count < sum && count < oldSampleSet.size())
@@ -909,7 +909,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
   // sensor resetting by whole goal
   if(n < oldSampleSet.size()) {
-    n = sensorResetBySensingGoalModel(sampleSet, n);
+    n = sensorResetBySensingGoalModel(sampleSet, (int)n);
   }
 
   // sensor resetting by the goal posts
@@ -922,7 +922,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // (shouldn't happen)
   while (n < sampleSet.size()) 
   {
-    int i = Math::random(sampleSet.size());//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
+    int i = Math::random((int)sampleSet.size());//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
     sampleSet[n] = sampleSet[i];
     n++;
   }//end while
