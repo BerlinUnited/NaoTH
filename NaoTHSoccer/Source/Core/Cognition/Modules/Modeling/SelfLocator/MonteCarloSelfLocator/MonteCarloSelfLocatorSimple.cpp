@@ -298,7 +298,7 @@ void MonteCarloSelfLocatorSimple::resetLocator()
 void MonteCarloSelfLocatorSimple::updateByOdometry(SampleSet& sampleSet, bool noise) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
-  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;
     if(noise)
@@ -369,7 +369,7 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
   const Vector2d* leftGoalPosition = NULL;
   const Vector2d* rightGoalPosition = NULL;
 
-  for (unsigned int j = 0; j < sampleSet.size(); j++)
+  for (size_t j = 0; j < sampleSet.size(); j++)
   { 
     Sample& sample = sampleSet[j];
     Vector2d expectedPostPosition;
@@ -438,7 +438,7 @@ void MonteCarloSelfLocatorSimple::updateBySingleGoalPost(const GoalPercept::Goal
 
 void MonteCarloSelfLocatorSimple::updateByCompas(SampleSet& sampleSet) const
 {
-  for(unsigned int i = 0; i < sampleSet.size(); i++) {
+  for(size_t i = 0; i < sampleSet.size(); i++) {
     Sample& sample = sampleSet[i];
     sample.likelihood *= getProbabilisticQuadCompas().probability(-sample.rotation);
   }
@@ -461,7 +461,7 @@ void MonteCarloSelfLocatorSimple::updateByLinePoints(const LineGraphPercept& lin
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
     CIRCLE(seen_point_g.x, seen_point_g.y, 20);
 
-    for(unsigned int s=0; s < sampleSet.size(); s++)
+    for(size_t s=0; s < sampleSet.size(); s++)
     {
       Sample& sample = sampleSet[s];
 
@@ -496,7 +496,7 @@ void MonteCarloSelfLocatorSimple::updateByStartPositions(SampleSet& sampleSet) c
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
-  for(unsigned int i = 0; i < sampleSet.size(); i++) {
+  for(size_t i = 0; i < sampleSet.size(); i++) {
     if(sampleSet[i].translation.y > 0) {
       sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
     } else {
@@ -632,7 +632,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocatorSimple::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const
 {
-  for (unsigned int j = 0; j < sampleSet.size(); j++)
+  for (size_t j = 0; j < sampleSet.size(); j++)
   {   
     double distDif = (sampleSet[j].translation - pose.translation).abs();
     //sampleSet[j].likelihood *= computeAngleWeighting(pose.rotation, sampleSet[j].rotation, sigmaAngle, bestPossibleAngleWeighting);
@@ -645,7 +645,7 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
 {
   double cross_entropy = 0.0;
   double avg = 0.0;
-  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+  for (size_t i = 0; i < sampleSet.size(); i++) {
     avg += sampleSet[i].likelihood;
     cross_entropy -= log(sampleSet[i].likelihood);
   }
@@ -659,7 +659,7 @@ void MonteCarloSelfLocatorSimple::updateStatistics(SampleSet& sampleSet)
   // effective number of particles
   static RingBufferWithSum<double, 30>  effective_number_of_samples_buffer;
   double sum2 = 0.0;
-  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+  for (size_t i = 0; i < sampleSet.size(); i++) {
     sum2 += Math::sqr(sampleSet[i].likelihood);
   }
   effective_number_of_samples = 1.0/sum2;
@@ -711,7 +711,7 @@ void MonteCarloSelfLocatorSimple::resampleSimple(SampleSet& sampleSet, int numbe
   double threshold = 1.0/sampleSet.size();
 
   int k = 0;
-  for(unsigned int i = 0; i < sampleSet.size() && i < 10; i++) {
+  for(size_t i = 0; i < sampleSet.size() && i < 10; i++) {
     if(sampleSet[i].likelihood < threshold && k + number < (int)sampleSet.size()) {
       createRandomSample(getFieldInfo().carpetRect, sampleSet[i]); 
       k++;
@@ -732,7 +732,7 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
   double angle = 0.2;
   MODIFY("resampleMH:angle", angle);
 
-  double threshold = 1.0/sampleSet.size();
+  double threshold = 1.0/(double)sampleSet.size();
   MODIFY("resampleMH:threshold", threshold);
 
   double alpha = 0.1;
@@ -743,7 +743,7 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
 
   double backendSum = 0;
 
-  for(unsigned int j = 0; j < mhBackendSet.size(); j++) 
+  for(size_t j = 0; j < mhBackendSet.size(); j++) 
   {
     // manage the backend set
     if(sampleSet[j].likelihood > mhBackendSet[j].likelihood) {
@@ -773,8 +773,8 @@ void MonteCarloSelfLocatorSimple::resampleMH(SampleSet& sampleSet)
   // Stochastic universal sampling
   // i - count over the old sample set
   // j - over the new one :)
-  unsigned int j = 0;
-  for(unsigned int i = 0; i < oldSampleSet.size(); i++)
+  size_t j = 0;
+  for(size_t i = 0; i < oldSampleSet.size(); i++)
   {
     currentSum += oldSampleSet[i].likelihood;
 
@@ -803,8 +803,8 @@ int MonteCarloSelfLocatorSimple::resampleSUS(SampleSet& sampleSet, int n) const
   // Stochastic universal sampling
   // i - count over the old sample set
   // j - over the new one :)
-  unsigned int j = 0;
-  for(unsigned int i = 0; i < oldSampleSet.size(); i++)
+  size_t j = 0;
+  for(size_t i = 0; i < oldSampleSet.size(); i++)
   {
     currentSum += oldSampleSet[i].likelihood;
 
@@ -837,10 +837,10 @@ void MonteCarloSelfLocatorSimple::resampleGT07(SampleSet& sampleSet, bool noise)
   //oldSampleSet.sort();
 
   double sum = -Math::random();
-  unsigned int count = 0;
+  size_t count = 0;
 
-  unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
-  unsigned int n = 0;  // Zaehler durchs Ziel-Set
+  size_t m = 0;  // Zaehler durchs Ausgangs-Set
+  size_t n = 0;  // Zaehler durchs Ziel-Set
 
   for(m = 0; m < sampleSet.size(); m++)
   {
