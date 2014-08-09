@@ -70,7 +70,7 @@ void SampleSet::normalize(double offset)
     return; 
   }
 
-  double offset_sum = 1.0+offset*samples.size();
+  double offset_sum = 1.0+offset*(double)samples.size();
 
   for(size_t i = 0; i < samples.size(); i++) {
     samples[i].likelihood = ((samples[i].likelihood/sum) + offset)/offset_sum;
@@ -162,7 +162,7 @@ const Sample& SampleSet::getMostLikelySample() const
   {
     if(maxLikelihood < samples[i].likelihood) {
       maxLikelihood = samples[i].likelihood;
-      maxIdx = i;
+      maxIdx = (int)i;
     }
   }
 

@@ -16,7 +16,9 @@ class SampleSet
 {
 
 public:
-  SampleSet(unsigned int n = 100)
+  typedef size_t size_type;
+
+  SampleSet(size_t n = 100)
     :
     samples(n)
   {

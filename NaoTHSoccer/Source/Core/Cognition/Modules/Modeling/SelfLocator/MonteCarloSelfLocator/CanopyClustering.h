@@ -76,7 +76,7 @@ public:
     numOfClusters = 0;
     largestCluster = -1;
 
-    for (int j = 0; j < (int)sampleSet.size(); j++)
+    for (typename C::size_type j = 0; j < sampleSet.size(); j++)
     {
       Sample2D& sample = sampleSet[j];
       sample.cluster = -1; // no cluster
@@ -117,7 +117,7 @@ public:
 
         numOfClusters++;
       }//end if
-    }//end for
+    }//end for j
 
 
     // merge close clusters
@@ -143,7 +143,7 @@ public:
             largestCluster = (int)k;
           
           // TODO: make it more effivient
-          for (int i = 0; i < (int)sampleSet.size(); i++)
+          for (typename C::size_type i = 0; i < sampleSet.size(); i++)
           {
             if(sampleSet[i].cluster == (int)j) {
               sampleSet[i].cluster = (int)k;
@@ -162,7 +162,7 @@ public:
     CanopyClusterBuilder& cluster = clusters[0];
     cluster.set(start);
 
-    for (unsigned int j = 0; j < sampleSet.size(); j++)
+    for (typename C::size_type j = 0; j < sampleSet.size(); j++)
     {
       sampleSet[j].cluster = -1;
       if(isInCluster(cluster, sampleSet[j]))
@@ -170,7 +170,7 @@ public:
         sampleSet[j].cluster = 0;
         cluster.add(sampleSet[j].getPos());
       }
-    }//end for j
+    }
 
     return cluster.size();
   }//end cluster
