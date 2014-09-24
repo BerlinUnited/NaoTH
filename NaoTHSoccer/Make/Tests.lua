@@ -34,3 +34,4 @@ project "NaoTHSoccer-Tests"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
+    buildoptions {"-Wno-unused-local-typedefs"}
