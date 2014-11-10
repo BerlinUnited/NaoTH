@@ -245,10 +245,10 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
     resetMatrices();
   }
   
-  if(newPercept.ballWasSeen)
-  {
+  //if(newPercept.ballWasSeen)
+  //{
     getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
-  }
+  //}
 
   //////////////////////////////////
   // Odometry-update (translation)
