@@ -76,6 +76,10 @@ public:
     valid = false;
   }
 
+  void resetTimeBallIsSeen(){
+      _timeBallIsSeen = 0;
+  }
+
   virtual void print(std::ostream& stream) const
   {
     stream << "valid = " << valid << std::endl;

@@ -87,6 +87,11 @@ void KalmanFilterBallLocator::execute()
     MODIFY("KalmanFilterBallLocator:validatePerceptWithModel", validatePerceptWithModel);
     if (validatePerceptWithModel == 0)  {
         executeKalman(getBallPercept());
+
+        if(!getBallPercept().ballWasSeen){
+            getBallModel().resetTimeBallIsSeen();
+        }
+
         return;
     }
 
@@ -245,10 +250,10 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
     resetMatrices();
   }
   
-  //if(newPercept.ballWasSeen)
-  //{
+  if(newPercept.ballWasSeen)
+  {
     getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
-  //}
+  }
 
   //////////////////////////////////
   // Odometry-update (translation)
