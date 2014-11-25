@@ -1,0 +1,136 @@
+/*
+ * File:   CameraInfo.h
+ * Author: Oliver Welter
+ *
+ * Created on 1. Februar 2009, 20:07
+ */
+
+#ifndef _CAMERAINFO_H
+#define _CAMERAINFO_H
+
+#include "CameraInfoConstants.h"
+#include "Tools/Math/Pose3D.h"
+#include "Tools/Math/Common.h"
+#include "Tools/DataStructures/ParameterList.h"
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
+
+namespace naoth
+{
+
+  class CameraInfo: public Printable
+  {
+
+    friend class Serializer<CameraInfo>;
+  public:
+    
+    CameraInfo()
+    :
+    resolutionWidth(IMAGE_WIDTH),
+    resolutionHeight(IMAGE_HEIGHT),
+    pixelSize(0.0),
+    focus(0.0),
+    xp(0.0),
+    yp(0.0),
+    k1(0.0),
+    k2(0.0),
+    k3(0.0),
+    p1(0.0),
+    p2(0.0),
+    b1(0.0),
+    b2(0.0),
+    cameraID(Bottom),
+    openingAngleDiagonal(0.0)
+    {}
+
+    virtual ~CameraInfo()
+    {}
+
+    enum CameraID
+    {
+      Top,
+      Bottom,
+      numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
+    };
+
+    unsigned int resolutionWidth;
+    unsigned int resolutionHeight;
+
+    //size of an Pixel on the chip
+    double pixelSize;
+    //measured focus
+    double focus;
+    //moved middle point
+    double xp;
+    double yp;
+    //radial symmetric distortion parameters
+    double k1;
+    double k2;
+    double k3;
+    //radial asymmetric and tangential distortion parameters
+    double p1;
+    double p2;
+    //affinity and ... distortion parameters
+    double b1;
+    double b2;
+
+    CameraID cameraID;
+
+    // getter functions that use the existing values to calculate their result
+
+    double getFocalLength() const;
+    double getOpeningAngleWidth() const;
+    double getOpeningAngleHeight() const;
+    double getOpticalCenterX() const;
+    double getOpticalCenterY() const;
+    unsigned long getSize() const;
+    double getOpeningAngleDiagonal() const;
+
+    virtual void print(std::ostream& stream) const;
+
+    std::string getCameraIDName(CameraID id) const
+    {
+      switch(id)
+      {
+        case Top: return "Top";
+        case Bottom: return "Bottom";
+        default: return "unknown";
+      }
+    }
+
+  protected:
+
+    double openingAngleDiagonal;
+
+  };
+
+  class CameraInfoParameter : public CameraInfo, public ParameterList
+  {
+  public:
+    CameraInfoParameter();
+  };
+
+  template<>
+  class Serializer<CameraInfo>
+  {
+    public:
+    static void serialize(const CameraInfo& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfo& representation);
+  };
+
+
+  class CameraInfoTop : public CameraInfo
+  {
+  public:
+    using CameraInfo::operator =;
+    virtual ~CameraInfoTop() {}
+  };
+
+  template<>
+  class Serializer<CameraInfoTop> : public Serializer<CameraInfo>
+  {};
+  
+}
+
+#endif  /* _CAMERAINFO_H */
+

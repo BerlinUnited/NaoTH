@@ -1,0 +1,171 @@
+package naothmessages;
+
+option java_package= "de.naoth.rc.messages";
+
+import "CommonTypes.proto";
+
+// command line interface //
+
+message CMDArg {
+  required string name = 1;
+  optional bytes bytes = 3;
+}
+
+message CMD {
+  required string name = 1;
+  repeated CMDArg args = 2;
+}
+
+
+message PlayerModel {
+  required int32 number = 1;
+  optional Pose2D poseOnField = 2;
+}
+
+// TeamComm //
+message TeamCommMessage {
+  required int32 playerNumber = 1;
+  required int32 teamNumber = 2;
+  optional bool wasStriker = 3 [default=false];
+  optional bool isPenalized = 4 [default=false];
+  optional double timeSinceBallWasSeen = 5;
+  optional DoubleVector2 ballPosition = 6;
+  optional Pose2D positionOnField = 7;
+  optional PlayerModel opponent = 8;
+  optional bool isFallenDown = 9 [default=false];
+  optional double timeToBall = 10;
+  optional string bodyID = 11; 
+}
+
+// pure RC messages //
+
+message StopwatchItem {
+  required string name = 1;
+  required int32 time = 2;
+}
+
+message Stopwatches {
+  repeated StopwatchItem stopwatches = 1;
+}
+
+message PlotItem {
+  enum PlotType {
+    Default = 1;
+    Plot2D = 2;
+    Origin2D = 3;
+  }  
+  required PlotType type = 1;
+  required string name = 2;
+  
+  optional double value = 3;
+  optional double x = 4;
+  optional double y = 5;
+  optional double rotation = 6;
+}
+
+message PlotStroke2D {
+  required string name = 2;
+  repeated DoubleVector2 points = 1;
+}
+
+message Plots {
+  repeated PlotItem plots = 1;
+  repeated PlotStroke2D plotstrokes = 2;
+}
+
+message XABSLParameter {
+  enum ParamType {
+   Decimal = 0;
+   Boolean = 1;
+   Enum = 2;
+   Unknown = 3;
+  }
+  optional string name = 1 [default="unknown"];
+  optional ParamType type = 2 [default=Unknown];
+  optional double decimalValue = 3;
+  optional bool boolValue = 4;
+  optional string enumValue = 5;
+}
+
+message XABSLAction {
+  enum ActionType {
+   Option = 0;
+   BasicBehavior = 1;
+   DecimalOutputSymbol = 2;
+   BooleanOutputSymbol = 3;
+   EnumOutputSymbol = 4;
+   Unknown = 5; 
+  }
+  optional ActionType type = 1 [default=Unknown];
+  optional string name = 2  [default="unknown"];
+  
+  // for options
+  optional int64 timeOfExecution = 3 [default=0];
+  optional string activeState = 4;
+  
+  optional int64 stateTime = 5;
+  repeated XABSLParameter parameters = 6;
+  
+  repeated XABSLAction activeSubActions = 7;
+  
+  // for parameters
+  optional double decimalValue = 8;
+  optional bool boolValue = 9;
+  optional string enumValue = 10;
+  
+}
+
+message BehaviorStatus {
+ optional string agent = 1;
+ repeated XABSLAction activeRootActions = 2;
+ repeated XABSLParameter inputSymbols = 3;
+ repeated XABSLParameter outputSymbols = 4;
+ optional uint32 frameNumber = 5;
+ optional string errorMessage = 6;
+}
+
+message Module {
+ required string name = 1;
+ repeated string usedRepresentations = 2;
+ repeated string providedRepresentations = 3;
+ optional bool active = 4 [default=false];
+}
+
+message ModuleList {
+ repeated Module modules = 1;
+}
+
+message FeatureKeyPoint {
+  required FloatVector2 pt = 1;
+  required float size = 2;
+  required float angle = 3;
+  required float response = 4;
+  required int32 octave = 5;
+  required int32 class_id = 6;
+}
+
+message FeatureDetectionResult {
+  required bytes grayScaleImage = 1;
+  
+  repeated FeatureKeyPoint keyPoints = 2;
+  repeated SingleDescriptor descriptors = 3;
+  
+  repeated string namesForKeyPoints = 4;
+  
+  optional int32 numberOfFeatureElements = 5 [default=64];
+}
+
+message SingleDescriptor {
+  repeated float d = 1;
+}
+
+message FeatureClass {
+  required string name=1;
+  repeated SingleDescriptor samples=2;
+  optional double objectHeight = 3;
+}
+
+message FeatureTable {
+  repeated FeatureClass classes = 1;
+  optional int32 numberOfFeatureElements = 2 [default=64];
+}

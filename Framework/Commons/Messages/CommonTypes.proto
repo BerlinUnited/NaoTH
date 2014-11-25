@@ -1,0 +1,142 @@
+package naothmessages;
+option java_package= "de.naoth.rc.messages";
+
+// common types for NaoTH //
+
+enum Color {
+  none = 0;
+  orange = 1;
+  yellow = 2;
+  skyblue = 3;
+  white = 4;
+  red = 5;
+  blue = 6;
+  green = 7;
+  black = 8;
+  pink = 9;
+  gray = 10;
+  yellowOrange = 11;
+}
+
+enum CameraID {
+  top = 0;
+  bottom = 1;
+}
+
+enum JointID {
+  HeadPitch = 0;
+  HeadYaw = 1;
+  RShoulderRoll = 2;
+  LShoulderRoll = 3;
+  RShoulderPitch = 4;
+  LShoulderPitch = 5;
+  RElbowRoll = 6;
+  LElbowRoll = 7;
+  RElbowYaw = 8;
+  LElbowYaw = 9;
+  RHipYawPitch = 10;
+  LHipYawPitch = 11;
+  RHipPitch = 12;
+  LHipPitch = 13;
+  RHipRoll = 14;
+  LHipRoll = 15;
+  RKneePitch = 16;
+  LKneePitch = 17;
+  RAnklePitch = 18;
+  LAnklePitch = 19;
+  RAnkleRoll = 20;
+  LAnkleRoll = 21;
+}
+
+message FloatVector2 {
+  required float x = 1;
+  required float y = 2;
+}
+
+message DoubleVector2 {
+  required double x = 1;
+  required double y = 2;
+}
+
+message IntVector2 {
+  required int32 x = 1;
+  required int32 y = 2;
+}
+
+message Pose2D {
+  required DoubleVector2 translation = 1;
+  required double rotation = 2;
+}
+
+message DoubleVector3 {
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+}
+
+message DoubleVector {
+  repeated double v = 1;
+}
+
+message Pose3D {
+  required DoubleVector3 translation = 1;
+  repeated DoubleVector3 rotation = 2;
+}
+
+message GoalPost {
+  enum PostType
+  {
+    rightPost = 0;
+    leftPost = 1;
+    unknownPost = 2;
+  };
+  
+  optional IntVector2 basePoint = 1;
+  optional DoubleVector2 position = 2;
+  optional Color color = 3;
+  optional PostType type = 4;
+  optional bool positionReliable = 5;
+  optional double seenHeight = 6;
+}
+
+message LineSegment {
+  required DoubleVector2 base = 1;
+  required DoubleVector2 direction = 2;
+  required double length = 3;
+}
+
+
+message FieldLineSegment {
+  optional LineSegment lineInImage = 1;
+  optional LineSegment lineOnField = 2;
+  optional int32 beginExtendCount = 3;
+  optional int32 endExtendCount = 4;
+  optional double thickness = 5;
+  optional double slope = 6;
+  optional double angle = 7;
+
+  optional bool valid = 8;
+}
+
+
+message Intersection {
+
+  enum IntersectionType
+  {
+    unknown = 0;
+    T = 1;
+    L = 2;
+    C = 3;
+    none = 4;
+    X = 5;
+  }
+
+  optional DoubleVector2 posInImage = 1;
+  optional DoubleVector2 posOnField = 2;
+
+  optional IntersectionType type = 3;
+  optional uint32 segmentOneIndex = 6;
+  optional uint32 segmentTwoIndex = 7;
+  optional double segmentOneDistance = 8;
+  optional double segmentTwoDistance = 9;
+}
