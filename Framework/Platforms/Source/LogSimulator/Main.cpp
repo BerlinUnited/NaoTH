@@ -111,7 +111,7 @@ int main(int argc, char** argv)
   sim.main();
   
   // dump some debug information
-  StopwatchManager::getInstance().dump();
+  //StopwatchManager::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main

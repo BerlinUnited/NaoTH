@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Tools/DataStructures/Singleton.h"
+#include "Tools/DataStructures/Serializer.h"
 
 class Stopwatch
 {
@@ -59,13 +60,10 @@ public:
 };//end class Stopwatch
 
 
-class StopwatchManager : public naoth::Singleton<StopwatchManager>
+class StopwatchManager // : public naoth::Singleton<StopwatchManager>
 {
-protected:
-  friend class naoth::Singleton<StopwatchManager>;
-  StopwatchManager() {}
-
 public:
+  StopwatchManager() {}
   virtual ~StopwatchManager() {}
   
   typedef std::map<std::string, Stopwatch> StopwatchMap;
@@ -94,21 +92,46 @@ private:
 
 };//end class StopwatchManager
 
+namespace naoth
+{
+template<>
+class Serializer<StopwatchManager>
+{
+  public:
+  static void serialize(const StopwatchManager& object, std::ostream& stream);
+
+  // we don't need that
+  static void deserialize(std::istream& stream, StopwatchManager& object);
+};
+}
+
 // MACROS //
 
 #define USE_DEBUG_STOPWATCH
 
 #ifdef USE_DEBUG_STOPWATCH
 
-#define STOPWATCH_START(name) \
+#define STOPWATCH_START_OLD(name) \
 { \
   static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
   _debug_stopwatch_item_.start(); \
 } ((void)0)
 
-#define STOPWATCH_STOP(name) \
+#define STOPWATCH_STOP_OLD(name) \
 { \
   static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
+  _debug_stopwatch_item_.stop(); \
+} ((void)0)
+
+#define STOPWATCH_START(name) \
+{ \
+  static Stopwatch& _debug_stopwatch_item_ = getStopwatchManager().getStopwatch(name); \
+  _debug_stopwatch_item_.start(); \
+} ((void)0)
+
+#define STOPWATCH_STOP(name) \
+{ \
+  static Stopwatch& _debug_stopwatch_item_ = getStopwatchManager().getStopwatch(name); \
   _debug_stopwatch_item_.stop(); \
 } ((void)0)
 

@@ -27,7 +27,6 @@
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
-#include "Modules/Infrastructure/Debug/StopwatchSender.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 
 // tools
@@ -79,7 +78,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // debug
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
-  REGISTER_MODULE(StopwatchSender);
   REGISTER_MODULE(DebugExecutor);
 
   // -- END REGISTER MODULES --

@@ -15,7 +15,6 @@
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
-#include <Tools/Debug/Stopwatch.h>
 
 #include <Tools/SynchronizedFileWriter.h>
 

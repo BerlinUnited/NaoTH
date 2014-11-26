@@ -32,10 +32,12 @@
 //#include "Representations/Modeling/RobotPose.h"
 
 #include "Tools/Debug/Logger.h"
+#include <Tools/Debug/Stopwatch.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
+  PROVIDE(StopwatchManager)
   REQUIRE(FrameInfo)
 //  REQUIRE(FieldInfo)
   PROVIDE(Image)

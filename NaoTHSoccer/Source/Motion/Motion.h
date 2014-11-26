@@ -38,7 +38,10 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 
+#include <Tools/Debug/Stopwatch.h>
+
 BEGIN_DECLARE_MODULE(Motion)
+  PROVIDE(StopwatchManager)
 //  REQUIRE(MotionStatus)
 //  REQUIRE(OdometryData)
 //  REQUIRE(InertialModel)

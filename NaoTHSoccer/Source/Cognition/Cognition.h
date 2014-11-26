@@ -14,14 +14,22 @@
 #include <PlatformInterface/PlatformInterface.h>
 
 #include <Tools/Debug/ModuleManagerWithDebug.h>
+#include "Tools/Debug/Stopwatch.h"
 
-class Cognition : public naoth::Callable, public ModuleManagerWithDebug
+BEGIN_DECLARE_MODULE(Cognition)
+  PROVIDE(StopwatchManager)
+END_DECLARE_MODULE(Cognition)
+
+class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug
 {
 public:
   Cognition();
   virtual ~Cognition();
 
   virtual void call();
+
+  // TODO: unify with Callable
+  void execute() {}
 
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 

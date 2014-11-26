@@ -12,6 +12,9 @@
 #include "Tools/SynchronizedFileWriter.h"
 #include "Tools/NaoTime.h"
 
+#include "Messages/Messages.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 Stopwatch::Stopwatch() 
   : 
   begin(0), 
@@ -83,3 +86,27 @@ void StopwatchManager::dump(std::string name) const
 
   SynchronizedFileWriter::saveStreamToFile(outputStream, s.str());
 }//end dump
+
+void naoth::Serializer<StopwatchManager>::serialize(const StopwatchManager& object, std::ostream& stream)
+{
+  static naothmessages::Stopwatches all;
+  all.Clear();
+  //all.mutable_stopwatches()->Reserve(stopwatches.size());
+
+  const StopwatchManager::StopwatchMap& stopwatches = object.getStopwatches();
+  StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
+
+  for (; it != stopwatches.end(); ++it)
+  {
+    naothmessages::StopwatchItem* s = all.add_stopwatches();
+    s->set_name(it->first);
+    s->set_time(it->second.lastValue);
+  }
+    
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  all.SerializeToZeroCopyStream(&buf);
+}
+
+void naoth::Serializer<StopwatchManager>::deserialize(std::istream& stream, StopwatchManager& object)
+{
+}
