@@ -85,12 +85,11 @@ public:
   void dump(std::string name = "") const;
 
   /** */
-  const StopwatchMap getStopwatches() const { return stopwatches; }
+  const StopwatchMap& getStopwatches() const { return stopwatches; }
 
 private:
   StopwatchMap stopwatches;
 };//end class StopwatchManager
-
 
 // MACROS //
 
