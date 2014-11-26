@@ -12,7 +12,6 @@
 #include <cstring>
 #include <string>
 
-#include "Tools/DataStructures/Singleton.h"
 #include "Tools/DataStructures/Serializer.h"
 
 class Stopwatch
@@ -105,23 +104,12 @@ class Serializer<StopwatchManager>
 };
 }
 
-// MACROS //
+// MACROS for convenient usage.
+// NOTE: those macros only work inside a MODULE whith PROVIDE(StopwatchManager)
 
 #define USE_DEBUG_STOPWATCH
 
 #ifdef USE_DEBUG_STOPWATCH
-
-#define STOPWATCH_START_OLD(name) \
-{ \
-  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
-  _debug_stopwatch_item_.start(); \
-} ((void)0)
-
-#define STOPWATCH_STOP_OLD(name) \
-{ \
-  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
-  _debug_stopwatch_item_.stop(); \
-} ((void)0)
 
 #define STOPWATCH_START(name) \
 { \
@@ -136,8 +124,8 @@ class Serializer<StopwatchManager>
 } ((void)0)
 
 // this is slow and should be used for loops (only if necessary)
-#define STOPWATCH_START_GENERIC(name) StopwatchManager::getInstance().notifyStart(name);
-#define STOPWATCH_STOP_GENERIC(name) StopwatchManager::getInstance().notifyStop(name);
+#define STOPWATCH_START_GENERIC(name) getStopwatchManager().notifyStart(name);
+#define STOPWATCH_STOP_GENERIC(name) getStopwatchManager().notifyStop(name);
 
 #else
 #define STOPWATCH_START(name) ((void)0)

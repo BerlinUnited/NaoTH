@@ -38,7 +38,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 
-#include <Tools/Debug/Stopwatch.h>
+#include <Representations/Debug/Stopwatch.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)

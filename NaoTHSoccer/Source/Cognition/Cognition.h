@@ -14,7 +14,7 @@
 #include <PlatformInterface/PlatformInterface.h>
 
 #include <Tools/Debug/ModuleManagerWithDebug.h>
-#include "Tools/Debug/Stopwatch.h"
+#include "Representations/Debug/Stopwatch.h"
 
 BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)

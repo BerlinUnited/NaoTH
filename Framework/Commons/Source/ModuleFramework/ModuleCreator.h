@@ -9,7 +9,7 @@
 #include "Module.h"
 
 #include <Tools/DataStructures/Printable.h>
-#include <Tools/Debug/Stopwatch.h>
+#include <Representations/Debug/Stopwatch.h>
 
 /**
  * AbstractModuleCreator is an interface.

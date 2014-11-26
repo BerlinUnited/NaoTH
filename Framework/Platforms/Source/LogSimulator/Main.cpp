@@ -9,7 +9,7 @@
 #include <glib-object.h>
 
 #include <PlatformInterface/Platform.h>
-#include <Tools/Debug/Stopwatch.h>
+//#include <Tools/Debug/Stopwatch.h>
 #include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/ModuleCreator.h>
 

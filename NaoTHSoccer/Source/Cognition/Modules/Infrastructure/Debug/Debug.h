@@ -32,7 +32,7 @@
 //#include "Representations/Modeling/RobotPose.h"
 
 #include "Tools/Debug/Logger.h"
-#include <Tools/Debug/Stopwatch.h>
+#include <Representations/Debug/Stopwatch.h>
 
 using namespace naoth;
 
