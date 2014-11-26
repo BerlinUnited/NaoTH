@@ -7,7 +7,7 @@
 
 #include <Tools/Debug/DebugBufferedOutput.h>
 #include <DebugCommunication/DebugCommandManager.h>
-#include <Tools/Debug/Stopwatch.h>
+
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 StopwatchSender::StopwatchSender()
@@ -41,22 +41,26 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
 {
   if ("stopwatch" == command)
   {
-    static naothmessages::Stopwatches all;
-    all.Clear();
-    //all.mutable_stopwatches()->Reserve(stopwatches.size());
-
-    const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
-    StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
-
-    for (; it != stopwatches.end(); ++it)
-    {
-      naothmessages::StopwatchItem* s = all.add_stopwatches();
-      s->set_name(it->first);
-      s->set_time(it->second.lastValue);
-    }
-    
-    google::protobuf::io::OstreamOutputStream buf(&outstream);
-    all.SerializeToZeroCopyStream(&buf);
+    Serializer<StopwatchManager>::serialize(StopwatchManager::getInstance(), outstream);
   }
-}//end executeDebugCommand
+}
 
+void Serializer<StopwatchManager>::serialize(const StopwatchManager& object, std::ostream& stream)
+{
+  static naothmessages::Stopwatches all;
+  all.Clear();
+  //all.mutable_stopwatches()->Reserve(stopwatches.size());
+
+  const StopwatchManager::StopwatchMap& stopwatches = StopwatchManager::getInstance().getStopwatches();
+  StopwatchManager::StopwatchMap::const_iterator it = stopwatches.begin();
+
+  for (; it != stopwatches.end(); ++it)
+  {
+    naothmessages::StopwatchItem* s = all.add_stopwatches();
+    s->set_name(it->first);
+    s->set_time(it->second.lastValue);
+  }
+    
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  all.SerializeToZeroCopyStream(&buf);
+}
