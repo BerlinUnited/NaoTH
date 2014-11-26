@@ -63,32 +63,35 @@ class StopwatchManager : public naoth::Singleton<StopwatchManager>
 {
 protected:
   friend class naoth::Singleton<StopwatchManager>;
-  StopwatchManager();
+  StopwatchManager() {}
 
 public:
-  virtual ~StopwatchManager();
+  virtual ~StopwatchManager() {}
   
   typedef std::map<std::string, Stopwatch> StopwatchMap;
 
-  //@Depricated and shouldn't be used
-  //since access using this method is very slow
-  void notifyStart(const std::string& name);
+  void notifyStart(const std::string& name) {
+    stopwatches[name].start();
+  }
 
-  //@Depricated and shouldn't be used
-  //since access using this method is very slow
-  void notifyStop(const std::string& name);
+  void notifyStop(const std::string& name) {
+    stopwatches[name].stop();
+  }
 
-  /** */
-  Stopwatch& getStopwatchReference(const std::string& stopWatchName);
+  Stopwatch& getStopwatch(const std::string& name) {
+    return stopwatches[name];
+  }
+
+  const StopwatchMap& getStopwatches() const { 
+    return stopwatches; 
+  }
 
   /** */
   void dump(std::string name = "") const;
 
-  /** */
-  const StopwatchMap& getStopwatches() const { return stopwatches; }
-
 private:
   StopwatchMap stopwatches;
+
 };//end class StopwatchManager
 
 // MACROS //
@@ -99,13 +102,13 @@ private:
 
 #define STOPWATCH_START(name) \
 { \
-  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatchReference(name); \
+  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
   _debug_stopwatch_item_.start(); \
 } ((void)0)
 
 #define STOPWATCH_STOP(name) \
 { \
-  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatchReference(name); \
+  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatch(name); \
   _debug_stopwatch_item_.stop(); \
 } ((void)0)
 

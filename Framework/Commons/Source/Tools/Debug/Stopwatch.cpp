@@ -53,37 +53,6 @@ void Stopwatch::stop()
 
 
 
-StopwatchManager::StopwatchManager()
-{
-}
-
-StopwatchManager::~StopwatchManager()
-{ 
-  // TODO: there is for sure a better  place for it
-  //Stopwatch::getInstance().dump(); 
-}
-
-
-void StopwatchManager::notifyStart(const std::string& name)
-{
-  stopwatches[name].start();
-}
-
-
-void StopwatchManager::notifyStop(const std::string& name)
-{
-  stopwatches[name].stop();
-}
-
-
-
-Stopwatch& StopwatchManager::getStopwatchReference(const std::string& name)
-{
-  // add value if not existing
-  return stopwatches[name];
-}
-
-
 void StopwatchManager::dump(std::string name) const
 {
   std::stringstream outputStream;

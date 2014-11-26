@@ -74,7 +74,7 @@ public:
   ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
     : theBlackBoard(theBlackBoard),
       theInstance(NULL),
-      stopwatch(StopwatchManager::getInstance().getStopwatchReference(IF<M>::getName()))
+      stopwatch(StopwatchManager::getInstance().getStopwatch(IF<M>::getName()))
   {
     setEnabled(enabled);
   }
