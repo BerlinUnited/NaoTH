@@ -51,7 +51,7 @@ public:
     std::stringstream hmmsg;
     ST::serialize(data, hmmsg);
     writer.write(hmmsg.str());
-  }//end execute
+  }
 }; // end class OutputChanelAction
 
 
@@ -157,7 +157,7 @@ public:
     
     MessageQueue* messageQueue = messageQueueHandler->getMessageQueue(typeid(T).name());
     return new OutputChanelAction<T>(messageQueue, data);
-  }//end createOutputChanelAction
+  }
 
 
   template<class T>
@@ -167,7 +167,7 @@ public:
 
     MessageQueue* messageQueue = messageQueueHandler->getMessageQueue(typeid(T).name());
     return new InputChanelAction<T>(messageQueue, data);
-  }//end createInputChanelAction
+  }
 
   template<class T, int maxSize>
   AbstractAction* createBufferedInputChanelAction(RingBuffer<T, maxSize>& buffer)
@@ -176,7 +176,7 @@ public:
 
     MessageQueue* messageQueue = messageQueueHandler->getMessageQueue(typeid(T).name());
     return new BufferedInputChanelAction<T, maxSize>(messageQueue, buffer);
-  }//end createInputChanelAction
+  }
 
 };//end ChannelActionCreator
 

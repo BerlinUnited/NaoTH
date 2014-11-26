@@ -53,8 +53,6 @@ namespace naoth
     int eventCounter[numOfButtons];
 
     virtual void print(std::ostream& stream) const;
-  private:
-
   };
 }
 

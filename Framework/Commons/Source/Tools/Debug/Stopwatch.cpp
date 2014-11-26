@@ -28,9 +28,8 @@ Stopwatch::Stopwatch()
 void Stopwatch::start()
 {
   isValid = false;
- 
   begin = naoth::NaoTime::getSystemTimeInMicroSeconds();
-}//end start
+}
 
 
 void Stopwatch::stop()
@@ -68,13 +67,13 @@ StopwatchManager::~StopwatchManager()
 void StopwatchManager::notifyStart(const std::string& name)
 {
   stopwatches[name].start();
-}//end notifyStart
+}
 
 
 void StopwatchManager::notifyStop(const std::string& name)
 {
   stopwatches[name].stop();
-}//end notifyStop
+}
 
 
 
@@ -82,7 +81,7 @@ Stopwatch& StopwatchManager::getStopwatchReference(const std::string& name)
 {
   // add value if not existing
   return stopwatches[name];
-}//end getStopwatchReference
+}
 
 
 void StopwatchManager::dump(std::string name) const

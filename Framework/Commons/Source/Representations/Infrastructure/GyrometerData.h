@@ -19,9 +19,6 @@ namespace naoth
   class GyrometerData : public Printable
   {
   public:
-    GyrometerData();
-    ~GyrometerData();
-
     // the GyrRef provided by the robot (what is it for?)
     double ref;
     // raw data as provided by the sensors

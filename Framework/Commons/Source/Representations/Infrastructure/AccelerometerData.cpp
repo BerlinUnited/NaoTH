@@ -5,28 +5,20 @@
 using namespace naoth;
 using namespace std;
 
-AccelerometerData::AccelerometerData()
+Vector3d AccelerometerData::getAcceleration() const
 {
+  Vector3d acc(data);
+  acc.z += Math::g;
+  return acc;
 }
-
-AccelerometerData::~AccelerometerData()
-{
-}
-
-Vector3<double> AccelerometerData::getAcceleration() const
-{
-    Vector3<double> acc(data);
-    acc.z += 9.81;
-    return acc;
-}//end getAcceleration
 
 void AccelerometerData::print(ostream& stream) const
 {
-  stream << "X = " << data.x << endl;
-  stream << "Y = " << data.y << endl;
-  stream << "Z = " << data.z << endl;
+  stream << "x = " << data.x << endl;
+  stream << "y = " << data.y << endl;
+  stream << "z = " << data.z << endl;
   stream << getAcceleration() <<endl;
-}//end print
+}
 
 void Serializer<AccelerometerData>::serialize(const AccelerometerData& representation, std::ostream& stream)
 {

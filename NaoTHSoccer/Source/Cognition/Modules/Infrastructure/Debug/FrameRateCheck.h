@@ -17,6 +17,7 @@ public:
   virtual ~FrameRateCheck();
 
   virtual void execute();
+
 private:
   FrameInfo lastFrameInfo;
 

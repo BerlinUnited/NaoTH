@@ -5,19 +5,12 @@
 using namespace naoth;
 using namespace std;
 
-GyrometerData::GyrometerData()
-{
-}
-
-GyrometerData::~GyrometerData()
-{
-}
-
 void GyrometerData::print(ostream& stream) const
 {
-  stream << "X : " << data.x << " radian/s (" << rawData.x << ")" << endl;
-  stream << "Y : " << data.y << " radian/s (" << rawData.y << ")" << endl;
-}//end print
+  stream << "x = " << data.x << " rad/s (" << rawData.x << ")" << endl;
+  stream << "y = " << data.y << " rad/s (" << rawData.y << ")" << endl;
+  stream << "z = " << data.z << " rad/s (" << rawData.z << ")" << endl;
+}
 
 void Serializer<GyrometerData>::serialize(const GyrometerData& representation, std::ostream& stream)
 {

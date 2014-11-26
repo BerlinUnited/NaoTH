@@ -20,16 +20,12 @@ namespace naoth
   {
   public:
     // normalized to m/s^2
-    Vector3<double> data;
+    Vector3d data;
 
     // raw data read from sensors
     Vector3d rawData;
 
-
-    AccelerometerData();
-    ~AccelerometerData();
-
-    Vector3<double> getAcceleration() const;
+    Vector3d getAcceleration() const;
 
     virtual void print(std::ostream& stream) const;
   };
