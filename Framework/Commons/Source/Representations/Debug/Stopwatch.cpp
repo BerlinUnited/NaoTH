@@ -107,6 +107,6 @@ void naoth::Serializer<StopwatchManager>::serialize(const StopwatchManager& obje
   all.SerializeToZeroCopyStream(&buf);
 }
 
-void naoth::Serializer<StopwatchManager>::deserialize(std::istream& stream, StopwatchManager& object)
+void naoth::Serializer<StopwatchManager>::deserialize(std::istream& /*stream*/, StopwatchManager& /*object*/)
 {
 }
