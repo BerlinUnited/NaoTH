@@ -64,7 +64,7 @@ Motion::~Motion()
 
 }
 
-void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
+void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& /*platform*/)
 {
   // TODO: need a better solution for this
 
