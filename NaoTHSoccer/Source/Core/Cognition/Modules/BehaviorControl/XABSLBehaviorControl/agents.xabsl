@@ -164,7 +164,7 @@ include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_foot_test.xabsl";
-include "Options/Test/Walk/ball_fight_test.xabsl";
+include "Options/Test/walk/ball_fight_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_foot_and_USOA_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
