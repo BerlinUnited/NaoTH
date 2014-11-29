@@ -146,56 +146,16 @@ private:
   std::vector<Vector2i> coordinates;
 };
 
+// representations: for top and the bottom image
+class DebugImageDrawings : public DebugDrawingCanvas{};
+class DebugImageDrawingsTop : public DebugDrawingCanvas{};
 
-class DebugImageDrawings
-{
-public:
-  DebugImageDrawings()
-    : currentCanvas(&canvasBottom)
-  {
-  }
-
-  void setCanvas(naoth::CameraInfo::CameraID id) {
-    if(id == naoth::CameraInfo::Bottom) {
-      currentCanvas = &canvasBottom;
-    } else if(id == naoth::CameraInfo::Top) {
-      currentCanvas = &canvasTop;
-    } else {
-      assert(false);
-    }
-  }
-
-  DebugDrawingCanvas& canvas() {
-    return *currentCanvas;
-  }
-
-  DebugDrawingCanvas& canvas(naoth::CameraInfo::CameraID id) {
-    if(id == naoth::CameraInfo::Bottom) {
-      return canvasBottom;
-    } else {
-      return canvasTop;
-    }
-  }
-
-  void reset() {
-    canvasTop.reset();
-    canvasBottom.reset();
-  }
-
-private:
-  DebugDrawingCanvas canvasTop;
-  DebugDrawingCanvas canvasBottom;
-  DebugDrawingCanvas* currentCanvas;
-};
 
 #ifdef DEBUG
-#define CANVAS_PX(id) DebugImageDrawings::getInstance().setCanvas(id)
-#define CANVAS_PX_TOP DebugImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Top)
-#define CANVAS_PX_BOTTOM DebugImageDrawings::getInstance().setCanvas(naoth::CameraInfo::Bottom)
-#define CIRCLE_PX(...) DebugImageDrawings::getInstance().canvas().drawCircleToImage(__VA_ARGS__)
-#define RECT_PX(...) DebugImageDrawings::getInstance().canvas().drawRectToImage(__VA_ARGS__)
-#define LINE_PX(...) DebugImageDrawings::getInstance().canvas().drawLineToImage(__VA_ARGS__)
-#define POINT_PX(...) DebugImageDrawings::getInstance().canvas().drawPointToImage(__VA_ARGS__)
+#define CIRCLE_PX(...) getDebugImageDrawings().drawCircleToImage(__VA_ARGS__)
+#define RECT_PX(...) getDebugImageDrawings().drawRectToImage(__VA_ARGS__)
+#define LINE_PX(...) getDebugImageDrawings().drawLineToImage(__VA_ARGS__)
+#define POINT_PX(...) getDebugImageDrawings().drawPointToImage(__VA_ARGS__)
 #else
 /* ((void)0) - that's a do-nothing statement */
 #define CIRCLE_PX(color,x,y,radius) ((void)0)
