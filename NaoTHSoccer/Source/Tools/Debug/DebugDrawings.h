@@ -52,30 +52,30 @@ class Serializer<DebugDrawings>
 
 
 #ifdef DEBUG
-#define CANVAS(id) DebugDrawings::getInstance().out() << "Canvas:" << id << std::endl
-#define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << std::endl
-#define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << std::endl
-#define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << std::endl
-#define ROTATION(angle) DebugDrawings::getInstance().out() << "Rotation:" << angle << std::endl
-#define TRANSLATION(x,y) DebugDrawings::getInstance().out() << "Translation:" << x << ":" << y << std::endl
+#define CANVAS(id) getDebugDrawings().out() << "Canvas:" << id << std::endl
+#define IMAGE_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnImage" << std::endl
+#define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << std::endl
+#define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << std::endl
+#define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << std::endl
+#define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << std::endl
 
-#define CIRCLE(x,y,radius) DebugDrawings::getInstance().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
-#define OVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
-#define ARROW(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define LINE(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define BOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define FILLBOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
-#define FILLOVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define TEXT_DRAWING(x,y,text) DebugDrawings::getInstance().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
-#define SIMPLE_PARTICLE(x,y,r) DebugDrawings::getInstance().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
+#define CIRCLE(x,y,radius) getDebugDrawings().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
+#define OVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
+#define ARROW(x0,y0,x1,y1) getDebugDrawings().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define LINE(x0,y0,x1,y1) getDebugDrawings().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define BOX(x0,y0,x1,y1) getDebugDrawings().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define FILLBOX(x0,y0,x1,y1) getDebugDrawings().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
+#define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
+#define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
 
 #define PARTICLE(x,y,r,l) \
   LINE(x,y,x + l*cos(r),y + l*sin(r)); \
   CIRCLE(x,y,0.1*l)
 
-#define BINARY_PLOT(name,value) DebugDrawings::getInstance().out() << "BinaryPlotData:" << name << ":" << value << std::endl
-#define ROBOT(x,y,rotation) DebugDrawings::getInstance().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
+#define BINARY_PLOT(name,value) getDebugDrawings().out() << "BinaryPlotData:" << name << ":" << value << std::endl
+#define ROBOT(x,y,rotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
 
 
 #else
