@@ -18,10 +18,12 @@
 // debug
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 
 BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
 END_DECLARE_MODULE(Cognition)
 
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug

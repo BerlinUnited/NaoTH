@@ -13,7 +13,6 @@
 
 // debug
 #include <Tools/Debug/DebugRequest.h>
-#include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 
 #include <Tools/SynchronizedFileWriter.h>
@@ -55,8 +54,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 
   // HACK: initialize the both canvases
-  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
-  DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).init(getImage().width(), getImage().height());
+  getDebugImageDrawings().canvas(naoth::CameraInfo::Top).init(getImageTop().width(), getImageTop().height());
+  getDebugImageDrawings().canvas(naoth::CameraInfo::Bottom).init(getImage().width(), getImage().height());
 }
 
 Debug::~Debug()
@@ -86,7 +85,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     if(arguments.find("top") != arguments.end())
     {
       ImageDrawingCanvas canvas(getImageTop());
-      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Top).drawToImage(canvas);
+      getDebugImageDrawings().canvas(naoth::CameraInfo::Top).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImageTop");
       Serializer<Image>::serialize(getImageTop(), outstream);
@@ -96,7 +95,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     else
     {
       ImageDrawingCanvas canvas(getImage());
-      DebugImageDrawings::getInstance().canvas(naoth::CameraInfo::Bottom).drawToImage(canvas);
+      getDebugImageDrawings().canvas(naoth::CameraInfo::Bottom).drawToImage(canvas);
       GT_TRACE("Debug::executeDebugCommand() before serialize");
       STOPWATCH_START("sendImage");
       Serializer<Image>::serialize(getImage(), outstream);

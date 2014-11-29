@@ -147,17 +147,14 @@ private:
 };
 
 
-class DebugImageDrawings : public naoth::Singleton<DebugImageDrawings>
+class DebugImageDrawings
 {
-protected:
-  friend class naoth::Singleton<DebugImageDrawings>;
-  
+public:
   DebugImageDrawings()
     : currentCanvas(&canvasBottom)
   {
   }
 
-public:
   void setCanvas(naoth::CameraInfo::CameraID id) {
     if(id == naoth::CameraInfo::Bottom) {
       currentCanvas = &canvasBottom;

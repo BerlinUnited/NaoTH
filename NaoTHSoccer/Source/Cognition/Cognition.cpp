@@ -11,7 +11,6 @@
 
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include <Representations/Debug/Stopwatch.h>
 
@@ -141,7 +140,7 @@ void Cognition::call()
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
   getDebugDrawings().reset();
-  DebugImageDrawings::getInstance().reset();
+  getDebugImageDrawings().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call
