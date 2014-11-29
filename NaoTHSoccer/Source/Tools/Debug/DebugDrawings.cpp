@@ -6,53 +6,15 @@
 //
 
 #include "DebugDrawings.h"
-#include <DebugCommunication/DebugCommandManager.h>
-#include "Tools/Math/Common.h"
 
-DebugDrawings::DebugDrawings() : debugDrawingsOut(&bufferOne)
+void naoth::Serializer<DebugDrawings>::serialize(const DebugDrawings& object, std::ostream& stream)
 {
-  REGISTER_DEBUG_COMMAND("debug_drawings", 
-    "return the debug drawings which where collected in the internal buffer", this);
+  const std::string& buf = object.out().str();
+  if (buf != "") {
+    stream << buf;
+  }
 }
 
-DebugDrawings::~DebugDrawings(){}
-
-
-void DebugDrawings::executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& /*arguments*/,
-    std::ostream &outstream)
+void naoth::Serializer<DebugDrawings>::deserialize(std::istream& /*stream*/, DebugDrawings& /*object*/)
 {
-  if ("debug_drawings" == command) {
-    std::stringstream* tmpBuffer = debugDrawingsOut;
-    update();
-
-    const std::string& buf = (*tmpBuffer).str();
-    if (buf != "") {
-      outstream << buf;
-    }
-  }
-}//end executeDebugCommand
-
-
-void DebugDrawings::update()
-{
-  if(debugDrawingsOut == &bufferOne)
-  {
-    // clear bufferTwo
-    bufferTwo.str("");
-    bufferTwo.clear();
-    debugDrawingsOut = &bufferTwo;
-  }else
-  {
-    // clear bufferOne
-    bufferOne.str("");
-    bufferOne.clear();
-    debugDrawingsOut = &bufferOne;
-  }
-}//end update
-
-
-std::stringstream& DebugDrawings::out()
-{
-  return *debugDrawingsOut;
 }

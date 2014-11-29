@@ -148,7 +148,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
         char c;
         while (fread(&c, 1, 1, file)) {
           outstream << c;
-        }//end while
+        }
         fclose(file);
       }
       else

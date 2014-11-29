@@ -16,32 +16,39 @@
 #include "Tools/Math/Vector_n.h"
 
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include "Tools/DataStructures/Serializer.h"
 
-class DebugDrawings : public naoth::Singleton<DebugDrawings>, public DebugCommandExecutor
+class DebugDrawings
 {
-protected:
-  friend class naoth::Singleton<DebugDrawings>;
-  DebugDrawings();
-  ~DebugDrawings();
-
 public:
 
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::ostream &outstream);
-  
-  void update();
-  std::stringstream& out();
+  void reset() {
+    buffer.str("");
+    buffer.clear();
+  }
+
+  std::stringstream& out() {
+    return buffer;
+  }
+  const std::stringstream& out() const {
+    return buffer;
+  }
 
 private:
-
-  // reference to the currentelly used buffer
-  std::stringstream* debugDrawingsOut;
-
   // do double-buffering :)
-  std::stringstream bufferOne;
-  std::stringstream bufferTwo;
+  std::stringstream buffer;
 };
+
+namespace naoth
+{
+template<>
+class Serializer<DebugDrawings>
+{
+  public:
+  static void serialize(const DebugDrawings& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, DebugDrawings& object);
+};
+}
 
 
 #ifdef DEBUG

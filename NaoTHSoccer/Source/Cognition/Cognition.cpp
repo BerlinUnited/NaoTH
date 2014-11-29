@@ -11,7 +11,6 @@
 
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include <Representations/Debug/Stopwatch.h>
@@ -141,7 +140,7 @@ void Cognition::call()
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Debug ~ Init");
   DebugBufferedOutput::getInstance().update();
-  DebugDrawings::getInstance().update();
+  getDebugDrawings().reset();
   DebugImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
