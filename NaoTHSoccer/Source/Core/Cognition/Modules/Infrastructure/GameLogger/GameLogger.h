@@ -14,6 +14,7 @@
 #include <Representations/Perception/ScanLineEdgelPercept.h>
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
+#include "Representations/Modeling/TeamMessage.h"
 
 using namespace naoth;
 
@@ -34,6 +35,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
 
+  REQUIRE(TeamMessage)
 END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase

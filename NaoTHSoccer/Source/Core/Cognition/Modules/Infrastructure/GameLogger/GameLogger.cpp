@@ -54,6 +54,9 @@ void GameLogger::execute()
       LOGSTUFF(BallPerceptTop);
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
+
+      LOGSTUFF(TeamMessage);
+
       something_recorded = true;
     }
 
