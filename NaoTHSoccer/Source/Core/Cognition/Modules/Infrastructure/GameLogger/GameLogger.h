@@ -9,13 +9,31 @@
 #include <Representations/Modeling/BehaviorStateSparse.h>
 #include <Representations/Modeling/PlayerInfo.h>
 
+#include <Representations/Perception/BallPercept.h>
+#include <Representations/Perception/GoalPercept.h>
+#include <Representations/Perception/ScanLineEdgelPercept.h>
+#include <Representations/Modeling/OdometryData.h>
+#include <Representations/Perception/CameraMatrix.h>
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+
   REQUIRE(BehaviorStateSparse)
   REQUIRE(BehaviorStateComplete)
+
+  REQUIRE(OdometryData)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  REQUIRE(GoalPercept)
+  REQUIRE(GoalPerceptTop)
+  REQUIRE(BallPercept)
+  REQUIRE(BallPerceptTop)
+  REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
+
 END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
