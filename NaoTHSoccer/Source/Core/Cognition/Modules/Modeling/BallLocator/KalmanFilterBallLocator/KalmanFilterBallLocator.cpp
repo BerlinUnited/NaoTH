@@ -87,6 +87,11 @@ void KalmanFilterBallLocator::execute()
     MODIFY("KalmanFilterBallLocator:validatePerceptWithModel", validatePerceptWithModel);
     if (validatePerceptWithModel == 0)  {
         executeKalman(getBallPercept());
+
+        if(!getBallPercept().ballWasSeen){
+            getBallModel().resetTimeBallIsSeen();
+        }
+
         return;
     }
 
