@@ -118,7 +118,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  splMsg.team = (uint8_t) teamData.teamColor;
+  splMsg.teamColor = (uint8_t) teamData.teamColor;
 
   splMsg.pose[0] = (float) teamData.pose.translation.x;
   splMsg.pose[1] = (float) teamData.pose.translation.y;

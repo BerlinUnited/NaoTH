@@ -113,7 +113,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
             msg.pose_a);
 
     
-    drawingList.add(new Pen(1, msg.team == 0 ? Color.BLUE : Color.RED));
+    drawingList.add(new Pen(1, msg.teamColor == 0 ? Color.BLUE : Color.RED));
     Robot robot = new Robot(
             robotPose.translation.x,
             robotPose.translation.y,
@@ -153,7 +153,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
       Text text = new Text(
         (int) robotPose.translation.x,
         (int) robotPose.translation.y + 150,
-        (msg.team == 0 ? "blue" : "red") + " " + msg.playerNum);
+        (msg.teamColor == 0 ? "blue" : "red") + " " + msg.playerNum);
       drawingList.add(text);
     }
 

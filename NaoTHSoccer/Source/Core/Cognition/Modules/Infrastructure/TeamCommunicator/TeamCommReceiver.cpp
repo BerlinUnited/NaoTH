@@ -76,7 +76,8 @@ void TeamCommReceiver::execute()
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 {
   SPLStandardMessage spl;
-  if(data.size() != sizeof(SPLStandardMessage))
+  
+  if(data.size() > sizeof(SPLStandardMessage))
   {
     //std::cerr << "wrong package size for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
     // invalid message size
@@ -98,7 +99,7 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     return;
   }
 
-  GameData::TeamColor teamColor = (GameData::TeamColor) spl.team;
+  GameData::TeamColor teamColor = (GameData::TeamColor) spl.teamColor;
 
   if ( teamColor == getPlayerInfo().gameData.teamColor
        // ignore our own messages, we are adding it artficially later
@@ -109,9 +110,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     data.frameInfo = getFrameInfo();
 
     data.playerNum = spl.playerNum;
-    if(spl.team < GameData::numOfTeamColor)
+    if(spl.teamColor < GameData::numOfTeamColor)
     {
-      data.teamColor = (GameData::TeamColor) spl.team;
+      data.teamColor = (GameData::TeamColor) spl.teamColor;
     }
 
     data.pose.translation.x = spl.pose[0];

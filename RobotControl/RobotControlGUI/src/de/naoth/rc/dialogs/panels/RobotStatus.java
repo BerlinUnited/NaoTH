@@ -31,7 +31,9 @@ public class RobotStatus extends javax.swing.JPanel {
     private final CircularFifoQueue<Long> timestamps = new CircularFifoQueue<>(5);
     
     private final Color darkOrange = new Color(255, 130, 0);
-
+    private final Color magenta = new Color(210, 180, 200);
+    private final Color cyan = new Color(180, 210, 255);
+    
     /** Creates new form RobotStatus */
     public RobotStatus(MessageServer messageServer, String ipAddress) {
         initComponents();
@@ -73,12 +75,15 @@ public class RobotStatus extends javax.swing.JPanel {
         this.jlTimestamp.setForeground(Color.black);
       }
       
-      if(msg.team==1) {
+      if(msg.teamColor==1) {
         this.jlTeamColor.setText("TEAM RED");
-      } else if(msg.team==0) {
+        this.setBackground(magenta);
+      } else if(msg.teamColor==0) {
         this.jlTeamColor.setText("TEAM BLUE");
+        this.setBackground(cyan);
       } else {
-        this.jlTeamColor.setText("TEAM " + msg.team);
+        this.jlTeamColor.setText("TEAM " + msg.teamColor);
+        this.setBackground(Color.lightGray);
       }
 
       this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");

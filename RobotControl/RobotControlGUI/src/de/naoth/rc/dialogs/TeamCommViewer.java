@@ -124,96 +124,40 @@ public class TeamCommViewer extends AbstractDialog
   }// </editor-fold>//GEN-END:initComponents
 
     private void btListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btListenActionPerformed
-      if(this.btListen.isSelected())
-      {
-        robotStatusPanel.setVisible(true);
-        
+      
         try {
-          int port = Integer.parseInt(portNumber.getText().trim());
-          this.teamCommListener.connect(port);
-        }
-        catch(NumberFormatException ex)
-        {
-          Helper.handleException("Invalid port number", ex);
-        } catch (Exception ex) {}
-        
-        
-        this.timerCheckMessages = new Timer();
-        this.timerCheckMessages.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                synchronized(teamCommListener.messageMap) 
-                {
-                    if(teamCommListener.messageMap.isEmpty())
-                    {
-                      return;
-                    }
-                    long currentTime = System.currentTimeMillis();
-                    Map<String, SPLMessage> splMessageMap = new HashMap<>();
-                    
-                    for(Entry<String,TeamCommListener.Message> msg: teamCommListener.messageMap.entrySet()) 
-                    {
-                        if((currentTime - msg.getValue().timestamp) < RobotStatus.MAX_TIME_BEFORE_DEAD)
-                        {
-                          splMessageMap.put(msg.getKey(), msg.getValue().message);
-                        }
-                        final String address = msg.getKey();
-                        final SPLMessage splMessage = msg.getValue().message;
-                        final long timestamp = msg.getValue().timestamp;
-                        
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
+            if (this.btListen.isSelected()) {
+                int port = Integer.parseInt(portNumber.getText().trim());
+                this.teamCommListener.connect(port);
 
-                          @Override
-                          public void run()
-                          {
-                            RobotStatus robotStatus = robotsMap.get(address);
-                            if(robotStatus == null)
-                            {
-                              robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-                              robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
-                              robotsMap.put(address, robotStatus);
-                              robotStatusPanel.add(robotStatus);
-                            }
-                            else
-                            {
-                              robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
-                            }
-                          }
-                        });
-                        
-                        
-                    }
-                    
-                    if(Plugin.teamCommDrawingManager != null)
-                    {
-                      Plugin.teamCommDrawingManager.handleSPLMessages(splMessageMap);
-                    }
-                } // end synchronized
-            } // end run
-        }, 100, 33);
-        
-      }else
-      {
-        this.timerCheckMessages.cancel();
-        this.timerCheckMessages.purge();
-        this.timerCheckMessages = null;
-        
-        try {
-          this.teamCommListener.disconnect();
-        } catch (Exception ex) {}
-        
-        synchronized(teamCommListener.messageMap) 
-        {
-          
+                this.timerCheckMessages = new Timer();
+                this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
+                this.portNumber.setEnabled(false);
+                this.robotStatusPanel.setVisible(true);
 
-          teamCommListener.messageMap.clear();
-          robotsMap.clear();
-          robotStatusPanel.removeAll();
-          robotStatusPanel.setVisible(false);
+            } else {
+
+                this.timerCheckMessages.cancel();
+                this.timerCheckMessages.purge();
+                this.timerCheckMessages = null;
+
+                this.teamCommListener.disconnect();
+
+                synchronized (this.teamCommListener.messageMap) {
+                    this.teamCommListener.messageMap.clear();
+                    this.robotsMap.clear();
+                    this.robotStatusPanel.removeAll();
+                    this.robotStatusPanel.setVisible(false);
+                    this.portNumber.setEnabled(true);
+                }
+            }
+        } catch (NumberFormatException ex) {
+            Helper.handleException("Invalid port number", ex);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace(System.err);
+        } catch (IOException ex) {
+            ex.printStackTrace(System.err);
         }
-        
-      }
     }//GEN-LAST:event_btListenActionPerformed
 
   @Override
@@ -221,38 +165,48 @@ public class TeamCommViewer extends AbstractDialog
   {
   }
   
+    class TeamCommListenTask extends TimerTask {
 
-  
-/*
-  private void parseMessage(String address, int port, ByteBuffer buffer)
-  {
-    SPLMessage splMessage = new SPLMessage(buffer);
+        @Override
+        public void run() {
+            synchronized (teamCommListener.messageMap) {
+                if (teamCommListener.messageMap.isEmpty()) {
+                    return;
+                }
+                long currentTime = System.currentTimeMillis();
+                Map<String, SPLMessage> splMessageMap = new HashMap<>();
 
-    try 
-    {
-        BUUserTeamMessage msg = BUUserTeamMessage.parseFrom(splMessage.data);
-    } catch (InvalidProtocolBufferException ex) 
-    {
-        ex.printStackTrace(System.err);
+                for (Entry<String, TeamCommListener.Message> msg : teamCommListener.messageMap.entrySet()) {
+                    if ((currentTime - msg.getValue().timestamp) < RobotStatus.MAX_TIME_BEFORE_DEAD) {
+                        splMessageMap.put(msg.getKey(), msg.getValue().message);
+                    }
+                    final String address = msg.getKey();
+                    final SPLMessage splMessage = msg.getValue().message;
+                    final long timestamp = msg.getValue().timestamp;
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            RobotStatus robotStatus = robotsMap.get(address);
+                            if (robotStatus == null) {
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                                robotsMap.put(address, robotStatus);
+                                robotStatusPanel.add(robotStatus);
+                            } else {
+                                robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                            }
+                        }
+                    });
+                }
+
+                if (Plugin.teamCommDrawingManager != null) {
+                    Plugin.teamCommDrawingManager.handleSPLMessages(splMessageMap);
+                }
+            } // end synchronized
+        } // end run
     }
-      
-    RobotStatus robotStatus = this.robotsMap.get(address);
-    if(robotStatus == null)
-    {
-      robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-      robotStatus.setStatus(splMessage.playerNum, 0, null);
-      this.robotsMap.put(address, robotStatus);
-      this.robotStatusPanel.add(robotStatus);
-    }else
-    {
-      robotStatus.setStatus(splMessage.playerNum, 0, null);
-    }
 
-    // TODO: make it better
-    Plugin.teamCommDrawingManager.setCurrenId(address);
-//    Plugin.teamCommDrawingManager.handleResponse(msg.toByteArray(), null);
-  }//end parseMessage
-*/
  
   class TeamCommListener implements Runnable
   {
