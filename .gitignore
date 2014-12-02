@@ -65,7 +65,6 @@ SimpleSoccerAgent/nbproject/Package-Default.bash
 *.user
 RobotControl/RobotControlGUI/plugins/
 build-impl.xml
-genfiles.properties
 doc/html/
 Deploy
 NaoTHSoccer/Config/behavior-ic.dat
