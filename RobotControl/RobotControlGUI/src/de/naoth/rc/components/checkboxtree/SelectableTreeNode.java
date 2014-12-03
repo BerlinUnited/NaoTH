@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.naoth.rc.checkboxtree;
+package de.naoth.rc.components.checkboxtree;
 
 import java.awt.Color;
 import java.awt.Component;

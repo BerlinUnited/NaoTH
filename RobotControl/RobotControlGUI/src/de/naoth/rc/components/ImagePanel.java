@@ -3,7 +3,7 @@
  *
  * Created on 07.03.2013, 19:27:12
  */
-package de.naoth.rc.dialogs.panels;
+package de.naoth.rc.components;
 
 import de.naoth.rc.dialogs.Tools.PNGImageFileFilter;
 import de.naoth.rc.dialogs.drawings.Drawable;
@@ -191,7 +191,7 @@ public class ImagePanel extends javax.swing.JPanel
 
         jPopupMenuImagePanel = new javax.swing.JPopupMenu();
         jMenuItemSaveAs = new javax.swing.JMenuItem();
-        fileChooser = new de.naoth.rc.dialogs.panels.ExtendedFileChooser();
+        fileChooser = new de.naoth.rc.components.ExtendedFileChooser();
 
         jMenuItemSaveAs.setText("Save As...");
         jMenuItemSaveAs.addActionListener(new java.awt.event.ActionListener() {
@@ -226,7 +226,7 @@ public class ImagePanel extends javax.swing.JPanel
     }//GEN-LAST:event_jMenuItemSaveAsActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
+    private de.naoth.rc.components.ExtendedFileChooser fileChooser;
     private javax.swing.JMenuItem jMenuItemSaveAs;
     private javax.swing.JPopupMenu jPopupMenuImagePanel;
     // End of variables declaration//GEN-END:variables

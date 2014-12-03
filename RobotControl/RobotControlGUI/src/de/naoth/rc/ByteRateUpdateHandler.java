@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package de.naoth.rc.interfaces;
+package de.naoth.rc;
 
 import net.xeoh.plugins.base.Plugin;
 

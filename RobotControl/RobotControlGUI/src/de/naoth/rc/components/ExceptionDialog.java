@@ -8,7 +8,7 @@
  *
  * Created on 27.01.2009, 20:29:11
  */
-package de.naoth.rc;
+package de.naoth.rc.components;
 
 /**
  *

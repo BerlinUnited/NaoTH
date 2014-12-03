@@ -3,7 +3,7 @@
  *
  * Created on 8. August 2008, 18:43
  */
-package de.naoth.rc.dialogs.panels;
+package de.naoth.rc.components;
 
 import de.naoth.rc.dialogs.drawings.Arrow;
 import de.naoth.rc.dialogs.drawings.Drawable;

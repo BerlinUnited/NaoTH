@@ -81,8 +81,8 @@ public class FieldViewer extends AbstractDialog
   private StrokePlot strokePlot;
 
   // TODO: this is a hack
-  private static de.naoth.rc.dialogs.panels.DynamicCanvasPanel canvasExport = null;
-  public static de.naoth.rc.dialogs.panels.DynamicCanvasPanel getCanvas() {
+  private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
+  public static de.naoth.rc.components.DynamicCanvasPanel getCanvas() {
       return canvasExport;
   }
   
@@ -170,7 +170,7 @@ public class FieldViewer extends AbstractDialog
         btTrace = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         drawingPanel = new javax.swing.JPanel();
-        fieldCanvas = new de.naoth.rc.dialogs.panels.DynamicCanvasPanel();
+        fieldCanvas = new de.naoth.rc.components.DynamicCanvasPanel();
 
         jMenuItemExport.setText("Export");
         jMenuItemExport.addActionListener(new java.awt.event.ActionListener() {
@@ -604,7 +604,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JComboBox cbBackground;
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
-    private de.naoth.rc.dialogs.panels.DynamicCanvasPanel fieldCanvas;
+    private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
     private javax.swing.JMenuItem jMenuItemExport;
     private javax.swing.JPopupMenu jPopupMenu;
     private javax.swing.JSlider jSlider1;

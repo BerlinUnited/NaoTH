@@ -215,7 +215,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
       <SubComponents>
-        <Container class="de.naoth.rc.dialogs.panels.DynamicCanvasPanel" name="fieldCanvas">
+        <Container class="de.naoth.rc.components.DynamicCanvasPanel" name="fieldCanvas">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f7" green="f7" red="f7" type="rgb"/>

@@ -2,7 +2,7 @@
  * 
  */
 
-package de.naoth.rc.dialogs.panels;
+package de.naoth.rc.components;
 
 import java.io.File;
 import javax.swing.JFileChooser;

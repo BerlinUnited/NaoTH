@@ -69,7 +69,7 @@
         <Property name="axis" type="int" value="3"/>
       </Layout>
       <SubComponents>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasTop">
+        <Container class="de.naoth.rc.components.ImagePanel" name="imageCanvasTop">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
@@ -95,7 +95,7 @@
             </DimensionLayout>
           </Layout>
         </Container>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasBottom">
+        <Container class="de.naoth.rc.components.ImagePanel" name="imageCanvasBottom">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>

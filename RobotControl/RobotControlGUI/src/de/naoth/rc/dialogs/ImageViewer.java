@@ -70,8 +70,8 @@ public class ImageViewer extends AbstractDialog
     private void initComponents() {
 
         imagePanel = new javax.swing.JPanel();
-        imageCanvasTop = new de.naoth.rc.dialogs.panels.ImagePanel();
-        imageCanvasBottom = new de.naoth.rc.dialogs.panels.ImagePanel();
+        imageCanvasTop = new de.naoth.rc.components.ImagePanel();
+        imageCanvasBottom = new de.naoth.rc.components.ImagePanel();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveImagesTop = new javax.swing.JToggleButton();
         btReceiveImagesBottom = new javax.swing.JToggleButton();
@@ -294,8 +294,8 @@ public class ImageViewer extends AbstractDialog
     private javax.swing.JCheckBox cbFadeOut;
     private javax.swing.JCheckBox cbPreserveAspectRatio;
     private javax.swing.JCheckBox cbStretch;
-    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvasBottom;
-    private de.naoth.rc.dialogs.panels.ImagePanel imageCanvasTop;
+    private de.naoth.rc.components.ImagePanel imageCanvasBottom;
+    private de.naoth.rc.components.ImagePanel imageCanvasTop;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JLabel jLabelFPS;
     private javax.swing.JLabel jLabelResolution;

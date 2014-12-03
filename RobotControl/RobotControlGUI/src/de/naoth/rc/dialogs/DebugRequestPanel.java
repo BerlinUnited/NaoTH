@@ -12,7 +12,7 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
@@ -80,7 +80,7 @@ public class DebugRequestPanel extends AbstractDialog
         btUpdate = new javax.swing.JToggleButton();
         btRefresh = new javax.swing.JToggleButton();
         jScrollPane = new javax.swing.JScrollPane();
-        debugRequestTree = new de.naoth.rc.checkboxtree.CheckboxTree();
+        debugRequestTree = new de.naoth.rc.components.checkboxtree.CheckboxTree();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -148,7 +148,7 @@ public class DebugRequestPanel extends AbstractDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btRefresh;
     private javax.swing.JToggleButton btUpdate;
-    private de.naoth.rc.checkboxtree.CheckboxTree debugRequestTree;
+    private de.naoth.rc.components.checkboxtree.CheckboxTree debugRequestTree;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToolBar toolbarMain;
     // End of variables declaration//GEN-END:variables

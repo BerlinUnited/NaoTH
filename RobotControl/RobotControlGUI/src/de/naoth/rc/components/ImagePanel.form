@@ -18,7 +18,7 @@
         </MenuItem>
       </SubComponents>
     </Container>
-    <Component class="de.naoth.rc.dialogs.panels.ExtendedFileChooser" name="fileChooser">
+    <Component class="de.naoth.rc.components.ExtendedFileChooser" name="fileChooser">
     </Component>
   </NonVisualComponents>
   <Properties>

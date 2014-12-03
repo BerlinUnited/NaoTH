@@ -67,7 +67,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="de.naoth.rc.checkboxtree.CheckboxTree" name="debugRequestTree">
+        <Component class="de.naoth.rc.components.checkboxtree.CheckboxTree" name="debugRequestTree">
         </Component>
       </SubComponents>
     </Container>

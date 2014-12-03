@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package de.naoth.rc.checkboxtree;
+package de.naoth.rc.components.checkboxtree;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

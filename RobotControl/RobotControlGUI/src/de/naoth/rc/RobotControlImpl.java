@@ -8,7 +8,6 @@ package de.naoth.rc;
 import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
-import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
