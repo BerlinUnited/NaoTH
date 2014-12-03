@@ -83,17 +83,6 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveDrawingsActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="btReceiveTeamCommDrawings">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="TeamComm"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveTeamCommDrawingsActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JButton" name="btClean">
           <Properties>
             <Property name="text" type="java.lang.String" value="Clean"/>
