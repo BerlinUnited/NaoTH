@@ -4,6 +4,7 @@
 
 package de.naoth.rc.manager;
 
+import de.naoth.rc.core.manager.AbstractManager;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.drawings.Circle;

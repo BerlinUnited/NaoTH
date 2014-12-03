@@ -3,6 +3,7 @@
  */
 package de.naoth.rc.manager;
 
+import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.server.Command;

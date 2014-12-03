@@ -4,6 +4,7 @@
 
 package de.naoth.rc.manager;
 
+import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
 import de.naoth.rc.server.Command;

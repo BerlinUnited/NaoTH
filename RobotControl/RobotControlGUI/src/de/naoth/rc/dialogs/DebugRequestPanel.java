@@ -9,13 +9,13 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.checkboxtree.SelectableTreeNode;
-import de.naoth.rc.manager.ObjectListener;
-import de.naoth.rc.manager.SwingCommandExecutor;
-import de.naoth.rc.manager.SwingCommandListener;
+import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.core.manager.SwingCommandListener;
 import de.naoth.rc.server.Command;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

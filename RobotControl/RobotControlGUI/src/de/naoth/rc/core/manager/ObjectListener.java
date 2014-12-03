@@ -2,7 +2,7 @@
  * 
  */
 
-package de.naoth.rc.manager;
+package de.naoth.rc.core.manager;
 
 /**
  * A generic listener for all kinds of debug objects.

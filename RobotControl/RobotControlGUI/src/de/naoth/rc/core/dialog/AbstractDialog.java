@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package de.naoth.rc;
+package de.naoth.rc.core.dialog;
 
 import javax.swing.JPanel;
 

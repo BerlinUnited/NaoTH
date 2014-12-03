@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package de.naoth.rc.manager;
+package de.naoth.rc.core.manager;
 
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;

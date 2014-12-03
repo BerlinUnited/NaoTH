@@ -2,7 +2,7 @@
  * 
  */
 
-package de.naoth.rc.manager;
+package de.naoth.rc.core.manager;
 
 import net.xeoh.plugins.base.Plugin;
 

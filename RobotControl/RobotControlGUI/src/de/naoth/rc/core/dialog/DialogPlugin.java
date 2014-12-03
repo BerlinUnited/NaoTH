@@ -1,6 +1,6 @@
 /*
  */
-package de.naoth.rc;
+package de.naoth.rc.core.dialog;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

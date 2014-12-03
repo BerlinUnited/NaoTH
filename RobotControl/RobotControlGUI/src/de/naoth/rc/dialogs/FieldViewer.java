@@ -5,9 +5,9 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.Dialog;
-import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.Dialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.PNGExportFileType;
@@ -26,7 +26,7 @@ import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
-import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.manager.TeamCommDrawingManager;
 import de.naoth.rc.math.Vector2D;
