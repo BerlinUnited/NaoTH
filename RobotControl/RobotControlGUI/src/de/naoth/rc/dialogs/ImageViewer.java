@@ -1,7 +1,6 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.core.dialog.AbstractDialog;
-import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
@@ -17,7 +16,6 @@ import de.naoth.rc.manager.ImageManagerTop;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -124,7 +122,7 @@ public class ImageViewer extends AbstractDialog
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        btReceiveImagesTop.setText("Receive Bottom");
+        btReceiveImagesTop.setText("Receive Top");
         btReceiveImagesTop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btReceiveImagesTopActionPerformed(evt);
@@ -132,7 +130,7 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(btReceiveImagesTop);
 
-        btReceiveImagesBottom.setText("Receive Top");
+        btReceiveImagesBottom.setText("Receive Bottom");
         btReceiveImagesBottom.setFocusable(false);
         btReceiveImagesBottom.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btReceiveImagesBottom.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -224,15 +222,15 @@ public class ImageViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
   private void btReceiveImagesTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesTopActionPerformed
 
-    if (btReceiveImagesTop.isSelected())
+    if (this.btReceiveImagesTop.isSelected())
     {
-      this.imageCanvasBottom.setVisible(true);
-      Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
+      this.imageCanvasTop.setVisible(true);
+      Plugin.imageManagerTop.addListener(this.imageListenerTop);
     }
     else
     {
-      this.imageCanvasBottom.setVisible(false);
-      Plugin.imageManagerBottom.removeListener(this.imageListenerBottom);
+      this.imageCanvasTop.setVisible(false);
+      Plugin.imageManagerTop.removeListener(this.imageListenerTop);
     }
 
   }//GEN-LAST:event_btReceiveImagesTopActionPerformed
@@ -266,15 +264,15 @@ public class ImageViewer extends AbstractDialog
   private void btReceiveImagesBottomActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveImagesBottomActionPerformed
   {//GEN-HEADEREND:event_btReceiveImagesBottomActionPerformed
     
-    if (this.btReceiveImagesBottom.isSelected())
+    if (btReceiveImagesBottom.isSelected())
     {
-      this.imageCanvasTop.setVisible(true);
-      Plugin.imageManagerTop.addListener(this.imageListenerTop);
+      this.imageCanvasBottom.setVisible(true);
+      Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
     }
     else
     {
-      this.imageCanvasTop.setVisible(false);
-      Plugin.imageManagerTop.removeListener(this.imageListenerTop);
+      this.imageCanvasBottom.setVisible(false);
+      Plugin.imageManagerBottom.removeListener(this.imageListenerBottom);
     }
     
   }//GEN-LAST:event_btReceiveImagesBottomActionPerformed
