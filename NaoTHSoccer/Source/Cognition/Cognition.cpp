@@ -141,6 +141,7 @@ void Cognition::call()
   DebugBufferedOutput::getInstance().update();
   getDebugDrawings().reset();
   getDebugImageDrawings().reset();
+  getDebugImageDrawingsTop().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
 }//end call

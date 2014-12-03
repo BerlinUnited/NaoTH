@@ -34,7 +34,7 @@ public class ImageViewer extends AbstractDialog
     public static RobotControl parent;
     @InjectPlugin
     public static ImageManagerBottom imageManagerBottom;
-    //@InjectPlugin
+    @InjectPlugin
     public static ImageManagerTop imageManagerTop;
     @InjectPlugin
     public static DebugDrawingManager debugDrawingManager;

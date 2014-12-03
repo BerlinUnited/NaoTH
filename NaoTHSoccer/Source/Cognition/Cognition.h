@@ -24,6 +24,7 @@ BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
 END_DECLARE_MODULE(Cognition)
 
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug

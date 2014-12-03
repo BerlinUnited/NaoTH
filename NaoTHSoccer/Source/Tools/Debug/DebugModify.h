@@ -67,7 +67,7 @@ public:
     {
       valueMap[name].value = d;
     }
-  }//end updateValue
+  }
 
   ModifyValue& getValueReference(std::string name, double& d)
   {
@@ -76,7 +76,7 @@ public:
     modifyValue.value = d;
       
     return modifyValue;
-  }//end getValueReference
+  }
 
 private:
   std::map<std::string, ModifyValue> valueMap;
