@@ -5,8 +5,8 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
-import de.naoth.rc.dialogs.drawings.Drawable;
-import de.naoth.rc.dialogs.drawings.DrawingsContainer;
+import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.server.Command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

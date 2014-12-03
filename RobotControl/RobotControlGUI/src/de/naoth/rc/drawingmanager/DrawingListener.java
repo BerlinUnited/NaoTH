@@ -6,7 +6,7 @@
 
 package de.naoth.rc.drawingmanager;
 
-import de.naoth.rc.dialogs.drawings.Drawable;
+import de.naoth.rc.drawings.Drawable;
 
 /**
  *

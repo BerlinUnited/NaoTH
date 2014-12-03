@@ -5,8 +5,7 @@
  */
 package de.naoth.rc.components;
 
-import de.naoth.rc.dialogs.Tools.PNGImageFileFilter;
-import de.naoth.rc.dialogs.drawings.Drawable;
+import de.naoth.rc.drawings.Drawable;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;

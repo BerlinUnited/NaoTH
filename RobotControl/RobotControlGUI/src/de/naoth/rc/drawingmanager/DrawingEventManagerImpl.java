@@ -3,7 +3,7 @@
 
 package de.naoth.rc.drawingmanager;
 
-import de.naoth.rc.dialogs.drawings.Drawable;
+import de.naoth.rc.drawings.Drawable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

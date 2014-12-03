@@ -5,8 +5,8 @@
  */
 package de.naoth.rc.components;
 
-import de.naoth.rc.dialogs.drawings.Arrow;
-import de.naoth.rc.dialogs.drawings.Drawable;
+import de.naoth.rc.drawings.Arrow;
+import de.naoth.rc.drawings.Drawable;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
