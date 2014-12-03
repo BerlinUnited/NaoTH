@@ -426,7 +426,8 @@ public class RobotControlImpl extends javax.swing.JFrame
       public void run()
       {
         // create the configlocation is not existing
-        if(!new File(configlocation).mkdirs()) {
+        File configDir = new File(configlocation);
+        if(!(configDir.exists() && configDir.isDirectory()) && !configDir.mkdirs()) {
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
                     "Could not create the configuration path: \"" + configlocation + "\".");
         }
