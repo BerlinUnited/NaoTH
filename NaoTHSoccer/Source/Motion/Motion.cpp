@@ -19,9 +19,6 @@
 
 //#include "Tools/CameraGeometry.h"
 
-// debug
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 using namespace naoth;
 

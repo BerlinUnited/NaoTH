@@ -17,15 +17,20 @@
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugPlot)
+
+  REQUIRE(FrameInfo)
 END_DECLARE_MODULE(Cognition)
 
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug

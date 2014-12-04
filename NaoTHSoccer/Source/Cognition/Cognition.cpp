@@ -10,7 +10,6 @@
 #include <PlatformInterface/Platform.h>
 
 // debug
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 
 /////////////////////////////////////
@@ -137,7 +136,6 @@ void Cognition::call()
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Debug ~ Init");
-  DebugBufferedOutput::getInstance().update();
   getDebugDrawings().reset();
   getDebugImageDrawings().reset();
   getDebugImageDrawingsTop().reset();
