@@ -10,6 +10,7 @@
 #include <ModuleFramework/ModuleManager.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include <DebugCommunication/DebugCommandManager.h>
+#include <Tools/Debug/DebugRequest.h>
 
 class ModuleManagerWithDebug: public ModuleManager, public DebugCommandExecutor
 {
@@ -23,7 +24,13 @@ public:
 
 protected:
   DebugCommandManager& getDebugCommandManager() {
-    return *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >());
+    static DebugCommandManager& debugCommandManager = *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
+    return debugCommandManager;
+  }
+
+  DebugRequest& getDebugRequest() {
+    DebugRequest& debugRequest = *(getBlackBoard().template getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
+    return debugRequest;
   }
 
 private:
@@ -36,6 +43,7 @@ private:
   std::string commandRepresentationGet;
   std::string commandRepresentationGetbinary;
 
+  std::string commandDebugRequestSet;
   
   
   void modulesList(std::ostream& outstream);

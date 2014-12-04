@@ -28,7 +28,6 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 public class DebugRequestPanel extends AbstractDialog
-  implements ObjectListener<byte[]>
 {
 
     @PluginImplementation
@@ -44,6 +43,9 @@ public class DebugRequestPanel extends AbstractDialog
           return "Debug Requests";
         }
     }
+    
+  DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:debugrequest:set");
+  DebugRequestUpdater debugRequestUpdaterMotion = new DebugRequestUpdater("[Motion]", "Motion:debugrequest:set");
     
   /** Creates new form DebugRequestPanel */
   public DebugRequestPanel()
@@ -125,7 +127,8 @@ public class DebugRequestPanel extends AbstractDialog
     if (btRefresh.isSelected())
     {
       if (Plugin.parent.checkConnected()) {
-        Plugin.commandExecutor.executeCommand(this, new Command("debug_request:list"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
       } else {
         btRefresh.setSelected(false);
         btUpdate.setSelected(false);
@@ -137,7 +140,8 @@ public class DebugRequestPanel extends AbstractDialog
         if (btUpdate.isSelected())
         {
           if (Plugin.parent.checkConnected()) {
-            Plugin.commandExecutor.executeCommand(this, new Command("debug_request:list"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
           } else {
             btRefresh.setSelected(false);
             btUpdate.setSelected(false);
@@ -158,17 +162,19 @@ public class DebugRequestPanel extends AbstractDialog
   {
     SelectableTreeNode node;
     String path;
+    String command;
     
-    DebugRequestAction(SelectableTreeNode node, String path) {
+    DebugRequestAction(String command, SelectableTreeNode node, String path) {
         this.node = node;
         this.path = path;
+        this.command = command;
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Command command = new Command("debug_request:set");
-        command.addArg(path, node.isSelected() ? "on" : "off");
-        Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), command);
+        Command cmd = new Command(command);
+        cmd.addArg(path, node.isSelected() ? "on" : "off");
+        Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), cmd);
     }
       
     @Override
@@ -184,52 +190,62 @@ public class DebugRequestPanel extends AbstractDialog
     }
   }
   
-  
-  @Override
-  public void newObjectReceived(byte[] object)
-  {
-    String[] messages = (new String(object)).split("\n");
-    for (String str : messages)
-    {
-      String[] tokens = str.split("\\|");
-
-      String tooltip = "NO COMMENT";
-      if (tokens.length >= 4) {
-        tooltip = "<html>" + tokens[2] + "<br>" + tokens[3] + "</html>";
-      } else if(tokens.length >= 3) {
-          tooltip = tokens[2];
-      }
-      
-      if (tokens.length >= 2)
-      {
-        boolean selected = tokens[1].equals("1");
-        final String path = tokens[0];
-        
-        final SelectableTreeNode node = this.debugRequestTree.insertPath(path, ':');
-        node.setSelected(selected);
-        node.setTooltip(tooltip);
-        //NOTE: add the listener only once
-        if(node.getComponent().getActionListeners().length == 0) {
-            node.getComponent().addActionListener(new DebugRequestAction(node,path));
-        }
-      }
-    }//end for
-    
-    this.debugRequestTree.repaint();
-    btRefresh.setSelected(false);
-    btUpdate.setSelected(false);
-  }
-
-  @Override
-  public void errorOccured(String cause)
-  {
-    btRefresh.setSelected(false);
-    btUpdate.setSelected(false);
-    dispose();
-  }
-  
   @Override
   public void dispose() {
     this.debugRequestTree.clear();
+  }
+  
+  class DebugRequestUpdater implements ObjectListener<byte[]>
+  {
+    String rootName;
+    String command;
+    
+    public DebugRequestUpdater(String rootName, String command) {
+        this.rootName = rootName;
+        this.command = command;
+    }
+      
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+      String[] messages = (new String(object)).split("\n");
+      for (String str : messages)
+      {
+        String[] tokens = str.split("\\|");
+
+        String tooltip = "NO COMMENT";
+        if (tokens.length >= 4) {
+          tooltip = "<html>" + tokens[2] + "<br>" + tokens[3] + "</html>";
+        } else if(tokens.length >= 3) {
+            tooltip = tokens[2];
+        }
+
+        if (tokens.length >= 2)
+        {
+          boolean selected = tokens[1].equals("1");
+          final String path = tokens[0];
+
+          final SelectableTreeNode node = debugRequestTree.insertPath(rootName + ':' + path, ':');
+          node.setSelected(selected);
+          node.setTooltip(tooltip);
+          //NOTE: add the listener only once
+          if(node.getComponent().getActionListeners().length == 0) {
+              node.getComponent().addActionListener(new DebugRequestAction(command,node,path));
+          }
+        }
+      }//end for
+
+      debugRequestTree.repaint();
+      btRefresh.setSelected(false);
+      btUpdate.setSelected(false);
+    }
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btRefresh.setSelected(false);
+      btUpdate.setSelected(false);
+      dispose();
+    }
   }
 }

@@ -21,17 +21,7 @@ void DebugRequest::executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream)
 {
-  if(command == "debug_request:list")
-  {
-    std::map<std::string, Request>::const_iterator iter = requestMap.begin();
-    
-    while(iter != requestMap.end())
-    {
-      outstream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
-      ++iter;
-    }
-  }
-  else if(command == "debug_request:set")
+  if(command == "debugrequest:set")
   {
     std::map<std::string,std::string>::const_iterator iter_arg = arguments.begin();
     for(;iter_arg != arguments.end(); ++iter_arg)
@@ -109,4 +99,19 @@ std::string get_sub_core_path(std::string fullpath)
   } else {
     return fullpath;
   }
+}
+
+void naoth::Serializer<DebugRequest>::serialize(const DebugRequest& r, std::ostream& stream)
+{
+  DebugRequest::RequestMap::const_iterator iter = r.getRequestMap().begin();
+    
+  while(iter != r.getRequestMap().end())
+  {
+    stream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
+    ++iter;
+  }
+}
+
+void naoth::Serializer<DebugRequest>::deserialize(std::istream& /*stream*/, DebugRequest& /*object*/)
+{
 }

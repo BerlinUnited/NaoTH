@@ -26,6 +26,7 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
   commandRepresentationGet = prefix + "representation:get";
   commandRepresentationGetbinary = prefix + "representation:getbinary";
 
+  commandDebugRequestSet = prefix + "debugrequest:set";
 
   REGISTER_DEBUG_COMMAND(commandModulesList,
     "return the list of registered modules with provided and required representations", this);
@@ -43,6 +44,10 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
     "Stream out all the representations listet", this);
   REGISTER_DEBUG_COMMAND(commandRepresentationGetbinary, 
     "Stream out serialized represenation", this);
+
+
+  REGISTER_DEBUG_COMMAND(prefix + "debugrequest:set",
+    "Set a debug request value", this);
 }
 
 ModuleManagerWithDebug::~ModuleManagerWithDebug(){}
@@ -78,6 +83,28 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
     for (iter = arguments.begin(); iter != arguments.end(); ++iter)
     {
       printRepresentation(outstream, iter->first, true);
+    }
+  }
+  else if(command == commandDebugRequestSet)
+  {
+    std::map<std::string,std::string>::const_iterator iter_arg = arguments.begin();
+    for(;iter_arg != arguments.end(); ++iter_arg)
+    {
+
+      // search in the map if we know this command/request
+      DebugRequest::RequestMap::iterator iter = getDebugRequest().getRequestMap().find(iter_arg->first);
+      if(iter != getDebugRequest().getRequestMap().end())
+      {
+        // enable or disable depending on the command
+        if(iter_arg->second == "off") {
+          iter->second.value = false;
+        } else if(iter_arg->second == "on") {
+          iter->second.value = true;
+        }
+        // print result
+        outstream << command << (iter->second.value ? " is on" : " is off");
+      }
+
     }
   }
 }//end executeDebugCommand

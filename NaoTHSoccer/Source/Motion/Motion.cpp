@@ -23,8 +23,6 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
-#include <DebugCommunication/DebugCommandManager.h>
-
 using namespace naoth;
 
 Motion::Motion()

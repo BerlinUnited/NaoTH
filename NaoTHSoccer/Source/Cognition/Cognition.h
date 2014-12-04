@@ -26,7 +26,6 @@ BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
-  PROVIDE(DebugRequest)
 END_DECLARE_MODULE(Cognition)
 
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug

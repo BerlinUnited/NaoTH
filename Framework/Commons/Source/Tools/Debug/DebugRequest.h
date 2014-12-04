@@ -12,9 +12,23 @@
 #include <map>
 
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include "Tools/DataStructures/Serializer.h"
 
 class DebugRequest : public DebugCommandExecutor
 {
+public:
+  class Request
+  {
+  public:
+    Request() : value(false) {}
+    Request(bool value) : value(value) {}
+    Request(bool value, const std::string& description) : value(value), description(description) {}
+    bool value;
+    std::string description;
+  };
+
+  typedef std::map<std::string, Request> RequestMap;
+
 public:
   DebugRequest();
   virtual ~DebugRequest();
@@ -38,22 +52,31 @@ public:
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream);
   
+  const RequestMap& getRequestMap() const {
+    return requestMap;
+  }
+
+  RequestMap& getRequestMap() {
+    return requestMap;
+  }
+
 private:
-
-  class Request
-  {
-  public:
-    Request() : value(false) {}
-    Request(bool value) : value(value) {}
-    Request(bool value, const std::string& description) : value(value), description(description) {}
-    bool value;
-    std::string description;
-  };
-
-  std::map<std::string, Request> requestMap;
+  RequestMap requestMap;
 };
 
 std::string get_sub_core_path(std::string fullpath);
+
+namespace naoth
+{
+template<>
+class Serializer<DebugRequest>
+{
+public:
+  static void serialize(const DebugRequest& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, DebugRequest& object);
+};
+}
+
 
 // MACROS //
 
