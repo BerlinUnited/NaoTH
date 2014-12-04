@@ -12,7 +12,6 @@
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-#include <Representations/Debug/Stopwatch.h>
 
 /////////////////////////////////////
 // Modules

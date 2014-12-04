@@ -35,14 +35,17 @@
 #include <Representations/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
+#include <Tools/Debug/DebugRequest.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
+// debug
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
 
   REQUIRE(FrameInfo)
 //  REQUIRE(FieldInfo)

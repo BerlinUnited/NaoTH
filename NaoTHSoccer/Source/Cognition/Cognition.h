@@ -16,7 +16,8 @@
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 // debug
-#include "Representations/Debug/Stopwatch.h"
+#include <Representations/Debug/Stopwatch.h>
+#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 
@@ -25,6 +26,7 @@ BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugRequest)
 END_DECLARE_MODULE(Cognition)
 
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug

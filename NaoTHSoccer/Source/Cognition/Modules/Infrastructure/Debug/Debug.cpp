@@ -12,7 +12,6 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 // debug
-#include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 
 #include <Tools/SynchronizedFileWriter.h>

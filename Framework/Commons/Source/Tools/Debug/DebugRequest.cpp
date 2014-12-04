@@ -10,7 +10,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
-DebugRequest::DebugRequest() : requestMap()
+DebugRequest::DebugRequest()
 {
   REGISTER_DEBUG_COMMAND("debug_request:list",
     "return the debug request which where collected in the internal buffer", this);
