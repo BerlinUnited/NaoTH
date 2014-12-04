@@ -203,6 +203,16 @@ public:
   }//end getRepresentation
 
 
+  template<class T>
+  const T& getRepresentation() const {
+    return getRepresentation<T>(typeid(T).name());
+  }
+
+  template<class T>
+  T& getRepresentation() {
+    return getRepresentation<T>(typeid(T).name());
+  }
+
   const Registry& getRegistry() const {
     return registry;
   }
