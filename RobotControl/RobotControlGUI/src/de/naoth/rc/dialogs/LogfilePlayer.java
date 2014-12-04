@@ -6,7 +6,6 @@
 
 package de.naoth.rc.dialogs;
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.LogSimulator;
