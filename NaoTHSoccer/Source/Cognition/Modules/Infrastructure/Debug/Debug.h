@@ -31,21 +31,27 @@
 //#include "Representations/Perception/CameraMatrix.h"
 //#include "Representations/Modeling/RobotPose.h"
 
+#include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/Logger.h"
 #include <Representations/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugParameterList.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
+
 // debug
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugCommandManager)
+  PROVIDE(DebugParameterList)
+
 
   REQUIRE(FrameInfo)
 //  REQUIRE(FieldInfo)

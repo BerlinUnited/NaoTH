@@ -14,7 +14,6 @@ using namespace std;
 
 DebugParameterList::DebugParameterList()
 {
-  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", this);
 }
 
 void DebugParameterList::executeDebugCommand(
@@ -67,9 +66,8 @@ void DebugParameterList::executeDebugCommand(
 void DebugParameterList::add(ParameterList* pl)
 {
   paramlists.insert(pl);
-  REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":set", "set parameters of "+pl->getName(), this);
-  REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":get", "get parameters of "+pl->getName(), this);
-
+  //REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":set", "set parameters of "+pl->getName(), this);
+  //REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":get", "get parameters of "+pl->getName(), this);
 }
 
 void DebugParameterList::remove(ParameterList* pl)

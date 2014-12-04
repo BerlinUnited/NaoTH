@@ -16,6 +16,7 @@ DebugBufferedOutput::DebugBufferedOutput()
 {
   plotsMutex = g_mutex_new();
 
+/*
   REGISTER_DEBUG_COMMAND("latest_output_messages", 
     "return the output messages which where collected in the internal buffer", this);
 
@@ -24,6 +25,7 @@ DebugBufferedOutput::DebugBufferedOutput()
 
   REGISTER_DEBUG_COMMAND("plot:get", 
     "return the values to plot which where collected in the internal buffer", this);
+*/
 }
 
 DebugBufferedOutput::~DebugBufferedOutput()

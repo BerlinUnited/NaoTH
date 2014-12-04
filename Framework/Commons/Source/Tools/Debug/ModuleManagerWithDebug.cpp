@@ -5,7 +5,6 @@
  */
 
 #include "ModuleManagerWithDebug.h"
-#include <DebugCommunication/DebugCommandManager.h>
 #include <PlatformInterface/Platform.h>
 
 // list the modules and representations on the blackboard

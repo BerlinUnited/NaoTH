@@ -11,11 +11,10 @@
 
 #include <set>
 
-#include <Tools/DataStructures/Singleton.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include <Tools/DataStructures/ParameterList.h>
 
-class DebugParameterList: public naoth::Singleton<DebugParameterList>, public DebugCommandExecutor
+class DebugParameterList: public DebugCommandExecutor
 {
 public:
     DebugParameterList();

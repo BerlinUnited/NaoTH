@@ -12,6 +12,7 @@ using namespace naoth;
 
 DebugModify::DebugModify()
 {
+  /*
   REGISTER_DEBUG_COMMAND("modify:list", 
     "return the list of registered modifiable values", this);
 
@@ -20,6 +21,7 @@ DebugModify::DebugModify()
 
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", this);
+  */
 }
 
 DebugModify::~DebugModify(){}

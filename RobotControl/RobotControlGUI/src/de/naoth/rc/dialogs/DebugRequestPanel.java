@@ -166,8 +166,8 @@ public class DebugRequestPanel extends AbstractDialog
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Command command = new Command(path);
-        command.addArg(node.isSelected() ? "on" : "off");
+        Command command = new Command("debug_request:set");
+        command.addArg(path, node.isSelected() ? "on" : "off");
         Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), command);
     }
       

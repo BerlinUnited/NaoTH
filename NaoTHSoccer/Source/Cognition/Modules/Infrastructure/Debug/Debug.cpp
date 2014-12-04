@@ -9,7 +9,6 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
-#include <DebugCommunication/DebugCommandManager.h>
 
 // debug
 #include <Tools/Debug/DebugDrawings3D.h>
@@ -51,6 +50,15 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:com", "Visualize the kinematic chain in the 3D viewer", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+
+
+  REGISTER_DEBUG_COMMAND("debug_request:list",
+    "return the debug request which where collected in the internal buffer", &getDebugRequest());
+  REGISTER_DEBUG_COMMAND("debug_request:set",
+    "", &getDebugRequest());
+
+  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+
 
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());

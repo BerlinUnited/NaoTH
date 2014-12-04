@@ -9,6 +9,7 @@
 
 #include <ModuleFramework/ModuleManager.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandManager.h>
 
 class ModuleManagerWithDebug: public ModuleManager, public DebugCommandExecutor
 {
@@ -19,6 +20,11 @@ public:
   virtual void executeDebugCommand(const std::string& command, 
                            const std::map<std::string,std::string>& arguments, 
                            std::ostream& outstream);
+
+protected:
+  DebugCommandManager& getDebugCommandManager() {
+    return *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >());
+  }
 
 private:
   std::string commandModulesList;

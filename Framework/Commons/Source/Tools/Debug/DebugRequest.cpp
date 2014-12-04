@@ -12,8 +12,6 @@
 
 DebugRequest::DebugRequest()
 {
-  REGISTER_DEBUG_COMMAND("debug_request:list",
-    "return the debug request which where collected in the internal buffer", this);
 }
 
 DebugRequest::~DebugRequest(){}
@@ -33,21 +31,31 @@ void DebugRequest::executeDebugCommand(
       ++iter;
     }
   }
+  else if(command == "debug_request:set")
+  {
+    std::map<std::string,std::string>::const_iterator iter_arg = arguments.begin();
+    for(;iter_arg != arguments.end(); ++iter_arg)
+    {
+
+      // search in the map if we know this command/request
+      std::map<std::string, Request>::iterator iter = requestMap.find(iter_arg->first);
+      if(iter != requestMap.end())
+      {
+        // enable or disable depending on the command
+        if(iter_arg->second == "off") {
+          iter->second.value = false;
+        } else if(iter_arg->second == "on") {
+          iter->second.value = true;
+        }
+        // print result
+        outstream << command << (iter->second.value ? " is on" : " is off");
+      }
+
+    }
+  }
   else
   {
-    // search in the map if we know this command/request
-    std::map<std::string, Request>::iterator iter = requestMap.find(command);
-    if(iter != requestMap.end())
-    {
-      // enable or disable depending on the command
-      if(arguments.find("off") != arguments.end()) {
-        iter->second.value = false;
-      } else if(arguments.find("on") != arguments.end()) {
-        iter->second.value = true;
-      }
-      // print result
-      outstream << command << (iter->second.value ? " is on" : " is off");
-    }
+    THROW( "[DebugRequest] unknown command" << command );
   }
 }//end executeDebugCommand
 
@@ -62,13 +70,9 @@ const bool& DebugRequest::registerRequest(const std::string& name, const std::st
     d = d.append(" (debug request, usage: ");
     d = d.append(name);
     d = d.append(" [on|off|status]");
-
-    // there should not be any other command with the same name
-    ASSERT(DebugCommandManager::getInstance().registerCommand(name, d, this));
     
     iter = requestMap.insert(iter, std::make_pair(name, Request(defaultValue)));
     iter->second.description = description;
-    //descriptionMap[name] = description;
   } else {
     // TODO:
     //some places use the fact that a debug request may be registered several times

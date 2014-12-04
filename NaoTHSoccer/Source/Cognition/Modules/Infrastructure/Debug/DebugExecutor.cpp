@@ -6,7 +6,7 @@
 
 #include "DebugExecutor.h"
 #include <PlatformInterface/PlatformInterface.h>
-#include <DebugCommunication/DebugCommandManager.h>
+
 
 DebugExecutor::DebugExecutor()
 {
@@ -22,7 +22,7 @@ void DebugExecutor::execute()
     answer_stream.clear();
     answer_stream.str("");
 
-    DebugCommandManager::getInstance().handleCommand(iter->command, iter->arguments, answer_stream);
+    getDebugCommandManager().handleCommand(iter->command, iter->arguments, answer_stream);
     getDebugMessageOut().addResponse(answer_stream);
   }
 }//end execute

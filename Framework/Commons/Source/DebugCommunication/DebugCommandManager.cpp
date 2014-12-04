@@ -20,9 +20,9 @@ DebugCommandManager::~DebugCommandManager()
 void DebugCommandManager::handleCommand(  
   const std::string& command, 
   const std::map<std::string, std::string>& arguments, 
-  std::ostream& answer)
+  std::ostream& answer) const
 {
-  ExecutorMap::iterator iter = executorMap.find(command);
+  ExecutorMap::const_iterator iter = executorMap.find(command);
   if (iter != executorMap.end()) {
     iter->second.executor->executeDebugCommand(command, arguments, answer);
   } else {

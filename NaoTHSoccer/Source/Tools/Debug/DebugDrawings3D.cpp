@@ -14,8 +14,8 @@ DebugDrawings3D::DebugDrawings3D()
   activeCount = 0;
 //  pthread_mutex_init(&theMutex, NULL);
   
-  REGISTER_DEBUG_COMMAND("debug_3d",
-    "return the debug 3d drawings which where collected in the internal buffer", this);
+//  REGISTER_DEBUG_COMMAND("debug_3d",
+//    "return the debug 3d drawings which where collected in the internal buffer", this);
 }
 
 DebugDrawings3D::~DebugDrawings3D()
