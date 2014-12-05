@@ -83,7 +83,7 @@ public:
 #ifdef DEBUG
   #define STRINGIZE_NX(A) #A
   #define STRINGIZE(A) STRINGIZE_NX(A)
-  #define MAKE_DESCTIPTION(description) std::string(description).append("|").append(get_sub_core_path(__FILE__)).append(":").append(STRINGIZE(__LINE__))
+  #define MAKE_DESCTIPTION(description) std::string(description).append("\n").append(get_sub_core_path(__FILE__)).append(":").append(STRINGIZE(__LINE__))
 
   /** Register debug request. Will do nothing if already known. */
   #define DEBUG_REQUEST_REGISTER(name, description, isActiveByDefault) {getDebugRequest().registerRequest(name, MAKE_DESCTIPTION(description), isActiveByDefault);} ((void)0)

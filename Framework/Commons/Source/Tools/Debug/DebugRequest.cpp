@@ -10,6 +10,9 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
+#include "Messages/Messages.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 DebugRequest::DebugRequest()
 {
 }
@@ -103,13 +106,20 @@ std::string get_sub_core_path(std::string fullpath)
 
 void naoth::Serializer<DebugRequest>::serialize(const DebugRequest& r, std::ostream& stream)
 {
+  naothmessages::DebugRequest msg;
+
   DebugRequest::RequestMap::const_iterator iter = r.getRequestMap().begin();
-    
-  while(iter != r.getRequestMap().end())
+  for(;iter != r.getRequestMap().end(); ++iter)
   {
-    stream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
-    ++iter;
+    //stream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
+    naothmessages::DebugRequest_Item* item = msg.add_requests();
+    item->set_name(iter->first);
+    item->set_description(iter->second.description);
+    item->set_value(iter->second.value);
   }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
 }
 
 void naoth::Serializer<DebugRequest>::deserialize(std::istream& /*stream*/, DebugRequest& /*object*/)

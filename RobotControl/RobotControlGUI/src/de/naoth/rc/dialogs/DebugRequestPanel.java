@@ -9,6 +9,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
@@ -16,6 +17,7 @@ import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
+import de.naoth.rc.messages.Messages.DebugRequest;
 import de.naoth.rc.server.Command;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -208,36 +210,37 @@ public class DebugRequestPanel extends AbstractDialog
     @Override
     public void newObjectReceived(byte[] object)
     {
-      String[] messages = (new String(object)).split("\n");
-      for (String str : messages)
+      try 
       {
-        String[] tokens = str.split("\\|");
-
-        String tooltip = "NO COMMENT";
-        if (tokens.length >= 4) {
-          tooltip = "<html>" + tokens[2] + "<br>" + tokens[3] + "</html>";
-        } else if(tokens.length >= 3) {
-            tooltip = tokens[2];
-        }
-
-        if (tokens.length >= 2)
+        DebugRequest request = DebugRequest.parseFrom(object);
+        
+        for(DebugRequest.Item item : request.getRequestsList())
         {
-          boolean selected = tokens[1].equals("1");
-          final String path = tokens[0];
-
-          final SelectableTreeNode node = debugRequestTree.insertPath(rootName + ':' + path, ':');
-          node.setSelected(selected);
-          node.setTooltip(tooltip);
-          //NOTE: add the listener only once
-          if(node.getComponent().getActionListeners().length == 0) {
-              node.getComponent().addActionListener(new DebugRequestAction(command,node,path));
-          }
+            final String path = item.getName();
+            boolean selected = item.getValue();
+            
+            String tooltip = "NO COMMENT";
+            if(item.hasDescription() && item.getDescription().length() > 0) {
+                tooltip = item.getDescription();
+            }
+            
+            final SelectableTreeNode node = debugRequestTree.insertPath(rootName + ':' + path, ':');
+            node.setSelected(selected);
+            node.setTooltip(tooltip);
+            //NOTE: add the listener only once
+            if(node.getComponent().getActionListeners().length == 0) {
+                node.getComponent().addActionListener(new DebugRequestAction(command,node,path));
+            }
         }
-      }//end for
-
-      debugRequestTree.repaint();
-      btRefresh.setSelected(false);
-      btUpdate.setSelected(false);
+        
+        debugRequestTree.repaint();
+        btRefresh.setSelected(false);
+        btUpdate.setSelected(false);
+        
+      } catch(InvalidProtocolBufferException ex) 
+      {
+          ex.printStackTrace();
+      }
     }
 
     @Override
