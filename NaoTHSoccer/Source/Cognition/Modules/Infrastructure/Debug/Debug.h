@@ -39,6 +39,8 @@
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugParameterList.h>
 
+#include <Tools/DataStructures/ParameterList.h>
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
@@ -82,6 +84,18 @@ public:
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream);
+
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("DebugParameter") 
+    {
+      PARAMETER_REGISTER(test) = 20;
+    }
+
+    double test;
+
+  } parameter;
 
 private:
   Logger cognitionLogger;

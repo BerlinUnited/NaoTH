@@ -12,44 +12,39 @@
 #include <Tools/Debug/NaoTHAssert.h>
 #include "ParameterList.h"
 
-ParameterList::ParameterList(const std::string& parentClassName)
-{
-  this->parentClassName = parentClassName;
-}//end constructor ParameterList
-
 unsigned int& ParameterList::registerParameter(const std::string& name, unsigned int& parameter)
 {
-  ASSERT(unsignedIntParameterReferences.find(name) == unsignedIntParameterReferences.end());
-  unsignedIntParameterReferences[name] = &parameter;
+  ASSERT(unsignedIntParameters.find(name) == unsignedIntParameters.end());
+  unsignedIntParameters[name] = &parameter;
   return parameter;
-}//end registerParameter
+}
 
 int& ParameterList::registerParameter(const std::string& name, int& parameter)
 {
-  ASSERT(intParameterReferences.find(name) == intParameterReferences.end());
-  intParameterReferences[name] = &parameter;
+  ASSERT(intParameters.find(name) == intParameters.end());
+  intParameters[name] = &parameter;
   return parameter;
-}//end registerParameter
+}
 
 double& ParameterList::registerParameter(const std::string& name, double& parameter)
 {
-  ASSERT(doubleParameterReferences.find(name) == doubleParameterReferences.end());
-  doubleParameterReferences[name] = &parameter;
+  ASSERT(doubleParameters.find(name) == doubleParameters.end());
+  doubleParameters[name] = &parameter;
 
   return parameter;
-}//end registerParameter
+}
 
 std::string& ParameterList::registerParameter(const std::string& name, std::string& parameter)
 {
-  ASSERT(stringParameterReferences.find(name) == stringParameterReferences.end());
-  stringParameterReferences[name] = &parameter;
+  ASSERT(stringParameters.find(name) == stringParameters.end());
+  stringParameters[name] = &parameter;
   return parameter;
-}//end registerParameter
+}
 
 bool& ParameterList::registerParameter(const std::string& name, bool& parameter)
 {
-  ASSERT(boolParameterReferences.find(name) == boolParameterReferences.end());
-  boolParameterReferences[name] = &parameter;
+  ASSERT(boolParameters.find(name) == boolParameters.end());
+  boolParameters[name] = &parameter;
   return parameter;
 }
 
@@ -58,67 +53,52 @@ void ParameterList::syncWithConfig()
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
   // unsigned int
-  for (std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); ++iter)
+  for (std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameters.begin(); iter != unsignedIntParameters.end(); ++iter)
   {
-    if (config.hasKey(parentClassName, iter->first))
-    {
-      *(iter->second) = config.getInt(parentClassName, iter->first);
-    }
-    else
-    {
-      config.setDefault(parentClassName, iter->first, *(iter->second));
+    if (config.hasKey(name, iter->first)) {
+      *(iter->second) = config.getInt(name, iter->first);
+    } else {
+      config.setDefault(name, iter->first, *(iter->second));
     }
   }//end for
 
   // int
-  for (std::map<std::string, int*>::const_iterator iter = intParameterReferences.begin(); iter != intParameterReferences.end(); ++iter)
+  for (std::map<std::string, int*>::const_iterator iter = intParameters.begin(); iter != intParameters.end(); ++iter)
   {
-    if (config.hasKey(parentClassName, iter->first))
-    {
-      *(iter->second) = config.getInt(parentClassName, iter->first);
-    }
-    else
-    {
-      config.setDefault(parentClassName, iter->first, *(iter->second));
+    if (config.hasKey(name, iter->first)) {
+      *(iter->second) = config.getInt(name, iter->first);
+    } else {
+      config.setDefault(name, iter->first, *(iter->second));
     }
   }//end for
 
   // double
-  for (std::map<std::string, double*>::const_iterator iter = doubleParameterReferences.begin(); iter != doubleParameterReferences.end(); ++iter)
+  for (std::map<std::string, double*>::const_iterator iter = doubleParameters.begin(); iter != doubleParameters.end(); ++iter)
   {
-    if (config.hasKey(parentClassName, iter->first))
-    {
-      *(iter->second) = config.getDouble(parentClassName, iter->first);
-    }
-    else
-    {
-      config.setDefault(parentClassName, iter->first, *(iter->second));
+    if (config.hasKey(name, iter->first)) {
+      *(iter->second) = config.getDouble(name, iter->first);
+    } else {
+      config.setDefault(name, iter->first, *(iter->second));
     }
   }//end for
 
   // string
-  for (std::map<std::string, std::string*>::const_iterator iter = stringParameterReferences.begin(); iter != stringParameterReferences.end(); ++iter)
+  for (std::map<std::string, std::string*>::const_iterator iter = stringParameters.begin(); iter != stringParameters.end(); ++iter)
   {
-    if (config.hasKey(parentClassName, iter->first))
-    {
-      *(iter->second) = config.getString(parentClassName, iter->first);
-    }
-    else
-    {
-      config.setDefault(parentClassName, iter->first, *(iter->second));
+    if (config.hasKey(name, iter->first)) {
+      *(iter->second) = config.getString(name, iter->first);
+    } else {
+      config.setDefault(name, iter->first, *(iter->second));
     }
   }//end for
 
   // bool
-  for (std::map<std::string, bool*>::const_iterator iter = boolParameterReferences.begin(); iter != boolParameterReferences.end(); ++iter)
+  for (std::map<std::string, bool*>::const_iterator iter = boolParameters.begin(); iter != boolParameters.end(); ++iter)
   {
-    if (config.hasKey(parentClassName, iter->first))
-    {
-      *(iter->second) = config.getBool(parentClassName, iter->first);
-    }
-    else
-    {
-      config.setDefault(parentClassName, iter->first, *(iter->second));
+    if (config.hasKey(name, iter->first)) {
+      *(iter->second) = config.getBool(name, iter->first);
+    } else {
+      config.setDefault(name, iter->first, *(iter->second));
     }
   }//end for
 
@@ -128,30 +108,30 @@ void ParameterList::saveToConfig()
 {
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
-  for(std::map<std::string, unsigned int*>::iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); ++iter)
+  for(std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameters.begin(); iter != unsignedIntParameters.end(); ++iter)
   {
-    config.setInt(parentClassName, iter->first, *(iter->second));
-  }//end for
+    config.setInt(name, iter->first, *(iter->second));
+  }
 
-  for(std::map<std::string, int*>::iterator iter = intParameterReferences.begin(); iter != intParameterReferences.end(); ++iter)
+  for(std::map<std::string, int*>::const_iterator iter = intParameters.begin(); iter != intParameters.end(); ++iter)
   {
-    config.setInt(parentClassName, iter->first, *(iter->second));
-  }//end for
+    config.setInt(name, iter->first, *(iter->second));
+  }
 
-  for(std::map<std::string, double*>::iterator iter = doubleParameterReferences.begin(); iter != doubleParameterReferences.end(); ++iter)
+  for(std::map<std::string, double*>::const_iterator iter = doubleParameters.begin(); iter != doubleParameters.end(); ++iter)
   {
-    config.setDouble(parentClassName, iter->first, *(iter->second));
-  }//end for
+    config.setDouble(name, iter->first, *(iter->second));
+  }
 
-  for(std::map<std::string, std::string*>::iterator iter = stringParameterReferences.begin(); iter != stringParameterReferences.end(); ++iter)
+  for(std::map<std::string, std::string*>::const_iterator iter = stringParameters.begin(); iter != stringParameters.end(); ++iter)
   {
-    config.setString(parentClassName, iter->first, *(iter->second));
-  }//end for
+    config.setString(name, iter->first, *(iter->second));
+  }
 
-  for(std::map<std::string, bool*>::iterator iter = boolParameterReferences.begin(); iter != boolParameterReferences.end(); ++iter)
+  for(std::map<std::string, bool*>::const_iterator iter = boolParameters.begin(); iter != boolParameters.end(); ++iter)
   {
-    config.setBool(parentClassName, iter->first, *(iter->second));
-  }//end for
+    config.setBool(name, iter->first, *(iter->second));
+  }
 
   config.save();
 }

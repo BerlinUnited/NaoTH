@@ -59,6 +59,9 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
+
+
+  getDebugParameterList().add(&parameter);
 }
 
 Debug::~Debug()
