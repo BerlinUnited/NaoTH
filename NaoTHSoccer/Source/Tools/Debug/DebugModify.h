@@ -18,14 +18,11 @@
   where d is a numeric value which can be casted to double with static_cast 
   (can be local). Then this value can be modified using the RC.
  */
-class DebugModify : public naoth::Singleton<DebugModify>, public DebugCommandExecutor
+class DebugModify : public DebugCommandExecutor
 {
-protected:
-  friend class naoth::Singleton<DebugModify>;
+public:
   DebugModify();
   virtual ~DebugModify();
-
-public:
 
   /**
   * 
@@ -63,8 +60,7 @@ public:
     if(valueMap.find(name) != valueMap.end() && valueMap.find(name)->second.modify)
     {
       d = valueMap.find(name)->second.value;
-    }else
-    {
+    } else {
       valueMap[name].value = d;
     }
   }
@@ -86,7 +82,7 @@ private:
 // MACROS //
 
 #ifdef DEBUG
-#define MODIFY(id, value) {static DebugModify::ModifyValue& _debug_modify_value_ = DebugModify::getInstance().getValueReference(id, value); _debug_modify_value_.update(value); }
+#define MODIFY(id, value) {static DebugModify::ModifyValue& _debug_modify_value_ = getDebugModify().getValueReference(id, value); _debug_modify_value_.update(value); }
 #else
 /* ((void)0) - that's a do-nothing statement */
 #define MODIFY(id, value) ((void)0)

@@ -40,7 +40,8 @@ void DebugModify::executeDebugCommand(
       outstream << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
       ++iter;
     }
-  }else if(command == "modify:set")
+  }
+  else if(command == "modify:set")
   {
     std::map<std::string, std::string>::const_iterator iter;
 
@@ -65,7 +66,8 @@ void DebugModify::executeDebugCommand(
         outstream << "unknown value " << iter->first << std::endl;
       }
     }//end for
-  }else if(command == "modify:release")
+  }
+  else if(command == "modify:release")
   {
     std::map<std::string, std::string>::const_iterator iter;
 

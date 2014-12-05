@@ -66,7 +66,6 @@ public class RepresentationInspector extends AbstractDialog
     public RepresentationInspector() {
         initComponents();
         
-        Object o = this.cbProcess.getSelectedItem();
         this.representationOwner = this.cbProcess.getSelectedItem().toString();
     }
 
@@ -247,7 +246,6 @@ public class RepresentationInspector extends AbstractDialog
                     parser = p;
                 }
             }
-            
         } 
         
         if(result == null) {
