@@ -19,7 +19,7 @@ BEGIN_DECLARE_MODULE(LogProvider)
 END_DECLARE_MODULE(LogProvider)
 
 
-class LogProvider: public LogProviderBase
+class LogProvider: public LogProviderBase, virtual public BlackBoardInterface
 {
 private:
   const LogFileScanner::Frame* representations;
