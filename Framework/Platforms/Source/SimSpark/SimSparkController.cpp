@@ -1374,7 +1374,7 @@ void SimSparkController::jointControl()
   }
 }
 
-void SimSparkController::set(const CameraSettingsRequest& data)
+void SimSparkController::set(const CameraSettingsRequest& /*data*/)
 {
   // switch between two cameras is supported currently
 
@@ -1554,7 +1554,7 @@ bool SimSparkController::updateIMU(const sexp_t* sexp)
   return true;
 }
 
-MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
+MessageQueue* SimSparkController::createMessageQueue(const std::string& /*name*/)
 {
   if ( theSyncMode )
     return new MessageQueue();
