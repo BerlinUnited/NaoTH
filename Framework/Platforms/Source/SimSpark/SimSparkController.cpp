@@ -13,7 +13,7 @@
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
-#include <Tools/Debug/DebugRequest.h>
+//#include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
@@ -265,8 +265,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
 
-  DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
-  REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
+  //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+  //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -1487,7 +1487,7 @@ void SimSparkController::autoBeam()
 {
 
   bool beamRequest = false;
-  DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
+  //DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
 
   if (beamRequest
       || theGameData.gameState == GameData::initial

@@ -43,7 +43,7 @@
 #include "DebugCommunication/DebugServer.h"
 
 #include "sfsexp/SexpParser.h"
-#include "libb64/decode.h"
+#include <Extern/libb64/decode.h>
 
 using namespace naoth;
 
