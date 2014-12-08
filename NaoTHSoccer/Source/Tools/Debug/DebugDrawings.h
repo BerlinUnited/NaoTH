@@ -12,7 +12,6 @@
 #include <sstream>
 #include <iostream>
 
-#include "Tools/DataStructures/Singleton.h"
 #include "Tools/Math/Vector_n.h"
 
 #include <DebugCommunication/DebugCommandExecutor.h>

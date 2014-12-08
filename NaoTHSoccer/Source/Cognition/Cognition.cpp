@@ -9,9 +9,6 @@
 
 #include <PlatformInterface/Platform.h>
 
-// debug
-#include "Tools/Debug/DebugDrawings3D.h"
-
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -112,11 +109,11 @@ void Cognition::call()
   // BEGIN cognition frame rate measuring
   stopwatch.stop();
   stopwatch.start();
-  PLOT("_CognitionCycle", stopwatch.lastValue);
+  PLOT("Cognition.Cycle", stopwatch.lastValue);
   // END cognition frame rate measuring
 
 
-  STOPWATCH_START("CognitionExecute");
+  STOPWATCH_START("Cognition.Execute");
 
   // execute all modules
   list<AbstractModuleCreator*>::const_iterator iter;
@@ -131,14 +128,14 @@ void Cognition::call()
     }
   }
   
-  STOPWATCH_STOP("CognitionExecute");
+  STOPWATCH_STOP("Cognition.Execute");
 
 
   // HACK: reset all the debug stuff before executing the modules
-  STOPWATCH_START("Debug ~ Init");
+  STOPWATCH_START("Cognition.Debug.Init");
   getDebugDrawings().reset();
   getDebugImageDrawings().reset();
   getDebugImageDrawingsTop().reset();
-  DebugDrawings3D::getInstance().update();
-  STOPWATCH_STOP("Debug ~ Init");
+  getDebugDrawings3D().reset();
+  STOPWATCH_STOP("Cognition.Debug.Init");
 }//end call

@@ -79,14 +79,8 @@ Debug::~Debug()
 
 void Debug::execute()
 {
-
   cognitionLogger.log(getFrameInfo().getFrameNumber());
 
-  // draw 3d only when 3d viewer is active
-  if (DebugDrawings3D::getInstance().isActive())
-  {
-    //draw3D();
-  }
 
   FIELD_DRAWING_CONTEXT;
   PEN("FF0000", 50);
