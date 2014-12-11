@@ -3,7 +3,8 @@ project "NaoTHSoccer"
   language "C++"
 
   files { "../Source/**.h",
-          "../Source/**.cpp"
+          "../Source/**.cpp",
+          "../Source/**.cc"
         }
   
   includedirs { "../Source/" }
