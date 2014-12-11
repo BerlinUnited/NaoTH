@@ -82,9 +82,8 @@ void Debug::execute()
   cognitionLogger.log(getFrameInfo().getFrameNumber());
 
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("FF0000", 50);
-  CIRCLE(1000,500,300);
+  getDebugDrawingsField().pen("FF0000", 50);
+  getDebugDrawingsField().drawCircle(1000,500,300);
 
   DEBUG_REQUEST("Debug:drawCircle:bottom",
     getDebugImageDrawings().drawCircleToImage(ColorClasses::red, 320, 240, 30);
