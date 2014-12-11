@@ -26,7 +26,7 @@
 
 BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)
-  PROVIDE(DebugDrawings)
+  PROVIDE(DebugDrawingsField)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugPlot)
