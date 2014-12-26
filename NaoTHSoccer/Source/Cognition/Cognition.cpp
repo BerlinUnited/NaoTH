@@ -139,7 +139,7 @@ void Cognition::call()
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Cognition.Debug.Init");
-  getDebugDrawingsField().reset();
+  getDebugDrawings().reset();
   getDebugImageDrawings().reset();
   getDebugImageDrawingsTop().reset();
   getDebugDrawings3D().reset();
