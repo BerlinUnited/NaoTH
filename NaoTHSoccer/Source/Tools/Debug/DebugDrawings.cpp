@@ -7,7 +7,7 @@
 
 #include "DebugDrawings.h"
 
-void naoth::Serializer<DebugDrawings>::serialize(const DebugDrawings& object, std::ostream& stream)
+void naoth::Serializer<DrawingCanvas2D>::serialize(const DrawingCanvas2D& object, std::ostream& stream)
 {
   const std::string& buf = object.out().str();
   if (buf != "") {
@@ -15,6 +15,6 @@ void naoth::Serializer<DebugDrawings>::serialize(const DebugDrawings& object, st
   }
 }
 
-void naoth::Serializer<DebugDrawings>::deserialize(std::istream& /*stream*/, DebugDrawings& /*object*/)
+void naoth::Serializer<DrawingCanvas2D>::deserialize(std::istream& /*stream*/, DrawingCanvas2D& /*object*/)
 {
 }

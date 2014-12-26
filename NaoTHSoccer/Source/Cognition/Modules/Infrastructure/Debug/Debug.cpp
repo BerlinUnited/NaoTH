@@ -49,8 +49,11 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:mass", "Visualize the kinematic chain in the 3D viewer", false);
   DEBUG_REQUEST_REGISTER("3DViewer:kinematic_chain:com", "Visualize the kinematic chain in the 3D viewer", false);
 
-  DEBUG_REQUEST_REGISTER("Debug:drawCircle:top", "", false);
-  DEBUG_REQUEST_REGISTER("Debug:drawCircle:bottom", "", false);
+  DEBUG_REQUEST_REGISTER("Debug:Test:ImageDrawings:bottom", "", false);
+  DEBUG_REQUEST_REGISTER("Debug:Test:ImageDrawings:top", "", false);
+  DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Field", "", false);
+  DEBUG_REQUEST_REGISTER("Debug:Test:DebugDrawings:Image", "", false);
+
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
@@ -82,16 +85,26 @@ void Debug::execute()
   cognitionLogger.log(getFrameInfo().getFrameNumber());
 
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("FF0000", 50);
-  CIRCLE(1000,500,300);
 
-  DEBUG_REQUEST("Debug:drawCircle:bottom",
+  DEBUG_REQUEST("Debug:Test:DebugDrawings:Field",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 50);
+    CIRCLE(1000,500,300);
+  );
+
+  DEBUG_REQUEST("Debug:Test:DebugDrawings:Image",
+    IMAGE_DRAWING_CONTEXT;
+    PEN("FF0000", 50);
+    CIRCLE(320,320,100);
+  );
+
+  DEBUG_REQUEST("Debug:Test:ImageDrawings:bottom",
     getDebugImageDrawings().drawCircleToImage(ColorClasses::red, 320, 240, 30);
   );
-  DEBUG_REQUEST("Debug:drawCircle:top",
+  DEBUG_REQUEST("Debug:Test:ImageDrawings:top",
     getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::blue, 320, 240, 30);
   );
+
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)

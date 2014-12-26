@@ -16,8 +16,9 @@
 
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include "Tools/DataStructures/Serializer.h"
+#include "Color.h"
 
-class DebugDrawings
+class DrawingCanvas2D
 {
 public:
 
@@ -33,20 +34,52 @@ public:
     return buffer;
   }
 
+public:
+  void pen(const char* color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void pen(const std::string& color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void pen(const Color& color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void drawCircle(double x, double y, double radius) {
+    out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl;
+  }
+  void drawLine(double x0, double y0, double x1, double y1) {
+    out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+  }
+  void drawText(double x, double y, const char* text) {
+    out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
+  }
+
+  void fillBox(double x0, double y0, double x1, double y1) {
+    out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
+  }
+  void fillOval(double x, double y, double radiusX, double radiusY) {
+    out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
+  }
+
+  
+
 private:
-  // do double-buffering :)
   std::stringstream buffer;
 };
+
+class DebugDrawings : public DrawingCanvas2D {};
 
 namespace naoth
 {
 template<>
-class Serializer<DebugDrawings>
+class Serializer<DrawingCanvas2D>
 {
   public:
-  static void serialize(const DebugDrawings& object, std::ostream& stream);
-  static void deserialize(std::istream& stream, DebugDrawings& object);
+  static void serialize(const DrawingCanvas2D& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, DrawingCanvas2D& object);
 };
+
+template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> {};
 }
 
 
@@ -54,6 +87,7 @@ class Serializer<DebugDrawings>
 #define CANVAS(id) getDebugDrawings().out() << "Canvas:" << id << std::endl
 #define IMAGE_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnImage" << std::endl
 #define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << std::endl
+
 #define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << std::endl
 #define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << std::endl
 #define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << std::endl

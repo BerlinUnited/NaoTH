@@ -22,6 +22,9 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 
+// behavior
+#include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -72,6 +75,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(DebugExecutor);
+
+  // behavior
+  REGISTER_MODULE(BasicTestBehavior);
 
   // -- END REGISTER MODULES --
 

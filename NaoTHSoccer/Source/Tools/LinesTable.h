@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Debug/Color.h"
+#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Line.h"
 
 class LinesTable
@@ -238,34 +238,33 @@ public:
   /**
    * Draws a debug field drawing that displays the set of lines.
    */
-  void draw() const
+  void draw(DrawingCanvas2D& canvas) const
   {
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 20);
+    canvas.pen("0000FF", 20);
     for (unsigned int i = 0; i < lines.size(); i++)
     {
-      LINE(lines[i].begin().x, lines[i].begin().y,
+      canvas.drawLine(lines[i].begin().x, lines[i].begin().y,
         lines[i].end().x, lines[i].end().y);
     }//end for
 
 
-    PEN("FF0000", 20);
+    canvas.pen("FF0000", 20);
     for (unsigned int i = 0; i < intersections.size(); i++)
     {
-      FILLOVAL(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
+      canvas.fillOval(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
       switch(intersections[i].type)
       {
         case Math::Intersection::L:
-          TEXT_DRAWING(intersections[i].pos.x+30, intersections[i].pos.y+30,"L");
+          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"L");
           break;
         case Math::Intersection::T:
-          TEXT_DRAWING(intersections[i].pos.x+30, intersections[i].pos.y+30,"T");
+          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"T");
           break;
         case Math::Intersection::X:
-          TEXT_DRAWING(intersections[i].pos.x+30, intersections[i].pos.y+30,"X");
+          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"X");
           break;
         default: // shouldn't happen
-          TEXT_DRAWING(intersections[i].pos.x+30, intersections[i].pos.y+30,"Unknown krossing type");
+          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"Unknown krossing type");
       }//end switch
     }
   }//end draw
@@ -402,9 +401,8 @@ public:
   }//end get_closest_point
 
 
-  void draw_closest_points(int type) const
+  void draw_closest_points(DrawingCanvas2D& canvas, int type) const
   {
-    FIELD_DRAWING_CONTEXT;
     Color white(1.0,1.0,1.0,0.0); // transparent
     Color black(0.0,0.0,0.0,1.0);
 
@@ -420,22 +418,21 @@ public:
           double d = (np.position - point).abs();
           double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
           Color color = white*t + black*(1-t);
-          PEN(color, 20);
+          canvas.pen(color, 20);
         }else
         {
           // noclosest line
-          PEN(white, 20);
+          canvas.pen(white, 20);
         }
-        FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+        canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
     }//end for
   }//end draw_closest_points
 
 
 
-  void draw_closest_corner_points() const
+  void draw_closest_corner_points(DrawingCanvas2D& canvas) const
   {
-    FIELD_DRAWING_CONTEXT;
     Color white(1.0,1.0,1.0,0.0); // transparent
     Color black(0.0,0.0,0.0,1.0);
 
@@ -447,16 +444,15 @@ public:
         double d = (point - get_closest_corner_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
         Color color = white*t + black*(1-t);
-        PEN(color, 20);
-        FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+        canvas.pen(color, 20);
+        canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
     }//end for
   }//end draw_closest_points
 
 
-  void draw_closest_tcrossing_points() const
+  void draw_closest_tcrossing_points(DrawingCanvas2D& canvas) const
   {
-    FIELD_DRAWING_CONTEXT;
     Color white(1.0,1.0,1.0,0.0); // transparent
     Color black(0.0,0.0,0.0,1.0);
 
@@ -468,8 +464,8 @@ public:
         double d = (point - get_closest_tcrossing_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
         Color color = white*t + black*(1-t);
-        PEN(color, 20);
-        FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+        canvas.pen(color, 20);
+        canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
     }//end for
   }//end draw_closest_points
