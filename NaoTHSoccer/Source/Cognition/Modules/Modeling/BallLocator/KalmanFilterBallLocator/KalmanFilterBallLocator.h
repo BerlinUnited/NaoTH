@@ -30,6 +30,7 @@
 // debug
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -39,6 +40,8 @@ BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
