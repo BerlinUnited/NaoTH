@@ -28,7 +28,7 @@
 #include "KFBLParameters.h"
 
 // debug
-#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
