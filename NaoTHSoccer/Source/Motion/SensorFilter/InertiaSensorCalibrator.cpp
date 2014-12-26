@@ -7,9 +7,6 @@
  */
 
 #include "InertiaSensorCalibrator.h"
-
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 using namespace naoth;
