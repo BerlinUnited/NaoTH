@@ -14,6 +14,7 @@
 
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/Color.h"
 #include "Tools/Math/Line.h"
 
 class LinesTable
@@ -404,8 +405,8 @@ public:
   void draw_closest_points(int type) const
   {
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
-    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
+    Color white(1.0,1.0,1.0,0.0); // transparent
+    Color black(0.0,0.0,0.0,1.0);
 
     for (int x = 0; x < xSize; x++)
     {
@@ -418,7 +419,7 @@ public:
         {
           double d = (np.position - point).abs();
           double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
-          DebugDrawings::Color color = white*t + black*(1-t);
+          Color color = white*t + black*(1-t);
           PEN(color, 20);
         }else
         {
@@ -435,8 +436,8 @@ public:
   void draw_closest_corner_points() const
   {
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
-    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
+    Color white(1.0,1.0,1.0,0.0); // transparent
+    Color black(0.0,0.0,0.0,1.0);
 
     for (int x = 0; x < xSize; x++)
     {
@@ -445,7 +446,7 @@ public:
         Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
         double d = (point - get_closest_corner_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
-        DebugDrawings::Color color = white*t + black*(1-t);
+        Color color = white*t + black*(1-t);
         PEN(color, 20);
         FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
@@ -456,8 +457,8 @@ public:
   void draw_closest_tcrossing_points() const
   {
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
-    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
+    Color white(1.0,1.0,1.0,0.0); // transparent
+    Color black(0.0,0.0,0.0,1.0);
 
     for (int x = 0; x < xSize; x++)
     {
@@ -466,7 +467,7 @@ public:
         Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
         double d = (point - get_closest_tcrossing_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
-        DebugDrawings::Color color = white*t + black*(1-t);
+        Color color = white*t + black*(1-t);
         PEN(color, 20);
         FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
