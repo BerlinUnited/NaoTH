@@ -29,7 +29,15 @@
 
 #include "Matrix3x2.h"
 
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugPlot.h"
+
 BEGIN_DECLARE_MODULE(InertiaSensorFilter)
+
+  PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+
   REQUIRE(FrameInfo)
   REQUIRE(RobotInfo)
   REQUIRE(InertialSensorData)
