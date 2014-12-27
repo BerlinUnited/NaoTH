@@ -29,6 +29,12 @@
 
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 
+#include "Modules/VisualCortex/ColorProvider.h"
+#include "Modules/VisualCortex/GridProvider.h"
+#include "Modules/VisualCortex/HistogramProvider.h"
+
+#include "Modules/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -77,6 +83,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
  
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(BodyContourProvider);
+  REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(ColorProvider);
+  REGISTER_MODULE(GridProvider);
+
+  REGISTER_MODULE(SimpleFieldColorClassifier);
 
   // debug
   REGISTER_MODULE(Debug);
