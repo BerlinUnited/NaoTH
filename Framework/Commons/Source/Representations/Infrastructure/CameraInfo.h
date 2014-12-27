@@ -17,45 +17,11 @@
 
 namespace naoth
 {
-
-  class CameraInfo: public Printable
+  class CameraInfoParameter : public ParameterList
   {
-
-    friend class Serializer<CameraInfo>;
   public:
-    
-    CameraInfo()
-    :
-    resolutionWidth(IMAGE_WIDTH),
-    resolutionHeight(IMAGE_HEIGHT),
-    pixelSize(0.0),
-    focus(0.0),
-    xp(0.0),
-    yp(0.0),
-    k1(0.0),
-    k2(0.0),
-    k3(0.0),
-    p1(0.0),
-    p2(0.0),
-    b1(0.0),
-    b2(0.0),
-    cameraID(Bottom),
-    openingAngleDiagonal(0.0)
-    {}
-
-    virtual ~CameraInfo()
-    {}
-
-    enum CameraID
-    {
-      Top,
-      Bottom,
-      numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
-    };
-
-    unsigned int resolutionWidth;
-    unsigned int resolutionHeight;
-
+    //diagonal angle of field of view
+    double openingAngleDiagonal;
     //size of an Pixel on the chip
     double pixelSize;
     //measured focus
@@ -74,7 +40,43 @@ namespace naoth
     double b1;
     double b2;
 
+    CameraInfoParameter(std::string idName);
+  };
+
+  class CameraInfo: public Printable
+  {
+    friend class Serializer<CameraInfo>;
+  public:
+    enum CameraID
+    {
+      Top,
+      Bottom,
+      numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
+    };
+    
+    CameraInfo()
+    :
+    cameraID(Bottom),
+    resolutionWidth(IMAGE_WIDTH),
+    resolutionHeight(IMAGE_HEIGHT),
+    params(getCameraIDName(Bottom))
+    {}
+
+    CameraInfo(CameraID id)
+    :
+    cameraID(id),
+    resolutionWidth(IMAGE_WIDTH),
+    resolutionHeight(IMAGE_HEIGHT),
+    params(getCameraIDName(id))
+    {}
+
+    virtual ~CameraInfo()
+    {}
+
     CameraID cameraID;
+
+    unsigned int resolutionWidth;
+    unsigned int resolutionHeight;
 
     // getter functions that use the existing values to calculate their result
 
@@ -99,16 +101,10 @@ namespace naoth
     }
 
   protected:
-
-    double openingAngleDiagonal;
+    CameraInfoParameter params;
 
   };
 
-  class CameraInfoParameter : public CameraInfo, public ParameterList
-  {
-  public:
-    CameraInfoParameter();
-  };
 
   template<>
   class Serializer<CameraInfo>
@@ -122,7 +118,7 @@ namespace naoth
   class CameraInfoTop : public CameraInfo
   {
   public:
-    using CameraInfo::operator =;
+    CameraInfoTop() : CameraInfo(Top) {};
     virtual ~CameraInfoTop() {}
   };
 

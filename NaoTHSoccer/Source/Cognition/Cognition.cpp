@@ -25,6 +25,8 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
+#include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -70,6 +72,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 //  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
+ 
+  REGISTER_MODULE(KinematicChainProvider);
 
   // debug
   REGISTER_MODULE(Debug);
