@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/FieldInfo.h>
 
 //#include "Representations/Infrastructure/ColorTable64.h"
 //#include "Representations/Modeling/ColorClassificationModel.h"
@@ -50,12 +51,13 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
-  PROVIDE(DebugDrawingsField)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
   PROVIDE(DebugCommandManager)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
 
+  REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
 //  REQUIRE(FieldInfo)
   PROVIDE(Image)
