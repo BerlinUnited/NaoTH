@@ -28,6 +28,8 @@
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 
+#include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -76,6 +78,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
  
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
+
+  REGISTER_MODULE(LineGraphProvider);
 
   // debug
   REGISTER_MODULE(Debug);
