@@ -27,7 +27,16 @@
 
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
+#include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
+#include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 
+#include "Modules/VisualCortex/ColorProvider.h"
+#include "Modules/VisualCortex/GridProvider.h"
+#include "Modules/VisualCortex/HistogramProvider.h"
+
+#include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
+#include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
+#include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 
@@ -79,7 +88,16 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
  
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(ArtificialHorizonCalculator);
+  REGISTER_MODULE(BodyContourProvider);
 
+  REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(ColorProvider);
+  REGISTER_MODULE(GridProvider);
+
+  REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(ScanLineEdgelDetector);
+  REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(GoalFeatureDetector);
   REGISTER_MODULE(GoalDetector);
 
