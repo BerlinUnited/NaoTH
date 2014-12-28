@@ -80,7 +80,7 @@ public:
     double lowBorderY = filteredHistogramY.median - parameters.filterFactorY * filteredHistogramY.sigma;
     double highBorderY = filteredHistogramY.median + parameters.filterFactorY * filteredHistogramY.sigma;
 
-    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markYClassification",
+    DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markYClassification",
       for(unsigned int x = 0; x < getImage().width(); x+=2) {
         for(unsigned int y = 0; y < getImage().height(); y+=2) {
           const Pixel& pixel = getImage().get(x, y);
@@ -91,7 +91,7 @@ public:
       }
     );
 
-    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green",
+    DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:mark_green",
       for(unsigned int x = 0; x < getImage().width(); x+=2) {
         for(unsigned int y = 0; y < getImage().height(); y+=2) {
           if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
@@ -102,7 +102,7 @@ public:
     );
 
     cameraID = CameraInfo::Top;
-    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markYClassification",
+    DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markYClassification",
       for(unsigned int x = 0; x < getImage().width(); x+=2) {
         for(unsigned int y = 0; y < getImage().height(); y+=2) {
           const Pixel& pixel = getImage().get(x, y);
@@ -113,7 +113,7 @@ public:
       }
     );
 
-    DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green",
+    DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:mark_green",
       for(unsigned int x = 0; x < getImage().width(); x+=2) {
         for(unsigned int y = 0; y < getImage().height(); y+=2) {
           if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
