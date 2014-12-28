@@ -25,10 +25,9 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
-
+#include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
-
 
 // tools
 #include "Tools/Debug/Trace.h"
@@ -76,9 +75,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
  
+  REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
-
-
   REGISTER_MODULE(ArtificialHorizonCalculator);
 
   // debug
