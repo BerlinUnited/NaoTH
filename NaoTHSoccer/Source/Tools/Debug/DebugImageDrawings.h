@@ -18,7 +18,6 @@
 
 #include <vector>
 
-
 class DebugDrawingCanvas: public naoth::DrawingCanvas
 {
 public:
