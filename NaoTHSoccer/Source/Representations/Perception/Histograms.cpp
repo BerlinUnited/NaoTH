@@ -18,19 +18,19 @@ ColorClassesHistograms::ColorClassesHistograms()
 {
   std::stringstream dbgString;
   std::stringstream descString;
-  //for(int color = 0; color < ColorClasses::numOfColors; color++)
-  //{
-  //  dbgString.str("");
-  //  dbgString << "Vision:ColorClassesHistograms:x:" << ColorClasses::getColorName((ColorClasses::Color) color);
-  //  descString.str("");
-  //  descString << "draw X axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
-  //  DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
-  //  dbgString.str("");
-  //  dbgString << "Vision:ColorClassesHistograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
-  //  descString.str("");
-  //  descString << "draw Y axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
-  //  DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
-  //}
+  for(int color = 0; color < ColorClasses::numOfColors; color++)
+  {
+    //dbgString.str("");
+    //dbgString << "Vision:ColorClassesHistograms:x:" << ColorClasses::getColorName((ColorClasses::Color) color);
+    //descString.str("");
+    //descString << "draw X axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
+    //DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
+    //dbgString.str("");
+    //dbgString << "Vision:ColorClassesHistograms:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
+    //descString.str("");
+    //descString << "draw Y axis histogram of " << ColorClasses::getColorName((ColorClasses::Color) color) << " pixels";
+    //DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
+  }
  
   init();
 }
@@ -47,9 +47,9 @@ void ColorClassesHistograms::init()
 
 void ColorClassesHistograms::showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const
 {
-  std::stringstream dbgString;
-  bool drawXHist = false;
-  bool drawYHist = false;
+  //std::stringstream dbgString;
+  //bool drawXHist = false;
+  //bool drawYHist = false;
 
   //for(int color = 0; color < ColorClasses::numOfColors; color++)
   //{

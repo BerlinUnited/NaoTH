@@ -8,6 +8,7 @@
 #define  _Histogram_H
 
 #include <vector>
+//#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 namespace Statistics
