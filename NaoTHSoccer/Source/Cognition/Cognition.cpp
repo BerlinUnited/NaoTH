@@ -27,7 +27,7 @@
 
 
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
-#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
+#include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 
 
 // tools
