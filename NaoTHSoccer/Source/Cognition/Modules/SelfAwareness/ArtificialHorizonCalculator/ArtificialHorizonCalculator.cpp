@@ -32,7 +32,6 @@ void ArtificialHorizonCalculator::execute(CameraInfo::CameraID id)
   getArtificialHorizon() = ArtificialHorizon(a, b);
 
   DEBUG_REQUEST("ArtificialHorizonCalculator:draw_horizon",
-    //CANVAS_PX(cameraID);
     LINE_PX(ColorClasses::red,
       (int)(getArtificialHorizon().begin().x +0.5), (int)(getArtificialHorizon().begin().y +0.5),
       (int)(getArtificialHorizon().end().x +0.5), (int)(getArtificialHorizon().end().y +0.5));

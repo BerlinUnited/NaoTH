@@ -28,6 +28,11 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings.h>
 BEGIN_DECLARE_MODULE(ArtificialHorizonCalculator)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
+
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
@@ -36,9 +41,6 @@ BEGIN_DECLARE_MODULE(ArtificialHorizonCalculator)
   PROVIDE(ArtificialHorizon)
   PROVIDE(ArtificialHorizonTop)
 
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugImageDrawings)
-  PROVIDE(DebugDrawings)
 END_DECLARE_MODULE(ArtificialHorizonCalculator)
 
 class ArtificialHorizonCalculator : public ArtificialHorizonCalculatorBase
@@ -59,9 +61,11 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator,CameraMatrix);
-  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator,CameraInfo);
-  DOUBLE_CAM_PROVIDE(ArtificialHorizonCalculator,ArtificialHorizon);
+  DOUBLE_CAM_PROVIDE(ArtificialHorizonCalculator, DebugImageDrawings);
+
+  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(ArtificialHorizonCalculator, CameraInfo);
+  DOUBLE_CAM_PROVIDE(ArtificialHorizonCalculator, ArtificialHorizon);
 
 };
 
