@@ -18,7 +18,6 @@
 
 #include <vector>
 
-
 class DebugDrawingCanvas: public naoth::DrawingCanvas
 {
 public:
@@ -148,7 +147,7 @@ private:
 
 // representations: for top and the bottom image
 class DebugImageDrawings : public DebugDrawingCanvas{};
-class DebugImageDrawingsTop : public DebugDrawingCanvas{};
+class DebugImageDrawingsTop : public DebugImageDrawings{};
 
 
 #ifdef DEBUG
