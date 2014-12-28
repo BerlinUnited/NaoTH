@@ -24,10 +24,7 @@
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/FrameInfo.h>
-//#include "Representations/Infrastructure/ColoredGrid.h"
-//#include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldPercept.h"
-//#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -52,18 +49,12 @@ BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  //REQUIRE(ArtificialHorizon)
-  //REQUIRE(ArtificialHorizonTop)
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-  //REQUIRE(BodyContour)
-  //REQUIRE(BodyContourTop)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  //REQUIRE(OverTimeHistogram)
-  //REQUIRE(OverTimeHistogramTop)
   REQUIRE(GoalPostHistograms)
 
   PROVIDE(BallPercept)
@@ -148,11 +139,8 @@ private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(BallDetector, Image);
   DOUBLE_CAM_REQUIRE(BallDetector, CameraMatrix);
-  //DOUBLE_CAM_REQUIRE(BallDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(BallDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(BallDetector, FieldPercept);
-  //DOUBLE_CAM_REQUIRE(BallDetector, BodyContour);
-  //DOUBLE_CAM_REQUIRE(BallDetector, OverTimeHistogram);
  
   DOUBLE_CAM_PROVIDE(BallDetector, BallPercept);
           
