@@ -30,6 +30,7 @@ BEGIN_DECLARE_MODULE(GridProvider)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
   
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -65,6 +66,8 @@ private:
   CameraInfo::CameraID cameraID;
 
   void calculateColoredGrid();
+
+  DOUBLE_CAM_PROVIDE(GridProvider, DebugImageDrawings);
 
   DOUBLE_CAM_REQUIRE(GridProvider, Image);
   DOUBLE_CAM_REQUIRE(GridProvider, ColorClassificationModel);
