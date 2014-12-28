@@ -30,6 +30,8 @@
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 
+#include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -80,6 +82,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
+
+  REGISTER_MODULE(ScanLineEdgelDetector);
 
   // debug
   REGISTER_MODULE(Debug);
