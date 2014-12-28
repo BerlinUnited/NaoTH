@@ -38,6 +38,7 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugPlot.h>
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 
@@ -56,6 +57,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(DebugCommandManager)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)

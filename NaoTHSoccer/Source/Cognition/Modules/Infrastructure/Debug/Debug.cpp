@@ -105,6 +105,8 @@ void Debug::execute()
     getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::blue, 320, 240, 30);
   );
 
+  PLOT("Debug:Test", sin(getFrameInfo().getTimeInSeconds()));
+
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
