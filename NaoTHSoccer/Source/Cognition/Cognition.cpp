@@ -22,10 +22,13 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 
-// Perception
-#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
+
+
+#include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
+#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
+
 
 // tools
 #include "Tools/Debug/Trace.h"
@@ -72,6 +75,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 //  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
+ 
+  REGISTER_MODULE(KinematicChainProvider);
+
+
+  REGISTER_MODULE(ArtificialHorizonCalculator);
 
   // debug
   REGISTER_MODULE(Debug);
