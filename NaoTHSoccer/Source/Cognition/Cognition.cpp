@@ -33,7 +33,7 @@
 #include "Modules/VisualCortex/GridProvider.h"
 #include "Modules/VisualCortex/HistogramProvider.h"
 
-#include "Modules/VisualCortex/ColorClassifiers/SimpleFieldColorClassifier.h"
+#include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
 
 // tools
 #include "Tools/Debug/Trace.h"

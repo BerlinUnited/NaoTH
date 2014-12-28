@@ -14,13 +14,13 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   cameraID(CameraInfo::Bottom),
   uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markYClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markYClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markYClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:markYClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:mark_green", "", false);
 
   //collect only last x seconds of histogram data
   filteredHistogramY.setMaxTotalSum(uniformGrid.size() * 30 * parameters.collectionTimeSpan);
@@ -205,8 +205,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   }
   
   cameraID = CameraInfo::Bottom;
-  //CANVAS_PX(cameraID);
-  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:BottomCam:markCrClassification",
+  DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
     for(unsigned int x = 0; x < getImage().width(); x+=2) {
       for(unsigned int y = 0; y < getImage().height(); y+=2) {
         const Pixel& pixel = getImage().get(x, y);
@@ -217,8 +216,7 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     }
   );
   cameraID = CameraInfo::Top;
-  //CANVAS_PX(cameraID);
-  DEBUG_REQUEST("Vision:ColorClassifiers:SimpleFieldColorClassifier:TopCam:markCrClassification",
+  DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification",
     for(unsigned int x = 0; x < getImage().width(); x+=2) {
       for(unsigned int y = 0; y < getImage().height(); y+=2) {
         const Pixel& pixel = getImage().get(x, y);
