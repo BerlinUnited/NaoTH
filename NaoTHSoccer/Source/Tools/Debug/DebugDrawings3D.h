@@ -73,13 +73,13 @@ public:
 }
 
 #ifdef DEBUG
-#define ENTITY DebugDrawings3D::getInstance().addEntity
-#define BOX_3D DebugDrawings3D::getInstance().addBox
-#define SPHERE DebugDrawings3D::getInstance().addSphere
-#define CONE DebugDrawings3D::getInstance().addCone
-#define CYLINDER DebugDrawings3D::getInstance().addCylinder
-#define LINE_3D DebugDrawings3D::getInstance().addLine
-#define TEXT_3D DebugDrawings3D::getInstance().addText3D
+#define ENTITY getDebugDrawings3D().addEntity
+#define BOX_3D getDebugDrawings3D().addBox
+#define SPHERE getDebugDrawings3D().addSphere
+#define CONE getDebugDrawings3D().addCone
+#define CYLINDER getDebugDrawings3D().addCylinder
+#define LINE_3D getDebugDrawings3D().addLine
+#define TEXT_3D getDebugDrawings3D().addText3D
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */
 #define ENTITY(...) ((void)0)

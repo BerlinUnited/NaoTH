@@ -96,6 +96,8 @@ public:
     Parameter() : ParameterList("DebugParameter") 
     {
       PARAMETER_REGISTER(test) = 20;
+
+      syncWithConfig();
     }
 
     double test;
