@@ -29,8 +29,14 @@ BallDetector::BallDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_estimated","..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball","..", false);  
+
+  getDebugParameterList().add(&params);
 }
 
+BallDetector::~BallDetector()
+{
+  getDebugParameterList().remove(&params);
+}
 
 void BallDetector::execute(CameraInfo::CameraID id)
 {

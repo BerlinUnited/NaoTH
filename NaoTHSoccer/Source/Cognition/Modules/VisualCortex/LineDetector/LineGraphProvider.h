@@ -28,8 +28,6 @@
 #include "Representations/Perception/LineGraphPercept.h"
 
 #include "Tools/DoubleCamHelpers.h"
-#include <Tools/DataStructures/ParameterList.h>
-//#include "Tools/naoth_opencv.h"
 #include <algorithm>
 #include <set>
 
@@ -47,6 +45,7 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)

@@ -20,8 +20,6 @@
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
 // Tools
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/MaximumScan.h"
@@ -34,6 +32,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Representations/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   PROVIDE(DebugRequest)
@@ -42,6 +41,7 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)  
+  PROVIDE(DebugParameterList)  
   
   REQUIRE(FrameInfo)
   REQUIRE(Image)

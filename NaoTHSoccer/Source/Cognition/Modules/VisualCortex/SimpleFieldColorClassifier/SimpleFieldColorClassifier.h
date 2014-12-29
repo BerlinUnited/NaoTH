@@ -21,11 +21,7 @@
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
-#include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/UniformGrid.h>
-
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
 
 // Debug
 #include "Representations/Debug/Stopwatch.h"
@@ -33,6 +29,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DoubleCamHelpers.h"
 

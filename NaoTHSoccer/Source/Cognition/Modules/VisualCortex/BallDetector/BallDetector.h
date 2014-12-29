@@ -17,7 +17,6 @@
 #include <Tools/Math/PointList.h>
 #include <Tools/DataStructures/OccupancyGrid.h>
 #include <Tools/DataStructures/Area.h>
-#include <Tools/DataStructures/ParameterList.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
@@ -38,12 +37,14 @@
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 
 BEGIN_DECLARE_MODULE(BallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -66,7 +67,7 @@ class BallDetector: private BallDetectorBase
 {
 public:
   BallDetector();
-  ~BallDetector(){}
+  ~BallDetector();
 
   void execute(CameraInfo::CameraID id);
 

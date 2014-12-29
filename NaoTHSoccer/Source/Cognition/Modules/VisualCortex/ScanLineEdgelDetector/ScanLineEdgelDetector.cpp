@@ -23,10 +23,14 @@ ScanLineEdgelDetector::ScanLineEdgelDetector()
   DEBUG_REQUEST_REGISTER("Vision:ScanLineEdgelDetector:mark_endpoints", "mark the endpints on the image", false);
 
   DEBUG_REQUEST_REGISTER("Vision:ScanLineEdgelDetector:mark_scan_segments", "...", false);
+
+  getDebugParameterList().add(&theParameters);
 }
 
 ScanLineEdgelDetector::~ScanLineEdgelDetector()
-{}
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
 {

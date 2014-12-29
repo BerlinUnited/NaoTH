@@ -8,7 +8,6 @@
 #include "Tools/CameraGeometry.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Math/Geometry.h"
-//#include "Tools/DataStructures/Histogram.h"
 
 LineGraphProvider::LineGraphProvider()
 :
@@ -22,10 +21,15 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_lines", "draw the esimated lines in the image", false);
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
+
+  getDebugParameterList().add(&parameters);
 }
 
 
-LineGraphProvider::~LineGraphProvider(){}
+LineGraphProvider::~LineGraphProvider()
+{
+  getDebugParameterList().remove(&parameters);
+}
 
 
 void LineGraphProvider::execute(CameraInfo::CameraID id)

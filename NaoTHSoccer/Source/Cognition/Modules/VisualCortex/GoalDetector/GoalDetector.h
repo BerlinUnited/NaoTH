@@ -22,9 +22,6 @@
 // tools
 #include "Tools/DoubleCamHelpers.h"
 
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
-
 #include <vector>
 
 #include "Tools/naoth_opencv.h"
@@ -33,6 +30,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(GoalDetector)
   PROVIDE(StopwatchManager)
@@ -40,6 +38,7 @@ BEGIN_DECLARE_MODULE(GoalDetector)
   PROVIDE(DebugModify)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
   REQUIRE(Image)
@@ -64,7 +63,7 @@ class GoalDetector: private GoalDetectorBase
 public:
 
   GoalDetector();
-  virtual ~GoalDetector(){}
+  virtual ~GoalDetector();
 
   // override the Module execute method
   virtual void execute()

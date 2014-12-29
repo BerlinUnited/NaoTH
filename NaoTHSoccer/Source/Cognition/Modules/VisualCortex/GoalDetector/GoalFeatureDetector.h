@@ -21,9 +21,6 @@
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
-
 //#include "Tools/naoth_opencv.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/Filter.h"
@@ -33,6 +30,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(GoalFeatureDetector)
   PROVIDE(StopwatchManager)
@@ -40,6 +38,7 @@ BEGIN_DECLARE_MODULE(GoalFeatureDetector)
   PROVIDE(DebugModify)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -56,7 +55,7 @@ class GoalFeatureDetector: private GoalFeatureDetectorBase
 public:
 
   GoalFeatureDetector();
-  virtual ~GoalFeatureDetector(){}
+  virtual ~GoalFeatureDetector();
 
   // override the Module execute method
   bool execute(CameraInfo::CameraID id);

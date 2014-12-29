@@ -32,8 +32,14 @@ GoalFeatureDetector::GoalFeatureDetector()
 
   getGoalFeaturePercept().reset(parameters.numberOfScanlines);
   getGoalFeaturePerceptTop().reset(parameters.numberOfScanlines);
+
+  getDebugParameterList().add(&parameters);
 }
 
+GoalFeatureDetector::~GoalFeatureDetector()
+{
+  getDebugParameterList().remove(&parameters);
+}
 
 bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
 {

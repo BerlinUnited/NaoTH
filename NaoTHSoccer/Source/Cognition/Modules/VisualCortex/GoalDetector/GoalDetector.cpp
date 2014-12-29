@@ -27,6 +27,13 @@ GoalDetector::GoalDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramBottom","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramTop","..", false);
+
+  getDebugParameterList().add(&params);
+}
+
+GoalDetector::~GoalDetector()
+{
+  getDebugParameterList().remove(&params);
 }
 
 void GoalDetector::execute(CameraInfo::CameraID id)
