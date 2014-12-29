@@ -45,7 +45,7 @@ Motion::Motion()
 
   // register the modeules
 //  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
-//  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
+  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
 //  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
 //  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
 //  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
@@ -96,7 +96,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 //  platformInterface.registerOutputChanel(getMotionStatus());
 //  platformInterface.registerOutputChanel(getOdometryData());
 //  platformInterface.registerOutputChanel(getCalibrationData());
-//  platformInterface.registerOutputChanel(getInertialModel());
+  platformInterface.registerOutputChanel(getInertialModel());
 
   // messages from cognition to motion
 //  platformInterface.registerInputChanel(getCameraInfo());
@@ -159,10 +159,12 @@ void Motion::processSensorData()
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getGyrometerData().data += getCalibrationData().gyroSensorOffset;
   getAccelerometerData().data += getCalibrationData().accSensorOffset;
+  */
 
   //
   theInertiaSensorFilterBH->execute();
 
+  /*
   //
   theFootGroundContactDetector->execute();
 
