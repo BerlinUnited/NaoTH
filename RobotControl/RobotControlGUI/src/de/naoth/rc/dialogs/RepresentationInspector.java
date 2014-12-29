@@ -354,13 +354,13 @@ public class RepresentationInspector extends AbstractDialog
         @Override
         public Object parse(byte[] object)
         {
-            return new String("No binary serialization avaliable.");
+            return "No binary serialization avaliable.";
         }
     }
     
     class ProtobufParser implements Parser
     {
-        private Descriptor descriptor;
+        private final Descriptor descriptor;
         public ProtobufParser(Descriptor descriptor) {
             this.descriptor = descriptor;
         }
