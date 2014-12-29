@@ -21,7 +21,7 @@
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 //#include "MorphologyProcessor/FootGroundContactDetector.h"
 //#include "MorphologyProcessor/KinematicChainProviderMotion.h"
-//#include "SensorFilter/InertiaSensorCalibrator.h"
+#include "SensorFilter/InertiaSensorCalibrator.h"
 //#include "SensorFilter/InertiaSensorFilter.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
@@ -107,7 +107,7 @@ private:
 //  void updateCameraMatrix();
 
 private:
-//  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
+  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
 //  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
 //  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
 //  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;

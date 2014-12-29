@@ -44,7 +44,7 @@ Motion::Motion()
 
 
   // register the modeules
-//  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
+  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
 //  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
 //  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
 //  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
@@ -150,10 +150,12 @@ void Motion::processSensorData()
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
+  */
 
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
+  /*
   //TODO: introduce calibrated versions of the data
   // correct the sensors
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
