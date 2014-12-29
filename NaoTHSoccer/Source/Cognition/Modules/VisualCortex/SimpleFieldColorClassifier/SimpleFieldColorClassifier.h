@@ -39,12 +39,13 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
+  PROVIDE(StopwatchManager)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
-  PROVIDE(StopwatchManager)
+  PROVIDE(DebugParameterList)
   
   REQUIRE(FrameInfo)
   REQUIRE(ColorChannelHistograms)
@@ -65,7 +66,7 @@ class SimpleFieldColorClassifier : public  SimpleFieldColorClassifierBase
 {
 public:
   SimpleFieldColorClassifier();
-  virtual ~SimpleFieldColorClassifier(){}
+  virtual ~SimpleFieldColorClassifier();
 
   void execute()
   {
@@ -81,8 +82,8 @@ public:
     double highBorderY = filteredHistogramY.median + parameters.filterFactorY * filteredHistogramY.sigma;
 
     DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markYClassification",
-      for(unsigned int x = 0; x < getImage().width(); x+=2) {
-        for(unsigned int y = 0; y < getImage().height(); y+=2) {
+      for(unsigned int x = 0; x < getImage().width(); x+=4) {
+        for(unsigned int y = 0; y < getImage().height(); y+=4) {
           const Pixel& pixel = getImage().get(x, y);
           if(lowBorderY < pixel.y && pixel.y < highBorderY) {
             POINT_PX(ColorClasses::black, x, y);
@@ -92,8 +93,8 @@ public:
     );
 
     DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:mark_green",
-      for(unsigned int x = 0; x < getImage().width(); x+=2) {
-        for(unsigned int y = 0; y < getImage().height(); y+=2) {
+      for(unsigned int x = 0; x < getImage().width(); x+=4) {
+        for(unsigned int y = 0; y < getImage().height(); y+=4) {
           if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
             POINT_PX(ColorClasses::green, x, y);
           }
@@ -103,8 +104,8 @@ public:
 
     cameraID = CameraInfo::Top;
     DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markYClassification",
-      for(unsigned int x = 0; x < getImage().width(); x+=2) {
-        for(unsigned int y = 0; y < getImage().height(); y+=2) {
+      for(unsigned int x = 0; x < getImage().width(); x+=4) {
+        for(unsigned int y = 0; y < getImage().height(); y+=4) {
           const Pixel& pixel = getImage().get(x, y);
           if(lowBorderY < pixel.y && pixel.y < highBorderY) {
             POINT_PX(ColorClasses::black, x, y);
@@ -114,8 +115,8 @@ public:
     );
 
     DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:mark_green",
-      for(unsigned int x = 0; x < getImage().width(); x+=2) {
-        for(unsigned int y = 0; y < getImage().height(); y+=2) {
+      for(unsigned int x = 0; x < getImage().width(); x+=4) {
+        for(unsigned int y = 0; y < getImage().height(); y+=4) {
           if(getFieldColorPercept().isFieldColor(getImage().get(x, y))) {
             POINT_PX(ColorClasses::green, x, y);
           }
@@ -142,12 +143,9 @@ private:
       PARAMETER_REGISTER(collectionTimeSpan) = 5;
 
       syncWithConfig();
-      //DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters() {
-      //DebugParameterList::getInstance().remove(this);
-    }
+    ~Parameters() {}
 
     DoublePixel fieldColorMax;
     DoublePixel fieldColorMin;

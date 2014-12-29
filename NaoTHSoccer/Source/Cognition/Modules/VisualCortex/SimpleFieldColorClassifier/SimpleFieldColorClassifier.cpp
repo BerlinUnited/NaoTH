@@ -26,7 +26,15 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   filteredHistogramY.setMaxTotalSum(uniformGrid.size() * 30 * parameters.collectionTimeSpan);
   //filteredHistogramU.setMaxTotalSum(uniformGrid.size()/* * 30 * parameters.collectionTimeSpan*/);
   filteredHistogramV.setMaxTotalSum(uniformGrid.size() * 30 * parameters.collectionTimeSpan);  
+
+  getDebugParameterList().add(&parameters);
 }
+
+SimpleFieldColorClassifier::~SimpleFieldColorClassifier()
+{
+  getDebugParameterList().remove(&parameters);
+};
+
 
 void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
 {
@@ -206,8 +214,8 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   
   cameraID = CameraInfo::Bottom;
   DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markCrClassification",
-    for(unsigned int x = 0; x < getImage().width(); x+=2) {
-      for(unsigned int y = 0; y < getImage().height(); y+=2) {
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
         const Pixel& pixel = getImage().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
           POINT_PX(ColorClasses::red, x, y);
@@ -217,8 +225,8 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
   );
   cameraID = CameraInfo::Top;
   DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification",
-    for(unsigned int x = 0; x < getImage().width(); x+=2) {
-      for(unsigned int y = 0; y < getImage().height(); y+=2) {
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
         const Pixel& pixel = getImage().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
           POINT_PX(ColorClasses::red, x, y);
