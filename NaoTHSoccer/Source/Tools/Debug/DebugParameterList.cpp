@@ -17,43 +17,27 @@ DebugParameterList::DebugParameterList()
 }
 
 void DebugParameterList::executeDebugCommand(
-  const std::string& command, const std::map<std::string, std::string>& arguments,
+  const std::string& command, const ArgumentMap& arguments,
   std::ostream &outstream)
 {
   if ( command == "ParameterList:list" )
   {
-    for(set<ParameterList*>::const_iterator itParamList = paramlists.begin();
+    for(ParameterMap::const_iterator itParamList = paramlists.begin();
         itParamList != paramlists.end(); ++itParamList)
     {
-      outstream << (*itParamList)->getName() << "\n";
+      outstream << itParamList->second->getName() << "\n";
     }
-    return;
-  }
-
-  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
-
-  for(set<ParameterList*>::const_iterator itParamList = paramlists.begin();
-      itParamList != paramlists.end(); ++itParamList)
+  } 
+  else if( command == "ParameterList:get" )
   {
-    const string& name = (*itParamList)->getName();
-    string cmd = "ParameterList:" + name;
-    if (command == cmd + ":set")
+    ArgumentMap::const_iterator iter = arguments.find("<name>");
+    if(iter != arguments.end()) 
     {
-      for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); ++iter)
-      {
-        // update global config when value changed
-        if ( config.getRawValue(name, iter->first) != iter->second )
-          config.setRawValue(name, iter->first, iter->second);
-      }
-      config.save();
-      (*itParamList)->syncWithConfig();
+      const std::string& name = iter->second;
 
-      // always success
-      outstream<<"set " << name << " successfully"<< std::endl;
-    }
-    else if (command == cmd + ":get")
-    {
+      naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
       set<string> keys = config.getKeys(name);
+
       for(set<string>::const_iterator it = keys.begin(); it != keys.end(); ++it)
       {
         string val = config.getRawValue(name, *it);
@@ -61,16 +45,41 @@ void DebugParameterList::executeDebugCommand(
       }
     }
   }
+  else if( command == "ParameterList:set" )
+  {
+    ArgumentMap::const_iterator iter = arguments.find("<name>");
+    if(iter != arguments.end()) 
+    {
+      const std::string& name = iter->second;
+      
+      naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+      
+      for (ArgumentMap::const_iterator iter = arguments.begin(); iter != arguments.end(); ++iter)
+      {
+        // update global config
+        if (  config.hasKey(name, iter->first) ) {
+          config.setRawValue(name, iter->first, iter->second);
+        }
+      }
+      config.save();
+
+      ParameterMap::iterator pIter = paramlists.find(name);
+      if(pIter == paramlists.end() ) {
+        outstream << "[error] " << name << " not registered" << std::endl;
+      } else {
+        pIter->second->syncWithConfig();
+        outstream << "[info] set " << name << " successfully" << std::endl;
+      }
+    }
+  }
 }
 
 void DebugParameterList::add(ParameterList* pl)
 {
-  paramlists.insert(pl);
-  //REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":set", "set parameters of "+pl->getName(), this);
-  //REGISTER_DEBUG_COMMAND("ParameterList:"+pl->getName()+":get", "get parameters of "+pl->getName(), this);
+  paramlists[pl->getName()] = pl;
 }
 
 void DebugParameterList::remove(ParameterList* pl)
 {
-  paramlists.erase(paramlists.find(pl));
+  paramlists.erase(paramlists.find(pl->getName()));
 }

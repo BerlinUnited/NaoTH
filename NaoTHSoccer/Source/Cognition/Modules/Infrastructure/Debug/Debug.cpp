@@ -57,6 +57,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // modify commands
   REGISTER_DEBUG_COMMAND("modify:list", 
@@ -78,12 +80,12 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
 Debug::~Debug()
 {
+  getDebugParameterList().remove(&parameter);
 }
 
 void Debug::execute()
 {
   cognitionLogger.log(getFrameInfo().getFrameNumber());
-
 
 
   DEBUG_REQUEST("Debug:Test:DebugDrawings:Field",
