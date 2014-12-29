@@ -21,7 +21,9 @@
 class DebugPlot
 {
 public:
-  static const int maxPlotBufferSize = 1024;
+  // number of frames to be buffered (~1s in motion or ~3s in cognition)
+  static const int maxPlotBufferSize = 100; 
+
   typedef RingBuffer<Vector2d, maxPlotBufferSize> PlotStrokeBuffer;
   typedef std::map<std::string, PlotStrokeBuffer> PlotStrokesMap;
 

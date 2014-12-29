@@ -11,15 +11,20 @@
 
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.manager.PlotDataManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.server.Command;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IRangePolicy;
 import info.monitorenter.gui.chart.ITrace2D;
@@ -46,6 +51,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -60,16 +67,20 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author Heinrich Mellmann
  */
-@PluginImplementation
 public class Plott2D  extends AbstractDialog
   implements ObjectListener<Plots>
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public PlotDataManager plotDataManager;
-
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<Plott2D>
+  {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static PlotDataManager plotDataManager;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
+  }
   
   private final int maxNumberOfValues = 10000;
   private final int numberOfValues = maxNumberOfValues;
@@ -80,6 +91,9 @@ public class Plott2D  extends AbstractDialog
   private final Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
   private final Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
+  private final Command commandGetPlotMotion = new Command("Motion:representation:getbinary").addArg("DebugPlot");
+  private final PlotDataHandler plotDataHandler = new PlotDataHandler();
+  
     /** Creates new form SimpleValuePlotter */
     public Plott2D() {
         initComponents();
@@ -412,14 +426,16 @@ public class Plott2D  extends AbstractDialog
     private void btReceiveDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDataActionPerformed
 
       if (btReceiveData.isSelected()) {
-        if (parent.checkConnected()) {
-          plotDataManager.addListener(this);
+        if (Plugin.parent.checkConnected()) {
+          Plugin.plotDataManager.addListener(this);
+          Plugin.genericManagerFactory.getManager(commandGetPlotMotion).addListener(plotDataHandler);
           chart.getAxisX().setRangePolicy(new DynamicRangePolicy(chart.getAxisX().getRange()));
         } else {
           btReceiveData.setSelected(false);
         }
       } else {
-        plotDataManager.removeListener(this);
+        Plugin.plotDataManager.removeListener(this);
+        Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
         chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(chart.getAxisX().getRange()));
         //chart.enablePointHighlighting(true);
       }
@@ -534,10 +550,30 @@ private void clearTracePoints()
     private javax.swing.JScrollPane scrollList;
     // End of variables declaration//GEN-END:variables
 
+  class PlotDataHandler implements ObjectListener<byte[]>
+  {
+    @Override
+    public void newObjectReceived(byte[] object) {
+        try
+        {
+          Plott2D.this.newObjectReceived( Plots.parseFrom(object) );
+        }
+        catch (InvalidProtocolBufferException ex)
+        {
+          Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, new String(object), ex);
+        }
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        errorOccured(cause);
+    }
+  }//end class DataHandlerPrint
+    
   @Override
   public void errorOccured(String cause) {
-    JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
-    plotDataManager.removeListener(this);
+    //JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
+    Plugin.plotDataManager.removeListener(this);
   }
 
   @Override
@@ -661,7 +697,7 @@ private void clearTracePoints()
   public void dispose()
   {
     btReceiveData.setSelected(false);
-    plotDataManager.removeListener(this);
+    Plugin.plotDataManager.removeListener(this);
   }
 
   private int currentColorIndex = 0;
