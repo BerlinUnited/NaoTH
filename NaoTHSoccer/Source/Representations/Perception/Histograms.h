@@ -60,7 +60,6 @@ class ColorClassesHistograms: public naoth::Printable
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
 
-    void showDebugInfos(const UniformGrid& grid, const naoth::CameraInfo& cameraInfo) const;
     virtual void print(std::ostream& stream) const;
 
   public:
@@ -104,7 +103,6 @@ public:
   }
 
   ColorChannelHistograms();
-  void showDebugInfos() const;
 
 public:
   // color channel histograms bottomImage

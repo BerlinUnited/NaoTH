@@ -21,16 +21,12 @@
 */
 class CameraMatrix : public Pose3D, public naoth::Printable
 {
-protected:
-  // TODO: does anybody need this?!
-  //naoth::CameraInfo::CameraID cameraID;
 public:
   bool valid;
   unsigned int timestamp;
 
-public:
-  CameraMatrix(): /*cameraID(naoth::CameraInfo::Bottom),*/ valid(false), timestamp(0) {}
-  CameraMatrix(const Pose3D& pose): Pose3D(pose),/* cameraID(naoth::CameraInfo::Bottom),*/ valid(false) {}
+  CameraMatrix(): valid(false), timestamp(0) {}
+  CameraMatrix(const Pose3D& pose): Pose3D(pose), valid(false) {}
 
   virtual void print(std::ostream& stream) const;
 };
@@ -41,8 +37,8 @@ public:
 class CameraMatrixTop : public CameraMatrix
 {
 public:
-  CameraMatrixTop(){ /*cameraID = naoth::CameraInfo::Top;*/ }
-  CameraMatrixTop(const Pose3D& pose): CameraMatrix(pose) { /*cameraID = naoth::CameraInfo::Top;*/ }
+  CameraMatrixTop() {}
+  CameraMatrixTop(const Pose3D& pose): CameraMatrix(pose) {}
   virtual ~CameraMatrixTop() {}
 };
 
