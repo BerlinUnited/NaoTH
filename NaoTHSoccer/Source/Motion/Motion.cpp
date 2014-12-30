@@ -48,7 +48,7 @@ Motion::Motion()
 //  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
 //  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
 //  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
-//  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
 //  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
 //  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
@@ -183,11 +183,12 @@ void Motion::processSensorData()
 
   //
   updateCameraMatrix();
+  */
 
   //
   theOdometryCalculator->execute();
 
-
+  /*
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
   */

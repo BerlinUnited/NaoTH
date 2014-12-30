@@ -17,7 +17,7 @@
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 //#include "MorphologyProcessor/SupportPolygonGenerator.h"
-//#include "MorphologyProcessor/OdometryCalculator.h"
+#include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 //#include "MorphologyProcessor/FootGroundContactDetector.h"
 //#include "MorphologyProcessor/KinematicChainProviderMotion.h"
@@ -120,7 +120,7 @@ private:
 //  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
 //  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
 //  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
-//  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
 //  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
 //  ModuleCreator<MotionEngine>* theMotionEngine;
