@@ -25,6 +25,8 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
+#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -78,6 +80,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
+
+  REGISTER_MODULE(KalmanFilterBallLocator);
 
   // -- END REGISTER MODULES --
 
