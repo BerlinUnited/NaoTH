@@ -22,6 +22,8 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 
+//
+#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
