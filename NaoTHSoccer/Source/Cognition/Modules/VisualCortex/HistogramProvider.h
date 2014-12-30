@@ -13,10 +13,10 @@
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/Histograms.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Perception/BodyContour.h"
 
 #include "Tools/DoubleCamHelpers.h"
+#include "Tools/DataStructures/UniformGrid.h"
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"

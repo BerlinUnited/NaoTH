@@ -22,62 +22,15 @@
 
 //Representations
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/ColoredGrid.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-
-
-class ColorClassesHistograms: public naoth::Printable
-{
- public:
-    ColorClassesHistograms();
-    ~ColorClassesHistograms(){}
-
-    void init();
-
-    void resizeHistograms(Vector2i& size)
-    {
-      histSizes = size;
-      for(int color = 0; color < ColorClasses::numOfColors; color++)
-      {
-        //histogram along x-axis needs height as size
-        xHistogram[color].resize(histSizes.y);
-        //histogram along y-axis needs width as size
-        yHistogram[color].resize(histSizes.x);
-      }
-    }
-
-    inline void increaseValue(const int x, const int y, const ColorClasses::Color& color)
-    {
-      xHistogram[color].add(y);
-      yHistogram[color].add(x);
-    }
-
-    inline void increaseValue(const Vector2i pixel, const ColorClasses::Color& color)
-    {
-      xHistogram[color].add(pixel.y);
-      yHistogram[color].add(pixel.x);
-    }
-
-    void createFromColoredGrid(const ColoredGrid& coloredGrid);
-
-    virtual void print(std::ostream& stream) const;
-
-  public:
-    //color class histograms bottom image
-    Statistics::HistogramX xHistogram[ColorClasses::numOfColors];
-    Statistics::HistogramX yHistogram[ColorClasses::numOfColors];
-
-  private:
-    Vector2i histSizes;
-};
-
-class ColorClassesHistogramsTop : public ColorClassesHistograms{};
 
 
 class ColorChannelHistograms
 {
 public:
   static const int VALUE_COUNT = 256;
+
+  ColorChannelHistograms() {}
 
   inline void increaseChannelValue(const Pixel& pixel)
   {
@@ -101,8 +54,6 @@ public:
     histogramU.calculate();
     histogramV.calculate();
   }
-
-  ColorChannelHistograms();
 
 public:
   // color channel histograms bottomImage
@@ -147,7 +98,17 @@ public:
     diff.v = 0.0;
   }
 
-  virtual void print(std::ostream& stream) const;
+  void print(std::ostream& stream) const
+  {
+    stream << "OverTimeHistogram" << std::endl;
+    stream << "----------------------" << std::endl << std::endl;
+    stream << "meanEnv = (" << meanEnv.y << ", " << meanEnv.u << ", " << meanEnv.v << ")" << std::endl;
+    stream << "meanImg = (" << meanImg.y << ", " << meanImg.u << ", " << meanImg.v << ")" << std::endl;
+    stream << "minEnv = (" << minEnv.y << ", " << minEnv.u << ", " << maxEnv.v << ")" << std::endl;
+    stream << "maxEnv = (" << maxEnv.y << ", " << maxEnv.u << ", " << maxEnv.v << ")" << std::endl;
+    stream << "spanWidthEnv = (" << spanWidthEnv.y << ", " << spanWidthEnv.u << ", " << spanWidthEnv.v << ")" << std::endl;
+  }//end print
+
 };
 
 class OverTimeHistogramTop : public OverTimeHistogram{};
