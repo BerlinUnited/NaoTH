@@ -1,0 +1,76 @@
+option test_dribble
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto play;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if(motion.dribble.action_done && executed_motion.step_control.left_movable)
+        goto short_freeze;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.dribble = true;
+    }
+  }
+
+  state short_freeze {
+    decision {
+      else if(state_time > 500)
+        goto search_ball;
+      else 
+        stay; 
+    }
+    action {
+      motion.type = stand;
+      motion.walk.stop_with_stand = false;
+      
+      head.control_mode = look_at_ball_percept;
+
+      // really needed?
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = none;
+    }
+  }
+
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto play;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

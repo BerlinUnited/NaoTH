@@ -1,0 +1,82 @@
+option go_to_point_with_USOA_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto step0;
+      else
+        stay;
+    }
+    action 
+    {
+    }
+  }
+
+  state step0
+  {
+    decision {
+      else if(state_time > 10000)
+        goto step1;
+      else
+        stay;
+    }
+    action{
+      head.control_mode = search_for_goal;
+     
+   }
+  }
+  
+  state step1
+  {
+    decision {
+      else if(action_done)
+        goto step2;
+      else
+        stay;
+    }
+    action {
+      go_to_point_with_USOA(x=-4400, y=0, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state step2{
+     decision {
+      else if(action_done)
+        goto step3;
+      else
+        stay;
+    }
+    action{
+      go_to_point_with_USOA(x=0, y=0, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state step3{
+     decision {
+      else if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action{
+      go_to_point_with_USOA(x=-4500, y=3000, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+  
+   state stand{
+    action{
+      motion.type = stand;
+    }
+  }
+
+  
+}

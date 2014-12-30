@@ -1,0 +1,129 @@
+option fast_forward_kick
+{
+
+  enum direction @foot;
+  
+  initial state wait
+  {
+    decision
+    {
+      if(executed_motion.step_control.right_movable && @foot == right)
+      {
+        goto kick_with_right_foot;
+      }
+      else if(executed_motion.step_control.left_movable && @foot == left)
+      {
+        goto kick_with_left_foot;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.walk.style = normal;
+
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state kick_with_right_foot
+  {
+    decision
+    {
+      if(state_time > 300 && executed_motion.step_control.left_movable)
+        goto short_freeze;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = fast;
+
+      motion.walk.step_control.foot = right;
+      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
+      motion.walk.step_control.target.y = 0;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.step_control.scale = 0.7;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+   state kick_with_left_foot
+  {
+    decision
+    {
+      if(state_time > 300 && executed_motion.step_control.right_movable)
+        goto finished; //short_freeze;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = fast;
+
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = 0;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.step_control.scale = 0.7;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  state short_freeze {
+    decision {
+      if(state_time > 500)
+        goto finished;
+      else 
+        stay; 
+    }
+    action {
+      motion.type = stand;
+      motion.walk.stop_with_stand = false;
+      
+      head.control_mode = look_at_ball_percept;
+
+      // really needed?
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = none;
+    }
+  
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand; // walk besser?
+      motion.walk.stop_with_stand = true;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}

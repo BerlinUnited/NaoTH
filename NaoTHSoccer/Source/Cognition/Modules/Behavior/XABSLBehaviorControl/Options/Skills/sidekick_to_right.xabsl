@@ -1,0 +1,95 @@
+/** Side kick the ball to the right (with the left foot) in a 90 degree angle
+    assumes ball is infront of hip instead of foot **/
+
+option sidekick_to_right
+{
+  
+  initial state sidestep_right
+  {
+    decision
+    {
+      if(state_time > 500 && executed_motion.step_control.left_movable)
+      {
+        goto sidekick_left_foot;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+
+      motion.walk_speed.x = ball.preview.left_foot.x - ball.radius - 130;
+      motion.walk_speed.y = ball.preview.left_foot.y;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state sidekick_left_foot
+  {
+    decision
+    {
+      if(state_time > 300 && executed_motion.step_control.right_movable)
+        goto short_freeze;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = normal;
+
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.left_foot.y - 100;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = -90;
+      motion.walk.step_control.time = 300;
+
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  state short_freeze {
+    decision {
+      if(state_time > 500)
+        goto finished;
+      else 
+        stay; 
+    }
+    action {
+      motion.type = stand;
+      motion.walk.stop_with_stand = false;
+      
+      head.control_mode = look_at_ball_percept;
+
+      // really needed?
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = none;
+    }
+  
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+    
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}

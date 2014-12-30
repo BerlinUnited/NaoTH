@@ -1,0 +1,151 @@
+option play_soccer
+{
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode != playing &&
+            game.current_mode != ready &&
+            game.current_mode != set)
+      goto idle;
+  }
+  
+
+  initial state idle{
+    decision{
+      else if ( game.current_mode == playing ||
+				        game.current_mode == ready || 
+				        game.current_mode == set )
+        goto calibrate_inertial;
+      else
+        stay;
+    } 
+    action{}
+  }
+
+  state calibrate_inertial
+  {
+    decision
+    {
+      else if(sensor.inertial.calibrated)
+        goto localize;
+      else 
+        stay;
+    }
+    action
+    {
+      show_calibration();
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  // actualy check for localize
+  state localize
+  {
+    decision
+    {
+      else if((robot_pose.is_valid && state_time > 6000) || 
+        state_time>12000)
+      {
+        if(game.current_mode == playing)
+          goto play;
+        else if(game.current_mode == ready)
+          goto ready;
+        else if(game.current_mode == set)
+          goto set;
+        else 
+          goto idle;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_goal;
+      situationStatusOwnHalf = true;
+      motion.type = stand;
+    }
+  }
+
+  state ready
+  {
+    decision
+    {
+      else if (game.current_mode == playing)
+        goto play;
+      else if (game.current_mode == set)
+        goto set;
+      else 
+        stay;
+    }
+    action 
+    {
+      decide_and_go_to_ready_position();
+      
+      //only the first we know that we are in our own half
+      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
+    }
+  }
+
+  state set
+  {
+    decision
+    {
+      else if (game.current_mode == playing)
+      {
+        if(team.calc_if_is_striker)
+          goto initial_striker;
+        else
+          goto play;
+      }
+      else if (game.current_mode == ready)
+        goto ready;
+      else 
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      situationStatusOwnHalf = true;
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if (game.current_mode != playing)
+        goto idle;
+      else if(last_state_was_penalized)
+        goto localize; // allways localize after penalized!!!
+      else 
+        stay;
+    }
+    action 
+    {
+      last_state_was_penalized = false; // important!!!
+      decide_role();
+    }
+  }
+
+  state initial_striker {
+	  decision {
+	    else if (game.current_mode == ready)
+        goto ready;
+      else if (game.current_mode == set)
+        goto set;
+	    else if(action_done || !team.calc_if_is_striker)
+	      goto play;
+	    else
+	      stay; 
+	  }
+	  action {
+	    initial_striker();
+   		team.is_playing_as_striker = true;
+	  }
+  }
+
+  // from set to play: if would be striker -> be inital striker for e.i. 20 sec?
+  
+}

@@ -1,0 +1,35 @@
+option decide_and_go_to_ready_position
+{
+  initial state decide
+  {
+    decision
+    {
+      if(game.own_kickoff)
+        goto own_kickoff;
+      else
+        goto opp_kickoff;
+    }
+    action
+    {
+    }
+  }
+
+  state own_kickoff {
+    decision {
+        stay;
+    }
+    action{
+      positioning_for_own_kickoff();
+    }
+  }
+
+  state opp_kickoff{
+     decision {
+        stay;
+    }
+    action{
+      positioning_for_opp_kickoff();
+    }
+  }
+
+}

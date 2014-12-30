@@ -1,0 +1,70 @@
+option test_walk_lv2{
+
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto diagonal;
+  }
+  action
+  {
+  }
+}
+
+state diagonal{
+  decision
+  {
+    else if (action_done){
+      goto circle_x;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    walk_square_diagonally();
+  }
+}
+
+state circle_x{
+  decision
+  {
+    else if (action_done){
+      goto circle_y;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    walk_circularly_x();
+  }
+}
+
+state circle_y{
+  decision
+  {
+    else if (action_done){
+      goto stop;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    walk_circularly_y();
+  }
+}
+
+target state stop {
+  action
+  {
+  }
+}
+
+}

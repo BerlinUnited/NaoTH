@@ -24,6 +24,7 @@
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
+#include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
 
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
@@ -41,7 +42,6 @@
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
-
 // tools
 #include "Tools/Debug/Trace.h"
 

@@ -1,0 +1,20 @@
+/** The root option of a simple ball following behavior */
+option ball_in_fight_test_agent {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      ball_fight_test();
+      
+      // control the arms
+      arms_control();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}
+ 

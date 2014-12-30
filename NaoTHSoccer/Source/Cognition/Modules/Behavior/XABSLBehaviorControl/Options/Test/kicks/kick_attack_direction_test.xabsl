@@ -1,0 +1,70 @@
+/* Tests kick in the ball in attack direction after going to the ball*/
+
+option kick_attack_direction_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state get_attack_direction
+  {
+    decision
+    {
+      else if(state_time > 0)
+        goto kick;
+      else
+        stay;
+    }
+    action
+    {
+      attack.direction.used = attack.direction.preview;
+    }
+  }
+
+  state kick
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_direction(direction = attack.direction.used);
+    }
+  }
+
+  state go_to_ball
+  {
+    decision
+    {
+      else if(action_done)
+        goto get_attack_direction;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball(distance = 130);
+    }
+  }
+}

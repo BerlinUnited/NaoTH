@@ -1,0 +1,55 @@
+option ball_fight_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+	    else if(game.current_mode == playing)
+	      goto search_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 5000)
+        goto search_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_in_fight(distance=190);
+      //go_to_ball_with_foot(right=true, distance=190);
+    }
+  }
+
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto play;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

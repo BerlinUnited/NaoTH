@@ -1,0 +1,34 @@
+/** Behavior that is common to all players (goalie, striker, defender, ...) */
+option decide_penalty_role
+{
+  common decision 
+  {
+    /** Goalie */
+    if(game.player_number == 1)
+    {
+      goto goalie;
+    }
+    else if(true)
+    {
+      goto penalty_kicker;
+    }
+  }
+
+  state goalie
+  {
+    action
+    {
+      //team.is_playing_as_striker = false;
+    }
+  }
+
+  initial state penalty_kicker
+  {
+    action
+    {
+      //team.is_playing_as_striker = true;
+      penalty_kicker();
+    }
+  }
+  
+}

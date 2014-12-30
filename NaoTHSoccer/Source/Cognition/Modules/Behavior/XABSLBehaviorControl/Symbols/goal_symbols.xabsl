@@ -1,0 +1,40 @@
+    /** Symbols for accessing goal distance and angle */
+namespace goal_symbols("Goal Symbols") {
+  
+
+  float input goal.own.whole.time_since_seen [ms];
+  float input goal.opp.whole.time_since_seen [ms];
+  
+  // goal model
+  float input goal.opp.time_since_seen [ms];
+  
+
+  // moved to selfloc_symbols
+  //float input goal.opp.x [mm];
+  //float input goal.opp.y [mm];
+  //float input goal.opp.angle [deg];
+  //float input goal.opp.distance [mm];
+
+
+  float input goal.own.time_since_seen [ms];
+
+  // moved to selfloc_symbols
+  //float input goal.own.x [mm];
+  //float input goal.own.y [mm];
+  //float input goal.own.angle [deg];
+  //float input goal.own.distance [mm];
+
+  float input goal.centroid.x [mm];
+  float input goal.centroid.y [mm];
+  float input goal.centroid.z [mm];
+  
+  bool input goal.own.was_seen;
+  bool input goal.opp.was_seen;
+  bool input goal.opp.isValid;
+
+  float input goal.opp.seen_angle [deg];
+  float input goal.opp.seen_center.x [mm];
+  float input goal.opp.seen_center.y [mm];
+}
+
+

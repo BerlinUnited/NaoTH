@@ -1,0 +1,190 @@
+/** Scan mode for looking at the ball/searching for the ball */
+option search_for_ball
+{
+  bool @force_ball_model_check; // false by default
+  bool @look_around; 
+  
+  initial state start_search 
+  {
+    decision 
+    {
+	    if((ball.know_where_itis || @force_ball_model_check) && 
+	       abs(value=ball.angle) < 60)
+	      goto try_to_look_at_the_old_ball;
+	    else if(ball.angle > 0)
+        goto search_for_ball_left;
+      else
+	      goto search_for_ball_right;
+	  }
+	  action 
+	  {
+	  }
+  }
+
+  state try_to_look_at_the_old_ball
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if (state_time > 2000)
+      {
+        if(ball.angle > 0)
+	        goto search_for_ball_left;
+	      else
+	        goto search_for_ball_right;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  
+  state search_for_ball_right
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time > 1000)
+        goto search_for_ball_left_high;
+      else
+       stay;
+    }
+    action
+    {
+        head.point_in_world.x = 200;
+        head.point_in_world.y = -200;
+        head.point_in_world.z = 0;
+        head.motion_type = look_at_world_point;
+    }
+  }
+
+  state search_for_ball_left
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time > 1000)
+        goto search_for_ball_right;
+      else
+       stay;
+    }
+    action
+    {
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+    }
+  }
+
+  state search_for_ball_right_high
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time > 1000)
+        goto search_for_ball_left;
+      else
+       stay;
+    }
+    action
+    {
+        head.point_in_world.x = 500;
+        head.point_in_world.y = -500;
+        head.point_in_world.z = 0;
+        head.motion_type = look_at_world_point;
+    }
+  }
+
+  state search_for_ball_left_high
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto look_at_ball_percept;
+      else if(state_time > 1000)
+        goto search_for_ball_right_high;
+      else
+       stay;
+    }
+    action
+    {
+      head.point_in_world.x = 500;
+      head.point_in_world.y = 500;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+    }
+  }
+    
+  state look_at_ball_percept
+  {
+    decision
+    {
+      if (state_time > 1000) // I waited long enough...
+      {
+        if(ball.know_where_itis) // I still can see the ball => look at the model
+          goto look_at_ball;
+        else
+          goto search_for_ball_right; // I cannt see the ball anymore, must have been a mirage => go back, where I came from
+      }
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.y = ball.percept.y * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  state look_at_ball
+  {
+    decision
+    {
+      if (!ball.know_where_itis)
+      {
+        if( ball.y > 0 )
+          goto search_for_ball_left;
+        else
+          goto search_for_ball_right;
+      }
+      else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1000)
+        goto look_around_state;
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  state look_around_state {
+    decision{
+      if ( state_time > 2500 )
+        goto start_search;
+      else 
+        stay; 
+    }
+    action{
+      head.camera.id = Top;
+      look_around();
+    }
+  }
+}

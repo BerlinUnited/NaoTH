@@ -1,0 +1,55 @@
+option close_to_ball_with_USOA_situation{
+
+  initial state differentiate_situation{
+    decision{
+      /*if (abs(value=attack.direction.preview) < 60)
+        {  if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+             goto sidekick_to_right_state; //obstacle_to_left;
+           else
+             goto sidekick_to_left_state; //obstacle_to_right;
+        }
+      else */ if (attack.direction.preview>0)
+        goto sidekick_to_left_state;
+      else
+        goto sidekick_to_right_state;
+    }
+    action{
+    }
+  }
+
+
+
+  state sidekick_to_left_state{ //obstacle_to_right{
+    decision{
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action{
+      sidekick_to_left();
+      motion.walk.style = stable;
+    }
+  }
+
+  state sidekick_to_right_state{ //obstacle_to_left{
+    decision{
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action{
+      sidekick_to_right();
+      motion.walk.style = stable;
+    }
+  }
+
+  target state finish{
+    decision{
+      stay;
+    }
+    action{
+    }
+  }
+}

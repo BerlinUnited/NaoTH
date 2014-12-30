@@ -1,0 +1,59 @@
+/** Go straight to the ball with respect to hip coordinates 
+  Note: robot doesn't rotate if closer then 200mm distance!
+  Note: the robot never go backwards!
+  Parameter @distance for the distance hip-ball (use 130 as default)
+**/
+
+option go_to_ball
+{
+  float @distance [mm];
+  initial state go_to_ball
+  {
+    decision
+    {
+      if ( (ball.preview.x - @distance - ball.radius) < 20
+        && abs(value = ball.preview.y) < 20
+        //&& abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) < 20
+        && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+        goto go_to_ball_done;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+    }
+  }
+
+  target state go_to_ball_done
+  {
+    decision
+    {
+      if ((ball.preview.x - @distance - ball.radius) > 30
+        || abs(value = ball.preview.y) > 30
+        //|| abs(value = atan2(y = ball.preview.y, x = ball.preview.x)) > 30
+        || vector.abs(x=ball.speed.x, y=ball.speed.y) > 150)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0.7*(ball.preview.x - @distance - ball.radius);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+    }
+  }
+}

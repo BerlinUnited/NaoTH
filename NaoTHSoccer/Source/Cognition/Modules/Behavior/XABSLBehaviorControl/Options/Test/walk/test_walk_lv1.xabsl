@@ -1,0 +1,53 @@
+option test_walk_lv1{
+
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto pirouette;
+  }
+  action{}
+}
+
+state pirouette{
+  decision
+  {
+    else if (action_done){
+      goto straight;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    walk_pirouette();
+  }
+}
+
+state straight{
+  decision
+  {
+    else if (action_done){
+      goto stop;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    walk_square();
+  }
+}
+
+target state stop {
+  action
+  {
+  }
+}
+
+}

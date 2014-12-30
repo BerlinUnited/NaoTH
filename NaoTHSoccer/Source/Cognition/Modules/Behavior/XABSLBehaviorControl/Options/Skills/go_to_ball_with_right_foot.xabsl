@@ -1,0 +1,60 @@
+/** Go to the ball with respect to the given foot 
+  Note: No rotation with less then 25 cm distance! 
+  Parameter @distance for the distance foot-ball (use 120 as default)**/
+
+option go_to_ball_with_right_foot
+{
+  float @distance;
+  
+  initial state go_to_ball_right_foot
+  {
+    decision
+    {
+      if ( (ball.preview.right_foot.x - @distance - ball.radius) < 30
+        && abs(value = ball.preview.right_foot.y) < 30)
+        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
+        goto go_to_ball_right_foot_done;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = stable;
+      
+      //motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
+      
+    }
+  }
+
+  target state go_to_ball_right_foot_done
+  {
+    decision
+    {
+      if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 40
+        || abs(value = ball.preview.right_foot.y) > 40
+        || atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
+        goto go_to_ball_right_foot;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball_and_look_around;
+      motion.type = walk;
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = stable;
+
+      //motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - @distance - ball.radius);
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.right_foot.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+}
