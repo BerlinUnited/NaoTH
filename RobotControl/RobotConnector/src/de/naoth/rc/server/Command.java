@@ -9,7 +9,6 @@ import java.util.Map;
  */
 public class Command
 {
-
   private String name;
   private Map<String,byte[]> arguments;
 
@@ -104,6 +103,10 @@ public class Command
 
   @Override
   public String toString() {
-      return this.name;
+      StringBuilder signature = new StringBuilder(name);
+      for(String a: this.arguments.keySet()) {
+          signature.append("_").append(a);
+      }
+      return signature.toString();
   }
 }
