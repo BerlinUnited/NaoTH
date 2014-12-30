@@ -20,7 +20,7 @@
 //#include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 //#include "MorphologyProcessor/FootGroundContactDetector.h"
-//#include "MorphologyProcessor/KinematicChainProviderMotion.h"
+#include "MorphologyProcessor/KinematicChainProviderMotion.h"
 //#include "SensorFilter/InertiaSensorCalibrator.h"
 //#include "SensorFilter/InertiaSensorFilter.h"
 
@@ -67,8 +67,8 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(MotorJointData) // TODO: check
   
 //  PROVIDE(RobotInfo)
-//  PROVIDE(KinematicChainSensor)
-//  PROVIDE(KinematicChainMotor)
+  PROVIDE(KinematicChainSensor)
+  PROVIDE(KinematicChainMotor)
 
   // platform input
   REQUIRE(SensorJointData)
@@ -121,7 +121,7 @@ private:
 //  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
 //  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
 //  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
-//  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
+  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
 //  ModuleCreator<MotionEngine>* theMotionEngine;
 

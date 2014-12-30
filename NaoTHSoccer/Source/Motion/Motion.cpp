@@ -15,7 +15,7 @@
 #endif
 
 
-// #include "MorphologyProcessor/ForwardKinematics.h"
+#include "MorphologyProcessor/ForwardKinematics.h"
 
 //#include "Tools/CameraGeometry.h"
 
@@ -49,7 +49,7 @@ Motion::Motion()
 //  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
 //  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
 //  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
-//  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
 //  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
@@ -174,10 +174,12 @@ void Motion::processSensorData()
 
   //
   theFootGroundContactDetector->execute();
+  */
 
   //
   theKinematicChainProvider->execute();
 
+  /*
   //
   theSupportPolygonGenerator->execute();
 
@@ -242,23 +244,25 @@ void Motion::debugPlots()
 //  PLOT("Motion:InertialModel:x", getInertialModel().orientation.x);
 //  PLOT("Motion:InertialModel:y", getInertialModel().orientation.y);
 
-//  PLOT("Motion:KinematicChain:oriantation:model:x",
-//    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
-//  );
-//  PLOT("Motion:KinematicChain:oriantation:model:y",
-//    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getYAngle()
-//  );
+  PLOT("Motion:KinematicChain:oriantation:model:x",
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
+  );
+  PLOT("Motion:KinematicChain:oriantation:model:y",
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getYAngle()
+  );
 
-//  DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
-//    RotationMatrix calculatedRotation =
-//      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
-//
-//    // calculate expected acceleration sensor reading
-//    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
-//
-//    PLOT("Motion:KinematicChain:oriantation:sensor:x", Math::toDegrees(inertialExpected.x) );
-//    PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
-//  );
+
+  // TODO: shouldn't this be part of kinematicChainProvider?
+  DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
+    RotationMatrix calculatedRotation =
+      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+
+    // calculate expected acceleration sensor reading
+    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
+
+    PLOT("Motion:KinematicChain:oriantation:sensor:x", Math::toDegrees(inertialExpected.x) );
+    PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
+  );
 
 
   // plot the requested joint positions
