@@ -61,13 +61,16 @@ public:
     out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
   }
 
+  void drawRobot(double x, double y, double rotation){
+    out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
+  }
   
 
 private:
   std::stringstream buffer;
 };
 
-class DebugDrawingsField : public DrawingCanvas2D {};
+class DebugDrawings : public DrawingCanvas2D {};
 
 namespace naoth
 {
@@ -78,6 +81,8 @@ class Serializer<DrawingCanvas2D>
   static void serialize(const DrawingCanvas2D& object, std::ostream& stream);
   static void deserialize(std::istream& stream, DrawingCanvas2D& object);
 };
+
+template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> {};
 }
 
 

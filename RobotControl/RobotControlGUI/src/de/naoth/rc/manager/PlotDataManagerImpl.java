@@ -41,7 +41,7 @@ public class PlotDataManagerImpl extends AbstractManagerPlugin<Plots>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("plot:get");
+    return new Command("Cognition:representation:getbinary").addArg("DebugPlot");
   }
 }//end class PlotDataManager
 

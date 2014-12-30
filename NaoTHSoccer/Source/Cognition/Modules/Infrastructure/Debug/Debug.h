@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/FieldInfo.h>
 
 //#include "Representations/Infrastructure/ColorTable64.h"
 //#include "Representations/Modeling/ColorClassificationModel.h"
@@ -37,6 +38,7 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugPlot.h>
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 
@@ -50,12 +52,14 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
-  PROVIDE(DebugDrawingsField)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
   PROVIDE(DebugCommandManager)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
 
+  REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
 //  REQUIRE(FieldInfo)
   PROVIDE(Image)
@@ -92,6 +96,8 @@ public:
     Parameter() : ParameterList("DebugParameter") 
     {
       PARAMETER_REGISTER(test) = 20;
+
+      syncWithConfig();
     }
 
     double test;
