@@ -33,7 +33,6 @@ BEGIN_DECLARE_MODULE(CameraInfoSetter)
   PROVIDE(Image)
   PROVIDE(ImageTop)
 
-  PROVIDE(CameraInfoParameter)
   PROVIDE(CameraInfo)
   PROVIDE(CameraInfoTop)
 END_DECLARE_MODULE(CameraInfoSetter)

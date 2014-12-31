@@ -24,26 +24,28 @@ void CameraInfoSetter::execute()
 {
   const CameraSettings& camSettings = getCameraSettingsRequest();
   // copy parameter based representation to the "pure" one
-  getCameraInfo() = getCameraInfoParameter();
   getCameraInfo().cameraID = CameraInfo::Bottom;
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
-  getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
-  getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
+  if(camSettings.data[CameraSettings::ResolutionWidth] != 0)
+    getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
+  if(camSettings.data[CameraSettings::ResolutionHeight] != 0)
+    getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
 
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 
-  const CameraSettings& camSettings2 = getCameraSettingsRequestTop();
+  const CameraSettings& camSettingsTop = getCameraSettingsRequestTop();
   // copy parameter based representation to the "pure" one
-  getCameraInfoTop() = getCameraInfoParameter();
   getCameraInfoTop().cameraID = CameraInfo::Top;
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
-  getCameraInfoTop().resolutionWidth = (unsigned int) camSettings2.data[CameraSettings::ResolutionWidth];
-  getCameraInfoTop().resolutionHeight = (unsigned int) camSettings2.data[CameraSettings::ResolutionHeight];
+  if(camSettingsTop.data[CameraSettings::ResolutionWidth] != 0)
+    getCameraInfoTop().resolutionWidth = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionWidth];
+  if(camSettingsTop.data[CameraSettings::ResolutionHeight] != 0)
+    getCameraInfoTop().resolutionHeight = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionHeight];
 
   // set param for image
   getImageTop().cameraInfo = getCameraInfoTop();
