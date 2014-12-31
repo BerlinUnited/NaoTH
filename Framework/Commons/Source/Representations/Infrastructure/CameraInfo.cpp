@@ -58,6 +58,7 @@ double CameraInfo::getOpeningAngleDiagonal() const
 void CameraInfo::print(ostream& stream) const
 {
   stream << "Camera selection: " << cameraID << endl
+    << "Resolution Width: " << resolutionWidth << ", Height: " << resolutionHeight << endl
          << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
          << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
          << "Focal Length (calculated): "<< getFocalLength() << " Pixel"<< endl
