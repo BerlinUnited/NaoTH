@@ -9,7 +9,7 @@
 #ifndef DEBUGPARAMETERLIST_H
 #define DEBUGPARAMETERLIST_H
 
-#include <set>
+#include <map>
 
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include <Tools/DataStructures/ParameterList.h>
@@ -20,7 +20,7 @@ public:
     DebugParameterList();
 
     virtual void executeDebugCommand(
-      const std::string& command, const std::map<std::string, std::string>& arguments,
+      const std::string& command, const ArgumentMap& arguments,
       std::ostream &outstream);
 
     void add(ParameterList* pl);
@@ -28,7 +28,8 @@ public:
     void remove(ParameterList* pl);
 
 private:
-  std::set<ParameterList*> paramlists;
+  typedef std::map<std::string, ParameterList*> ParameterMap;
+  ParameterMap paramlists;
 };
 
 #endif // DEBUGPARAMETERLIST_H
