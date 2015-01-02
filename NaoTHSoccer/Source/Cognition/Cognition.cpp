@@ -21,12 +21,18 @@
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
+#include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
 // tools
 #include "Tools/Debug/Trace.h"
+
+// modeling
+#include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 
 using namespace std;
 
@@ -70,11 +76,17 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 //  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
+  REGISTER_MODULE(LEDSetter);
 
   // debug
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(DebugExecutor);
+
+  // modeling
+  REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(SoccerStrategyProvider);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
