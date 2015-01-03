@@ -198,7 +198,7 @@ namespace Statistics
       }
 
       //generate plot for raw, normalized and cumulated histograms
-      void plot(std::string id) const
+      void plot(/*std::string id*/) const
       {
         for(int i = 0; i < size; i++)
         {
@@ -212,7 +212,7 @@ namespace Statistics
       }
 
       //generate plot only for raw histogram
-      void plotRaw(std::string id) const
+      void plotRaw(/*std::string id*/) const
       {
         for(int i = 0; i < size; i++)
         {
@@ -221,7 +221,7 @@ namespace Statistics
       }
 
       //generate plot only for normalized histogram
-      void plotNormalized(std::string id) const
+      void plotNormalized(/*std::string id*/) const
       {
         for(int i = 0; i < size; i++)
         {
@@ -230,7 +230,7 @@ namespace Statistics
       }
 
       //generate plot only for cumulated histogram
-      void plotCumulated(std::string id) const
+      void plotCumulated(/*std::string id*/) const
       {
         for(int i = 0; i < size; i++)
         {

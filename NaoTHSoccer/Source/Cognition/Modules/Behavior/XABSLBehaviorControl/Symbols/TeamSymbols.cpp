@@ -147,6 +147,7 @@ bool TeamSymbols::calculateIfStrikerByTimeToBall()
 
 TeamSymbols::~TeamSymbols()
 {
+    getDebugParameterList().remove(&parameters);
 }
 
 /** the robot which is closest to own goal is defined as the last one */

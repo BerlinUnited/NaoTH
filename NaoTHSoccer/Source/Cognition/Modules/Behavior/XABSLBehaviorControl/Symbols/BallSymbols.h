@@ -52,8 +52,11 @@ public:
     ball_know_where_itis(false)
   {
     theInstance = this;
+    getDebugParameterList().add(&parameters);
   }
-  virtual ~BallSymbols(){}
+  virtual ~BallSymbols(){
+    getDebugParameterList().remove(&parameters);
+  }
   
   void registerSymbols(xabsl::Engine& engine);
   
@@ -69,7 +72,6 @@ private:
       PARAMETER_REGISTER(ball_seen_filter.g1) = 0.1;
       
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
     }
 
     struct Ball_seen_filter {
@@ -78,7 +80,6 @@ private:
     } ball_seen_filter;
     
     virtual ~Parameters() {
-      DebugParameterList::getInstance().remove(this);
     }
   } parameters;
 

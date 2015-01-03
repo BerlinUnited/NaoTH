@@ -25,6 +25,9 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamSymbols)
+
+  PROVIDE(DebugParameterList)
+
   REQUIRE(TeamMessage)
   REQUIRE(FrameInfo)
   REQUIRE(BallModel)
@@ -44,6 +47,7 @@ public:
   TeamSymbols()
   {
     theInstance = this;
+    getDebugParameterList().add(&parameters);
   }
 
   void registerSymbols(xabsl::Engine& engine);
@@ -64,7 +68,6 @@ private:
       
       // load from the file after registering all parameters
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
     }
 
     int maximumFreshTime;
@@ -72,7 +75,6 @@ private:
     int maxBallLostTime;
     
     virtual ~Parameters() {
-      DebugParameterList::getInstance().remove(this);
     }
   } parameters;
 
