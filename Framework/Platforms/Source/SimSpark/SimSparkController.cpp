@@ -57,7 +57,8 @@ SimSparkController::SimSparkController(const std::string& name)
   registerOutput<const TeamMessageDataOut>(*this);
 
   // debug
-  registerInput<DebugMessageIn>(*this);
+  registerInput<DebugMessageInCognition>(*this);
+  registerInput<DebugMessageInMotion>(*this);
   registerOutput<DebugMessageOut>(*this);
 
   // init the name -- id maps
@@ -260,7 +261,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
     debugPort = static_cast<short unsigned int> (5500 + theGameData.playerNumber);
   }
 
-  theDebugServer.start(debugPort, true);
+  theDebugServer.start(debugPort);
 #endif
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
