@@ -16,7 +16,7 @@
 #include "PlatformInterface/PlatformInterface.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
-#include "Tools/Debug/Stopwatch.h"
+//#include "Tools/Debug/Stopwatch.h"
 
 //
 #include "V4lCameraHandler.h"
@@ -110,38 +110,38 @@ public:
 
   virtual void getMotionInput()
   {
-    STOPWATCH_START("getMotionInput");
+    //STOPWATCH_START("getMotionInput");
     // try to get some data from the DCM
     if ( !naoSensorData.swapReading() )
     {
       std::cerr << "[NaoController] didn't get new sensor data" << std::endl;
     }
     PlatformInterface::getMotionInput();
-    STOPWATCH_STOP("getMotionInput");
+    //STOPWATCH_STOP("getMotionInput");
   }
 
 
   virtual void setMotionOutput()
   {
-    STOPWATCH_START("setMotionOutput");
+    //STOPWATCH_START("setMotionOutput");
     PlatformInterface::setMotionOutput();
-    STOPWATCH_STOP("setMotionOutput");
+    //STOPWATCH_STOP("setMotionOutput");
   }
 
 
   virtual void getCognitionInput()
   {
-    STOPWATCH_START("getCognitionInput");
+    //STOPWATCH_START("getCognitionInput");
     PlatformInterface::getCognitionInput();
-    STOPWATCH_STOP("getCognitionInput");
+    //STOPWATCH_STOP("getCognitionInput");
   }
   
 
   void setCognitionOutput()
   {
-    STOPWATCH_START("setCognitionOutput");
+    //STOPWATCH_START("setCognitionOutput");
     PlatformInterface::setCognitionOutput();
-    STOPWATCH_STOP("setCognitionOutput");
+    //STOPWATCH_STOP("setCognitionOutput");
   }
 
 
