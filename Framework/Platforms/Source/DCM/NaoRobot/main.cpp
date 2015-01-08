@@ -30,7 +30,7 @@ void got_signal(int t)
 
   std::cout << "dumping traces" << std::endl;
   Trace::getInstance().dump();
-  StopwatchManager::getInstance().dump("cognition");
+  //StopwatchManager::getInstance().dump("cognition");
 
   std::cout << "syncing file system..." ;
   sync();
@@ -99,7 +99,7 @@ void* motionThreadCallback(void* ref)
 
   NaoController* theController = static_cast<NaoController*> (ref);
 
-  Stopwatch stopwatch;
+  //Stopwatch stopwatch;
   while(true)
   {
     if(g_atomic_int_get(&framesSinceCognitionLastSeen) > 4000)
@@ -110,7 +110,7 @@ void* motionThreadCallback(void* ref)
       std::cerr << "+==================================+" << std::endl;
       std::cerr << "dumping traces" << std::endl;
       Trace::getInstance().dump();
-      StopwatchManager::getInstance().dump("cognition");
+      //StopwatchManager::getInstance().dump("cognition");
 
       #ifndef WIN32
       std::cerr << "syncing file system..." ;
@@ -128,8 +128,8 @@ void* motionThreadCallback(void* ref)
       cerr << "lock errno: " << errno << endl;
     }
 
-    stopwatch.stop();
-    stopwatch.start();
+    //stopwatch.stop();
+    //stopwatch.start();
   }//end while
 
   return NULL;

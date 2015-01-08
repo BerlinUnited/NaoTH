@@ -24,12 +24,12 @@ public:
 
 protected:
   DebugCommandManager& getDebugCommandManager() {
-    DebugCommandManager& debugCommandManager = *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
+    DebugCommandManager& debugCommandManager = *(getBlackBoard().getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
     return debugCommandManager;
   }
 
   DebugRequest& getDebugRequest() {
-    DebugRequest& debugRequest = *(getBlackBoard().template getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
+    DebugRequest& debugRequest = *(getBlackBoard().getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
     return debugRequest;
   }
 
