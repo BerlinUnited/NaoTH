@@ -48,7 +48,7 @@ Motion::Motion()
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
   theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
   theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
-//  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
 //  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
 //  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
@@ -136,6 +136,15 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+
+  // HACK: reset all the debug stuff before executing the modules
+  STOPWATCH_START("Motion.Debug.Init");
+  getDebugDrawings().reset();
+  getDebugImageDrawings().reset();
+  getDebugImageDrawingsTop().reset();
+  getDebugDrawings3D().reset();
+  STOPWATCH_STOP("Motion.Debug.Init");
+
   STOPWATCH_STOP("MotionExecute");
 
 }//end call
@@ -180,11 +189,12 @@ void Motion::processSensorData()
   /*
   //
   updateCameraMatrix();
+  */
 
   //
   theOdometryCalculator->execute();
 
-
+  /*
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
   */

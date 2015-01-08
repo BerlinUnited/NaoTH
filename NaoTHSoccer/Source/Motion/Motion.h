@@ -17,7 +17,7 @@
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
-//#include "MorphologyProcessor/OdometryCalculator.h"
+#include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 //#include "MorphologyProcessor/KinematicChainProviderMotion.h"
@@ -38,13 +38,22 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 
+// debug
 #include <Representations/Debug/Stopwatch.h>
-#include "Tools/Debug/DebugModify.h"
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugDrawings3D.h"
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings3D)
 
 //  REQUIRE(MotionStatus)
 //  REQUIRE(OdometryData)
@@ -110,8 +119,8 @@ private:
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
-ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
-//  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
+  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
 //  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
 //  ModuleCreator<MotionEngine>* theMotionEngine;
