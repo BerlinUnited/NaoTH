@@ -11,14 +11,14 @@ import java.nio.ByteBuffer;
  */
 public class SPLMessage
 {
-  public static final int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 4;
-  public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 802;
-  public static final int SPL_STANDARD_MESSAGE_SIZE = 58 + SPL_STANDARD_MESSAGE_DATA_SIZE;
+  public static final int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 5;
+  public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 800;
+  public static final int SPL_STANDARD_MESSAGE_SIZE = 60 + SPL_STANDARD_MESSAGE_DATA_SIZE;
 
   //public byte header[4]; // 4
   //public byte version; // 1
   public byte playerNum; // 1
-  public byte team; // 1 // 0 is blue, 1 is red 
+  public byte teamColor; // 1 // 0 is blue, 1 is red 
   public byte fallen; // 1
   public float pose_x; // 4
   public float pose_y; // 4
@@ -35,6 +35,16 @@ public class SPLMessage
   public float ball_y; // 4
   public float ballVel_x; // 4
   public float ballVel_y; // 4
+  
+  // describes what the robot intends to do:
+  // 0 - nothing particular (default)
+  // 1 - wants to be keeper
+  // 2 - wants to play defense
+  // 3 - wants to play the ball
+  // 4 - robot is lost
+  // (the second byte is a padding byte)
+  public short intention; // 2
+  
   public short numOfDataBytes; // 2
   public byte[] data;
 
@@ -57,7 +67,7 @@ public class SPLMessage
       }
 
       this.playerNum = buffer.get();
-      this.team = buffer.get();
+      this.teamColor = buffer.get();
       this.fallen = buffer.get();
       this.pose_x = buffer.getFloat();
       this.pose_y = buffer.getFloat();
@@ -71,6 +81,7 @@ public class SPLMessage
       this.ball_y = buffer.getFloat();
       this.ballVel_x = buffer.getFloat();
       this.ballVel_y = buffer.getFloat();
+      this.intention = buffer.getShort();
       this.numOfDataBytes = buffer.getShort();
       this.data = new byte[this.numOfDataBytes];
       buffer.get(this.data, 0, this.data.length);

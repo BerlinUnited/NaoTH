@@ -5,7 +5,9 @@
  * Created on 7. Dezember 2008, 14:50
  */
 
-#ifndef WIN32
+#ifdef  WIN32
+  #include <conio.h>
+#else
 #ifndef _MYCONIO_H
 #define _MYCONIO_H
 
