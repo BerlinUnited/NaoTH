@@ -24,7 +24,7 @@ public:
 
 protected:
   DebugCommandManager& getDebugCommandManager() {
-    static DebugCommandManager& debugCommandManager = *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
+    DebugCommandManager& debugCommandManager = *(getBlackBoard().template getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
     return debugCommandManager;
   }
 

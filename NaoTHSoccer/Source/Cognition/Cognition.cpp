@@ -31,7 +31,7 @@
 using namespace std;
 
 Cognition::Cognition()
-  : ModuleManagerWithDebug("Cognition")
+  : ModuleManagerWithDebug("")
 {
 }
 

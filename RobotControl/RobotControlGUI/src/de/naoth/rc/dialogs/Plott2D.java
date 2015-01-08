@@ -68,7 +68,6 @@ import org.freehep.util.export.ExportDialog;
  * @author Heinrich Mellmann
  */
 public class Plott2D  extends AbstractDialog
-  implements ObjectListener<Plots>
 {
 
   @PluginImplementation
@@ -76,8 +75,6 @@ public class Plott2D  extends AbstractDialog
   {
     @InjectPlugin
     public static RobotControl parent;
-    @InjectPlugin
-    public static PlotDataManager plotDataManager;
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
   }
@@ -91,7 +88,9 @@ public class Plott2D  extends AbstractDialog
   private final Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
   private final Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
-  private final Command commandGetPlotMotion = new Command("Motion:representation:getbinary").addArg("DebugPlot");
+  private final Command commandGetPlotMotion = new Command("Motion:DebugPlot:get");
+  private final Command commandGetPlotCognition = new Command("Cognition:DebugPlot:get");
+  
   private final PlotDataHandler plotDataHandler = new PlotDataHandler();
   
     /** Creates new form SimpleValuePlotter */
@@ -427,15 +426,15 @@ public class Plott2D  extends AbstractDialog
 
       if (btReceiveData.isSelected()) {
         if (Plugin.parent.checkConnected()) {
-          Plugin.plotDataManager.addListener(this);
           Plugin.genericManagerFactory.getManager(commandGetPlotMotion).addListener(plotDataHandler);
+          Plugin.genericManagerFactory.getManager(commandGetPlotCognition).addListener(plotDataHandler);
           chart.getAxisX().setRangePolicy(new DynamicRangePolicy(chart.getAxisX().getRange()));
         } else {
           btReceiveData.setSelected(false);
         }
       } else {
-        Plugin.plotDataManager.removeListener(this);
         Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+        Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
         chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(chart.getAxisX().getRange()));
         //chart.enablePointHighlighting(true);
       }
@@ -556,7 +555,20 @@ private void clearTracePoints()
     public void newObjectReceived(byte[] object) {
         try
         {
-          Plott2D.this.newObjectReceived( Plots.parseFrom(object) );
+          if (object != null)
+          {
+              synchronized(Plott2D.this)
+              {
+                Plots plots = Plots.parseFrom(object);
+                for(PlotStroke2D stroke : plots.getPlotstrokesList())
+                {
+                  for(DoubleVector2 point: stroke.getPointsList())
+                  {
+                    addValue(stroke.getName(), point.getX(), point.getY());
+                  }
+                }//end for
+              }//end synchronized
+            }//end if
         }
         catch (InvalidProtocolBufferException ex)
         {
@@ -569,40 +581,6 @@ private void clearTracePoints()
         errorOccured(cause);
     }
   }//end class DataHandlerPrint
-    
-  @Override
-  public void errorOccured(String cause) {
-    //JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
-    Plugin.plotDataManager.removeListener(this);
-  }
-
-  @Override
-  public void newObjectReceived(Plots data)
-  {
-    if (data != null)
-    {
-      synchronized(this)
-      {
-         /*
-        for(PlotItem item : data.getPlotsList())
-        {
-          if(item.getType() == PlotItem.PlotType.Default && item.hasX() && item.hasY())
-          {
-            addValue(item.getName(), item.getX(), item.getY());
-          }
-        }//end for
-           * */
-        for(PlotStroke2D stroke : data.getPlotstrokesList())
-        {
-          for(DoubleVector2 point: stroke.getPointsList())
-          {
-            addValue(stroke.getName(), point.getX(), point.getY());
-          }
-        }//end for
-      }//end synchronized
-    }//end if
-  }//end newObjectReceived
-
 
   public class PointPainterCoords extends APointPainter
   {
@@ -697,7 +675,8 @@ private void clearTracePoints()
   public void dispose()
   {
     btReceiveData.setSelected(false);
-    Plugin.plotDataManager.removeListener(this);
+    Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+    Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
   }
 
   private int currentColorIndex = 0;
