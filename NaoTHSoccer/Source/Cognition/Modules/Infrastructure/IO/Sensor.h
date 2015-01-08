@@ -33,7 +33,7 @@
 //#include "Representations/Infrastructure/SerialSensorData.h"
 //#include "Representations/Motion/MotionStatus.h"
 //#include "Representations/Modeling/OdometryData.h"
-//#include <Representations/Modeling/InertialModel.h>
+#include <Representations/Modeling/InertialModel.h>
 //#include <Representations/Perception/CameraMatrix.h>
 //#include <Representations/Perception/CameraMatrixBuffer.h>
 
@@ -74,7 +74,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   // from motion
   //PROVIDE(MotionStatus)
   //PROVIDE(OdometryData)
-  //PROVIDE(InertialModel)
+  PROVIDE(InertialModel)
   //PROVIDE(CameraMatrixBuffer)
   //PROVIDE(CameraMatrixBuffer2)
   //PROVIDE(CalibrationData)

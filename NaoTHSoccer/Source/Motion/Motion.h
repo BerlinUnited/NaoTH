@@ -22,7 +22,7 @@
 //#include "MorphologyProcessor/FootGroundContactDetector.h"
 //#include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
-//#include "SensorFilter/InertiaSensorFilter.h"
+#include "SensorFilter/InertiaSensorFilter.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -48,7 +48,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
 //  REQUIRE(MotionStatus)
 //  REQUIRE(OdometryData)
-//  REQUIRE(InertialModel)
+  REQUIRE(InertialModel)
 //  REQUIRE(CalibrationData)
 
 //  PROVIDE(CameraMatrix)// TODO:strange...
@@ -108,7 +108,7 @@ private:
 
 private:
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
-//  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
+  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
 //  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
 //  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
 //  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
