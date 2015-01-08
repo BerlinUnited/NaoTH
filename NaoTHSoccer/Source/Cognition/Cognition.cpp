@@ -112,7 +112,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
-
+  REGISTER_MODULE(XABSLBehaviorControl);
   // -- END REGISTER MODULES --
 
   // register output module

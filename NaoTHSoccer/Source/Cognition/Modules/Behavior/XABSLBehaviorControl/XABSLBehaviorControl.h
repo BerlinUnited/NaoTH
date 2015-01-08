@@ -17,6 +17,7 @@
 
 #include "Tools/Xabsl/XabslFileInputSource.h"
 #include "Tools/Debug/DebugRequest.h"
+#include <DebugCommunication/DebugCommandManager.h>
 /*
 
 #include "Representations/Modeling/BodyState.h"
@@ -79,6 +80,9 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   PROVIDE(BehaviorStateSparse)
   PROVIDE(BehaviorStateComplete)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(StopwatchManager)
+  PROVIDE(DebugCommandManager)
 END_DECLARE_MODULE(XABSLBehaviorControl)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
