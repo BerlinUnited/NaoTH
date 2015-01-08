@@ -81,6 +81,20 @@ public:
       }
     }//end for
   }//end execute
+
+  bool getRepresentation(const std::string& name, std::ostream& stream)
+  {
+    BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
+    BlackBoard::Registry::iterator bbData = blackBoard.getRegistry().find(name);
+
+    if(bbData == blackBoard.getRegistry().end()) {
+      return false;
+    }
+
+    bbData->second->getRepresentation().serialize(stream);
+
+    return true;
+  }
 };
 
 #endif  /* _LogProviderModule_h_ */

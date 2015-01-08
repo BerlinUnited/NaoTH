@@ -95,6 +95,7 @@ class PointList
 
     Vector2<int>& operator[] (int i) { ASSERT(i>=0&&i<MAX_NUMBER_OF_POINTS); return points[i]; }
     const Vector2<int>& operator[] (int i) const { ASSERT(i>=0&&i<MAX_NUMBER_OF_POINTS); return points[i]; }
+    size_t size() const { return length; }
 };//end class pointList
 
 

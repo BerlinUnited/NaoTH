@@ -49,7 +49,7 @@ public:
   void openFile(const char* filePath)
   {
     closeFile();
-    dataBuffer.init();
+    dataBuffer.clear();
     outFile.open(filePath, ios::out | ios::binary);
   }
   
@@ -116,7 +116,7 @@ public:
       outFile.flush();
 
       // clear buffer
-      dataBuffer.init();
+      dataBuffer.clear();
     }//end if
   }//end flush
 

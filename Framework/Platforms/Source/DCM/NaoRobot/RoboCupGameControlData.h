@@ -2,9 +2,7 @@
 #define ROBOCUPGAMECONTROLDATA_H
 
 #include "SPLCoachMessage.h"
-#ifdef __cplusplus
-  #include <string>
-#endif
+#include <cstring>
 
 #define GAMECONTROLLER_PORT            3838
 
@@ -87,7 +85,7 @@ struct RoboCupGameControlData
   uint8_t playersPerTeam;       // The number of players on a team
   uint8_t state;                // state of the game (STATE_READY, STATE_PLAYING, etc)
   uint8_t firstHalf;            // 1 = game in first half, 0 otherwise
-  uint8_t kickOffTeam;          // the next team to kick off
+  uint8_t kickOffTeam;          // the next team to kick off (TEAM_BLUE, TEAM_RED)
   uint8_t secondaryState;       // Extra state information - (STATE2_NORMAL, STATE2_PENALTYSHOOT, etc)
   uint8_t dropInTeam;           // team that caused last drop in
   uint16_t dropInTime;          // number of seconds passed since the last drop in.  -1 before first dropin
@@ -116,8 +114,7 @@ struct RoboCupGameControlReturnData
   // constructor
   RoboCupGameControlReturnData()
   {
-    std::string headerAsString = GAMECONTROLLER_STRUCT_HEADER;
-    headerAsString.copy(header, 4, 0);
+    strcpy( header, GAMECONTROLLER_RETURN_STRUCT_HEADER );
     version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
   }
 #endif
