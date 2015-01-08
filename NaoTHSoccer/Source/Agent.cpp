@@ -30,5 +30,15 @@ ModuleManager* getModuleManager(Cognition* c)
   return dynamic_cast<ModuleManager*>(c);
 }
 
+void deleteCognition(Cognition* cognition)
+{
+  delete cognition;
+}
+
+void deleteMotion(Motion* motion)
+{
+  delete motion;
+}
+
 
 #endif // _Agent_h_
