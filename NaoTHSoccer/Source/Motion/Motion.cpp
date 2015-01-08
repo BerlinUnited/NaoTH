@@ -177,14 +177,14 @@ void Motion::processSensorData()
 
   //
   theFootGroundContactDetector->execute();
-  */
 
-  /*
+
+
   //
   theKinematicChainProvider->execute();
-  */
 
-  /*
+
+
   //
   theSupportPolygonGenerator->execute();
 

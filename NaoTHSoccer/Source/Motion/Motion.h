@@ -56,7 +56,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugDrawings3D)
 
 //  REQUIRE(MotionStatus)
-//  REQUIRE(OdometryData)
+  REQUIRE(OdometryData)
   REQUIRE(InertialModel)
 //  REQUIRE(CalibrationData)
 
