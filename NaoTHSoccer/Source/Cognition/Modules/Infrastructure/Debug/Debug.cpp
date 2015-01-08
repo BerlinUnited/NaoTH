@@ -57,6 +57,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
   REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // modify commands
   REGISTER_DEBUG_COMMAND("modify:list", 
@@ -68,6 +70,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
@@ -78,12 +82,12 @@ Debug::Debug() : cognitionLogger("CognitionLog")
 
 Debug::~Debug()
 {
+  getDebugParameterList().remove(&parameter);
 }
 
 void Debug::execute()
 {
   cognitionLogger.log(getFrameInfo().getFrameNumber());
-
 
 
   DEBUG_REQUEST("Debug:Test:DebugDrawings:Field",
@@ -104,6 +108,8 @@ void Debug::execute()
   DEBUG_REQUEST("Debug:Test:ImageDrawings:top",
     getDebugImageDrawingsTop().drawCircleToImage(ColorClasses::blue, 320, 240, 30);
   );
+
+  PLOT("Debug:Test", sin(getFrameInfo().getTimeInSeconds()));
 
 }
 

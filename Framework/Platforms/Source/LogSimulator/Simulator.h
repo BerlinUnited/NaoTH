@@ -64,6 +64,9 @@ public:
   void jumpTo(unsigned int position);
   void play(bool loop = false);
 
+  int getCurrentFrame() { return *currentFrame; }
+  int getMinFrame() { return *(logFileScanner.begin());}
+  int getMaxFrame() { return *(logFileScanner.last());}
   
   /////////////////////// get ///////////////////////
   template<class T> void generalGet(T& data, std::string name) const;
@@ -79,7 +82,7 @@ public:
   //SIM_GET(FrameInfo);
   void get(unsigned int& /*timestamp*/) const {}
 
-  // HACK: provide some basic representations directly
+  
   SIM_GET(FrameInfo);
   SIM_GET(SensorJointData);
   SIM_GET(AccelerometerData);
@@ -104,6 +107,7 @@ public:
   //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////
+  void open(const std::string& filePath);
   virtual void init();
   
   const LogFileScanner::Frame& getRepresentations() {
@@ -151,8 +155,11 @@ private:
   DebugServer theDebugServer;
 
 public:
-  void get(DebugMessageIn& data) {
-    theDebugServer.getDebugMessageIn(data);
+  void get(DebugMessageInCognition& data) {
+    theDebugServer.getDebugMessageInCognition(data);
+  }
+  void get(DebugMessageInMotion& data) {
+    theDebugServer.getDebugMessageInMotion(data);
   }
 
   void set(const DebugMessageOut& data) {

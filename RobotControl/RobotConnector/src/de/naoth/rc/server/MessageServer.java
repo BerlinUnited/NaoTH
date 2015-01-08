@@ -12,6 +12,7 @@ import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +54,12 @@ public class MessageServer extends AbstractMessageServer {
     // list of requested commands to be executed periodically (can be modified from outside)
     private final List<CommandSender> pendingSubscribersList = Collections.synchronizedList(new LinkedList<CommandSender>());
     // list of commands which have been sent and are waiting for the response
-    private final List<SingleExecEntry> answerRequestList = new LinkedList<SingleExecEntry>();
+    //private final List<SingleExecEntry> answerRequestList = new LinkedList<SingleExecEntry>();
+    private final Map<Integer, SingleExecEntry> answerRequestMap = Collections.synchronizedMap(new HashMap<Integer, SingleExecEntry>());
 
+    // each sent command has a unique id, which is used to assign the responces correctly
+    private Integer commandId = 0;
+    
     // just for statistics
     private long receivedBytes;
     private long sentBytes;
@@ -127,10 +132,10 @@ public class MessageServer extends AbstractMessageServer {
         //       So, we don't synchronize the answerRequestList.
         
         // call error handlers of remaining requests
-        for (SingleExecEntry a : answerRequestList) {
+        for (SingleExecEntry a : answerRequestMap.values()) {
             a.listener.handleError(-2);
         }
-        answerRequestList.clear();
+        answerRequestMap.clear();
 
         MessageServer.this.fireDisconnected(message);
     }//end disconnect
@@ -237,7 +242,7 @@ public class MessageServer extends AbstractMessageServer {
                 // send new commands
                 // NOTE: this is a approximation:
                 //       send new commands only when the old answers have been received
-                if(this.answerRequestList.size() < this.pendingSubscribersList.size() + this.pendingCommandsList.size()) {
+                if(this.answerRequestMap.size() < this.pendingSubscribersList.size() + this.pendingCommandsList.size()) {
                     sendPendingCommands();
                 }
 
@@ -273,8 +278,9 @@ public class MessageServer extends AbstractMessageServer {
         // handle the single execution requests
         synchronized (this.pendingCommandsList) {
             for (SingleExecEntry e : this.pendingCommandsList) {
-                sendCommand(socketChannel, e.command);
-                answerRequestList.add(e);
+                Integer id = sendCommand(socketChannel, e.command);
+                //answerRequestList.add(e);
+                answerRequestMap.put(id, e);
             }
             this.pendingCommandsList.clear();
         }
@@ -283,8 +289,9 @@ public class MessageServer extends AbstractMessageServer {
         synchronized (this.pendingSubscribersList) {
             for (CommandSender c : this.pendingSubscribersList) {
                 SingleExecEntry e = new SingleExecEntry(c, c.getCurrentCommand());
-                sendCommand(socketChannel, e.command);
-                answerRequestList.add(e);
+                Integer id = sendCommand(socketChannel, e.command);
+                //answerRequestList.add(e);
+                answerRequestMap.put(id, e);
             }
         }
         
@@ -293,41 +300,52 @@ public class MessageServer extends AbstractMessageServer {
     private void pollAnswers() throws IOException {
         //socketChannel.configureBlocking(true);
         
-        Iterator<SingleExecEntry> i = answerRequestList.iterator();
-        while (i.hasNext()) 
+        //Iterator<SingleExecEntry> i = answerRequestList.iterator();
+        while (!answerRequestMap.isEmpty()) 
         {
-            SingleExecEntry e = i.next();
+            //SingleExecEntry e = i.next();
             
             // read size of data
             socketChannel.configureBlocking(false);
+            ByteBuffer idBuffer = readContent(socketChannel, 4);
+            if (idBuffer == null) {
+                break;
+            }
+            int id = idBuffer.getInt();
+            
+            // read the rest of the data
+            socketChannel.configureBlocking(true);
+            
             ByteBuffer sizeBuffer = readContent(socketChannel, 4);
             if (sizeBuffer == null) {
                 break;
             }
             int size = sizeBuffer.getInt();
-
-            // read the rest of the data
-            socketChannel.configureBlocking(true);
+            
+            SingleExecEntry e = answerRequestMap.remove(id);
+            if (e == null) {
+                throw new IOException("Illegal response ID: " + id);
+            }
+            
             ByteBuffer data = readContent(socketChannel, size);
             if (data == null) {
                 throw new IOException("No data could be read from the socket.");
             }
-
-            // call sender
+            
+            // call responce handler
             try {
                 e.listener.handleResponse(data.array(), e.command);
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
                     "Exception while handling response to " + e.command, ex);
             }
-            
-            i.remove();
+
+            //i.remove();
         }//end for
     }//end pollAnswers
 
     // helpers
-    private void sendCommand(SocketChannel socket, Command command) throws IOException {
+    private Integer sendCommand(SocketChannel socket, Command command) throws IOException {
         // convert to Protobuf
         CMD.Builder cmd = CMD.newBuilder().setName(command.getName());
 
@@ -343,15 +361,22 @@ public class MessageServer extends AbstractMessageServer {
 
         byte[] commandAsByteArray = cmd.build().toByteArray();
         int intLength = commandAsByteArray.length;
+        int currentCommandId = commandId;
 
+        ByteBuffer bId = byteBufferFromInt(currentCommandId);
         ByteBuffer bLength = byteBufferFromInt(intLength);
-
         ByteBuffer bCommand = ByteBuffer.wrap(commandAsByteArray);
 
+        // write id    
+        sentBytes += socket.write(bId);
         // write length    
         sentBytes += socket.write(bLength);
         // write data
         sentBytes += socket.write(bCommand);
+        
+        commandId = (commandId + 1) % 1000000;
+        
+        return currentCommandId;
     }//end sendCommand
 
     private ByteBuffer readContent(SocketChannel socket, int length) throws IOException {

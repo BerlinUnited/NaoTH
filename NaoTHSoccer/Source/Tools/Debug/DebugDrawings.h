@@ -61,6 +61,9 @@ public:
     out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
   }
 
+  void drawRobot(double x, double y, double rotation){
+    out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
+  }
   
 
 private:

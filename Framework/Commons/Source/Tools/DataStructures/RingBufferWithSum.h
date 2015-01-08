@@ -22,6 +22,9 @@
 template <class C, int n> class RingBufferWithSum
 {
   public:
+
+    typedef int size_type;
+
     /** Constructor */
     RingBufferWithSum() { clear(); }
 
