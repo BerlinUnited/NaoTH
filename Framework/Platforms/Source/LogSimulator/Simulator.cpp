@@ -48,7 +48,9 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerInput<UltraSoundReceiveData>(*this);
 
   registerInput<FrameInfo>(*this);
-  registerInput<DebugMessageIn>(*this);
+
+  registerInput<DebugMessageInCognition>(*this);
+  registerInput<DebugMessageInMotion>(*this);
   registerOutput<DebugMessageOut>(*this);
 }
 
@@ -66,7 +68,7 @@ void Simulator::init()
 {  
   lastFrameTime = 0;
   simulatedTime = 0;
-  theDebugServer.start(5401, true);
+  theDebugServer.start(5401);
   theDebugServer.setTimeOut(0);
 }
 

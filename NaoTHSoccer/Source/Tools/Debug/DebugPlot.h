@@ -17,8 +17,9 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/DataStructures/Serializer.h"
+#include <DebugCommunication/DebugCommandExecutor.h>
 
-class DebugPlot
+class DebugPlot: public DebugCommandExecutor
 {
 public:
   // number of frames to be buffered (~1s in motion or ~3s in cognition)
@@ -34,6 +35,16 @@ public:
   const PlotStrokesMap& getPlots() const {
     return plotStrokes;
   }
+
+  void clear() {
+    for(PlotStrokesMap::iterator iter = plotStrokes.begin(); iter != plotStrokes.end(); ++iter) {
+      iter->second.clear();
+    }
+  }
+  
+  virtual void executeDebugCommand(
+      const std::string& command, const ArgumentMap& arguments,
+      std::ostream &outstream);
 
 private:
   PlotStrokesMap plotStrokes;
