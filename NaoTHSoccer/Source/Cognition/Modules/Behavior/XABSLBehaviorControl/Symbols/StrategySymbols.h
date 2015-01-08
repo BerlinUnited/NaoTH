@@ -20,6 +20,7 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugPlot.h"
 BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(AttentionModel)
   REQUIRE(PlayersModel)
@@ -39,6 +40,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
 END_DECLARE_MODULE(StrategySymbols)
 
 class StrategySymbols: public StrategySymbolsBase

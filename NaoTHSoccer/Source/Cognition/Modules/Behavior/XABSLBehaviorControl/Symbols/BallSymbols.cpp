@@ -9,7 +9,7 @@
 
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugModify.h>
-#include <Tools/Debug/DebugBufferedOutput.h>
+#include <Tools/Debug/DebugPlot.h>
 
 void BallSymbols::registerSymbols(xabsl::Engine& engine)
 {

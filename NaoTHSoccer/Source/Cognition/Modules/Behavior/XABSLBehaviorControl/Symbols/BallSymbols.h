@@ -27,6 +27,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugPlot.h"
 BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
@@ -38,6 +39,7 @@ BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(KinematicChain)
   REQUIRE(SoccerStrategy)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
 END_DECLARE_MODULE(BallSymbols)
