@@ -20,7 +20,6 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-#include "Representations/Modeling/RadarGrid.h"
 #include "Representations/Modeling/CollisionModel.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
@@ -40,7 +39,6 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
-  REQUIRE(RadarGrid)
   REQUIRE(Image)
   REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
