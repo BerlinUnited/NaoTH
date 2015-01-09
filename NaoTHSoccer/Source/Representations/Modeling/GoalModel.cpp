@@ -104,15 +104,6 @@ void GoalModel::draw() const
 
 }//end draw
 
-LocalGoalModel::LocalGoalModel() 
-  : 
-  someGoalWasSeen(false), 
-  opponentGoalIsValid(false),
-  ownGoalIsValid(false),
-  seen_angle(0.0)
-{
-
-}
 
 GoalModel::Goal GoalModel::calculateAnotherGoal(const GoalModel::Goal& goal, double distance)
 {
@@ -157,8 +148,16 @@ Pose2D GoalModel::calculatePose(double angle, const FieldInfo& fieldInfo) const
 
   return pose;
 }//end calculatePosition
+/*
+LocalGoalModel::LocalGoalModel() 
+  : 
+  someGoalWasSeen(false), 
+  opponentGoalIsValid(false),
+  ownGoalIsValid(false),
+  seen_angle(0.0)
+{
 
-
+}
 
 void LocalGoalModel::print(std::ostream& stream) const
 {
@@ -168,6 +167,7 @@ void LocalGoalModel::print(std::ostream& stream) const
 
   GoalModel::print(stream);
 }//end print
+*/
 
 void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInfo)
 {
