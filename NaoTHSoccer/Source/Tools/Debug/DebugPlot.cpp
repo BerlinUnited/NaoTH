@@ -44,7 +44,7 @@ void naoth::Serializer<DebugPlot>::deserialize(std::istream& /*stream*/, DebugPl
 }
 
 void DebugPlot::executeDebugCommand(
-  const std::string& command, const ArgumentMap& arguments,
+  const std::string& command, const ArgumentMap& /*arguments*/,
   std::ostream &outstream)
 {
   if ( command == "DebugPlot:get" )
