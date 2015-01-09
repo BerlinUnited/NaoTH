@@ -27,4 +27,4 @@
 *.zip    binary
 
 
-*       text=auto
+#*       text=auto
