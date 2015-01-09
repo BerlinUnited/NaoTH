@@ -68,13 +68,12 @@ public:
 };//end class GoalModel
 
 /** goal model in robot's local coordinates based on pure observations of the goal posts */
-/*
 class LocalGoalModel : public GoalModel
 {
 public:
   LocalGoalModel();
 
-  // indicates whether a complete goal was seen in the last frame
+  /** indicates whether a complete goal was seen in the last frame */
   bool someGoalWasSeen;
 
   bool opponentGoalIsValid;
@@ -88,7 +87,6 @@ public:
   naoth::FrameInfo frameWhenOpponentGoalWasSeen;
   naoth::FrameInfo frameWhenOwnGoalWasSeen;
 };
-*/
 
 /** goal model in robot's local coordinates, it is updated by robot's pose */
 class SelfLocGoalModel : public GoalModel

@@ -45,7 +45,6 @@ void PotentialFieldProvider::execute()
   // use the selflocator by default
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
 
-  /*
   //FIXME: frameWhenOpponentGoalWasSeen not supported by Model anymore!
   if ( getFrameInfo().getTimeSince(getLocalGoalModel().frameWhenOpponentGoalWasSeen.getTime()) < 10000
     //&& getLocalGoalModel().someGoalWasSeen
@@ -57,7 +56,6 @@ void PotentialFieldProvider::execute()
       oppGoalModel = localOppGoalModel;
     }
   }
-  */
 
   // calculate the target point to play the ball to based on the 
   // goal model and the ball model 
