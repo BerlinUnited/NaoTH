@@ -5,7 +5,7 @@
 * Implementation of class KeyFrameMotionFactory
 */
 
-#include "KeyFrameMotionEngine.h"
+#include "KeyFrameMotionFactory.h"
 
 #include <Tools/Math/Common.h>
 #include <PlatformInterface/Platform.h>
