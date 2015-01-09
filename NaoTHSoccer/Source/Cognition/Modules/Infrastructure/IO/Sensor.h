@@ -27,15 +27,15 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-//#include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Infrastructure/CalibrationData.h"
 
 #include "Representations/Infrastructure/GPSData.h"
 //#include "Representations/Infrastructure/SerialSensorData.h"
-//#include "Representations/Motion/MotionStatus.h"
-//#include "Representations/Modeling/OdometryData.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
-//#include <Representations/Perception/CameraMatrix.h>
-//#include <Representations/Perception/CameraMatrixBuffer.h>
+#include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Perception/CameraMatrixBuffer.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -72,12 +72,12 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(DebugMessageInCognition)
 
   // from motion
-  //PROVIDE(MotionStatus)
-  //PROVIDE(OdometryData)
+  PROVIDE(MotionStatus)
+  PROVIDE(OdometryData)
   PROVIDE(InertialModel)
-  //PROVIDE(CameraMatrixBuffer)
-  //PROVIDE(CameraMatrixBuffer2)
-  //PROVIDE(CalibrationData)
+  PROVIDE(CameraMatrixBuffer)
+  PROVIDE(CameraMatrixBufferTop)
+  PROVIDE(CalibrationData)
   
 END_DECLARE_MODULE(Sensor)
 

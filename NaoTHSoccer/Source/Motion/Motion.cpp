@@ -17,7 +17,7 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 
-//#include "Tools/CameraGeometry.h"
+#include "Tools/CameraGeometry.h"
 
 
 using namespace naoth;
@@ -38,7 +38,7 @@ Motion::Motion()
   ADD_LOGGER(AccelerometerData);
   ADD_LOGGER(GyrometerData);
   ADD_LOGGER(FSRData);
-//  ADD_LOGGER(MotionRequest);
+  ADD_LOGGER(MotionRequest);
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
@@ -60,7 +60,7 @@ Motion::~Motion()
 
 }
 
-void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& /*platform*/)
+void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // TODO: need a better solution for this
 
@@ -69,10 +69,10 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 
   // init robot info
-//  getRobotInfo().platform = platform.getName();
-//  getRobotInfo().bodyNickName = platform.getBodyNickName();
-//  getRobotInfo().bodyID = platform.getBodyID();
-//  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
 
   std::cout << "[Motion] register begin" << std::endl;
 #define REG_INPUT(R)                                                    \
@@ -95,19 +95,19 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   //REG_OUTPUT(LEDData);
 
   // messages from motion to cognition
-//  platformInterface.registerOutputChanel(getCameraMatrix());
-//  platformInterface.registerOutputChanel(getCameraMatrixTop());
-//  platformInterface.registerOutputChanel(getMotionStatus());
-//  platformInterface.registerOutputChanel(getOdometryData());
-//  platformInterface.registerOutputChanel(getCalibrationData());
+  platformInterface.registerOutputChanel(getCameraMatrix());
+  platformInterface.registerOutputChanel(getCameraMatrixTop());
+  platformInterface.registerOutputChanel(getMotionStatus());
+  platformInterface.registerOutputChanel(getOdometryData());
+  platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
 
   // messages from cognition to motion
-//  platformInterface.registerInputChanel(getCameraInfo());
-//  platformInterface.registerInputChanel(getCameraInfoTop());
-//  platformInterface.registerInputChanel(getCameraMatrixOffset());
-//  platformInterface.registerInputChanel(getHeadMotionRequest());
-//  platformInterface.registerInputChanel(getMotionRequest());
+  platformInterface.registerInputChanel(getCameraInfo());
+  platformInterface.registerInputChanel(getCameraInfoTop());
+  platformInterface.registerInputChanel(getCameraMatrixOffset());
+  platformInterface.registerInputChanel(getHeadMotionRequest());
+  platformInterface.registerInputChanel(getMotionRequest());
 
   std::cout << "[Motion] register end" << std::endl;
 }//end init
@@ -169,25 +169,22 @@ void Motion::call()
 
 void Motion::processSensorData()
 {
-  /*
+
   // check all joint stiffness
   int i = getSensorJointData().checkStiffness();
   if(i != -1)
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
-  */
 
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
-  /*
   //TODO: introduce calibrated versions of the data
   // correct the sensors
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getGyrometerData().data += getCalibrationData().gyroSensorOffset;
   getAccelerometerData().data += getCalibrationData().accSensorOffset;
-  */
 
   //
   theInertiaSensorFilterBH->execute();
@@ -195,35 +192,28 @@ void Motion::processSensorData()
   //
   theFootGroundContactDetector->execute();
 
-
-
   //
   theKinematicChainProvider->execute();
-
-
 
   //
   theSupportPolygonGenerator->execute();
 
-  /*
   //
   updateCameraMatrix();
-  */
 
   //
   theOdometryCalculator->execute();
 
-  /*
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
-  */
+
   debugPlots();
 }//end processSensorData
 
 
 void Motion::postProcess()
 {
-  /*
+
   motionLogger.log(getFrameInfo().getFrameNumber());
 
   MotorJointData& mjd = getMotorJointData();
@@ -240,7 +230,7 @@ void Motion::postProcess()
   mjd.clamp();
   mjd.updateSpeed(theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
-  */
+
 }//end postProcess
 
 
@@ -351,7 +341,7 @@ void Motion::debugPlots()
 
 }//end debugPlots
 
-/*
+
 void Motion::updateCameraMatrix()
 {
   getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
@@ -374,7 +364,3 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
-*/
-
-
-
