@@ -42,6 +42,8 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
+#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
 
@@ -109,6 +111,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalFeatureDetector);
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
+
+  REGISTER_MODULE(WholeGoalLocator);
 
   // debug
   REGISTER_MODULE(Debug);
