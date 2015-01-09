@@ -11,8 +11,8 @@
 #include "Tools/Math/Line.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Serializer.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include <Tools/DataStructures/RingBuffer.h>
 
