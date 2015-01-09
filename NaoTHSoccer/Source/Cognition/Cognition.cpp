@@ -118,11 +118,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(WholeGoalLocator);
 
-  // debug
-  REGISTER_MODULE(Debug);
-  REGISTER_MODULE(FrameRateCheck);
-  REGISTER_MODULE(DebugExecutor);
-
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(UltraSoundObstacleLocator);
@@ -134,6 +129,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
+
+  // debug
+  REGISTER_MODULE(Debug);
+  REGISTER_MODULE(FrameRateCheck);
+  REGISTER_MODULE(DebugExecutor);
 
   // -- END REGISTER MODULES --
 

@@ -65,6 +65,7 @@ void MonteCarloSelfLocator::execute()
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
+      FIELD_DRAWING_CONTEXT;
       theSampleSet.drawImportance(getDebugDrawings());
     );
 
@@ -199,6 +200,7 @@ void MonteCarloSelfLocator::execute()
       calculatePose(mhBackendSet);
       
       DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
+        FIELD_DRAWING_CONTEXT;
         mhBackendSet.drawImportance(getDebugDrawings());
       );
 
@@ -238,6 +240,7 @@ void MonteCarloSelfLocator::execute()
       calculatePose(theSampleSet);
 
       DEBUG_REQUEST("MCSLS:draw_Samples_effective", 
+        FIELD_DRAWING_CONTEXT;
         theSampleSet.drawImportance(getDebugDrawings());
       );
 
@@ -275,10 +278,12 @@ void MonteCarloSelfLocator::execute()
   );
 
   DEBUG_REQUEST("MCSLS:draw_Samples",
+    FIELD_DRAWING_CONTEXT;
     theSampleSet.drawImportance(getDebugDrawings());
   );
 
   DEBUG_REQUEST("MCSLS:draw_BackendSamples",
+    FIELD_DRAWING_CONTEXT;
     mhBackendSet.drawImportance(getDebugDrawings(), false);
   );
 
@@ -982,6 +987,7 @@ void MonteCarloSelfLocator::calculatePose(SampleSet& sampleSet)
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   DEBUG_REQUEST("MCSLS:draw_Cluster",
+    FIELD_DRAWING_CONTEXT;
     sampleSet.drawCluster(getDebugDrawings(), newPose.cluster);
   );
 
