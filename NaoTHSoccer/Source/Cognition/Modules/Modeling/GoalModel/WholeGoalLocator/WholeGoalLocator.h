@@ -24,7 +24,6 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
-#include <Representations/Perception/FieldSidePercept.h>
 
 
 // debug
@@ -38,7 +37,6 @@ BEGIN_DECLARE_MODULE(WholeGoalLocator)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
 
-  REQUIRE(FieldSidePercept)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(OdometryData)
