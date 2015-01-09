@@ -8,7 +8,7 @@
 #include "V4lCameraHandler.h"
 
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/Debug/Stopwatch.h"
+//#include "Tools/Debug/Stopwatch.h"
 #include "Tools/NaoTime.h"
 
 #include "Representations/Infrastructure/Image.h"

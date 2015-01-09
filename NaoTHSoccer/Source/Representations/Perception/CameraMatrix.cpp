@@ -16,7 +16,6 @@ using namespace naoth;
 
 void CameraMatrix::print(std::ostream& stream) const
 {
-  stream << "camera = " << cameraID << std::endl;
   stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << std::endl;
   stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << std::endl;
   stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << std::endl;
@@ -30,9 +29,6 @@ void CameraMatrix::print(std::ostream& stream) const
 void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std::ostream& stream)
 {
   naothmessages::CameraMatrix msg;
-  // ACHTUNG: representation.cameraNumber has to be some value in naothmessages::CameraID
-  // in particular, it cannot be -1 (!)
-  //msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
 
   msg.set_valid(representation.valid);
   msg.set_timestamp(representation.timestamp);
@@ -48,7 +44,6 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  //representation.cameraID = (naoth::CameraInfo::CameraID) msg.cameraid();
   if(msg.has_timestamp()) {
     representation.timestamp = msg.timestamp();
   }

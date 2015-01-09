@@ -70,6 +70,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());

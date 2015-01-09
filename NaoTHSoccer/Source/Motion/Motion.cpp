@@ -23,7 +23,7 @@
 using namespace naoth;
 
 Motion::Motion()
-  : ModuleManagerWithDebug("Motion"),
+  : ModuleManagerWithDebug(""),
     motionLogger("MotionLog")
 {
 
@@ -42,6 +42,7 @@ Motion::Motion()
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
   // register the modeules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
@@ -84,10 +85,13 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
 
+  REG_INPUT(DebugMessageInMotion);
+
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerOutput(get##R())
 
   REG_OUTPUT(MotorJointData);
+  REG_OUTPUT(DebugMessageOut);
   //REG_OUTPUT(LEDData);
 
   // messages from motion to cognition
@@ -135,6 +139,19 @@ void Motion::call()
   STOPWATCH_START("Motion:postProcess");
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
+
+
+  getDebugMessageOut().reset();
+
+  for(std::list<DebugMessageIn::Message>::const_iterator iter = getDebugMessageInMotion().messages.begin();
+      iter != getDebugMessageInMotion().messages.end(); ++iter)
+  {
+    debug_answer_stream.clear();
+    debug_answer_stream.str("");
+
+    getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
+    getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
+  }
 
 
   // HACK: reset all the debug stuff before executing the modules

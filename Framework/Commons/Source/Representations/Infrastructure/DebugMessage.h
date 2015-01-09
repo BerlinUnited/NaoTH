@@ -22,6 +22,9 @@ public:
   class Message
   {
   public:
+    Message() : id(-1) {}
+
+    int id;
     std::string command;
     std::map<std::string, std::string> arguments;
   };
@@ -29,24 +32,34 @@ public:
   std::list<Message> messages;
 };
 
+class DebugMessageInCognition : public DebugMessageIn {};
+class DebugMessageInMotion : public DebugMessageIn {};
+
 class DebugMessageOut
 {
 public:
-  typedef std::vector<char> Data;
+  class Message
+  {
+  public:
+    Message(int id, long length) : id(id), data(length) {}
 
-  std::list<Data*> answers;
+    int id;
+    std::vector<char> data;
+  };
 
-  void addResponse(std::stringstream& str) {
+  std::list<Message*> answers;
+
+  void addResponse(int id, std::stringstream& str) {
     long length = (long)str.tellp(); length = length < 0 ? 0 : length;
   
     // NOTE: the objects are deleted later by the DebugServer
-    Data* buffer = new Data(length);
+    Message* msg = new Message(id, length);
 
     if(length > 0) {
-      str.read(buffer->data(), buffer->size());
+      str.read(msg->data.data(), msg->data.size());
     }
 
-    answers.push_back(buffer);
+    answers.push_back(msg);
   }
 
   void reset() {

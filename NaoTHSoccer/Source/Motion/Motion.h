@@ -37,6 +37,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/DebugMessage.h>
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -77,7 +78,10 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
-  
+
+  PROVIDE(DebugMessageInMotion)
+  PROVIDE(DebugMessageOut)
+
 //  PROVIDE(CameraMatrixOffset)
 
   // from cognition
@@ -128,6 +132,10 @@ private:
 //  naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
+
+private:
+  std::stringstream debug_answer_stream;
+
 };
 
 

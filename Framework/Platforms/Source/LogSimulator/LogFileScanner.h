@@ -29,6 +29,7 @@ public:
 public:
   LogFileScanner(const std::string& file);
   void readFrame(unsigned int currentFrame, Frame& frame);
+  void open(const std::string& filePath);
 
   const std::set<std::string>& getIncludedRepresentations() {
     return includedRepresentations;
@@ -55,7 +56,6 @@ private:
 
   // list of representation names included in the logfile
   std::set<std::string> includedRepresentations;
-
 
   void scanFile();
 };

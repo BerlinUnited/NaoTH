@@ -240,6 +240,7 @@ public class DebugRequestPanel extends AbstractDialog
       } catch(InvalidProtocolBufferException ex) 
       {
           ex.printStackTrace();
+          System.out.println(new String(object));
       }
     }
 

@@ -22,7 +22,7 @@ project "NaoSMAL"
 	}
 
   links {
-	"NaoTH-Commons",
+	"Commons",
 	"almemoryfastaccess", -- Aldebaran NaoQi
 	"alcommon", -- Aldebaran NaoQi
 	"gthread-2.0", 

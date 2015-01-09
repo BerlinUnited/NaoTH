@@ -28,6 +28,8 @@ class Cognition;
 class Motion;
 extern Cognition* createCognition();
 extern Motion* createMotion();
+extern void deleteCognition(Cognition* cognition);
+extern void deleteMotion(Motion* motion);
 
 namespace naoth
 {
