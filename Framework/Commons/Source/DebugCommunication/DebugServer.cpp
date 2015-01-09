@@ -153,17 +153,24 @@ void DebugServer::receive()
 
       std::size_t p = message.command.find(':');
       std::string base(message.command.substr(0,p));
-      message.command = message.command.substr(p+1);
+      std::string subcmd(message.command.substr(p+1));
 
-      if(base == "Cognition") {
+      if(base == "Cognition") 
+      {
+        message.command = subcmd;
         g_mutex_lock(m_received_messages_cognition);
         received_messages_cognition.push(message);
         g_mutex_unlock(m_received_messages_cognition);
-      } else if (base == "Motion") {
+      } 
+      else if (base == "Motion") 
+      {
+        message.command = subcmd;
         g_mutex_lock(m_received_messages_motion);
         received_messages_motion.push(message);
         g_mutex_unlock(m_received_messages_motion);
-      } else {
+      } 
+      else 
+      {
         received_messages_cognition.push(message);
       }
       g_string_free(msg, true);
