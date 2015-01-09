@@ -1,3 +1,6 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
 # These files are text and should be normalized (convert crlf =&gt; lf)
 *.h      text diff=cpp
 *.hpp    text diff=cpp
@@ -25,6 +28,3 @@
 *.jpg    binary
 *.jar    binary
 *.zip    binary
-
-
-#*       text=auto
