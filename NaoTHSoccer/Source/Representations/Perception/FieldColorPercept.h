@@ -115,11 +115,6 @@ public:
     range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
   }
 
-  // DEPRECATED
-  inline bool isFieldColorOld(int yy, int cb, int cr) const {
-    return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
-  }
-
   inline bool isFieldColor(int y, int u, int v) const {
     return range.inside(y, u, v);
   }

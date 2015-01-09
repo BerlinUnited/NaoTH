@@ -69,7 +69,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
   PROVIDE(VirtualVisionTop)
-  PROVIDE(DebugMessageIn)
+  PROVIDE(DebugMessageInCognition)
 
   // from motion
   //PROVIDE(MotionStatus)

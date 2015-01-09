@@ -21,20 +21,20 @@
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
+#include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
 
+#include "Modules/Infrastructure/Debug/CameraDebug.h"
+#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 
-#include "Modules/VisualCortex/ColorProvider.h"
-#include "Modules/VisualCortex/GridProvider.h"
 #include "Modules/VisualCortex/HistogramProvider.h"
-
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
@@ -42,13 +42,21 @@
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
+
+#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+
 // tools
 #include "Tools/Debug/Trace.h"
+
+// modeling
+#include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 
 using namespace std;
 
 Cognition::Cognition()
-  : ModuleManagerWithDebug("Cognition")
+  : ModuleManagerWithDebug("")
 {
 }
 
@@ -87,16 +95,16 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 //  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
- 
+  REGISTER_MODULE(LEDSetter);
+
+  REGISTER_MODULE(CameraDebug);
+  REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
 
   REGISTER_MODULE(HistogramProvider);
-  REGISTER_MODULE(ColorProvider);
-  REGISTER_MODULE(GridProvider);
-
   REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
@@ -105,10 +113,17 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
 
+  REGISTER_MODULE(WholeGoalLocator);
+
   // debug
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(DebugExecutor);
+
+  // modeling
+  REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(SoccerStrategyProvider);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);

@@ -31,7 +31,6 @@
 #include "Representations/Perception/Histograms.h"
 
 // tools
-#include "Tools/ImageProcessing/GradientSpiderScan.h"
 #include "Tools/DoubleCamHelpers.h"
 
 #include "Representations/Debug/Stopwatch.h"

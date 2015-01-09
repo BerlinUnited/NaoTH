@@ -17,11 +17,14 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/DataStructures/Serializer.h"
+#include <DebugCommunication/DebugCommandExecutor.h>
 
-class DebugPlot
+class DebugPlot: public DebugCommandExecutor
 {
 public:
-  static const int maxPlotBufferSize = 1024;
+  // number of frames to be buffered (~1s in motion or ~3s in cognition)
+  static const int maxPlotBufferSize = 100; 
+
   typedef RingBuffer<Vector2d, maxPlotBufferSize> PlotStrokeBuffer;
   typedef std::map<std::string, PlotStrokeBuffer> PlotStrokesMap;
 
@@ -32,6 +35,16 @@ public:
   const PlotStrokesMap& getPlots() const {
     return plotStrokes;
   }
+
+  void clear() {
+    for(PlotStrokesMap::iterator iter = plotStrokes.begin(); iter != plotStrokes.end(); ++iter) {
+      iter->second.clear();
+    }
+  }
+  
+  virtual void executeDebugCommand(
+      const std::string& command, const ArgumentMap& arguments,
+      std::ostream &outstream);
 
 private:
   PlotStrokesMap plotStrokes;

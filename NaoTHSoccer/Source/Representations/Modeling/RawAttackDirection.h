@@ -14,21 +14,28 @@
    limitations under the License.
 */
 
-#include "ArtificialHorizon.h"
+#ifndef RAWATTACKDIRECTION_H
+#define RAWATTACKDIRECTION_H
 
-ArtificialHorizon::ArtificialHorizon()
-  : Math::LineSegment()
+#include <Tools/Math/Vector2.h>
+#include <Tools/DataStructures/Printable.h>
+
+class RawAttackDirection : public naoth::Printable
 {
-}
+public:
+  RawAttackDirection();
 
+  Vector2<double> attackDirection;
 
-ArtificialHorizon::ArtificialHorizon(const Vector2d &begin, const Vector2d &end)
-  : Math::LineSegment(begin, end)
-{
-}
+  // some possible support information
+  double deviationLeft;
+  double deviationRight;
+  double distanceToTarget;
 
+  // strategic meaning
+  bool pointingToGoal;
 
-ArtificialHorizon::~ArtificialHorizon()
-{
+  virtual void print(std::ostream &stream) const;
+};
 
-}
+#endif // RAWATTACKDIRECTION_H
