@@ -33,9 +33,6 @@ public class ParameterPanel extends AbstractDialog
     public static SwingCommandExecutor commandExecutor;
   }
 
-  private Command commandToExecute;
-  //private String defaultConfigureFilePath;
-
   public ParameterPanel()
   {
     initComponents();
@@ -52,8 +49,9 @@ public class ParameterPanel extends AbstractDialog
           sendParameters();
           
           int k = jTextArea.getCaretPosition();
-          if(k > 0)
+          if(k > 0) {
             jTextArea.setCaretPosition(k-1);
+          }
         }
       }
     });
@@ -150,6 +148,43 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   sendParameters();
 }//GEN-LAST:event_jButtonSendActionPerformed
 
+private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
+{//GEN-HEADEREND:event_cbParameterIdActionPerformed
+    getParameterList();
+}//GEN-LAST:event_cbParameterIdActionPerformed
+
+private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
+{//GEN-HEADEREND:event_jToggleButtonListActionPerformed
+    listParameters();
+}//GEN-LAST:event_jToggleButtonListActionPerformed
+
+  private class ParameterListItem
+  {
+      private String owner;
+      private String name;
+      
+      public ParameterListItem(String owner, String name)
+      {
+          this.owner = owner;
+          this.name = name;
+      }
+      
+      Command getCommandGET() {
+          return new Command(owner + ":ParameterList:get")
+                  .addArg("<name>", name);
+      }
+      
+      Command getCommandSET() {
+          return new Command(owner + ":ParameterList:set")
+                  .addArg("<name>", name);
+      }
+      
+      @Override
+      public String toString() 
+      {
+          return "[" + owner + "] " + name;
+      }
+  }
 
   class ParameterListHandlerGet implements ObjectListener<byte[]>
   {
@@ -159,10 +194,9 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         // remember the carret
         int k = jTextArea.getCaretPosition();
         jTextArea.setText(new String(object));
-        try{
+        try {
             jTextArea.setCaretPosition(k);
-        }catch(IllegalArgumentException ex)
-        {
+        } catch(IllegalArgumentException ex) {
             // do nothing
             // could not set the caret at the right place, e.g.,
             // if the text is shorter now
@@ -182,7 +216,7 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     @Override
     public void newObjectReceived(byte[] object)
     {
-        
+        // do nothing
     }
     
     @Override
@@ -194,6 +228,13 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   
   class ParameterListHandlerList implements ObjectListener<byte[]>
   {
+    private final String owner;
+    
+    public ParameterListHandlerList(String owner)
+    {
+        this.owner = owner;
+    }
+    
     @Override
     public void newObjectReceived(byte[] object)
     {
@@ -206,9 +247,8 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         cbParameterId.removeAllItems();
         
         String[] parameterLists = strResult.split("\n");
-        for (String parameterList : parameterLists)
-        {
-          cbParameterId.addItem(parameterList);
+        for (String parameterList : parameterLists) {
+          cbParameterId.addItem(new ParameterListItem(owner, parameterList));
         }
         
         // try to set back the selection
@@ -231,7 +271,7 @@ private void sendParameters()
 {
   if (Plugin.parent.checkConnected())
   {
-    Command cmd = new Command("ParameterList:set").addArg("<name>", cbParameterId.getSelectedItem().toString());
+    Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandSET();
 
     String text = this.jTextArea.getText();
 
@@ -268,21 +308,12 @@ private void sendParameters()
   }
 }
 
-private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
-{//GEN-HEADEREND:event_cbParameterIdActionPerformed
-    getParameterList();
-}//GEN-LAST:event_cbParameterIdActionPerformed
-
-private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
-{//GEN-HEADEREND:event_jToggleButtonListActionPerformed
-    listParameters();
-}//GEN-LAST:event_jToggleButtonListActionPerformed
-
 private void listParameters()
 {
     if (Plugin.parent.checkConnected())
     {
-      Plugin.commandExecutor.executeCommand(new ParameterListHandlerList(), new Command("ParameterList:list"));
+      Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Cognition"), new Command("Cognition:ParameterList:list"));
+      Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Motion"), new Command("Motion:ParameterList:list"));
     }
     else
     {
@@ -296,8 +327,8 @@ private void listParameters()
     {
       if (cbParameterId.getSelectedItem() != null)
       {
-        Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), 
-                new Command("ParameterList:get").addArg("<name>", cbParameterId.getSelectedItem().toString()));
+        Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandGET();
+        Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), cmd);
       }
     }
     else
