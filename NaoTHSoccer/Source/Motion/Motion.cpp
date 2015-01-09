@@ -51,7 +51,7 @@ Motion::Motion()
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
-//  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
 
 Motion::~Motion()
@@ -123,7 +123,7 @@ void Motion::call()
   /**
   * run the motion engine
   */
-  //theMotionEngine->execute();
+  theMotionEngine->execute();
 
   // TODO: do we need it, is was never used so far
   // calibrate the foot touch detector

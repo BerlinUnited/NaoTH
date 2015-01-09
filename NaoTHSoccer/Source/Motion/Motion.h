@@ -27,7 +27,7 @@
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
-//#include "Engine/MotionEngine.h"
+#include "Engine/MotionEngine.h"
 
 
 // representations
@@ -123,7 +123,7 @@ private:
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
-//  ModuleCreator<MotionEngine>* theMotionEngine;
+  ModuleCreator<MotionEngine>* theMotionEngine;
 
 //  naoth::MotorJointData theLastMotorJointData;
 
