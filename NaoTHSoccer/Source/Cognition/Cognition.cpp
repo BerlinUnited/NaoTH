@@ -9,6 +9,9 @@
 
 #include <PlatformInterface/Platform.h>
 
+// tools
+#include "Tools/Debug/Trace.h"
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -22,12 +25,9 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
-
-// behavior
-#include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
-
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
@@ -42,10 +42,6 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
-#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
-
-// tools
-#include "Tools/Debug/Trace.h"
 
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -55,6 +51,14 @@
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+
+
+// modeling
+#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+
+// behavior
+#include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
 using namespace std;
 
