@@ -45,16 +45,14 @@
 
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
-
-
-// modeling
-#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 
 // behavior
@@ -120,16 +118,17 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
 
-  REGISTER_MODULE(WholeGoalLocator);
-
   // modeling
   REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(WholeGoalLocator);
+  REGISTER_MODULE(DummyActiveGoalLocator);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
