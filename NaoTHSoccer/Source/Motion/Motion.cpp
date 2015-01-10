@@ -44,6 +44,19 @@ Motion::Motion()
 
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
+  // parameter
+  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
+
+  // modify commands
+  REGISTER_DEBUG_COMMAND("modify:list", 
+    "return the list of registered modifiable values", &getDebugModify());
+  REGISTER_DEBUG_COMMAND("modify:set", 
+    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
+  REGISTER_DEBUG_COMMAND("modify:release", 
+    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
+
   // register the modeules
 //  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
 //  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
@@ -141,6 +154,7 @@ void Motion::call()
   STOPWATCH_STOP("Motion:postProcess");
 
 
+  // todo: execute debug commands => find a better place for this
   getDebugMessageOut().reset();
 
   for(std::list<DebugMessageIn::Message>::const_iterator iter = getDebugMessageInMotion().messages.begin();

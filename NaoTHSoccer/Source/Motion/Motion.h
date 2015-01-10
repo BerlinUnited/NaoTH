@@ -47,6 +47,8 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
@@ -55,6 +57,8 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
 
 //  REQUIRE(MotionStatus)
 //  REQUIRE(OdometryData)

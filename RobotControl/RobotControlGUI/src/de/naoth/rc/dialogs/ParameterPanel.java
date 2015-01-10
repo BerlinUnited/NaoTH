@@ -244,7 +244,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             selectedList = cbParameterId.getSelectedItem().toString();
         }
         
-        cbParameterId.removeAllItems();
+        //cbParameterId.removeAllItems();
         
         String[] parameterLists = strResult.split("\n");
         for (String parameterList : parameterLists) {
@@ -312,6 +312,7 @@ private void listParameters()
 {
     if (Plugin.parent.checkConnected())
     {
+      cbParameterId.removeAllItems();
       Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Cognition"), new Command("Cognition:ParameterList:list"));
       Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Motion"), new Command("Motion:ParameterList:list"));
     }
