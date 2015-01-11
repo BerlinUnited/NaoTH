@@ -10,7 +10,7 @@
 
 struct SPLStandardMessage 
 {
-  char header[4];        // "SPL "
+  char header[5];        // "SPL "
   uint8_t version;       // has to be set to SPL_STANDARD_MESSAGE_STRUCT_VERSION
   uint8_t playerNum;     // 1-5
   uint8_t teamColor;     // 0 is blue, 1 is red 
