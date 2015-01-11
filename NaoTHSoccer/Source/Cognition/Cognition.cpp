@@ -18,6 +18,7 @@
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/ButtonEventMonitor/ButtonEventMonitor.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
+#include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
@@ -89,7 +90,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
 //  REGISTER_MODULE(TeamCommReceiver);
-//  REGISTER_MODULE(GameController);
+  REGISTER_MODULE(GameController);
 //  REGISTER_MODULE(OpenCVGrayScaleImageProvider);
 //  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
