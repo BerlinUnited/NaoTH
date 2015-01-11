@@ -77,13 +77,13 @@ GError* DebugCommunicator::internalInit()
   return NULL;
 }
 
-bool DebugCommunicator::sendMessage(const char* data, size_t size)
+bool DebugCommunicator::sendMessage(gint32 id, const char* data, size_t size)
 {
   if (fatalFail) {
     throw "fatalFail";
   }
 
-  GError* err = internalSendMessage(data, size);
+  GError* err = internalSendMessage(id, data, size);
   if (err)
   {
     std::cerr << "[DebugServer:port " << port << "] " << "SocketException in sendMessage: " << err->message << std::endl;
@@ -94,12 +94,15 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
 }//end sendMessage
 
 
-GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
+GError* DebugCommunicator::internalSendMessage(gint32 id, const char* data, size_t size)
 {
   GError* err = NULL;
   if (connection != NULL)
   {
     g_socket_set_blocking(connection, true);
+
+    // send the message id
+    g_socket_send(connection, (char*) &id, 4, NULL, &err);
 
     // send message size in 4 bytes
     guint32 sizeFixed = static_cast<unsigned int> (size);
@@ -119,14 +122,15 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 }//end sendMessage
 
 
-GString* DebugCommunicator::readMessage()
+GString* DebugCommunicator::readMessage(gint32& id)
 {
   if (fatalFail) {
     throw "fatalFail";
   }
 
   GError* err = NULL;
-  GString* result = internalReadMessage(&err);
+  GString* result = NULL;
+  id = internalReadMessage(&result, &err);
 
   if(err)
   {
@@ -150,15 +154,16 @@ GString* DebugCommunicator::readMessage()
   return result;
 }//end readMessage
 
-GString* DebugCommunicator::internalReadMessage(GError** err)
+gint32 DebugCommunicator::internalReadMessage(GString** result, GError** err)
 {
   *err = NULL;
   if (connection == NULL) {
-    return NULL;
+    return -1;
   }
 
-  gint32 sizeOfMessage = 0;
-  gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
+  // read the message id
+  gint32 messageId = -1;
+  gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &messageId, 4, false, NULL, err);
 
   // nothing to read
   if ( initialBytes == -1 ) {
@@ -171,20 +176,29 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
       throw "connection timed out";
     }
 
-    return NULL;
+    return -1;
+  }
+
+  if(initialBytes == 0) {
+    throw "connection closed by peer";
   }
 
   if(initialBytes != 4) {
-    throw "wrong message size";
+    throw "error reading message id";
   }
 
   // some data was received, so keep the connection alive
   time_of_last_message = naoth::NaoTime::getSystemTimeInMilliSeconds();
 
   // heartbeat message, ignore
-  if(sizeOfMessage == -1) { 
+  if(messageId == -1) { 
     // std::cout << "heartbeat received" << std::endl;
-    return NULL;
+    return -1;
+  }
+
+  gint32 sizeOfMessage = 0;
+  if(g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, true, NULL, err) != 4) {
+    throw "error reading message size";
   }
 
   if(sizeOfMessage > 0)
@@ -214,13 +228,14 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
 
     if(*err) {
       g_string_free(buffer, true);
-      return NULL;
+      return -1;
     }
 
-    return buffer;
+    *result = buffer;
+    return messageId;
   }
 
-  return NULL;
+  return -1;
 }
 
 

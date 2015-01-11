@@ -63,12 +63,12 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   // modify commands
   REGISTER_DEBUG_COMMAND("modify:list", 
     "return the list of registered modifiable values", &getDebugModify());
-
   REGISTER_DEBUG_COMMAND("modify:set", 
     "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
+
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());

@@ -11,7 +11,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 BEGIN_DECLARE_MODULE(DebugExecutor)
-  REQUIRE(DebugMessageIn)
+  REQUIRE(DebugMessageInCognition)
   PROVIDE(DebugMessageOut)
   REQUIRE(DebugCommandManager)
 END_DECLARE_MODULE(DebugExecutor)

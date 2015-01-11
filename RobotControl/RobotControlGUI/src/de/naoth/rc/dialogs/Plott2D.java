@@ -11,15 +11,20 @@
 
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.manager.PlotDataManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.server.Command;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IRangePolicy;
 import info.monitorenter.gui.chart.ITrace2D;
@@ -46,6 +51,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -60,16 +67,17 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author Heinrich Mellmann
  */
-@PluginImplementation
 public class Plott2D  extends AbstractDialog
-  implements ObjectListener<Plots>
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public PlotDataManager plotDataManager;
-
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<Plott2D>
+  {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
+  }
   
   private final int maxNumberOfValues = 10000;
   private final int numberOfValues = maxNumberOfValues;
@@ -80,6 +88,11 @@ public class Plott2D  extends AbstractDialog
   private final Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
   private final Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
+  private final Command commandGetPlotMotion = new Command("Motion:DebugPlot:get");
+  private final Command commandGetPlotCognition = new Command("Cognition:DebugPlot:get");
+  
+  private final PlotDataHandler plotDataHandler = new PlotDataHandler();
+  
     /** Creates new form SimpleValuePlotter */
     public Plott2D() {
         initComponents();
@@ -412,14 +425,16 @@ public class Plott2D  extends AbstractDialog
     private void btReceiveDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDataActionPerformed
 
       if (btReceiveData.isSelected()) {
-        if (parent.checkConnected()) {
-          plotDataManager.addListener(this);
+        if (Plugin.parent.checkConnected()) {
+          Plugin.genericManagerFactory.getManager(commandGetPlotMotion).addListener(plotDataHandler);
+          Plugin.genericManagerFactory.getManager(commandGetPlotCognition).addListener(plotDataHandler);
           chart.getAxisX().setRangePolicy(new DynamicRangePolicy(chart.getAxisX().getRange()));
         } else {
           btReceiveData.setSelected(false);
         }
       } else {
-        plotDataManager.removeListener(this);
+        Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+        Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
         chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(chart.getAxisX().getRange()));
         //chart.enablePointHighlighting(true);
       }
@@ -534,39 +549,38 @@ private void clearTracePoints()
     private javax.swing.JScrollPane scrollList;
     // End of variables declaration//GEN-END:variables
 
-  @Override
-  public void errorOccured(String cause) {
-    JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
-    plotDataManager.removeListener(this);
-  }
-
-  @Override
-  public void newObjectReceived(Plots data)
+  class PlotDataHandler implements ObjectListener<byte[]>
   {
-    if (data != null)
-    {
-      synchronized(this)
-      {
-         /*
-        for(PlotItem item : data.getPlotsList())
+    @Override
+    public void newObjectReceived(byte[] object) {
+        try
         {
-          if(item.getType() == PlotItem.PlotType.Default && item.hasX() && item.hasY())
+          if (object != null)
           {
-            addValue(item.getName(), item.getX(), item.getY());
-          }
-        }//end for
-           * */
-        for(PlotStroke2D stroke : data.getPlotstrokesList())
+              synchronized(Plott2D.this)
+              {
+                Plots plots = Plots.parseFrom(object);
+                for(PlotStroke2D stroke : plots.getPlotstrokesList())
+                {
+                  for(DoubleVector2 point: stroke.getPointsList())
+                  {
+                    addValue(stroke.getName(), point.getX(), point.getY());
+                  }
+                }//end for
+              }//end synchronized
+            }//end if
+        }
+        catch (InvalidProtocolBufferException ex)
         {
-          for(DoubleVector2 point: stroke.getPointsList())
-          {
-            addValue(stroke.getName(), point.getX(), point.getY());
-          }
-        }//end for
-      }//end synchronized
-    }//end if
-  }//end newObjectReceived
+          Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, new String(object), ex);
+        }
+    }
 
+    @Override
+    public void errorOccured(String cause) {
+        errorOccured(cause);
+    }
+  }//end class DataHandlerPrint
 
   public class PointPainterCoords extends APointPainter
   {
@@ -661,7 +675,8 @@ private void clearTracePoints()
   public void dispose()
   {
     btReceiveData.setSelected(false);
-    plotDataManager.removeListener(this);
+    Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+    Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
   }
 
   private int currentColorIndex = 0;

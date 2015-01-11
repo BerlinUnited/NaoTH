@@ -51,7 +51,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(GameData);
-  REG_INPUT(DebugMessageIn);
+  REG_INPUT(DebugMessageInCognition);
 
 //  platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
 //  platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer2());

@@ -73,6 +73,126 @@ message Plots {
   repeated PlotStroke2D plotstrokes = 2;
 }
 
+
+message XABSLSymbol {
+	enum SymbolType {
+		Decimal = 0;
+		Boolean = 1;
+		Enum = 2;
+		Unknown = 3;
+	}
+
+  required int32 id = 1 [default=-1];
+  required SymbolType type = 2 [default=Unknown];
+  optional string name = 3;
+  
+  optional double decimalValue = 11;
+  optional bool boolValue = 12;
+  optional int32 enumValue = 13;
+  optional int32 enumTypeId = 14;
+}
+
+message XABSLActiveOptionSparse {
+	required int32 id = 1 [default=-1];
+	
+	optional int64 timeOfExecution = 3 [default=0];
+	optional int32 activeState = 4;
+	optional int64 stateTime = 5;
+	
+	repeated double decimalParameters = 6;
+	repeated bool booleanParameters = 7;
+	repeated int32 enumeratedParameters = 8;
+	  
+	repeated XABSLActionSparse activeSubActions = 9;
+}
+
+message XABSLActionSparse {
+  enum ActionType {
+   Option = 0;
+   BasicBehavior = 1;
+   SymbolAssignement = 2;
+   Unknown = 3;
+  }
+  
+  required ActionType type = 2 [default=Unknown];
+  
+  optional XABSLSymbol symbol = 3;
+  optional XABSLActiveOptionSparse option = 4;
+}
+
+message SymbolValueList {
+	message DoubleSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional double value = 3;
+	}
+	message BooleanSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional bool value = 3;
+	}
+	
+	message EnumSymbol {
+		required int32 id = 1 [default=-1];
+		optional string name = 2;
+		optional int32 value = 13;
+		optional int32 typeId = 14;
+	}
+	
+	repeated DoubleSymbol decimal = 1;
+	repeated BooleanSymbol boolean = 2;
+	repeated EnumSymbol enumerated = 3;
+}
+
+message BehaviorStateSparse {  
+  optional string agent = 1;
+  repeated XABSLActionSparse activeRootActions = 2;
+  
+  optional SymbolValueList inputSymbolList = 10;
+  optional SymbolValueList outputSymbolList = 11;
+  
+  optional uint32 frameNumber = 5;
+  optional string errorMessage = 6;
+}
+
+
+message BehaviorStateComplete {
+  
+  message EnumType {
+	message Element {
+		required int32 value = 1;
+		required string name = 2;
+	}
+	required string name = 1;
+	repeated Element elements = 2;
+  }
+  
+  message Option {
+	message State {
+		required string name = 1;
+		optional bool target = 2;
+	}
+	
+	required string name = 1;
+	repeated State states = 3;
+	repeated XABSLSymbol parameters = 2;
+  }
+  
+  message Agent {
+	required string name = 1;
+	required string rootOption = 2;
+  }
+  
+  repeated EnumType enumerations = 10;
+  repeated Option options = 11;
+  repeated Agent agents = 12;
+  
+  optional SymbolValueList inputSymbolList = 13;
+  optional SymbolValueList outputSymbolList = 14;
+  optional uint32 frameNumber = 15;
+}
+
+
 message XABSLParameter {
   enum ParamType {
    Decimal = 0;

@@ -53,7 +53,7 @@ public:
   *
   * @return True if message could be send, false if some error occured.
   */
-  bool sendMessage(const char* data, size_t size);
+  bool sendMessage(gint32 id, const char* data, size_t size);
 
   /**
   * Read a new message. Blocks until a complete message was received or an
@@ -63,7 +63,7 @@ public:
   *
   * @return A null terminated message string or NULL if nothing to read after timeout
   */
-  GString* readMessage();
+  GString* readMessage(gint32& id);
 
   /** 
   * Set the time after which the connection should be closed in case of inactivity.
@@ -82,9 +82,9 @@ private:
   unsigned long long time_of_last_message;
   unsigned int time_out_delta;
 
-  GError* internalSendMessage(const char* data, size_t size);
+  GError* internalSendMessage(gint32 id, const char* data, size_t size);
   GError* internalInit();
-  GString* internalReadMessage(GError** err);
+  gint32 internalReadMessage(GString** result, GError** err);
 };
 
 #endif  /* _DEBUGCOMMUNICATOR_H */

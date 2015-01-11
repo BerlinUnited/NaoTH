@@ -37,14 +37,28 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/DebugMessage.h>
 
+// debug
 #include <Representations/Debug/Stopwatch.h>
-#include "Tools/Debug/DebugModify.h"
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
 
 //  REQUIRE(MotionStatus)
 //  REQUIRE(OdometryData)
@@ -68,7 +82,10 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
-  
+
+  PROVIDE(DebugMessageInMotion)
+  PROVIDE(DebugMessageOut)
+
 //  PROVIDE(CameraMatrixOffset)
 
   // from cognition
@@ -119,6 +136,10 @@ private:
 //  naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
+
+private:
+  std::stringstream debug_answer_stream;
+
 };
 
 

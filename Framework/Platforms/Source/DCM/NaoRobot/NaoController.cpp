@@ -89,7 +89,8 @@ NaoController::NaoController()
   registerOutput<const TeamMessageDataOut>(*this);
 
   // debug comm
-  registerInput<DebugMessageIn>(*this);
+  registerInput<DebugMessageInCognition>(*this);
+  registerInput<DebugMessageInMotion>(*this);
   registerOutput<const DebugMessageOut>(*this);
 
   // time
@@ -139,7 +140,7 @@ NaoController::NaoController()
   int debug_port = 5401; // default port
   config.get("network", "debug_port", debug_port);
   theDebugServer = new DebugServer();
-  theDebugServer->start(static_cast<unsigned short>(debug_port), true);
+  theDebugServer->start(static_cast<unsigned short>(debug_port));
 
 
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;

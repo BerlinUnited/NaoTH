@@ -23,7 +23,7 @@
 using namespace naoth;
 
 Motion::Motion()
-  : ModuleManagerWithDebug("Motion"),
+  : ModuleManagerWithDebug(""),
     motionLogger("MotionLog")
 {
 
@@ -42,6 +42,20 @@ Motion::Motion()
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
+  REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
+  // parameter
+  REGISTER_DEBUG_COMMAND("ParameterList:list", "list all registered parameters", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
+  REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
+
+  // modify commands
+  REGISTER_DEBUG_COMMAND("modify:list", 
+    "return the list of registered modifiable values", &getDebugModify());
+  REGISTER_DEBUG_COMMAND("modify:set", 
+    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
+  REGISTER_DEBUG_COMMAND("modify:release", 
+    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
   // register the modeules
 //  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
@@ -84,10 +98,13 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
 
+  REG_INPUT(DebugMessageInMotion);
+
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerOutput(get##R())
 
   REG_OUTPUT(MotorJointData);
+  REG_OUTPUT(DebugMessageOut);
   //REG_OUTPUT(LEDData);
 
   // messages from motion to cognition
@@ -135,6 +152,29 @@ void Motion::call()
   STOPWATCH_START("Motion:postProcess");
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
+
+
+  // todo: execute debug commands => find a better place for this
+  getDebugMessageOut().reset();
+
+  for(std::list<DebugMessageIn::Message>::const_iterator iter = getDebugMessageInMotion().messages.begin();
+      iter != getDebugMessageInMotion().messages.end(); ++iter)
+  {
+    debug_answer_stream.clear();
+    debug_answer_stream.str("");
+
+    getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
+    getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
+  }
+
+
+  // HACK: reset all the debug stuff before executing the modules
+  STOPWATCH_START("Motion.Debug.Init");
+  getDebugDrawings().reset();
+  getDebugImageDrawings().reset();
+  getDebugImageDrawingsTop().reset();
+  getDebugDrawings3D().reset();
+  STOPWATCH_STOP("Motion.Debug.Init");
 
   STOPWATCH_STOP("MotionExecute");
 

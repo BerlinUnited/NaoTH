@@ -89,8 +89,8 @@ void StopwatchManager::dump(std::string name) const
 
 void naoth::Serializer<StopwatchManager>::serialize(const StopwatchManager& object, std::ostream& stream)
 {
-  static naothmessages::Stopwatches all;
-  all.Clear();
+  naothmessages::Stopwatches all;
+  //all.Clear();
   //all.mutable_stopwatches()->Reserve(stopwatches.size());
 
   const StopwatchManager::StopwatchMap& stopwatches = object.getStopwatches();
