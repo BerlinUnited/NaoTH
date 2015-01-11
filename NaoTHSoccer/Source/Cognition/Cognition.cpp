@@ -23,6 +23,8 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -89,7 +91,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // -- BEGIN REGISTER MODULES --
 
   // infrastructure
-//  REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
 //  REGISTER_MODULE(OpenCVGrayScaleImageProvider);
 //  REGISTER_MODULE(OpenCVImageProvider);
@@ -128,6 +130,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
 
+  REGISTER_MODULE(TeamCommSender);
   // -- END REGISTER MODULES --
 
   // register output module
