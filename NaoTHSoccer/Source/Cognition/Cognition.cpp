@@ -102,8 +102,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
-//  REGISTER_MODULE(OpenCVGrayScaleImageProvider);
-//  REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(LEDSetter);
