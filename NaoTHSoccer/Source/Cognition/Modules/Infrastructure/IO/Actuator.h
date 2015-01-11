@@ -20,12 +20,12 @@
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Infrastructure/GameData.h>
 
-//#include "Representations/Motion/Request/HeadMotionRequest.h"
-//#include "Representations/Motion/MotionStatus.h"
-//#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 
-//#include "Representations/Modeling/KinematicChain.h"
-//#include "Representations/Modeling/CameraMatrixOffset.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 
 using namespace naoth;
 
@@ -37,22 +37,22 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
   REQUIRE(SoundPlayData)
-//  REQUIRE(MotionStatus)
+  REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
   REQUIRE(FrameInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
-//  REQUIRE(CameraMatrixOffset)
+  REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
 
   // HACK: needed to transform the HeadMotionRequest
-//  REQUIRE(KinematicChain)
+  REQUIRE(KinematicChain)
 
 
   // HACK: check execute()
-//  PROVIDE(MotionRequest)
-//  PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
+  PROVIDE(HeadMotionRequest)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase

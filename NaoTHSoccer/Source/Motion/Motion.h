@@ -16,18 +16,18 @@
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
-//#include "MorphologyProcessor/SupportPolygonGenerator.h"
-//#include "MorphologyProcessor/OdometryCalculator.h"
+#include "MorphologyProcessor/SupportPolygonGenerator.h"
+#include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
-//#include "MorphologyProcessor/FootGroundContactDetector.h"
-//#include "MorphologyProcessor/KinematicChainProviderMotion.h"
-//#include "SensorFilter/InertiaSensorCalibrator.h"
-//#include "SensorFilter/InertiaSensorFilter.h"
+#include "MorphologyProcessor/FootGroundContactDetector.h"
+#include "MorphologyProcessor/KinematicChainProviderMotion.h"
+#include "SensorFilter/InertiaSensorCalibrator.h"
+#include "SensorFilter/InertiaSensorFilter.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
-//#include "Engine/MotionEngine.h"
+#include "Engine/MotionEngine.h"
 
 
 // representations
@@ -60,20 +60,20 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
 
-//  REQUIRE(MotionStatus)
-//  REQUIRE(OdometryData)
-//  REQUIRE(InertialModel)
-//  REQUIRE(CalibrationData)
+  REQUIRE(MotionStatus)
+  REQUIRE(OdometryData)
+  REQUIRE(InertialModel)
+  REQUIRE(CalibrationData)
 
-//  PROVIDE(CameraMatrix)// TODO:strange...
-//  PROVIDE(CameraMatrixTop)// TODO:strange...
+  PROVIDE(CameraMatrix)// TODO:strange...
+  PROVIDE(CameraMatrixTop)// TODO:strange...
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
   
-//  PROVIDE(RobotInfo)
-//  PROVIDE(KinematicChainSensor)
-//  PROVIDE(KinematicChainMotor)
+  PROVIDE(RobotInfo)
+  PROVIDE(KinematicChainSensor)
+  PROVIDE(KinematicChainMotor)
 
   // platform input
   REQUIRE(SensorJointData)
@@ -86,13 +86,13 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugMessageInMotion)
   PROVIDE(DebugMessageOut)
 
-//  PROVIDE(CameraMatrixOffset)
+  PROVIDE(CameraMatrixOffset)
 
   // from cognition
-//  PROVIDE(CameraInfo)
-//  PROVIDE(CameraInfoTop)
-//  PROVIDE(HeadMotionRequest)
-//  PROVIDE(MotionRequest)
+  PROVIDE(CameraInfo)
+  PROVIDE(CameraInfoTop)
+  PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Motion)
 
 
@@ -121,19 +121,19 @@ private:
 
 private:
   void debugPlots();
-//  void updateCameraMatrix();
+  void updateCameraMatrix();
 
 private:
-//  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
-//  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
-//  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
-//  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
-//  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
-//  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
+  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
+  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
+  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
+  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
+  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
-//  ModuleCreator<MotionEngine>* theMotionEngine;
+  ModuleCreator<MotionEngine>* theMotionEngine;
 
-//  naoth::MotorJointData theLastMotorJointData;
+  naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
 

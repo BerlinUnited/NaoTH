@@ -15,9 +15,9 @@
 #endif
 
 
-// #include "MorphologyProcessor/ForwardKinematics.h"
+#include "MorphologyProcessor/ForwardKinematics.h"
 
-//#include "Tools/CameraGeometry.h"
+#include "Tools/CameraGeometry.h"
 
 
 using namespace naoth;
@@ -38,7 +38,7 @@ Motion::Motion()
   ADD_LOGGER(AccelerometerData);
   ADD_LOGGER(GyrometerData);
   ADD_LOGGER(FSRData);
-//  ADD_LOGGER(MotionRequest);
+  ADD_LOGGER(MotionRequest);
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
@@ -58,14 +58,14 @@ Motion::Motion()
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
   // register the modeules
-//  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
-//  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
-//  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
-//  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
-//  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
-//  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
+  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
+  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
+  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
+  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
-//  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+  theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
 
 Motion::~Motion()
@@ -73,7 +73,7 @@ Motion::~Motion()
 
 }
 
-void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& /*platform*/)
+void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // TODO: need a better solution for this
 
@@ -82,10 +82,10 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 
   // init robot info
-//  getRobotInfo().platform = platform.getName();
-//  getRobotInfo().bodyNickName = platform.getBodyNickName();
-//  getRobotInfo().bodyID = platform.getBodyID();
-//  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
 
   std::cout << "[Motion] register begin" << std::endl;
 #define REG_INPUT(R)                                                    \
@@ -108,19 +108,19 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   //REG_OUTPUT(LEDData);
 
   // messages from motion to cognition
-//  platformInterface.registerOutputChanel(getCameraMatrix());
-//  platformInterface.registerOutputChanel(getCameraMatrixTop());
-//  platformInterface.registerOutputChanel(getMotionStatus());
-//  platformInterface.registerOutputChanel(getOdometryData());
-//  platformInterface.registerOutputChanel(getCalibrationData());
-//  platformInterface.registerOutputChanel(getInertialModel());
+  platformInterface.registerOutputChanel(getCameraMatrix());
+  platformInterface.registerOutputChanel(getCameraMatrixTop());
+  platformInterface.registerOutputChanel(getMotionStatus());
+  platformInterface.registerOutputChanel(getOdometryData());
+  platformInterface.registerOutputChanel(getCalibrationData());
+  platformInterface.registerOutputChanel(getInertialModel());
 
   // messages from cognition to motion
-//  platformInterface.registerInputChanel(getCameraInfo());
-//  platformInterface.registerInputChanel(getCameraInfoTop());
-//  platformInterface.registerInputChanel(getCameraMatrixOffset());
-//  platformInterface.registerInputChanel(getHeadMotionRequest());
-//  platformInterface.registerInputChanel(getMotionRequest());
+  platformInterface.registerInputChanel(getCameraInfo());
+  platformInterface.registerInputChanel(getCameraInfoTop());
+  platformInterface.registerInputChanel(getCameraMatrixOffset());
+  platformInterface.registerInputChanel(getHeadMotionRequest());
+  platformInterface.registerInputChanel(getMotionRequest());
 
   std::cout << "[Motion] register end" << std::endl;
 }//end init
@@ -140,7 +140,7 @@ void Motion::call()
   /**
   * run the motion engine
   */
-  //theMotionEngine->execute();
+  theMotionEngine->execute();
 
   // TODO: do we need it, is was never used so far
   // calibrate the foot touch detector
@@ -183,7 +183,7 @@ void Motion::call()
 
 void Motion::processSensorData()
 {
-  /*
+
   // check all joint stiffness
   int i = getSensorJointData().checkStiffness();
   if(i != -1)
@@ -218,17 +218,16 @@ void Motion::processSensorData()
   //
   theOdometryCalculator->execute();
 
-
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
-  */
+
   debugPlots();
 }//end processSensorData
 
 
 void Motion::postProcess()
 {
-  /*
+
   motionLogger.log(getFrameInfo().getFrameNumber());
 
   MotorJointData& mjd = getMotorJointData();
@@ -245,7 +244,7 @@ void Motion::postProcess()
   mjd.clamp();
   mjd.updateSpeed(theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
-  */
+
 }//end postProcess
 
 
@@ -273,23 +272,25 @@ void Motion::debugPlots()
 //  PLOT("Motion:InertialModel:x", getInertialModel().orientation.x);
 //  PLOT("Motion:InertialModel:y", getInertialModel().orientation.y);
 
-//  PLOT("Motion:KinematicChain:oriantation:model:x",
-//    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
-//  );
-//  PLOT("Motion:KinematicChain:oriantation:model:y",
-//    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getYAngle()
-//  );
+  PLOT("Motion:KinematicChain:oriantation:model:x",
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
+  );
+  PLOT("Motion:KinematicChain:oriantation:model:y",
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getYAngle()
+  );
 
-//  DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
-//    RotationMatrix calculatedRotation =
-//      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
-//
-//    // calculate expected acceleration sensor reading
-//    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
-//
-//    PLOT("Motion:KinematicChain:oriantation:sensor:x", Math::toDegrees(inertialExpected.x) );
-//    PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
-//  );
+
+  // TODO: shouldn't this be part of kinematicChainProvider?
+  DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
+    RotationMatrix calculatedRotation =
+      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+
+    // calculate expected acceleration sensor reading
+    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
+
+    PLOT("Motion:KinematicChain:oriantation:sensor:x", Math::toDegrees(inertialExpected.x) );
+    PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
+  );
 
 
   // plot the requested joint positions
@@ -354,7 +355,7 @@ void Motion::debugPlots()
 
 }//end debugPlots
 
-/*
+
 void Motion::updateCameraMatrix()
 {
   getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
@@ -377,7 +378,3 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
-*/
-
-
-
