@@ -7,7 +7,7 @@
 
 #include "InitialMotion.h"
 
-#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugPlot.h"
 
 using namespace naoth;
 using namespace std;

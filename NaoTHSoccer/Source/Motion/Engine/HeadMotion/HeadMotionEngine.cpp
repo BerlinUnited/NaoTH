@@ -18,11 +18,7 @@
 #include <Tools/Math/Matrix2x2.h>
 #include <Tools/NaoInfo.h>
 
-// Debug
-#include "Tools/Debug/DebugModify.h"
-#include <Tools/Debug/DebugRequest.h>
 #include "Tools/CameraGeometry.h"
-#include <Tools/Debug/DebugDrawings.h>
 
 
 using namespace naoth;

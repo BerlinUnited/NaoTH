@@ -8,11 +8,6 @@
 
 #include "ArmMotionEngine.h"
 
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugModify.h"
-
-
 #include <PlatformInterface/Platform.h>
 
 using namespace naoth;
@@ -20,6 +15,12 @@ using namespace std;
 
 ArmMotionEngine::ArmMotionEngine()
 {
+    getDebugParameterList().add(&theArmMotionParams);
+}
+
+ArmMotionEngine::~ArmMotionEngine()
+{
+    getDebugParameterList().remove(&theArmMotionParams);
 }
 
 void ArmMotionEngine::execute()

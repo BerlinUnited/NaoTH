@@ -40,6 +40,7 @@
 #define _DestructionSentinel_h_
 
 #include <list>
+#include <cstring> // needed for NULL
 
 template<class T> class DestructionSentinel;
 template<class T> class DestructionListener;

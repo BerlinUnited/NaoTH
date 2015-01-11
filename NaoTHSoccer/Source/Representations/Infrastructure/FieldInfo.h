@@ -88,6 +88,7 @@ public:
   double yPosRightGoalpost;
   double yPosLeftGoalpost;
 
+  Geometry::Rect2d fieldRect;
   Geometry::Rect2d carpetRect;
   Geometry::Rect2d ownHalfRect;
   Geometry::Rect2d oppHalfRect;

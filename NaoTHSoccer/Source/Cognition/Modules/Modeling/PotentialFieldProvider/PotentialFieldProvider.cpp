@@ -7,9 +7,6 @@
 
 #include "PotentialFieldProvider.h"
 
-// Debug
-#include "Tools/Debug/DebugModify.h"
-#include <Tools/Debug/DebugRequest.h>
 
 using namespace naoth;
 using namespace std;
@@ -30,8 +27,14 @@ PotentialFieldProvider::PotentialFieldProvider()
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:sensitivity", "", false);
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:getGoalTargetOld", "", false);
+
+  getDebugParameterList().add(&theParameters);
 }
 
+PotentialFieldProvider::~PotentialFieldProvider()
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 void PotentialFieldProvider::execute()
 {

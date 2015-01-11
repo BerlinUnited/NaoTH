@@ -5,11 +5,11 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.SimpleProgressBar;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.ModuleStopwatchManager;
-import de.naoth.rc.dialogs.panels.SimpleProgressBar;
-import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.StopwatchManager;
 import java.awt.Color;
 import java.awt.GridLayout;

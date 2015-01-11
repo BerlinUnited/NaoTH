@@ -2,7 +2,6 @@
 #include "TeamCommSender.h"
 
 #include <Tools/Debug/DebugRequest.h>
-#include <Tools/Debug/DebugBufferedOutput.h>
 #include <Messages/Representations.pb.h>
 #include <Representations/Modeling/SPLStandardMessage.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -13,6 +12,9 @@ TeamCommReceiver::TeamCommReceiver() : droppedMessages(0)
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
+
+
+  getDebugParameterList().add(&parameters);
 }
 
 void TeamCommReceiver::execute()
@@ -71,6 +73,11 @@ void TeamCommReceiver::execute()
   }
 
   PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
+}
+
+TeamCommReceiver::~TeamCommReceiver()
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)

@@ -5,8 +5,8 @@
 // motion factories
 #include "InitialMotion/InitialMotionFactory.h"
 #include "InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
-#include "ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
-#include "KeyFrameMotion/KeyFrameMotionEngine.h"
+// #include "ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
+#include "KeyFrameMotion/KeyFrameMotionFactory.h"
 
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
@@ -22,7 +22,7 @@ MotionEngine::MotionEngine()
   theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<InverseKinematicsMotionFactory>("InverseKinematicsMotionFactory", true)->getModuleT());
   theMotionFactories.push_back(registerModule<KeyFrameMotionFactory>("KeyFrameMotionFactory", true)->getModuleT());
-  theMotionFactories.push_back(registerModule<ParallelKinematicMotionFactory>("ParallelKinematicMotionFactory", true)->getModuleT());
+  //theMotionFactories.push_back(registerModule<ParallelKinematicMotionFactory>("ParallelKinematicMotionFactory", true)->getModuleT());
 
 
   //

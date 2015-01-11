@@ -14,6 +14,7 @@
 // representations
 #include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/FrameInfo.h>
 
 // tools
 #include "Tools/LinearClassifier.h"
@@ -21,7 +22,18 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
+
+
 BEGIN_DECLARE_MODULE(FootGroundContactDetector)
+
+  REQUIRE(FrameInfo)
+
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+
   PROVIDE(FSRData)
   PROVIDE(GroundContactModel)
 END_DECLARE_MODULE(FootGroundContactDetector)
@@ -44,7 +56,7 @@ private:
   {
   public:
 
-    Parameters() : ParameterList("FootGroundContactParameters")
+      Parameters(DebugParameterList& list) : ParameterList("FootGroundContactParameters"), list(&list)
     {
       PARAMETER_REGISTER(left) = 3;
       PARAMETER_REGISTER(right) = 3;
@@ -52,13 +64,15 @@ private:
 
       syncWithConfig();
 
-      DebugParameterList::getInstance().add(this);
+      this->list->add(this);
     }
 
     ~Parameters()
     {
-      DebugParameterList::getInstance().remove(this);
+      list->remove(this);
     }
+
+    DebugParameterList* list;
 
     double left;
     double right;

@@ -30,7 +30,7 @@
 #include "Representations/Infrastructure/CalibrationData.h"
 
 #include "Representations/Infrastructure/GPSData.h"
-#include "Representations/Infrastructure/SerialSensorData.h"
+//#include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
@@ -46,7 +46,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(FrameInfo)
   
-  PROVIDE(SerialSensorData)
+  //PROVIDE(SerialSensorData)
   PROVIDE(Image)
   PROVIDE(ImageTop)
   PROVIDE(FSRData)
@@ -69,14 +69,14 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
   PROVIDE(VirtualVisionTop)
-  PROVIDE(DebugMessageIn)
+  PROVIDE(DebugMessageInCognition)
 
   // from motion
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
   PROVIDE(CameraMatrixBuffer)
-  PROVIDE(CameraMatrixBuffer2)
+  PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)
   
 END_DECLARE_MODULE(Sensor)

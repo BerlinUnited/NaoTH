@@ -10,19 +10,26 @@
 
 
 #include <ModuleFramework/Module.h>
-#include <DebugCommunication/DebugCommandExecutor.h>
 
 // Representations
 #include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
 
+//Debug
+#include <DebugCommunication/DebugCommandManager.h>
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugParameterList.h>
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CameraDebug)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugCommandManager)
+
   REQUIRE(HeadMotionRequest)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CurrentCameraSettingsTop)
@@ -40,7 +47,7 @@ class CameraDebug : private CameraDebugBase, public DebugCommandExecutor
 
 public:
   CameraDebug();
-  virtual ~CameraDebug(){}
+  virtual ~CameraDebug();
 
   virtual void execute();
 

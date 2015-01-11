@@ -8,7 +8,6 @@
 #ifndef DebugCommandManager_H
 #define DebugCommandManager_H
 
-#include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
 #include "DebugCommandExecutor.h"
 #include <string>
@@ -17,7 +16,6 @@
 class DebugCommandManager 
   : 
   public DebugCommandExecutor,
-  public naoth::Singleton<DebugCommandManager>, 
   public DestructionListener<DebugCommandExecutor>
 {
 public:
@@ -30,7 +28,7 @@ public:
   void handleCommand(  
     const std::string& command, 
     const std::map<std::string, std::string>& arguments, 
-    std::ostream& answer);
+    std::ostream& answer) const;
 
   /**
    * Register a command and a handler for this command.
@@ -82,7 +80,7 @@ private:
 #ifdef DEBUG
 /** register a command only in DEBUG mode */
 #define REGISTER_DEBUG_COMMAND(command, description, executor) \
-DebugCommandManager::getInstance().registerCommand(command, description, executor);
+  getDebugCommandManager().registerCommand(command, description, executor);
 #else //DEBUG
 #define REGISTER_DEBUG_COMMAND(command, description, executor) {}
 #endif //DEBUG

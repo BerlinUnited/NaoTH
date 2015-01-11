@@ -7,6 +7,7 @@
 package de.naoth.rc.manager;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.messages.Messages;
 import java.util.HashMap;
 import java.util.logging.Level;

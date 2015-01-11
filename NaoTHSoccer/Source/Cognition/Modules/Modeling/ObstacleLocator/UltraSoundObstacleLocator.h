@@ -12,11 +12,14 @@
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/DataStructures/RingBufferWithSum.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/Debug/NaoTHAssert.h"
+
+
 
 // tools
 #include "Tools/Math/Geometry.h"
@@ -34,6 +37,11 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugDrawings)
+
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
@@ -68,13 +76,13 @@ private:
 
       // load from the file after registering all parameters
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
+      //DebugParameterList::getInstance().add(this);
     }
 
     int minBlockedDistance;
 
     virtual ~Parameters() {
-      DebugParameterList::getInstance().remove(this);
+      //DebugParameterList::getInstance().remove(this);
     }
   } parameters;
 

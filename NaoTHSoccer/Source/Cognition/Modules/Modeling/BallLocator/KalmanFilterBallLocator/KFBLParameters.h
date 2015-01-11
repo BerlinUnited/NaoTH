@@ -10,12 +10,17 @@
 #define __KFBLParameters_h_
 
 #include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 class KFBLParameters: private ParameterList
 {
 public: 
-  KFBLParameters();
+
+  // TODO: i'm not sure if this is a good solution
+  KFBLParameters(DebugParameterList& list);
   ~KFBLParameters();
+
+  DebugParameterList* list;
 
   // standart deviations for the gausian angle and distance model
 

@@ -12,121 +12,109 @@
 #include <sstream>
 #include <iostream>
 
-#include "Tools/DataStructures/Singleton.h"
 #include "Tools/Math/Vector_n.h"
 
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include "Tools/DataStructures/Serializer.h"
+#include "Color.h"
 
-class DebugDrawings : public naoth::Singleton<DebugDrawings>, public DebugCommandExecutor
+class DrawingCanvas2D
 {
-protected:
-  friend class naoth::Singleton<DebugDrawings>;
-  DebugDrawings();
-  ~DebugDrawings();
-
 public:
 
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::ostream &outstream);
+  void reset() {
+    buffer.str("");
+    buffer.clear();
+  }
+
+  std::stringstream& out() {
+    return buffer;
+  }
+  const std::stringstream& out() const {
+    return buffer;
+  }
+
+public:
+  void pen(const char* color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void pen(const std::string& color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void pen(const Color& color, double width) {
+    out() << "Pen:" << color << ":" << width << std::endl;
+  }
+  void drawCircle(double x, double y, double radius) {
+    out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl;
+  }
+  void drawLine(double x0, double y0, double x1, double y1) {
+    out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+  }
+  void drawArrow(double x0, double y0, double x1, double y1) {
+    out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+  }
+  void drawText(double x, double y, const char* text) {
+    out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
+  }
+
+  void fillBox(double x0, double y0, double x1, double y1) {
+    out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
+  }
+  void fillOval(double x, double y, double radiusX, double radiusY) {
+    out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
+  }
+
+  void drawRobot(double x, double y, double rotation){
+    out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
+  }
   
-  void update();
-  std::stringstream& out();
-
-  /**
-   * class Color encodes a color by 4 double values.
-   * The values represent red, green, blue and the alpha chanels.
-   * every value has to be between 0.0 and 1.0
-   */
-  class Color: public Vector_n<double,4>
-  {
-  public:
-    enum Chanel
-    {
-      red,
-      green, 
-      blue,
-      alpha,
-      numberOfChanel
-    };
-
-    // default color is black
-    Color();
-
-    Color(const Vector_n<double,4>& colorVector);
-
-    Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
-
-    Color(double r, double g, double b, double a = 1.0);
-
-    Color(const char* color);
-
-    /**
-     * Generate a color using an index number.
-     *
-     * The generation is done by more or less random parameters which showed that
-     * they generate differing colors for the first indexes.
-     */
-    Color(unsigned int colorIndex);
-
-    unsigned char getRed() const;
-    unsigned char getGreen() const;
-    unsigned char getBlue() const;
-    unsigned char getAlpha() const;
-
-    // html style hex string
-    std::string toString() const;
-
-
-    static std::string charToHexString(unsigned char c);
-    static int hexCharToInt(char c);
-    static char intToHexChar(int n);
-  };//end class Color
 
 private:
-
-  // reference to the currentelly used buffer
-  std::stringstream* debugDrawingsOut;
-
-  // do double-buffering :)
-  std::stringstream bufferOne;
-  std::stringstream bufferTwo;
+  std::stringstream buffer;
 };
 
-/**
- * Streaming operator that writes a Color to a stream.
- * @param stream The stream to write on.
- * @param image The Color object.
- * @return The stream.
- */ 
-std::ostream& operator<<(std::ostream& stream, const DebugDrawings::Color& color);
+class DebugDrawings : public DrawingCanvas2D {};
+
+namespace naoth
+{
+template<>
+class Serializer<DrawingCanvas2D>
+{
+  public:
+  static void serialize(const DrawingCanvas2D& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, DrawingCanvas2D& object);
+};
+
+template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> {};
+}
 
 
 #ifdef DEBUG
-#define CANVAS(id) DebugDrawings::getInstance().out() << "Canvas:" << id << std::endl
-#define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << std::endl
-#define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << std::endl
-#define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << std::endl
-#define ROTATION(angle) DebugDrawings::getInstance().out() << "Rotation:" << angle << std::endl
-#define TRANSLATION(x,y) DebugDrawings::getInstance().out() << "Translation:" << x << ":" << y << std::endl
+#define CANVAS(id) getDebugDrawings().out() << "Canvas:" << id << std::endl
+#define IMAGE_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnImage" << std::endl
+#define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << std::endl
 
-#define CIRCLE(x,y,radius) DebugDrawings::getInstance().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
-#define OVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
-#define ARROW(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define LINE(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define BOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define FILLBOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
-#define FILLOVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define TEXT_DRAWING(x,y,text) DebugDrawings::getInstance().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
-#define SIMPLE_PARTICLE(x,y,r) DebugDrawings::getInstance().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
+#define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << std::endl
+#define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << std::endl
+#define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << std::endl
+
+#define CIRCLE(x,y,radius) getDebugDrawings().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
+#define OVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
+#define ARROW(x0,y0,x1,y1) getDebugDrawings().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define LINE(x0,y0,x1,y1) getDebugDrawings().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define BOX(x0,y0,x1,y1) getDebugDrawings().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define FILLBOX(x0,y0,x1,y1) getDebugDrawings().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
+#define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
+#define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
 
 #define PARTICLE(x,y,r,l) \
   LINE(x,y,x + l*cos(r),y + l*sin(r)); \
   CIRCLE(x,y,0.1*l)
 
-#define BINARY_PLOT(name,value) DebugDrawings::getInstance().out() << "BinaryPlotData:" << name << ":" << value << std::endl
-#define ROBOT(x,y,rotation) DebugDrawings::getInstance().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
+#define BINARY_PLOT(name,value) getDebugDrawings().out() << "BinaryPlotData:" << name << ":" << value << std::endl
+#define ROBOT(x,y,rotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
 
 
 #else

@@ -7,8 +7,8 @@
  * via the debug-console
  */
 
-#ifndef _ParameterList_h
-#define _ParameterList_h
+#ifndef _ParameterList_h_
+#define _ParameterList_h_
 
 #include <map>
 #include <sstream>
@@ -16,7 +16,7 @@
 class ParameterList
 {
 public:
-  ParameterList(const std::string& parentClassName);
+  ParameterList(const std::string& name) : name(name) {}
   virtual ~ParameterList() {}
 
   bool& registerParameter(const std::string& name, bool& parameter);
@@ -31,19 +31,19 @@ public:
   void syncWithConfig();
   void saveToConfig();
 
-  const std::string& getName() const { return parentClassName; }
+  const std::string& getName() const { return name; }
 
 private:
-  std::string parentClassName;
+  std::string name;
 
-  std::map<std::string, unsigned int*> unsignedIntParameterReferences;
-  std::map<std::string, int*> intParameterReferences;
-  std::map<std::string, double*> doubleParameterReferences;
-  std::map<std::string, std::string*> stringParameterReferences;
-  std::map<std::string, bool*> boolParameterReferences;
+  std::map<std::string, unsigned int*> unsignedIntParameters;
+  std::map<std::string, int*> intParameters;
+  std::map<std::string, double*> doubleParameters;
+  std::map<std::string, std::string*> stringParameters;
+  std::map<std::string, bool*> boolParameters;
 
 };
 
 #define PARAMETER_REGISTER(parameter) registerParameter(convertName(#parameter), parameter)
 
-#endif // _ParameterList_h
+#endif // _ParameterList_h_

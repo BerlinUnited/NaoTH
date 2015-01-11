@@ -6,7 +6,6 @@
 */
 
 #include "SampleSet.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Common.h"
 
@@ -169,28 +168,27 @@ const Sample& SampleSet::getMostLikelySample() const
   return samples[maxIdx];
 }
 
-void SampleSet::drawCluster(unsigned int clusterId) const
+void SampleSet::drawCluster(DrawingCanvas2D& canvas, unsigned int clusterId) const
 {
   ASSERT(samples.size() > 0);
-  FIELD_DRAWING_CONTEXT;
+
   for (size_t i = 0; i < samples.size(); i++)
   {
     if (samples[i].cluster == (int)clusterId) {
-      PEN("FFFFFF", 20);
+      canvas.pen("FFFFFF", 20);
     } else { 
-      PEN("000000", 20);
+      canvas.pen("000000", 20);
     }
 
-    ARROW(samples[i].translation.x, samples[i].translation.y, 
+    canvas.drawArrow(samples[i].translation.x, samples[i].translation.y, 
           samples[i].translation.x + 100*cos(samples[i].rotation), 
           samples[i].translation.y + 100*sin(samples[i].rotation));
   }
 }
 
-void SampleSet::drawImportance(bool /*arrows*/) const
+void SampleSet::drawImportance(DrawingCanvas2D& canvas, bool /*arrows*/) const
 {
   ASSERT(samples.size() > 0);
-  FIELD_DRAWING_CONTEXT;
 
   // normalize the colors (black: less importent, red more importent)
   double minValue = samples[0].likelihood;
@@ -204,14 +202,14 @@ void SampleSet::drawImportance(bool /*arrows*/) const
 
   for (size_t i = 0; i < samples.size(); i++)
   {
-    DebugDrawings::Color color;
+    Color color;
     if(colorDiff > 0) {
       color[0] = Math::clamp((log(samples[i].likelihood) - log(minValue))/colorDiff,0.0,1.0);
     }
     
-    PEN(color, 20);
+    canvas.pen(color, 20);
 
-    ARROW(samples[i].translation.x, samples[i].translation.y, 
+    canvas.drawArrow(samples[i].translation.x, samples[i].translation.y, 
           samples[i].translation.x + 100*cos(samples[i].rotation), 
           samples[i].translation.y + 100*sin(samples[i].rotation));
   }

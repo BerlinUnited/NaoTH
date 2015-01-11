@@ -27,7 +27,8 @@ public:
     reactiveBallModelNeeded(false)
   {
   }
-  ~SituationStatus();
+
+  ~SituationStatus(){}
 
   enum StatusID
   {
@@ -44,7 +45,10 @@ public:
   bool ownHalf; //force selflocator to locate in own half (e.g. after penalized)
   bool oppHalf; //force selflocator to locate in opp half (e.g. for debugging attacksituations)
   bool reactiveBallModelNeeded; // NOTE: deprecated
-  virtual void print(std::ostream& stream) const;
+  virtual void print(std::ostream& stream) const
+  {
+    stream << "In own half = " << ownHalf << std::endl;
+  }
 
 };
 #endif  /* _SITUATIONSTATUS_H */

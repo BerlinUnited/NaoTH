@@ -7,13 +7,9 @@
 
 #include "KalmanFilterBallLocator.h"
 
-// debug
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugModify.h"
-
 KalmanFilterBallLocator::KalmanFilterBallLocator()
   : 
-    modelIsValid(false), wasReactiveInLastFrame(false)
+    parameters(getDebugParameterList()), modelIsValid(false), wasReactiveInLastFrame(false)
 {
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_ball_on_field", "draw the modelled ball on the field", false);
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:hold_ball_prediction_in_10s", "draw the ball prediction for 10s.", false);

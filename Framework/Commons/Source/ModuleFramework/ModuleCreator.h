@@ -9,7 +9,7 @@
 #include "Module.h"
 
 #include <Tools/DataStructures/Printable.h>
-#include <Tools/Debug/Stopwatch.h>
+#include <Representations/Debug/Stopwatch.h>
 
 /**
  * AbstractModuleCreator is an interface.
@@ -74,7 +74,8 @@ public:
   ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
     : theBlackBoard(theBlackBoard),
       theInstance(NULL),
-      stopwatch(StopwatchManager::getInstance().getStopwatchReference(IF<M>::getName()))
+      //stopwatch(StopwatchManager::getInstance().getStopwatch(IF<M>::getName()))
+      stopwatch((*(theBlackBoard.template getRepresentation<DataHolder<StopwatchManager> >("StopwatchManager"))).getStopwatch(IF<M>::getName()))
   {
     setEnabled(enabled);
   }

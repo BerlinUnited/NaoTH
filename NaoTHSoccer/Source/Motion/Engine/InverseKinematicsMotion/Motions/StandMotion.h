@@ -15,7 +15,7 @@
 #define _StandMotion_H
 
 #include "IKMotion.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugPlot.h"
 
 #include <ModuleFramework/Module.h>
 
@@ -30,8 +30,14 @@
 #include <Representations/Infrastructure/CalibrationData.h>
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+
+  REQUIRE(FrameInfo)
+
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
   REQUIRE(GroundContactModel)

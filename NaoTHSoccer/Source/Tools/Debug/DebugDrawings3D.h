@@ -5,33 +5,21 @@
 #ifndef _DEBUGDRAWINGS3D_H
 #define  _DEBUGDRAWINGS3D_H
 
-#include "Tools/DataStructures/Singleton.h"
+#include "Tools/DataStructures/Serializer.h"
 #include <Tools/ColorClasses.h>
 #include "Tools/Math/Pose3D.h"
-#include <DebugCommunication/DebugCommandExecutor.h>
 
 #include <sstream>
 
-//#include "pthread.h"
-
-//#include <pthread.h>
-
 using namespace naoth;
 
-class DebugDrawings3D : public Singleton<DebugDrawings3D>, public DebugCommandExecutor
+class DebugDrawings3D
 {
-  friend class Singleton<DebugDrawings3D>;
-protected:
+public:
   DebugDrawings3D();
   ~DebugDrawings3D();
-public:
-  bool isActive() const { return activeCount > 0; }
 
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string, std::string>& arguments,
-    std::ostream &outstream);
-
-  void update();
+  void reset();
 
   void addEntity(const std::string& name, const Pose3D& pose);
   void addEntity(const std::string& name, const RotationMatrix& R, const Vector3<double>& p);
@@ -64,22 +52,34 @@ public:
 
   void addCamera(const std::string& id, const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
   void addCamera(const std::string& id, const Pose3D& rp, const Pose3D& cm, double focusLength, unsigned int width, unsigned height);
+
+  const std::stringstream& getOutStream() const {
+    return outStream;
+  }
+
 private:
   std::stringstream outStream;
-
-  int activeCount;
-
-  //pthread_mutex_t theMutex;
 };
 
+namespace naoth
+{
+template<>
+class Serializer<DebugDrawings3D>
+{
+public:
+  static void serialize(const DebugDrawings3D& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, DebugDrawings3D& object);
+};
+}
+
 #ifdef DEBUG
-#define ENTITY DebugDrawings3D::getInstance().addEntity
-#define BOX_3D DebugDrawings3D::getInstance().addBox
-#define SPHERE DebugDrawings3D::getInstance().addSphere
-#define CONE DebugDrawings3D::getInstance().addCone
-#define CYLINDER DebugDrawings3D::getInstance().addCylinder
-#define LINE_3D DebugDrawings3D::getInstance().addLine
-#define TEXT_3D DebugDrawings3D::getInstance().addText3D
+#define ENTITY getDebugDrawings3D().addEntity
+#define BOX_3D getDebugDrawings3D().addBox
+#define SPHERE getDebugDrawings3D().addSphere
+#define CONE getDebugDrawings3D().addCone
+#define CYLINDER getDebugDrawings3D().addCylinder
+#define LINE_3D getDebugDrawings3D().addLine
+#define TEXT_3D getDebugDrawings3D().addText3D
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */
 #define ENTITY(...) ((void)0)

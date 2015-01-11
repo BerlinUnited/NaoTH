@@ -3,6 +3,7 @@
  */
 package de.naoth.rc.manager;
 
+import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.server.Command;
@@ -40,7 +41,7 @@ public class PlotDataManagerImpl extends AbstractManagerPlugin<Plots>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("plot:get");
+    return new Command("Cognition:representation:getbinary").addArg("DebugPlot");
   }
 }//end class PlotDataManager
 

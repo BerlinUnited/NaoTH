@@ -13,7 +13,6 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include <vector>
 

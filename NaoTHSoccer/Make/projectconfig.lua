@@ -93,7 +93,7 @@ end
 --------------------------------------------------------------
 assert(FRAMEWORK_PATH ~= nil and os.isdir(FRAMEWORK_PATH), 
 	"a valid FRAMEWORK_PATH is needed for compilation.")
-dofile (FRAMEWORK_PATH .. "/LuaTools/ansicolors.lua")
+dofile (FRAMEWORK_PATH .. "/BuildTools/ansicolors.lua")
 
 print("INFO: list raw path configuration")
 printPath("  FRAMEWORK_PATH = ", tostring(FRAMEWORK_PATH))
@@ -108,7 +108,7 @@ printPath("  WEBOTS_HOME = ", tostring(WEBOTS_HOME))
 
 -- define pathes depending on the platform
 if PLATFORM == "Nao" then
-    assert(EXTERN_PATH_NAO ~= nil, "EXTERN_PATH_NAO is needed to be able to compile for nao.")
+  assert(EXTERN_PATH_NAO ~= nil, "EXTERN_PATH_NAO is needed to be able to compile for nao.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NAO)
 	if AL_DIR ~= nil then
 		PATH:includedirs {AL_DIR .. "/include"}
@@ -126,8 +126,8 @@ end
 -- add general pathes
 -- this mainly reflects the internal structure of the extern directory
 PATH:includedirs {
-	FRAMEWORK_PATH .. "/NaoTH-Commons/Source",
-	FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages",
+	FRAMEWORK_PATH .. "/Commons/Source",
+	FRAMEWORK_PATH .. "/Commons/Source/Messages",
 	EXTERN_PATH .. "/include",
 	EXTERN_PATH .. "/include/glib-2.0",
 	EXTERN_PATH .. "/lib/glib-2.0/include"

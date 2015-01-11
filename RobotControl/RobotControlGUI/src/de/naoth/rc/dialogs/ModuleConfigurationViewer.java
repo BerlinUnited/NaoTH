@@ -9,16 +9,16 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.dialogs.Tools.S20BinaryLookup;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
-import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Component;
@@ -91,7 +91,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileChooser = new de.naoth.rc.dialogs.panels.ExtendedFileChooser();
+        fileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonRefresh = new javax.swing.JToggleButton();
         btExport = new javax.swing.JButton();
@@ -102,8 +102,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         cbRepresentations = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane = new javax.swing.JScrollPane();
-        moduleConfigTree = new de.naoth.rc.checkboxtree.CheckboxTree();
-        modulePanel = new de.naoth.rc.dialogs.panels.SimpleModulePanel();
+        moduleConfigTree = new de.naoth.rc.components.checkboxtree.CheckboxTree();
+        modulePanel = new de.naoth.rc.components.SimpleModulePanel();
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -502,12 +502,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private javax.swing.JComboBox cbModules;
     private javax.swing.JComboBox cbProcess;
     private javax.swing.JComboBox cbRepresentations;
-    private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
+    private de.naoth.rc.components.ExtendedFileChooser fileChooser;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
-    private de.naoth.rc.checkboxtree.CheckboxTree moduleConfigTree;
-    private de.naoth.rc.dialogs.panels.SimpleModulePanel modulePanel;
+    private de.naoth.rc.components.checkboxtree.CheckboxTree moduleConfigTree;
+    private de.naoth.rc.components.SimpleModulePanel modulePanel;
     // End of variables declaration//GEN-END:variables
 }//end class ModuleConfigurationViewer

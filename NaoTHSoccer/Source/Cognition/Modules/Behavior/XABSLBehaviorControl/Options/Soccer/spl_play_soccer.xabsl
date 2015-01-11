@@ -1,0 +1,21 @@
+/** The root option of the soccer behavior */
+option spl_play_soccer {
+  
+  initial state play_soccer {
+    action {
+      // react to the game controller and handle fall down
+      basic_play();
+
+      play_soccer();
+
+      // control the arms
+      arms_control();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+
+      //hack
+      situationStatusOwnHalf = situationStatusOwnHalf || (game.player_number == 1);
+    }
+  }
+}

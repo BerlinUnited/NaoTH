@@ -9,6 +9,8 @@
 
 #include <ModuleFramework/ModuleManager.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandManager.h>
+#include <Tools/Debug/DebugRequest.h>
 
 class ModuleManagerWithDebug: public ModuleManager, public DebugCommandExecutor
 {
@@ -20,6 +22,17 @@ public:
                            const std::map<std::string,std::string>& arguments, 
                            std::ostream& outstream);
 
+protected:
+  DebugCommandManager& getDebugCommandManager() {
+    DebugCommandManager& debugCommandManager = *(getBlackBoard().getRepresentation<DataHolder<DebugCommandManager> >("DebugCommandManager"));
+    return debugCommandManager;
+  }
+
+  DebugRequest& getDebugRequest() {
+    DebugRequest& debugRequest = *(getBlackBoard().getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
+    return debugRequest;
+  }
+
 private:
   std::string commandModulesList;
   std::string commandModulesSet;
@@ -30,6 +43,7 @@ private:
   std::string commandRepresentationGet;
   std::string commandRepresentationGetbinary;
 
+  std::string commandDebugRequestSet;
   
   
   void modulesList(std::ostream& outstream);

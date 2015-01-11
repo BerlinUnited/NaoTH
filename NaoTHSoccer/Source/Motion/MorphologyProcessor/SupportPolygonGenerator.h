@@ -21,9 +21,13 @@
 
 // debug
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandManager.h>
 
 
 BEGIN_DECLARE_MODULE(SupportPolygonGenerator)
+
+  PROVIDE(DebugCommandManager)
+
   REQUIRE(FSRData)
   REQUIRE(FSRPositions)
   REQUIRE(KinematicChainSensor)

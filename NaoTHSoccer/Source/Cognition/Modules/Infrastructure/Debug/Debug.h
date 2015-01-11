@@ -11,7 +11,7 @@
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-#include "Representations/Infrastructure/FieldInfo.h"
+//#include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
@@ -20,43 +20,62 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/FieldInfo.h>
 
-#include "Representations/Infrastructure/ColorTable64.h"
-#include "Representations/Modeling/ColorClassificationModel.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/BehaviorStateComplete.h"
-#include "Representations/Modeling/BehaviorStateSparse.h"
+//#include "Representations/Infrastructure/ColorTable64.h"
+//#include "Representations/Modeling/ColorClassificationModel.h"
+//#include "Representations/Motion/Request/MotionRequest.h"
+//#include "Representations/Modeling/RobotPose.h"
+//#include "Representations/Modeling/KinematicChain.h"
+//#include "Representations/Modeling/BallModel.h"
 
-#include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/RobotPose.h"
+//#include "Representations/Perception/CameraMatrix.h"
+//#include "Representations/Modeling/RobotPose.h"
 
+#include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/Logger.h"
+#include <Representations/Debug/Stopwatch.h>
+#include <Tools/Debug/DebugImageDrawings.h>
+#include "Tools/Debug/DebugDrawings.h"
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugPlot.h>
+#include <Tools/Debug/DebugParameterList.h>
+#include "Tools/Debug/DebugModify.h"
+
+#include <Tools/DataStructures/ParameterList.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
-  REQUIRE(FrameInfo)
+
+// debug
+  PROVIDE(StopwatchManager)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugCommandManager)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+
   REQUIRE(FieldInfo)
+  REQUIRE(FrameInfo)
+//  REQUIRE(FieldInfo)
   PROVIDE(Image)
   PROVIDE(ImageTop)
 
-  REQUIRE(RobotPose)
-  REQUIRE(KinematicChain)
-  REQUIRE(BallModel)
+//  REQUIRE(RobotPose)
+//  REQUIRE(KinematicChain)
+//  REQUIRE(BallModel)
 
-  PROVIDE(CameraInfoParameter)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
-
-  REQUIRE(BehaviorStateComplete)
-  REQUIRE(BehaviorStateSparse)
+//  PROVIDE(CameraInfoParameter)
+//  REQUIRE(CameraMatrix)
+//  REQUIRE(CameraMatrixTop)
   
-  PROVIDE(ColorTable64)
-  PROVIDE(ColorClassificationModel)
-  PROVIDE(MotionRequest)
+//  PROVIDE(ColorTable64)
+//  PROVIDE(ColorClassificationModel)
+//  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, virtual private BlackBoardInterface, public DebugCommandExecutor
@@ -71,12 +90,22 @@ public:
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream);
 
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("DebugParameter") 
+    {
+      PARAMETER_REGISTER(test) = 20;
+
+      syncWithConfig();
+    }
+
+    double test;
+
+  } parameter;
+
 private:
   Logger cognitionLogger;
-
-  void draw3D();
-  void drawRobot3D(const Pose3D& robotPose);
-  void drawKinematicChain3D();
 
 
   void registerLogableRepresentationList()
@@ -89,7 +118,7 @@ private:
       const Representation& theRepresentation = iter->second->getRepresentation();
       cognitionLogger.addRepresentation(&theRepresentation, iter->first);
     }
-  }//end registerLogableRepresentationList
+  }
 
 };
 

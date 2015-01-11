@@ -11,21 +11,26 @@
 
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.components.PNGExportFileType;
+import de.naoth.rc.components.PlainPDFExportFileType;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.manager.PlotDataManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.server.Command;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IRangePolicy;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.ITracePoint2D;
 import info.monitorenter.gui.chart.LabeledValue;
 import info.monitorenter.gui.chart.axis.AxisLinear;
-import info.monitorenter.gui.chart.pointhighlighters.APointHighlighter;
-import info.monitorenter.gui.chart.pointhighlighters.PointHighlighterConfigurable;
 import info.monitorenter.gui.chart.pointpainters.APointPainter;
 import info.monitorenter.gui.chart.rangepolicies.ARangePolicy;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
@@ -40,40 +45,54 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import org.freehep.graphicsio.emf.EMFExportFileType;
+import org.freehep.graphicsio.java.JAVAExportFileType;
+import org.freehep.graphicsio.ps.EPSExportFileType;
+import org.freehep.graphicsio.svg.SVGExportFileType;
+import org.freehep.util.export.ExportDialog;
 
 /**
  *
  * @author Heinrich Mellmann
  */
-@PluginImplementation
 public class Plott2D  extends AbstractDialog
-  implements ObjectListener<Plots>
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public PlotDataManager plotDataManager;
-
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<Plott2D>
+  {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
+  }
   
-  private final int maxNumberOfValues = 5000;
+  private final int maxNumberOfValues = 10000;
   private final int numberOfValues = maxNumberOfValues;
   
   //private final ColorIterator colorIterator = new ColorIterator();
-  private final APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
+  //private final APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
 
   private final Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
   private final Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
+  private final Command commandGetPlotMotion = new Command("Motion:DebugPlot:get");
+  private final Command commandGetPlotCognition = new Command("Cognition:DebugPlot:get");
+  
+  private final PlotDataHandler plotDataHandler = new PlotDataHandler();
+  
     /** Creates new form SimpleValuePlotter */
     public Plott2D() {
         initComponents();
@@ -269,6 +288,8 @@ public class Plott2D  extends AbstractDialog
         cbDontScrollOnStaticRegionData = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         cbShowGrid = new javax.swing.JCheckBox();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jSplitPane = new javax.swing.JSplitPane();
         scrollList = new javax.swing.JScrollPane();
         panelList = new javax.swing.JPanel();
@@ -339,6 +360,28 @@ public class Plott2D  extends AbstractDialog
         });
         jToolBar1.add(cbShowGrid);
 
+        jButton2.setText("export csv");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton2);
+
+        jButton3.setText("export graph");
+        jButton3.setFocusable(false);
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton3);
+
         jSplitPane.setBorder(null);
         jSplitPane.setDividerLocation(150);
 
@@ -354,7 +397,7 @@ public class Plott2D  extends AbstractDialog
         chart.setLayout(chartLayout);
         chartLayout.setHorizontalGroup(
             chartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 369, Short.MAX_VALUE)
+            .addGap(0, 479, Short.MAX_VALUE)
         );
         chartLayout.setVerticalGroup(
             chartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -367,8 +410,8 @@ public class Plott2D  extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-            .addComponent(jSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSplitPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -382,14 +425,16 @@ public class Plott2D  extends AbstractDialog
     private void btReceiveDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDataActionPerformed
 
       if (btReceiveData.isSelected()) {
-        if (parent.checkConnected()) {
-          plotDataManager.addListener(this);
+        if (Plugin.parent.checkConnected()) {
+          Plugin.genericManagerFactory.getManager(commandGetPlotMotion).addListener(plotDataHandler);
+          Plugin.genericManagerFactory.getManager(commandGetPlotCognition).addListener(plotDataHandler);
           chart.getAxisX().setRangePolicy(new DynamicRangePolicy(chart.getAxisX().getRange()));
         } else {
           btReceiveData.setSelected(false);
         }
       } else {
-        plotDataManager.removeListener(this);
+        Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+        Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
         chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(chart.getAxisX().getRange()));
         //chart.enablePointHighlighting(true);
       }
@@ -444,6 +489,48 @@ private void clearTracePoints()
         }
     }//GEN-LAST:event_cbShowGridActionPerformed
 
+    private int name_count = 0;
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        for(String name : plotTraces.keySet()) {
+            ITrace2D trace = plotTraces.get(name);
+            Iterator<ITracePoint2D> pi = trace.iterator();
+            
+            try {
+                String fileName = name.replace(':', '_') + name_count + ".txt";
+                PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+                //System.out.println(name  + "X, " + name + "Y");
+
+                while(pi.hasNext())
+                {
+                    ITracePoint2D p = pi.next();
+                    //System.out.println(p.getX() + ", " + p.getY());
+                    writer.println("" + p.getX() + ", " + p.getY());
+                }
+                
+                writer.close();
+            } catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        
+        name_count++;
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        ExportDialog export = new ExportDialog("FieldViewer", false);
+  
+        // add the image types for export
+        export.addExportFileType(new SVGExportFileType());
+        export.addExportFileType(new PlainPDFExportFileType());
+        export.addExportFileType(new EPSExportFileType());
+        export.addExportFileType(new EMFExportFileType());
+        export.addExportFileType(new JAVAExportFileType());
+        export.addExportFileType(new PNGExportFileType());
+
+        export.showExportDialog(this, "Export view as ...", this.chart, "export");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -454,45 +541,46 @@ private void clearTracePoints()
     private javax.swing.JCheckBox cbShowGrid;
     private info.monitorenter.gui.chart.Chart2D chart;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JSplitPane jSplitPane;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel panelList;
     private javax.swing.JScrollPane scrollList;
     // End of variables declaration//GEN-END:variables
 
-  @Override
-  public void errorOccured(String cause) {
-    JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
-    plotDataManager.removeListener(this);
-  }
-
-  @Override
-  public void newObjectReceived(Plots data)
+  class PlotDataHandler implements ObjectListener<byte[]>
   {
-    if (data != null)
-    {
-      synchronized(this)
-      {
-         /*
-        for(PlotItem item : data.getPlotsList())
+    @Override
+    public void newObjectReceived(byte[] object) {
+        try
         {
-          if(item.getType() == PlotItem.PlotType.Default && item.hasX() && item.hasY())
+          if (object != null)
           {
-            addValue(item.getName(), item.getX(), item.getY());
-          }
-        }//end for
-           * */
-        for(PlotStroke2D stroke : data.getPlotstrokesList())
+              synchronized(Plott2D.this)
+              {
+                Plots plots = Plots.parseFrom(object);
+                for(PlotStroke2D stroke : plots.getPlotstrokesList())
+                {
+                  for(DoubleVector2 point: stroke.getPointsList())
+                  {
+                    addValue(stroke.getName(), point.getX(), point.getY());
+                  }
+                }//end for
+              }//end synchronized
+            }//end if
+        }
+        catch (InvalidProtocolBufferException ex)
         {
-          for(DoubleVector2 point: stroke.getPointsList())
-          {
-            addValue(stroke.getName(), point.getX(), point.getY());
-          }
-        }//end for
-      }//end synchronized
-    }//end if
-  }//end newObjectReceived
+          Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, new String(object), ex);
+        }
+    }
 
+    @Override
+    public void errorOccured(String cause) {
+        errorOccured(cause);
+    }
+  }//end class DataHandlerPrint
 
   public class PointPainterCoords extends APointPainter
   {
@@ -529,7 +617,7 @@ private void clearTracePoints()
     {
       Trace2DLtd trace = new Trace2DLtd(numberOfValues, name);
       trace.setVisible(false);
-      trace.setPointHighlighter(pointHighlighter);
+      //trace.setPointHighlighter(pointHighlighter);
       plotTraces.put(name, trace);
       plotTracesMaxX.put(name, 0.0);
       chart.addTrace(trace);
@@ -578,6 +666,7 @@ private void clearTracePoints()
     {
       plotTracesMaxX.put(name, x);
       plotTraces.get(name).addPoint(x, y);
+      System.out.println("" + x + " - " + y);
     }
     
   }//end addValue
@@ -586,7 +675,8 @@ private void clearTracePoints()
   public void dispose()
   {
     btReceiveData.setSelected(false);
-    plotDataManager.removeListener(this);
+    Plugin.genericManagerFactory.getManager(commandGetPlotMotion).removeListener(plotDataHandler);
+    Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
   }
 
   private int currentColorIndex = 0;

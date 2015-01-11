@@ -8,7 +8,6 @@
 #define  _Histogram_H
 
 #include <vector>
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 namespace Statistics
@@ -197,46 +196,10 @@ namespace Statistics
         calculated = true;
       }
 
-      //generate plot for raw, normalized and cumulated histograms
-      void plot(std::string id) const
-      {
-        for(int i = 0; i < size; i++)
-        {
-          PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
-          if(calculated)
-          {
-            PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
-            PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
-          }
-        }
-      }
-
-      //generate plot only for raw histogram
-      void plotRaw(std::string id) const
-      {
-        for(int i = 0; i < size; i++)
-        {
-          PLOT_GENERIC(id + ":rawHistogram", i, rawData[i]);
-        }
-      }
-
-      //generate plot only for normalized histogram
-      void plotNormalized(std::string id) const
-      {
-        for(int i = 0; i < size; i++)
-        {
-          PLOT_GENERIC(id + ":normalizedHistogram", i, normalizedData[i]);
-        }
-      }
-
-      //generate plot only for cumulated histogram
-      void plotCumulated(std::string id) const
-      {
-        for(int i = 0; i < size; i++)
-        {
-          PLOT_GENERIC(id + ":cumulativeHistogram", i, cumulativeData[i]);
-        }
-      }
+    bool isCalculated()
+    {
+      return calculated;
+    };
 
   protected:
     bool calculated;

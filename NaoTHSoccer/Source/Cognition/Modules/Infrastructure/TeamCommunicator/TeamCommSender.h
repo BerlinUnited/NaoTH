@@ -15,7 +15,6 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
-#include "Representations/Modeling/TeamMessage.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(FrameInfo)

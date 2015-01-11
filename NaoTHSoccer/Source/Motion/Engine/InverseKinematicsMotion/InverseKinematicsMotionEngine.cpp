@@ -9,8 +9,6 @@
 
 #include "InverseKinematicsMotionEngine.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -19,7 +17,7 @@ InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
  :
   rotationStabilizeFactor(0)
 {
-  
+    getDebugParameterList().add(&theParameters);
 }
 
 Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const

@@ -9,8 +9,6 @@
 #include "SupportPolygonGenerator.h"
 #include "PlatformInterface/Platform.h"
 
-#include <DebugCommunication/DebugCommandManager.h>
-
 using namespace naoth;
 using namespace std;
 

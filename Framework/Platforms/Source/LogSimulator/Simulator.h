@@ -155,8 +155,11 @@ private:
   DebugServer theDebugServer;
 
 public:
-  void get(DebugMessageIn& data) {
-    theDebugServer.getDebugMessageIn(data);
+  void get(DebugMessageInCognition& data) {
+    theDebugServer.getDebugMessageInCognition(data);
+  }
+  void get(DebugMessageInMotion& data) {
+    theDebugServer.getDebugMessageInMotion(data);
   }
 
   void set(const DebugMessageOut& data) {

@@ -21,7 +21,18 @@
 
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
+// debug
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
+
 BEGIN_DECLARE_MODULE(ArmMotionEngine)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
   REQUIRE(SensorJointData)
@@ -36,7 +47,7 @@ class ArmMotionEngine: private ArmMotionEngineBase
 {
 public:
   ArmMotionEngine();
-  ~ArmMotionEngine(){}
+  ~ArmMotionEngine();
 
   void execute();
 
@@ -55,11 +66,9 @@ private:
       PARAMETER_REGISTER(armsOnBack.elbowYaw) = 25;
 
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
     }
 
     ~ArmMotionParams() {
-      DebugParameterList::getInstance().remove(this);
     }
 
     struct ArmsOnBack {

@@ -8,10 +8,10 @@
 */
 
 #include "KFBLParameters.h"
-#include "Tools/Debug/DebugParameterList.h"
 
-KFBLParameters::KFBLParameters()
-  : ParameterList("KFBLParameters")
+KFBLParameters::KFBLParameters(DebugParameterList& list)
+  : ParameterList("KFBLParameters"),
+    list(&list)
 {
   PARAMETER_REGISTER(sigmaBallPosition) = 100;
   PARAMETER_REGISTER(sigmaBallPositionReactive) = 100;
@@ -28,10 +28,10 @@ KFBLParameters::KFBLParameters()
   // load from the file after registering all parameters
   syncWithConfig();
 
-  DebugParameterList::getInstance().add(this);
+  this->list->add(this);
 }
 
 KFBLParameters::~KFBLParameters()
 {
-  DebugParameterList::getInstance().remove(this);
+  list->remove(this);
 }

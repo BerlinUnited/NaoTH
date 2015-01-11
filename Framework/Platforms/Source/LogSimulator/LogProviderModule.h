@@ -10,19 +10,16 @@
 
 #include <ModuleFramework/Module.h>
 #include "LogFileScanner.h"
+
 #include <Tools/Debug/DebugRequest.h>
 
-class LogProvider;
 
-template<> class IF<LogProvider>: public StaticRegistry<LogProvider>
-{
-public:
-  static std::string getName() { return "LogProvider"; }
-  static std::string getModulePath() { return get_sub_core_module_path(__FILE__); }
-};
+BEGIN_DECLARE_MODULE(LogProvider)
+  PROVIDE(DebugRequest)
+END_DECLARE_MODULE(LogProvider)
 
 
-class LogProvider: public Module, virtual private BlackBoardInterface
+class LogProvider: public LogProviderBase, virtual public BlackBoardInterface
 {
 private:
   const LogFileScanner::Frame* representations;
@@ -47,10 +44,6 @@ public:
     exludeMap.insert("UltraSoundReceiveData");
     exludeMap.insert("FrameInfo");
   }
-
-  virtual std::string getName() const { return "LogProvider"; }
-  virtual std::string getModulePath() const { return IF<LogProvider>::getModulePath(); } \
-  virtual std::string getDescription() const { return IF<LogProvider>::description; }
 
   void init(LogFileScanner& logScanner, const LogFileScanner::Frame& rep, const std::set<std::string>& includedRepresentations)
   {

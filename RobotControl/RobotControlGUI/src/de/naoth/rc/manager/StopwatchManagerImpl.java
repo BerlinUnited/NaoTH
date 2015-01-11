@@ -20,7 +20,7 @@ public class StopwatchManagerImpl extends AbstractStopwatchManager
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("stopwatch");
+    return new Command("Cognition:representation:getbinary").addArg("StopwatchManager");
   }
 
 }//end class StopwatchManagerImpl

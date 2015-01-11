@@ -5,30 +5,29 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.Dialog;
-import de.naoth.rc.DialogPlugin;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.Dialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.dialogs.Tools.PNGExportFileType;
-import de.naoth.rc.dialogs.Tools.PlainPDFExportFileType;
-import de.naoth.rc.dialogs.drawings.Drawable;
-import de.naoth.rc.dialogs.drawings.DrawingCollection;
-import de.naoth.rc.dialogs.drawings.DrawingOnField;
-import de.naoth.rc.dialogs.drawings.DrawingsContainer;
-import de.naoth.rc.dialogs.drawings.FieldDrawingS3D2011;
-import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2012;
-import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2013;
-import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
-import de.naoth.rc.dialogs.drawings.RadarDrawing;
-import de.naoth.rc.dialogs.drawings.StrokePlot;
+import de.naoth.rc.components.PNGExportFileType;
+import de.naoth.rc.components.PlainPDFExportFileType;
+import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.drawings.DrawingOnField;
+import de.naoth.rc.drawings.DrawingsContainer;
+import de.naoth.rc.drawings.FieldDrawingS3D2011;
+import de.naoth.rc.drawings.FieldDrawingSPL2012;
+import de.naoth.rc.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.drawings.LocalFieldDrawing;
+import de.naoth.rc.drawings.RadarDrawing;
+import de.naoth.rc.drawings.StrokePlot;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
-import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
-import de.naoth.rc.manager.TeamCommDrawingManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
@@ -36,7 +35,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -67,8 +65,6 @@ public class FieldViewer extends AbstractDialog
       @InjectPlugin
       public static ImageManagerBottom imageManager;
       @InjectPlugin
-      public static TeamCommDrawingManager teamCommDrawingManager;
-      @InjectPlugin
       public static DrawingEventManager drawingEventManager;
   }//end Plugin
   
@@ -81,8 +77,8 @@ public class FieldViewer extends AbstractDialog
   private StrokePlot strokePlot;
 
   // TODO: this is a hack
-  private static de.naoth.rc.dialogs.panels.DynamicCanvasPanel canvasExport = null;
-  public static de.naoth.rc.dialogs.panels.DynamicCanvasPanel getCanvas() {
+  private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
+  public static de.naoth.rc.components.DynamicCanvasPanel getCanvas() {
       return canvasExport;
   }
   
@@ -92,15 +88,15 @@ public class FieldViewer extends AbstractDialog
     
     // 
     this.cbBackground.setModel(
-            new javax.swing.DefaultComboBoxModel(
-            new Drawable[] 
-            { 
-                new FieldDrawingSPL2013(),
-                new FieldDrawingSPL2012(),
-                new FieldDrawingS3D2011(),
-                new LocalFieldDrawing(),
-                new RadarDrawing()
-            }
+        new javax.swing.DefaultComboBoxModel(
+        new Drawable[] 
+        { 
+            new FieldDrawingSPL2013(),
+            new FieldDrawingSPL2012(),
+            new FieldDrawingS3D2011(),
+            new LocalFieldDrawing(),
+            new RadarDrawing()
+        }
     ));
     
     this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
@@ -128,7 +124,6 @@ public class FieldViewer extends AbstractDialog
     });
   }
 
-  
   @Init
   @Override
   public void init()
@@ -138,12 +133,6 @@ public class FieldViewer extends AbstractDialog
     this.fieldCanvas.repaint();
 
     this.strokePlot = new StrokePlot(300);
-  }
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
   }
 
   /** This method is called from within the constructor to
@@ -159,7 +148,6 @@ public class FieldViewer extends AbstractDialog
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
-        btReceiveTeamCommDrawings = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btImageProjection = new javax.swing.JToggleButton();
@@ -170,7 +158,7 @@ public class FieldViewer extends AbstractDialog
         btTrace = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         drawingPanel = new javax.swing.JPanel();
-        fieldCanvas = new de.naoth.rc.dialogs.panels.DynamicCanvasPanel();
+        fieldCanvas = new de.naoth.rc.components.DynamicCanvasPanel();
 
         jMenuItemExport.setText("Export");
         jMenuItemExport.addActionListener(new java.awt.event.ActionListener() {
@@ -204,17 +192,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btReceiveDrawings);
-
-        btReceiveTeamCommDrawings.setText("TeamComm");
-        btReceiveTeamCommDrawings.setFocusable(false);
-        btReceiveTeamCommDrawings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btReceiveTeamCommDrawings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btReceiveTeamCommDrawings.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReceiveTeamCommDrawingsActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btReceiveTeamCommDrawings);
 
         btClean.setText("Clean");
         btClean.setFocusable(false);
@@ -411,17 +388,6 @@ private void btCollectDrawingsActionPerformed(java.awt.event.ActionEvent evt) {/
   // TODO add your handling code here:
 }//GEN-LAST:event_btCollectDrawingsActionPerformed
 
-private void btReceiveTeamCommDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveTeamCommDrawingsActionPerformed
-  if(btReceiveTeamCommDrawings.isSelected())
-  {
-    Plugin.teamCommDrawingManager.addListener(this);
-  }
-  else
-  {
-    Plugin.teamCommDrawingManager.removeListener(this);
-  }
-}//GEN-LAST:event_btReceiveTeamCommDrawingsActionPerformed
-
 private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
   int v = this.jSlider1.getValue();
   this.fieldCanvas.setBackground(new Color(v,v,v));
@@ -588,7 +554,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.debugDrawingManager.removeListener(this);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
-    Plugin.teamCommDrawingManager.removeListener(this);
   }//end dispose
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -597,14 +562,13 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btImageProjection;
     private javax.swing.JToggleButton btReceiveDrawings;
-    private javax.swing.JToggleButton btReceiveTeamCommDrawings;
     private javax.swing.JToggleButton btRotate;
     private javax.swing.JToggleButton btRotate180;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
-    private de.naoth.rc.dialogs.panels.DynamicCanvasPanel fieldCanvas;
+    private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
     private javax.swing.JMenuItem jMenuItemExport;
     private javax.swing.JPopupMenu jPopupMenu;
     private javax.swing.JSlider jSlider1;

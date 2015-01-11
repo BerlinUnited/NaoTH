@@ -12,14 +12,6 @@ using namespace naoth;
 
 DebugModify::DebugModify()
 {
-  REGISTER_DEBUG_COMMAND("modify:list", 
-    "return the list of registered modifiable values", this);
-
-  REGISTER_DEBUG_COMMAND("modify:set", 
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", this);
-
-  REGISTER_DEBUG_COMMAND("modify:release", 
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", this);
 }
 
 DebugModify::~DebugModify(){}
@@ -38,7 +30,8 @@ void DebugModify::executeDebugCommand(
       outstream << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
       ++iter;
     }
-  }else if(command == "modify:set")
+  }
+  else if(command == "modify:set")
   {
     std::map<std::string, std::string>::const_iterator iter;
 
@@ -63,7 +56,8 @@ void DebugModify::executeDebugCommand(
         outstream << "unknown value " << iter->first << std::endl;
       }
     }//end for
-  }else if(command == "modify:release")
+  }
+  else if(command == "modify:release")
   {
     std::map<std::string, std::string>::const_iterator iter;
 

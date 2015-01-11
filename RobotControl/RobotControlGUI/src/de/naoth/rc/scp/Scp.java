@@ -14,8 +14,8 @@ import java.util.Arrays;
 public class Scp {
 
   public ChannelSftp c;
-  private Channel channel;
-  private Session session;
+  private final Channel channel;
+  private final Session session;
 
   public Scp(String Ip) throws JSchException
   {

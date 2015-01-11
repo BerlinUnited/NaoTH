@@ -9,11 +9,6 @@
 
 #include "IKArmGrasping.h"
 
-// Debug
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugBufferedOutput.h" //For Plotting
 #include <time.h> // for meassurement of elapsed times
 
 using namespace std;

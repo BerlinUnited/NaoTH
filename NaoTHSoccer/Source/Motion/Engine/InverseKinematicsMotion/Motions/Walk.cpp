@@ -9,8 +9,6 @@
 #include "Walk.h"
 #include "Walk/ZMPPlanner.h"
 #include "Walk/FootTrajectoryGenerator.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 using namespace InverseKinematic;
 using namespace naoth;

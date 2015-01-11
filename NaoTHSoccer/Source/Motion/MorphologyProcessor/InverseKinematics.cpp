@@ -7,7 +7,7 @@
 */
 
 
-#include "Tools/Debug/Stopwatch.h"
+//#include "Representations/Debug/Stopwatch.h"
 
 // Tools
 //#include "Tools/TemplateUtility.h"
@@ -344,7 +344,7 @@ double InverseKinematics::gotoLegs(
   Mask leftFootMask, 
   Mask rightFootMask)
 {
-  STOPWATCH_START("InverseKinematics");
+  //STOPWATCH_START("InverseKinematics");
 
   tlf = tc.local(tlf);
   trf = tc.local(trf);
@@ -416,7 +416,7 @@ double InverseKinematics::gotoLegs(
   }//end while
 
     
-  STOPWATCH_STOP("InverseKinematics");
+  //STOPWATCH_STOP("InverseKinematics");
   return lerr + rerr;
 }//end gotoLegs
 
@@ -431,7 +431,7 @@ double InverseKinematics::gotoArms(
   Mask leftHandMask, 
   Mask rightHandMask)
 {
-  STOPWATCH_START("InverseKinematics --- ARMS");
+  //STOPWATCH_START("InverseKinematics --- ARMS");
 
   // transform to the chest coordinates
   Pose3D tlh = tc.local(targetLeftHand);
@@ -455,7 +455,7 @@ double InverseKinematics::gotoArms(
 
   // TODO: handle error
 
-  STOPWATCH_STOP("InverseKinematics --- ARMS");
+  //STOPWATCH_STOP("InverseKinematics --- ARMS");
   return lerr + rerr;
 }//end gotoArms
 

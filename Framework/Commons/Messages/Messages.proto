@@ -255,6 +255,16 @@ message ModuleList {
  repeated Module modules = 1;
 }
 
+message DebugRequest {
+  message Item {
+   required string name = 1;
+   optional string description = 2;
+   required bool value = 4 [default=false];
+  }
+
+  repeated Item requests = 1;
+}
+
 message FeatureKeyPoint {
   required FloatVector2 pt = 1;
   required float size = 2;

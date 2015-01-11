@@ -83,17 +83,6 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveDrawingsActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="btReceiveTeamCommDrawings">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="TeamComm"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveTeamCommDrawingsActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JButton" name="btClean">
           <Properties>
             <Property name="text" type="java.lang.String" value="Clean"/>
@@ -215,7 +204,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
       <SubComponents>
-        <Container class="de.naoth.rc.dialogs.panels.DynamicCanvasPanel" name="fieldCanvas">
+        <Container class="de.naoth.rc.components.DynamicCanvasPanel" name="fieldCanvas">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="f7" green="f7" red="f7" type="rgb"/>

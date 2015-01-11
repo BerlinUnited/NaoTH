@@ -1,5 +1,0 @@
-Time HeadPitch HeadYaw RShoulderPitch LShoulderPitch RShoulderRoll LShoulderRoll RElbowRoll LElbowRoll RElbowYaw LElbowYaw RHipYawPitch LHipYawPitch RHipPitch LHipPitch RHipRoll LHipRoll RKneePitch LKneePitch RAnklePitch LAnklePitch RAnkleRoll LAnkleRoll
-
-for example:
-
-1000 0 0 -90 90 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0

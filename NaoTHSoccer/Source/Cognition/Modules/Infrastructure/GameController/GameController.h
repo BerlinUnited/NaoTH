@@ -2,6 +2,8 @@
 #define GAMECONTROLLER_H
 
 #include <ModuleFramework/Module.h>
+#include <Tools/Debug/DebugRequest.h>
+
 #include <PlatformInterface/PlatformInterface.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/LEDRequest.h>
@@ -16,6 +18,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
 
+  PROVIDE(DebugRequest)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
   PROVIDE(PlayerInfo)

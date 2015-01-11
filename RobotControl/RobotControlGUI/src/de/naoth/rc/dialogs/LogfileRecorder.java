@@ -5,15 +5,15 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.ExtendedFileChooser;
-import de.naoth.rc.Helper;
-import de.naoth.rc.server.CommandSender;
-import de.naoth.rc.server.MessageServer;
 import com.jcraft.jsch.SftpProgressMonitor;
-import de.naoth.rc.AbstractDialog;
+import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.ExtendedFileChooser;
+import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
+import de.naoth.rc.server.CommandSender;
+import de.naoth.rc.server.MessageServer;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -180,7 +180,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         txtTempFile = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jProgressBar = new javax.swing.JProgressBar();
-        stringSelectionPanel = new de.naoth.rc.dialogs.panels.StringSelectionPanel();
+        stringSelectionPanel = new de.naoth.rc.components.StringSelectionPanel();
         cbSelectionScheme = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
 
@@ -473,7 +473,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     private javax.swing.JLabel jLabel3;
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JFileChooser saveFileChooser;
-    private de.naoth.rc.dialogs.panels.StringSelectionPanel stringSelectionPanel;
+    private de.naoth.rc.components.StringSelectionPanel stringSelectionPanel;
     private javax.swing.JToolBar tbLog;
     private javax.swing.JTextField txtTempFile;
     // End of variables declaration//GEN-END:variables

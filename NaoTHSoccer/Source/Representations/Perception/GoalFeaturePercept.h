@@ -18,7 +18,7 @@
 class GoalFeaturePercept : public naoth::Printable
 { 
 public:
-  GoalFeaturePercept(){}
+  GoalFeaturePercept() {}
 
   class Feature
   {
@@ -30,10 +30,7 @@ public:
     Vector2d responseAtBegin;
     Vector2d responseAtEnd;
 
-    //double width;
-
     bool possibleObstacle;
-    //bool used;
 
     Feature()
     :
@@ -42,12 +39,8 @@ public:
       end(-1, -1),
       responseAtBegin(0.0, 0.0),
       responseAtEnd(0.0, 0.0),
-      //width(0.0),
-      possibleObstacle(false)//,
-      //used(false)
-    {
-
-    }
+      possibleObstacle(false)
+    {}
   };
 
   //NOTE: experimental
@@ -62,28 +55,8 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "nothing" << std::endl;
-    //stream << "angleToSeenGoal=" << angleToSeenGoal << std::endl;
-    //stream << "goalCentroid=" << goalCentroid << std::endl;
-    //stream << "horizonScan=" << (horizonScan?"true":"false") << std::endl;
-    //
-    //for(unsigned int n=0; n<numberOfSeenPosts; n++)
-    //{
-    //  stream << "=====Post " << n << "=====" << std::endl;
-    //  stream << "post type= " << GoalPost::getPostTypeName(post[n].type) << std::endl;
-    //  stream << "basePoint=(" << post[n].basePoint.x << ";" << post[n].basePoint.y << ")" << std::endl;
-    //  stream << "position=(" << post[n].position.x << ";" << post[n].position.y << ")" << std::endl;
-    //  stream << "color=" << ColorClasses::getColorName(post[n].color) << std::endl;
-    //  stream << "reliable=" << (post[n].positionReliable? "true" : "false") << std::endl;
-    //}//end for
+    stream << "feature count: " << features.size() << std::endl;
   }//end print
-
-
-  ////////////////////////////////////////
-  //// getters
-  //int getNumberOfSeenPosts() const { return (int)numberOfSeenPosts; }
-  //const GoalPost& getPost(unsigned int i) const { ASSERT(i < numberOfSeenPosts); return post[i]; }
-  //GoalPost& getPost(unsigned int i) { ASSERT(i < numberOfSeenPosts); return post[i]; }
 
 private:
 };//end GoalFeaturePercept

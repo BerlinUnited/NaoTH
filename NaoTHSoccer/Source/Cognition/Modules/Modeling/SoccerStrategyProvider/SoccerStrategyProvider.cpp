@@ -44,13 +44,14 @@ SoccerStrategyProvider::SoccerStrategyProvider()
 
 void SoccerStrategyProvider::execute()
 {
-  if (getPlayerInfo().gameData.playerNumber != theFormationParameters.num)
+  /*
+	if (getPlayerInfo().gameData.playerNumber != theFormationParameters.num)
   {
     theFormationParameters = FormationParameters(getPlayerInfo().gameData.playerNumber);
   }
-  
+  */
   //
-  getSoccerStrategy().formation = calculateForamtion();
+  //getSoccerStrategy().formation = calculateForamtion();
 
   //
   getSoccerStrategy().timeToBall = estimateTimeToBall();

@@ -5,7 +5,6 @@
 
 package de.naoth.rc;
 
-import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.MessageServer;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;

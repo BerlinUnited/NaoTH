@@ -5,9 +5,9 @@
  */
 package de.naoth.rc;
 
+import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
-import de.naoth.rc.interfaces.ByteRateUpdateHandler;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -426,7 +426,8 @@ public class RobotControlImpl extends javax.swing.JFrame
       public void run()
       {
         // create the configlocation is not existing
-        if(!new File(configlocation).mkdirs()) {
+        File configDir = new File(configlocation);
+        if(!(configDir.exists() && configDir.isDirectory()) && !configDir.mkdirs()) {
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
                     "Could not create the configuration path: \"" + configlocation + "\".");
         }

@@ -5,33 +5,34 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
  * @author  Heinrich Mellmann
  */
-@PluginImplementation
 public class ParameterPanel extends AbstractDialog
-  implements CommandSender
 {
 
-  @InjectPlugin
-  public RobotControl parent;
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<ParameterPanel>
+  {
+    @InjectPlugin
+    public static RobotControl parent;
+    @InjectPlugin
+    public static SwingCommandExecutor commandExecutor;
+  }
 
-  private Command commandToExecute;
-  //private String defaultConfigureFilePath;
-
-  /** Creates new form ParameterPanel */
   public ParameterPanel()
   {
     initComponents();
@@ -48,20 +49,13 @@ public class ParameterPanel extends AbstractDialog
           sendParameters();
           
           int k = jTextArea.getCaretPosition();
-          if(k > 0)
+          if(k > 0) {
             jTextArea.setCaretPosition(k-1);
+          }
         }
       }
     });
   }//end constructor
-
-  @Init
-  public void init()
-  {
-//    defaultConfigureFilePath = parent.getMainDirectory().getParentFile().getAbsolutePath() +
-//      "/NaoController/";
-  }
-
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -154,11 +148,130 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   sendParameters();
 }//GEN-LAST:event_jButtonSendActionPerformed
 
+private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
+{//GEN-HEADEREND:event_cbParameterIdActionPerformed
+    getParameterList();
+}//GEN-LAST:event_cbParameterIdActionPerformed
+
+private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
+{//GEN-HEADEREND:event_jToggleButtonListActionPerformed
+    listParameters();
+}//GEN-LAST:event_jToggleButtonListActionPerformed
+
+  private class ParameterListItem
+  {
+      private String owner;
+      private String name;
+      
+      public ParameterListItem(String owner, String name)
+      {
+          this.owner = owner;
+          this.name = name;
+      }
+      
+      Command getCommandGET() {
+          return new Command(owner + ":ParameterList:get")
+                  .addArg("<name>", name);
+      }
+      
+      Command getCommandSET() {
+          return new Command(owner + ":ParameterList:set")
+                  .addArg("<name>", name);
+      }
+      
+      @Override
+      public String toString() 
+      {
+          return "[" + owner + "] " + name;
+      }
+  }
+
+  class ParameterListHandlerGet implements ObjectListener<byte[]>
+  {
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+        // remember the carret
+        int k = jTextArea.getCaretPosition();
+        jTextArea.setText(new String(object));
+        try {
+            jTextArea.setCaretPosition(k);
+        } catch(IllegalArgumentException ex) {
+            // do nothing
+            // could not set the caret at the right place, e.g.,
+            // if the text is shorter now
+        }
+        jToggleButtonRefresh.setSelected(false);
+    }
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+      dispose();
+    }
+  }
+  
+  class ParameterListHandlerSet implements ObjectListener<byte[]>
+  {
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+        // do nothing
+    }
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+      dispose();
+    }
+  }
+  
+  class ParameterListHandlerList implements ObjectListener<byte[]>
+  {
+    private final String owner;
+    
+    public ParameterListHandlerList(String owner)
+    {
+        this.owner = owner;
+    }
+    
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+        String strResult = new String(object);
+        String selectedList = null;
+        if(cbParameterId.getSelectedItem() != null) {
+            selectedList = cbParameterId.getSelectedItem().toString();
+        }
+        
+        //cbParameterId.removeAllItems();
+        
+        String[] parameterLists = strResult.split("\n");
+        for (String parameterList : parameterLists) {
+          cbParameterId.addItem(new ParameterListItem(owner, parameterList));
+        }
+        
+        // try to set back the selection
+        if(selectedList != null) {
+            cbParameterId.setSelectedItem(selectedList);
+        }
+        
+        jToggleButtonList.setSelected(false);
+    }
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+      dispose();
+    }
+  }
+
+
 private void sendParameters()
 {
-  if (parent.checkConnected())
+  if (Plugin.parent.checkConnected())
   {
-    Command cmd = new Command("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":set");
+    Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandSET();
 
     String text = this.jTextArea.getText();
 
@@ -180,7 +293,8 @@ private void sendParameters()
         cmd.addArg(key, value);
       }
     }//end for
-    sendCommand(cmd);
+    
+    Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
     
     // update everything
     //listParameters();
@@ -194,22 +308,13 @@ private void sendParameters()
   }
 }
 
-private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
-{//GEN-HEADEREND:event_cbParameterIdActionPerformed
-    getParameterList();
-}//GEN-LAST:event_cbParameterIdActionPerformed
-
-private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
-{//GEN-HEADEREND:event_jToggleButtonListActionPerformed
-  listParameters();
-}//GEN-LAST:event_jToggleButtonListActionPerformed
-
 private void listParameters()
 {
-    if (parent.checkConnected())
+    if (Plugin.parent.checkConnected())
     {
-      Command cmd = new Command("ParameterList:list");
-      sendCommand(cmd);
+      cbParameterId.removeAllItems();
+      Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Cognition"), new Command("Cognition:ParameterList:list"));
+      Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Motion"), new Command("Motion:ParameterList:list"));
     }
     else
     {
@@ -219,12 +324,12 @@ private void listParameters()
 
   private void getParameterList()
   {
-    if (parent.checkConnected())
+    if (Plugin.parent.checkConnected())
     {
       if (cbParameterId.getSelectedItem() != null)
       {
-        Command cmd = new Command("ParameterList:" + cbParameterId.getSelectedItem().toString() + ":get");
-        sendCommand(cmd);
+        Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandGET();
+        Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), cmd);
       }
     }
     else
@@ -233,81 +338,12 @@ private void listParameters()
     }
   }//end refresh
 
-  private void sendCommand(Command command)
-  {
-    commandToExecute = command;
-    parent.getMessageServer().executeSingleCommand(this, command);
-  }
-
-  @Override
-  public void handleResponse(byte[] result, Command originalCommand)
-  {
-    String strResult = new String(result);
-    if (strResult.contains("[DebugServer] unknown command: "))
-    {
-      JOptionPane.showMessageDialog(this,
-        "'" + cbParameterId.getSelectedItem().toString() + "' is not available!", "Parameter List", JOptionPane.ERROR_MESSAGE);
-      jToggleButtonRefresh.setSelected(false);
-    }
-    else
-    {
-      if (originalCommand.getName().compareTo("ParameterList:list") == 0)
-      {
-        String selectedList = null;
-        if(cbParameterId.getSelectedItem() != null)
-            selectedList = cbParameterId.getSelectedItem().toString();
-        
-        cbParameterId.removeAllItems();
-        
-        String[] parameterLists = strResult.split("\n");
-        for (String parameterList : parameterLists)
-        {
-          cbParameterId.addItem(parameterList);
-        }
-        
-        // try to set back the selection
-        if(selectedList != null)
-            cbParameterId.setSelectedItem(selectedList);
-        
-        jToggleButtonList.setSelected(false);
-      }
-      else if (originalCommand.getName().compareTo("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":get") == 0)
-      {
-        // remember the carret
-        int k = jTextArea.getCaretPosition();
-        jTextArea.setText(strResult);
-        try{
-            jTextArea.setCaretPosition(k);
-        }catch(IllegalArgumentException ex)
-        {
-            // do nothing
-            // could not set the caret at the right place, e.g.,
-            // if the text is shorter now
-        }
-        jToggleButtonRefresh.setSelected(false);
-      }
-    }
-  }//end handleResponse
-
-  @Override
-  public void handleError(int code)
-  {
-    jToggleButtonRefresh.setSelected(false);
-    JOptionPane.showMessageDialog(this,
-              "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
-  }//end handleError
-
-  @Override
-  public Command getCurrentCommand()
-  {
-    return commandToExecute;
-  }
-
   @Override
   public void dispose()
   {
     System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-  }//end dispose
+  }
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbParameterId;
     private javax.swing.JButton jButtonSend;

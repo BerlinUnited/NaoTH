@@ -4,6 +4,7 @@
 package de.naoth.rc.manager;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.messages.Messages.ModuleList;

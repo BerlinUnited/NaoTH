@@ -27,9 +27,18 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 
+// Debug
+#include "Tools/Debug/DebugModify.h"
+#include <Tools/Debug/DebugRequest.h>
+
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(PotentialFieldProvider)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
   REQUIRE(PlayerInfo)
@@ -52,7 +61,7 @@ class PotentialFieldProvider : public PotentialFieldProviderBase
 public:
 
   PotentialFieldProvider();
-  virtual ~PotentialFieldProvider(){}
+  virtual ~PotentialFieldProvider();
 
   /** executes the module */
   void execute();
@@ -72,12 +81,6 @@ public:
       PARAMETER_REGISTER(player_repeller_strenth) = 1500;
 
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
-    }
-
-    virtual ~Parameters()
-    {
-      DebugParameterList::getInstance().remove(this);
     }
 
     // 

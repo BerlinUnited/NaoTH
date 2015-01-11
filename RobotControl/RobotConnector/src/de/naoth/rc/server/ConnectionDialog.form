@@ -36,8 +36,6 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="btConnect" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btAuto" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="btCancel" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -58,7 +56,6 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btConnect" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btAuto" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btCancel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -95,16 +92,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btConnectActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btAuto">
-      <Properties>
-        <Property name="mnemonic" type="int" value="97"/>
-        <Property name="text" type="java.lang.String" value="Auto"/>
-        <Property name="toolTipText" type="java.lang.String" value="Connect and choose port automaticly"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAutoActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btCancel">

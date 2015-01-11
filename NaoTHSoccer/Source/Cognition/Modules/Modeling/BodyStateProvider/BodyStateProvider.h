@@ -10,6 +10,7 @@
 
 #include <ModuleFramework/Module.h>
 
+
 // Representations
 #include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/FSRData.h"
@@ -20,12 +21,21 @@
 
 // Tools
 #include "Tools/DataStructures/RingBufferWithSum.h"
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
+//#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugParameterList.h>
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(BodyStateProvider)
+  // debug
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+	
   REQUIRE(InertialSensorData)
   REQUIRE(FSRData)
   REQUIRE(FrameInfo)
@@ -55,12 +65,12 @@ private:
       PARAMETER_REGISTER(foot_threshold) = 1;
 
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
+      //DebugParameterList::getInstance().add(this);
     }
 
     ~Parameters()
     {
-      DebugParameterList::getInstance().remove(this);
+      //DebugParameterList::getInstance().remove(this);
     }
 
     double foot_threshold;

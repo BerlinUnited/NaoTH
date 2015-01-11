@@ -9,12 +9,15 @@
 #define DEBUGSERVER_H
 
 #include <glib.h>
-#include <libb64/decode.h>
-#include <libb64/encode.h>
+//#include <libb64/decode.h>
+//#include <libb64/encode.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 
 #include "DebugCommunicator.h"
+
+#include <map>
+#include <queue>
 
 class DebugServer
 {
@@ -23,7 +26,7 @@ public:
   virtual ~DebugServer();
 
   // TODO: why is this virtual?
-  virtual void start(unsigned short port, bool threaded = false);
+  virtual void start(unsigned short port);
   
   /** 
   * Set the time after which the connection should be closed in case of inactivity.
@@ -33,7 +36,9 @@ public:
     comm.setTimeOut(t);
   }
   
-  void getDebugMessageIn(naoth::DebugMessageIn& buffer);
+  void getDebugMessageInCognition(naoth::DebugMessageIn& buffer);
+  void getDebugMessageInMotion(naoth::DebugMessageIn& buffer);
+
   void setDebugMessageOut(const naoth::DebugMessageOut& buffer);
 
 private:
@@ -46,17 +51,23 @@ private:
 
   GThread* connectionThread;
 
-  GAsyncQueue* commands;
-  GAsyncQueue* answers;
+  GAsyncQueue* commands; // incoming messages
+  GAsyncQueue* answers; // outgoing messages
 
   GMutex* m_executing;
   GMutex* m_abort;
 
+  std::queue<naoth::DebugMessageIn::Message> received_messages_cognition;
+  GMutex* m_received_messages_cognition;
+
+  std::queue<naoth::DebugMessageIn::Message> received_messages_motion;
+  GMutex* m_received_messages_motion;
+
   bool abort;
 
-  void mainConnection();
-  void receiveAll();
-  void sendAll();
+  void run();
+  void receive();
+  void send();
 
   void parseCommand(GString* cmdRaw, naoth::DebugMessageIn::Message& command) const;
 

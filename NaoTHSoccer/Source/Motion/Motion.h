@@ -11,27 +11,57 @@
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
+
 #include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
-
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
-#include "MorphologyProcessor/FootTouchCalibrator.h"
+//#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 #include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
 
-#include <Representations/Modeling/CameraMatrixOffset.h>
+//#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
+
+// representations
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/DebugMessage.h>
+
+// debug
+#include <Representations/Debug/Stopwatch.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugModify.h"
+
 BEGIN_DECLARE_MODULE(Motion)
+  PROVIDE(StopwatchManager)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
+
   REQUIRE(MotionStatus)
-  PROVIDE(OdometryData)
+  REQUIRE(OdometryData)
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 
@@ -52,7 +82,10 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
-  
+
+  PROVIDE(DebugMessageInMotion)
+  PROVIDE(DebugMessageOut)
+
   PROVIDE(CameraMatrixOffset)
 
   // from cognition
@@ -69,28 +102,6 @@ public:
   Motion();
   virtual ~Motion();
 
-  class Parameters: public ParameterList
-  {
-  public: 
-    Parameters(): ParameterList("MotionParameters")
-    {
-      PARAMETER_REGISTER(gyrometerOdometry) = false;
-      
-      // load from the file after registering all parameters
-      syncWithConfig();
-      DebugParameterList::getInstance().add(this);
-    }
-
-    bool gyrometerOdometry;
-
-    virtual ~Parameters() {
-      DebugParameterList::getInstance().remove(this);
-    }
-  } parameters;
-
-  /**
-  *
-  */
   virtual void call();
 
   // TODO: unify with Callable
@@ -100,8 +111,6 @@ public:
   *
   */
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
-  
-  //bool exit();
   
 private:
   
@@ -113,8 +122,8 @@ private:
 private:
   void debugPlots();
   void updateCameraMatrix();
-private:
 
+private:
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
@@ -124,12 +133,13 @@ private:
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 
-  //FootTouchCalibrator theFootTouchCalibrator;
-
-
   naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
+
+private:
+  std::stringstream debug_answer_stream;
+
 };
 
 

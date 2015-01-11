@@ -11,16 +11,18 @@
 
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.AbstractDialog;
-import de.naoth.rc.DialogPlugin;
+import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -30,8 +32,9 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.messages.Representations;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -47,6 +50,8 @@ public class RepresentationInspector extends AbstractDialog
         public static RobotControl parent;
         @InjectPlugin
         public static GenericManagerFactory genericManagerFactory;
+        @InjectPlugin
+        public static SwingCommandExecutor commandExecutor;
     }
 
     private String representationOwner;
@@ -61,7 +66,6 @@ public class RepresentationInspector extends AbstractDialog
     public RepresentationInspector() {
         initComponents();
         
-        Object o = this.cbProcess.getSelectedItem();
         this.representationOwner = this.cbProcess.getSelectedItem().toString();
     }
 
@@ -193,7 +197,7 @@ public class RepresentationInspector extends AbstractDialog
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
         if(jToggleButtonRefresh.isSelected()) {
             if(Plugin.parent.checkConnected()) {
-                sendCommand(new Command(getRepresentationList()));
+                Plugin.commandExecutor.executeCommand(new RepresentationListUpdater(), new Command(getRepresentationList()));
             } else {
                 jToggleButtonRefresh.setSelected(false);
             }
@@ -221,28 +225,41 @@ public class RepresentationInspector extends AbstractDialog
  
   class DataHandlerBinary implements ObjectListener<byte[]>
   {
-    private Class<?> parser;
+    private Parser parser = null;
+    private List<Descriptor> allDescriptors = getAllProtobufDescriptors();
     
     public DataHandlerBinary(String name) {
-        parser = getProtobufClass(name);
+
     }
     
     @Override
     public void newObjectReceived(byte[] data) {
-        if(parser != null) {
-            Object result = parse(parser, data);
+        Object result = null;
+    
+        if(parser == null) {
+            parser = new EmptyParser();
+            
+            for(Descriptor c: allDescriptors) {
+                Parser p = new ProtobufParser(c);
+                result = p.parse(data);
+                if(result != null) {
+                    parser = p;
+                }
+            }
+        } 
+        
+        if(result == null) {
+            result = parser.parse(data);
             if(result != null){
                 textArea.setText(result.toString());
             } else {
                 textArea.setText("Error while parsing.\n");
-                textArea.append(new String(data));
+                //textArea.append(new String(data));
             }
-        } else {
-            textArea.setText("No binary serialization avaliable.\n");
-            textArea.append(new String(data));
         }
+        
     }//end newObjectReceived
-
+    
     @Override
     public void errorOccured(String cause) {
         handleError(cause);
@@ -264,34 +281,28 @@ public class RepresentationInspector extends AbstractDialog
   }//end class DataHandlerPrint
   
 
-  private void sendCommand(final Command command)
+  class RepresentationListUpdater implements ObjectListener<byte[]>
   {
-      Plugin.parent.getMessageServer().executeSingleCommand(new CommandSender() 
-      {    
-            @Override
-            public void handleResponse(byte[] result, Command originalCommand)
-            {
-                //System.out.println(new String(result));
-                String[] representations = new String(result).split("\n");
+    @Override
+    public void newObjectReceived(byte[] object)
+    {
+        //System.out.println(new String(result));
+        String[] representations = new String(object).split("\n");
 
-                DefaultListModel model = new DefaultListModel();
-                for(String representation: representations) {
-                    model.addElement(representation);
-                }
-                representationList.setModel(model);
-            }
-
-            @Override
-            public void handleError(int code) {
-                RepresentationInspector.this.handleError("Error occured, code " + code);
-            }
-
-            @Override
-            public Command getCurrentCommand() {
-                return command;
-            }
-        }, command);
-  }//end sendCommand
+        DefaultListModel model = new DefaultListModel();
+        for(String representation: representations) {
+            model.addElement(representation);
+        }
+        representationList.setModel(model);
+    }
+    
+    @Override
+    public void errorOccured(String cause)
+    {
+      jToggleButtonRefresh.setSelected(false);
+      dispose();
+    }
+  }//end RepresentationListUpdater
 
   
   public void handleError(String cause)
@@ -300,8 +311,6 @@ public class RepresentationInspector extends AbstractDialog
     if(currentManager != null){
       currentManager.removeListener(currentHandler);
     }
-    
-    JOptionPane.showMessageDialog(this, cause, "ERROR", JOptionPane.ERROR_MESSAGE);
   }
 
   
@@ -312,49 +321,66 @@ public class RepresentationInspector extends AbstractDialog
       currentManager.removeListener(currentHandler);
     }
     this.jToggleButtonRefresh.setSelected(false);
-  }//end dispose
+  }
   
+  private static List<Descriptor> getAllProtobufDescriptors()
+  {
+      List<Descriptor> result = new ArrayList<Descriptor>();
+      result.addAll(FrameworkRepresentations.getDescriptor().getMessageTypes());
+      result.addAll(Representations.getDescriptor().getMessageTypes());
+      result.addAll(Messages.getDescriptor().getMessageTypes());
+      return result;
+  }
   
-  private static Class<?> getSubClass(Class<?> parent, String name)
-    {
-        Class<?>[] c = parent.getClasses();
-        for(int i = 0; i < c.length; i++) {
-            String n = c[i].getSimpleName();
-            if(c[i].getSimpleName().equals(name)) {
-                return c[i];
-            }
+  private static List<Class<?>> getAllProtobufClasses()
+  {
+      List<Class<?>> result = new ArrayList<Class<?>>();
+      Class<?> protoClasses[] = {
+          FrameworkRepresentations.class, 
+          Representations.class, 
+          Messages.class};
+      
+      for(Class<?> c : protoClasses) {
+            result.addAll(Arrays.asList(c.getClasses()));
         }
-        return null;
-    }//end findSubClass
+      return result;
+  }
     
-    private static Class<?> getProtobufClass(String name)
+    interface Parser {
+        public Object parse(byte[] object);
+    }
+    
+    class EmptyParser implements Parser {
+        @Override
+        public Object parse(byte[] object)
+        {
+            return "No binary serialization avaliable.";
+        }
+    }
+    
+    class ProtobufParser implements Parser
     {
-        Class<?> result = null;
-        Class<?> protoClasses[] = {FrameworkRepresentations.class, Representations.class, Messages.class};
+        private final Descriptor descriptor;
+        public ProtobufParser(Descriptor descriptor) {
+            this.descriptor = descriptor;
+        }
         
-        for(int i = 0; i < protoClasses.length; i++) {
-            result = getSubClass(protoClasses[i], name);
-            if(result != null) {
-                break;
+        @Override
+        public Object parse(byte[] data)
+        {
+            try {
+                DynamicMessage msg = DynamicMessage.parseFrom(descriptor, data);
+                //Method m = parser.getMethod("parseFrom", object.getClass());
+                //Object result = m.invoke(null, object);
+                return msg;
             }
-        }
-        return result;
-    }//end getProtobufClass
-    
-    
-    private Object parse(Class<?> parser, byte[] object)
-    {
-        try {
-            Method m = parser.getMethod("parseFrom", object.getClass());
-            Object result = m.invoke(null, object);
-            return result;
-        }
-        catch(NoSuchMethodException e){}
-        catch(IllegalAccessException ex){}
-        catch(InvocationTargetException ebx){}
-        
-        return null;
-    }//end parse
+            catch(InvalidProtocolBufferException ex)
+            {
+            }
+            
+            return null;
+        }//end parse
+    }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbProcess;

@@ -29,8 +29,19 @@
 #include <Representations/Infrastructure/JointData.h>
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+
+// debug
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(Walk)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+
+  REQUIRE(FrameInfo)
+
   REQUIRE(RobotInfo)
   REQUIRE(GroundContactModel)
   REQUIRE(MotionRequest)

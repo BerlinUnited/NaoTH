@@ -4,6 +4,7 @@
  */
 package de.naoth.rc;
 
+import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.SingleCDockableFactory;

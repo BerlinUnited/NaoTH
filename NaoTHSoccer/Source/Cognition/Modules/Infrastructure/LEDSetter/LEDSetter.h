@@ -12,8 +12,8 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 
-#include <Representations/Infrastructure/LEDRequest.h>
-#include <Representations/Infrastructure/LEDData.h>
+#include <Representations/Infrastructure/LEDRequest.h>//nicht auffindbar
+#include <Representations/Infrastructure/LEDData.h>//nicht auffindbar
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;

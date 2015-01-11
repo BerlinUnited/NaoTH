@@ -13,6 +13,8 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
 
 // Representations
 #include "Representations/Infrastructure/GPSData.h"
@@ -28,6 +30,12 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GPS_SelfLocator)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugModify)
+
+  REQUIRE(FrameInfo)
   REQUIRE(GPSData)
   REQUIRE(OdometryData)
   REQUIRE(PlayerInfo)

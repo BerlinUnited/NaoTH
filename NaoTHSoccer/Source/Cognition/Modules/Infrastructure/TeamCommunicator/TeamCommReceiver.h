@@ -19,7 +19,9 @@
 #include <Tools/DataStructures/RingBuffer.h>
 
 #include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)
@@ -35,6 +37,10 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(PlayersModel)
   REQUIRE(BatteryData)
 
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugPlot)
+
   PROVIDE(TeamMessage)
 END_DECLARE_MODULE(TeamCommReceiver)
 
@@ -45,6 +51,8 @@ public:
   TeamCommReceiver();
 
   virtual void execute();
+
+  virtual ~TeamCommReceiver();
 
 private:
   class Parameters: public ParameterList
@@ -57,15 +65,12 @@ private:
       
       // load from the file after registering all parameters
       syncWithConfig();
-      DebugParameterList::getInstance().add(this);
     }
 
     int monotonicTimestampCheckResetTime;
     bool monotonicTimestampCheck;
     
-    virtual ~Parameters() {
-      DebugParameterList::getInstance().remove(this);
-    }
+    virtual ~Parameters() {}
   } parameters;
 
 private:

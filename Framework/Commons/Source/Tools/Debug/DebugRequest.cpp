@@ -10,10 +10,11 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
-DebugRequest::DebugRequest() : requestMap()
+#include "Messages/Messages.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+DebugRequest::DebugRequest()
 {
-  REGISTER_DEBUG_COMMAND("debug_request:list",
-    "return the debug request which where collected in the internal buffer", this);
 }
 
 DebugRequest::~DebugRequest(){}
@@ -23,31 +24,31 @@ void DebugRequest::executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream)
 {
-  if(command == "debug_request:list")
+  if(command == "debugrequest:set")
   {
-    std::map<std::string, bool>::const_iterator iter = requestMap.begin();
-    
-    while(iter != requestMap.end())
+    std::map<std::string,std::string>::const_iterator iter_arg = arguments.begin();
+    for(;iter_arg != arguments.end(); ++iter_arg)
     {
-      outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << std::endl;
-      ++iter;
+
+      // search in the map if we know this command/request
+      std::map<std::string, Request>::iterator iter = requestMap.find(iter_arg->first);
+      if(iter != requestMap.end())
+      {
+        // enable or disable depending on the command
+        if(iter_arg->second == "off") {
+          iter->second.value = false;
+        } else if(iter_arg->second == "on") {
+          iter->second.value = true;
+        }
+        // print result
+        outstream << command << (iter->second.value ? " is on" : " is off");
+      }
+
     }
   }
   else
   {
-    // search in the map if we know this command/request
-    std::map<std::string, bool>::iterator iter = requestMap.find(command);
-    if(iter != requestMap.end())
-    {
-      // enable or disable depending on the command
-      if(arguments.find("off") != arguments.end()) {
-        iter->second = false;
-      } else if(arguments.find("on") != arguments.end()) {
-        iter->second = true;
-      }
-      // print result
-      outstream << command << (iter->second ? " is on" : " is off");
-    }
+    THROW( "[DebugRequest] unknown command" << command );
   }
 }//end executeDebugCommand
 
@@ -55,19 +56,16 @@ void DebugRequest::executeDebugCommand(
 const bool& DebugRequest::registerRequest(const std::string& name, const std::string& description, bool defaultValue = false)
 {
   // only add if not known already
-  std::map<std::string, bool>::iterator iter = requestMap.lower_bound(name);
+  std::map<std::string, Request>::iterator iter = requestMap.lower_bound(name);
   if(iter == requestMap.end() || iter->first != name)
   {
     std::string d =  description;
     d = d.append(" (debug request, usage: ");
     d = d.append(name);
     d = d.append(" [on|off|status]");
-
-    // there should not be any other command with the same name
-    ASSERT(DebugCommandManager::getInstance().registerCommand(name, d, this));
     
-    iter = requestMap.insert(iter, std::make_pair(name, defaultValue));
-    descriptionMap[name] = description;
+    iter = requestMap.insert(iter, std::make_pair(name, Request(defaultValue)));
+    iter->second.description = description;
   } else {
     // TODO:
     //some places use the fact that a debug request may be registered several times
@@ -76,24 +74,24 @@ const bool& DebugRequest::registerRequest(const std::string& name, const std::st
     //THROW( "[ERROR] there is already a request with the name \"" + name + "\"");
   }
 
-  return iter->second;
+  return iter->second.value;
 }//end registerRequest
 
 
 bool DebugRequest::isActive(const std::string& name) const
 {
-  std::map<std::string, bool>::const_iterator iter = requestMap.find(name);
-  return iter != requestMap.end() && iter->second;
-}//end isActive
+  std::map<std::string, Request>::const_iterator iter = requestMap.find(name);
+  return iter != requestMap.end() && iter->second.value;
+}
 
 const bool& DebugRequest::getValueReference(const std::string& name) const
 {
-  std::map<std::string, bool>::const_iterator iter = requestMap.find(name);
+  std::map<std::string, Request>::const_iterator iter = requestMap.find(name);
   if(iter == requestMap.end()) {
     THROW( "[ERROR] Could not find reference for debug request \"" + name + "\"");
   }
-  return iter->second;
-}//end getValueReference
+  return iter->second.value;
+}
 
 
 std::string get_sub_core_path(std::string fullpath)
@@ -104,4 +102,26 @@ std::string get_sub_core_path(std::string fullpath)
   } else {
     return fullpath;
   }
+}
+
+void naoth::Serializer<DebugRequest>::serialize(const DebugRequest& r, std::ostream& stream)
+{
+  naothmessages::DebugRequest msg;
+
+  DebugRequest::RequestMap::const_iterator iter = r.getRequestMap().begin();
+  for(;iter != r.getRequestMap().end(); ++iter)
+  {
+    //stream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
+    naothmessages::DebugRequest_Item* item = msg.add_requests();
+    item->set_name(iter->first);
+    item->set_description(iter->second.description);
+    item->set_value(iter->second.value);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void naoth::Serializer<DebugRequest>::deserialize(std::istream& /*stream*/, DebugRequest& /*object*/)
+{
 }

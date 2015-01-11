@@ -7,10 +7,6 @@
 
 #include "GPS_SelfLocator.h"
 
-// debug
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugModify.h"
-
 GPS_SelfLocator::GPS_SelfLocator()
 {
   DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data", false); 

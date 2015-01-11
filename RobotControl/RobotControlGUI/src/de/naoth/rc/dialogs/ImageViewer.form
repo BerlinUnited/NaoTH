@@ -69,7 +69,7 @@
         <Property name="axis" type="int" value="3"/>
       </Layout>
       <SubComponents>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasTop">
+        <Container class="de.naoth.rc.components.ImagePanel" name="imageCanvasTop">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
@@ -95,7 +95,7 @@
             </DimensionLayout>
           </Layout>
         </Container>
-        <Container class="de.naoth.rc.dialogs.panels.ImagePanel" name="imageCanvasBottom">
+        <Container class="de.naoth.rc.components.ImagePanel" name="imageCanvasBottom">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
@@ -133,7 +133,7 @@
       <SubComponents>
         <Component class="javax.swing.JToggleButton" name="btReceiveImagesTop">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive Bottom"/>
+            <Property name="text" type="java.lang.String" value="Receive Top"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btReceiveImagesTopActionPerformed"/>
@@ -141,7 +141,7 @@
         </Component>
         <Component class="javax.swing.JToggleButton" name="btReceiveImagesBottom">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive Top"/>
+            <Property name="text" type="java.lang.String" value="Receive Bottom"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>

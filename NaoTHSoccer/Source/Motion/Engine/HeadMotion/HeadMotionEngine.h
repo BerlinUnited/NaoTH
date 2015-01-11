@@ -26,7 +26,17 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Representations/Modeling/CameraMatrixOffset.h>
 
+// Debug
+#include "Tools/Debug/DebugModify.h"
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugDrawings.h>
+
 BEGIN_DECLARE_MODULE(HeadMotionEngine)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+
+
   REQUIRE(RobotInfo)
   REQUIRE(InertialModel)
   REQUIRE(KinematicChainSensor)

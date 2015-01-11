@@ -7,9 +7,8 @@
 
 #include "FootGroundContactDetector.h"
 
-#include "Tools/Debug/DebugBufferedOutput.h"
-
-FootGroundContactDetector::FootGroundContactDetector()
+FootGroundContactDetector::FootGroundContactDetector():
+    footParams(getDebugParameterList())
 {
 }
 

@@ -32,7 +32,7 @@ private:
   {
     fullFieldPoly.clear();
     // create default field poly in image (the whole image)
-    // basicaly the same as rect
+    // basically the same as rect
     fullFieldPoly.add(Vector2i(0, 0));
     fullFieldPoly.add(Vector2i(0, dimension.y - 1));
     fullFieldPoly.add(Vector2i(dimension.x - 1, dimension.y - 1));

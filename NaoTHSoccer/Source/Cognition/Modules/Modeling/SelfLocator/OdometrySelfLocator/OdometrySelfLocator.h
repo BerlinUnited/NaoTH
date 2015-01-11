@@ -21,6 +21,9 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(OdometrySelfLocator)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+
   REQUIRE(OdometryData)
   PROVIDE(RobotPose)
 END_DECLARE_MODULE(OdometrySelfLocator)

@@ -27,7 +27,18 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Motion/MotionStatus.h"
 
+// debug
+#include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
+
 BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
+  PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+
   REQUIRE(FrameInfo)
   REQUIRE(KinematicChainSensor)
   REQUIRE(KinematicChainMotor)
@@ -52,6 +63,7 @@ public:
 
   virtual ~InverseKinematicsMotionEngine()
   {
+      getDebugParameterList().remove(&theParameters);
   }
 
   virtual void execute(){} // dummy

@@ -8,12 +8,12 @@ end
 dofile "projectconfig.lua"
 
 -- load some helpers
-dofile (FRAMEWORK_PATH .. "/LuaTools/info.lua")
---dofile (FRAMEWORK_PATH .. "/LuaTools/ilpath.lua")
-dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator.lua")
-dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator_2.7+.lua")
-dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
-dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
+dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
+dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
+--dofile (FRAMEWORK_PATH .. "/BuildTools/ilpath.lua")
+dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
+dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
+--dofile (FRAMEWORK_PATH .. "/BuildTools/extract_todos.lua")
 
 -- include the Nao platform
 if COMPILER_PATH_NAO ~= nil then
@@ -59,19 +59,22 @@ solution "NaoTHSoccer"
   
 
  -- TODO: howto compile the framework representations properly *inside* the project?
+  local COMMONS_MESSAGES = FRAMEWORK_PATH .. "/Commons/Messages/"
   invokeprotoc(
-    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", 
-	 FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
-     FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
+    { COMMONS_MESSAGES .. "CommonTypes.proto", 
+      COMMONS_MESSAGES .. "Framework-Representations.proto", 
+      COMMONS_MESSAGES .. "Messages.proto"
+    },
+    FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/"}
+    {COMMONS_MESSAGES}
   )
 
   invokeprotoc(
     {"../Messages/Representations.proto"}, 
-    "../Source/Core/Messages/", 
+    "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/", "../Messages/"}
+    {COMMONS_MESSAGES, "../Messages/"}
   )
 
   
@@ -130,7 +133,7 @@ solution "NaoTHSoccer"
    end
    
   -- base
-  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
+  dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
   -- core
   dofile "NaoTHSoccer.lua"
   
@@ -139,38 +142,22 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
 	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  links { "NaoTHSoccer", "Commons" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	  debugargs { "--sync" }
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	  --defines { "QVGA" }
-	  postbuildcommands { "premake4 webots_copy" }
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons" }
+      debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVImageLoader.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
-	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVWebCam.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "NaoTH-Commons" }
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons" }
   end
   
   
   -- tests
-  if(_OPTIONS["platform"] ~= "Nao") then
-	dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
-	dofile "Tests.lua"
-  end
+  --if(_OPTIONS["platform"] ~= "Nao") then
+	--dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
+	--dofile "Tests.lua"
+  --end
   
   

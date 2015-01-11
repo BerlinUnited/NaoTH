@@ -11,6 +11,7 @@
 #include "Sample.h"
 #include <Tools/Math/Moments2.h>
 #include <vector>
+#include "Tools/Debug/DebugDrawings.h"
 
 class SampleSet
 {
@@ -70,8 +71,8 @@ public:
   Sample meanOfCluster(Moments2<2>& moments, int idx) const;
 
   // TODO: move it out of here
-  void drawCluster(unsigned int clusterId) const;
-  void drawImportance(bool arrows = true) const;
+  void drawCluster(DrawingCanvas2D& canvas, unsigned int clusterId) const;
+  void drawImportance(DrawingCanvas2D& canvas, bool arrows = true) const;
 
 private:
   std::vector<Sample> samples;

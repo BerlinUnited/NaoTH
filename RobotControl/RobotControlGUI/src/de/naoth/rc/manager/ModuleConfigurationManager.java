@@ -4,6 +4,7 @@
 
 package de.naoth.rc.manager;
 
+import de.naoth.rc.core.manager.ManagerPlugin;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 
 /**

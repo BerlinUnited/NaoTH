@@ -97,10 +97,10 @@ void GoalModel::print(std::ostream& stream) const
 
 void GoalModel::draw() const
 {
-  FIELD_DRAWING_CONTEXT;
-  PEN("FF0000", 50);
-  CIRCLE(goal.leftPost.x, goal.leftPost.y, 50);
-  CIRCLE(goal.rightPost.x, goal.rightPost.y, 50);
+  //FIELD_DRAWING_CONTEXT;
+  //PEN("FF0000", 50);
+  //CIRCLE(goal.leftPost.x, goal.leftPost.y, 50);
+  //CIRCLE(goal.rightPost.x, goal.rightPost.y, 50);
 
 }//end draw
 

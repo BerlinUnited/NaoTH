@@ -13,7 +13,7 @@
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
-#include <Tools/Debug/DebugRequest.h>
+//#include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
@@ -57,7 +57,8 @@ SimSparkController::SimSparkController(const std::string& name)
   registerOutput<const TeamMessageDataOut>(*this);
 
   // debug
-  registerInput<DebugMessageIn>(*this);
+  registerInput<DebugMessageInCognition>(*this);
+  registerInput<DebugMessageInMotion>(*this);
   registerOutput<DebugMessageOut>(*this);
 
   // init the name -- id maps
@@ -260,13 +261,13 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
     debugPort = static_cast<short unsigned int> (5500 + theGameData.playerNumber);
   }
 
-  theDebugServer.start(debugPort, true);
+  theDebugServer.start(debugPort);
 #endif
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
 
-  DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
-  REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
+  //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+  //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -1374,7 +1375,7 @@ void SimSparkController::jointControl()
   }
 }
 
-void SimSparkController::set(const CameraSettingsRequest& data)
+void SimSparkController::set(const CameraSettingsRequest& /*data*/)
 {
   // switch between two cameras is supported currently
 
@@ -1487,7 +1488,7 @@ void SimSparkController::autoBeam()
 {
 
   bool beamRequest = false;
-  DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
+  //DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
 
   if (beamRequest
       || theGameData.gameState == GameData::initial
@@ -1554,7 +1555,7 @@ bool SimSparkController::updateIMU(const sexp_t* sexp)
   return true;
 }
 
-MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
+MessageQueue* SimSparkController::createMessageQueue(const std::string& /*name*/)
 {
   if ( theSyncMode )
     return new MessageQueue();

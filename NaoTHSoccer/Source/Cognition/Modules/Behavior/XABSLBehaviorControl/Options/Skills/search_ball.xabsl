@@ -1,0 +1,82 @@
+option search_ball
+{  
+
+  // stop first
+  initial state start
+  {
+    decision {
+      if(executed_motion.type == stand)
+      {
+	      if(ball.preview.y > 0)
+	        goto search_ball_rot_left;
+	      else
+	        goto search_ball_rot_right;
+      }
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state search_ball_rot_left
+  {
+    decision {
+      if(action_done)
+        goto search_ball_simple_right;
+      else
+        stay;
+    }
+    action {
+      search_ball_back_rot(search_direction = left);
+    }
+  }
+
+ state search_ball_rot_right
+  {
+    decision {
+      if(action_done)
+        goto search_ball_simple_left;
+      else
+        stay;
+    }
+    action {
+      search_ball_back_rot(search_direction = right);
+    }
+  }
+
+  state search_ball_simple_left
+  {
+    decision {
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball(search_direction = left);
+    }
+  }
+
+  state search_ball_simple_right
+  {
+    decision {
+      if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball(search_direction = right);
+    }
+  }
+
+  target state finish {
+    action{
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}

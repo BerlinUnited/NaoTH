@@ -28,7 +28,19 @@
 #include "Tools/NaoInfo.h"
 #include "Tools/ReachibilityGrid.h"
 
+// Debug
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h" //For Plotting
+
 BEGIN_DECLARE_MODULE(IKArmGrasping)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+
+
   REQUIRE(RobotInfo)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)

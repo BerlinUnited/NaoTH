@@ -9,7 +9,6 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Representations/Infrastructure/Configuration.h>
 #include <PlatformInterface/Platform.h>
-#include <Tools/Debug/DebugParameterList.h>
 
 using namespace std;
 
@@ -18,14 +17,18 @@ CameraDebug::CameraDebug(): CameraDebugBase(),
   afterAutoCalibratingCamera(false),
   afterQueryCameraSettings(false)
 {  
-  REGISTER_DEBUG_COMMAND("camera:switch_auto_parameters",
-    "switch Automation for camera parameters", this);
-  REGISTER_DEBUG_COMMAND("camera:force_reload",
-    "force reading all parameters from camera", this);
+  REGISTER_DEBUG_COMMAND("camera:switch_auto_parameters", "switch Automation for camera parameters", this);
+  REGISTER_DEBUG_COMMAND("camera:force_reload", "force reading all parameters from camera", this);
   
   // register the CameraSettingsRequest as a parameter list
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
-  DebugParameterList::getInstance().add(&(getCameraSettingsRequestTop()));
+  getDebugParameterList().add(&(getCameraSettingsRequest()));
+  getDebugParameterList().add(&(getCameraSettingsRequestTop()));
+}
+
+CameraDebug::~CameraDebug()
+{
+  getDebugParameterList().remove(&(getCameraSettingsRequest()));
+  getDebugParameterList().remove(&(getCameraSettingsRequestTop()));
 }
 
 void CameraDebug::execute()

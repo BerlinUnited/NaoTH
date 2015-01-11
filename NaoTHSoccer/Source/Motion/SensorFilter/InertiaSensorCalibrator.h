@@ -19,7 +19,8 @@
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
 #include "Tools/Debug/NaoTHAssert.h"
-
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugPlot.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -33,6 +34,10 @@
 #include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(InertiaSensorCalibrator)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
+
   REQUIRE(AccelerometerData)
   REQUIRE(GyrometerData)
   REQUIRE(InertialSensorData)

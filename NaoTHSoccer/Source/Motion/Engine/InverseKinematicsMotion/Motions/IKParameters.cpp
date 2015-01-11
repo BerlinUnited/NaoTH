@@ -6,7 +6,6 @@
 */
 
 #include "IKParameters.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 
 IKParameters::IKParameters()
@@ -20,8 +19,6 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   
-
-
   // walk parameter:
   // General
   PARAMETER_REGISTER(walk.general.stiffness) = 0.7;
@@ -133,10 +130,8 @@ IKParameters::IKParameters()
 
   syncWithConfig();
 
-  DebugParameterList::getInstance().add(this);
 }
 
 IKParameters::~IKParameters()
 {
-  DebugParameterList::getInstance().remove(this);
 }

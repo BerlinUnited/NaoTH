@@ -9,7 +9,7 @@
 #include <glib-object.h>
 
 #include <PlatformInterface/Platform.h>
-#include <Tools/Debug/Stopwatch.h>
+//#include <Tools/Debug/Stopwatch.h>
 #include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/ModuleCreator.h>
 
@@ -109,9 +109,9 @@ int main(int argc, char** argv)
 
   // start the execution
   sim.main();
-
+  
   // dump some debug information
-  StopwatchManager::getInstance().dump();
+  //StopwatchManager::getInstance().dump();
 
   deleteCognition(theCognition);
   deleteMotion(theMotion);

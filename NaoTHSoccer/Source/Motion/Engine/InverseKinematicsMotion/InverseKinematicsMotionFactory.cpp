@@ -11,8 +11,8 @@
 #include "Motions/StandMotion.h"
 #include "Motions/Dance.h"
 #include "Motions/Walk.h"
-#include "Motions/ProtectFalling.h"
-#include "Motions/IKDynamicKickMotion.h"
+//#include "Motions/ProtectFalling.h"
+//#include "Motions/IKDynamicKickMotion.h"
 
 InverseKinematicsMotionFactory::InverseKinematicsMotionFactory()
   : currentMotionCreator(NULL)
@@ -41,8 +41,8 @@ Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motion
   REGISTER_MOTION(motion::stand, StandMotion);
   REGISTER_MOTION(motion::dance, DanceMotion);
   REGISTER_MOTION(motion::walk, Walk);
-  REGISTER_MOTION(motion::protect_falling, ProtectFalling);
-  REGISTER_MOTION(motion::kick, IKDynamicKickMotion);
+  //REGISTER_MOTION(motion::protect_falling, ProtectFalling);
+  //REGISTER_MOTION(motion::kick, IKDynamicKickMotion);
 
   if(currentMotionCreator != NULL)
   {

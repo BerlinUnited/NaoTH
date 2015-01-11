@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     {"server", 's', 0, G_OPTION_ARG_STRING, &optServer, "server host", "localhost"},
     {"port", 'p', 0, G_OPTION_ARG_INT, &port, "server port", "3100"},
     {"sync", 0, 0,  G_OPTION_ARG_NONE, &sync, "sync mode", NULL},
-    {NULL} // This NULL is very important!!!
+    {NULL,0,0,G_OPTION_ARG_NONE, NULL, NULL, NULL} // This NULL is very important!!!
   };
   
   std::stringstream info;

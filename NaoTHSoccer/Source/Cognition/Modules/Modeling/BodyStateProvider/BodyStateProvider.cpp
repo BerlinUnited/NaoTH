@@ -9,7 +9,6 @@
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 BodyStateProvider::BodyStateProvider()
 {
