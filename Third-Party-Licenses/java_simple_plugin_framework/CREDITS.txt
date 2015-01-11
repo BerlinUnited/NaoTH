@@ -1,0 +1,26 @@
+
+
+Entities involved
+-----------------
+
+- Initial Version from Ralf Biedert (ralf.biedert@dfki.de)
+- Nicolas Delsaux adopted the project, added Maven support, 
+  did modifications and a relayout of the project
+- Part of this work were created during work at the DFKI 
+  (German Research Center for Artificial Intelligence) 
+- Thomas Lottermann (development on various plugins)
+
+
+
+Code used
+---------
+
+This framework uses:
+
+- ROX (for XMLRPC services)
+- jmDNS
+- LipeRMI
+- Essence RMI
+- XMLRPC Delight
+- jCores
+
