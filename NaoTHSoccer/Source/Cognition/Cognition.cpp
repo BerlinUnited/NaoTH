@@ -9,6 +9,9 @@
 
 #include <PlatformInterface/Platform.h>
 
+// tools
+#include "Tools/Debug/Trace.h"
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -26,11 +29,9 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 
-// behavior
-#include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
-
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
@@ -45,15 +46,22 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
-#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
-
-// tools
-#include "Tools/Debug/Trace.h"
 
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
+#include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
+#include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
+#include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
+#include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+#include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
+#include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+
+// behavior
+#include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 
 using namespace std;
 
@@ -115,22 +123,29 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
 
+  // modeling
+  REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(FieldCompass);
+  REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(SoccerStrategyProvider);
+  REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(GPS_SelfLocator);
+  REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
+  REGISTER_MODULE(DummyActiveGoalLocator);
+  REGISTER_MODULE(KalmanFilterBallLocator);
+  
+  // behavior
+  REGISTER_MODULE(BasicTestBehavior);
 
+  REGISTER_MODULE(TeamCommSender);
+  
   // debug
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(DebugExecutor);
 
-  // modeling
-  REGISTER_MODULE(BodyStateProvider);
-  REGISTER_MODULE(UltraSoundObstacleLocator);
-  REGISTER_MODULE(SoccerStrategyProvider);
-
-  // behavior
-  REGISTER_MODULE(BasicTestBehavior);
-
-  REGISTER_MODULE(TeamCommSender);
   // -- END REGISTER MODULES --
 
   // register output module

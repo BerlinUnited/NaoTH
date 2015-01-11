@@ -50,6 +50,9 @@ public:
   void drawLine(double x0, double y0, double x1, double y1) {
     out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
   }
+  void drawArrow(double x0, double y0, double x1, double y1) {
+    out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+  }
   void drawText(double x, double y, const char* text) {
     out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
   }

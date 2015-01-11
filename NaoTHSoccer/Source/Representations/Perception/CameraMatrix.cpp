@@ -14,7 +14,6 @@
 
 using namespace naoth;
 
-
 void CameraMatrix::print(std::ostream& stream) const
 {
   stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << std::endl;
