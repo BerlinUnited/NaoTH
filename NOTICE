@@ -11,3 +11,33 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+Third-Party-Licenses
+====================
+
+We use the following third party software, their licenses
+can be found in the "Third-Party-Licenses" folder.
+
+* OpenCV (http://opencv.org/) 
+  -- BSD License
+* GLib (https://developer.gnome.org/glib/stable/) 
+  -- GNU LIBRARY GENERAL PUBLIC LICENSE Version 2
+* Protocol Buffers (https://code.google.com/p/protobuf/)
+  -- BSD License
+* sexpr (http://sexpr.sourceforge.net/)
+  -- GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
+* DockingFrames (http://dock.javaforge.com/)
+  -- GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
+* FreeHEP (http://java.freehep.org/)
+  -- GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1
+* JDOM (http://www.jdom.org)
+  -- BSD-style (additional clause)
+* JChart2D (http://sourceforge.net/projects/jchart2d/)
+  -- GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
+* Java look and feel Graphics Repository (http://www.oracle.com/technetwork/java/index-138612.html)
+  -- custom
+* JSch (http://www.jcraft.com/jsch/)
+  -- BSD-style
+* Java Simple Plugin Framework (https://code.google.com/p/jspf/)
+  -- New BSD License
+
