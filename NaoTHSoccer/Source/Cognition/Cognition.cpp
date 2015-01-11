@@ -54,6 +54,7 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -129,7 +130,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
-
+  REGISTER_MODULE(KalmanFilterBallLocator);
+  
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
 
