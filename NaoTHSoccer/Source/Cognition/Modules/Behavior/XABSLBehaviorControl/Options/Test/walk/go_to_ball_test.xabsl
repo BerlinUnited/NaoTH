@@ -1,0 +1,54 @@
+option go_to_ball_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state go_to_ball
+  {
+    decision
+    {
+      else if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball(distance = 210);
+    }
+  }
+
+  state done
+  {
+    decision
+    {
+      else if(ball.time_seen > 100 && ball.distance > 500)
+        goto go_to_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

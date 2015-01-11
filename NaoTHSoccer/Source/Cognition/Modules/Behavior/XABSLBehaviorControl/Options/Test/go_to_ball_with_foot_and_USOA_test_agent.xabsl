@@ -1,0 +1,21 @@
+// go to ball while avoiding obstacles using ultra sonic test agent
+option go_to_ball_with_foot_and_USOA_test_agent
+{
+
+  initial state test {    
+    action {
+      // react to the game controller and handle fall down
+      basic_play();
+
+      go_to_ball_with_foot_and_USOA_test();
+      
+      take_arms_back();
+      // control the arms
+      arms_control();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+
+}

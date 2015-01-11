@@ -1,0 +1,109 @@
+/** The base option for the head control behavior */
+option head_control
+{
+  common decision
+  {
+    if (head.control_mode == none)
+      goto none;
+    else if (head.control_mode == stay_as_forced)
+      goto stay_as_forced;
+    else if (head.control_mode == look_straight_ahead)
+      goto look_straight_ahead;
+    else if (head.control_mode == search_for_ball)
+      goto search_for_ball;
+    else if (head.control_mode == look_around)
+      goto look_around;
+    else if (head.control_mode == search_for_goal)
+      goto search_for_goal;
+    else if (head.control_mode == search_for_goal_opp)
+      goto search_for_goal_opp;
+    else if(head.control_mode == look_at_ball_percept)
+      goto look_at_ball_percept;
+    else if(head.control_mode == search_for_ball_and_look_around)
+      goto search_for_ball_and_look_around;
+  }
+
+  initial state none
+  {
+    action
+    {
+    // do nothing
+    }
+  }
+  
+  state stay_as_forced
+  {
+    action
+    {
+      head.motion_type = hold;
+      head.camera.id = Bottom;
+    }
+  }
+    
+  state look_straight_ahead
+  {
+    action
+    {
+      head.camera.id = Top;
+      head.motion_type = look_straight_ahead;
+    }
+  }
+  
+  state search_for_ball
+  {
+    action
+    {
+      head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check = false, look_around=true);
+    }
+  }
+
+  state search_for_ball_and_look_around
+  {
+    action
+    {
+      //search_for_ball_and_look_around();
+      head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check=false, look_around=true);
+    }
+  }
+
+  state look_around
+  {
+    action
+    {
+      head.camera.id = Top;
+      look_around();
+    }
+  }
+
+  state search_for_goal
+  {
+    action
+    {
+      head.camera.id = Top;
+      search_for_goal(own=true,opp=true);
+    }
+  }
+
+  state search_for_goal_opp
+  {
+    action
+    {
+      head.camera.id = Top;
+      search_for_goal(own=false,opp=true);
+    }
+  }
+
+
+  state look_at_ball_percept 
+  {
+	  action 
+	  {
+      head.camera.id = Bottom;
+      look_at_ball_percept();
+	  }
+	}
+
+}
+  

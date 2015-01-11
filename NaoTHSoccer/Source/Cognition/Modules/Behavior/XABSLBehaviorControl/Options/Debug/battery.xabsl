@@ -1,0 +1,47 @@
+/** The show battery status and warn if too low */
+option battery {
+
+  initial state ok {
+    decision 
+    {
+      if(platform.battery <= 0.05)
+      {
+        goto low_warn;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      set_left_ear = 
+        min(value0=10.0,value1=platform.battery*10);
+
+      set_right_ear = 
+        min(value0=10.0,value1=platform.battery*10);
+    }
+  }
+
+  state low_warn
+  {
+    decision
+    {
+      if(platform.battery > 0.05)
+      {
+        goto ok;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      set_left_ear = 0;
+      set_right_ear = 0;
+      //sound.request = (state_time == 0 || platform.battery == 0) 
+      //  ? battery_low : off;
+    }
+  }
+  
+}

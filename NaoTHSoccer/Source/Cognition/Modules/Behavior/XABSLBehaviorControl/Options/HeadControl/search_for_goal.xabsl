@@ -1,0 +1,120 @@
+/** Scan mode for looking at the goal/searching for the goal of the opponent*/
+option search_for_goal 
+{
+  //we should include a parameter like owngoal=true/false
+
+  bool @own;
+  bool @opp;
+
+  initial state look_straight_ahead {
+    decision {
+      if (state_time > 1000)
+        goto try_to_look_at_the_old_goal;
+      else
+        stay;
+    }
+    action {
+      head.motion_type = look_straight_ahead;
+    }
+  }
+  
+  state try_to_look_at_the_old_goal
+  {
+    decision
+    {
+      if (state_time > 1000)
+        goto search_for_goal_right;
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
+      head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
+      head.point_in_world.z = 500;
+    }
+  }
+
+  // make it to search for goal left and right
+  state search_for_goal_right 
+  {
+    decision{
+      if ((goal.own.was_seen && @own)|| 
+          (goal.opp.was_seen && @opp))
+        goto look_at_goal_percept;
+      else if(state_time>2000)
+        goto search_for_goal_left;
+      else
+       stay;
+    }
+    action
+    {
+        head.point_in_world.x = 2000;
+        head.point_in_world.y = -2000;
+        head.point_in_world.z = 500;
+        head.motion_type = look_at_world_point;
+    }
+  }
+
+state search_for_goal_left 
+  {
+    decision
+    {
+      if ((goal.own.was_seen && @own)|| 
+          (goal.opp.was_seen && @opp))
+        goto look_at_goal_percept;
+      else if(state_time>2000)
+        goto search_for_goal_right;
+      else
+       stay;
+    }
+    action
+    {
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = 2000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+    }
+  }
+  
+  state look_at_goal
+  {
+    decision
+    {
+      if ((goal.own.time_since_seen < 1000 && @own) ||
+          (goal.opp.time_since_seen < 1000 && @opp))        
+        stay;
+      else
+        goto search_for_goal_right;
+    }
+    action
+    {     
+      head.motion_type = look_at_world_point;      
+      
+      head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
+      head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
+      head.point_in_world.z = 500;    
+    }
+  }
+
+  state look_at_goal_percept
+  {
+    decision
+    {
+      if((goal.own.time_since_seen == 0 && @own) ||
+         (goal.opp.time_since_seen == 0 && @opp) ||
+         (state_time > 1500))
+        goto look_at_goal;
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.x:goal.opp.x;
+      head.point_in_world.y = (@own && (!@opp || abs(value = goal.own.angle) < abs(value = goal.opp.angle)))?goal.own.y:goal.opp.y;
+      head.point_in_world.z = 500;
+    }
+  }
+}

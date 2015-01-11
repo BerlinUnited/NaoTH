@@ -1,0 +1,36 @@
+/** This is the "main" file for playing */
+
+option penalty_set_penalized_play
+{  
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode == playing)
+      goto play;
+    else if(game.current_mode == ready)
+      goto ready;
+    else if(true)
+      goto idle;
+  }
+  
+
+  initial state idle{action{}}  
+  
+  state play {
+    action 
+    {
+      //sound.request = (state_time == 0)  ? playing : off;
+      decide_penalty_role();
+      //check_fall_down();
+      last_state_was_penalized = false;
+    }
+  }
+
+  state ready
+  {
+    action 
+    {
+    }
+  }
+}

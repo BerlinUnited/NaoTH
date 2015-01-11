@@ -1,0 +1,88 @@
+/* If walking in a slight curve fails, read comment in the look for ball state */
+
+option penalty_kicker
+{
+  initial state look_for_ball
+  {
+    decision
+    {
+      if(ball.was_seen && state_time > 3000)
+        goto approach_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+
+
+  state approach_ball_right
+  {
+    decision
+    {
+      if (action_done)
+        goto do_kick;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_with_foot(right=true, distance=160);      
+    }
+  }
+
+  state prepare_kick
+  {
+    decision
+    {
+      if(state_time > 1000)
+        goto do_kick;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      arm.control_mode = normal;
+    }
+  }
+
+
+  state do_kick
+  {
+    decision
+    {
+      if(action_done)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      situation.abortable = false;
+      kick_ball_with_foot(direction = 0, right = true);
+      head.control_mode = search_for_ball;
+      arm.control_mode = normal;
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+      arm.control_mode = normal;
+    }
+  }
+
+}

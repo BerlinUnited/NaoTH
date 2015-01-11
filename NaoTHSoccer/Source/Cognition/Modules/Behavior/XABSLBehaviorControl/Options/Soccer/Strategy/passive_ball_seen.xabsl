@@ -1,0 +1,53 @@
+// important: assume the ball is seen
+// achtung: it can happen that the ball is not seen for ~3s
+option passive_ball_seen
+{
+  target state look_at_ball 
+  {
+    decision {
+      if(abs(value=atan2(y=ball.preview.y, x=ball.preview.x)) > 40)
+        goto turn_to_ball;
+      else if(vector.abs(y=ball.preview.y, x=ball.preview.x) > 2000
+              && state_time > 4000
+              && ball.time_since_last_seen < 100)
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  initial target state turn_to_ball 
+  {
+    decision {
+      if(atan2(y=ball.preview.y, x=ball.preview.x) < 30)
+        goto look_at_ball;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.preview.y, x=ball.preview.x);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state look_around
+  {
+    decision {
+      if(state_time > 3000)
+        goto look_at_ball;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}

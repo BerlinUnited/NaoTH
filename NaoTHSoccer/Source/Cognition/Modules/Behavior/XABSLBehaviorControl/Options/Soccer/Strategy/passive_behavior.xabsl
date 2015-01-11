@@ -1,0 +1,46 @@
+option passive_behavior{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto ball_not_seen;
+      else
+        stay;
+    }
+    action {}
+  }
+
+  
+
+  state ball_seen {
+    decision {
+      else if((action_done && ball.time_since_last_seen > 1000) || 
+              ball.time_since_last_seen > 4000)
+        goto ball_not_seen;
+      else
+        stay;
+    }
+    action {
+      passive_ball_seen();
+    }
+  }
+
+  state ball_not_seen {
+    decision {
+      else if(action_done)
+        goto ball_seen;
+      else
+        stay;
+    }
+    action {
+      passive_ball_not_seen();
+    }
+  }
+
+}

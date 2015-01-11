@@ -1,0 +1,130 @@
+option walk_circularly_x
+{
+  initial state and_action
+  {
+    decision
+    {
+      if(executed_motion.type == stand){
+        goto rot_forwards_left;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  state rot_forwards_left
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.rot = 9;
+      motion.walk.style = fast;
+      test_walk.last_state=rot_forwards_left;
+    }
+  }
+
+  state rot_forwards_right
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.rot = -9;
+      motion.walk.style = fast;
+      test_walk.last_state=rot_forwards_right;
+    }
+  }
+
+  state rot_backwards_right
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.rot = 9;
+      motion.walk.style = fast;
+      test_walk.last_state=rot_backwards_right;
+    }
+  }
+
+  state rot_backwards_left
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto stop;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.rot = -9;
+      motion.walk.style = fast;
+      test_walk.last_state=rot_backwards_left;
+    }
+  }
+
+  state stand{
+  decision{
+      if(!(executed_motion.type == stand)){
+        stay;
+      }
+      else if(test_walk.last_state==rot_forwards_left){
+        goto rot_forwards_right;
+      }
+      else if(test_walk.last_state==rot_forwards_right){
+        goto rot_backwards_right;
+      }
+      else if(test_walk.last_state==rot_backwards_right){
+        goto rot_backwards_left;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  
+  }
+
+  target state stop
+  {
+    action
+    {
+    }
+  }
+  
+}

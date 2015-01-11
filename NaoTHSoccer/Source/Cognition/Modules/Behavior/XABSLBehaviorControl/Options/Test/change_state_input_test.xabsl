@@ -1,0 +1,43 @@
+option change_state_input_test
+{
+  float @test;
+  
+  initial state one{
+
+    decision{
+	    if(@test > 0.5)
+        goto two;
+      else
+        stay;
+	  }
+	  action{
+	  }
+	  
+  }
+
+  state two{
+	  
+	  decision{
+	    if(@test <= 0.5)
+        goto three;
+      else
+        stay;
+	  }
+	  action{
+	  }
+  }
+
+  state three{
+
+    decision{
+      if(state_time > 1000)
+        goto one;
+      else
+        stay;   
+    }
+    action{
+    }
+  }
+  
+
+}

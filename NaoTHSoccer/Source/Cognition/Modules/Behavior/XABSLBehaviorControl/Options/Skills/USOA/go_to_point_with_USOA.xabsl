@@ -1,0 +1,142 @@
+option go_to_point_with_USOA
+{
+ /** x position of the point to walk to on the field */
+ float @x; //[-4500..4500] "mm";
+
+ /** y position of the point to walk to on the field */
+ float @y; // [-3000..3000] "mm";
+
+ /** absolute rotation on field */
+ float @rot; // -180...180 "deg";
+
+  initial state go
+  {
+    decision
+    {
+      if(obstacle.ultrasound.blockedtime > 100){
+	      if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
+	            &&(obstacle.ultrasound.distance<400))
+	          goto approach_carefully;
+	      else if(obstacle.ultrasound.left.distance < 400)
+	          goto avoid_left;
+	      else if(obstacle.ultrasound.right.distance < 400)
+	          goto avoid_right;
+        else
+          stay;
+      }
+      else if(action_done)
+        goto finish;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_point(x=@x,y=@y,rot=@rot);
+    }
+  }
+
+  state avoid_left
+  {
+    decision
+    { if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
+            &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
+        goto approach_carefully;
+      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
+        goto go;
+      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance 
+              && state_time > 1000
+              && obstacle.ultrasound.blockedtime > 100)
+        goto avoid_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    { if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
+            &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
+        goto approach_carefully;
+      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
+        goto go;
+      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance 
+              && state_time > 1000
+              && obstacle.ultrasound.blockedtime > 100)
+       goto avoid_left;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 60;
+      motion.walk_speed.rot =0; 
+    }
+  }
+
+  state approach_carefully{
+
+    decision{
+      if ( action_done )
+        goto finish;
+      else if (obstacle.ultrasound.distance>400)
+        goto go;
+      else if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) > obstacle.ultrasound.distance)
+              && obstacle.ultrasound.blockedtime > 100){
+        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+           goto avoid_left;
+        else
+           goto avoid_right;
+      }
+      else
+        stay;
+    }
+
+    action{
+      head.control_mode = search_for_ball;
+
+      go_to_point(x=@x,y=@y,rot=@rot);
+
+      motion.walk.style = stable;
+  }
+  }
+
+  target state finish{
+    decision
+    {
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300
+          || abs(value=robot_pose.planned.rotation - @rot) > 10 )
+        goto go;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = stand;
+    }
+  }
+  
+
+}

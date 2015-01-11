@@ -1,0 +1,179 @@
+/* Tests walking against ball as "kick"*/
+
+option walk_against_ball_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state walk_right
+  {
+    decision
+    {
+      else if(state_time > 2000)
+        goto go_to_ball_left;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = normal;
+      
+      motion.walk_speed.x = 500;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state walk_left
+  {
+    decision
+    {
+      else if(state_time > 2000)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = normal;
+      
+      motion.walk_speed.x = 500;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state go_to_ball_right
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball_right;
+      else if(action_done)
+        goto walk_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = true, distance = 140);
+      //motion.walk.stop_with_stand = false;
+    }
+  }
+
+state go_to_ball_left
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball_left;
+      else if(action_done)
+        goto walk_left;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = false, distance = 140);
+      //motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state search_ball_right
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state search_ball_left
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball_left;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state stand_right
+  {
+    decision
+    {
+      else if(state_time > 3000)
+        goto walk_right;
+      else stay;
+    }
+    action
+    {
+      motion.type = stand;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state stand_left
+  {
+    decision
+    {
+      else if(state_time > 3000)
+        goto walk_left;
+      else stay;
+    }
+    action
+    {
+      motion.type = stand;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+}

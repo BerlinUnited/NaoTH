@@ -1,0 +1,30 @@
+option show_calibration{
+
+
+  initial state show_off{
+    decision{
+      if(state_time > 500)
+        goto show_red;
+      else
+        stay;
+    }
+    action{
+       set_right_eye = eyeLED.off;
+       set_left_eye = eyeLED.off; 
+    }
+  }
+
+  state show_red{
+    decision{
+      if(state_time > 500)
+        goto show_off;
+      else
+        stay;
+      }
+    action{
+      set_right_eye = eyeLED.red;
+      set_left_eye = eyeLED.red;
+    }
+  }
+
+}

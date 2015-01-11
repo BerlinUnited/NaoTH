@@ -1,0 +1,61 @@
+/** behavior for testing the role change */
+option role_change_test 
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto defender;
+      else
+        stay;
+    }
+    action 
+    {
+      team.is_playing_as_striker = false;
+    }
+  }
+
+  state striker 
+  { 
+    decision 
+    {
+      else if( team.members_alive_count != 0 &&
+               !team.calc_if_is_striker)
+        goto defender;
+      else
+        stay;
+    }
+    action {
+      team.is_playing_as_striker = true;
+      // show striker
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      set_left_ear = platform.frameNumber % 10;
+      set_right_ear = platform.frameNumber % 10;
+    }
+  }
+
+  state defender 
+  { 
+    decision 
+    {
+      else if( team.members_alive_count == 0 ||
+               team.calc_if_is_striker)
+        goto striker;
+      else 
+        stay;
+    }
+    action {
+      team.is_playing_as_striker = false;
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+}

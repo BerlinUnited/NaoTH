@@ -1,0 +1,86 @@
+/** behavior for testing the walk */
+option clown_walk_test 
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto stand;
+      else
+        stay;
+    }
+    action 
+    {
+      team.is_playing_as_striker = false;
+    }
+  }
+
+  state stand {
+    decision {
+      else if (ball.was_seen)
+        goto walk_to_ball_far_away;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk_to_ball_far_away {
+    decision {
+      else if (ball.time_since_last_seen > 1000)
+        goto stand;
+      else if(vector.abs(x=ball.preview.x,y=ball.preview.y) < 200)
+        goto walk_to_ball_close;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+
+      go_to_ball();
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.offset.y = 0;
+      motion.walk.offset.rot = 0;
+      
+      motion.walk.step_control.foot = none;
+      motion.walk.style = normal;
+    }
+  }
+
+  state walk_to_ball_close {
+    decision {
+      else if (ball.time_since_last_seen > 1000)
+        goto stand;
+      else if(vector.abs(x=ball.preview.x,y=ball.preview.y) > 300)
+        goto walk_to_ball_far_away;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+
+      go_to_ball();
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.offset.y = 0;
+      motion.walk.offset.rot = 20;
+      
+      motion.walk.step_control.foot = none;
+      motion.walk.style = normal;
+    }
+  }
+}

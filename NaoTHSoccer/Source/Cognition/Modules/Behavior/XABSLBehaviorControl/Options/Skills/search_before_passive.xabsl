@@ -1,0 +1,151 @@
+option search_before_passive{
+
+common decision  {
+if(ball.was_seen || ball.time_since_last_seen < 100)
+      goto finish;
+}
+
+initial state start {
+
+decision{
+    else if(state_time>500 ){
+        if (ball.preview.y>0)
+          goto turn_left_first;
+        else
+          goto turn_right_first;
+      }
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state turn_left_first{
+
+decision{
+    else if(state_time>1300 )
+      goto turn_left;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = -10000;
+      motion.walk_speed.rot = 50;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state turn_right_first{
+
+  decision{
+    else if(state_time>1300 )
+      goto turn_right;
+    else
+      stay;
+  }
+  action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = 10000;
+      motion.walk_speed.rot = -50;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = -200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+  }
+}
+
+state turn_left{
+
+decision{
+    else if(state_time>1700 )
+      goto finish;
+    else
+      stay;
+}
+action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = -10000;
+      motion.walk_speed.rot = 70;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+}
+}
+
+state turn_right{
+
+  decision{
+    else if(state_time>1700 )
+      goto finish;
+    else
+      stay;
+  }
+  action{
+      motion.type = walk;
+      motion.walk.style = fast;
+      
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = -10000;
+      motion.walk_speed.y = 10000;
+      motion.walk_speed.rot = -70;
+
+      head.control_mode = none;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = -200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+  }
+}
+
+target state finish {
+
+  decision{    
+    else stay;
+  }
+
+  action{
+      motion.walk.stop_with_stand=false;
+      motion.type = stand;
+  
+      head.control_mode = search_for_ball;
+  }
+}
+}
+

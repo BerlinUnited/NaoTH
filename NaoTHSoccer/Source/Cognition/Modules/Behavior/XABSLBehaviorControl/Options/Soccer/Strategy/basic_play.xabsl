@@ -1,0 +1,107 @@
+option basic_play
+{
+
+  initial state initialize {
+    decision {
+      if (game.state != _initial_)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      game.current_mode = init;
+      head.control_mode = stay_as_forced;
+      motion.type = init;
+      arm.control_mode = normal;
+
+      battery();
+
+      //set LED stuff
+      // make head player number
+      set_head = game.player_number%7; //mod to pretend higher ID
+      
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
+          
+      set_left_eye = ball.was_seen ? green : off;   
+
+    }
+
+  }
+
+  // this is part of the initial precedure
+  // to ensure that the robot stands before doing anything
+  state stand {
+    decision {
+      if(executed_motion.type == stand && executed_motion.time > 1000)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      game.current_mode = init;
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+      arm.control_mode = normal;
+    }
+  }
+
+
+  state play {
+    decision {
+      if (game.state == _initial_)
+        goto initialize;
+      else
+        stay;
+    }
+    action {
+    
+      //IMPORTANT: reset some stuff(!)
+      motion.type = stand;
+      motion.execute_immediately = false;
+      motion.standHeight = -1;
+      motion.walk.step_control.foot = none;
+      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk.step_control.scale = 1;
+
+      // why was this put here? Steffen?
+      //arm.control_mode = normal;
+      
+      head.control_mode = stay_as_forced;
+
+      // team symbols
+      team.is_playing_as_striker = false;
+
+      // supports localization, only set to true if in game state set
+      situationStatusOwnHalf = false;
+      
+      //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
+      body.ready_to_walk = true;
+      
+      // react to the game controller and observe fall down
+      decide_game_state();
+
+      // it has to be after the decide_game_state because the getup motion uses it
+      // to decide whether the arms are back or not
+      //arm.control_mode = normal;
+
+      //set LED stuff
+      // make here some initializations
+   
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
+          
+      set_left_eye = ball.was_seen ? green : off;   
+
+      set_head = (robot_pose.x < 0) ? 3 : 6;
+
+      //set ear
+      battery();
+    }
+  }
+}

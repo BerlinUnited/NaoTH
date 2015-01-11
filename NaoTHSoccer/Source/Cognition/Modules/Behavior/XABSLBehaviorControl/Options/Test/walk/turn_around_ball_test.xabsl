@@ -1,0 +1,76 @@
+option turn_around_ball_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto search_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state approach_ball
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if(action_done)
+        goto turn_around_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      go_to_ball(distance=200);
+    }
+  }
+
+  state turn_around_ball
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if(vector.abs(x=ball.preview.x, y=ball.preview.y) > 250)
+        goto turn_around_ball;
+      else
+        stay;
+    }
+	  action
+	  {
+	    move_around_ball(direction=-30, radius=190);
+      head.control_mode = search_for_ball;
+      motion.walk.style = fast;
+	  }
+  }
+
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+/** Symbols for accessing all team relevant information */
+namespace team("Team Symbols") {
+  
+  /** Count of team members who are alive (which means they sent a team-message) */
+  float input team.members_alive_count [number];
+
+  /** Whether we have been choosen as striker in dynamic role handling*/
+  bool input team.calc_if_is_striker;
+
+  /** decide by time to ball instead of distance */
+  bool input team.calc_if_is_striker_by_time_to_ball;
+
+  /** Whether the robot is the 'last' player in the field */
+  bool input team.calc_if_is_the_last;
+
+  /** Whether we actually play as striker */
+  bool output team.is_playing_as_striker;
+}
+  

@@ -1,0 +1,173 @@
+/* Tests sidekick_to_right and sidekick_to_left:
+  Goes to the ball and kicks to the different sides */
+
+option sidekick_test
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state search {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision {
+
+      else if(ball.time_since_last_seen > 1500)
+        goto search;
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        goto sidekick;
+      }
+      else
+        stay;
+    }
+    action {
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+
+
+  state sidekick {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_sidekick();
+    }
+  }
+
+
+/*
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(ball.time_since_last_seen > 1000)
+      goto search_ball;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto go_to_ball0;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state go_to_ball0
+  {
+    decision
+    {
+      else if(action_done && state_time > 1000)
+        goto sidekick_to_left;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = true,distance = 180);
+    }
+  }
+
+  state sidekick_to_left
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball1;
+      else
+        stay;
+    }
+    action 
+    {
+      sidekick(to = left);
+    }
+  }
+
+  state go_to_ball1
+  {
+    decision
+    {
+      else if(action_done && state_time > 1000)
+        goto sidekick_to_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_with_foot(right = false, distance = 180);
+    }
+  }
+
+  state sidekick_to_right
+  {
+    decision
+    {
+      else if(action_done)
+        goto go_to_ball0;
+      else
+        stay;
+    }
+    action 
+    {
+      sidekick(to = right);
+    }
+  }
+
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto go_to_ball0;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+  */
+}

@@ -1,0 +1,91 @@
+option fall_down_and_stand_up
+{
+  initial state idle
+  {
+    decision
+    {
+      if(abs(value=sensor.inertial.y)>30)
+        goto falling;
+      else
+        stay;
+    }      
+    action
+    {
+      //HACK: body.ready_to_walk = true has to be set outside
+      //body.ready_to_walk = true;
+      // remember the arms position for the case the robot falls backwards
+      // (used by stand up)
+      arm.control_mode_before_fall = arm.control_mode;
+    }
+  }
+  
+  state falling
+  {
+    decision
+    {
+      if (fall_down_state != upright)
+        goto wait_before_stand_up;
+      else if (state_time > 2000)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type = dead;
+    }
+  }
+
+  state wait_before_stand_up
+  {
+    decision
+    {
+      if (state_time > 500)
+        goto stand_up;
+      else 
+        stay;
+    }
+    action
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = true;
+      motion.type = dead;
+    }
+  }
+
+  state stand_up
+  {
+    decision
+    {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action 
+    {
+      body.ready_to_walk = false;
+      motion.execute_immediately = false;
+      stand_up();
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if(state_time > 2000) // && (executed_motion.type == stand))
+        goto idle;
+      else 
+        stay;
+    }      
+    action
+    {
+      body.ready_to_walk = false;
+      motion.type=stand;
+      arm.control_mode = normal;
+    }
+  }
+}

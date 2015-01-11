@@ -1,0 +1,50 @@
+option initial_striker
+{
+  initial state kickoff {
+    decision {
+      if(game.own_kickoff)
+        goto approach_for_kick_off_kick;
+      else if(state_time > 10000)
+        goto be_striker;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state approach_for_kick_off_kick {
+	  decision {
+      if(action_done)
+        goto do_kick_off_kick;
+      else
+        stay;
+	  }
+	  action {
+      go_to_ball_with_foot(right=true, distance=190);
+	  }
+  }
+
+  state do_kick_off_kick {
+    decision
+    {
+      if(action_done)
+        goto be_striker;
+      else
+        stay;
+    }
+    action
+    {
+       kick_with_foot(foot = right);
+       //head.control_mode = search_for_ball;
+    }
+  }
+
+  target state be_striker {
+    action {
+      //situation_based_striker();
+    }
+  }
+}
