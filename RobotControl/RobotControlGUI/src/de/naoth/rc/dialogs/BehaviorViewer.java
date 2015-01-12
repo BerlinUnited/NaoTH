@@ -106,7 +106,6 @@ public class BehaviorViewer extends AbstractDialog
   private XABSLProtoParser behaviorParser = null;
   
   private boolean vetoSetAgent = false;
-  //private String currentAgent = "";
 
   // max size of the buffer (25fps ~ 20s)
   private int maxNumberOfFrames = 500;
@@ -275,15 +274,6 @@ public class BehaviorViewer extends AbstractDialog
             return;
         }
 
-        // remove the leading 
-        //String data_value = symbol.getValueAsString();
-
-        // cut the leading enum type
-        //if(symbol instanceof Symbol.Enum)
-        //{
-        //  data_value = data_value.replace(name+".", "");
-        //}
-        
         XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
         
         if(type == XABSLBehaviorFrame.SymbolIOType.input)
@@ -730,7 +720,6 @@ public class BehaviorViewer extends AbstractDialog
       this.inputSymbolsBoxPanel.removeAll();
       this.outputSymbolsBoxPanel.removeAll();
 
-      
       if(currentBehavior != null)
       {
         for(Symbol s : currentBehavior.inputSymbols.values())
@@ -851,8 +840,9 @@ public class BehaviorViewer extends AbstractDialog
     this.vetoSetAgent = true;
     DefaultComboBoxModel model = new DefaultComboBoxModel();
     
-    if(agents.length == 0)
+    if(agents.length == 0) {
       model.addElement("no agents");
+    }
     else
     {
       for(int i = 0; i < agents.length; i++)
@@ -872,14 +862,14 @@ public class BehaviorViewer extends AbstractDialog
     {
       JCheckBox checkBox = (JCheckBox)components[i];
       checkBox.setVisible(checkSearchTextMatch(checkBox.getText(),searchString));
-    }//end for
+    }
 
     components = this.outputSymbolsBoxPanel.getComponents();
     for(int i = 0; i < components.length; i++)
     {
       JCheckBox checkBox = (JCheckBox)components[i];
       checkBox.setVisible(checkSearchTextMatch(checkBox.getText(),searchString));
-    }//end for
+    }
   }//end sortSymbols
 
   private boolean checkSearchTextMatch(String text, String match)
