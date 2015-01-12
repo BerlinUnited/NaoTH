@@ -195,8 +195,8 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     }
     
     BresenhamLineScan scanner(pos, end);
-    Filter<Diff5x1, Vector2i, double, 5> filter;
-    //Filter<Prewitt3x1, Vector2i, double, 5> filter;
+    //Filter<Diff5x1, Vector2i, double, 5> filter;
+    Filter<Prewitt3x1, Vector2i, double, 3> filter;
 
     // initialize the scanner
     Vector2i peak_point_max(pos);
@@ -317,6 +317,12 @@ Vector2d GoalFeatureDetector::calculateGradientUV(const Vector2i& point) const
 
 Vector2d GoalFeatureDetector::calculateGradientY(const Vector2i& point) const
 {
+  // no angle at the border (shouldn't happen)
+  if( point.x < 2 || point.x + 3 > (int)getImage().width() ||
+      point.y < 2 || point.y + 3 > (int)getImage().height() ) {
+    return Vector2d();
+  }
+
   Vector2d gradientY;
   gradientY.x =
        (int)getImage().getY(point.x-2, point.y+2)
