@@ -85,8 +85,11 @@ private:
 
     Parameters() : ParameterList("GoalDetectorParameters")
     {
-      PARAMETER_REGISTER(thresholdUV) = 60;
+      PARAMETER_REGISTER(threshold) = 60;
       PARAMETER_REGISTER(minGoodPoints) = 3;
+
+      PARAMETER_REGISTER(detectWhiteGoals) = true;
+
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
 
@@ -96,8 +99,11 @@ private:
     virtual ~Parameters() {
     }
 
-    int thresholdUV;
+    int threshold;
     int minGoodPoints;
+
+    bool detectWhiteGoals;
+
     double thresholdFeatureSimilarity;
     double colorRegionDeviation;
   };

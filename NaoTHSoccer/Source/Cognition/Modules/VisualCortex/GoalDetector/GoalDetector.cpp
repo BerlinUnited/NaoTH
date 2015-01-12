@@ -184,8 +184,8 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
   while(footPointScanner.getNextWithCheck(pos))
   {
     IMG_GET(pos.x, pos.y, pixel);
-    int diffVU = pixel.y;//(int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
-    filter.add(pos, diffVU);
+    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    filter.add(pos, pixValue);
 
     //collect some values for statisics of colors
     getGoalPostHistograms().increaseChannelValue(pixel);
@@ -196,7 +196,7 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
       }
     );
 
-    if(filter.ready() && filter.value() < params.thresholdUV) {
+    if(filter.ready() && filter.value() < params.threshold) {
       break; 
     }
   }
