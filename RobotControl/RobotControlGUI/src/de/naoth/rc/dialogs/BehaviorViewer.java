@@ -118,6 +118,8 @@ public class BehaviorViewer extends AbstractDialog
   private BehaviorUpdateListener behaviorUpdateListener = new BehaviorUpdateListener();
   //private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
   
+  private SortedSet<String> symbolsToWatch = new TreeSet<>();
+  
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
   {
@@ -227,8 +229,8 @@ public class BehaviorViewer extends AbstractDialog
 
   class SymbolWatchCheckBoxListener implements ActionListener
   {
-    private JCheckBox checkBox;
-    private SortedSet<String> selectedSymbols;
+    private final JCheckBox checkBox;
+    private final SortedSet<String> selectedSymbols;
     
     SymbolWatchCheckBoxListener(SortedSet<String> selectedSymbols, JCheckBox checkBox)
     {
@@ -245,16 +247,15 @@ public class BehaviorViewer extends AbstractDialog
       String name = this.checkBox.getText();
       boolean value = this.checkBox.isSelected();
 
-      if(value)
+      if(value) {
         this.selectedSymbols.add(name);
-      else
+      } else {
         this.selectedSymbols.remove(name);
+      }
       
       this.checkBox.setOpaque(value);
     }//end actionPerformed
   }//end SymbolWatchCheckBoxListener
-  
-  private SortedSet<String> symbolsToWatch = new TreeSet<>();
 
   private void showFrame(XABSLBehaviorFrame frame)
   {
@@ -268,43 +269,34 @@ public class BehaviorViewer extends AbstractDialog
 
       for(String name: symbolsToWatch)
       {
-                Symbol symbol = frame.getSymbolByName(name);
+        Symbol symbol = frame.getSymbolByName(name);
         // TODO: error treatment
-        if(symbol == null) return;
+        if(symbol == null) {
+            return;
+        }
 
         // remove the leading 
-        String data_value = symbol.getValueAsString();
+        //String data_value = symbol.getValueAsString();
 
         // cut the leading enum type
-        if(symbol instanceof Symbol.Enum)
-        {
-          data_value = data_value.replace(name+".", "");
-        }
+        //if(symbol instanceof Symbol.Enum)
+        //{
+        //  data_value = data_value.replace(name+".", "");
+        //}
         
         XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
         
         if(type == XABSLBehaviorFrame.SymbolIOType.input)
         {
-          inputBuffer.append("> ");
-          inputBuffer.append(name)
-                  .append(" = ")
-                  .append(data_value)
-                  .append(" (")
-                  .append(symbol.getDataType())
-                  .append(")")
-                  .append("\n");
-                   
+          inputBuffer.append("> ")
+                     .append(symbol)
+                     .append("\n");
         }
         else if(type == XABSLBehaviorFrame.SymbolIOType.output)
         {
-          outputBuffer.append("< ");
-          outputBuffer.append(name)
-                  .append(" = ")
-                  .append(data_value)
-                  .append(" (")
-                  .append(symbol.getDataType())
-                  .append(")")
-                  .append("\n");
+          inputBuffer.append("< ")
+                     .append(symbol)
+                     .append("\n");
         }
           
       }//end for
@@ -348,7 +340,7 @@ public class BehaviorViewer extends AbstractDialog
         Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
     }
  }
-  
+  /*
   private void drawFrameOnFieldGlobal(XABSLBehaviorFrame frame)
   {
     try
@@ -426,31 +418,24 @@ public class BehaviorViewer extends AbstractDialog
       //Plugin.debugDrawingManager.handleResponse(msg.toString().getBytes(), null);
       //this.parent.getDebugDrawingManager().handleResponse(msg.toString().getBytes(), null);
       
-    }catch(Exception ex)
-    {
+    } catch(Exception ex) {
         Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
     }
   }//end drawFrameOnField
-
+*/
   
   private String getSymbolValue(XABSLBehaviorFrame frame, String name) throws Exception
   {
-        Symbol s = frame.getSymbolByName(name);
+    Symbol s = frame.getSymbolByName(name);
     if(s == null)
     {
         throw new Exception("Symbol " + name + " is not existing");
     }
     return s.getValueAsString();
   }//end getDoubleSymbolValue
-
-
-  
   
   public class BehaviorFrameListModel extends AbstractListModel 
   {
-      public BehaviorFrameListModel() {
-      }
-
       @Override
       public Object getElementAt(int index) {
         return behaviorBuffer.get(index).frameNumber;
@@ -461,9 +446,8 @@ public class BehaviorViewer extends AbstractDialog
         return behaviorBuffer.size();
       }
 
-      public void refresh()
-      {
-          fireContentsChanged(this, 0, getSize()-1);
+      public void refresh() {
+        fireContentsChanged(this, 0, getSize()-1);
       }
   }//end class BehaviorFrameListModel
   
@@ -475,14 +459,7 @@ public class BehaviorViewer extends AbstractDialog
       this.behaviorBuffer.remove(0);
     }
 
-    
-    try{
-      this.behaviorBuffer.add(status);
-    }catch(Exception ex)
-    {
-      Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-      return;
-    }
+    this.behaviorBuffer.add(status);
  
     //Select the new item and make it visible.
     BehaviorFrameListModel listModel = ((BehaviorFrameListModel) this.frameList.getModel());
@@ -494,7 +471,6 @@ public class BehaviorViewer extends AbstractDialog
     
     drawStuff(status);
     showFrame(status);
-    
   }//end addFrame
 
   /** This method is called from within the constructor to

@@ -6,40 +6,25 @@
 
 package de.naoth.rc.components.behaviorviewer.model;
 
-import de.naoth.rc.messages.Messages;
-
 /**
  *
  * @author thomas
  */
-public enum SymbolType {
-    VOID(""), DECIMAL("decimal"), BOOL("bool"), ENUM("enum");
+public class SymbolType {
+    public final static SymbolType VOID = new SymbolType("");
+    public final static SymbolType DECIMAL = new SymbolType("decimal");
+    public final static SymbolType BOOL = new SymbolType("bool");
+    public final static SymbolType ENUM = new SymbolType("enum");
     
-    private final String humanReadable;
+    public final String name;
     
-    SymbolType(String humanReadable)
+    SymbolType(String name)
     {
-        this.humanReadable = humanReadable;
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return humanReadable;
-    }
-    
-    
-    public static SymbolType fromMessageType(Messages.XABSLSymbol.SymbolType type) {
-        switch(type)
-        {
-            case Boolean:
-                return BOOL;
-            case Enum:
-                return ENUM;
-            case Decimal:
-                return DECIMAL;
-            default:
-                return VOID;
-        }
-    }
-    
+        return name;
+    }   
 }

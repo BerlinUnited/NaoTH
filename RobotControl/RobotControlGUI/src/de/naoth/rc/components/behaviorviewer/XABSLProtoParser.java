@@ -9,6 +9,10 @@ import de.naoth.rc.components.behaviorviewer.model.SymbolType;
 import de.naoth.rc.components.behaviorviewer.model.Agent;
 import de.naoth.rc.components.behaviorviewer.model.Option;
 import de.naoth.rc.components.behaviorviewer.model.SymbolKey;
+import static de.naoth.rc.components.behaviorviewer.model.SymbolType.BOOL;
+import static de.naoth.rc.components.behaviorviewer.model.SymbolType.DECIMAL;
+import static de.naoth.rc.components.behaviorviewer.model.SymbolType.ENUM;
+import static de.naoth.rc.components.behaviorviewer.model.SymbolType.VOID;
 import de.naoth.rc.messages.Messages;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,7 +120,7 @@ public class XABSLProtoParser {
         } else if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.SymbolAssignement) {
             XABSLAction.SymbolAssignement a = new XABSLAction.SymbolAssignement();
             
-            SymbolKey key = new SymbolKey(action_msg.getSymbol().getType(), 
+            SymbolKey key = new SymbolKey(parse(action_msg.getSymbol().getType()), 
                 action_msg.getSymbol().getId());
                     
             a.symbol = parse(behavior.outputSymbols.get(key), action_msg.getSymbol());
@@ -128,6 +132,16 @@ public class XABSLProtoParser {
         }
 
         return null;
+    }
+    
+    private SymbolType parse(Messages.XABSLSymbol.SymbolType type) {
+        switch(type)
+        {
+            case Boolean: return BOOL;
+            case Enum: return ENUM;
+            case Decimal: return DECIMAL;
+            default: return VOID;
+        }
     }
 
     public XABSLBehavior parse(Messages.BehaviorStateComplete behavior_msg) {
@@ -231,19 +245,20 @@ public class XABSLProtoParser {
     }
 
     private EnumType parse(Messages.BehaviorStateComplete.EnumType enum_msg) {
-        EnumType enumeration = new EnumType();
-        enumeration.name = enum_msg.getName();
+        EnumType enumeration = new EnumType(enum_msg.getName());
         for (Messages.BehaviorStateComplete.EnumType.Element msgElement : enum_msg.getElementsList()) {
-            EnumType.Element e = parse(msgElement);
+            EnumType.Element e = new EnumType.Element(
+                msgElement.getValue(),
+                msgElement.getName().replace(enumeration.name+".", "")); // remove the preceeding type name, e.g., motion.type.walk => walk
             enumeration.elements.put(e.value, e);
         }
         return enumeration;
     }
 
     private EnumType.Element parse(Messages.BehaviorStateComplete.EnumType.Element element_msg) {
-        EnumType.Element element = new EnumType.Element();
-        element.name = element_msg.getName();
-        element.value = (int) element_msg.getValue();
+        EnumType.Element element = new EnumType.Element(
+            (int) element_msg.getValue(),
+            element_msg.getName());
         return element;
     }
 }

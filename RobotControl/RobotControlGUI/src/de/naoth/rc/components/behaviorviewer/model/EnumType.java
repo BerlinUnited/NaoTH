@@ -13,14 +13,28 @@ import java.util.TreeMap;
  *
  * @author thomas
  */
-public class EnumType {
+public class EnumType extends SymbolType{
 
     public static class Element {
-
-        public String name;
-        public int value;
+        public final int value;
+        public final String name;
+        
+        public Element(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
     }
-    public String name;
-    public Map<Integer, Element> elements = new TreeMap<>();
     
+    //public final String name;
+    public final Map<Integer, Element> elements = new TreeMap<>();
+
+    public EnumType(String name)
+    {
+        super(name);
+    }
+    
+    @Override
+    public String toString() {
+        return "enum " + this.name;
+    }
 }

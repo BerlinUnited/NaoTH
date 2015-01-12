@@ -6,7 +6,6 @@
 
 package de.naoth.rc.components.behaviorviewer.model;
 
-import de.naoth.rc.messages.Messages;
 import java.util.Objects;
 
 /**
@@ -22,11 +21,6 @@ public class SymbolKey {
         this.symbolType = dateType;
     }
     
-    public SymbolKey(Messages.XABSLSymbol.SymbolType symbolType, int id) {
-        this.id = id;
-        this.symbolType = SymbolType.fromMessageType(symbolType);
-    }
-
     @Override
     public int hashCode() {
         int hash = 5;

@@ -37,6 +37,18 @@ public class Symbol {
     public Enum createEnum(EnumType enumType, int value) {
         return new Enum(name, enumType, value);
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name)
+          .append(" = ")
+          .append(getValueAsString())
+          .append(" (")
+          .append(getDataType())
+          .append(")");
+        return sb.toString();
+    }
 
     public static class Decimal extends Symbol {
 
@@ -93,7 +105,7 @@ public class Symbol {
 
         @Override
         public SymbolType getDataType() {
-            return SymbolType.ENUM;
+            return enumType;//SymbolType.ENUM;
         }
     }
     
