@@ -106,6 +106,7 @@ private:
   void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
   void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;
+  Vector2d calculateGradientY(const Vector2i& point) const;
 
 private:
   DOUBLE_CAM_PROVIDE(GoalFeatureDetector, DebugImageDrawings);

@@ -109,7 +109,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
-      int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+      int diffVU =  pixel.y;//(int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
       DEBUG_REQUEST("Vision:GoalFeatureDetector:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -145,11 +145,11 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
           POINT_PX(ColorClasses::red, end.x, end.y );
         );
 
-        Vector2d gradientBegin = calculateGradientUV(begin);
+        Vector2d gradientBegin = calculateGradientY(begin);//calculateGradientUV(begin);
         DEBUG_REQUEST("Vision:GoalFeatureDetector:markGradients", 
           LINE_PX(ColorClasses::black, begin.x, begin.y, begin.x + (int)(10*gradientBegin.x+0.5), begin.y + (int)(10*gradientBegin.y+0.5));
         );
-        Vector2d gradientEnd = calculateGradientUV(end);
+        Vector2d gradientEnd = calculateGradientY(end);//calculateGradientUV(end);
         DEBUG_REQUEST("Vision:GoalFeatureDetector:markGradients", 
           LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
         );
@@ -196,6 +196,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     
     BresenhamLineScan scanner(pos, end);
     Filter<Diff5x1, Vector2i, double, 5> filter;
+    //Filter<Prewitt3x1, Vector2i, double, 5> filter;
 
     // initialize the scanner
     Vector2i peak_point_max(pos);
@@ -209,7 +210,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
-      int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+      int diffVU = pixel.y;//(int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
       DEBUG_REQUEST("Vision:GoalFeatureDetector:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -230,11 +231,11 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
 
       if(negativeScan.add(filter.point(), -filter.value()))
       {
-        Vector2d gradientBegin = calculateGradientUV(peak_point_max);
+        Vector2d gradientBegin = calculateGradientY(peak_point_max);//(peak_point_max);
         DEBUG_REQUEST("Vision:GoalFeatureDetector:markGradients",
           LINE_PX(ColorClasses::black, peak_point_max.x, peak_point_max.y, peak_point_max.x + (int)(10*gradientBegin.x+0.5), peak_point_max.y + (int)(10*gradientBegin.y+0.5));
         );
-        Vector2d gradientEnd = calculateGradientUV(peak_point_min);
+        Vector2d gradientEnd = calculateGradientY(peak_point_min);//calculateGradientUV(peak_point_min);
         DEBUG_REQUEST("Vision:GoalFeatureDetector:markGradients",
           LINE_PX(ColorClasses::black, peak_point_min.x, peak_point_min.y, peak_point_min.x + (int)(10*gradientEnd.x+0.5), peak_point_min.y + (int)(10*gradientEnd.y+0.5));
         );
@@ -312,4 +313,26 @@ Vector2d GoalFeatureDetector::calculateGradientUV(const Vector2i& point) const
 
   //calculate the angle of the gradient
   return (gradientV - gradientU).normalize();
+}
+
+Vector2d GoalFeatureDetector::calculateGradientY(const Vector2i& point) const
+{
+  Vector2d gradientY;
+  gradientY.x =
+       (int)getImage().getY(point.x-2, point.y+2)
+    +2*(int)getImage().getY(point.x  , point.y+2)
+    +  (int)getImage().getY(point.x+2, point.y+2)
+    -  (int)getImage().getY(point.x-2, point.y-2)
+    -2*(int)getImage().getY(point.x  , point.y-2)
+    -  (int)getImage().getY(point.x+2, point.y-2);
+
+  gradientY.y =
+       (int)getImage().getY(point.x-2, point.y-2)
+    +2*(int)getImage().getY(point.x-2, point.y  )
+    +  (int)getImage().getY(point.x-2, point.y+2)
+    -  (int)getImage().getY(point.x+2, point.y-2)
+    -2*(int)getImage().getY(point.x+2, point.y  )
+    -  (int)getImage().getY(point.x+2, point.y+2);
+
+  return gradientY.normalize();
 }
