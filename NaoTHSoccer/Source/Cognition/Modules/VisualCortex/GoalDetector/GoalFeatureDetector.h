@@ -75,12 +75,13 @@ private:
   public:
     Parameters() : ParameterList("GoalFeatureParameters")
     {
-      PARAMETER_REGISTER(numberOfScanlines) = 5;
-      PARAMETER_REGISTER(scanlinesDistance) = 6;
+      PARAMETER_REGISTER(numberOfScanlines) = 9;
+      PARAMETER_REGISTER(scanlinesDistance) = 8;
 
+      PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(useColorFeatures) = true;
-      PARAMETER_REGISTER(thresholdUV) = 60;
-      PARAMETER_REGISTER(thresholdUVGradient) = 12;
+      PARAMETER_REGISTER(threshold) = 60;
+      PARAMETER_REGISTER(thresholdGradient) = 40;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
 
       syncWithConfig();
@@ -92,9 +93,11 @@ private:
     int numberOfScanlines;
     int scanlinesDistance;
 
+    bool detectWhiteGoals;
+    bool usePrewitt;
     bool useColorFeatures;
-    int thresholdUV;
-    int thresholdUVGradient;
+    int threshold;
+    int thresholdGradient;
 
     double thresholdFeatureGradient;
   };
