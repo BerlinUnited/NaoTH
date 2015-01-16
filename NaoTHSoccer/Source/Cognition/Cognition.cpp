@@ -45,6 +45,7 @@
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/MaxRedHogBallDetector/MaxRedHogBallDetector.h"
 
 
 // modeling
@@ -121,6 +122,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalFeatureDetector);
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
+  REGISTER_MODULE(MaxRedHogBallDetector);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
