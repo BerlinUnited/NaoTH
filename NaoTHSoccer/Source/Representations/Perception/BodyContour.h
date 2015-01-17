@@ -49,7 +49,7 @@ public:
 
   BodyContour()
   :
-    stepSize(0),
+    stepSize(1),
     xDensity(0),
     yDensity(0),
     timestamp(0)
@@ -124,7 +124,7 @@ public:
   bool isOccupied(const Vector2i& point) const
   {
     Vector2i temp = getCellCoord(point);
-    return grid[temp.x][temp.y].occupied;
+    return !grid.empty() && grid[temp.x][temp.y].occupied;
   }
 
   Vector2i getFirstFreeCell(const Vector2i& start) const
