@@ -1,178 +1,137 @@
 #!/bin/bash
-# Video
-if [ ! -f /etc/init.d/set_dev_video ]  
-then
-    if [ -f ./etc/init.d/set_dev_video ]
+
+# copy function
+copy(){
+  local from="$1"
+  local to="$2"
+  local owner="$3"
+  local rights="$4"
+  
+  if [ -f ${from} ]
+  then
+	  echo "copy ${from} to ${to}";
+    
+    # backup
+    if [ -f ${to} ]
     then
-	echo "adding rc script for /dev/video0 to /dev/video mapping";
-	cp ./etc/init.d/set_dev_video /etc/init.d/set_dev_video;
-	chown root:root /etc/init.d/set_dev_video;
-	chmod 755 /etc/init.d/set_dev_video;
-    else
-	echo "init script set_dev_video is missing";
+      mv "${to}" "${to}.bak";
     fi
-else
-    echo "set_dev_video exists";
-fi
+    
+    # copy the file
+	  cp -f ${from} ${to};
+    
+    #set correct rights
+    echo "set owner ${owner}";
+    chown ${owner}:${owner} ${to};
+    echo "set rights ${rights}";
+    chmod ${rights} ${to};
+    
+    return 0
+  else
+	  echo "missing file ${from}";
+    return 1
+  fi
+}
+
+# -----------  video driver -----------
 
 # copy the video driver
 kernel_name=$(uname -r)
 video_driver_path=/lib/modules/$kernel_name/kernel/drivers/media/video/mt9m114.ko
-if [ -f video_driver_path ]  
-then
-  mv $video_driver_path $video_driver_path.bak
-fi
-cp ./kernel/drivers/media/video/mt9m114.ko $video_driver_path
+copy ./kernel/drivers/media/video/mt9m114.ko $video_driver_path root 644
 
-# Cognition Common
-if [ ! -f /etc/init.d/cognition-common ]  
-then
-    if [ -f ./etc/init.d/cognition-common ]
-    then
-	echo "adding script cognition-common";
-	cp -f ./etc/init.d/cognition-common /etc/init.d/cognition-common;
-	chown root:root /etc/init.d/cognition-common;
-	chmod 755 /etc/init.d/cognition-common;
-    else
-	echo "init script cognition-common is missing";
-    fi
-else
-    echo "cognition-common exists";
-fi
+# -----------  set up the naoth running environment -----------
+
+# NaoTH init script
+copy ./etc/init.d/naoth /etc/init.d/naoth root 755
 
 # NaoTH
-if [ ! -f /etc/init.d/naoth ]  
-then
-    if [ -f ./etc/init.d/naoth ]
-    then
-	echo "adding rc script naoth";
-	cp -f ./etc/init.d/naoth /etc/init.d/naoth;
-	chown root:root /etc/init.d/naoth;
-	chmod 755 /etc/init.d/naoth;
-    else
-	echo "init script naoth is missing";
-    fi
-else
-    echo "naoth exists";
-fi
-
-# NaoTH
-if [ -f ./naoth ]
-then
-    echo "adding start script naoth";
-    cp -f ./usr/bin/naoth /usr/bin/naoth;
-    chown root:root /usr/bin/naoth;
-    chmod 755 /usr/bin/naoth;
-else
-    echo "start script naoth is missing";
-fi
+copy ./usr/bin/naoth /usr/bin/naoth root 755
 
 # brainwashinit
-if [ -f ./bin/brainwash ]
-then
-    echo "adding start script brainwash";
-    cp -f ./bin/brainwash /usr/bin/brainwash;
-    chown root:root /usr/bin/brainwash;
-    chmod 755 /usr/bin/brainwash;
-else
-    echo "brainwash script is missing";
-fi
+copy ./usr/bin/brainwash /usr/bin/brainwash root 755
 
 # brainwash udev rule
-if [ -f ./etc/udev/rules.d/brainwashing.rules ]
-then
-    echo "setting udev brainwashing.rules";
-    cp -f ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules;
-    chown root:root /etc/udev/rules.d/brainwashing.rules;
-    chmod 644 /etc/udev/rules.d/brainwashing.rules;
-else
-    echo "udev brainwashing.rules is missing";
-fi
-
+copy ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules nao 644
 
 # naoqi user autoload.ini
-if [ -f ./autoload.ini ]
-then
-    echo "setting naoqi user autoload.ini";
-    cp -f ./autoload.ini /home/nao/naoqi/preferences/autoload.ini;
-    chown nao:nao /home/nao/naoqi/preferences/autoload.ini;
-    chmod 644 /home/nao/naoqi/preferences/autoload.ini;
-else
-    echo "naoqi user autoload.ini is missing";
-fi
+copy ./home/nao/naoqi/preferences/autoload.ini /home/nao/naoqi/preferences/autoload.ini nao 644
 
 # naoqi system autoload.ini
-if [ -f ./etc/naoqi/autoload.ini ]
-then
-    echo "setting naoqi system autoload.ini";
-    cp -f ./etc/naoqi/autoload.ini /etc/naoqi/autoload.ini;
-    chown root:root /etc/naoqi/autoload.ini;
-    chmod 644 /etc/naoqi/autoload.ini;
-else
-    echo "naoqi system autoload.ini is missing";
-fi
+copy ./etc/naoqi/autoload.ini /etc/naoqi/autoload.ini root 644
 
-# check for link to our local lib directory
+# copy ld.so.conf
+copy ./etc/ld.so.conf /etc/ld.so.conf root 644
+
+# create the local lib directory
 if [ ! -d /home/nao/lib ]
 then
     echo "setting library directory permissions";
     mkdir /home/nao/lib;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/lib"
+    else
+        chown -R nao:nao /home/nao/lib;
+        chmod -R 755 /home/nao/lib;
+    fi
 fi
 
-if [ -d /home/nao/lib ]
-then
-    chown -R nao:nao /home/nao/lib;
-    chmod -R 755 /home/nao/lib;
-fi
-
+# add link to the Config directory
 if [ ! -h /home/nao/Config ]
 then
     echo "setting link to NaoTH Config directory";
     ln -s /home/nao/naoqi/Config /home/nao/Config;
 fi
 
-# copy naoth-profile.sh
-if [ -f ./etc/ld.so.conf ]
-then
-    echo "copy ld.so.conf.d/naoth.conf";
-    cp -f ./etc/ld.so.conf /etc/ld.so.conf;
-    chown root:root /etc/ld.so.conf;
-    chmod 755 /etc/ld.so.conf;
-else
-    echo "ld.so.conf.d/naoth.conf is missing";
-fi
-
-# register avahi services
-if [ -f ./etc/avahi/services/naoth.service ]
-then
-    echo "setting avahi service for naoth";
-    cp -f ./etc/avahi/services/naoth.service /etc/avahi/services/naoth.service;
-    chown root:root /etc/avahi/services/naoth.service;
-    chmod 644 /etc/avahi/services/naoth.service;
-else
-    echo "avahi service config file is missing";
-fi
+# -----------  system -----------
 
 # Check and Update Runlevel Configuration for Non-Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "set_dev_video=default naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable";
+./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable";
+
+# allow everyone to shutdown
+chmod +s /sbin/shutdown
+chmod +s /sbin/reboot
+
+# ----------- basic network configuration -----------
+
+# LAN link
+if [ ! -f /etc/init.d/net.eth0 ]
+then
+    echo "adding rc link for ethernet";
+    ln -s /etc/init.d/net.lo /etc/init.d/net.eth0;
+else
+    echo "ethernet link exists";
+fi
+
+# WLAN link
+if [ ! -f /etc/init.d/net.wlan0 ]
+then
+    echo "adding rc link for wireless";
+    ln -s /etc/init.d/net.lo /etc/init.d/net.wlan0;
+else
+    echo "wireless link exists";
+fi
+
+#SSH Config
+copy ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config root 644
+
+#RC Config
+copy ./etc/rc.conf /etc/rc.conf root 644
+
+# Check and Update Runlevel Configuration for Network Services
+chown root:root ./checkRC.sh;
+chmod 744 ./checkRC.sh;
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
+
+
+# ----------- network -----------
 
 # Check and Update Network Configuration
 chown root:root ./init_net.sh;
 chmod 744 ./init_net.sh;
 ./init_net.sh;
-
-# check for link to librt.so
-if [ ! -h /home/nao/lib/librt.so ]
-then
-    ln -s /usr/librt.so.1 /home/nao/lib/librt.so;
-fi
-
-ldconfig;
-
-# allow everyone to shutdown
-chmod +s /sbin/shutdown
-chmod +s /sbin/reboot
 
 

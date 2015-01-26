@@ -3,11 +3,8 @@
 description="NaoTH init script"
 
 depends(){
-    need set_dev_video
     after naoqi
 }
-
-PID="/tmp/cognition.pid"
 
 start(){
   ebegin "starting naoth"

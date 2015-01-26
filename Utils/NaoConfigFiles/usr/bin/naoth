@@ -1,45 +1,48 @@
 #!/bin/bash
 
-PID="/tmp/cognition.pid"
+LOCK_FILE="/tmp/naoth.pid"
+WORKING_DIR="/home/nao/naoqi/"
+BINARY="/home/nao/bin/naoth"
 
 case "$1" in
   start)
-    if [ -f "$PID" ]; then
-      OLDPID=`cat /tmp/cognition.pid`
-      echo "old pid is $OLDPID"
-      kill -0 $OLDPID
-      if [ "$?" -eq 0 ]; then
+    if [ -f "${LOCK_FILE}" ]; then
+      #still the running process?
+      if kill -0 $(cat "${LOCK_FILE}") 2>/dev/null ; then
         echo "NaoTH cognition already started, use stop first"
+        echo "if you are sure it is not running, remove ${LOCK_FILE}."
         exit 1
-      else
-        echo "removing stalled $PID"
-        rm "$PID"
       fi
     fi
+    if killall -0 "${BINARY}" 2>/dev/null ; then
+      ewarn "!! Warning: naoqi is already running !!"
+      ewarn "Please, stop it (killall ${bin}) before starting it again."
+      return 1
+    fi
+
 
     echo "starting naoth cognition process"
-    cd /home/nao/naoqi/
+    cd ${WORKING_DIR}
 
     if [ nao = `whoami` ]; then
-      nohup /etc/init.d/cognition-common 2>&1 | logger &
+      nohup "${BINARY}" 2>&1 & echo $! > "${LOCK_FILE}" | logger &
     else
-      su -c 'nohup /etc/init.d/cognition-common 2>&1 | logger &' nao
+      su -c 'nohup "${BINARY}" 2>&1 & echo $! > "${LOCK_FILE}" | logger &' nao
     fi
     ;;
   stop)
-    if [ ! -f "$PID" ]; then
-      echo "NaoTH Cognition not started"
-      exit 2
+    if [ -f "${LOCK_FILE}" ] ; then
+      if kill -0 $(cat "${LOCK_FILE}") 2>/dev/null ; then
+        OLDPID=`cat ${LOCK_FILE}`
+        echo "killing naoth cognition processes ${OLDPID}"
+        kill $(cat "${LOCK_FILE}")
+    
+        #waiting for naoqi to shutdown
+        while kill -0 $(cat ${LOCK_FILE}) 2>/dev/null ; do
+          sleep 1
+        done
+      fi
     fi
-    OLDPID=`cat /tmp/cognition.pid`
-    echo "killing naoth cognition processes $OLDPID"
-    kill $OLDPID
-    while [ -d "/proc/$OLDPID" ]
-    do
-      sleep 1
-    done
-    rm $PID
-
     ;;
   restart)
     $0 stop
@@ -47,7 +50,7 @@ case "$1" in
     $0 start
     ;;
   *)
-    echo "Usage: /etc/init.d/naoqi {start|stop|restart}"
+    echo "Usage: /etc/init.d/naoth {start|stop|restart}"
     exit 1
     ;;
 
