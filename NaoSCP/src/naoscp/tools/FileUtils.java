@@ -92,14 +92,18 @@ public class FileUtils
         copyFiles(src1, dest1);
       }
     }
-    else
+    else if(dest.isDirectory()) // copy file to a directory
+    {
+        copyFiles(src, new File(dest,src.getName()));
+    }
+    else // copy file to file
     {
       try
       {
         Logger.getGlobal().log(Level.INFO, "copy " + src.getName());
         byte[] buffer = new byte[4096]; //Buffer 4K at a time (you can change this).
         int bytesRead;
-
+        
         FileInputStream fin = new FileInputStream(src);
         FileOutputStream fout = new FileOutputStream(dest);
 
