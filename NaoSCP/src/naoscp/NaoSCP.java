@@ -6,24 +6,23 @@
 
 package naoscp;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.io.File;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
+import javax.swing.JFileChooser;
 import naoscp.tools.FileUtils;
 
 /**
  *
- * @author gxy
+ * @author Henrich Mellmann
  */
 public class NaoSCP extends javax.swing.JFrame {
 
+    private final String utilsPath = "./../Utils";
+    private final String deployStickScriptPath = utilsPath + "/DeployStick/startBrainwashing.sh";
+    
     /**
      * Creates new form NaoSCP
      */
@@ -31,6 +30,15 @@ public class NaoSCP extends javax.swing.JFrame {
         initComponents();
         
         Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
+    }
+
+    void setEnabled(Component component, boolean enabled) {
+        component.setEnabled(enabled);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setEnabled(child, enabled);
+            }
+        }
     }
 
     /**
@@ -47,9 +55,11 @@ public class NaoSCP extends javax.swing.JFrame {
         naoTHPanel = new naoscp.components.NaoTHPanel();
         btDeploy = new javax.swing.JButton();
         logTextPanel = new naoscp.components.LogTextPanel();
+        btWriteToStick = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
+        setLocationByPlatform(true);
         setMaximumSize(new java.awt.Dimension(2147483647, 495));
         setMinimumSize(new java.awt.Dimension(0, 495));
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -58,7 +68,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(netwokPanel, gridBagConstraints);
@@ -67,7 +77,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(naoTHPanel, gridBagConstraints);
@@ -87,7 +97,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
         logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -96,35 +106,77 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(logTextPanel, gridBagConstraints);
 
+        btWriteToStick.setText("Write to Stick");
+        btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btWriteToStickActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(btWriteToStick, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
 
-        new Thread(new Runnable() { public void run() 
-        { 
-            // STEP 1: create the deploy directory for the playerNumber
-            File deployDir = new File("./deploy");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // STEP 1: create the deploy directory for the playerNumber
+                File deployDir = new File("./deploy");
 
-            // delete the target directory if it's existing, 
-            // so we have a fresh new directory
-            if(deployDir.isDirectory())
-            {
-              FileUtils.deleteDir(deployDir);
-            }
+                // delete the target directory if it's existing, 
+                // so we have a fresh new directory
+                if (deployDir.isDirectory()) {
+                    FileUtils.deleteDir(deployDir);
+                }
 
-            if(!deployDir.mkdirs())
-            {
-              Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                if (!deployDir.mkdirs()) {
+                    Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                } else {
+                    setEnabled(naoTHPanel, false);
+                    naoTHPanel.getAction().run(deployDir);
+                    setEnabled(naoTHPanel, true);
+                }
             }
-            else
-            {
-                naoTHPanel.setEnabled(false);
-                naoTHPanel.getAction().run(deployDir);
-                naoTHPanel.setEnabled(true);
-            }
-        }}).start();
+        }).start();
     }//GEN-LAST:event_btDeployActionPerformed
+
+    private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
+        final JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Select NaoController Directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // STEP 1: create the deploy directory for the playerNumber
+                    File deployDir = chooser.getSelectedFile();
+
+                    // delete the target directory if it's existing, 
+                    // so we have a fresh new directory
+                    if (deployDir.isDirectory()) {
+                        FileUtils.deleteDir(deployDir);
+                    }
+
+                    if (!deployDir.mkdirs()) {
+                        Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                    } else {
+                        setEnabled(naoTHPanel, false);
+                        naoTHPanel.getAction().run(new File(deployDir,"deploy"));
+                        FileUtils.copyFiles(new File(deployStickScriptPath), deployDir);
+                        setEnabled(naoTHPanel, true);
+                    }
+                }
+            }).start();
+        }
+    }//GEN-LAST:event_btWriteToStickActionPerformed
 
     /**
      * @param args the command line arguments
@@ -163,6 +215,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
+    private javax.swing.JButton btWriteToStick;
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
