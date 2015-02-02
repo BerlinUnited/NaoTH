@@ -157,20 +157,27 @@ public class NaoSCP extends javax.swing.JFrame {
                 @Override
                 public void run() {
                     // STEP 1: create the deploy directory for the playerNumber
-                    File deployDir = chooser.getSelectedFile();
-
+                    File targetDir = chooser.getSelectedFile();
+                    File deployDir = new File(targetDir,"deploy");
+                    
                     // delete the target directory if it's existing, 
                     // so we have a fresh new directory
                     if (deployDir.isDirectory()) {
-                        FileUtils.deleteDir(deployDir);
+                        // backup 
+                        //FileUtils.deleteDir(deployDir);
+                        if(deployDir.renameTo(new File(targetDir, "bak"))) {
+                            deployDir = new File(targetDir,"deploy");
+                        } else {
+                            Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                        }
                     }
 
                     if (!deployDir.mkdirs()) {
                         Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
                     } else {
                         setEnabled(naoTHPanel, false);
-                        naoTHPanel.getAction().run(new File(deployDir,"deploy"));
-                        FileUtils.copyFiles(new File(deployStickScriptPath), deployDir);
+                        naoTHPanel.getAction().run(new File(targetDir,"deploy"));
+                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                         setEnabled(naoTHPanel, true);
                     }
                 }

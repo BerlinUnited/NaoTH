@@ -81,11 +81,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
         jLabel4.setText("Scheme:");
 
         jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
-        jSchemeBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jSchemeBoxItemStateChanged(evt);
-            }
-        });
 
         jButtonRefreshData.setText("Refresh");
         jButtonRefreshData.addActionListener(new java.awt.event.ActionListener() {
@@ -96,7 +91,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
         jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
-        jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
+        jDirPathLabel.setToolTipText("NaoTHSoccer project directory");
 
         jDirChooser.setText("...");
         jDirChooser.setActionCommand("jDirChoose");
@@ -239,29 +234,18 @@ public class NaoTHPanel extends javax.swing.JPanel {
         chooser.setAcceptAllFileFilterUsed(false);
         if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            //setNaoControllerDirectory(String.valueOf(chooser.getSelectedFile()));
-            String directoryName = chooser.getSelectedFile().getPath();
-            jDirPathLabel.setText(directoryName);
-            
             naothProjectFile = chooser.getSelectedFile();
+            jDirPathLabel.setText(naothProjectFile.getPath());
+            
             copyConfigAction = new CopyConfigAction(chooser.getSelectedFile());
-            
-            File configDir = new File(chooser.getSelectedFile(), "Config");
-            loadPlayerCfg(configDir);
-            loadConfigSchemes(configDir);
-            loadTeamCommCfg(configDir);
-            
-            playerNumberPanel.setRobots(configDir);
+
+            updateForm();
         }
     }//GEN-LAST:event_jDirChooserPerformed
 
     private void jButtonRefreshDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshDataActionPerformed
-
+        updateForm();
     }//GEN-LAST:event_jButtonRefreshDataActionPerformed
-
-    private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jSchemeBoxItemStateChanged
-
-    }//GEN-LAST:event_jSchemeBoxItemStateChanged
 
     private void jTeamNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTeamNumberActionPerformed
         this.jTeamCommPort.setText("10" + this.jTeamNumber.getText() + "00");
@@ -271,8 +255,21 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jColorBoxActionPerformed
 
+    private void updateForm()
+    {
+        // load the defaults for the configs
+        File configDir = new File(naothProjectFile, "Config");
+        loadPlayerCfg(configDir);
+        loadConfigSchemes(configDir);
+        loadTeamCommCfg(configDir);
+
+        playerNumberPanel.setRobots(configDir);
+        
+        // check for the binaries
+        
+    }
     
-    /**
+   /**
    * populates the Schemes-Dropdown with the Schemes found in the schemedir
    *
    * @return
