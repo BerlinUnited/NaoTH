@@ -6,6 +6,8 @@
 
 package naoscp;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
@@ -13,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import naoscp.tools.FileUtils;
+import naoscp.tools.Scp;
 
 /**
  *
@@ -56,6 +59,7 @@ public class NaoSCP extends javax.swing.JFrame {
         btDeploy = new javax.swing.JButton();
         logTextPanel = new naoscp.components.LogTextPanel();
         btWriteToStick = new javax.swing.JButton();
+        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -68,7 +72,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(netwokPanel, gridBagConstraints);
@@ -77,7 +81,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(naoTHPanel, gridBagConstraints);
@@ -91,13 +95,12 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.ipadx = 32;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(btDeploy, gridBagConstraints);
 
         logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -116,6 +119,11 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         getContentPane().add(btWriteToStick, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        getContentPane().add(jProgressBar1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -139,6 +147,17 @@ public class NaoSCP extends javax.swing.JFrame {
                 } else {
                     setEnabled(naoTHPanel, false);
                     naoTHPanel.getAction().run(deployDir);
+                    
+                    try {
+                        Scp scp = new Scp("192.168.56.101", "nao", "nao");
+                        
+                        scp.put(deployDir, "/home/nao/tmp");
+                        
+                        scp.disconnect();
+                    } catch (JSchException | SftpException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                    }
+                    
                     setEnabled(naoTHPanel, true);
                 }
             }
@@ -223,6 +242,7 @@ public class NaoSCP extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
     private javax.swing.JButton btWriteToStick;
+    private javax.swing.JProgressBar jProgressBar1;
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;

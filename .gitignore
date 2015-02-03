@@ -2,7 +2,7 @@
 dist/
 build/
 private/
-Deploy/
+deploy/
 
 #java project files
 build.xml
