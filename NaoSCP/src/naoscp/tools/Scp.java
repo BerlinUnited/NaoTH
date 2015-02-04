@@ -2,7 +2,6 @@ package naoscp.tools;
 
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
-import static com.jcraft.jsch.Logger.DEBUG;
 import static com.jcraft.jsch.Logger.ERROR;
 import static com.jcraft.jsch.Logger.FATAL;
 import static com.jcraft.jsch.Logger.INFO;
@@ -10,6 +9,7 @@ import static com.jcraft.jsch.Logger.WARN;
 import java.io.*;
 import java.util.*;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 /**
  *
@@ -20,16 +20,19 @@ public class Scp {
 
     private ChannelSftp channel;
     private Session session;
-
+    private SftpProgressMonitor progressMonitor;
+    
     public Scp(String ip, String userName, String password) throws JSchException {
         this(ip, userName, new SimpleUserInfo(password));
     }
 
     public Scp(String ip, String userName, UserInfo ui) throws JSchException {
+        java.util.logging.Logger.getGlobal().log(Level.INFO, "connecting to " + userName + "@" + ip);
+        
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
 
-        JSch.setLogger(new Logger());
+        JSch.setLogger(new SimpleLogger());
         
         JSch jsch = new JSch();
         session = jsch.getSession(userName, ip, 22);
@@ -37,9 +40,9 @@ public class Scp {
         session.setUserInfo(ui);
         session.connect();
 
-        Channel c = session.openChannel("sftp");
-        c.connect();
-        channel = (ChannelSftp) c;
+        channel = (ChannelSftp)session.openChannel("sftp");
+        channel.connect();
+        
     }
 
     public void disconnect() {
@@ -47,8 +50,31 @@ public class Scp {
         session.disconnect();
     }
 
+    public void setProgressMonitor(SftpProgressMonitor progressMonitor) {
+        this.progressMonitor = progressMonitor;
+    }
+    
+    public void run(String cmd) throws IOException, JSchException
+    {
+        java.util.logging.Logger.getGlobal().log(Level.INFO, "run: '" + cmd + "'");
+        
+        ChannelExec c = (ChannelExec)session.openChannel("exec");
+        c.setCommand(cmd);
+        c.setOutputStream(new LogStream(Level.FINE));
+        c.setErrStream(new LogStream(Level.SEVERE));
+        c.connect();
+        // block until the execution is done
+        while(!c.isClosed()) {
+          try {
+            Thread.sleep(100);
+          } catch(InterruptedException ex) {}
+        }
+        
+        java.util.logging.Logger.getGlobal().log(Level.INFO, "'" + cmd + "' exits with status " + c.getExitStatus());
+    }
+
     /**
-     * rm -r <dst>/
+     * rm -r <dst>/*
      *
      *
      * @param dst String directory to delete
@@ -114,16 +140,43 @@ public class Scp {
      * @throws com.jcraft.jsch.SftpException
      */
     public void put(File src, String dst) throws SftpException {
-        File files[] = src.listFiles();
-        Arrays.sort(files);
-        for (int i = 0, n = files.length; i < n; i++) {
-            String newdst = dst + "/" + files[i].getName();
-            if (files[i].isDirectory()) {
-                channel.mkdir(newdst);
+        if(src.isDirectory())
+        {
+            File files[] = src.listFiles();
+            Arrays.sort(files);
+            for (int i = 0, n = files.length; i < n; i++) {
+                String newdst = dst + "/" + files[i].getName();
+                mkdir(newdst);
                 put(files[i], newdst);
-            } else {
-                channel.put(files[i].getAbsolutePath(), newdst);
             }
+        }
+        else
+        {
+            java.util.logging.Logger.getGlobal().log(Level.FINE, "put " + dst + "");
+            if(progressMonitor == null ) {
+                channel.put(src.getAbsolutePath(), dst);
+            } else {
+                channel.put(src.getAbsolutePath(), dst, progressMonitor);
+            }
+        }
+    }
+    
+    public void mkdir(String dst) throws SftpException {
+        try {
+            try {
+                SftpATTRS attr = channel.stat(dst);
+                if(!attr.isDir()) {
+                    throw new SftpException(ChannelSftp.SSH_FX_FAILURE, "Not a directory " + dst + "( " + attr + ")");
+                }
+            } catch(SftpException ex) {
+                if(ex.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+                    channel.mkdir(dst);
+                } else {
+                    throw ex;
+                }
+            }
+        } catch(SftpException ex) {
+            throw new SftpException(ex.id, "Cannot create directory " + dst + ": " + ex.getMessage());
         }
     }
 
@@ -176,28 +229,62 @@ public class Scp {
         }
     }//end class SimpleUserInfo
 
-     protected class Logger implements com.jcraft.jsch.Logger 
-  {
-    HashMap<Integer, String> name = new HashMap<Integer, String>();
-    {
-      name.put(new Integer(DEBUG), "DEBUG: ");
-      name.put(new Integer(INFO), "INFO: ");
-      name.put(new Integer(WARN), "WARN: ");
-      name.put(new Integer(ERROR), "ERROR: ");
-      name.put(new Integer(FATAL), "FATAL: ");
-    }
+     protected class SimpleLogger implements Logger {
 
-    @Override
-    public boolean isEnabled(int level)
-    {
-      return true;
-    }
+        @Override
+        public boolean isEnabled(int level) {
+            switch (level) {
+                //case DEBUG: return true;
+                //case INFO: return true;
+                case WARN: return true;
+                case ERROR: return true;
+                case FATAL: return true;
+            }
+            return false;
+        }
 
-    @Override
-    public void log(int level, String message)
-    {
-      System.err.print(name.get(new Integer(level)));
-      System.err.println(message);
+        Level getLevel(int level) {
+            switch (level) {
+                //case DEBUG: return true;
+                case INFO: return Level.INFO;
+                case WARN: return Level.WARNING;
+                case ERROR: return Level.SEVERE;
+                case FATAL: return Level.SEVERE;
+            }
+            return Level.INFO;
+        }
+
+        @Override
+        public void log(int level, String message) {
+            java.util.logging.Logger.getGlobal().log(getLevel(level), message);
+        }
     }
-  }   
+     
+    protected class LogStream extends OutputStream
+    {
+        private final StringBuilder buffer = new StringBuilder();
+        private final Level level;
+        
+        public LogStream(Level level) {
+            super();
+            this.level = level;
+        }
+        
+        @Override
+        public void write(int i) throws IOException {
+            if(i == '\n') {
+                flush();
+            } else {
+                buffer.append((char)i);
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            java.util.logging.Logger.getGlobal().log(level, "  " + buffer.toString());
+            buffer.setLength(0);
+       }
+    }
+  
 }//end class scp

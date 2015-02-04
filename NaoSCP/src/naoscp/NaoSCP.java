@@ -11,9 +11,11 @@ import com.jcraft.jsch.SftpException;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import naoscp.tools.BarProgressMonitor;
 import naoscp.tools.FileUtils;
 import naoscp.tools.Scp;
 
@@ -33,6 +35,7 @@ public class NaoSCP extends javax.swing.JFrame {
         initComponents();
         
         Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
+        Logger.getGlobal().setLevel(Level.FINE);
     }
 
     void setEnabled(Component component, boolean enabled) {
@@ -59,7 +62,7 @@ public class NaoSCP extends javax.swing.JFrame {
         btDeploy = new javax.swing.JButton();
         logTextPanel = new naoscp.components.LogTextPanel();
         btWriteToStick = new javax.swing.JButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        jProgressBar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -123,13 +126,14 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(jProgressBar1, gridBagConstraints);
+        getContentPane().add(jProgressBar, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
-
+        this.logTextPanel.clear();
+        
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -150,14 +154,18 @@ public class NaoSCP extends javax.swing.JFrame {
                     
                     try {
                         Scp scp = new Scp("192.168.56.101", "nao", "nao");
+                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+                        
+                        scp.run("ls /");
                         
                         scp.put(deployDir, "/home/nao/tmp");
                         
                         scp.disconnect();
-                    } catch (JSchException | SftpException ex) {
+                    } catch (JSchException | SftpException | IOException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                     
+                    Logger.getGlobal().log(Level.INFO, "DONE");
                     setEnabled(naoTHPanel, true);
                 }
             }
@@ -165,6 +173,8 @@ public class NaoSCP extends javax.swing.JFrame {
     }//GEN-LAST:event_btDeployActionPerformed
 
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
+        this.logTextPanel.clear();
+
         final JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
         chooser.setDialogTitle("Select NaoController Directory");
@@ -242,7 +252,7 @@ public class NaoSCP extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
     private javax.swing.JButton btWriteToStick;
-    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JProgressBar jProgressBar;
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;

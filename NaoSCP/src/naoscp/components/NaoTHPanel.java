@@ -384,7 +384,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
         }
 
         public void run(File deployDir) {
-
+            
+            Logger.getGlobal().log(Level.INFO, "Set up deploy directory '" + deployDir + "'");
             File deployBinDir = new File(deployDir, deployBinPath);
             deployBinDir.mkdirs();
 

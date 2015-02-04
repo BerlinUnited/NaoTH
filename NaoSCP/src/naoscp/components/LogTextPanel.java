@@ -29,26 +29,32 @@ public class LogTextPanel extends javax.swing.JPanel {
         initComponents();
         
         StyledDocument doc = outputPanel.getStyledDocument();
-        //addStylesToDocument(doc);
-        
         
         Style defaultStyle = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
         
         // set the font type for all styles
         StyleConstants.setFontFamily(defaultStyle, "monospaced"); // "SansSerif"
         
-        Style s_info = doc.addStyle(Level.INFO.getName(), defaultStyle);
-        StyleConstants.setForeground(s_info, new Color(64,64,64));
+        Style s_fine = doc.addStyle(Level.FINE.getName(), defaultStyle);
+        StyleConstants.setForeground(s_fine, new Color(64,64,64));
         
-        Style s_error = doc.addStyle(Level.SEVERE.getName(), defaultStyle);
-        StyleConstants.setForeground(s_error, new Color(200,0,0));
-        StyleConstants.setBold(s_error, true);
+        Style s_info = doc.addStyle(Level.INFO.getName(), defaultStyle);
+        StyleConstants.setForeground(s_info, new Color(0,128,0));
+        StyleConstants.setBold(s_info, true);
         
         Style s_warn = doc.addStyle(Level.WARNING.getName(), defaultStyle);
         StyleConstants.setForeground(s_warn, new Color(200,128,0));
         StyleConstants.setBold(s_warn, true);
+        
+        Style s_error = doc.addStyle(Level.SEVERE.getName(), defaultStyle);
+        StyleConstants.setForeground(s_error, new Color(200,0,0));
+        StyleConstants.setBold(s_error, true);
     }
 
+    public void clear() {
+        outputPanel.setText("");
+    }
+    
     public Handler getLogHandler() {
         return new Handler() {
 
@@ -60,6 +66,8 @@ public class LogTextPanel extends javax.swing.JPanel {
                     String levelName = lr.getLevel().getName();
                     Style s = doc.getStyle(levelName);
                     doc.insertString(doc.getLength(), lr.getMessage() + "\n", s);
+                    
+                    outputPanel.setCaretPosition(doc.getLength());
                 } catch (BadLocationException ex) {
                     
                 }

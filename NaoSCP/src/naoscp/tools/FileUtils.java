@@ -100,7 +100,7 @@ public class FileUtils
     {
       try
       {
-        Logger.getGlobal().log(Level.INFO, "copy " + src.getName());
+        Logger.getGlobal().log(Level.FINE, "copy " + src.getName());
         byte[] buffer = new byte[4096]; //Buffer 4K at a time (you can change this).
         int bytesRead;
         
