@@ -49,8 +49,18 @@ public class NetwokPanel extends javax.swing.JPanel {
         private NetConfig lan;
         private NetConfig wlan;
         private WlanConfig wlan_encryption;
-        
-        
+
+        public NetConfig getLan() {
+            return lan;
+        }
+
+        public NetConfig getWlan() {
+            return wlan;
+        }
+
+        public WlanConfig getWlan_encryption() {
+            return wlan_encryption;
+        }
     }
     
     public NetworkConfig getNetworkConfig() {

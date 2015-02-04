@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import naoscp.components.NetwokPanel;
 import naoscp.tools.BarProgressMonitor;
 import naoscp.tools.FileUtils;
 import naoscp.tools.Scp;
@@ -63,6 +64,8 @@ public class NaoSCP extends javax.swing.JFrame {
         logTextPanel = new naoscp.components.LogTextPanel();
         btWriteToStick = new javax.swing.JButton();
         jProgressBar = new javax.swing.JProgressBar();
+        btSetNetwork = new javax.swing.JButton();
+        btInintRobot = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -75,7 +78,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(netwokPanel, gridBagConstraints);
@@ -84,7 +87,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(naoTHPanel, gridBagConstraints);
@@ -103,7 +106,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
         logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -123,10 +126,32 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridy = 2;
         getContentPane().add(btWriteToStick, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(jProgressBar, gridBagConstraints);
+
+        btSetNetwork.setText("Set Network");
+        btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSetNetworkActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(btSetNetwork, gridBagConstraints);
+
+        btInintRobot.setText("Initialize Robot");
+        btInintRobot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btInintRobotActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(btInintRobot, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -176,7 +201,7 @@ public class NaoSCP extends javax.swing.JFrame {
         this.logTextPanel.clear();
 
         final JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setCurrentDirectory(new File("."));
         chooser.setDialogTitle("Select NaoController Directory");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
@@ -213,6 +238,83 @@ public class NaoSCP extends javax.swing.JFrame {
             }).start();
         }
     }//GEN-LAST:event_btWriteToStickActionPerformed
+
+    private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new File("."));
+        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        
+        if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        {
+            File tmpDir = new File("./tmp");
+            File setupDir = new File(tmpDir, "setup");
+            
+            if(setupDir.isDirectory()) {
+                //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                FileUtils.deleteDir(setupDir);
+            }
+            
+            if (!setupDir.mkdirs()) {
+                Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+            } else {
+                // copy deploy stuff
+                naoTHPanel.getAction().run(setupDir);
+                
+                // copy scripts
+                FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), new File(setupDir, "home/nao/naoqi/naothSetup"));
+                
+                // copy libs
+                File libDir = chooser.getSelectedFile();
+                FileUtils.copyFiles(libDir, new File(setupDir, "lib"));
+            }
+        }
+        
+    }//GEN-LAST:event_btInintRobotActionPerformed
+
+    class TemplateFile
+    {
+        private String text;
+        TemplateFile(File file) throws IOException {
+            this.text = FileUtils.readFile(file);
+        }
+        
+        public void set(String arg, String value) {
+            text = text.replace(arg, value);
+        }
+        
+        public void save(File file) throws IOException {
+            FileUtils.writeToFile(text, file);
+        }
+    }
+    
+    private void btSetNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSetNetworkActionPerformed
+        try {
+            File tmpDir = new File("./tmp");
+            File setupDir = new File(tmpDir, "setup");
+            
+            NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+            
+            TemplateFile tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wep"));
+            tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
+            tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
+            tmp.save(new File(setupDir,"wpa_supplicant"));
+            
+            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
+            tmp.set("ETH_ADDR", cfg.getLan().subnet);
+            tmp.set("ETH_NETMASK", cfg.getLan().mask);
+            tmp.set("ETH_BRD", cfg.getLan().broadcast);
+            
+            tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
+            tmp.set("ETH_NETMASK", cfg.getWlan().mask);
+            tmp.set("ETH_BRD", cfg.getWlan().broadcast);
+            tmp.save(new File(setupDir,"net"));
+            
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btSetNetworkActionPerformed
 
     /**
      * @param args the command line arguments
@@ -251,6 +353,8 @@ public class NaoSCP extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btDeploy;
+    private javax.swing.JButton btInintRobot;
+    private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
     private javax.swing.JProgressBar jProgressBar;
     private naoscp.components.LogTextPanel logTextPanel;
