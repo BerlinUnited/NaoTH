@@ -39,13 +39,17 @@ public class NaoSCP extends javax.swing.JFrame {
         Logger.getGlobal().setLevel(Level.FINE);
     }
 
-    void setEnabled(Component component, boolean enabled) {
+    private static void setEnabled(Component component, boolean enabled) {
         component.setEnabled(enabled);
         if (component instanceof Container) {
             for (Component child : ((Container) component).getComponents()) {
                 setEnabled(child, enabled);
             }
         }
+    }
+    
+    public void setEnabledAll(boolean v) {
+        setEnabled(this, v);
     }
 
     /**
@@ -66,6 +70,8 @@ public class NaoSCP extends javax.swing.JFrame {
         jProgressBar = new javax.swing.JProgressBar();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
+        btAdvancedSimle = new javax.swing.JToggleButton();
+        txt = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -78,7 +84,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(netwokPanel, gridBagConstraints);
@@ -87,26 +93,27 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(naoTHPanel, gridBagConstraints);
 
-        btDeploy.setText("Deploy");
+        btDeploy.setText("Send toRobot");
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         getContentPane().add(btDeploy, gridBagConstraints);
 
         logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -122,11 +129,12 @@ public class NaoSCP extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(btWriteToStick, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(jProgressBar, gridBagConstraints);
@@ -138,8 +146,9 @@ public class NaoSCP extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(btSetNetwork, gridBagConstraints);
 
         btInintRobot.setText("Initialize Robot");
@@ -149,9 +158,30 @@ public class NaoSCP extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(btInintRobot, gridBagConstraints);
+
+        btAdvancedSimle.setText("Advanced");
+        btAdvancedSimle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAdvancedSimleActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        getContentPane().add(btAdvancedSimle, gridBagConstraints);
+
+        txt.setColumns(3);
+        txt.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txt.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(txt, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -159,11 +189,13 @@ public class NaoSCP extends javax.swing.JFrame {
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
         this.logTextPanel.clear();
         
+        final File targetDir = new File("./tmp");
+        
         new Thread(new Runnable() {
             @Override
             public void run() {
                 // STEP 1: create the deploy directory for the playerNumber
-                File deployDir = new File("./deploy");
+                File deployDir = new File(targetDir,"deploy");
 
                 // delete the target directory if it's existing, 
                 // so we have a fresh new directory
@@ -174,16 +206,22 @@ public class NaoSCP extends javax.swing.JFrame {
                 if (!deployDir.mkdirs()) {
                     Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
                 } else {
-                    setEnabled(naoTHPanel, false);
+                    NaoSCP.this.setEnabledAll(false);
                     naoTHPanel.getAction().run(deployDir);
+                    FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                     
+                    // send stuff to robot
                     try {
                         Scp scp = new Scp("192.168.56.101", "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
                         
-                        scp.run("ls /");
-                        
+                        scp.cleardir("/home/nao/tmp");
                         scp.put(deployDir, "/home/nao/tmp");
+                        scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
+                        
+                        //scp.channel.chown(WIDTH, utilsPath);
+                        scp.channel.chmod(Integer.parseInt("755",8), "/home/nao/tmp/setup.sh");
+                        scp.run("cd /home/nao/tmp; sh ./setup.sh");
                         
                         scp.disconnect();
                     } catch (JSchException | SftpException | IOException ex) {
@@ -191,7 +229,7 @@ public class NaoSCP extends javax.swing.JFrame {
                     }
                     
                     Logger.getGlobal().log(Level.INFO, "DONE");
-                    setEnabled(naoTHPanel, true);
+                    NaoSCP.this.setEnabledAll(true);
                 }
             }
         }).start();
@@ -200,18 +238,19 @@ public class NaoSCP extends javax.swing.JFrame {
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
         this.logTextPanel.clear();
 
-        final JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("."));
         chooser.setDialogTitle("Select NaoController Directory");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
+            final File targetDir = chooser.getSelectedFile();
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     // STEP 1: create the deploy directory for the playerNumber
-                    File targetDir = chooser.getSelectedFile();
                     File deployDir = new File(targetDir,"deploy");
                     
                     // delete the target directory if it's existing, 
@@ -229,10 +268,10 @@ public class NaoSCP extends javax.swing.JFrame {
                     if (!deployDir.mkdirs()) {
                         Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
                     } else {
-                        setEnabled(naoTHPanel, false);
+                        NaoSCP.this.setEnabledAll(false);
                         naoTHPanel.getAction().run(new File(targetDir,"deploy"));
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-                        setEnabled(naoTHPanel, true);
+                        NaoSCP.this.setEnabledAll(true);
                     }
                 }
             }).start();
@@ -316,6 +355,10 @@ public class NaoSCP extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
+    private void btAdvancedSimleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdvancedSimleActionPerformed
+        this.netwokPanel.setVisible(this.btAdvancedSimle.isSelected());
+    }//GEN-LAST:event_btAdvancedSimleActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -352,6 +395,7 @@ public class NaoSCP extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btAdvancedSimle;
     private javax.swing.JButton btDeploy;
     private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
@@ -360,5 +404,6 @@ public class NaoSCP extends javax.swing.JFrame {
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JFormattedTextField txt;
     // End of variables declaration//GEN-END:variables
 }

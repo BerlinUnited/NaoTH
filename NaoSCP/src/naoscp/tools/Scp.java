@@ -18,7 +18,7 @@ import java.util.logging.Level;
  */
 public class Scp {
 
-    private ChannelSftp channel;
+    public ChannelSftp channel;
     private Session session;
     private SftpProgressMonitor progressMonitor;
     
