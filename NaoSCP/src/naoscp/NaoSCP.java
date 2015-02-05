@@ -220,8 +220,8 @@ public class NaoSCP extends javax.swing.JFrame {
                         scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
                         
                         //scp.channel.chown(WIDTH, utilsPath);
-                        scp.channel.chmod(Integer.parseInt("755",8), "/home/nao/tmp/setup.sh");
-                        scp.run("cd /home/nao/tmp; sh ./setup.sh");
+                        scp.chmod(755, "/home/nao/tmp/setup.sh");
+                        scp.run("/home/nao/tmp", "./setup.sh");
                         
                         scp.disconnect();
                     } catch (JSchException | SftpException | IOException ex) {

@@ -72,6 +72,11 @@ public class Scp {
         
         java.util.logging.Logger.getGlobal().log(Level.INFO, "'" + cmd + "' exits with status " + c.getExitStatus());
     }
+    
+    public void run(String workingDir, String cmd) throws IOException, JSchException
+    {
+        run("cd " + workingDir + "; " + cmd + ";");
+    }
 
     /**
      * rm -r <dst>/*
@@ -98,6 +103,10 @@ public class Scp {
                 }
             }
         }
+    }
+    
+    public void chmod(int permissions, String path) throws SftpException {
+        channel.chmod(Integer.parseInt("" + permissions,8), path);
     }
 
     /**
