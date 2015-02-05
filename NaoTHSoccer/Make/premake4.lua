@@ -81,10 +81,12 @@ solution "NaoTHSoccer"
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     flags { "Symbols", "FatalWarnings" }
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     flags { "Optimize", "FatalWarnings" }
   
   configuration{"Native"}
