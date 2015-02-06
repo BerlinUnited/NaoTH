@@ -29,7 +29,17 @@
 
 #include "Tools/DoubleCamHelpers.h"
 
+// debug
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include <Representations/Debug/Stopwatch.h>
+
+
 BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
+  PROVIDE(StopwatchManager)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
   REQUIRE(CameraInfo)

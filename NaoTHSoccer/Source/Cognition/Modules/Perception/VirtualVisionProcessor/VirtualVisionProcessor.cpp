@@ -9,9 +9,6 @@
 #include "VirtualVisionProcessor.h"
 
 #include <Tools/Math/Matrix_mxn.h>
-
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/Stopwatch.h"
 #include "Tools/DataConversion.h"
 
 using namespace std;

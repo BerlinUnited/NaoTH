@@ -79,27 +79,22 @@ public:
     }
   }//end print
 
-  virtual void draw() const
+  virtual void draw(DrawingCanvas2D& canvas) const
   {
-    FIELD_DRAWING_CONTEXT;
+    //FIELD_DRAWING_CONTEXT;
     for(std::list<Player>::const_iterator iter=playersList.begin(); iter!=playersList.end(); ++iter)
     {
       if(iter->teamColorIsValid)
       {
-        if(iter->teamColor == naoth::GameData::red)
-        {
-          PEN("FF0000", 20);
+        if(iter->teamColor == naoth::GameData::red) {
+          canvas.pen("FF0000", 20);
+        } else {
+          canvas.pen("0000FF", 20);
         }
-        else
-        {
-          PEN("0000FF", 20);
-        }
+      } else {
+        canvas.pen("FF00FF", 20);
       }
-      else
-      {
-        PEN("FF00FF", 20);
-      }
-      ROBOT(iter->pose.translation.x, iter->pose.translation.y, iter->pose.rotation);
+      canvas.drawRobot(iter->pose.translation.x, iter->pose.translation.y, iter->pose.rotation);
     }
   }
 };
