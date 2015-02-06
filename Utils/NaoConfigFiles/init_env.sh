@@ -89,7 +89,7 @@ fi
 # Check and Update Runlevel Configuration for Non-Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable";
+./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable ofono=disable";
 
 # allow everyone to shutdown
 chmod +s /sbin/shutdown
