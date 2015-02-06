@@ -1020,7 +1020,26 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         }
         theGameData.teamColor = SimSparkGameInfo::getTeamColorByName(team);
         theGameData.teamNumber = theGameData.teamColor;
-      } else
+      } 
+      else if ("sl" == name)
+      {
+        int score_left = 0;
+        if (!SexpParser::parseValue(t->next, score_left))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed score left\n";
+        }
+      } 
+      else if ("sr" == name)
+      {
+        int score_right = 0;
+        if (!SexpParser::parseValue(t->next, score_right))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed score right\n";
+        }
+      } 
+      else
       {
         ok = false;
         cerr << "SimSparkGameInfo::update unknown name: " << name << '\n';
