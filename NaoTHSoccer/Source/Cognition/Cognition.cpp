@@ -48,6 +48,7 @@
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+#include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -127,6 +128,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BallDetector);
 
   REGISTER_MODULE(VirtualVisionProcessor);
+  REGISTER_MODULE(PerceptionsVisualizer);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
