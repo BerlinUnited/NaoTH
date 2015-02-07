@@ -266,7 +266,18 @@ public class NaoTHPanel extends javax.swing.JPanel {
         playerNumberPanel.setRobots(configDir);
         
         // check for the binaries
-        
+        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/naoth").exists()) {
+            cbCopyExe.setEnabled(true);
+        } else {
+            cbCopyExe.setEnabled(false);
+            cbCopyExe.setSelected(false);
+        }
+        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/libnaosmal.so").exists()) {
+            cbCopyLib.setEnabled(true);
+        } else {
+            cbCopyLib.setEnabled(false);
+            cbCopyLib.setSelected(false);
+        }
     }
     
    /**
@@ -389,13 +400,13 @@ public class NaoTHPanel extends javax.swing.JPanel {
             File deployBinDir = new File(deployDir, deployBinPath);
             deployBinDir.mkdirs();
 
-            if (cbCopyExe.isSelected()) {
+            if (cbCopyLib.isSelected()) {
                 File src = new File(localBinDir, "libnaosmal.so");
                 File dst = new File(deployBinDir, "libnaosmal.so");
                 FileUtils.copyFiles(src, dst);
             }
 
-            if (cbCopyLib.isSelected()) {
+            if (cbCopyExe.isSelected()) {
                 File src = new File(localBinDir, "naoth");
                 File dst = new File(deployBinDir, "naoth");
                 FileUtils.copyFiles(src, dst);

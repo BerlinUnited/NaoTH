@@ -51,6 +51,32 @@ public class NaoSCP extends javax.swing.JFrame {
     public void setEnabledAll(boolean v) {
         setEnabled(this, v);
     }
+    
+    private void setupNetwork(File setupDir) throws IOException 
+    {
+        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+            
+        TemplateFile tmp = null;
+        if (cfg.getWlan_encryption().ecryption == NetwokPanel.NetworkConfig.WlanConfig.Encryption.WEP) {
+            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wep"));
+        } else {
+            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wpa"));
+        }
+
+        tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
+        tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
+        tmp.save(new File(setupDir,"/etc/wpa_supplicant/wpa_supplicant.conf"));
+
+        tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
+        tmp.set("ETH_ADDR", cfg.getLan().subnet);
+        tmp.set("ETH_NETMASK", cfg.getLan().mask);
+        tmp.set("ETH_BRD", cfg.getLan().broadcast);
+
+        tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
+        tmp.set("ETH_NETMASK", cfg.getWlan().mask);
+        tmp.set("ETH_BRD", cfg.getWlan().broadcast);
+        tmp.save(new File(setupDir, "/etc/conf.d/net"));
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -300,13 +326,19 @@ public class NaoSCP extends javax.swing.JFrame {
             } else {
                 // copy deploy stuff
                 naoTHPanel.getAction().run(setupDir);
+                FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
                 
                 // copy scripts
-                FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), new File(setupDir, "home/nao/naoqi/naothSetup"));
+                FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
                 
                 // copy libs
                 File libDir = chooser.getSelectedFile();
-                FileUtils.copyFiles(libDir, new File(setupDir, "lib"));
+                FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
+                try {
+                    setupNetwork(setupDir);
+                } catch (IOException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                }
             }
         }
         
@@ -333,22 +365,7 @@ public class NaoSCP extends javax.swing.JFrame {
             File tmpDir = new File("./tmp");
             File setupDir = new File(tmpDir, "setup");
             
-            NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
-            
-            TemplateFile tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wep"));
-            tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
-            tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
-            tmp.save(new File(setupDir,"wpa_supplicant"));
-            
-            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
-            tmp.set("ETH_ADDR", cfg.getLan().subnet);
-            tmp.set("ETH_NETMASK", cfg.getLan().mask);
-            tmp.set("ETH_BRD", cfg.getLan().broadcast);
-            
-            tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
-            tmp.set("ETH_NETMASK", cfg.getWlan().mask);
-            tmp.set("ETH_BRD", cfg.getWlan().broadcast);
-            tmp.save(new File(setupDir,"net"));
+            setupNetwork(setupDir);
             
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, null, ex);
