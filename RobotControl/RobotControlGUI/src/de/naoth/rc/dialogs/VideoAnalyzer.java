@@ -122,16 +122,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
       {
-        if (logfile != null && Plugin.logFileEventManager != null)
-        {
-          try {
-            int frameNumber =  (int) frameSlider.getValue();
-            HashMap<String,LogDataFrame> frame = logfile.readFrame(frameNumber);
-            Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
-          } catch (IOException ex) {
-            Helper.handleException(ex);
-          }
-        }
+        seekFromSliderPos();
       }
     });
 
@@ -231,9 +222,10 @@ public class VideoAnalyzer extends AbstractJFXDialog
       try
       {
         logfile = new LogFile(f);
-        timeSlider.setMin(0.0);
-        timeSlider.setMax(logfile.getFrameCount() - 1);
-        //timeSlider.
+        frameSlider.setMin(0.0);
+        frameSlider.setMax(logfile.getFrameCount() - 1);
+        frameSlider.setValue(0.0);
+        sendLogFrame(0);
 
       } catch (IOException ex)
       {
@@ -298,6 +290,21 @@ public class VideoAnalyzer extends AbstractJFXDialog
     });
 
   }
+  
+  private void sendLogFrame(int frameNumber)
+  {
+    if (logfile != null && Plugin.logFileEventManager != null)
+    {
+      try
+      {
+        HashMap<String, LogDataFrame> frame = logfile.readFrame(frameNumber);
+        Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
+      } catch (IOException ex)
+      {
+        Helper.handleException(ex);
+      }
+    }
+  }
 
   private void seekFromSliderPos()
   {
@@ -306,6 +313,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
       player.pause();
       player.seek(Duration.seconds(timeSlider.getValue()));
     }
+    int frameNumber = (int) frameSlider.getValue();
+    sendLogFrame(frameNumber);
   }
 
   private String formatTime(Duration elapsed, boolean withDecimal)
