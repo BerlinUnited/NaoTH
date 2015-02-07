@@ -80,9 +80,13 @@ public class VideoAnalyzer extends AbstractJFXDialog
   private Slider timeSlider;
   private Text lblTime;
   private TextField txtOffset;
+  private Button btSyncPointLog;
+  private Button btSyncPointVideo;
   private final FileChooser fileChooser = new FileChooser();
 
-  private Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
+  private final Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
+  private Double syncTimeLog;
+  private Double syncTimeVideo;
   
   /**
    * Maps a second (fractioned) to a log frame number
@@ -116,7 +120,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
     Button btLoadVideo = new Button("Video");
     btLoadVideo.setOnAction(new EventHandler<ActionEvent>()
     {
-
       @Override
       public void handle(ActionEvent event)
       {
@@ -177,11 +180,39 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
     Text lblOffset = new Text("Offset:");
     txtOffset = new TextField("0.0");
-    
     txtOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
 
+    btSyncPointVideo = new Button("Sync point Video");
+    btSyncPointVideo.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent event)
+      {
+        if(player != null)
+        {
+          btSyncPointLog.setDisable(false);
+          syncTimeVideo = player.getCurrentTime().toSeconds();
+          updateOffset();
+        }
+      }
+    });
+    btSyncPointLog = new Button("Sync point Log");
+    btSyncPointLog.setDisable(true);
+    btSyncPointLog.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent event)
+      {
+        if(player != null)
+        {
+          syncTimeLog = player.getCurrentTime().toSeconds() + timeOffset.getValue();
+          updateOffset();
+        }
+      }
+    });
+    
     HBox upper = new HBox(btLoadLog, btLoadVideo, timeSlider, lblTime);
-    HBox lower = new HBox(lblOffset, txtOffset);
+    HBox lower = new HBox(btSyncPointVideo, btSyncPointLog, lblOffset, txtOffset);
 
     return new VBox(upper, lower);
   }
@@ -189,7 +220,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
   @Override
   public Scene createScene()
   {
-//    Logger.setLevel(Logger.DEBUG);
+//    com.sun.media.jfxmedia.logging.Logger.setLevel(com.sun.media.jfxmedia.logging.Logger.DEBUG);
 
     BorderPane rootPane = new BorderPane();
     Scene scene = new Scene(rootPane);
@@ -306,6 +337,14 @@ public class VideoAnalyzer extends AbstractJFXDialog
     });
 
   }
+  
+  private void updateOffset()
+  {
+    if(syncTimeLog != null && syncTimeVideo != null)
+    {
+      timeOffset.setValue(syncTimeLog - syncTimeVideo);
+    }
+  }
 
   private void initFrameMap()
   {
@@ -322,6 +361,12 @@ public class VideoAnalyzer extends AbstractJFXDialog
             FrameInfo frame = FrameInfo.parseFrom(frameRaw.getData());
             double t = ((double) frame.getTime()) / 1000.0;
             time2LogFrame.put(t, i);
+            
+            if(i == 0)
+            {
+              timeOffset.setValue(t);
+            }
+            
           }
         }
       } catch (IOException ex)
@@ -367,9 +412,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
   private String formatTime(Duration elapsed, boolean withDecimal)
   {
     double minutes = Math.floor(elapsed.toMinutes());
-    double seconds
-      = minutes == 0.0 ? elapsed.toSeconds()
-        : elapsed.divide(minutes * 60000.0).toSeconds();
+    double seconds = elapsed.toSeconds() - (minutes*60);
+
     if (withDecimal)
     {
       return String.format("%02d:%05.2f", (int) minutes, seconds);
