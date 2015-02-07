@@ -18,6 +18,10 @@ import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.Robot;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 
@@ -73,8 +77,8 @@ public class BehaviorViewer extends AbstractDialog
       public static DebugDrawingManager debugDrawingManager;
       @InjectPlugin
       public static SwingCommandExecutor commandExecutor;
-      //@InjectPlugin
-      //public static LogFileEventManager logFileEventManager;
+      @InjectPlugin
+      public static LogFileEventManager logFileEventManager;
       @InjectPlugin
       public static DrawingEventManager drawingEventManager;
   }//end Plugin
@@ -115,7 +119,7 @@ public class BehaviorViewer extends AbstractDialog
 
   private BehaviorListener behaviorListener = new BehaviorListener();
   private BehaviorUpdateListener behaviorUpdateListener = new BehaviorUpdateListener();
-  //private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
+  private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
   
   private SortedSet<String> symbolsToWatch = new TreeSet<>();
   
@@ -780,19 +784,19 @@ public class BehaviorViewer extends AbstractDialog
     private void btReceiveLogDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveLogDataActionPerformed
         if(btReceiveLogData.isSelected())
         {
-            //frameListPanel.setVisible(false);
+            frameListPanel.setVisible(false);
             btReceive.setEnabled(false);
-            //Plugin.logFileEventManager.addListener(logBehaviorListener);
+            Plugin.logFileEventManager.addListener(logBehaviorListener);
         }
         else
         {
-            //frameListPanel.setVisible(true);
+            frameListPanel.setVisible(true);
             btReceive.setEnabled(true);
-            //Plugin.logFileEventManager.removeListener(logBehaviorListener);
+            Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
 
-  /*
+  
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
@@ -824,7 +828,7 @@ public class BehaviorViewer extends AbstractDialog
         }
     }
   }
-  */
+  
     
   //TODO: check if the agent name is avaliable
   private void setAgent(String name)

@@ -4,6 +4,7 @@
 
 package de.naoth.rc.dialogs;
 
+import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -16,6 +17,8 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -212,8 +215,9 @@ public class BehaviorAnalyzer extends AbstractDialog
               
               long skippedSize = data_in.skip(currentSize);
             }
-            catch (EOFException eof) {
-              System.out.println ("End of File");
+            catch (EOFException eof) 
+            {
+              Logger.getLogger(BehaviorAnalyzer.class.getName()).log(Level.FINE, "End of file", eof);
               break;
             }
           }//end while
