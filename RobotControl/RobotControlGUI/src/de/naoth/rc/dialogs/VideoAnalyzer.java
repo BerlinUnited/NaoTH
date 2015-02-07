@@ -40,6 +40,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -291,14 +292,23 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   }
   
-  private void sendLogFrame(int frameNumber)
+  private void sendLogFrame(final int frameNumber)
   {
     if (logfile != null && Plugin.logFileEventManager != null)
     {
       try
       {
-        HashMap<String, LogDataFrame> frame = logfile.readFrame(frameNumber);
-        Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
+        final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameNumber);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
+          }
+        });
+        
       } catch (IOException ex)
       {
         Helper.handleException(ex);
