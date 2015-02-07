@@ -10,28 +10,20 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.dialogs.VideoAnalyzer.Plugin;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -411,235 +403,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
     
   }
 
-  private class LogFile
-  {
 
-    private int minFrame = Integer.MAX_VALUE;
-    private int maxFrame = Integer.MIN_VALUE;
-    private ArrayList<Frame> frameList = new ArrayList<Frame>();
-    private HashMap<Integer, Integer> framePosition = new HashMap<Integer, Integer>();
-    private BasicReader reader = null;
-
-    public LogFile(File file) throws IOException
-    {
-      //FileInputStream file_input = new FileInputStream (file);
-      //DataInputStream inputStream = new DataInputStream (file_input);
-      reader = new BasicReader(new RandomAccessFile(file, "r"));
-      scan(reader);
-      //this.raf = new RandomAccessFile(this.openedFile, "r");
-    }
-
-    private void scan(BasicReader data_in) throws IOException
-    {
-      int currentFrameNumber = -1;
-      int currentFrameSize = 0;
-      int currentFramePos = 0;
-
-      while (true)
-      {
-        try
-        {
-          int fragmentFrameSize = 0;
-
-          int frameNumber = data_in.readInt();
-          fragmentFrameSize += 4;
-
-          // plausibility check
-          if (currentFrameNumber > -1 && (frameNumber < currentFrameNumber || frameNumber < 0))
-          {
-            throw new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber);
-          }
-
-          if (frameNumber - currentFrameNumber > 30)
-          {
-            System.out.println("frame jump: " + currentFrameNumber + " -> " + frameNumber);
-          }
-
-          String currentName = data_in.readString();
-          fragmentFrameSize += currentName.length() + 1;
-
-          int currentSize = data_in.readInt();
-          fragmentFrameSize += 4;
-          fragmentFrameSize += currentSize;
-
-          this.minFrame = Math.min(this.minFrame, frameNumber);
-          this.maxFrame = Math.max(this.maxFrame, frameNumber);
-
-          if (currentFrameNumber != frameNumber && currentFrameNumber != -1)
-          {
-            Frame frame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
-
-            framePosition.put(frameList.size(), currentFrameNumber);
-            frameList.add(frame);
-
-            currentFramePos += currentFrameSize;
-            currentFrameSize = 0;
-          }//end if
-
-          currentFrameSize += fragmentFrameSize;
-          currentFrameNumber = frameNumber;
-
-          long skippedSize = data_in.skip(currentSize);
-        } catch (EOFException eof)
-        {
-          System.out.println("End of File");
-          break;
-        }
-      }//end while
-    }//end parseLogFile
-
-    private HashMap<String, LogDataFrame> readFrame(int frameId) throws IOException
-    {
-      Frame frame = this.frameList.get(frameId);
-      if (frame == null)
-      {
-        return null;
-      }
-
-      // jump to the begin of the frame
-      reader.seek(frame.position);
-
-      int numberOfReadBytes = 0;
-
-      HashMap<String, LogDataFrame> currentFrame = new HashMap<>();
-
-      while (numberOfReadBytes < frame.size)
-      {
-        int frameNumber = reader.readInt();
-        numberOfReadBytes += 4;
-
-        if (frameNumber != frame.number)
-        {
-          throw new IOException("corrupt frame number: " + frameNumber + " expected " + frame.number);
-        }
-
-        String currentName = reader.readString();
-        numberOfReadBytes += currentName.length() + 1;
-        int currentSize = reader.readInt();
-        numberOfReadBytes += 4;
-
-        byte[] buffer = new byte[currentSize];
-        numberOfReadBytes += reader.read(buffer);
-
-        LogDataFrame logDataFrame = new LogDataFrame(frameNumber, currentName, buffer);
-        currentFrame.put(currentName, logDataFrame);
-      }//end while
-
-      return currentFrame;
-    }//end readFrame
-
-    class Frame
-    {
-
-      final int number;
-      final int size;
-      final int position;
-
-      public Frame(int number, int size, int position)
-      {
-        this.number = number;
-        this.size = size;
-        this.position = position;
-      }
-    }//end class Frame
-
-    public int getMinFrame()
-    {
-      return minFrame;
-    }
-
-    public int getMaxFrame()
-    {
-      return maxFrame;
-    }
-
-    public int getFrameCount()
-    {
-      return frameList.size();
-    }
-
-    public int getFrameNumber(int n)
-    {
-      Frame frame = this.frameList.get(n);
-      if (frame == null)
-      {
-        return -1;
-      }
-      return frame.number;
-    }
-  }
-
-  class BasicReader
-  {
-
-    private InputStream streamReader = null;
-    private RandomAccessFile rafReader = null;
-
-    public BasicReader(InputStream streamReader)
-    {
-      this.streamReader = streamReader;
-    }
-
-    public BasicReader(RandomAccessFile rafReader)
-    {
-      this.rafReader = rafReader;
-    }
-
-    public int read(byte[] buffer) throws IOException
-    {
-      return (streamReader == null) ? this.rafReader.read(buffer) : this.streamReader.read(buffer);
-    }
-
-    public int read() throws IOException
-    {
-      return (streamReader == null) ? this.rafReader.read() : this.streamReader.read();
-    }
-
-    public long skip(int size) throws IOException
-    {
-      return (streamReader == null) ? this.rafReader.skipBytes(size) : this.streamReader.skip(size);
-    }
-
-    public void seek(long size) throws IOException
-    {
-      this.rafReader.seek(size);
-    }
-
-    public String readString() throws IOException, EOFException
-    {
-      StringBuilder sb = new StringBuilder();
-      int c = this.read();
-      while (((char) c) != '\0')
-      {
-        if (c == -1)
-        {
-          throw new EOFException();
-        }
-        sb.append((char) c);
-        c = this.read();
-      }
-
-      return sb.toString();
-    }
-
-    public int readInt() throws IOException
-    {
-      byte[] buffer = new byte[4];
-      int numberOfBytes = this.read(buffer);
-
-      if (numberOfBytes != 4)
-      {
-        throw new EOFException();
-      }
-
-      int result
-        = (0xff000000 & buffer[3] << 32)
-        | (0x00ff0000 & buffer[2] << 16)
-        | (0x0000ff00 & buffer[1] << 8)
-        | (0x000000ff & buffer[0]);
-
-      return result;
-    }
-  }//end class BasicReader
 
 }
