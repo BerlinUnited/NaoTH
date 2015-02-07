@@ -182,7 +182,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
     txtOffset = new TextField("0.0");
     txtOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
 
-    btSyncPointVideo = new Button("Sync point Video");
+    btSyncPointVideo = new Button("Video Sync point");
     btSyncPointVideo.setOnAction(new EventHandler<ActionEvent>()
     {
       @Override
@@ -196,7 +196,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
         }
       }
     });
-    btSyncPointLog = new Button("Sync point Log");
+    btSyncPointLog = new Button("Log Sync point");
     btSyncPointLog.setDisable(true);
     btSyncPointLog.setOnAction(new EventHandler<ActionEvent>()
     {
