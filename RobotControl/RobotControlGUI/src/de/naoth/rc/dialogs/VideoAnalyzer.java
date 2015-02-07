@@ -13,13 +13,25 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dialogs.VideoAnalyzer.Plugin;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -28,11 +40,13 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -71,10 +85,17 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   private MediaPlayer player;
   private MediaView mediaView;
-  private Slider frameSlider;
   private Slider timeSlider;
-  private Text txtTime;
+  private Text lblTime;
+  private TextField txtOffset;
   private final FileChooser fileChooser = new FileChooser();
+
+  private Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
+  
+  /**
+   * Maps a second (fractioned) to a log frame number
+   */
+  private final TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
 
   private LogFile logfile;
 
@@ -116,17 +137,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
       }
     });
 
-    frameSlider = new Slider();
-    frameSlider.valueProperty().addListener(new ChangeListener<Number>()
-    {
-
-      @Override
-      public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-      {
-        seekFromSliderPos();
-      }
-    });
-
     timeSlider = new Slider(0.0, 0.0, 0.0);
     timeSlider.setLabelFormatter(new StringConverter<Double>()
     {
@@ -144,7 +154,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
       }
     });
 
-    HBox.setHgrow(frameSlider, Priority.ALWAYS);
     HBox.setHgrow(timeSlider, Priority.ALWAYS);
 
     timeSlider.valueProperty().addListener(new ChangeListener<Number>()
@@ -172,9 +181,17 @@ public class VideoAnalyzer extends AbstractJFXDialog
       }
     });
 
-    txtTime = new Text("mm:ss");
+    lblTime = new Text("mm:ss");
 
-    return new HBox(btLoadLog, frameSlider, btLoadVideo, timeSlider, txtTime);
+    Text lblOffset = new Text("Offset:");
+    txtOffset = new TextField("0.0");
+    
+    txtOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
+
+    HBox upper = new HBox(btLoadLog, btLoadVideo, timeSlider, lblTime);
+    HBox lower = new HBox(lblOffset, txtOffset);
+
+    return new VBox(upper, lower);
   }
 
   @Override
@@ -223,9 +240,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       try
       {
         logfile = new LogFile(f);
-        frameSlider.setMin(0.0);
-        frameSlider.setMax(logfile.getFrameCount() - 1);
-        frameSlider.setValue(0.0);
+        initFrameMap();
         sendLogFrame(0);
 
       } catch (IOException ex)
@@ -286,12 +301,44 @@ public class VideoAnalyzer extends AbstractJFXDialog
       public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue)
       {
         timeSlider.setValue(newValue.toSeconds());
-        txtTime.setText(formatTime(newValue, true));
+        lblTime.setText(formatTime(newValue, true));
+        
+        double searchVal = newValue.toSeconds() + timeOffset.getValue();
+
+        Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
+        if (frame != null)
+        {
+          sendLogFrame(frame.getValue());
+        }
       }
     });
 
   }
-  
+
+  private void initFrameMap()
+  {
+    time2LogFrame.clear();
+    if (logfile != null)
+    {
+      try
+      {
+        for (int i = 0; i < logfile.getFrameCount(); i++)
+        {
+          LogDataFrame frameRaw = logfile.readFrame(i).get("FrameInfo");
+          if (frameRaw != null)
+          {
+            FrameInfo frame = FrameInfo.parseFrom(frameRaw.getData());
+            double t = ((double) frame.getTime()) / 1000.0;
+            time2LogFrame.put(t, i);
+          }
+        }
+      } catch (IOException ex)
+      {
+        Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }
+
   private void sendLogFrame(final int frameNumber)
   {
     if (logfile != null && Plugin.logFileEventManager != null)
@@ -308,7 +355,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
             Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
           }
         });
-        
+
       } catch (IOException ex)
       {
         Helper.handleException(ex);
@@ -323,8 +370,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
       player.pause();
       player.seek(Duration.seconds(timeSlider.getValue()));
     }
-    int frameNumber = (int) frameSlider.getValue();
-    sendLogFrame(frameNumber);
   }
 
   private String formatTime(Duration elapsed, boolean withDecimal)
@@ -340,6 +385,30 @@ public class VideoAnalyzer extends AbstractJFXDialog
     {
       return String.format("%02d:%02.0f", (int) minutes, seconds);
     }
+  }
+  
+  private static class DoubleConverter extends StringConverter<Double>
+  {
+
+    @Override
+    public String toString(Double object)
+    {
+      if(object == null)
+      {
+        return "0.0";
+      }
+      else
+      {
+        return object.toString();
+      }
+    }
+
+    @Override
+    public Double fromString(String string)
+    {
+      return Double.parseDouble(string);
+    }
+    
   }
 
   private class LogFile
