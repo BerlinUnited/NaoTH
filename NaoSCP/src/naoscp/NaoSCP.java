@@ -1,15 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
  */
 
 package naoscp;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import java.awt.Component;
-import java.awt.Container;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,7 +17,9 @@ import javax.swing.JOptionPane;
 import naoscp.components.NetwokPanel;
 import naoscp.tools.BarProgressMonitor;
 import naoscp.tools.FileUtils;
+import naoscp.tools.NaoSCPException;
 import naoscp.tools.Scp;
+import naoscp.tools.SwingTools;
 
 /**
  *
@@ -50,23 +47,15 @@ public class NaoSCP extends javax.swing.JFrame {
         
         try {
             config.load(new FileReader(configPath));
-          } catch(IOException ex) {
+            naoTHPanel.setProperties(config);
+        } catch(IOException ex) {
             Logger.getGlobal().log(Level.INFO, 
-                    "Could not open the config file. It will be created after the first execution.");
-          }
-    }
-
-    private static void setEnabled(Component component, boolean enabled) {
-        component.setEnabled(enabled);
-        if (component instanceof Container) {
-            for (Component child : ((Container) component).getComponents()) {
-                setEnabled(child, enabled);
-            }
+                "Could not open the config file. It will be created after the first execution.");
         }
     }
     
     public void setEnabledAll(boolean v) {
-        setEnabled(this, v);
+        SwingTools.setEnabled(this, v);
     }
     
     private void setupNetwork(File setupDir) throws IOException 
@@ -242,42 +231,44 @@ public class NaoSCP extends javax.swing.JFrame {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // STEP 1: create the deploy directory for the playerNumber
-                File deployDir = new File(targetDir,"deploy");
+                try 
+                {
+                    // STEP 1: create the deploy directory for the playerNumber
+                    File deployDir = new File(targetDir,"deploy");
 
-                // delete the target directory if it's existing, 
-                // so we have a fresh new directory
-                if (deployDir.isDirectory()) {
-                    FileUtils.deleteDir(deployDir);
-                }
+                    // delete the target directory if it's existing, 
+                    // so we have a fresh new directory
+                    if (deployDir.isDirectory()) {
+                        FileUtils.deleteDir(deployDir);
+                    }
 
-                if (!deployDir.mkdirs()) {
-                    Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                } else {
-                    NaoSCP.this.setEnabledAll(false);
-                    naoTHPanel.getAction().run(deployDir);
-                    FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-                    
-                    // send stuff to robot
-                    try {
+                    if (!deployDir.mkdirs()) {
+                        Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                    } else {
+                        //NaoSCP.this.setEnabledAll(false);
+                        naoTHPanel.getAction().run(deployDir);
+
+                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
+
+                        // send stuff to robot
                         Scp scp = new Scp("192.168.56.101", "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-                        
+
                         scp.cleardir("/home/nao/tmp");
                         scp.put(deployDir, "/home/nao/tmp");
                         scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
-                        
+
                         //scp.channel.chown(WIDTH, utilsPath);
                         scp.chmod(755, "/home/nao/tmp/setup.sh");
                         scp.run("/home/nao/tmp", "./setup.sh");
-                        
+
                         scp.disconnect();
-                    } catch (JSchException | SftpException | IOException ex) {
-                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+
+                        Logger.getGlobal().log(Level.INFO, "DONE");
+                        //NaoSCP.this.setEnabledAll(true);
                     }
-                    
-                    Logger.getGlobal().log(Level.INFO, "DONE");
-                    NaoSCP.this.setEnabledAll(true);
+                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                 }
             }
         }).start();
@@ -298,28 +289,33 @@ public class NaoSCP extends javax.swing.JFrame {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    // STEP 1: create the deploy directory for the playerNumber
-                    File deployDir = new File(targetDir,"deploy");
-                    
-                    // delete the target directory if it's existing, 
-                    // so we have a fresh new directory
-                    if (deployDir.isDirectory()) {
-                        // backup 
-                        //FileUtils.deleteDir(deployDir);
-                        if(deployDir.renameTo(new File(targetDir, "bak"))) {
-                            deployDir = new File(targetDir,"deploy");
-                        } else {
-                            Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
-                        }
-                    }
+                    try 
+                    {
+                        // STEP 1: create the deploy directory for the playerNumber
+                        File deployDir = new File(targetDir,"deploy");
 
-                    if (!deployDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                    } else {
-                        NaoSCP.this.setEnabledAll(false);
-                        naoTHPanel.getAction().run(new File(targetDir,"deploy"));
-                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-                        NaoSCP.this.setEnabledAll(true);
+                        // delete the target directory if it's existing, 
+                        // so we have a fresh new directory
+                        if (deployDir.isDirectory()) {
+                            // backup 
+                            //FileUtils.deleteDir(deployDir);
+                            if(deployDir.renameTo(new File(targetDir, "bak"))) {
+                                deployDir = new File(targetDir,"deploy");
+                            } else {
+                                Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                            }
+                        }
+
+                        if (!deployDir.mkdirs()) {
+                            Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                        } else {
+                            //NaoSCP.this.setEnabledAll(false);
+                            naoTHPanel.getAction().run(new File(targetDir,"deploy"));
+                            FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
+                            //NaoSCP.this.setEnabledAll(true);
+                        }
+                    } catch (NaoSCPException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                 }
             }).start();
@@ -354,38 +350,37 @@ public class NaoSCP extends javax.swing.JFrame {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    File tmpDir = new File("./tmp");
-                    File setupDir = new File(tmpDir, "setup");
-
-                    if(setupDir.isDirectory()) {
-                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
-                        FileUtils.deleteDir(setupDir);
-                    }
-
-                    if (!setupDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                    } else {
-                        // copy deploy stuff
-                        naoTHPanel.getAction().run(setupDir);
-                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
-
-                        // copy scripts
-                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
-
-                        // copy libs
-                        File libDir = chooser.getSelectedFile();
-                        FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
-                        try {
-                            setupNetwork(setupDir);
-                        } catch (IOException ex) {
-                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                    try {
+                        File tmpDir = new File("./tmp");
+                        File setupDir = new File(tmpDir, "setup");
+                    
+                        if(setupDir.isDirectory()) {
+                            //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                            FileUtils.deleteDir(setupDir);
                         }
 
+                        if (!setupDir.mkdirs()) {
+                            Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                        } else {
+                            // copy deploy stuff
+                            naoTHPanel.getAction().run(setupDir);
+                            FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
 
-                        // copy to robot
-                        String ip = JOptionPane.showInputDialog(this, "Robot ip address");
-                        try 
-                        {
+                            // copy scripts
+                            FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
+
+                            // copy libs
+                            File libDir = chooser.getSelectedFile();
+                            FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
+                            try {
+                                setupNetwork(setupDir);
+                            } catch (IOException ex) {
+                                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                            }
+
+
+                            // copy to robot
+                            String ip = JOptionPane.showInputDialog(this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
                             scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
@@ -397,11 +392,11 @@ public class NaoSCP extends javax.swing.JFrame {
                             //scp.run("/home/nao/tmp/setup", "./init_env.sh");
 
                             scp.disconnect();
-                            
+
                             Logger.getGlobal().log(Level.INFO, "DONE");
-                        } catch (JSchException | SftpException ex) {
-                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                         }
+                    } catch (JSchException | SftpException | NaoSCPException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                 }
             }).start();

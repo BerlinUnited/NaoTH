@@ -9,20 +9,22 @@ package naoscp.components;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import naoscp.tools.Config;
 import naoscp.tools.FileUtils;
+import naoscp.tools.NaoSCPException;
+import naoscp.tools.SwingTools;
 
 
 /**
  *
- * @author gxy
+ * @author Heinrich Mellmann
  */
 public class NaoTHPanel extends javax.swing.JPanel {
 
-    CopyConfigAction copyConfigAction = null;
     File naothProjectFile = null;
     
     /**
@@ -30,6 +32,14 @@ public class NaoTHPanel extends javax.swing.JPanel {
      */
     public NaoTHPanel() {
         initComponents();
+    }
+    
+    public void setEnabledAll(boolean v) {
+        SwingTools.setEnabled(this, v);
+    }
+    
+    public void setProperties(Properties config) {
+        updateForm(new File(config.getProperty("naoscp.naothsoccerpath", "../NaoTHSoccer")));
     }
 
     /**
@@ -234,17 +244,12 @@ public class NaoTHPanel extends javax.swing.JPanel {
         chooser.setAcceptAllFileFilterUsed(false);
         if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            naothProjectFile = chooser.getSelectedFile();
-            jDirPathLabel.setText(naothProjectFile.getPath());
-            
-            copyConfigAction = new CopyConfigAction(chooser.getSelectedFile());
-
-            updateForm();
+            updateForm(chooser.getSelectedFile());
         }
     }//GEN-LAST:event_jDirChooserPerformed
 
     private void jButtonRefreshDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshDataActionPerformed
-        updateForm();
+        updateForm(naothProjectFile);
     }//GEN-LAST:event_jButtonRefreshDataActionPerformed
 
     private void jTeamNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTeamNumberActionPerformed
@@ -255,8 +260,15 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jColorBoxActionPerformed
 
-    private void updateForm()
+    private void updateForm(File projectFile)
     {
+        if(!projectFile.isDirectory()) {
+            return;
+        }
+        
+        naothProjectFile = projectFile;
+        jDirPathLabel.setText(naothProjectFile.getAbsolutePath());
+        
         // load the defaults for the configs
         File configDir = new File(naothProjectFile, "Config");
         loadPlayerCfg(configDir);
@@ -359,6 +371,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
       }
   }
   
+  
   private Config getTeamCommCfg()
   {
     Config cfg = new Config("teamcomm");
@@ -366,15 +379,16 @@ public class NaoTHPanel extends javax.swing.JPanel {
     return cfg;
   }
   
-  public CopyConfigAction getAction() {
+  public CopyConfigAction getAction() throws NaoSCPException {
       
       if( this.naothProjectFile == null || 
           !this.naothProjectFile.exists() || 
           !this.naothProjectFile.isDirectory())
       {
-          Logger.getGlobal().log(Level.WARNING, "No valid NaoTH project directory specified.");
+          //Logger.getGlobal().log(Level.WARNING, "No valid NaoTH project directory specified.");
+          throw new NaoSCPException("No valid NaoTH project directory specified.");
       }
-      return copyConfigAction;
+      return new CopyConfigAction(naothProjectFile);
   }
   
     public class CopyConfigAction {
@@ -391,7 +405,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
         public CopyConfigAction(File projectDir) {
             this.localConfigDir = new File(projectDir, localConfigPath);
             this.localBinDir = new File(projectDir, localBinPath);
-
         }
 
         public void run(File deployDir) {
