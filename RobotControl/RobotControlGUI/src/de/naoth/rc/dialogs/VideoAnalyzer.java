@@ -7,9 +7,7 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
-import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
-import de.naoth.rc.components.behaviorviewer.model.Symbol;
+import de.naoth.rc.components.videoanalyzer.ParseLogController;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
@@ -17,12 +15,10 @@ import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.dialogs.VideoAnalyzer.Plugin;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
-import de.naoth.rc.messages.Messages.BehaviorStateComplete;
-import de.naoth.rc.messages.Messages.BehaviorStateSparse;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -33,7 +29,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -50,6 +48,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -79,11 +78,13 @@ public class VideoAnalyzer extends AbstractJFXDialog
       return "Video Analyzer";
     }
   }
-  
+
   public static class GameStateChange
   {
+
     public double time;
     public String state;
+
     @Override
     public String toString()
     {
@@ -107,7 +108,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
   /**
    * Maps a second (fractioned) to a log frame number
    */
-  private final TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
+  private TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
 
   private LogFile logfile;
 
@@ -126,7 +127,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   private void setLogFrameFromCurrentTime()
   {
-    if(player != null)
+    if (player != null)
     {
       double searchVal = player.getCurrentTime().toSeconds() + timeOffset.getValue();
 
@@ -241,7 +242,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void changed(ObservableValue<? extends GameStateChange> observable, GameStateChange oldValue, GameStateChange newValue)
       {
-        if(player != null)
+        if (player != null)
         {
           syncTimeLog = newValue.time;
           updateOffset();
@@ -293,20 +294,27 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
     return (scene);
   }
-
+  
   private void setLogFile(File f)
   {
     if (f != null && f.isFile())
     {
+
       try
       {
-        logfile = new LogFile(f);
-        initFrameMap();
-        sendLogFrame(0);
+        FXMLLoader loader = new FXMLLoader(ParseLogController.class.getResource("ParseLog.fxml"));
+        loader.load();
+        ParseLogController controller = loader.<ParseLogController>getController();
+        controller.setLogFile(f);
+        controller.setParent(this);
 
+        Scene scene = new Scene(loader.<Parent>getRoot());
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.show();
       } catch (IOException ex)
       {
-        Helper.handleException("Could not open logfile " + f.getAbsolutePath(), ex);
+        Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
       }
 
     }
@@ -378,76 +386,28 @@ public class VideoAnalyzer extends AbstractJFXDialog
     }
   }
 
-  private void initFrameMap()
+  public void setTimeOffset(Double val)
   {
-    time2LogFrame.clear();
-    
-    XABSLProtoParser parser = new XABSLProtoParser();
-    
-    if (logfile != null)
-    {
-      try
-      {
-        String lastGameState = "";
-        for (int i = 0; i < logfile.getFrameCount(); i++)
-        {
-          Double currentTime = null;
-          Map<String, LogDataFrame> messages = logfile.readFrame(i);
-          LogDataFrame frameRaw = messages.get("FrameInfo");
-          if (frameRaw != null)
-          {
-            FrameInfo frame = FrameInfo.parseFrom(frameRaw.getData());
-            currentTime = ((double) frame.getTime()) / 1000.0;
-            time2LogFrame.put(currentTime, i);
-
-            if (i == 0)
-            {
-              timeOffset.setValue(currentTime);
-            }
-          }
-          XABSLBehaviorFrame behaviorFrame = null;
-          // parse any behavior related messages
-          LogDataFrame completeStatusRaw = messages.get("BehaviorStateComplete");
-          if(completeStatusRaw != null)
-          {
-            BehaviorStateComplete completeStatus = BehaviorStateComplete.parseFrom(completeStatusRaw.getData());
-            parser.parse(completeStatus);
-          }
-          LogDataFrame statusRaw = messages.get("BehaviorStateSparse");
-          if(statusRaw != null)
-          {
-            BehaviorStateSparse status = BehaviorStateSparse.parseFrom(statusRaw.getData());
-            behaviorFrame = parser.parse(status);
-          }
-          // try to detect game state changes 
-          if(behaviorFrame != null && currentTime != null)
-          {
-            Symbol s = behaviorFrame.getSymbolByName("game.state");
-            if(s != null)
-            {
-              if(!lastGameState.equals(s.getValueAsString()))
-              {
-                // CHANGE DETECTED!
-                GameStateChange change = new GameStateChange();
-                change.time = currentTime;
-                change.state = s.getValueAsString();
-                cbSyncLog.getItems().add(change);
-                
-                lastGameState = s.getValueAsString();
-                
-              }
-            }
-          }
-          
-        } // end for each frame
-      } catch (IOException ex)
-      {
-        Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
+    this.timeOffset.setValue(val);
   }
 
-  private void sendLogFrame(final int frameNumber)
+  public void setTime2LogFrame(TreeMap<Double, Integer> time2LogFrame)
+  {
+    this.time2LogFrame = time2LogFrame;
+  }
+
+  public void setLogfile(LogFile logfile)
+  {
+    this.logfile = logfile;
+  }
+  
+  public void setGameStateChanges(List<GameStateChange> newVal)
+  {
+    cbSyncLog.getItems().clear();
+    cbSyncLog.getItems().addAll(newVal);
+  }
+
+  public void sendLogFrame(final int frameNumber)
   {
     if (logfile != null && Plugin.logFileEventManager != null)
     {
