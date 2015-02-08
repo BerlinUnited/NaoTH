@@ -8,6 +8,7 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.videoanalyzer.ParseLogController;
+import de.naoth.rc.components.videoanalyzer.VideoPlayerController;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
@@ -35,21 +36,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -92,10 +85,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
     }
   }
 
-  private MediaPlayer player;
-  private MediaView mediaView;
-  private Slider timeSlider;
-  private Text lblTime;
+  private VideoPlayerController videoController;
+    
   private TextField txtOffset;
   private ChoiceBox<GameStateChange> cbSyncLog;
   private Button btSyncPointVideo;
@@ -120,16 +111,16 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
       {
-        setLogFrameFromCurrentTime();
+        setLogFrameFromVideo();
       }
     });
   }
 
-  private void setLogFrameFromCurrentTime()
+  public void setLogFrameFromVideo()
   {
-    if (player != null)
+    if (videoController != null)
     {
-      double searchVal = player.getCurrentTime().toSeconds() + timeOffset.getValue();
+      double searchVal = videoController.getElapsedSeconds() + timeOffset.getValue();
 
       Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
       if (frame != null)
@@ -167,56 +158,10 @@ public class VideoAnalyzer extends AbstractJFXDialog
         if (result != null)
         {
           fileChooser.setInitialDirectory(result.getParentFile());
-          setMedia(new Media(result.toURI().toString()));
+          setMedia(result);
         }
       }
     });
-
-    timeSlider = new Slider(0.0, 0.0, 0.0);
-    timeSlider.setLabelFormatter(new StringConverter<Double>()
-    {
-
-      @Override
-      public String toString(Double object)
-      {
-        return formatTime(Duration.seconds(object), false);
-      }
-
-      @Override
-      public Double fromString(String string)
-      {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-      }
-    });
-
-    HBox.setHgrow(timeSlider, Priority.ALWAYS);
-
-    timeSlider.valueProperty().addListener(new ChangeListener<Number>()
-    {
-
-      @Override
-      public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-      {
-        if (timeSlider.isValueChanging())
-        {
-          seekFromSliderPos();
-        }
-      }
-    });
-    timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
-      {
-        if (event.getButton() == MouseButton.PRIMARY)
-        {
-          seekFromSliderPos();
-        }
-      }
-    });
-
-    lblTime = new Text("mm:ss");
 
     Text lblOffset = new Text("Offset:");
     txtOffset = new TextField("0.0");
@@ -228,9 +173,9 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void handle(ActionEvent event)
       {
-        if (player != null)
+        if (videoController != null)
         {
-          syncTimeVideo = player.getCurrentTime().toSeconds();
+          syncTimeVideo =  videoController.getElapsedSeconds();
           updateOffset();
         }
       }
@@ -242,15 +187,14 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void changed(ObservableValue<? extends GameStateChange> observable, GameStateChange oldValue, GameStateChange newValue)
       {
-        if (player != null)
-        {
-          syncTimeLog = newValue.time;
-          updateOffset();
-        }
+        syncTimeLog = newValue.time;
+        updateOffset();
       }
     });
+    
+    
 
-    HBox upper = new HBox(btLoadLog, btLoadVideo, timeSlider, lblTime);
+    HBox upper = new HBox(btLoadLog, btLoadVideo);
     HBox lower = new HBox(btSyncPointVideo, cbSyncLog, lblOffset, txtOffset);
 
     return new VBox(upper, lower);
@@ -263,31 +207,21 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
     BorderPane rootPane = new BorderPane();
     Scene scene = new Scene(rootPane);
-
-    mediaView = new MediaView();
-    mediaView.setPreserveRatio(true);
-    mediaView.fitWidthProperty().bind(rootPane.widthProperty());
-
-    mediaView.setOnMouseClicked(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
+    
+    try
       {
-        if (event.getButton() == MouseButton.PRIMARY)
-        {
-          if (player.statusProperty().get() == MediaPlayer.Status.PLAYING)
-          {
-            player.pause();
-          } else
-          {
-            player.play();
-          }
-        }
+        FXMLLoader loader = new FXMLLoader(VideoPlayerController.class.getResource("VideoPlayer.fxml"));
+        loader.load();
+        videoController = loader.<VideoPlayerController>getController();
+        videoController.setAnalyzer(this);
+        rootPane.setCenter(loader.<Node>getRoot());
+        
+      } catch (IOException ex)
+      {
+        Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
       }
-    });
 
-    rootPane.setCenter(mediaView);
+    
     Node controls = createControls();
     controls.prefWidth(Double.MAX_VALUE);
     rootPane.setTop(controls);
@@ -320,62 +254,13 @@ public class VideoAnalyzer extends AbstractJFXDialog
     }
   }
 
-  private void setMedia(Media media)
+  private void setMedia(File file)
   {
-    if (media == null)
+    
+    if(videoController != null)
     {
-      return;
+      videoController.open(file);
     }
-    player = null;
-    timeSlider.setValue(0.0);
-
-    player = new MediaPlayer(media);
-    mediaView.setMediaPlayer(player);
-
-    timeSlider.setMax(0.0);
-
-    player.statusProperty().addListener(new ChangeListener<MediaPlayer.Status>()
-    {
-
-      @Override
-      public void changed(ObservableValue<? extends MediaPlayer.Status> observable, MediaPlayer.Status oldValue, MediaPlayer.Status newValue)
-      {
-        if (newValue == MediaPlayer.Status.READY)
-        {
-          Duration total = player.getTotalDuration();
-          if (total != Duration.UNKNOWN && total != Duration.INDEFINITE)
-          {
-            timeSlider.setMax(total.toSeconds());
-            timeSlider.setShowTickMarks(true);
-            timeSlider.setShowTickLabels(true);
-
-            if (total.toMinutes() < 1.5)
-            {
-              timeSlider.setMajorTickUnit(5.0);
-              timeSlider.setMinorTickCount(0);
-            } else
-            {
-              timeSlider.setMajorTickUnit(60.0);
-              timeSlider.setMinorTickCount(10);
-            }
-          }
-        }
-      }
-    });
-
-    player.currentTimeProperty().addListener(new ChangeListener<Duration>()
-    {
-
-      @Override
-      public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue)
-      {
-        timeSlider.setValue(newValue.toSeconds());
-        lblTime.setText(formatTime(newValue, true));
-
-        setLogFrameFromCurrentTime();
-      }
-    });
-
   }
 
   private void updateOffset()
@@ -420,29 +305,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
       {
         Helper.handleException(ex);
       }
-    }
-  }
-
-  private void seekFromSliderPos()
-  {
-    if (player != null)
-    {
-      player.pause();
-      player.seek(Duration.seconds(timeSlider.getValue()));
-    }
-  }
-
-  private String formatTime(Duration elapsed, boolean withDecimal)
-  {
-    double minutes = Math.floor(elapsed.toMinutes());
-    double seconds = elapsed.toSeconds() - (minutes * 60);
-
-    if (withDecimal)
-    {
-      return String.format("%02d:%05.2f", (int) minutes, seconds);
-    } else
-    {
-      return String.format("%02d:%02.0f", (int) minutes, seconds);
     }
   }
 
