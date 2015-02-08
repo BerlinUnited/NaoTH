@@ -425,9 +425,9 @@ public class NaoTHPanel extends javax.swing.JPanel {
                 FileUtils.copyFiles(src, dst);
             }
 
+            // copy Config
             File deployConfigDir = new File(deployDir, deployConfigPath);
             deployConfigDir.mkdirs();
-
             FileUtils.copyFiles(localConfigDir, deployConfigDir);
 
             // the "private" folder should always be empty
@@ -441,7 +441,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
                 //write the config files
                 getTeamCommCfg().writeToFile(new File(privateFolder, "teamcomm.cfg"));
                 getPlayerCfg().writeToFile(new File(privateFolder, "player.cfg"));
-                writeScheme(jSchemeBox.getSelectedItem().toString(),new File(privateFolder, "scheme.cfg"));
+                writeScheme(jSchemeBox.getSelectedItem().toString(),new File(deployConfigDir, "scheme.cfg"));
             
             } catch(IOException ex) {
                 Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());

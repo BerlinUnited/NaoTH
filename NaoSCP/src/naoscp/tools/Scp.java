@@ -174,16 +174,17 @@ public class Scp {
         try {
             try {
                 SftpATTRS attr = channel.stat(dst);
-                if(!attr.isDir()) {
+                if( !attr.isDir()) {
                     throw new SftpException(ChannelSftp.SSH_FX_FAILURE, "Not a directory " + dst + "( " + attr + ")");
                 }
             } catch(SftpException ex) {
-                if(ex.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
-                    channel.mkdir(dst);
-                } else {
+                if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE) {
                     throw ex;
+                } else {
+                    channel.mkdir(dst);
                 }
             }
+                    
         } catch(SftpException ex) {
             throw new SftpException(ex.id, "Cannot create directory " + dst + ": " + ex.getMessage());
         }

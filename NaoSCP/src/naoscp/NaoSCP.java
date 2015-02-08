@@ -79,8 +79,8 @@ public class NaoSCP extends javax.swing.JFrame {
         tmp.set("ETH_BRD", cfg.getLan().broadcast);
 
         tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
-        tmp.set("ETH_NETMASK", cfg.getWlan().mask);
-        tmp.set("ETH_BRD", cfg.getWlan().broadcast);
+        tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
+        tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
         tmp.save(new File(setupDir, "/etc/conf.d/net"));
     }
 
@@ -378,14 +378,14 @@ public class NaoSCP extends javax.swing.JFrame {
                                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                             }
 
-
+                            
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
                             scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
+                            scp.mkdir("/home/nao/tmp");
                             scp.cleardir("/home/nao/tmp");
-                            //scp.mkdir("/home/nao/tmp");
                             scp.put(setupDir, "/home/nao/tmp");
 
                             scp.chmod(755, "/home/nao/tmp/init_env.sh");
