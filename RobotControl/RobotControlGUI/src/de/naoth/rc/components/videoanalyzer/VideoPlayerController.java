@@ -15,12 +15,16 @@ import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -60,34 +64,30 @@ public class VideoPlayerController implements Initializable
   @Override
   public void initialize(URL url, ResourceBundle rb)
   {
+    playButton.setGraphic(new ImageView(getClass().getResource("/de/naoth/rc/res/play.png").toString()));
+    Tooltip.install(playButton, new Tooltip("Play/Pause"));
+    
     timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setLabelFormatter(new TickFormatter());
     mediaView.fitWidthProperty().bind(rootPane.widthProperty());
     mediaView.fitHeightProperty().bind(rootPane.heightProperty());
   }
 
-  private void seek(double pos)
-  {
-    if (player != null)
-    {
-      player.pause();
-      player.seek(Duration.seconds(pos));
-    }
-  }
 
   @FXML
   private void playPause(ActionEvent event)
   {
-    if (playButton.isSelected())
+    if(player != null)
     {
-      timeSlider.valueProperty().removeListener(sliderChangeListener);
-      player.play();
-      playButton.setText("Pause");
-    } else
-    {
-      player.pause();
-      timeSlider.valueProperty().addListener(sliderChangeListener);
-      playButton.setText("Play");
+      if (playButton.isSelected())
+      {
+        player.play();
+        playButton.setText("Pause");
+      } else
+      {
+        player.pause();
+        playButton.setText("Play");
+      }
     }
   }
 
@@ -126,6 +126,22 @@ public class VideoPlayerController implements Initializable
     });
     player.currentTimeProperty().addListener(new CurrentTimeListener());
     mediaView.setMediaPlayer(player);
+    timeSlider.valueProperty().addListener(sliderChangeListener);
+    timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
+    {
+
+      @Override
+      public void handle(MouseEvent event)
+      {
+        if(player != null)
+        {
+          player.pause();
+          playButton.setSelected(false);
+          playButton.setText("Play");
+          player.seek(Duration.seconds(timeSlider.getValue()));
+        }
+      }
+    });
   }
 
   public double getElapsedSeconds()
@@ -160,10 +176,15 @@ public class VideoPlayerController implements Initializable
     @Override
     public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
     {
+      if(player != null && 
+        player.getStatus() == MediaPlayer.Status.PLAYING)
+      {
+        return;
+      }
       Duration duration = Duration.seconds(newValue.doubleValue());
       if (player != null && !duration.equals(player.getCurrentTime()))
       {
-        seek(newValue.doubleValue());
+        player.seek(Duration.seconds(newValue.doubleValue()));
       }
     }
   }
