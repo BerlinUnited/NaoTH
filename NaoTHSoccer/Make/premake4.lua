@@ -124,7 +124,7 @@ solution "NaoTHSoccer"
       buildoptions {"-Wno-deprecated-declarations"}
       buildoptions {"-Wno-deprecated"}
       flags { "ExtraWarnings" }
-      --links {"pthread"}
+      links {"pthread"}
     
       if _OPTIONS["Wno-conversion"] == nil then
         buildoptions {"-Wconversion"}
