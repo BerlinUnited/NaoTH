@@ -388,6 +388,8 @@ public class NaoSCP extends javax.swing.JFrame {
                             scp.cleardir("/home/nao/tmp");
                             scp.put(setupDir, "/home/nao/tmp");
 
+                            scp.runStream("su\nroot");
+                            
                             scp.chmod(755, "/home/nao/tmp/init_env.sh");
                             //scp.run("/home/nao/tmp/setup", "./init_env.sh");
 
@@ -395,7 +397,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
                             Logger.getGlobal().log(Level.INFO, "DONE");
                         }
-                    } catch (JSchException | SftpException | NaoSCPException ex) {
+                    } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                 }

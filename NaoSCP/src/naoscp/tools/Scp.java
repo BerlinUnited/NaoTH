@@ -7,8 +7,8 @@ import static com.jcraft.jsch.Logger.FATAL;
 import static com.jcraft.jsch.Logger.INFO;
 import static com.jcraft.jsch.Logger.WARN;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
@@ -63,6 +63,30 @@ public class Scp {
         c.setOutputStream(new LogStream(Level.FINE));
         c.setErrStream(new LogStream(Level.SEVERE));
         c.connect();
+        // block until the execution is done
+        while(!c.isClosed()) {
+          try {
+            Thread.sleep(100);
+          } catch(InterruptedException ex) {}
+        }
+        
+        java.util.logging.Logger.getGlobal().log(Level.INFO, "'" + cmd + "' exits with status " + c.getExitStatus());
+    }
+    
+    public void runStream(String cmd) throws IOException, JSchException
+    {
+        java.util.logging.Logger.getGlobal().log(Level.INFO, "run: '" + cmd + "'");
+        
+        ChannelExec c = (ChannelExec)session.openChannel("exec");
+        //c.setCommand(cmd);
+        c.setOutputStream(new LogStream(Level.FINE));
+        c.setErrStream(new LogStream(Level.SEVERE));
+        
+        InputStream stream = new ByteArrayInputStream(cmd.getBytes(StandardCharsets.UTF_8));
+        c.setInputStream(stream);
+        
+        c.connect();
+        
         // block until the execution is done
         while(!c.isClosed()) {
           try {
