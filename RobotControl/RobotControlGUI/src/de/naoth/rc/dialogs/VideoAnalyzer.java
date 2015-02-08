@@ -7,6 +7,9 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
+import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
+import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
@@ -15,6 +18,8 @@ import de.naoth.rc.dialogs.VideoAnalyzer.Plugin;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.messages.FrameworkRepresentations.FrameInfo;
+import de.naoth.rc.messages.Messages.BehaviorStateComplete;
+import de.naoth.rc.messages.Messages.BehaviorStateSparse;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +36,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
@@ -46,7 +52,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -74,20 +79,31 @@ public class VideoAnalyzer extends AbstractJFXDialog
       return "Video Analyzer";
     }
   }
+  
+  public static class GameStateChange
+  {
+    public double time;
+    public String state;
+    @Override
+    public String toString()
+    {
+      return state + " (at " + time + " seconds)";
+    }
+  }
 
   private MediaPlayer player;
   private MediaView mediaView;
   private Slider timeSlider;
   private Text lblTime;
   private TextField txtOffset;
-  private Button btSyncPointLog;
+  private ChoiceBox<GameStateChange> cbSyncLog;
   private Button btSyncPointVideo;
   private final FileChooser fileChooser = new FileChooser();
 
   private final Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
   private Double syncTimeLog;
   private Double syncTimeVideo;
-  
+
   /**
    * Maps a second (fractioned) to a log frame number
    */
@@ -97,6 +113,29 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   public VideoAnalyzer()
   {
+    timeOffset.addListener(new ChangeListener<Double>()
+    {
+
+      @Override
+      public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
+      {
+        setLogFrameFromCurrentTime();
+      }
+    });
+  }
+
+  private void setLogFrameFromCurrentTime()
+  {
+    if(player != null)
+    {
+      double searchVal = player.getCurrentTime().toSeconds() + timeOffset.getValue();
+
+      Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
+      if (frame != null)
+      {
+        sendLogFrame(frame.getValue());
+      }
+    }
   }
 
   private Node createControls()
@@ -188,31 +227,30 @@ public class VideoAnalyzer extends AbstractJFXDialog
       @Override
       public void handle(ActionEvent event)
       {
-        if(player != null)
+        if (player != null)
         {
-          btSyncPointLog.setDisable(false);
           syncTimeVideo = player.getCurrentTime().toSeconds();
           updateOffset();
         }
       }
     });
-    btSyncPointLog = new Button("Log Sync point");
-    btSyncPointLog.setDisable(true);
-    btSyncPointLog.setOnAction(new EventHandler<ActionEvent>()
+    cbSyncLog = new ChoiceBox<>();
+    cbSyncLog.valueProperty().addListener(new ChangeListener<GameStateChange>()
     {
+
       @Override
-      public void handle(ActionEvent event)
+      public void changed(ObservableValue<? extends GameStateChange> observable, GameStateChange oldValue, GameStateChange newValue)
       {
         if(player != null)
         {
-          syncTimeLog = player.getCurrentTime().toSeconds() + timeOffset.getValue();
+          syncTimeLog = newValue.time;
           updateOffset();
         }
       }
     });
-    
+
     HBox upper = new HBox(btLoadLog, btLoadVideo, timeSlider, lblTime);
-    HBox lower = new HBox(btSyncPointVideo, btSyncPointLog, lblOffset, txtOffset);
+    HBox lower = new HBox(btSyncPointVideo, cbSyncLog, lblOffset, txtOffset);
 
     return new VBox(upper, lower);
   }
@@ -325,22 +363,16 @@ public class VideoAnalyzer extends AbstractJFXDialog
       {
         timeSlider.setValue(newValue.toSeconds());
         lblTime.setText(formatTime(newValue, true));
-        
-        double searchVal = newValue.toSeconds() + timeOffset.getValue();
 
-        Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
-        if (frame != null)
-        {
-          sendLogFrame(frame.getValue());
-        }
+        setLogFrameFromCurrentTime();
       }
     });
 
   }
-  
+
   private void updateOffset()
   {
-    if(syncTimeLog != null && syncTimeVideo != null)
+    if (syncTimeLog != null && syncTimeVideo != null)
     {
       timeOffset.setValue(syncTimeLog - syncTimeVideo);
     }
@@ -349,26 +381,65 @@ public class VideoAnalyzer extends AbstractJFXDialog
   private void initFrameMap()
   {
     time2LogFrame.clear();
+    
+    XABSLProtoParser parser = new XABSLProtoParser();
+    
     if (logfile != null)
     {
       try
       {
+        String lastGameState = "";
         for (int i = 0; i < logfile.getFrameCount(); i++)
         {
-          LogDataFrame frameRaw = logfile.readFrame(i).get("FrameInfo");
+          Double currentTime = null;
+          Map<String, LogDataFrame> messages = logfile.readFrame(i);
+          LogDataFrame frameRaw = messages.get("FrameInfo");
           if (frameRaw != null)
           {
             FrameInfo frame = FrameInfo.parseFrom(frameRaw.getData());
-            double t = ((double) frame.getTime()) / 1000.0;
-            time2LogFrame.put(t, i);
-            
-            if(i == 0)
+            currentTime = ((double) frame.getTime()) / 1000.0;
+            time2LogFrame.put(currentTime, i);
+
+            if (i == 0)
             {
-              timeOffset.setValue(t);
+              timeOffset.setValue(currentTime);
             }
-            
           }
-        }
+          XABSLBehaviorFrame behaviorFrame = null;
+          // parse any behavior related messages
+          LogDataFrame completeStatusRaw = messages.get("BehaviorStateComplete");
+          if(completeStatusRaw != null)
+          {
+            BehaviorStateComplete completeStatus = BehaviorStateComplete.parseFrom(completeStatusRaw.getData());
+            parser.parse(completeStatus);
+          }
+          LogDataFrame statusRaw = messages.get("BehaviorStateSparse");
+          if(statusRaw != null)
+          {
+            BehaviorStateSparse status = BehaviorStateSparse.parseFrom(statusRaw.getData());
+            behaviorFrame = parser.parse(status);
+          }
+          // try to detect game state changes 
+          if(behaviorFrame != null && currentTime != null)
+          {
+            Symbol s = behaviorFrame.getSymbolByName("game.state");
+            if(s != null)
+            {
+              if(!lastGameState.equals(s.getValueAsString()))
+              {
+                // CHANGE DETECTED!
+                GameStateChange change = new GameStateChange();
+                change.time = currentTime;
+                change.state = s.getValueAsString();
+                cbSyncLog.getItems().add(change);
+                
+                lastGameState = s.getValueAsString();
+                
+              }
+            }
+          }
+          
+        } // end for each frame
       } catch (IOException ex)
       {
         Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
@@ -383,15 +454,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       try
       {
         final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameNumber);
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
-          }
-        });
+        Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
 
       } catch (IOException ex)
       {
@@ -412,7 +475,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
   private String formatTime(Duration elapsed, boolean withDecimal)
   {
     double minutes = Math.floor(elapsed.toMinutes());
-    double seconds = elapsed.toSeconds() - (minutes*60);
+    double seconds = elapsed.toSeconds() - (minutes * 60);
 
     if (withDecimal)
     {
@@ -422,18 +485,17 @@ public class VideoAnalyzer extends AbstractJFXDialog
       return String.format("%02d:%02.0f", (int) minutes, seconds);
     }
   }
-  
+
   private static class DoubleConverter extends StringConverter<Double>
   {
 
     @Override
     public String toString(Double object)
     {
-      if(object == null)
+      if (object == null)
       {
         return "0.0";
-      }
-      else
+      } else
       {
         return object.toString();
       }
@@ -444,9 +506,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
     {
       return Double.parseDouble(string);
     }
-    
+
   }
-
-
 
 }
