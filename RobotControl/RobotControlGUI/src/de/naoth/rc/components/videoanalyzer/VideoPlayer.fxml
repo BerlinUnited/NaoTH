@@ -22,11 +22,11 @@
       <Slider fx:id="zoomSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" orientation="VERTICAL" showTickMarks="true" snapToTicks="true" value="1.0" BorderPane.alignment="CENTER" />
    </left>
    <center>
-      <ScrollPane fx:id="mediaPane" prefViewportHeight="266.0" prefViewportWidth="374.0">
-         <content>
+      <StackPane fx:id="mediaPane">
+         <children>
             <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" />
-         </content>
-      </ScrollPane>
+         </children>
+      </StackPane>
    </center>
    <top>
       <AnchorPane prefHeight="25.0" prefWidth="400.0" BorderPane.alignment="CENTER">
