@@ -11,7 +11,10 @@ import com.jcraft.jsch.SftpException;
 import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -30,6 +33,12 @@ public class NaoSCP extends javax.swing.JFrame {
     private final String utilsPath = "./../Utils";
     private final String deployStickScriptPath = utilsPath + "/DeployStick/startBrainwashing.sh";
     
+    private static final String configlocation = System.getProperty("user.home")
+        + "/.naoth/naoscp/";
+    private final File configPath = new File(configlocation, "config");
+    
+    private final Properties config = new Properties();
+    
     /**
      * Creates new form NaoSCP
      */
@@ -38,6 +47,13 @@ public class NaoSCP extends javax.swing.JFrame {
         
         Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
         Logger.getGlobal().setLevel(Level.FINE);
+        
+        try {
+            config.load(new FileReader(configPath));
+          } catch(IOException ex) {
+            Logger.getGlobal().log(Level.INFO, 
+                    "Could not open the config file. It will be created after the first execution.");
+          }
     }
 
     private static void setEnabled(Component component, boolean enabled) {
@@ -105,6 +121,11 @@ public class NaoSCP extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setMaximumSize(new java.awt.Dimension(2147483647, 495));
         setMinimumSize(new java.awt.Dimension(0, 495));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         netwokPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Network"));
@@ -307,13 +328,29 @@ public class NaoSCP extends javax.swing.JFrame {
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
         final JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new File("."));
+        String libPath = config.getProperty("naoscp.libpath", ".");
+        chooser.setCurrentDirectory(new File(libPath));
         chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         
         if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
+            // senity check
+            File libDir = chooser.getSelectedFile();
+            File gioFile = new File(libDir, "libgio-2.0.so");
+            File glibDir = new File(libDir, "glib-2.0");
+            if(!gioFile.isFile() || !glibDir.isDirectory())
+            {
+              chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
+              JOptionPane.showMessageDialog(this, 
+                      "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.", 
+                      "ERROR", JOptionPane.ERROR_MESSAGE);
+              return;
+            }
+            config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+            
+            
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -402,6 +439,16 @@ public class NaoSCP extends javax.swing.JFrame {
     private void btAdvancedSimleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdvancedSimleActionPerformed
         this.netwokPanel.setVisible(this.btAdvancedSimle.isSelected());
     }//GEN-LAST:event_btAdvancedSimleActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            // save configuration to file
+            new File(configlocation).mkdirs();
+            config.store(new FileWriter(configPath), "");
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Could not write config file.", ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
