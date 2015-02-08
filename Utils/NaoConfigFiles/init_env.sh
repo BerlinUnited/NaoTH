@@ -84,6 +84,17 @@ then
     ln -s /home/nao/naoqi/Config /home/nao/Config;
 fi
 
+# ----------- copy naoth binaries -----------
+
+copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
+copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
+
+if [ -d "/home/nao/naoqi/Config" ]; then
+  rm -rf /home/nao/naoqi/Config/*
+fi
+
+cp -r ./home/nao/naoqi/Config/* /home/nao/Config/
+
 # -----------  system -----------
 
 # Check and Update Runlevel Configuration for Non-Network Services
@@ -121,17 +132,15 @@ copy ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config root 644
 #RC Config
 copy ./etc/rc.conf /etc/rc.conf root 644
 
+# WLAN Encryption
+copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf root 644
+
+# Network IP Adresses
+copy ./etc/conf.d/net /etc/conf.d/net root 644
+
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
 ./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
 
-
-# ----------- network -----------
-
-# Check and Update Network Configuration
-chown root:root ./init_net.sh;
-chmod 744 ./init_net.sh;
-./init_net.sh;
-
-
+# ----------------------

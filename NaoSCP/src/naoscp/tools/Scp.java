@@ -151,11 +151,11 @@ public class Scp {
     public void put(File src, String dst) throws SftpException {
         if(src.isDirectory())
         {
+            mkdir(dst);
+                
             File files[] = src.listFiles();
-            Arrays.sort(files);
             for (int i = 0, n = files.length; i < n; i++) {
                 String newdst = dst + "/" + files[i].getName();
-                mkdir(newdst);
                 put(files[i], newdst);
             }
         }

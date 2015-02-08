@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import naoscp.components.NetwokPanel;
 import naoscp.tools.BarProgressMonitor;
 import naoscp.tools.FileUtils;
@@ -305,7 +306,7 @@ public class NaoSCP extends javax.swing.JFrame {
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
-        JFileChooser chooser = new JFileChooser();
+        final JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("."));
         chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -313,35 +314,61 @@ public class NaoSCP extends javax.swing.JFrame {
         
         if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            File tmpDir = new File("./tmp");
-            File setupDir = new File(tmpDir, "setup");
-            
-            if(setupDir.isDirectory()) {
-                //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
-                FileUtils.deleteDir(setupDir);
-            }
-            
-            if (!setupDir.mkdirs()) {
-                Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-            } else {
-                // copy deploy stuff
-                naoTHPanel.getAction().run(setupDir);
-                FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
-                
-                // copy scripts
-                FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
-                
-                // copy libs
-                File libDir = chooser.getSelectedFile();
-                FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
-                try {
-                    setupNetwork(setupDir);
-                } catch (IOException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    File tmpDir = new File("./tmp");
+                    File setupDir = new File(tmpDir, "setup");
+
+                    if(setupDir.isDirectory()) {
+                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                        FileUtils.deleteDir(setupDir);
+                    }
+
+                    if (!setupDir.mkdirs()) {
+                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                    } else {
+                        // copy deploy stuff
+                        naoTHPanel.getAction().run(setupDir);
+                        FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
+
+                        // copy scripts
+                        FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
+
+                        // copy libs
+                        File libDir = chooser.getSelectedFile();
+                        FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
+                        try {
+                            setupNetwork(setupDir);
+                        } catch (IOException ex) {
+                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                        }
+
+
+                        // copy to robot
+                        String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                        try 
+                        {
+                            Scp scp = new Scp(ip, "nao", "nao");
+                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+
+                            scp.cleardir("/home/nao/tmp");
+                            //scp.mkdir("/home/nao/tmp");
+                            scp.put(setupDir, "/home/nao/tmp");
+
+                            scp.chmod(755, "/home/nao/tmp/init_env.sh");
+                            //scp.run("/home/nao/tmp/setup", "./init_env.sh");
+
+                            scp.disconnect();
+                            
+                            Logger.getGlobal().log(Level.INFO, "DONE");
+                        } catch (JSchException | SftpException ex) {
+                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                        }
+                    }
                 }
-            }
+            }).start();
         }
-        
     }//GEN-LAST:event_btInintRobotActionPerformed
 
     class TemplateFile
