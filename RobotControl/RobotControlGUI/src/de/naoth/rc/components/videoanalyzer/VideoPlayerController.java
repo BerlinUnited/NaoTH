@@ -9,8 +9,6 @@ import de.naoth.rc.dialogs.VideoAnalyzer;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -20,14 +18,22 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -44,20 +50,33 @@ public class VideoPlayerController implements Initializable
 {
 
   @FXML
-  private Pane rootPane;
+  private BorderPane rootPane;
 
   @FXML
   private MediaView mediaView;
+  @FXML
+  private ScrollPane mediaPane;
+  
   @FXML
   private Slider timeSlider;
   @FXML
   private ToggleButton playButton;
   @FXML
   private Label timeCodeLabel;
-
+  
+  @FXML
+  private Slider zoomSlider;
+  
+  @FXML
+  private Label labelDebugPos;
+  
+  private Media media;
   private MediaPlayer player;
 
   private VideoAnalyzer analyzer;
+  
+  private Double lastX;
+  private Double lastY;
 
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
@@ -72,9 +91,81 @@ public class VideoPlayerController implements Initializable
 
     timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setLabelFormatter(new TickFormatter());
-    mediaView.fitWidthProperty().bind(rootPane.widthProperty());
-    mediaView.fitHeightProperty().bind(rootPane.heightProperty());
+
+    mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
+    mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
+    
+    zoomSlider.valueProperty().addListener(new ChangeListener<Number>()
+    {
+      @Override
+      public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+      {
+        double origHeight = media.getHeight();
+        double origWidth = media.getWidth();
+        
+        double newHeight = origHeight / zoomSlider.getValue();
+        double newWidth = origWidth / zoomSlider.getValue();
+        
+        double newX = (origWidth - newWidth) / 2.0;
+        double newY = (origHeight - newHeight) / 2.0;
+        
+        mediaView.setViewport(new Rectangle2D(newX, newY, newWidth, newHeight));
+      }
+    });
+    
+    mediaView.setOnMouseClicked(new EventHandler<MouseEvent>()
+    {
+
+      @Override
+      public void handle(MouseEvent event)
+      {
+        if(event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY)
+        {
+          mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
+        }
+      }
+    });
+    
+    mediaView.setOnMouseMoved(new EventHandler<MouseEvent>()
+    {
+
+      @Override
+      public void handle(MouseEvent event)
+      {
+        lastX = event.getX();
+        lastY = event.getY();
+        labelDebugPos.setText(""+lastX+"x"+lastY);
+      }
+    });
+    mediaView.setOnMouseExited(new EventHandler<MouseEvent>()
+    {
+
+      @Override
+      public void handle(MouseEvent event)
+      {
+        lastX = null;
+        lastY = null;
+      }
+    });
+    
+    mediaView.setOnScroll(new EventHandler<ScrollEvent>()
+    {
+
+      @Override
+      public void handle(ScrollEvent event)
+      {
+        double diff = event.getDeltaY()/100.0;
+        if(lastX != null && lastY != null)
+        {
+
+        }
+        zoomSlider.setValue(zoomSlider.getValue()+diff);
+//        zoomSlider.valueProperty().add(diff);
+      }
+    });
   }
+  
+  
 
   public void initAccelerators()
   {
@@ -112,7 +203,7 @@ public class VideoPlayerController implements Initializable
 
   public void open(File file)
   {
-    Media media = new Media(file.toURI().toASCIIString());
+    media = new Media(file.toURI().toASCIIString());
     player = new MediaPlayer(media);
     player.setOnReady(new Runnable()
     {
