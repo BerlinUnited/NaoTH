@@ -9,6 +9,8 @@ import de.naoth.rc.dialogs.VideoAnalyzer;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -22,8 +24,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -55,7 +58,7 @@ public class VideoPlayerController implements Initializable
   private MediaPlayer player;
 
   private VideoAnalyzer analyzer;
-  
+
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
   /**
@@ -66,27 +69,38 @@ public class VideoPlayerController implements Initializable
   {
     playButton.setGraphic(new ImageView(getClass().getResource("/de/naoth/rc/res/play.png").toString()));
     Tooltip.install(playButton, new Tooltip("Play/Pause"));
-    
+
     timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setLabelFormatter(new TickFormatter());
     mediaView.fitWidthProperty().bind(rootPane.widthProperty());
     mediaView.fitHeightProperty().bind(rootPane.heightProperty());
   }
 
+  public void initAccelerators()
+  {
+    rootPane.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE),
+      new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          playButton.fire();
+        }
+      });
+  }
 
   @FXML
   private void playPause(ActionEvent event)
   {
-    if(player != null)
+    if (player != null)
     {
       if (playButton.isSelected())
       {
         player.play();
-        playButton.setText("Pause");
       } else
       {
         player.pause();
-        playButton.setText("Play");
       }
     }
   }
@@ -125,6 +139,7 @@ public class VideoPlayerController implements Initializable
       }
     });
     player.currentTimeProperty().addListener(new CurrentTimeListener());
+
     mediaView.setMediaPlayer(player);
     timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -133,12 +148,10 @@ public class VideoPlayerController implements Initializable
       @Override
       public void handle(MouseEvent event)
       {
-        if(player != null)
+        if (player != null)
         {
           player.pause();
           playButton.setSelected(false);
-          playButton.setText("Play");
-          player.seek(Duration.seconds(timeSlider.getValue()));
         }
       }
     });
@@ -176,15 +189,15 @@ public class VideoPlayerController implements Initializable
     @Override
     public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
     {
-      if(player != null && 
-        player.getStatus() == MediaPlayer.Status.PLAYING)
+      if (player != null
+        && player.getStatus() == MediaPlayer.Status.PLAYING)
       {
         return;
       }
-      Duration duration = Duration.seconds(newValue.doubleValue());
-      if (player != null && !duration.equals(player.getCurrentTime()))
+      final Duration duration = Duration.seconds(newValue.doubleValue());
+      if (player != null)
       {
-        player.seek(Duration.seconds(newValue.doubleValue()));
+        player.seek(duration);
       }
     }
   }

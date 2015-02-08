@@ -148,12 +148,13 @@ public class VideoAnalyzer extends AbstractJFXDialog
       }
     });
 
-    Button btLoadVideo = new Button("Video");
+    final Button btLoadVideo = new Button("Video");
     btLoadVideo.setOnAction(new EventHandler<ActionEvent>()
     {
       @Override
       public void handle(ActionEvent event)
       {
+        btLoadVideo.getScene().getRoot().requestFocus();
         File result = fileChooser.showOpenDialog(null);
         if (result != null)
         {
@@ -214,7 +215,9 @@ public class VideoAnalyzer extends AbstractJFXDialog
         loader.load();
         videoController = loader.<VideoPlayerController>getController();
         videoController.setAnalyzer(this);
+        
         rootPane.setCenter(loader.<Node>getRoot());
+        videoController.initAccelerators();
         
       } catch (IOException ex)
       {
