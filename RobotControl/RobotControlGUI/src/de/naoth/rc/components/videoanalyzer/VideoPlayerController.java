@@ -52,7 +52,7 @@ public class VideoPlayerController implements Initializable
 
   private VideoAnalyzer analyzer;
   
-  private SliderChangedListener sliderChangeListener = new SliderChangedListener();
+  private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
   /**
    * Initializes the controller class.
@@ -63,7 +63,7 @@ public class VideoPlayerController implements Initializable
     timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setLabelFormatter(new TickFormatter());
     mediaView.fitWidthProperty().bind(rootPane.widthProperty());
-
+    mediaView.fitHeightProperty().bind(rootPane.heightProperty());
   }
 
   private void seek(double pos)
