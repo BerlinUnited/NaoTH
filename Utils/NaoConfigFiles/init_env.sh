@@ -66,7 +66,6 @@ copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 # create the local lib directory
 if [ ! -d /home/nao/lib ]
 then
-    echo "setting library directory permissions";
     mkdir /home/nao/lib;
     if [ $? -ne 0 ]
     then
@@ -74,6 +73,32 @@ then
     else
         chown -R nao:nao /home/nao/lib;
         chmod -R 755 /home/nao/lib;
+    fi
+fi
+
+# create the local bin directory
+if [ ! -d /home/nao/bin ]
+then
+    mkdir /home/nao/bin;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/bin"
+    else
+        chown -R nao:nao /home/nao/bin;
+        chmod -R 755 /home/nao/bin;
+    fi
+fi
+
+# create the local Config directory
+if [ ! -d /home/nao/naoqi/Config ]
+then
+    mkdir -p /home/nao/naoqi/Config;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/naoqi/Config"
+    else
+        chown -R nao:nao /home/nao/naoqi/Config;
+        chmod -R 644 /home/nao/naoqi/Config;
     fi
 fi
 
@@ -93,7 +118,15 @@ if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
 fi
 
-cp -r ./home/nao/naoqi/Config/* /home/nao/Config/
+cp -r ./home/nao/naoqi/Config/* /home/nao/Config
+
+
+# ----------- copy libs -----------
+if [ -d "/home/nao/lib" ]; then
+  rm -rf /home/nao/lib/*
+fi
+
+cp -r ./home/nao/lib/* /home/nao/lib
 
 # -----------  system -----------
 
