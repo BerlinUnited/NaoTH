@@ -41,6 +41,10 @@ public class RemoteControl extends AbstractDialog
     boolean steeringPanelMousePressed;
     int throttle;
     boolean w, a, s, d, q, e, shift, strg;
+    int lastX;
+    int lastY;
+    int lastAlpha;
+    int lastThrottle;
 
     public RemoteControl()
     {
@@ -54,7 +58,12 @@ public class RemoteControl extends AbstractDialog
         strg = false;
         steeringPanelMousePressed = false;
         throttle = 50;
+        lastX = 0;
+        lastY = 0;
+        lastAlpha = 0;
+        lastThrottle = throttle;
         initComponents();
+        configKeyListeners();
         int x = steeringPanel.getX() + steeringPanel.getHeight() / 2 - midPoint.getHeight() / 2;
         int y = steeringPanel.getY() + steeringPanel.getWidth() / 2 - midPoint.getWidth() / 2;
         midPoint.setLocation(x, y);
@@ -62,23 +71,24 @@ public class RemoteControl extends AbstractDialog
 
     public void configKeyListeners()
     {
-        this.addKeyListener(new RemoteControlKeyListener());
-        this.backwardButton.addKeyListener(new RemoteControlKeyListener());
-        this.backwardLeftButton.addKeyListener(new RemoteControlKeyListener());
-        this.backwardRightButton.addKeyListener(new RemoteControlKeyListener());
-        this.connectToRobotToggle.addKeyListener(new RemoteControlKeyListener());
-        this.forwardButton.addKeyListener(new RemoteControlKeyListener());
-        this.forwardLeftButton.addKeyListener(new RemoteControlKeyListener());
-        this.forwardRightButton.addKeyListener(new RemoteControlKeyListener());
-        this.jToggleButton2.addKeyListener(new RemoteControlKeyListener());
-        this.jToolBar1.addKeyListener(new RemoteControlKeyListener());
-        this.kickButton.addKeyListener(new RemoteControlKeyListener());
-        this.leftButton.addKeyListener(new RemoteControlKeyListener());
-        this.midPoint.addKeyListener(new RemoteControlKeyListener());
-        this.rightButton.addKeyListener(new RemoteControlKeyListener());
-        this.steeringPanel.addKeyListener(new RemoteControlKeyListener());
-        this.throttleLabel.addKeyListener(new RemoteControlKeyListener());
-        this.throttleSlider.addKeyListener(new RemoteControlKeyListener());
+        this.addKeyListener(new RemoteControlKeyListener(this));
+        this.backwardButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.backwardLeftButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.backwardRightButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.connectToRobotToggle.addKeyListener(new RemoteControlKeyListener(this));
+        this.forwardButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.forwardLeftButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.forwardRightButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.jToggleButton2.addKeyListener(new RemoteControlKeyListener(this));
+        this.jToolBar1.addKeyListener(new RemoteControlKeyListener(this));
+        this.kickButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.leftButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.midPoint.addKeyListener(new RemoteControlKeyListener(this));
+        this.rightButton.addKeyListener(new RemoteControlKeyListener(this));
+        this.steeringPanel.addKeyListener(new RemoteControlKeyListener(this));
+        this.throttleLabel.addKeyListener(new RemoteControlKeyListener(this));
+        this.throttleSlider.addKeyListener(new RemoteControlKeyListener(this));
+        this.requestFocus();
     }
 
     /**
@@ -481,6 +491,21 @@ public class RemoteControl extends AbstractDialog
     {//GEN-HEADEREND:event_throttleSliderMouseDragged
         throttle = throttleSlider.getValue();
         throttleLabel.setText("Throttle = " + throttle);
+        if(throttle == 0)
+        {
+            stopWalking();
+        }
+        else
+        {
+            if(lastX != 0 || lastY != 0 || lastAlpha != 0)
+            {
+                int x = (int)((double)lastX/lastThrottle * throttle);
+                int y =(int)((double)lastY/lastThrottle * throttle);
+                int alpha = (int)((double)lastAlpha/lastThrottle * throttle);
+                startWalking(x,y,alpha);
+            }
+        }
+        lastThrottle = throttle;
     }//GEN-LAST:event_throttleSliderMouseDragged
 
     private void stopWalking()
@@ -489,6 +514,9 @@ public class RemoteControl extends AbstractDialog
         {
             Command command = new Command("Cognition:remoteControlRequest_STAND");
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+            lastX = 0;
+            lastY = 0;
+            lastAlpha = 0;
         }
     }
 
@@ -499,6 +527,9 @@ public class RemoteControl extends AbstractDialog
             Command command = new Command("Cognition:remoteControlRequest_WALK");
             command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+            lastX = x;
+            lastY = y;
+            lastAlpha = alpha;
         }
     }
 
@@ -560,7 +591,7 @@ public class RemoteControl extends AbstractDialog
                 alpha = -throttle;
             }
         }
-        if(x != 0 || y != 0 || alpha != 0)
+        if (x != 0 || y != 0 || alpha != 0)
         {
             startWalking(x, y, alpha);
         }
@@ -589,7 +620,12 @@ public class RemoteControl extends AbstractDialog
 
     class RemoteControlKeyListener implements KeyListener
     {
-
+        RemoteControl panel;
+        public RemoteControlKeyListener(RemoteControl p)
+        {
+            panel = p;
+        }
+        
         @Override
         public void keyTyped(KeyEvent e)
         {
