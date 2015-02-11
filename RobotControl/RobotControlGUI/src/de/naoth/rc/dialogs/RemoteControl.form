@@ -44,7 +44,7 @@
               </Group>
               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
               <Component id="steeringPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="35" pref="144" max="32767" attributes="0"/>
+              <EmptySpace min="35" pref="299" max="32767" attributes="0"/>
           </Group>
           <Component id="jToolBar1" alignment="0" max="32767" attributes="0"/>
       </Group>

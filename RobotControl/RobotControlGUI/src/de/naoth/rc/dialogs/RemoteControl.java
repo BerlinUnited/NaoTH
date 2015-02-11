@@ -5,7 +5,6 @@
  */
 package de.naoth.rc.dialogs;
 
-import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -13,6 +12,8 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.server.Command;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -39,15 +40,45 @@ public class RemoteControl extends AbstractDialog
     int mouseY;
     boolean steeringPanelMousePressed;
     int throttle;
+    boolean w, a, s, d, q, e, shift, strg;
 
     public RemoteControl()
     {
+        w = false;
+        a = false;
+        s = false;
+        d = false;
+        q = false;
+        e = false;
+        shift = false;
+        strg = false;
         steeringPanelMousePressed = false;
         throttle = 50;
         initComponents();
         int x = steeringPanel.getX() + steeringPanel.getHeight() / 2 - midPoint.getHeight() / 2;
         int y = steeringPanel.getY() + steeringPanel.getWidth() / 2 - midPoint.getWidth() / 2;
         midPoint.setLocation(x, y);
+    }
+
+    public void configKeyListeners()
+    {
+        this.addKeyListener(new RemoteControlKeyListener());
+        this.backwardButton.addKeyListener(new RemoteControlKeyListener());
+        this.backwardLeftButton.addKeyListener(new RemoteControlKeyListener());
+        this.backwardRightButton.addKeyListener(new RemoteControlKeyListener());
+        this.connectToRobotToggle.addKeyListener(new RemoteControlKeyListener());
+        this.forwardButton.addKeyListener(new RemoteControlKeyListener());
+        this.forwardLeftButton.addKeyListener(new RemoteControlKeyListener());
+        this.forwardRightButton.addKeyListener(new RemoteControlKeyListener());
+        this.jToggleButton2.addKeyListener(new RemoteControlKeyListener());
+        this.jToolBar1.addKeyListener(new RemoteControlKeyListener());
+        this.kickButton.addKeyListener(new RemoteControlKeyListener());
+        this.leftButton.addKeyListener(new RemoteControlKeyListener());
+        this.midPoint.addKeyListener(new RemoteControlKeyListener());
+        this.rightButton.addKeyListener(new RemoteControlKeyListener());
+        this.steeringPanel.addKeyListener(new RemoteControlKeyListener());
+        this.throttleLabel.addKeyListener(new RemoteControlKeyListener());
+        this.throttleSlider.addKeyListener(new RemoteControlKeyListener());
     }
 
     /**
@@ -301,7 +332,7 @@ public class RemoteControl extends AbstractDialog
                             .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(40, 40, 40)
                         .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 144, Short.MAX_VALUE))
+                        .addGap(35, 299, Short.MAX_VALUE))
                     .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 );
                 layout.setVerticalGroup(
@@ -384,7 +415,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_forwardLeftButtonMousePressed
-        startWalking(throttle/2, -throttle/2, 0);
+        startWalking(throttle / 2, -throttle / 2, 0);
     }//GEN-LAST:event_forwardLeftButtonMousePressed
 
     private void forwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMouseReleased
@@ -394,7 +425,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMousePressed
     {//GEN-HEADEREND:event_forwardRightButtonMousePressed
-        startWalking(throttle/2, throttle/2, 0);
+        startWalking(throttle / 2, throttle / 2, 0);
     }//GEN-LAST:event_forwardRightButtonMousePressed
 
     private void forwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMouseReleased
@@ -404,7 +435,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMousePressed
     {//GEN-HEADEREND:event_backwardRightButtonMousePressed
-        startWalking(-throttle/2, throttle/2, 0);
+        startWalking(-throttle / 2, throttle / 2, 0);
     }//GEN-LAST:event_backwardRightButtonMousePressed
 
     private void backwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMouseReleased
@@ -414,7 +445,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_backwardLeftButtonMousePressed
-        startWalking(-throttle/2, -throttle/2, 0);
+        startWalking(-throttle / 2, -throttle / 2, 0);
     }//GEN-LAST:event_backwardLeftButtonMousePressed
 
     private void backwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMouseReleased
@@ -478,7 +509,7 @@ public class RemoteControl extends AbstractDialog
         double y = mouseY - steeringPanel.getHeight() / 2;
         y = y / (steeringPanel.getHeight() / 2) * (-throttle);
         //System.out.println("x = " + x + "; y = " + y + "; mouseX = " + mouseX + "; mouseY = " + mouseY);
-        startWalking((int)y, (int)x, 0);
+        startWalking((int) y, (int) x, 0);
     }
 
     private void kick()
@@ -488,6 +519,54 @@ public class RemoteControl extends AbstractDialog
             Command command = new Command("Cognition:remoteControlRequest_KICK");
             //command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+        }
+    }
+
+    private void walkWithKeys()
+    {
+        int x = 0;
+        int y = 0;
+        int alpha = 0;
+        if (w ^ s)
+        {
+            if (w)
+            {
+                x = throttle;
+            }
+            else
+            {
+                x = -throttle;
+            }
+        }
+        if (a ^ d)
+        {
+            if (a)
+            {
+                y = -throttle;
+            }
+            else
+            {
+                y = throttle;
+            }
+        }
+        if (q ^ e)
+        {
+            if (q)
+            {
+                alpha = throttle;
+            }
+            else
+            {
+                alpha = -throttle;
+            }
+        }
+        if(x != 0 || y != 0 || alpha != 0)
+        {
+            startWalking(x, y, alpha);
+        }
+        else
+        {
+            stopWalking();
         }
     }
 
@@ -508,6 +587,27 @@ public class RemoteControl extends AbstractDialog
 
     }
 
+    class RemoteControlKeyListener implements KeyListener
+    {
+
+        @Override
+        public void keyTyped(KeyEvent e)
+        {
+            System.out.println("typed key: " + e.getKeyCode());
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e)
+        {
+            System.out.println("pressed key: " + e.getKeyCode());
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e)
+        {
+            System.out.println("released key: " + e.getKeyCode());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backwardButton;
