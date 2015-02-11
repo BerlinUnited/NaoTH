@@ -38,10 +38,12 @@ public class RemoteControl extends AbstractDialog
     int mouseX;
     int mouseY;
     boolean steeringPanelMousePressed;
+    int throttle;
 
     public RemoteControl()
     {
         steeringPanelMousePressed = false;
+        throttle = 50;
         initComponents();
         int x = steeringPanel.getX() + steeringPanel.getHeight() / 2 - midPoint.getHeight() / 2;
         int y = steeringPanel.getY() + steeringPanel.getWidth() / 2 - midPoint.getWidth() / 2;
@@ -61,6 +63,8 @@ public class RemoteControl extends AbstractDialog
         jToolBar1 = new javax.swing.JToolBar();
         connectToRobotToggle = new javax.swing.JToggleButton();
         jToggleButton2 = new javax.swing.JToggleButton();
+        throttleLabel = new javax.swing.JLabel();
+        throttleSlider = new javax.swing.JSlider();
         forwardButton = new javax.swing.JButton();
         backwardButton = new javax.swing.JButton();
         rightButton = new javax.swing.JButton();
@@ -93,6 +97,18 @@ public class RemoteControl extends AbstractDialog
         jToggleButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jToggleButton2);
+
+        throttleLabel.setText("Throttle = 50");
+        jToolBar1.add(throttleLabel);
+
+        throttleSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
+        {
+            public void mouseDragged(java.awt.event.MouseEvent evt)
+            {
+                throttleSliderMouseDragged(evt);
+            }
+        });
+        jToolBar1.add(throttleSlider);
 
         forwardButton.setText("|");
         forwardButton.addMouseListener(new java.awt.event.MouseAdapter()
@@ -285,7 +301,7 @@ public class RemoteControl extends AbstractDialog
                             .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(40, 40, 40)
                         .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(59, Short.MAX_VALUE))
+                        .addGap(35, 144, Short.MAX_VALUE))
                     .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 );
                 layout.setVerticalGroup(
@@ -312,7 +328,7 @@ public class RemoteControl extends AbstractDialog
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(89, Short.MAX_VALUE))
+                        .addContainerGap(229, Short.MAX_VALUE))
                 );
             }// </editor-fold>//GEN-END:initComponents
 
@@ -328,7 +344,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardButtonMousePressed
     {//GEN-HEADEREND:event_forwardButtonMousePressed
-        startWalking(100, 0, 0);
+        startWalking(throttle, 0, 0);
     }//GEN-LAST:event_forwardButtonMousePressed
 
     private void forwardButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardButtonMouseReleased
@@ -338,7 +354,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardButtonMousePressed
     {//GEN-HEADEREND:event_backwardButtonMousePressed
-        startWalking(-100, 0, 0);
+        startWalking(-throttle, 0, 0);
     }//GEN-LAST:event_backwardButtonMousePressed
 
     private void backwardButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardButtonMouseReleased
@@ -348,7 +364,7 @@ public class RemoteControl extends AbstractDialog
 
     private void leftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_leftButtonMousePressed
     {//GEN-HEADEREND:event_leftButtonMousePressed
-        startWalking(0, -100, 0);
+        startWalking(0, -throttle, 0);
     }//GEN-LAST:event_leftButtonMousePressed
 
     private void leftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_leftButtonMouseReleased
@@ -358,7 +374,7 @@ public class RemoteControl extends AbstractDialog
 
     private void rightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_rightButtonMousePressed
     {//GEN-HEADEREND:event_rightButtonMousePressed
-        startWalking(0, 100, 0);
+        startWalking(0, throttle, 0);
     }//GEN-LAST:event_rightButtonMousePressed
 
     private void rightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_rightButtonMouseReleased
@@ -368,7 +384,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_forwardLeftButtonMousePressed
-        startWalking(50, -50, 0);
+        startWalking(throttle/2, -throttle/2, 0);
     }//GEN-LAST:event_forwardLeftButtonMousePressed
 
     private void forwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMouseReleased
@@ -378,7 +394,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMousePressed
     {//GEN-HEADEREND:event_forwardRightButtonMousePressed
-        startWalking(50, 50, 0);
+        startWalking(throttle/2, throttle/2, 0);
     }//GEN-LAST:event_forwardRightButtonMousePressed
 
     private void forwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMouseReleased
@@ -388,7 +404,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMousePressed
     {//GEN-HEADEREND:event_backwardRightButtonMousePressed
-        startWalking(-50, 50, 0);
+        startWalking(-throttle/2, throttle/2, 0);
     }//GEN-LAST:event_backwardRightButtonMousePressed
 
     private void backwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMouseReleased
@@ -398,7 +414,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_backwardLeftButtonMousePressed
-        startWalking(-50, -50, 0);
+        startWalking(-throttle/2, -throttle/2, 0);
     }//GEN-LAST:event_backwardLeftButtonMousePressed
 
     private void backwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMouseReleased
@@ -430,6 +446,12 @@ public class RemoteControl extends AbstractDialog
         stopWalking();
     }//GEN-LAST:event_steeringPanelMouseReleased
 
+    private void throttleSliderMouseDragged(java.awt.event.MouseEvent evt)//GEN-FIRST:event_throttleSliderMouseDragged
+    {//GEN-HEADEREND:event_throttleSliderMouseDragged
+        throttle = throttleSlider.getValue();
+        throttleLabel.setText("Throttle = " + throttle);
+    }//GEN-LAST:event_throttleSliderMouseDragged
+
     private void stopWalking()
     {
         if (Plugin.parent.checkConnected())
@@ -452,9 +474,9 @@ public class RemoteControl extends AbstractDialog
     private void walkTowardsMouse()
     {
         double x = mouseX - steeringPanel.getWidth() / 2;
-        x = x / (steeringPanel.getWidth() / 2) * (-200);
+        x = x / (steeringPanel.getWidth() / 2) * (-throttle);
         double y = mouseY - steeringPanel.getHeight() / 2;
-        y = y / (steeringPanel.getHeight() / 2) * (-200);
+        y = y / (steeringPanel.getHeight() / 2) * (-throttle);
         //System.out.println("x = " + x + "; y = " + y + "; mouseX = " + mouseX + "; mouseY = " + mouseY);
         startWalking((int)y, (int)x, 0);
     }
@@ -502,5 +524,7 @@ public class RemoteControl extends AbstractDialog
     private javax.swing.JPanel midPoint;
     private javax.swing.JButton rightButton;
     private javax.swing.JPanel steeringPanel;
+    private javax.swing.JLabel throttleLabel;
+    private javax.swing.JSlider throttleSlider;
     // End of variables declaration//GEN-END:variables
 }
