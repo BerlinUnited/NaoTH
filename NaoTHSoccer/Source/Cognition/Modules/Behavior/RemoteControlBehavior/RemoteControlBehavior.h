@@ -9,6 +9,7 @@
 #define _RemoteControlBehavior_H_
 
 #include <ModuleFramework/Module.h>
+#include <DebugCommunication/DebugCommandExecutor.h>
 
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -31,8 +32,10 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 //#include "Tools/Debug/DebugDrawings.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 BEGIN_DECLARE_MODULE(RemoteControlBehavior)
+	PROVIDE(DebugCommandManager)
   //PROVIDE(DebugRequest)
   //PROVIDE(DebugModify)
   //PROVIDE(DebugDrawingsField)
@@ -46,12 +49,12 @@ BEGIN_DECLARE_MODULE(RemoteControlBehavior)
   //REQUIRE(PlayersPercept)
 
   //PROVIDE(HeadMotionRequest)
-  //PROVIDE(MotionRequest)
+  PROVIDE(MotionRequest)
   //PROVIDE(SoundPlayData)
   //PROVIDE(BehaviorLEDRequest)
 END_DECLARE_MODULE(RemoteControlBehavior)
 
-class RemoteControlBehavior: public RemoteControlBehaviorBase
+class RemoteControlBehavior: public RemoteControlBehaviorBase, public DebugCommandExecutor
 {
 public:
   RemoteControlBehavior();
@@ -59,7 +62,20 @@ public:
 
   virtual void execute();
 
+  virtual void executeDebugCommand(
+    const std::string& command, const ArgumentMap& arguments,
+    std::ostream& outstream);
+
 private:
+	enum State {
+		stand,
+		walk,
+		kick
+	};
+
+	State state;
+
+	Pose2D walkParams;
 
 };//end class RemoteControlBehavior
 #endif // _RemoteControlBehavior_H_
