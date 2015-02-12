@@ -21,6 +21,15 @@ public:
   {
     stream<<"formation = "<<formation<<"\n";
     stream<<"attackDirection = "<<attackDirection<<"\n";
+    stream<<"timeToBall = "<<timeToBall<<"\n";
+    stream<<"   timeForWalkstartTowardBall = "<<timeForWalkstartTowardBall<<"\n";
+    stream<<"   distanceToPoint = "<<distanceToPoint<<"\n";
+    stream<<"   timeForDistance = "<<timeForDistance<<"\n";
+    stream<<"   timeForTurning = "<<timeForTurning<<"\n";
+    stream<<"   timeForStandingUp = "<<timeForStandingUp<<"\n";
+    stream<<"   timeForObstacle = "<<timeForObstacle<<"\n";
+    stream<<"timeToTurn_afterBallAcquisition = "<<timeToTurn_afterBallAcquisition<<"\n";
+    stream<<"==> totalTime = "<<totalTime<<"\n";
   }
 
   /** formation position */
@@ -29,8 +38,17 @@ public:
   /** direction of the attack (based on potential field, see: PotentialFieldProvider) */
   Vector2<double> attackDirection; 
 
-  /** the shorest time that the robot reach the ball in milliseconds */
+  /** the shorest time, in which the robot can reach the ball [ms] */
   double timeToBall;
+  /** Explanation for the time **/
+  double distanceToPoint;
+  double timeForDistance;
+  double timeForTurning;
+  double timeForStandingUp;
+  double timeForObstacle;
+  double timeToTurn_afterBallAcquisition;
+  double timeForWalkstartTowardBall;
+  double totalTime;
 };
 
 
