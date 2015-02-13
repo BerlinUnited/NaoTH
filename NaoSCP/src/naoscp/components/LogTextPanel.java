@@ -7,14 +7,19 @@
 package naoscp.components;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import naoscp.tools.BashColors;
 
 /**
  *
@@ -49,6 +54,8 @@ public class LogTextPanel extends javax.swing.JPanel {
         Style s_error = doc.addStyle(Level.SEVERE.getName(), defaultStyle);
         StyleConstants.setForeground(s_error, new Color(200,0,0));
         StyleConstants.setBold(s_error, true);
+        
+        BashColors.addStylesToDocument(doc);
     }
 
     public void clear() {
@@ -63,15 +70,48 @@ public class LogTextPanel extends javax.swing.JPanel {
                 StyledDocument doc = outputPanel.getStyledDocument();
                 
                 try {
-                    String levelName = lr.getLevel().getName();
-                    Style s = doc.getStyle(levelName);
-                    doc.insertString(doc.getLength(), lr.getMessage() + "\n", s);
+                    // try to parse console output
+                    if(lr.getLevel() == Level.FINE) 
+                    {
+                        String pattern = "(\\e\\[(\\d{1,2}(;\\d{1,2})?)m)";
+                        String message = lr.getMessage();
+                        
+                        int idx = 0;
+                        String styleName = lr.getLevel().getName();
+                        Style style = doc.getStyle(styleName);
+                        
+                        for ( Matcher m = Pattern.compile(pattern).matcher(message); m.find(); ) 
+                        {
+                          if(idx < m.toMatchResult().start()) 
+                          {
+                            String msg = message.substring(idx, m.toMatchResult().start());
+                            doc.insertString(doc.getLength(), msg, style);
+                          }
+                          
+                          styleName = "bash_" + m.toMatchResult().group(2).replace(";", "_");
+                          System.out.println();
+                          style = doc.getStyle(styleName);
+                          idx = m.toMatchResult().end();
+                        }
+                        if(idx < message.length()) 
+                        {
+                          String msg = message.substring(idx);
+                          doc.insertString(doc.getLength(), msg, style);
+                        }
+                    }
+                    else
+                    {
+                        String levelName = lr.getLevel().getName();
+                        Style s = doc.getStyle(levelName);
+                        doc.insertString(doc.getLength(), lr.getMessage() + "\n", s);
+                    }
                     
                     outputPanel.setCaretPosition(doc.getLength());
                 } catch (BadLocationException ex) {
                     
                 }
             }
+           
 
             @Override
             public void flush() {
@@ -84,6 +124,8 @@ public class LogTextPanel extends javax.swing.JPanel {
             }
         };
     }
+    
+   
     
     /**
      * This method is called from within the constructor to initialize the form.

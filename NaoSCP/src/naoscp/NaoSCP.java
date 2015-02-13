@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -388,10 +390,14 @@ public class NaoSCP extends javax.swing.JFrame {
                             scp.cleardir("/home/nao/tmp");
                             scp.put(setupDir, "/home/nao/tmp");
 
-                            scp.runStream("su\nroot");
-                            
                             scp.chmod(755, "/home/nao/tmp/init_env.sh");
-                            //scp.run("/home/nao/tmp/setup", "./init_env.sh");
+                            
+                            //scp.runStream("su\nroot\ncd /home/nao/tmp\n./init_env.sh");
+                            //scp.run("/home/nao/tmp", "./init_env.sh");
+                            Scp.CommandStream shell = scp.getShell();
+                            shell.run("ls");
+                            shell.close();
+                            
 
                             scp.disconnect();
 
@@ -434,7 +440,27 @@ public class NaoSCP extends javax.swing.JFrame {
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
     private void btAdvancedSimleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdvancedSimleActionPerformed
-        this.netwokPanel.setVisible(this.btAdvancedSimle.isSelected());
+    new Thread(new Runnable() {
+                @Override
+                public void run() {
+        
+        Scp.CommandStream shell = null;
+        try {
+            //this.netwokPanel.setVisible(this.btAdvancedSimle.isSelected());
+            Scp scp = new Scp("192.168.56.104", "nao", "nao");
+            shell = scp.getShell();
+            String hostName = "virtual-nao";
+            shell.run("ls -lisah", hostName);
+            shell.run("su", hostName);
+            shell.run("wfwwfwfwfw", "fa");
+            shell.run("cd /", hostName);
+            shell.run("ls -lisah", hostName);
+            shell.close();
+        } catch (IOException | JSchException ex) {
+            Logger.getGlobal().log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        }}).start();
+        
     }//GEN-LAST:event_btAdvancedSimleActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

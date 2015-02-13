@@ -7,7 +7,6 @@ import static com.jcraft.jsch.Logger.FATAL;
 import static com.jcraft.jsch.Logger.INFO;
 import static com.jcraft.jsch.Logger.WARN;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -38,7 +37,7 @@ public class Scp {
         session = jsch.getSession(userName, ip, 22);
         session.setConfig(config);
         session.setUserInfo(ui);
-        session.connect();
+        session.connect(3000);
 
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
@@ -73,28 +72,92 @@ public class Scp {
         java.util.logging.Logger.getGlobal().log(Level.INFO, "'" + cmd + "' exits with status " + c.getExitStatus());
     }
     
-    public void runStream(String cmd) throws IOException, JSchException
+    
+    public class CommandStream
     {
-        java.util.logging.Logger.getGlobal().log(Level.INFO, "run: '" + cmd + "'");
+        ChannelShell c;
+        PrintStream print;  
+        PipedInputStream pis;
         
-        ChannelExec c = (ChannelExec)session.openChannel("exec");
-        //c.setCommand(cmd);
-        c.setOutputStream(new LogStream(Level.FINE));
-        c.setErrStream(new LogStream(Level.SEVERE));
-        
-        InputStream stream = new ByteArrayInputStream(cmd.getBytes(StandardCharsets.UTF_8));
-        c.setInputStream(stream);
-        
-        c.connect();
-        
-        // block until the execution is done
-        while(!c.isClosed()) {
-          try {
-            Thread.sleep(100);
-          } catch(InterruptedException ex) {}
+        public CommandStream () throws JSchException, IOException
+        {
+            c = (ChannelShell)session.openChannel("shell");
+            //c.setOutputStream(new LogStream(Level.FINE));
+            {
+            PipedOutputStream pos = new PipedOutputStream();
+            pis = new PipedInputStream(pos);
+            c.setOutputStream(pos);
+            }
+            
+            PipedInputStream pis = new PipedInputStream();
+            c.setInputStream(pis);
+            
+            PipedOutputStream pos = new PipedOutputStream(pis);
+            print = new PrintStream(pos);   
+            c.connect();
+            //run("");
         }
         
-        java.util.logging.Logger.getGlobal().log(Level.INFO, "'" + cmd + "' exits with status " + c.getExitStatus());
+        public void run(String cmd) throws IOException
+        {
+            run(cmd,cmd);
+        }
+        
+        public void run(String cmd, String expect) throws IOException
+        {
+            if(c.isConnected()) {
+                print.println(cmd);
+                print.flush();
+                
+                /*
+                BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(pis));
+                while (true)
+                {
+                    String line = stdoutReader.readLine();
+                    if (line == null)
+                    {
+                            stdoutReader.close();
+                            break;
+                    }
+                    System.out.println(line);
+                }
+                */
+                
+                
+                boolean check = false;
+                StringBuilder sb = new StringBuilder();
+                while (!check) {
+                    while(pis.available() > 0)
+                    {
+                        //String ln = isr.readLine();
+                        int k = pis.read();
+                        char ch = (char)k;
+                        if(k != 13) {
+                            sb.append(ch);
+                        }
+                        System.err.print(ch);
+                        if(sb.toString().contains(expect) || sb.toString().contains(cmd)) {
+                            check = true;
+                        }
+                    }
+                    try{Thread.sleep(100);}catch(Exception e){System.out.println(e);}
+                }
+               
+                java.util.logging.Logger.getGlobal().log(Level.FINE, sb.toString());
+                
+            }
+        }
+        
+        
+        
+        public void close() {
+            c.disconnect();
+        }
+    }
+    
+    public CommandStream getShell() throws IOException, JSchException
+    {
+        return new CommandStream();
     }
     
     public void run(String workingDir, String cmd) throws IOException, JSchException
@@ -298,6 +361,7 @@ public class Scp {
     {
         private final StringBuilder buffer = new StringBuilder();
         private final Level level;
+        public boolean flashed = false;
         
         public LogStream(Level level) {
             super();
@@ -318,6 +382,7 @@ public class Scp {
             super.flush();
             java.util.logging.Logger.getGlobal().log(level, "  " + buffer.toString());
             buffer.setLength(0);
+            flashed = true;
        }
     }
   
