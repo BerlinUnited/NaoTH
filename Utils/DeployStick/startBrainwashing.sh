@@ -13,7 +13,7 @@ fi
 rm -rf ./backup
 mkdir ./backup
 cp -r /home/nao/naoqi/Config ./backup
-cp -R /home/nao/bin ./backup
+cp -r /home/nao/bin ./backup
 
 # remove files that will be copied
 if [ -d "./deploy/home/nao/naoqi/Config" ]; then
