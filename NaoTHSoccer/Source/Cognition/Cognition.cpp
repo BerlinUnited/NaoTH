@@ -67,6 +67,7 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/Behavior/GraspingBehaviorControl/GraspingBehaviorControl.h"
 
 using namespace std;
 
@@ -147,6 +148,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(GraspingBehaviorControl);
 
   REGISTER_MODULE(TeamCommSender);
   

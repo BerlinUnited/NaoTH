@@ -14,7 +14,7 @@
 using namespace std;
 
 const double IKArmGrasping::maxHandDistance = 100.0;
-const Vector3<double> IKArmGrasping::defaultGraspingCenter(145, 0, 20);
+const Vector3d IKArmGrasping::defaultGraspingCenter(145, 0, 20);
 
 IKArmGrasping::IKArmGrasping()
   :
@@ -122,8 +122,8 @@ void IKArmGrasping::execute()
 void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest) 
 {
   //TODO: find a better place for it
-  static const Vector3<double> lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
-  static const Vector3<double> rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  static const Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  static const Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
 
   // some parameters
   double minDistance = 30.0;
@@ -136,7 +136,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   MODIFY("IKArmGrasping:default_arm_stiffness", default_arm_stiffness);
   
 
-  static Vector3<double> oldGraspingCenter = graspingCenter;
+  static Vector3d oldGraspingCenter = graspingCenter;
   // store the old graspingCenter 
   oldGraspingCenter = graspingCenter;
 
@@ -150,7 +150,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   );
 
   // limit the motion speed of the grasping center
-  Vector3<double> graspingCenterMotionDelta = graspingCenter - oldGraspingCenter;
+  Vector3d graspingCenterMotionDelta = graspingCenter - oldGraspingCenter;
   if (graspingCenterMotionDelta.abs() > maxSpeed)
     graspingCenter = oldGraspingCenter + graspingCenterMotionDelta.normalize(maxSpeed);
 
@@ -202,8 +202,8 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     case GraspRequest::thresh_dist_dist:
     {
       // determine controller parameters
-      const Vector3<double> lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
-      const Vector3<double> rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
+      const Vector3d lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
+      const Vector3d rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
       double measured_ratio = 0.5 * (lHandPoint - rHandPoint).abs();
       double step = 3.0;
       MODIFY("IKGrasping:thresh_dist_dist_step", step);
@@ -315,8 +315,8 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     case GraspRequest::no_dist:
     {
       // determine controller parameters
-      const Vector3<double> lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
-      const Vector3<double> rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
+      const Vector3d lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
+      const Vector3d rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
       double measured_ratio = 0.5 * (lHandPoint - rHandPoint).abs();
       double step = 5.0;
       MODIFY("IKGrasping:thresh_dist_dist:step", step);
@@ -427,14 +427,14 @@ void IKArmGrasping::setArmStiffness(double value)
 }//end setArmStiffness
 
 
-void IKArmGrasping::hug(InverseKinematic::ChestArmsPose& p, const Vector3<double>& graspingCenter, double ratio) 
+void IKArmGrasping::hug(InverseKinematic::ChestArmsPose& p, const Vector3d& graspingCenter, double ratio) 
 {
   p.localInChest();
 
-  Vector3<double> leftDir(0, 1, 0);
+  Vector3d leftDir(0, 1, 0);
   p.arms.left.translation = graspingCenter + leftDir.normalize(ratio);
 
-  Vector3<double> rightDir(0, -1, 0);
+  Vector3d rightDir(0, -1, 0);
   p.arms.right.translation = graspingCenter + rightDir.normalize(ratio);
 }//end hug
 
@@ -512,9 +512,9 @@ void IKArmGrasping::debugDraw3D()
 
   // draw the right hand request
   Pose3D globalHandRight = chestPose * currentPose.arms.right;
-  Vector3<double> xAxis(60, 0, 0);
-  Vector3<double> yAxis(0, 60, 0);
-  Vector3<double> zAxis(0, 0, 60);
+  Vector3d xAxis(60, 0, 0);
+  Vector3d yAxis(0, 60, 0);
+  Vector3d zAxis(0, 0, 60);
 
   // transform into the hands coordinate system
   xAxis = globalHandRight * xAxis;
@@ -530,9 +530,9 @@ void IKArmGrasping::debugDraw3D()
   // draw the right hand request
   Pose3D globalHandLeft = chestPose * currentPose.arms.left;
   // transform into the hands coordinate system
-  xAxis = Vector3<double>(60, 0, 0);
-  yAxis = Vector3<double>(0, 60, 0);
-  zAxis = Vector3<double>(0, 0, 60);
+  xAxis = Vector3d(60, 0, 0);
+  yAxis = Vector3d(0, 60, 0);
+  zAxis = Vector3d(0, 0, 60);
 
   xAxis = globalHandLeft * xAxis;
   yAxis = globalHandLeft * yAxis;
@@ -559,7 +559,7 @@ void IKArmGrasping::drawReachabilityGrid() const
   for (point.x = 0; point.x < reachibilityGrid.grid.resolution; point.x++) {
     for (point.y = 0; point.y < reachibilityGrid.grid.resolution; point.y++) {
       if (reachibilityGrid.gridPointReachable(point)) {
-        Vector3<double> pointInGlobalCoords = reachibilityGrid.gridPointToWorldCoordinates(point);
+        Vector3d pointInGlobalCoords = reachibilityGrid.gridPointToWorldCoordinates(point);
 
         SPHERE("FF0000", 5, chestPose * pointInGlobalCoords);
       }//end if
