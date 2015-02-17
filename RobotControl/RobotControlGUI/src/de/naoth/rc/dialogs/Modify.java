@@ -12,14 +12,12 @@ import de.naoth.rc.components.treetable.ModifyDataModel;
 import de.naoth.rc.components.treetable.ModifyDataModel.ModifyDataNode;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
-import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
 
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JOptionPane;
@@ -27,7 +25,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -36,14 +33,10 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author admin
  */
 public class Modify extends AbstractDialog
-        implements Dialog, CommandSender
 {
     private static final Command commandCognitionModifyList = new Command("Cognition:modify:list");
     private static final Command commandMotionModifyList = new Command("Motion:modify:list");
     
-    private static final Command setModifyCommand = new Command("Motion:modify:set");
-    private static final Command releaseModifyCommand = new Command("Motion:modify:release");
-
     Command commandToExecute = null;
 
     @PluginImplementation
@@ -60,8 +53,8 @@ public class Modify extends AbstractDialog
     private ModifyDataModel treeTableModel = new ModifyDataModel();
     private TreeTable myTreeTable = new TreeTable(treeTableModel);
     
-    ModifyUpdater modifyUpdaterCognition = new ModifyUpdater("[Cognition]","");
-    ModifyUpdater modifyUpdaterMotion = new ModifyUpdater("[Motion]","");
+    ModifyUpdater modifyUpdaterCognition = new ModifyUpdater("Cognition");
+    ModifyUpdater modifyUpdaterMotion = new ModifyUpdater("Motion");
     
     /** Creates new form Modify */
     public Modify() {
@@ -146,10 +139,12 @@ public class Modify extends AbstractDialog
   private class FlagModifiedListener implements ModifyDataModel.ValueChangedListener
   {
       private final String name;
+      private final String prefix;
       
-      FlagModifiedListener(String name)
+      FlagModifiedListener(String name, String prefix)
       {
           this.name = name;
+          this.prefix = prefix;
       }
       
     @Override
@@ -157,13 +152,13 @@ public class Modify extends AbstractDialog
     {
         if(!enabled)
         {
-            Command command = new Command("modify:release").addArg(name, "");
-            sendCommand(command);
+            Command command = new Command(prefix + ":modify:release").addArg(name, "");
+            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
         }
         else
         {
-            Command command = new Command("modify:set").addArg(name, ""+value);
-            sendCommand(command);
+            Command command = new Command(prefix + ":modify:set").addArg(name, ""+value);
+            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
         }
     }
   }//end class FlagModifiedListener
@@ -172,11 +167,9 @@ public class Modify extends AbstractDialog
   class ModifyUpdater implements ObjectListener<byte[]>
   {
     String rootName;
-    String command;
-    
-    public ModifyUpdater(String rootName, String command) {
+
+    public ModifyUpdater(String rootName) {
         this.rootName = rootName;
-        this.command = command;
     }
 
        @Override
@@ -191,13 +184,13 @@ public class Modify extends AbstractDialog
                       for (String msg : modifies) {
                           String[] s = msg.split("(( |\t)*=( |\t)*)|;");
 
-                          ModifyDataNode node = treeTableModel.insertPath(rootName + ":" + s[1], ':');
+                          ModifyDataNode node = treeTableModel.insertPath("[" + rootName + "]:" + s[1], ':');
                           
                           node.enabled = Integer.parseInt(s[0]) > 0;
                           node.value = Double.parseDouble(s[2]);
 
                           if (node.enabledListener == null) {
-                              node.enabledListener = new FlagModifiedListener(s[1]);
+                              node.enabledListener = new FlagModifiedListener(s[1], rootName);
                           }
                       }//end for
                   } catch (NumberFormatException e) {
@@ -220,35 +213,19 @@ public class Modify extends AbstractDialog
         }
   }
   
-  private void sendCommand(Command command)
+  class PrintObjectListener implements ObjectListener<byte[]>
   {
-    commandToExecute = command;
-    Plugin.parent.getMessageServer().executeSingleCommand(this, command);
-  }
+        @Override
+        public void newObjectReceived(byte[] object) {
+            System.out.println(new String(object));
+        }
 
-  @Override
-  public Command getCurrentCommand() {
-    return commandToExecute;
+        @Override
+        public void errorOccured(String cause) {
+            System.err.println(cause);
+        }
   }
-
-  @Override
-  public void handleError(int code) {
-    this.btRefresh.setSelected(false);
-    JOptionPane.showMessageDialog(this,
-              "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
-  }
-
-  @Override
-  public void handleResponse(byte[] result, Command originalCommand) {
-    System.out.println(new String(result));
-    if(originalCommand.getName().equals(setModifyCommand.getName()))
-    {
-      System.out.println(new String(result));
-    }else if(originalCommand.getName().equals(releaseModifyCommand.getName()))
-    {
-      
-    }
-  }
+  
 
   class ColorRenderer extends DefaultTableCellRenderer
   {
