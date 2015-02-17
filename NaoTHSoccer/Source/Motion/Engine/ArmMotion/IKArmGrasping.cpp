@@ -57,7 +57,8 @@ void IKArmGrasping::execute()
   {
     currentState = motion::stopped;
     return;
-  }else
+  }
+  else
   {
     // init
     if(currentState == motion::stopped)

@@ -426,8 +426,8 @@ double InverseKinematics::gotoArms(
   const Pose3D& tc, 
   const Pose3D& targetLeftHand, 
   const Pose3D& targetRightHand,
-  const Vector3<double>& leftOffset, 
-  const Vector3<double>& rightOffset,
+  const Vector3d& leftOffset, 
+  const Vector3d& rightOffset,
   Mask leftHandMask, 
   Mask rightHandMask)
 {
@@ -460,7 +460,7 @@ double InverseKinematics::gotoArms(
 }//end gotoArms
 
 
-double InverseKinematics::gotoArm(bool leftArm, const Pose3D& target, const Vector3<double>& offset, Mask mask)
+double InverseKinematics::gotoArm(bool leftArm, const Pose3D& target, const Vector3d& offset, Mask mask)
 {
   list<Link*> linkList;
   getRoute(leftArm?KinematicChain::LForeArm:KinematicChain::RForeArm, linkList);
@@ -470,10 +470,10 @@ double InverseKinematics::gotoArm(bool leftArm, const Pose3D& target, const Vect
 
 void InverseKinematics::calcError(const Pose3D& current, const Pose3D& target, Vector_n<double,6>& result, Mask mask)
 {
-  Vector3<double> perr = target.translation - current.translation;
+  Vector3d perr = target.translation - current.translation;
   RotationMatrix rerr = current.rotation.invert() * target.rotation;
-  Vector3<double> n = rerr.toQuaternion();
-  Vector3<double> werr = current.rotation * n;
+  Vector3d n = rerr.toQuaternion();
+  Vector3d werr = current.rotation * n;
   result[0] = (mask&MASK_X) ? perr[0] : 0;
   result[1] = (mask&MASK_Y) ? perr[1] : 0;
   result[2] = (mask&MASK_Z) ? perr[2] : 0;

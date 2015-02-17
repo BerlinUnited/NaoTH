@@ -710,8 +710,8 @@ double InverseKinematicsMotionEngine::solveHandsIK(
   double (&position)[naoth::JointData::numOfJoint])
 {
   // TODO: is it a good place for it?
-  static const Vector3<double> lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
-  static const Vector3<double> rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  static const Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  static const Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
 
   static const Kinematics::InverseKinematics::Mask lHandMask(Kinematics::InverseKinematics::MASK_POS);
   static const Kinematics::InverseKinematics::Mask rHandMask(Kinematics::InverseKinematics::MASK_POS);
@@ -720,7 +720,7 @@ double InverseKinematicsMotionEngine::solveHandsIK(
   //         otherwise, there is a risk of getting a assymetric solution
   Kinematics::Link& torsoLink = theInverseKinematics.theKinematicChain.theLinks[KinematicChain::Torso];
   torsoLink.R = RotationMatrix();
-  torsoLink.p = Vector3<double>(0, 0, 0);
+  torsoLink.p = Vector3d(0, 0, 0);
   Kinematics::ForwardKinematics::updateKinematicChainFrom(&torsoLink);
 
   // STEP 2: solve the inverse kinematic for arms
