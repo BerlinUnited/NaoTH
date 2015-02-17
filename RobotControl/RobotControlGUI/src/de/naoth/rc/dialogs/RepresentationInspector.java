@@ -32,6 +32,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.messages.Representations;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -225,37 +227,32 @@ public class RepresentationInspector extends AbstractDialog
  
   class DataHandlerBinary implements ObjectListener<byte[]>
   {
-    private Parser parser = null;
-    private List<Descriptor> allDescriptors = getAllProtobufDescriptors();
+    private final Parser parser;
+    private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
     
     public DataHandlerBinary(String name) {
-
+        // EVIL HACK
+        if(name.endsWith("Top")) {
+            name = name.substring(0,name.length()-3);
+        }
+        
+        Class<?> parserClass = getProtobufClass(name);
+        if(parserClass != null) {
+            parser = new ProtobufParser(parserClass);
+        } else {
+            parser = new EmptyParser();
+        }
     }
     
     @Override
     public void newObjectReceived(byte[] data) {
-        Object result = null;
-    
-        if(parser == null) {
-            parser = new EmptyParser();
-            
-            for(Descriptor c: allDescriptors) {
-                Parser p = new ProtobufParser(c);
-                result = p.parse(data);
-                if(result != null) {
-                    parser = p;
-                }
-            }
-        } 
         
-        if(result == null) {
-            result = parser.parse(data);
-            if(result != null){
-                textArea.setText(result.toString());
-            } else {
-                textArea.setText("Error while parsing.\n");
-                //textArea.append(new String(data));
-            }
+        Object result = parser.parse(data);
+        if(result != null){
+            textArea.setText(result.toString());
+        } else {
+            textArea.setText("Error while parsing.\n");
+            //textArea.append(new String(data));
         }
         
     }//end newObjectReceived
@@ -342,9 +339,27 @@ public class RepresentationInspector extends AbstractDialog
       
       for(Class<?> c : protoClasses) {
             result.addAll(Arrays.asList(c.getClasses()));
-        }
+      }
       return result;
   }
+  
+    private static Class<?> getProtobufClass(String name)
+    {
+        Class<?> protoClasses[] = {
+            FrameworkRepresentations.class, 
+            Representations.class, 
+            Messages.class};
+
+        for(Class<?> pc : protoClasses) {
+            for(Class<?> c: pc.getClasses()) {
+              if(c.getSimpleName().equals(name)) {
+                  return c;
+              }
+            }
+        }
+        
+        return null;
+    }
     
     interface Parser {
         public Object parse(byte[] object);
@@ -360,23 +375,37 @@ public class RepresentationInspector extends AbstractDialog
     
     class ProtobufParser implements Parser
     {
-        private final Descriptor descriptor;
-        public ProtobufParser(Descriptor descriptor) {
-            this.descriptor = descriptor;
-        }
+        //private Descriptor descriptor;
+        private final Class<?> parserClass;
         
+        public ProtobufParser(Class<?> parserClass) {
+            this.parserClass = parserClass;
+        }
+        /*
+        @Override
+        public Object test(byte[] data)
+        {
+            try {
+                DynamicMessage msg = DynamicMessage.parseFrom(descriptor, data);
+                return msg;
+            }
+            catch(InvalidProtocolBufferException ex) {}
+            
+            return null;
+        }//end parse
+        */
         @Override
         public Object parse(byte[] data)
         {
             try {
-                DynamicMessage msg = DynamicMessage.parseFrom(descriptor, data);
-                //Method m = parser.getMethod("parseFrom", object.getClass());
-                //Object result = m.invoke(null, object);
+                //DynamicMessage msg = DynamicMessage.parseFrom(descriptor, data);
+                Method m = parserClass.getMethod("parseFrom", data.getClass());
+                Object msg = m.invoke(null, data);
                 return msg;
             }
-            catch(InvalidProtocolBufferException ex)
-            {
-            }
+            catch(NoSuchMethodException e){}
+            catch(IllegalAccessException ex){}
+            catch(InvocationTargetException ebx){}
             
             return null;
         }//end parse
