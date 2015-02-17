@@ -179,6 +179,8 @@ bool SimSparkController::connect(const std::string& host, int port)
     return false;
   }
 
+  cout << "[SimSparkController] connecting to " << host << ":" << port << endl;
+
   gboolean conn = false;
   GCancellable* cancellable = NULL;
   GSocketAddress* sockaddr = NULL;
