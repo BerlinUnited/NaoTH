@@ -17,7 +17,7 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
     /** Die letzte Zeile, die gerendert wurde. */
     protected int visibleRow;
      
-    private TreeTable treeTable;
+    private final TreeTable treeTable;
      
     public TreeTableCellRenderer(TreeTable treeTable, TreeModel model) {
         super(model);
@@ -32,6 +32,7 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
     /**
      * Tree und Table muessen die gleiche Hoehe haben.
      */
+    @Override
     public void setRowHeight(int rowHeight) {
         if (rowHeight > 0) {
             super.setRowHeight(rowHeight);
@@ -44,6 +45,7 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
     /**
      * Tree muss die gleiche Hoehe haben wie Table.
      */
+    @Override
     public void setBounds(int x, int y, int w, int h) {
         super.setBounds(x, 0, w, treeTable.getHeight());
     }
@@ -51,6 +53,7 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
     /**
      * Sorgt fuer die Einrueckung der Ordner.
      */
+    @Override
     public void paint(Graphics g) {
         g.translate(0, -visibleRow * getRowHeight());
          
@@ -60,6 +63,7 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
     /**
      * Liefert den Renderer mit der passenden Hintergrundfarbe zurueck.
      */
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (isSelected)
             setBackground(table.getSelectionBackground());

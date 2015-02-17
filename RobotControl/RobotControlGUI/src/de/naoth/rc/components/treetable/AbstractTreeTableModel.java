@@ -18,28 +18,34 @@ public abstract class AbstractTreeTableModel implements TreeTableModel {
         this.root = root;
     }
  
+    @Override
     public Object getRoot() {
         return root;
     }
  
+    @Override
     public boolean isLeaf(Object node) {
         return getChildCount(node) == 0;
     }
  
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
  
     /**
      * Die Methode wird normalerweise nicht aufgerufen.
      */
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         return 0;
     }
  
+    @Override
     public void addTreeModelListener(TreeModelListener l) {
         listenerList.add(TreeModelListener.class, l);
     }
  
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         listenerList.remove(TreeModelListener.class, l);
     }

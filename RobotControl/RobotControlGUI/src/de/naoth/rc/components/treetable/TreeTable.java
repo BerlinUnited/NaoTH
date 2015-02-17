@@ -13,11 +13,10 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
-import javax.swing.tree.TreePath;
  
 public class TreeTable extends JTable {
  
-    private TreeTableCellRenderer tree;
+    private final TreeTableCellRenderer tree;
     
     public JTree getTree() {
         return this.tree;
@@ -34,9 +33,9 @@ public class TreeTable extends JTable {
         super.setModel(new TreeTableModelAdapter(treeTableModel, tree));
          
         // Gleichzeitiges Selektieren fuer Tree und Table.
-        TreeTableSelectionModel selectionModel = new TreeTableSelectionModel();
-        tree.setSelectionModel(selectionModel); //For the tree
-        setSelectionModel(selectionModel.getListSelectionModel()); //For the table
+        TreeTableSelectionModel treeSelectionModel = new TreeTableSelectionModel();
+        tree.setSelectionModel(treeSelectionModel); //For the tree
+        setSelectionModel(treeSelectionModel.getListSelectionModel()); //For the table
  
          
         // Renderer fuer den Tree.

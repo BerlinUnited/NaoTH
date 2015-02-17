@@ -16,31 +16,35 @@ public class ModifyDataModel extends AbstractTreeTableModel
     static protected Class<?>[] columnTypes = { Boolean.class, TreeTableModel.class, Double.class };
  
     public ModifyDataModel() {
-        super(new ModifyDataNode(null));
+        super(new ModifyDataNode("Modify"));
     }
  
+    @Override
     public Object getChild(Object parent, int index) {
         return ((ModifyDataNode) parent).getChildren().get(index);
     }
  
- 
+    @Override
     public int getChildCount(Object parent) {
         return ((ModifyDataNode) parent).getChildren().size();
     }
  
- 
+    @Override
     public int getColumnCount() {
         return columnNames.length;
     }
  
+    @Override
     public String getColumnName(int column) {
         return columnNames[column];
     }
  
+    @Override
     public Class<?> getColumnClass(int column) {
         return columnTypes[column];
     }
  
+    @Override
     public boolean isCellEditable(Object node, int column) {
         return true; // Important to activate TreeExpandListener
     }
@@ -77,7 +81,7 @@ public class ModifyDataModel extends AbstractTreeTableModel
     }//end insertPath
     
     
-    
+    @Override
     public Object getValueAt(Object node, int column) {
         switch (column) {
         case 1:
@@ -92,7 +96,7 @@ public class ModifyDataModel extends AbstractTreeTableModel
         return null;
     }
 
- 
+    @Override
     public void setValueAt(Object aValue, Object node, int column) {
         if(aValue == null)
             return;
@@ -120,8 +124,8 @@ public class ModifyDataModel extends AbstractTreeTableModel
         public Boolean enabled = null;
         public Double value = null;
         
-        private String name;
-        private List<ModifyDataNode> children;
+        private final String name;
+        private final List<ModifyDataNode> children;
         public ValueChangedListener enabledListener;
  
         public void setEnabled(boolean v)
@@ -153,6 +157,7 @@ public class ModifyDataModel extends AbstractTreeTableModel
             return children;
         }
         
+        @Override
         public String toString() {
             return name;
         }

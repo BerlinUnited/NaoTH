@@ -23,8 +23,8 @@ import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
@@ -36,11 +36,13 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author admin
  */
 public class Modify extends AbstractDialog
-        implements Dialog, ObjectListener<byte[]>, CommandSender
+        implements Dialog, CommandSender
 {
-    private static final Command getModifyCommand = new Command("modify:list");
-    private static final Command setModifyCommand = new Command("modify:set");
-    private static final Command releaseModifyCommand = new Command("modify:release");
+    private static final Command commandCognitionModifyList = new Command("Cognition:modify:list");
+    private static final Command commandMotionModifyList = new Command("Motion:modify:list");
+    
+    private static final Command setModifyCommand = new Command("Motion:modify:set");
+    private static final Command releaseModifyCommand = new Command("Motion:modify:release");
 
     Command commandToExecute = null;
 
@@ -51,10 +53,15 @@ public class Modify extends AbstractDialog
         public static RobotControl parent;
         @InjectPlugin
         public static SwingCommandExecutor commandExecutor;
+        @InjectPlugin
+        public static GenericManagerFactory genericManagerFactory;
     }
 
     private ModifyDataModel treeTableModel = new ModifyDataModel();
     private TreeTable myTreeTable = new TreeTable(treeTableModel);
+    
+    ModifyUpdater modifyUpdaterCognition = new ModifyUpdater("[Cognition]","");
+    ModifyUpdater modifyUpdaterMotion = new ModifyUpdater("[Motion]","");
     
     /** Creates new form Modify */
     public Modify() {
@@ -119,12 +126,19 @@ public class Modify extends AbstractDialog
           treeTableModel = new ModifyDataModel();
           myTreeTable = new TreeTable(treeTableModel);
           myTreeTable.getColumn("Modify").setMaxWidth(50);
+          //myTreeTable.getTree().setRootVisible(false);
           jScrollPane2.setViewportView(myTreeTable);
       
-          Plugin.commandExecutor.executeCommand(this, getModifyCommand);
+          Plugin.genericManagerFactory.getManager(commandCognitionModifyList).addListener(modifyUpdaterCognition);
+          Plugin.genericManagerFactory.getManager(commandMotionModifyList).addListener(modifyUpdaterMotion);
         } else {
           btRefresh.setSelected(false);
         }
+      }
+      else
+      {
+        Plugin.genericManagerFactory.getManager(commandCognitionModifyList).removeListener(modifyUpdaterCognition);
+        Plugin.genericManagerFactory.getManager(commandMotionModifyList).removeListener(modifyUpdaterMotion);
       }
     }//GEN-LAST:event_btRefreshActionPerformed
 
@@ -155,45 +169,57 @@ public class Modify extends AbstractDialog
   }//end class FlagModifiedListener
 
 
-  @Override
-  public void errorOccured(String cause)
+  class ModifyUpdater implements ObjectListener<byte[]>
   {
-    btRefresh.setSelected(false);
-    dispose();
-  }
-
-  @Override
-  public void newObjectReceived(byte[] object)
-  {
-    String str = new String(object);
-    String[] modifies = str.split("(\n|\t| |\r)+");
-
-    try{
-      for(String msg: modifies)
-      {
-        String[] s = msg.split("(( |\t)*=( |\t)*)|;");
-
-        ModifyDataNode node = treeTableModel.insertPath(s[1], ':');
-        node.enabled = Integer.parseInt(s[0]) > 0;
-        node.value = Double.parseDouble(s[2]);
-
-        if(node.enabledListener == null) {
-            node.enabledListener = new FlagModifiedListener(s[1]);
-        }
-      }//end for
-    }catch(NumberFormatException e)
-    {
-      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
-      dispose();
+    String rootName;
+    String command;
+    
+    public ModifyUpdater(String rootName, String command) {
+        this.rootName = rootName;
+        this.command = command;
     }
 
-    myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
-    myTreeTable.getTree().setRootVisible(false);
-    myTreeTable.revalidate();
-    myTreeTable.repaint();
-  }//end newObjectReceived
-  int k = 0;
+       @Override
+      public void newObjectReceived(byte[] object) {
+          String str = new String(object);
+          final String[] modifies = str.split("(\n|\t| |\r)+");
+          
+          SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+                  try {
+                      for (String msg : modifies) {
+                          String[] s = msg.split("(( |\t)*=( |\t)*)|;");
 
+                          ModifyDataNode node = treeTableModel.insertPath(rootName + ":" + s[1], ':');
+                          
+                          node.enabled = Integer.parseInt(s[0]) > 0;
+                          node.value = Double.parseDouble(s[2]);
+
+                          if (node.enabledListener == null) {
+                              node.enabledListener = new FlagModifiedListener(s[1]);
+                          }
+                      }//end for
+                  } catch (NumberFormatException e) {
+                      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
+                      dispose();
+                  }
+                  
+                  //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
+                  myTreeTable.revalidate();
+                  myTreeTable.repaint();
+              }
+          });
+      }
+
+        @Override
+        public void errorOccured(String cause)
+        {
+          btRefresh.setSelected(false);
+          dispose();
+        }
+  }
+  
   private void sendCommand(Command command)
   {
     commandToExecute = command;
@@ -250,6 +276,8 @@ public class Modify extends AbstractDialog
   @Override
   public void dispose()
   {
+    Plugin.genericManagerFactory.getManager(commandCognitionModifyList).removeListener(modifyUpdaterCognition);
+    Plugin.genericManagerFactory.getManager(commandMotionModifyList).removeListener(modifyUpdaterMotion);
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
