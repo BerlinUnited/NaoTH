@@ -108,6 +108,8 @@ void IKArmGrasping::execute()
     theCurrentPose.arms.right,
     getMotorJointData().position);
   
+  getMotorJointData().position[JointData::LWristYaw] = -Math::pi_2;
+  getMotorJointData().position[JointData::RWristYaw] = Math::pi_2;
 
   DEBUG_REQUEST("IKArmGrasping:3D_debug_drwings",
     debugDraw3D();
@@ -130,7 +132,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   MODIFY("IKGrasping:minDistance", minDistance);
   double maxDistance = 100.0;
   MODIFY("IKGrasping:maxDistance", maxDistance);
-  double maxSpeed = 0.2; // mm/ms ~ m/s
+  double maxSpeed = 0.05; // mm/ms ~ m/s
   MODIFY("IKArmGrasping:maxSpeed", maxSpeed);
   double default_arm_stiffness = 0.5;
   MODIFY("IKArmGrasping:default_arm_stiffness", default_arm_stiffness);

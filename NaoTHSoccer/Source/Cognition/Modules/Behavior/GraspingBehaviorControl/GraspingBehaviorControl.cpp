@@ -12,7 +12,7 @@
 
 GraspingBehaviorControl::GraspingBehaviorControl() 
   : 
-  sitHeight(190.0)
+  sitHeight(220.0)
 {
 
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:receive_ssd", "", false);
@@ -60,28 +60,6 @@ void GraspingBehaviorControl::execute()
   getMotionRequest().standHeight = -1; //standing
 
 
-  /*
-  getMotionRequest().receive_ssd = false;
-  getSoundPlayData().soundFile = "";
-  DEBUG_REQUEST("GraspingBehaviorControl:receive_ssd",
-
-    getMotionRequest().receive_ssd = true;
-
-    unsigned int rawdata =  theSerialSensorData.rawDataLength;
-    static bool alreadyPlayed = true;
-    if (rawdata <= 0)
-    {
-      if(!alreadyPlayed)
-      {
-        theSoundPlayData.soundFile = "beebeep.wav";
-        alreadyPlayed = true;
-      }
-    } else {
-      alreadyPlayed = false;
-    }
-  );
-  */
-
   DEBUG_REQUEST("GraspingBehaviorControl:init", getMotionRequest().id = motion::init; );
 
   DEBUG_REQUEST("GraspingBehaviorControl:sit",
@@ -124,23 +102,12 @@ void GraspingBehaviorControl::execute()
   
 
   // default grasping point
-  Vector3<double> defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 20);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
 
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;
   
-  /*
-  DEBUG_REQUEST("GraspingBehaviorControl:grasp_ball",
-    if(theGraspingBallModel.valid)
-    {
-      getMotionRequest().graspRequest.graspingPoint = theGraspingBallModel.position;
-    }
-    //if(theBallPercept.ballWasSeen)
-    //getMotionRequest().graspRequest.graspingPoint = theBallPercept.sizeBasedRelativePosition;
-  );
-  */
-
 
   DEBUG_REQUEST("GraspingBehaviorControl:look_at_grasping_point",
     getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
@@ -198,7 +165,7 @@ void GraspingBehaviorControl::take_object_from_table()
   //the hip-height of the robot ~default while standing 248.785
   double hipHeight = getKinematicChain().theLinks[KinematicChain::Hip].p.z; 
 
-  Vector3<double> defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 20);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;
@@ -254,7 +221,7 @@ void GraspingBehaviorControl::take_object_from_table()
       standHeight = -1;
       graspingState = GraspRequest::empty;
 
-      Vector3<double> heighGraspingCenter(145, 0, 50);
+      Vector3d heighGraspingCenter(145, 0, 50);
       const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
       heighGraspingCenter = chestPose * heighGraspingCenter;
       getMotionRequest().graspRequest.graspingPoint = heighGraspingCenter;
@@ -317,18 +284,18 @@ void GraspingBehaviorControl::track_and_take_object()
   double timeForGraspState = 1.0; //s
   MODIFY("GraspingBehaviorControl:track_the_object:timeForGraspState", timeForGraspState);
 
-  Vector3<double> defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 20);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;
 
-  static Vector3<double> holdingPoint = defaultGraspingCenter;
+  static Vector3d holdingPoint = defaultGraspingCenter;
 
   double mod_state = state;
   MODIFY("GraspBehaviorControl:track_the_object:state", mod_state);
 
   //fill buffer
-  Vector3<double> newBallPosition = getBallPercept().sizeBasedRelativePosition; //theGraspingBallModel.position;
+  Vector3d newBallPosition = getBallPercept().sizeBasedRelativePosition; //theGraspingBallModel.position;
 
   //if (theGraspingBallModel.valid)
   if(getBallPercept().ballWasSeen)
@@ -387,11 +354,11 @@ void GraspingBehaviorControl::track_and_take_object()
 
 
 
-        const Vector3<double> lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
-        const Vector3<double> rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
-        const Vector3<double> lHandPoint = getKinematicChain().theLinks[KinematicChain::LForeArm].M * lHandOffset;
-        const Vector3<double> rHandPoint = getKinematicChain().theLinks[KinematicChain::RForeArm].M * rHandOffset;
-        const Vector3<double> handCenter = (lHandPoint + rHandPoint)*0.5;
+        const Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+        const Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+        const Vector3d lHandPoint = getKinematicChain().theLinks[KinematicChain::LForeArm].M * lHandOffset;
+        const Vector3d rHandPoint = getKinematicChain().theLinks[KinematicChain::RForeArm].M * rHandOffset;
+        const Vector3d handCenter = (lHandPoint + rHandPoint)*0.5;
         double center_error = (handCenter-getMotionRequest().graspRequest.graspingPoint).abs();
 
         PLOT("GraspBehaviorControl:track_the_object:center_error", center_error);
