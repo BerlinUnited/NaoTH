@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * Modify.java
  *
  * Created on 28.06.2009, 22:00:10
@@ -20,6 +15,7 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
 
 import de.naoth.rc.server.Command;
@@ -54,7 +50,7 @@ public class Modify extends AbstractDialog
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
-        public static GenericManagerFactory genericManagerFactory;
+        public static SwingCommandExecutor commandExecutor;
     }
 
     private ModifyDataModel treeTableModel = new ModifyDataModel();
@@ -125,27 +121,17 @@ public class Modify extends AbstractDialog
           myTreeTable.getColumn("Modify").setMaxWidth(50);
           jScrollPane2.setViewportView(myTreeTable);
       
-          Plugin.genericManagerFactory.getManager(getModifyCommand).addListener(this);
+          Plugin.commandExecutor.executeCommand(this, getModifyCommand);
         } else {
           btRefresh.setSelected(false);
         }
       }
-      else
-      {
-        Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
-      }
     }//GEN-LAST:event_btRefreshActionPerformed
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
-  }
 
 
   private class FlagModifiedListener implements ModifyDataModel.ValueChangedListener
   {
-      private String name;
+      private final String name;
       
       FlagModifiedListener(String name)
       {
@@ -173,7 +159,7 @@ public class Modify extends AbstractDialog
   public void errorOccured(String cause)
   {
     btRefresh.setSelected(false);
-    Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
+    dispose();
   }
 
   @Override
@@ -195,7 +181,7 @@ public class Modify extends AbstractDialog
             node.enabledListener = new FlagModifiedListener(s[1]);
         }
       }//end for
-    }catch(Exception e)
+    }catch(NumberFormatException e)
     {
       JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
       dispose();
@@ -264,8 +250,7 @@ public class Modify extends AbstractDialog
   @Override
   public void dispose()
   {
-    Plugin.genericManagerFactory.getManager(getModifyCommand).removeListener(this);
-  }//end dispose
+  }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btRefresh;
