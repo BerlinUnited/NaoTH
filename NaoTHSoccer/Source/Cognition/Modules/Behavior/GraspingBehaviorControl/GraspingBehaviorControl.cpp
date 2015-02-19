@@ -59,6 +59,9 @@ void GraspingBehaviorControl::execute()
   getMotionRequest().forced = false;
   getMotionRequest().standHeight = -1; //standing
 
+  // set default arm control
+  getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_neutral;
+
 
   DEBUG_REQUEST("GraspingBehaviorControl:init", getMotionRequest().id = motion::init; );
 
@@ -66,7 +69,6 @@ void GraspingBehaviorControl::execute()
     getMotionRequest().id = motion::stand;
     getMotionRequest().standHeight = sitHeight; // sit in a stable position
   );
-
 
 
   GraspRequest::GraspingState& graspingState = getMotionRequest().graspRequest.graspingState;
@@ -102,7 +104,7 @@ void GraspingBehaviorControl::execute()
   
 
   // default grasping point
-  Vector3d defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 90);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
 
@@ -125,6 +127,11 @@ void GraspingBehaviorControl::execute()
     double r = 20.0; // mm
     getMotionRequest().graspRequest.graspingPoint.z += sin(t)*r;
   );
+
+  // turn off arm control if grasping is on
+  if(graspingState != GraspRequest::none) {
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;
+  }
 
 }//end execute
 
@@ -162,32 +169,35 @@ void GraspingBehaviorControl::take_object_from_table()
   double timeForGraspState = 1.0; //s
   MODIFY("GraspingBehaviorControl:take_object_from_table:timeForGraspState", timeForGraspState);
 
-  //the hip-height of the robot ~default while standing 248.785
-  double hipHeight = getKinematicChain().theLinks[KinematicChain::Hip].p.z; 
+  double comHeight = getKinematicChain().CoM.z; 
 
-  Vector3d defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 90);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;
 
   //minimal height while sitting is 145.526
   //minHipHeight indicates change of state
-  double minHipHeight = 146.1; 
+  //double minHipHeight = 146.1; 
 
-  double standHeight = minHipHeight;
+  double standHeight = -1;
 
   // state machine
   switch(state) 
   {
-    case 0: //setzen
+    case 0: //sit
     {
       standHeight = sitHeight; // sit
 
       graspDistState = GraspRequest::GDS_none;
       graspStiffState = GraspRequest::GSS_none;
-      if (hipHeight < 200) graspingState = GraspRequest::open;
+      if (comHeight < standHeight + 20) { 
+        graspingState = GraspRequest::open;
+      }
 
-      if (hipHeight < minHipHeight) state = 1;
+      if (comHeight < standHeight + 1) {
+        state = 1;
+      }
       break;
     }
     case 1: //open
@@ -199,8 +209,7 @@ void GraspingBehaviorControl::take_object_from_table()
       graspingState = GraspRequest::open;
 
 
-      if (state_time > timeForSitState) 
-      {
+      if (state_time > timeForSitState) {
         state = 2;
       }
       break;
@@ -210,8 +219,7 @@ void GraspingBehaviorControl::take_object_from_table()
       standHeight = sitHeight; // sit
       graspingState = GraspRequest::empty;
       
-      if (state_time > timeForGraspState) 
-      {
+      if (state_time > timeForGraspState) {
         state = 3;
       }
       break;
@@ -221,7 +229,7 @@ void GraspingBehaviorControl::take_object_from_table()
       standHeight = -1;
       graspingState = GraspRequest::empty;
 
-      Vector3d heighGraspingCenter(145, 0, 50);
+      Vector3d heighGraspingCenter(145, 0, 120);
       const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
       heighGraspingCenter = chestPose * heighGraspingCenter;
       getMotionRequest().graspRequest.graspingPoint = heighGraspingCenter;
@@ -284,7 +292,7 @@ void GraspingBehaviorControl::track_and_take_object()
   double timeForGraspState = 1.0; //s
   MODIFY("GraspingBehaviorControl:track_the_object:timeForGraspState", timeForGraspState);
 
-  Vector3d defaultGraspingCenter(145, 0, 20);
+  Vector3d defaultGraspingCenter(145, 0, 90);
   const Pose3D& chestPose = getKinematicChain().theLinks[KinematicChain::Torso].M;
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;

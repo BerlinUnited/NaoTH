@@ -109,8 +109,8 @@ void IKArmGrasping::execute()
     theCurrentPose.arms.right,
     getMotorJointData().position);
   
-  getMotorJointData().position[JointData::LWristYaw] = -Math::pi_2;
-  getMotorJointData().position[JointData::RWristYaw] = Math::pi_2;
+  //getMotorJointData().position[JointData::LWristYaw] = -Math::pi_2;
+  //getMotorJointData().position[JointData::RWristYaw] = Math::pi_2;
 
   DEBUG_REQUEST("IKArmGrasping:3D_debug_drwings",
     debugDraw3D();
@@ -154,9 +154,9 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
 
   // limit the motion speed of the grasping center
   Vector3d graspingCenterMotionDelta = graspingCenter - oldGraspingCenter;
-  if (graspingCenterMotionDelta.abs() > maxSpeed)
+  if (graspingCenterMotionDelta.abs() > maxSpeed) {
     graspingCenter = oldGraspingCenter + graspingCenterMotionDelta.normalize(maxSpeed);
-
+  }
 
   // draw the current grasping request
   DEBUG_REQUEST("IKArmGrasping:3D_draw_request",
@@ -192,7 +192,8 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   {
     case GraspRequest::min_dist:
     {
-      ratio = minDistance;
+      double step = 0.5;
+      ratio = min(maxHandDistance, ratio - step);
       break;
     }
     case GraspRequest::no_sensor_dist:
@@ -305,7 +306,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     {
       // do nothing
       break;
-    }// end open
+    }
 
     case GraspRequest::open:
     {
@@ -313,7 +314,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       ratio = min(maxHandDistance, ratio + step);
       setArmStiffness(0.5);
       break;
-    }// end open
+    }
     
     case GraspRequest::no_dist:
     {
