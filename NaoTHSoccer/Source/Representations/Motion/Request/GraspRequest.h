@@ -42,7 +42,7 @@ public:
 
   enum GraspDistState {
     GDS_none, // default
-    min_dist, 
+    min_dist,
     no_sensor_dist,
     thresh_dist_dist,
     thresh_curr_dist,
@@ -57,7 +57,7 @@ public:
     p_force_stiff
   };
 
-  Vector3<double> graspingPoint;
+  Vector3d graspingPoint;
   GraspingState graspingState;
   GraspDistState graspDistState;
   GraspStiffState graspStiffState;

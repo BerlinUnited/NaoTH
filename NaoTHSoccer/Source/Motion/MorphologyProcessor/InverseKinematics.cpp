@@ -443,7 +443,7 @@ double InverseKinematics::gotoArms(
     lock[i] = false;
   }
 
-  //fix the ElbowYaw joint
+  //HACK: fix the ElbowYaw joint
   lock[JointData::LElbowYaw] = true;
   lock[JointData::RElbowYaw] = true;
   theJointData.position[JointData::LElbowYaw] = 0.0;
