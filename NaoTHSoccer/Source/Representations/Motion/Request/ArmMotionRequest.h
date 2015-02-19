@@ -59,6 +59,7 @@ public:
     arms_none,
     arms_back,
     arms_down,
+    arms_neutral,
       
     numOfArmMotion
   };

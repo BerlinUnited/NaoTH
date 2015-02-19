@@ -38,6 +38,7 @@ std::string ArmMotionRequest::getName(ArmMotionID id)
     case arms_none: return "arms_none";
     case arms_back: return "arms_back";
     case arms_down: return "arms_down";
+    case arms_neutral: return "arms_neutral";
 
     default: return "unknown";
   }///end switch

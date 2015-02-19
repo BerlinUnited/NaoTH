@@ -116,6 +116,7 @@ private:
 
   ArmMotionRequest::ArmMotionID current_id;
 
+  bool armsNeutral();
   bool armsDown();
   bool armsOnBack();
 
