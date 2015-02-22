@@ -34,13 +34,15 @@ void JointData::loadJointLimitsFromConfig()
     string jointName = JointData::getJointName((JointData::JointID)i);
     
     if (cfg.hasKey("joints", jointName + "Max")) {
-      max[i] = Math::fromDegrees(cfg.getDouble("joints", jointName + "Max"));
+      double v = cfg.getDouble("joints", jointName + "Max");
+      max[i] = (i == LHand || i == RHand)?v:Math::fromDegrees(v);
     } else {
       THROW("JointData: can not get " + jointName + " max angle");
     }
 
     if (cfg.hasKey("joints", jointName + "Min")) {
-      min[i] = Math::fromDegrees(cfg.getDouble("joints", jointName + "Min"));
+      double v = cfg.getDouble("joints", jointName + "Min");
+      min[i] = (i == LHand || i == RHand)?v:Math::fromDegrees(v);
     } else {
       THROW("JointData: can not get " + jointName + " min angle");
     }
@@ -187,9 +189,11 @@ void JointData::updateAcceleration(const JointData& lastData, double dt)
 
 bool JointData::isLegStiffnessOn() const
 {
-  for ( int i=JointData::RHipYawPitch; i<JointData::numOfJoint; i++)
+  for ( int i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; i++)
   {
-    if ( stiffness[i] < 0 ) return false;
+    if ( stiffness[i] < 0 ) { 
+      return false;
+    }
   }
   return true;
 }
