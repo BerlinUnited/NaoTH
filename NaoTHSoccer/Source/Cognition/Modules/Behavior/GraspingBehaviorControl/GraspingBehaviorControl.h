@@ -66,10 +66,9 @@ public:
 
 private:
   double sitHeight;
-  RingBuffer<Vector3<double>, 40 > ballBuffer;
+  const Vector3d defaultGraspingCenter;
 
   void take_object_from_table();
-  void track_and_take_object();
   
 };//end class GraspingBehaviorControl
 

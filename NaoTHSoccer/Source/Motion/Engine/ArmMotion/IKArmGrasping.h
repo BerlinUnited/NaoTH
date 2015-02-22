@@ -45,7 +45,7 @@ BEGIN_DECLARE_MODULE(IKArmGrasping)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
-  REQUIRE(KinematicChainMotor)
+  REQUIRE(KinematicChainSensor)
   REQUIRE(InverseKinematicsMotionEngineService)
   
   PROVIDE(MotorJointData)
@@ -76,10 +76,14 @@ private:
   }
 
   static const Vector3<double> defaultGraspingCenter;
-  Vector3<double> graspingCenter;
+  Vector3d graspingCenter;
   double ratio;
   static const double maxHandDistance;
   InverseKinematic::ChestArmsPose initialPose;
+
+  // hand experiment
+  double handExperimentStiffness;
+  double handExperimentStartTime;
 
   // the currently executed pose
   InverseKinematic::ChestArmsPose theCurrentPose;

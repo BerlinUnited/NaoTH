@@ -24,7 +24,8 @@ IKArmGrasping::IKArmGrasping()
   initialTime(1000),
   currentState(motion::stopped),
   graspingCenter(defaultGraspingCenter),
-  ratio(100.0)
+  ratio(100.0),
+  handExperimentStiffness(0)
 {
   //theReachibilityGridLeft.setRightFoot(true);
 
@@ -68,9 +69,15 @@ void IKArmGrasping::execute()
       initialTime = 1000;
       graspingCenter = defaultGraspingCenter;
 
-      theCurrentPose.chest = getKinematicChainMotor().theLinks[KinematicChain::Torso].M;
-      theCurrentPose.arms.left = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M;
-      theCurrentPose.arms.right = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M;
+      // accept the grasping center request
+      DEBUG_REQUEST("IKArmGrasping:use_grasping_center_request",
+        const Pose3D& chestPose = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
+        graspingCenter = chestPose.invert() * getMotionRequest().graspRequest.graspingPoint;
+      );
+
+      theCurrentPose.chest = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
+      theCurrentPose.arms.left = getKinematicChainSensor().theLinks[KinematicChain::LForeArm].M;
+      theCurrentPose.arms.right = getKinematicChainSensor().theLinks[KinematicChain::RForeArm].M;
 
       Vector3d lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
       Vector3d rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
@@ -100,6 +107,14 @@ void IKArmGrasping::execute()
       theCurrentPose = initialPose;
       initialTime = 0;
     }
+    
+    setArmStiffness(0.5);
+
+    // HACK: control hand separately
+    getMotorJointData().position[JointData::LHand] = 1.0;
+    getMotorJointData().position[JointData::RHand] = 1.0;
+    getMotorJointData().stiffness[JointData::LHand] = 0.5;
+    getMotorJointData().stiffness[JointData::RHand] = 0.5;
   }
 
   // apply only the arms inverse kinematics
@@ -133,7 +148,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   MODIFY("IKGrasping:minDistance", minDistance);
   double maxDistance = 100.0;
   MODIFY("IKGrasping:maxDistance", maxDistance);
-  double maxSpeed = 0.05; // mm/ms ~ m/s
+  double maxSpeed = 0.5; // mm/ms ~ m/s
   MODIFY("IKArmGrasping:maxSpeed", maxSpeed);
   double default_arm_stiffness = 0.5;
   MODIFY("IKArmGrasping:default_arm_stiffness", default_arm_stiffness);
@@ -148,7 +163,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
 
   // accept the grasping center request
   DEBUG_REQUEST("IKArmGrasping:use_grasping_center_request",
-    const Pose3D& chestPose = getKinematicChainMotor().theLinks[KinematicChain::Torso].M;
+    const Pose3D& chestPose = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
     graspingCenter = chestPose.invert() * motionRequest.graspRequest.graspingPoint;
   );
 
@@ -206,8 +221,8 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     case GraspRequest::thresh_dist_dist:
     {
       // determine controller parameters
-      const Vector3d lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
-      const Vector3d rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
+      const Vector3d lHandPoint = getKinematicChainSensor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
+      const Vector3d rHandPoint = getKinematicChainSensor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
       double measured_ratio = 0.5 * (lHandPoint - rHandPoint).abs();
       double step = 3.0;
       MODIFY("IKGrasping:thresh_dist_dist_step", step);
@@ -239,13 +254,35 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       ratio -= (measured_current < currThres) * step;
       break;
     }
-    case GraspRequest::thresh_force_dist:
+    case GraspRequest::hand_grasp_experiment:
     {
+      if(handExperimentStiffness > 1.0) {
+        break;
+      }
+      if(handExperimentStiffness == 0) {
+        handExperimentStartTime = getFrameInfo().getTimeInSeconds();
+        handExperimentStiffness = 0.1;
+      }
+
+      double d = getFrameInfo().getTimeInSeconds() - handExperimentStartTime;
+      const double maxTime = 2.0; // in s
+
+      if(d > maxTime) {
+        handExperimentStiffness += 0.1;
+        d = 0;
+        handExperimentStartTime = getFrameInfo().getTimeInSeconds();
+      }
+      
+      double handsControl = 1.0-fabs(sin(d/maxTime*Math::pi));
+      getMotorJointData().position[JointData::LHand] = handsControl;
+      getMotorJointData().position[JointData::RHand] = handsControl;
       break;
     }
     default: 
     {
       // don't do anything by default
+      handExperimentStartTime = getFrameInfo().getTimeInSeconds();
+      handExperimentStiffness = 0;
       break;
     }
   }//end control the distance
@@ -258,6 +295,9 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     case GraspRequest::max_stiff:
     {
       setArmStiffness(default_arm_stiffness);
+
+      getMotorJointData().stiffness[MotorJointData::LHand] = default_arm_stiffness;
+      getMotorJointData().stiffness[MotorJointData::RHand] = default_arm_stiffness;
       break;
     }
     case GraspRequest::integ_curr_stiff:
@@ -265,7 +305,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       //integ_curr_stiff(newRequest);
       double stiffFactor = 2.0;
       MODIFY("IKArmGrasping:dynamic_stiff_current:factor", stiffFactor);
-      for (int i = JointData::RShoulderRoll; i < JointData::RHipYawPitch; i++)
+      for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
       {
         double jointCurr = getSensorJointData().electricCurrent[i];
         double value = jointCurr*stiffFactor;
@@ -279,7 +319,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       //integ_force_stiff(newRequest);
       double stiffFactor = 15.0;
       MODIFY("IKArmGrasping:dynamic_stiff_angle:factor", stiffFactor);
-      for (int i = JointData::RShoulderRoll; i < JointData::RHipYawPitch; i++)
+      for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
       {
         double measuredAngle = getSensorJointData().position[i];
         double targetAngle = getMotorJointData().position[i];
@@ -319,8 +359,8 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     case GraspRequest::no_dist:
     {
       // determine controller parameters
-      const Vector3d lHandPoint = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
-      const Vector3d rHandPoint = getKinematicChainMotor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
+      const Vector3d lHandPoint = getKinematicChainSensor().theLinks[KinematicChain::LForeArm].M * lHandOffset;
+      const Vector3d rHandPoint = getKinematicChainSensor().theLinks[KinematicChain::RForeArm].M * rHandOffset;
       double measured_ratio = 0.5 * (lHandPoint - rHandPoint).abs();
       double step = 5.0;
       MODIFY("IKGrasping:thresh_dist_dist:step", step);
@@ -361,6 +401,18 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   }//end switch
 
 
+  // hand control
+  //double handsControl = (sin(getFrameInfo().getTimeInSeconds()) + 1.0)*0.5;
+  //getMotorJointData().position[JointData::LHand] = handsControl;
+  //getMotorJointData().position[JointData::RHand] = handsControl;
+
+  if(handExperimentStiffness == -1 || (handExperimentStiffness >= 0 && handExperimentStiffness <= 1.0)) {
+    getMotorJointData().stiffness[JointData::LHand] = handExperimentStiffness;
+    getMotorJointData().stiffness[JointData::RHand] = handExperimentStiffness;
+  }
+
+
+
   // apply a minimum to the hands distance
   ratio = max(minDistance, ratio);
   PLOT("IKGrasping:thresh_force_dist_ratio", ratio);
@@ -391,6 +443,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     // TODO: interpolate?
     theCurrentPose = p;
 
+    /*
     InverseKinematic::ChestArmsPose q;
     q.chest = getKinematicChainMotor().theLinks[KinematicChain::Torso].M;
     q.arms.left = getKinematicChainMotor().theLinks[KinematicChain::LForeArm].M;
@@ -399,6 +452,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     q.arms.left.translate(lHandOffset);
     q.arms.right.translate(rHandOffset);
     q.localInChest();
+    */
   }
 }//end calculateTrajectory
 
@@ -423,11 +477,13 @@ void IKArmGrasping::setArmStiffness(double value)
   getMotorJointData().stiffness[MotorJointData::LElbowRoll] = stiffness;
   getMotorJointData().stiffness[MotorJointData::LShoulderPitch] = stiffness;
   getMotorJointData().stiffness[MotorJointData::LShoulderRoll] = stiffness;
+  getMotorJointData().stiffness[MotorJointData::LWristYaw] = stiffness;
 
   getMotorJointData().stiffness[MotorJointData::RElbowYaw] = stiffness;
   getMotorJointData().stiffness[MotorJointData::RElbowRoll] = stiffness;
   getMotorJointData().stiffness[MotorJointData::RShoulderPitch] = stiffness;
   getMotorJointData().stiffness[MotorJointData::RShoulderRoll] = stiffness;
+  getMotorJointData().stiffness[MotorJointData::RWristYaw] = stiffness;
 }//end setArmStiffness
 
 
@@ -507,7 +563,7 @@ void IKArmGrasping::debugDraw3D()
   //const Kinematics::Link* lio = MotionBlackBoard::getInstance().theKinematicChain.theLinks;
 
   // draw the current grasping center
-  const Pose3D& chestPose = getKinematicChainMotor().theLinks[KinematicChain::Torso].M;
+  const Pose3D& chestPose = getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
   SPHERE("CD7F32", 20, chestPose * graspingCenter);
 
   // visualization of the current requested pose

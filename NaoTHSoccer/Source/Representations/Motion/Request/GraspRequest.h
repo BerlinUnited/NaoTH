@@ -46,7 +46,7 @@ public:
     no_sensor_dist,
     thresh_dist_dist,
     thresh_curr_dist,
-    thresh_force_dist
+    hand_grasp_experiment
   };
 
   enum GraspStiffState {
