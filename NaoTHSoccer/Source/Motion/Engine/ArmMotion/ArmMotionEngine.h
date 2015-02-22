@@ -47,9 +47,9 @@ class ArmMotionEngine: private ArmMotionEngineBase
 {
 public:
   ArmMotionEngine();
-  ~ArmMotionEngine();
+  virtual ~ArmMotionEngine();
 
-  void execute();
+  virtual void execute();
 
 private:
   class ArmMotionParams : public ParameterList
@@ -85,6 +85,7 @@ private:
   ArmMotionParams theArmMotionParams;
 
 private:
+  bool init;
   naoth::MotorJointData theMotorJointDataOld;
   naoth::JointData theJointData;
 
@@ -113,8 +114,6 @@ private:
   // set all the joints with the same stiffness
   void setStiffness(double stiffness);
   void hold();
-
-  ArmMotionRequest::ArmMotionID current_id;
 
   bool armsNeutral();
   bool armsDown();
