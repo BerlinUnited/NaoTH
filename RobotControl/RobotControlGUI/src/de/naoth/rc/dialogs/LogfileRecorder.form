@@ -86,10 +86,7 @@
         <Component class="javax.swing.JComboBox" name="cbLogName">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
-                <StringItem index="0" value="CognitionLog"/>
-                <StringItem index="1" value="MotionLog"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Choose the Logger Module"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -194,7 +191,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="de.naoth.rc.dialogs.panels.StringSelectionPanel" name="stringSelectionPanel">
+    <Component class="de.naoth.rc.components.StringSelectionPanel" name="stringSelectionPanel">
       <Properties>
         <Property name="toolTipText" type="java.lang.String" value="Move Items to the right to select them."/>
         <Property name="enabled" type="boolean" value="false"/>

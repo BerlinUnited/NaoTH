@@ -5,30 +5,32 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.ExtendedFileChooser;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
-import de.naoth.rc.server.MessageServer;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.SwingWorker;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 
@@ -37,14 +39,16 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 @PluginImplementation
-public class LogfileRecorder extends AbstractDialog implements CommandSender
+public class LogfileRecorder extends AbstractDialog
 {
 
   @InjectPlugin
   public RobotControl parent;
-  private MessageServer server;
-  private String selectedLog;
+  @InjectPlugin
+  public static SwingCommandExecutor commandExecutor;
   
+  //private MessageServer server;
+  private LoggerItem selectedLog;
   
   Map<String, List<String>> selectionLists = new TreeMap<String, List<String>>();
         
@@ -54,7 +58,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
   {
     initComponents();
 
-    selectedLog = (String) cbLogName.getSelectedItem();
+    selectedLog = (LoggerItem) cbLogName.getSelectedItem();
     
     
     // TODO: make it config
@@ -74,33 +78,63 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     );
     
     // todo: load from config
-    javax.swing.DefaultComboBoxModel m = new javax.swing.DefaultComboBoxModel();
+    DefaultComboBoxModel m = new DefaultComboBoxModel();
     m.addElement("none");
     m.addElement("Basic Perception");
     m.addElement("Last Record");
-    
     cbSelectionScheme.setModel(m);
+   
     
+    DefaultComboBoxModel loggerListModel = new DefaultComboBoxModel();
+    loggerListModel.addElement(new LoggerItem("CognitionLog", "Cognition:CognitionLog"));
+    loggerListModel.addElement(new LoggerItem("MotionLog", "Motion:MotionLog"));
+    cbLogName.setModel(loggerListModel);
+  }
+  
+  class LoggerItem
+  {
+      private final String name;
+      private final String cmd;
+      
+      public LoggerItem(String name, String cmd) {
+          this.name = name;
+          this.cmd = cmd;
+      }
+      
+      @Override
+      public String toString() {
+          return name;
+      }
+      
+      public Command getCommand() {
+          return new Command(cmd);
+      }
   }
 
-  @Init
-  @Override
-  public void init()
+  class DefaultHandler implements ObjectListener<byte[]>
   {
-    this.server = parent.getMessageServer();
-  }
+    @Override
+    public void newObjectReceived(final byte[] result)
+    {
+        
+    }
 
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
+    @Override
+    public void errorOccured(String cause) {
+        btRecord.setEnabled(false);
+        btSave.setEnabled(false);
+        btClose.setEnabled(false);
+        txtTempFile.setEnabled(true);
+    
+        JOptionPane.showMessageDialog(null, "command failed: " + cause,
+            "ERROR", JOptionPane.ERROR_MESSAGE);
+    }
   }
-
-  @Override
-  public void handleResponse(final byte[] result, Command originalCommand)
+  
+  class UpdateLogListHandler extends DefaultHandler
   {
-    if (originalCommand.getArguments().size() >= 1
-      && originalCommand.getArguments().containsKey("open"))
+    @Override
+    public void newObjectReceived(final byte[] result)
     {
         // remember selected stuff
         ArrayList<String> selectedOptions = 
@@ -115,23 +149,6 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     }
   }
 
-  @Override
-  public void handleError(int code)
-  {
-    btRecord.setEnabled(false);
-    btSave.setEnabled(false);
-    btClose.setEnabled(false);
-    txtTempFile.setEnabled(true);
-    
-    JOptionPane.showMessageDialog(null, "command failed: " + code,
-      "ERROR", JOptionPane.ERROR_MESSAGE);
-  }
-
-  @Override
-  public Command getCurrentCommand()
-  {
-    return new Command("ping");
-  }
 
   private void close()
   {
@@ -148,15 +165,17 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     txtTempFile.setEnabled(true);
     cbLogName.setEnabled(true);
 
-    Command cmdOff = new Command(selectedLog)
+    Command cmdOff = selectedLog.getCommand()
       .addArg("off");
 
-    server.executeSingleCommand(this, cmdOff);
-
+    //server.executeSingleCommand(this, cmdOff);
+    commandExecutor.executeCommand(new DefaultHandler(), cmdOff);
+    
     // close file on robot
-    Command cmdClose = new Command(selectedLog)
+    Command cmdClose = selectedLog.getCommand()
       .addArg("close");
-    server.executeSingleCommand(this, cmdClose);
+    //server.executeSingleCommand(this, cmdClose);
+    commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
   }
 
   /** This method is called from within the constructor to
@@ -166,8 +185,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
    */
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         saveFileChooser = new ExtendedFileChooser();
         tbLog = new javax.swing.JToolBar();
@@ -189,16 +207,13 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         tbLog.setFloatable(false);
         tbLog.setRollover(true);
 
-        cbLogName.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CognitionLog", "MotionLog" }));
         cbLogName.setToolTipText("Choose the Logger Module");
         cbLogName.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         cbLogName.setMaximumSize(new java.awt.Dimension(124, 29));
         cbLogName.setMinimumSize(new java.awt.Dimension(124, 29));
         cbLogName.setPreferredSize(new java.awt.Dimension(124, 29));
-        cbLogName.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbLogName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbLogNameActionPerformed(evt);
             }
         });
@@ -209,10 +224,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btNew.setFocusable(false);
         btNew.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btNew.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btNew.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btNewActionPerformed(evt);
             }
         });
@@ -224,10 +237,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btRecord.setFocusable(false);
         btRecord.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btRecord.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRecord.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btRecord.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btRecordActionPerformed(evt);
             }
         });
@@ -239,10 +250,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btClose.setFocusable(false);
         btClose.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btClose.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btClose.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btCloseActionPerformed(evt);
             }
         });
@@ -253,10 +262,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         btSave.setFocusable(false);
         btSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSave.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSaveActionPerformed(evt);
             }
         });
@@ -275,10 +282,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         stringSelectionPanel.setEnabled(false);
 
         cbSelectionScheme.setEnabled(false);
-        cbSelectionScheme.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbSelectionScheme.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbSelectionSchemeActionPerformed(evt);
             }
         });
@@ -333,11 +338,13 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
 
       if(parent.checkConnected())
       {
-        Command openCMD = new Command(selectedLog)
+        Command openCMD = selectedLog.getCommand()
           .addArg("open", txtTempFile.getText());
-
+        
+        //server.executeSingleCommand(this, openCMD);
+        commandExecutor.executeCommand(new UpdateLogListHandler(), openCMD);
+        
         btNew.setEnabled(false);
-        server.executeSingleCommand(this, openCMD);
         btRecord.setEnabled(true);
         btSave.setEnabled(false);
         btClose.setEnabled(true);
@@ -367,16 +374,18 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
           Collection<String> remaining = stringSelectionPanel.getOptions();
           for(String item: remaining)
           {
-              Command cmdActivate = new Command(selectedLog).addArg("deactive", item);
-              server.executeSingleCommand(this, cmdActivate);
+              Command cmdActivate = selectedLog.getCommand().addArg("deactive", item);
+              //server.executeSingleCommand(this, cmdActivate);
+              commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
 
           // active all selected items
           Collection<String> selected = stringSelectionPanel.getSelection();
           for(String item: selected)
           {
-              Command cmdActivate = new Command(selectedLog).addArg("activate", item);
-              server.executeSingleCommand(this, cmdActivate);
+              Command cmdActivate = selectedLog.getCommand().addArg("activate", item);
+              //server.executeSingleCommand(this, cmdActivate);
+              commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
           
           // remember selected stuff
@@ -386,9 +395,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         }
         
         // activate permantent logging
-        Command cmdOnOff = new Command(selectedLog)
+        Command cmdOnOff = selectedLog.getCommand()
           .addArg((btRecord.isSelected() ? "on" : "off"));
-        server.executeSingleCommand(this, cmdOnOff);
+        //server.executeSingleCommand(this, cmdOnOff);
+        commandExecutor.executeCommand(new DefaultHandler(), cmdOnOff);
         
         // disable the controls once the recording started
         if(btRecord.isSelected())
@@ -438,9 +448,10 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
 
     private void cbLogNameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbLogNameActionPerformed
     {//GEN-HEADEREND:event_cbLogNameActionPerformed
-      selectedLog = (String) cbLogName.getSelectedItem();
+      selectedLog = (LoggerItem) cbLogName.getSelectedItem();
+      
       // auto change the filename
-      String autofilename = selectedLog.toLowerCase();
+      String autofilename = selectedLog.toString().toLowerCase();
       autofilename = autofilename.substring(0, autofilename.length()-3) + ".log";
       String filename = txtTempFile.getText();
       int i = filename.lastIndexOf("/"); //File.separator
@@ -478,6 +489,8 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
     private javax.swing.JTextField txtTempFile;
     // End of variables declaration//GEN-END:variables
 
+    
+    
   class Copier extends SwingWorker<Boolean, File> {
       String name;
       File store;
@@ -497,12 +510,12 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
           FileOutputStream out = new FileOutputStream(this.store);
           SftpProgressMonitor monitor = new MyProgressMonitor();
 
-          scp = new Scp(server.getAddress().getAddress().getHostAddress());
+          scp = new Scp(parent.getMessageServer().getAddress().getAddress().getHostAddress());
           scp.c.get(name, out, monitor);
 
           out.close();
         }
-        catch(Exception ex) {
+        catch(JSchException | SftpException | IOException ex) {
           Helper.handleException("Could not get logfile from the robot", ex);
           return false;
         }
