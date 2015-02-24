@@ -253,16 +253,23 @@ public class NaoSCP extends javax.swing.JFrame {
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
 
                         // send stuff to robot
-                        Scp scp = new Scp("192.168.56.101", "nao", "nao");
+                        Scp scp = new Scp("10.0.4.85", "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
+                        scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
                         scp.cleardir("/home/nao/tmp");
-                        scp.put(deployDir, "/home/nao/tmp");
+                        scp.put(deployDir, "/home/nao/tmp/deploy");
                         scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
 
                         //scp.channel.chown(WIDTH, utilsPath);
                         scp.chmod(755, "/home/nao/tmp/setup.sh");
-                        scp.run("/home/nao/tmp", "./setup.sh");
+                        //scp.run("/home/nao/tmp", "./setup.sh");
+                        
+                        Scp.CommandStream shell =  scp.getShell();
+                        shell.run("su");
+                        shell.run("root");
+                        shell.run("cd /home/nao/tmp/");
+                        shell.run("./setup.sh", "DONE");
 
                         scp.disconnect();
 

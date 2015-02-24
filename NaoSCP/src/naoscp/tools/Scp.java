@@ -37,7 +37,8 @@ public class Scp {
         session = jsch.getSession(userName, ip, 22);
         session.setConfig(config);
         session.setUserInfo(ui);
-        session.connect(3000);
+        session.setPassword(ui.getPassword());
+        session.connect();
 
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
@@ -136,7 +137,7 @@ public class Scp {
                             sb.append(ch);
                         }
                         System.err.print(ch);
-                        if(sb.toString().contains(expect) || sb.toString().contains(cmd)) {
+                        if(sb.toString().contains(expect)) {
                             check = true;
                         }
                     }
