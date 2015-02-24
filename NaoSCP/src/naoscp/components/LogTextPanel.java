@@ -7,8 +7,6 @@
 package naoscp.components;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -71,7 +69,7 @@ public class LogTextPanel extends javax.swing.JPanel {
                 
                 try {
                     // try to parse console output
-                    if(lr.getLevel() == Level.FINE) 
+                    if(lr.getLevel() == Level.FINEST) 
                     {
                         String pattern = "(\\e\\[(\\d{1,2}(;\\d{1,2})?)m)";
                         String message = lr.getMessage();

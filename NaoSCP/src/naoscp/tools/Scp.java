@@ -38,7 +38,7 @@ public class Scp {
         session.setConfig(config);
         session.setUserInfo(ui);
         session.setPassword(ui.getPassword());
-        session.connect();
+        session.connect(3000);
 
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
@@ -60,7 +60,7 @@ public class Scp {
         
         ChannelExec c = (ChannelExec)session.openChannel("exec");
         c.setCommand(cmd);
-        c.setOutputStream(new LogStream(Level.FINE));
+        c.setOutputStream(new LogStream(Level.FINEST));
         c.setErrStream(new LogStream(Level.SEVERE));
         c.connect();
         // block until the execution is done
@@ -144,7 +144,7 @@ public class Scp {
                     try{Thread.sleep(100);}catch(Exception e){System.out.println(e);}
                 }
                
-                java.util.logging.Logger.getGlobal().log(Level.FINE, sb.toString());
+                java.util.logging.Logger.getGlobal().log(Level.FINEST, sb.toString());
                 
             }
         }
