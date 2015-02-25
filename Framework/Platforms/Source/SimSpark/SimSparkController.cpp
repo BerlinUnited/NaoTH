@@ -1199,6 +1199,10 @@ bool SimSparkController::updateSee(VirtualVision& virtualVision, const sexp_t* s
       { 
         ok = parsePoint3D(t->next, virtualVision.data[name]);
       }
+      else if("B" == name) // ball
+      {
+        ok = parsePoint3D(t->next, virtualVision.data[name]);
+      }
       else // parse other points
       {
         if( ignore.find(name) == ignore.end() ) // new unknown message
