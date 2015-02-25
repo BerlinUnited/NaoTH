@@ -108,7 +108,7 @@ public:
   virtual std::string getHeadNickName() const;
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 

@@ -228,7 +228,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   return false;
 }//end connect
 
-bool SimSparkController::init(const std::string& teamName, unsigned int playerNumber, const std::string& server, unsigned int port, bool sync)
+bool SimSparkController::init(const std::string& modelPath, const std::string& teamName, unsigned int playerNumber, const std::string& server, unsigned int port, bool sync)
 {
   Platform::getInstance().init(this);
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
@@ -246,7 +246,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int playerNu
   theSocket.init(socket);
 
   // send create command to simulator
-  theSocket << "(scene rsg/agent/naov4/nao.rsg)" << theSync << send;
+  //"rsg/agent/naov4/nao.rsg";
+  theSocket << "(scene " << modelPath << ")" << theSync << send;
 
   // wait the response
   getSensorData(theSensorData);
