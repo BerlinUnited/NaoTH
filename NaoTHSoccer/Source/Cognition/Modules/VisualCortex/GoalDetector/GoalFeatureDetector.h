@@ -83,6 +83,7 @@ private:
       PARAMETER_REGISTER(threshold) = 60;
       PARAMETER_REGISTER(thresholdGradient) = 40;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
+      PARAMETER_REGISTER(maxFeatureWidth) = 213;
 
       syncWithConfig();
     }
@@ -98,6 +99,7 @@ private:
     bool useColorFeatures;
     int threshold;
     int thresholdGradient;
+    int maxFeatureWidth;
 
     double thresholdFeatureGradient;
   };

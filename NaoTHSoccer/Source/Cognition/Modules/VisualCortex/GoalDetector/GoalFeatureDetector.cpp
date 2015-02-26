@@ -153,7 +153,8 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
         DEBUG_REQUEST("Vision:GoalFeatureDetector:markGradients", 
           LINE_PX(ColorClasses::black, end.x, end.y, end.x + (int)(10*gradientEnd.x+0.5), end.y + (int)(10*gradientEnd.y+0.5));
         );
-        if(fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient) 
+        int featureWidth = (end - begin).abs();
+        if(fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient && featureWidth < parameters.maxFeatureWidth) 
         {
           DEBUG_REQUEST("Vision:GoalFeatureDetector:markPeaks", 
             LINE_PX(ColorClasses::blue, begin.x, begin.y, end.x, end.y);
