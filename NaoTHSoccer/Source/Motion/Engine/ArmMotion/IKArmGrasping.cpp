@@ -254,7 +254,7 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       ratio -= (measured_current < currThres) * step;
       break;
     }
-    case GraspRequest::hand_grasp_experiment:
+    case GraspRequest::hand_grasp_experiment_sinus:
     {
       if(handExperimentStiffness > 1.0) {
         break;
@@ -276,6 +276,16 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
       double handsControl = 1.0-fabs(sin(d/maxTime*Math::pi));
       getMotorJointData().position[JointData::LHand] = handsControl;
       getMotorJointData().position[JointData::RHand] = handsControl;
+      break;
+    }
+    case GraspRequest::hand_grasp_experiment_linear:
+    {
+
+      break;
+    }
+    case GraspRequest::hand_grasp_experiment_frequent:
+    {
+
       break;
     }
     default: 

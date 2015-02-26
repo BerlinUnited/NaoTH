@@ -35,7 +35,9 @@ GraspingBehaviorControl::GraspingBehaviorControl()
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:no_sensor_dist", "..", false);
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:thresh_dist_dist", "sets the desired distance to the measured distance minus a constant", false);
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:thresh_curr_dist", "uses the threshhold conroler with currency as input and distance as output", false);
-  DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment", "open-close hands with different stiffness", false);
+  DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_sinus", "open-close hands with different stiffness using a sinusodial trajectory", false);
+  DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_linear", "open-close hands with different stiffness using a linear trajectory", false);
+  DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_frequent", "open-close hands with different open-closing frequencies", false);
 
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:StiffController:max_stiff", "sets the arms stiffness to a maximum", false);
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:Grasp:StiffController:integ_curr_stiff", "uses the integral conroler with currency as input and stiffness as output", false);
@@ -90,7 +92,9 @@ void GraspingBehaviorControl::execute()
   DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:no_sensor_dist",    graspDistState = GraspRequest::no_sensor_dist;);
   DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:thresh_dist_dist",  graspDistState = GraspRequest::thresh_dist_dist;);
   DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:thresh_curr_dist",  graspDistState = GraspRequest::thresh_curr_dist;);
-  DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment", graspDistState = GraspRequest::hand_grasp_experiment;);
+  DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_sinus", graspDistState = GraspRequest::hand_grasp_experiment_sinus;);
+  DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_linear", graspDistState = GraspRequest::hand_grasp_experiment_linear;);
+  DEBUG_REQUEST("GraspingBehaviorControl:Grasp:DistController:hand_grasp_experiment_frequent", graspDistState = GraspRequest::hand_grasp_experiment_frequent;);
 
   // stiffness controllers
   DEBUG_REQUEST("GraspingBehaviorControl:Grasp:StiffController:max_stiff",         graspStiffState = GraspRequest::max_stiff;);
