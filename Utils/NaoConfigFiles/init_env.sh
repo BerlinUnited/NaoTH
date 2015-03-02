@@ -133,7 +133,7 @@ cp -r ./home/nao/lib/* /home/nao/lib
 # Check and Update Runlevel Configuration for Non-Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable ofono=disable";
+./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable";
 
 # allow everyone to shutdown
 chmod +s /sbin/shutdown
