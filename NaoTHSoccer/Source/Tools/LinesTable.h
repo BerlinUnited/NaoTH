@@ -245,7 +245,7 @@ public:
     {
       canvas.drawLine(lines[i].begin().x, lines[i].begin().y,
         lines[i].end().x, lines[i].end().y);
-    }//end for
+    }
 
 
     canvas.pen("FF0000", 20);
