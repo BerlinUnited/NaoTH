@@ -407,7 +407,15 @@ public class NaoTHPanel extends javax.swing.JPanel {
             this.localBinDir = new File(projectDir, localBinPath);
         }
 
-        public void run(File deployDir) {
+        public void run(File deployDir) throws NaoSCPException 
+        {
+            // HACK: check if there is anything to be done
+            if(!cbCopyLib.isSelected() && 
+               !cbCopyExe.isSelected() &&
+               !cbCopyConfig.isSelected()) 
+            {
+                throw new NaoSCPException("Set up deploy directory: no action selected");
+            }
             
             Logger.getGlobal().log(Level.INFO, "Set up deploy directory '" + deployDir + "'");
             File deployBinDir = new File(deployDir, deployBinPath);
@@ -426,26 +434,29 @@ public class NaoTHPanel extends javax.swing.JPanel {
             }
 
             // copy Config
-            File deployConfigDir = new File(deployDir, deployConfigPath);
-            deployConfigDir.mkdirs();
-            FileUtils.copyFiles(localConfigDir, deployConfigDir);
+            if(cbCopyConfig.isSelected())
+            {
+                File deployConfigDir = new File(deployDir, deployConfigPath);
+                deployConfigDir.mkdirs();
+                FileUtils.copyFiles(localConfigDir, deployConfigDir);
 
-            // the "private" folder should always be empty
-            File privateFolder = new File(deployConfigDir, "private");
-            FileUtils.deleteDir(privateFolder);
-            if (!privateFolder.mkdir()) {
-                Logger.getGlobal().log(Level.SEVERE, "Could not create empty \"private\" folder: " + privateFolder.getPath());
-            }
-            
-            try {
-                //write the config files
-                getTeamCommCfg().writeToFile(new File(privateFolder, "teamcomm.cfg"));
-                getPlayerCfg().writeToFile(new File(privateFolder, "player.cfg"));
-                writeScheme(jSchemeBox.getSelectedItem().toString(),new File(deployConfigDir, "scheme.cfg"));
-            
-            } catch(IOException ex) {
-                Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());
-                ex.printStackTrace(System.err);
+                // the "private" folder should always be empty
+                File privateFolder = new File(deployConfigDir, "private");
+                FileUtils.deleteDir(privateFolder);
+                if (!privateFolder.mkdir()) {
+                    Logger.getGlobal().log(Level.SEVERE, "Could not create empty \"private\" folder: " + privateFolder.getPath());
+                }
+
+                try {
+                    //write the config files
+                    getTeamCommCfg().writeToFile(new File(privateFolder, "teamcomm.cfg"));
+                    getPlayerCfg().writeToFile(new File(privateFolder, "player.cfg"));
+                    writeScheme(jSchemeBox.getSelectedItem().toString(),new File(deployConfigDir, "scheme.cfg"));
+
+                } catch(IOException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());
+                    ex.printStackTrace(System.err);
+                }
             }
         }
         
