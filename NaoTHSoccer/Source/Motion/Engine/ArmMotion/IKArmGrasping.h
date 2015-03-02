@@ -85,6 +85,10 @@ private:
   double handExperimentStiffness;
   double handExperimentStartTime;
 
+  //
+  double graspDistStateChangeTime;
+  GraspRequest::GraspDistState lastGraspDistState;
+
   // the currently executed pose
   InverseKinematic::ChestArmsPose theCurrentPose;
 

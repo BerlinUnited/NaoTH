@@ -25,7 +25,9 @@ IKArmGrasping::IKArmGrasping()
   currentState(motion::stopped),
   graspingCenter(defaultGraspingCenter),
   ratio(100.0),
-  handExperimentStiffness(0)
+  handExperimentStiffness(0),
+  handExperimentStartTime(0),
+  graspDistStateChangeTime(0)
 {
   //theReachibilityGridLeft.setRightFoot(true);
 
@@ -34,6 +36,8 @@ IKArmGrasping::IKArmGrasping()
   DEBUG_REQUEST_REGISTER("IKArmGrasping:3D_draw_reachable_space", "...", false);
 
   DEBUG_REQUEST_REGISTER("IKArmGrasping:use_grasping_center_request", "...", false);
+
+  lastGraspDistState = getMotionRequest().graspRequest.graspDistState;
 }
 
 IKArmGrasping::~IKArmGrasping() 
@@ -201,6 +205,11 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   // initial position
   InverseKinematic::ChestArmsPose p = initialPose;
 
+  if(lastGraspDistState != getMotionRequest().graspRequest.graspDistState) {
+    graspDistStateChangeTime = getFrameInfo().getTimeInSeconds();
+    lastGraspDistState = getMotionRequest().graspRequest.graspDistState;
+  }
+  double graspDistStateTime = getFrameInfo().getTimeInSeconds() - graspDistStateChangeTime;
 
   // control the distance
   switch (motionRequest.graspRequest.graspDistState) 
@@ -280,7 +289,22 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     }
     case GraspRequest::hand_grasp_experiment_linear:
     {
+      const double maxTime = 2.0; // in s
+      double handsControl = 1.0-fabs(sin(graspDistStateTime/maxTime*Math::pi));
+      getMotorJointData().position[JointData::LHand] = handsControl;
+      getMotorJointData().position[JointData::RHand] = handsControl;
 
+
+      double stiffFactor = 15.0;
+      MODIFY("IKArmGrasping:hand_grasp_experiment_linear:factor", stiffFactor);
+      for (int i = JointData::LHand; i <= JointData::RHand; i++)
+      {
+        double measuredAngle = getSensorJointData().position[i];
+        double targetAngle = getMotorJointData().position[i];
+        double value = fabs(measuredAngle - targetAngle)*stiffFactor;
+        double stiffness = Math::clamp(value,-1.0,1.0);
+        getMotorJointData().stiffness[i] = stiffness;
+      }
       break;
     }
     case GraspRequest::hand_grasp_experiment_frequent:
@@ -416,11 +440,12 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
   //getMotorJointData().position[JointData::LHand] = handsControl;
   //getMotorJointData().position[JointData::RHand] = handsControl;
 
+  /*
   if(handExperimentStiffness == -1 || (handExperimentStiffness >= 0 && handExperimentStiffness <= 1.0)) {
     getMotorJointData().stiffness[JointData::LHand] = handExperimentStiffness;
     getMotorJointData().stiffness[JointData::RHand] = handExperimentStiffness;
   }
-
+  */
 
 
   // apply a minimum to the hands distance
