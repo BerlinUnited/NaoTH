@@ -133,7 +133,7 @@ public class NetwokPanel extends javax.swing.JPanel {
 
         jLabel22.setText("Broadcast");
 
-        subnetFieldLAN.setText("10.0.4");
+        subnetFieldLAN.setText("192.168.13");
 
         netmaskFieldLAN.setText("255.255.255.0");
 
@@ -148,7 +148,7 @@ public class NetwokPanel extends javax.swing.JPanel {
 
         jLabel23.setText("Broadcast");
 
-        subnetFieldWLAN.setText("192.168.13");
+        subnetFieldWLAN.setText("10.0.4");
 
         netmaskFieldWLAN.setText("255.255.255.0");
 
