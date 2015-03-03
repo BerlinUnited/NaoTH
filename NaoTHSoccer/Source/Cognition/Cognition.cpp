@@ -31,7 +31,9 @@
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
+// perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
@@ -46,6 +48,8 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
+#include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+#include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -108,6 +112,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
+
+  // perception
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
@@ -121,6 +127,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalFeatureDetector);
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(BallDetector);
+
+  REGISTER_MODULE(VirtualVisionProcessor);
+  REGISTER_MODULE(PerceptionsVisualizer);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
@@ -142,6 +151,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamCommSender);
   
   // debug
+  REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(DebugExecutor);

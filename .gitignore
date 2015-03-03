@@ -19,3 +19,6 @@ projectconfig.user.lua
 RobotControl/RobotConnector/src/de/naoth/rc/messages
 NaoTHSoccer/Source/Messages
 Framework/Commons/Source/Messages
+
+#particular files
+behavior-ic.dat
