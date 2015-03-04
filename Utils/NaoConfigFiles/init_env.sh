@@ -177,3 +177,10 @@ chmod 744 ./checkRC.sh;
 ./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
 
 # ----------------------
+
+# configure the lib dependencies
+ldconfig;
+
+# allow everyone to shutdown
+chmod +s /sbin/shutdown
+chmod +s /sbin/reboot
