@@ -71,8 +71,8 @@ then
     then
         echo "could not create /home/nao/lib"
     else
-        chown -R nao:nao /home/nao/lib;
-        chmod -R 755 /home/nao/lib;
+        chown nao:nao /home/nao/lib;
+        chmod 744 /home/nao/lib;
     fi
 fi
 
@@ -84,8 +84,8 @@ then
     then
         echo "could not create /home/nao/bin"
     else
-        chown -R nao:nao /home/nao/bin;
-        chmod -R 755 /home/nao/bin;
+       chown nao:nao /home/nao/bin;
+       chmod 755 /home/nao/bin;
     fi
 fi
 
@@ -97,8 +97,8 @@ then
     then
         echo "could not create /home/nao/naoqi/Config"
     else
-        chown -R nao:nao /home/nao/naoqi/Config;
-        chmod -R 644 /home/nao/naoqi/Config;
+        chown nao:nao /home/nao/naoqi/Config;
+        chmod 744 /home/nao/naoqi/Config;
     fi
 fi
 
@@ -108,18 +108,21 @@ then
     echo "setting link to NaoTH Config directory";
     ln -s /home/nao/naoqi/Config /home/nao/Config;
 fi
+# ----------- stop naoqi -----------
+
+nao stop
 
 # ----------- copy naoth binaries -----------
 
 copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
-copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
+copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 444
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
 fi
 
 cp -r ./home/nao/naoqi/Config/* /home/nao/Config
-
+chown -R nao:nao /home/nao/naoqi/Config;
 
 # ----------- copy libs -----------
 if [ -d "/home/nao/lib" ]; then
