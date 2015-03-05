@@ -6,6 +6,8 @@ depends(){
     after naoqi
 }
 
+PID="/tmp/cognition.pid"
+
 start(){
   ebegin "starting naoth"
     naoth start
