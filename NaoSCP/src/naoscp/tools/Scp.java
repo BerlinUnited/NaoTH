@@ -38,7 +38,7 @@ public class Scp {
         session.setConfig(config);
         session.setUserInfo(ui);
         session.setPassword(ui.getPassword());
-        session.connect(3000);
+        session.connect(30000);
 
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
