@@ -45,6 +45,9 @@ copy ./kernel/drivers/media/video/mt9m114.ko $video_driver_path root 644
 # NaoTH init script
 copy ./etc/init.d/naoth /etc/init.d/naoth root 755
 
+# Needed by NaoTH init script
+copy ./etc/init.d/cognition-common /etc/init.d/cognition-common root 755
+
 # NaoTH
 copy ./usr/bin/naoth /usr/bin/naoth root 755
 
@@ -110,7 +113,7 @@ then
 fi
 # ----------- stop naoqi -----------
 
-nao stop
+/etc/init.d/naoqi stop
 
 # ----------- copy naoth binaries -----------
 
