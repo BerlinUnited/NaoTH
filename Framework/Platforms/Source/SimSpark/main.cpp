@@ -31,6 +31,8 @@ int main(int argc, char** argv)
   gchar* optTeamName = NULL;
   unsigned int num = 0; // zero means get a number from server
   string server = "localhost";
+  string modelPath = "rsg/agent/naov4/nao.rsg";
+  gchar* optModelPath = NULL;
   gchar* optServer = NULL;
   unsigned int port = 3100;
   gboolean sync = false;
@@ -39,6 +41,7 @@ int main(int argc, char** argv)
     {"num",'n', 0, G_OPTION_ARG_INT, &num, "player number", "0"},
     {"team", 't', 0, G_OPTION_ARG_STRING, &optTeamName, "team name", "NaoTH"},
     {"server", 's', 0, G_OPTION_ARG_STRING, &optServer, "server host", "localhost"},
+    {"model_path", 0, 0, G_OPTION_ARG_STRING, &optModelPath, "path for the model of the robot", "rsg/agent/naov4/nao.rsg"},
     {"port", 'p', 0, G_OPTION_ARG_INT, &port, "server port", "3100"},
     {"sync", 0, 0,  G_OPTION_ARG_NONE, &sync, "sync mode", NULL},
     {NULL,0,0,G_OPTION_ARG_NONE, NULL, NULL, NULL} // This NULL is very important!!!
@@ -79,13 +82,18 @@ int main(int argc, char** argv)
     server = optServer;
     g_free(optServer);
   }
+  if ( optModelPath != NULL )
+  {
+    modelPath = optModelPath;
+    g_free(optModelPath);
+  }
   g_option_context_free(context);
   
   SimSparkController theController(MAKE_NAME(PLATFORM_NAME));
 
-  if (!theController.init(teamName, num, server, port, sync > 0))
+  if (!theController.init(modelPath, teamName, num, server, port, sync > 0))
   {
-      cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
+    cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
     return EXIT_FAILURE;
   }
 
