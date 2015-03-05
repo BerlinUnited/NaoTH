@@ -12,13 +12,13 @@ class VoronoiCellT: public T
 {
 public:
 
-	VoronoiCellT<T>(){}
+  VoronoiCellT<T>(){}
 
     Vector2d site;
     std::vector<VoronoiCellT<T>*> neighbors;
 
 
-	/** Sets the position of this node
+  /** Sets the position of this node
     * @param position The position
     */
     void setPosition(const Vector2d& position)
@@ -42,12 +42,12 @@ public:
     struct CompareSite : public std::binary_function<Vector2d,Vector2d,bool>
     {
       bool operator()(const Vector2d& l, const Vector2d& r) const {
-		return (l.y < r.y) || ( (l.y == r.y) && (l.x < r.x));
+    return (l.y < r.y) || ( (l.y == r.y) && (l.x < r.x));
       }
     };
 
-	void addPointToPointsOfCell(const Vector2d& point)
-	{
+  void addPointToPointsOfCell(const Vector2d& point)
+  {
 
       // the angle if the site would be (0,0)
       double angle = (point-this->site).angle();

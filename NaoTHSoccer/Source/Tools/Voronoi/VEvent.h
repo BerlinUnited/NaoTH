@@ -7,16 +7,16 @@
 /*
 The class for storing place / circle event in event queue.
 
-point		: the point at which current event occurs (top circle point for circle event, focus point for place event)
-pe			: whether it is a place event or not
-y			: y coordinate of "point", events are sorted by this "y"
-arch		: if "pe", it is an arch above which the event occurs
+point    : the point at which current event occurs (top circle point for circle event, focus point for place event)
+pe      : whether it is a place event or not
+y      : y coordinate of "point", events are sorted by this "y"
+arch    : if "pe", it is an arch above which the event occurs
 */
 
 class VEvent
 {
 public:
-  Vector2d*	point;
+  Vector2d*  point;
   bool pe;
   VParabola* arch;
   Vector2d intersecitonPoint;
@@ -24,15 +24,15 @@ public:
   /*
   Constructor for the class
 
-  p		: point, at which the event occurs
-  pev		: whether it is a place event or not
+  p    : point, at which the event occurs
+  pev    : whether it is a place event or not
   */
 
   VEvent(Vector2d* p, bool pev)
   {
-    point	= p;
-    pe		= pev;
-    arch	= 0;
+    point  = p;
+    pe    = pev;
+    arch  = 0;
   }
 
   /*

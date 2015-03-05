@@ -30,17 +30,17 @@ Voronoi::Voronoi()
 
 void Voronoi::calculate(Vertices* v, Edges* edg,  double w,  double h)
 {
-	places = v;
-	width = w;
-	height = h;
-	root = 0;
+  places = v;
+  width = w;
+  height = h;
+  root = 0;
 
   edges = edg;
 
   //clean up for next round
   for(Vertices::iterator i = points.begin(); i != points.end(); ++i) delete (*i);
-	for(Edges::iterator i = edges->begin(); i != edges->end(); ++i) delete (*i);
-	points.clear();
+  for(Edges::iterator i = edges->begin(); i != edges->end(); ++i) delete (*i);
+  points.clear();
   edges->clear();
 
 
@@ -67,42 +67,42 @@ void Voronoi::calculate(Vertices* v, Edges* edg,  double w,  double h)
 
 
   // feed the queue using the y values
-	for(Vertices::iterator i = places->begin(); i!=places->end(); ++i)
-	{
-		queue.push(new VEvent( *i, true));
-	}
+  for(Vertices::iterator i = places->begin(); i!=places->end(); ++i)
+  {
+    queue.push(new VEvent( *i, true));
+  }
     // now are only site/place events inside the queue, site events will add a parabola to the beach line
 
-	VEvent * e;
-	while(!queue.empty())
-	{
+  VEvent * e;
+  while(!queue.empty())
+  {
         //get first event from the queue
-		e = queue.top();
-		queue.pop();
+    e = queue.top();
+    queue.pop();
 
         //ly is the current y coordinate of the sweep line
-		ly = e->point->y;
+    ly = e->point->y;
 
         //deleted is the set of false or deleted events
         //deleted is needed because events are not deleted from the queue, e.g. watch (**) in InsertParabola
-		if(deleted.find(e) != deleted.end()) { delete(e); deleted.erase(e); continue;}
+    if(deleted.find(e) != deleted.end()) { delete(e); deleted.erase(e); continue;}
 
         // if a place/site event a new parabola is added
-		if(e->pe) InsertParabola(e->point);
+    if(e->pe) InsertParabola(e->point);
         // else a parabola has to be removed
-		else RemoveParabola(e);
-		delete(e);
-	}
-	
+    else RemoveParabola(e);
+    delete(e);
+  }
+  
   FinishEdge(root);
 
   for(Edges::iterator i = edges->begin(); i != edges->end(); ++i)
-	{
-		if( (*i)->neighbour) 
-		{
+  {
+    if( (*i)->neighbour) 
+    {
       (*i)->start = (*i)->neighbour->end;
-			delete (*i)->neighbour;
-		}
+      delete (*i)->neighbour;
+    }
   }
 }
 
@@ -112,14 +112,14 @@ void Voronoi::InsertParabola(Vector2d* p)
 
   //if no parabola exists, build the first - the root
   //the parabolas are managed in a binary tree. Each parabola has a reference to its parent(public) and its kids(private)
-	if(!root){root = new VParabola(p); return;}
+  if(!root){root = new VParabola(p); return;}
 
   // it is true for the second site event if they are realy close
   if(root->isLeaf && root->site->y - p->y < 1) // Google: The case degenerate - sacrifice the lower points in the same high (original: degenerovan ppad - ob spodn msta ve stejn vce)
-	{
+  {
     // TODO: nach x Koordinate pruefen und entsprechend in den Baum schmeien
     Vector2d* fp = root->site;
-		root->isLeaf = false;
+    root->isLeaf = false;
     if(fp->x < p->x){
       root->SetLeft( new VParabola(fp) );
       root->SetRight(new VParabola(p)  );
@@ -128,16 +128,16 @@ void Voronoi::InsertParabola(Vector2d* p)
       root->SetRight(new VParabola(fp)  );
     }
     Vector2d* s = new Vector2d((p->x + fp->x)/2, height); //Google: The beginning of the middle edge points (original zatek hrany uprosted mst)
-		points.push_back(s);
-		if(p->x > fp->x) root->edge = new VEdge(s, fp, p); // rozhodnu, kter vlevo, kter vpravo
-		else root->edge = new VEdge(s, p, fp);
-		edges->push_back(root->edge);
-		return;
-	}
+    points.push_back(s);
+    if(p->x > fp->x) root->edge = new VEdge(s, fp, p); // rozhodnu, kter vlevo, kter vpravo
+    else root->edge = new VEdge(s, p, fp);
+    edges->push_back(root->edge);
+    return;
+  }
 
   //now the parabola under the new site is needed
-	VParabola* par = GetParabolaByX(p->x);
-	
+  VParabola* par = GetParabolaByX(p->x);
+  
   // (**) if par has a circle event (parabola will be remove while the circle event)
   // the circle event has to be remove from the priority queue because par will be "replaced"
   // but the left and right parabola of the new sequenz must have a circle event
@@ -147,7 +147,7 @@ void Voronoi::InsertParabola(Vector2d* p)
     par->cEvent = 0;
     //mustHaveCircleEvent=true;
   }
-	
+  
   // remember par is the parabola under the new site p
   // start is the new beginning of a new edge of the voronoi diagram
   // GetY returns the y-coordinate of the intersection of par with the
@@ -156,7 +156,7 @@ void Voronoi::InsertParabola(Vector2d* p)
   Vector2d* start = new Vector2d(p->x, GetY(*(par->site), p->x));
 
   // start is added to the list of new points which are determined during the algorithm
-	points.push_back(start);
+  points.push_back(start);
 
   // 2 new half edges => will be later combined to one edge
   // different "directions":
@@ -168,31 +168,31 @@ void Voronoi::InsertParabola(Vector2d* p)
   // neighbour from el is er
   // may be needed to combine both at the end?
   el->neighbour = er;
-	edges->push_back(el);
+  edges->push_back(el);
 
   // tree has to be rebuild because a new parabola is added (original: pestavuju strom .. vkldm novou parabolu)
   // par become a inner node of the tree which describes the edge between new site p and the site of par
   par->edge = er;
-	par->isLeaf = false;
+  par->isLeaf = false;
 
     // par to the left of ps parabola
-	VParabola * p0 = new VParabola(par->site);
+  VParabola * p0 = new VParabola(par->site);
     // ps parabola
-	VParabola * p1 = new VParabola(p);
+  VParabola * p1 = new VParabola(p);
     // par to the right of ps parabola
-	VParabola * p2 = new VParabola(par->site);
+  VParabola * p2 = new VParabola(par->site);
 
     // pars child to the right in the tree is p2
-	par->SetRight(p2);
+  par->SetRight(p2);
     // pars child to the left is a subtree...
   par->SetLeft(new VParabola());
     //... its root is the edge el ...
-	par->Left()->edge = el;
+  par->Left()->edge = el;
     //... left child of its root is the old part of par ...
-	par->Left()->SetLeft(p0);
+  par->Left()->SetLeft(p0);
     //... and the right child of its root is the new parabola of p
-	par->Left()->SetRight(p1);
-	
+  par->Left()->SetRight(p1);
+  
   // now check then p0 or p2 have their circle event
   CheckCircle(p0,mustHaveCircleEvent);
   CheckCircle(p2,mustHaveCircleEvent);
@@ -200,13 +200,13 @@ void Voronoi::InsertParabola(Vector2d* p)
 
 void Voronoi::RemoveParabola(VEvent* e)
 {
-	VParabola* p1 = e->arch;
+  VParabola* p1 = e->arch;
 
-	VParabola* xl = VParabola::GetLeftParent(p1);
-	VParabola* xr = VParabola::GetRightParent(p1);
+  VParabola* xl = VParabola::GetLeftParent(p1);
+  VParabola* xr = VParabola::GetRightParent(p1);
 
-	VParabola* p0 = VParabola::GetLeftChild(xl);
-	VParabola* p2 = VParabola::GetRightChild(xr);
+  VParabola* p0 = VParabola::GetLeftChild(xl);
+  VParabola* p2 = VParabola::GetRightChild(xr);
 
   bool p0MustHaveCircleEvent=false;
   bool p2MustHaveCircleEvent=false;
@@ -221,40 +221,40 @@ void Voronoi::RemoveParabola(VEvent* e)
   // TODO: Schnittpunktkoordinaten in dem Event speichern -> brauch nicht neu berechnet werden (Fehler?)
   // determine the point where p1 disappears / intersection point of 2 edges
   Vector2d* p = new Vector2d(e->intersecitonPoint);
-	points.push_back(p);
+  points.push_back(p);
 
   // p is the end point of the two edges xl and xr
   xl->edge->end = *p;
   xr->edge->end = *p;
-	
+  
   VParabola * higher=NULL;
-	VParabola * par = p1;
+  VParabola * par = p1;
 
     // the edge which is higher in the tree (xr or xl) becomes the new edge starting in p
-	while(par != root)
-	{
-		par = par->parent;
-		if(par == xl) higher = xl;
-		if(par == xr) higher = xr;
-	}
-	higher->edge = new VEdge(p, p0->site, p2->site);
-	edges->push_back(higher->edge);
+  while(par != root)
+  {
+    par = par->parent;
+    if(par == xl) higher = xl;
+    if(par == xr) higher = xr;
+  }
+  higher->edge = new VEdge(p, p0->site, p2->site);
+  edges->push_back(higher->edge);
 
   // delete p1 and the lower edge (xl or xr)
-	VParabola * gparent = p1->parent->parent;
-	if(p1->parent->Left() == p1)
-	{
-		if(gparent->Left()  == p1->parent) gparent->SetLeft ( p1->parent->Right() );
-		if(gparent->Right() == p1->parent) gparent->SetRight( p1->parent->Right() );
-	}
-	else
-	{
-		if(gparent->Left()  == p1->parent) gparent->SetLeft ( p1->parent->Left()  );
-		if(gparent->Right() == p1->parent) gparent->SetRight( p1->parent->Left()  );
-	}
+  VParabola * gparent = p1->parent->parent;
+  if(p1->parent->Left() == p1)
+  {
+    if(gparent->Left()  == p1->parent) gparent->SetLeft ( p1->parent->Right() );
+    if(gparent->Right() == p1->parent) gparent->SetRight( p1->parent->Right() );
+  }
+  else
+  {
+    if(gparent->Left()  == p1->parent) gparent->SetLeft ( p1->parent->Left()  );
+    if(gparent->Right() == p1->parent) gparent->SetRight( p1->parent->Left()  );
+  }
 
-	delete p1->parent;
-	delete p1;
+  delete p1->parent;
+  delete p1;
 
   CheckCircle(p0,p0MustHaveCircleEvent);
   CheckCircle(p2,p2MustHaveCircleEvent);
@@ -268,7 +268,7 @@ void Voronoi::FinishEdge(VParabola * n)
   double mx=0;
   double my=0;
 
-  if(n->edge->direction->x > 0.0)	{
+  if(n->edge->direction->x > 0.0)  {
       mx = std::max(width/2.0,n->edge->start.x);
       my = n->edge->start.y + n->edge->direction->y * (mx - n->edge->start.x)/n->edge->direction->x;
   }
@@ -336,7 +336,7 @@ double Voronoi::GetXOfEdge(VParabola* par,  double y) const
 //     double a1 = 1.0 / dp;
 //     double b1 = -2.0 * l->x / dp;
 //     double c1 = y + dp / 4 + l->x * l->x / dp;
-			
+      
 //    dp = 2.0 * (r->y - y);
 //    // if sweep line did not move downwards
 //    if(dp==0) return r->x;
@@ -344,11 +344,11 @@ double Voronoi::GetXOfEdge(VParabola* par,  double y) const
 //     double a2 = 1.0 / dp;
 //     double b2 = -2.0 * r->x/dp;
 //     double c2 = ly + dp / 4 + r->x * r->x / dp;
-			
+      
 //     double a = a1 - a2;
 //     double b = b1 - b2;
 //     double c = c1 - c2;
-			
+      
 //     double disc = b*b - 4 * a * c;
 //     double x1 = (-b + std::sqrt(disc)) / (2*a);
 //     double x2 = (-b - std::sqrt(disc)) / (2*a);
@@ -362,16 +362,16 @@ double Voronoi::GetXOfEdge(VParabola* par,  double y) const
 
 VParabola* Voronoi::GetParabolaByX(double xx) const
 {
-	VParabola* par = root;
+  VParabola* par = root;
   double x = 0.0;
 
-	while(!par->isLeaf) // projdu stromem dokud nenarazm na vhodn list
-	{
-		x = GetXOfEdge(par, ly);
-		if(x>xx) par = par->Left();
-		else par = par->Right();				
-	}
-	return par;
+  while(!par->isLeaf) // projdu stromem dokud nenarazm na vhodn list
+  {
+    x = GetXOfEdge(par, ly);
+    if(x>xx) par = par->Left();
+    else par = par->Right();        
+  }
+  return par;
 }
 
 double Voronoi::GetY(const Vector2d& p,  double x) const // focus, x-coordinate (original: ohnisko, x-souadnice)
@@ -380,18 +380,18 @@ double Voronoi::GetY(const Vector2d& p,  double x) const // focus, x-coordinate 
   // double a1 = 1;
   double b1 = -2 * p.x;
   double c1 = p.x * p.x;
-	
+  
   return (x*x + b1*x + c1)/dp+ly+dp/4;
 }
 
 void Voronoi::CheckCircle(VParabola* b, bool mustHaveCircleEvent)
 {
     // have to check if they are rigth, they look confusing
-	VParabola* lp = VParabola::GetLeftParent(b);
-	VParabola* rp = VParabola::GetRightParent(b);
+  VParabola* lp = VParabola::GetLeftParent(b);
+  VParabola* rp = VParabola::GetRightParent(b);
 
-	VParabola* a  = VParabola::GetLeftChild (lp);
-	VParabola* c  = VParabola::GetRightChild(rp);
+  VParabola* a  = VParabola::GetLeftChild (lp);
+  VParabola* c  = VParabola::GetRightChild(rp);
 
   // a or c don't exist
   if(!a || !c) return;
@@ -512,10 +512,10 @@ Vector2d* Voronoi::GetEdgeIntersection(VEdge* a, VEdge* b, bool mustIntersect) c
     if((y - b->start.y)/b->direction->y < 0) return 0;
 
     Vector2< double>  * p = new Vector2< double> (x, y);
-	points.push_back(p);
-	return p;
+  points.push_back(p);
+  return p;
     */
 }
 
 
-	
+  
