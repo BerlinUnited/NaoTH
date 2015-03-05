@@ -14,7 +14,10 @@ copy(){
     # backup
     if [ -f ${to} ]
     then
-      mv "${to}" "${to}.bak";
+			if [ ! -f "${to}.bak" ]
+			then
+				mv "${to}" "${to}.bak";
+			fi
     fi
     
     # copy the file
@@ -117,7 +120,9 @@ fi
 
 # ----------- copy naoth binaries -----------
 
+rm -f /home/nao/bin/naoth.bak
 copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
+rm -f /home/nao/bin/libnaosmal.so.bak
 copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 444
 
 if [ -d "/home/nao/naoqi/Config" ]; then
