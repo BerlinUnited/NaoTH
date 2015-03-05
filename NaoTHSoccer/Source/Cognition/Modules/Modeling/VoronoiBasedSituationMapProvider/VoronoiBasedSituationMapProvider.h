@@ -15,12 +15,12 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
-BEGIN_DECLARE_MODULE(VoronoiBasedSituationMapProvider)
-	REQUIRE(FieldInfo)
 
-	PROVIDE(DebugRequest)
-	PROVIDE(DebugDrawings)
-	PROVIDE(DebugModify)
+BEGIN_DECLARE_MODULE(VoronoiBasedSituationMapProvider)
+  REQUIRE(FieldInfo)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugModify)
 END_DECLARE_MODULE(VoronoiBasedSituationMapProvider)
 
 class VoronoiBasedSituationMapProvider: public VoronoiBasedSituationMapProviderBase
@@ -30,13 +30,14 @@ public:
  ~VoronoiBasedSituationMapProvider();
 
  virtual void execute();
-
+ 
 private:
 
 	//patterns
-    Pattern backgroundpattern;
-	VoronoiCellGraph voronoiCellGraph;
-	
+  Pattern backgroundpattern;
+  VoronoiCellGraph voronoiCellGraph;
+  void doDebugRequests();
+
 };
 
 #endif  /* _VoronoiBasedSituationMapProvider_H */
