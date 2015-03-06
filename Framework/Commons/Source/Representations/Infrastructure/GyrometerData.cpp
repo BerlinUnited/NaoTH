@@ -38,7 +38,7 @@ void Serializer<GyrometerData>::deserialize(std::istream& stream, GyrometerData&
   msg.ParseFromZeroCopyStream(&buf);
 
   // allow us to parse old log files
-  if(msg.legacypackeddata_size() == 7)
+  if(msg.legacypackeddata_size() == 5)
   {
     for(int i=0; i<2; i++)
     {

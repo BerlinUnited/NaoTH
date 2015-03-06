@@ -95,11 +95,13 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
-	flags { "ExtraWarnings" }
-	if _OPTIONS["Wno-conversion"] == nil then
-		buildoptions {"-Wconversion"}
-		defines { "_NAOTH_CHECK_CONVERSION_" }
-	end
+    flags { "ExtraWarnings" }
+    -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
+    buildoptions {"-Wno-deprecated-declarations"}
+    if _OPTIONS["Wno-conversion"] == nil then
+      buildoptions {"-Wconversion"}
+      defines { "_NAOTH_CHECK_CONVERSION_" }
+    end
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
