@@ -25,7 +25,7 @@ public:
   double expectation_xSquared; // Sum of squares of the message intervals
   bool valid;
   
-  std::map<unsigned int, double> failureProbabilities; // Map from robot number to its current failure probability
+  std::map<unsigned int, double> failureProbabilities; // Map from a robot's number to its current failure probability
 
   TeamMessageStatisticsModel()
     :
