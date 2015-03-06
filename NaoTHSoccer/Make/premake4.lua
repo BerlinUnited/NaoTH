@@ -99,6 +99,8 @@ solution "NaoTHSoccer"
     -- disable warning "comparison always true due to limited range of data type"
     -- this warning is caused by protobuf 2.4.1
     buildoptions {"-Wno-type-limits"}
+    -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
+    buildoptions {"-Wno-deprecated-declarations"}
     if _OPTIONS["Wno-conversion"] == nil then
 		  buildoptions {"-Wconversion"}
 		  defines { "_NAOTH_CHECK_CONVERSION_" }
