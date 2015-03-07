@@ -1,22 +1,22 @@
 /* 
- * File:   Action.h
+ * File:   ActionNew.h
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
-* Declaration of class Action
+* Declaration of class ActionNew
 */
-#ifndef _Action_H
-#define _Action_H
+#ifndef _ActionNew_H
+#define _ActionNew_H
 #include <Tools/Math/Vector2.h>
-class Action
+class ActionNew
 {
 public:
 
-  Action() {}
+  ActionNew() {}
 
-  virtual ~Action() {}
+  virtual ~ActionNew() {}
 
   Vector2d impactVector;
   double distribution;
 };
 
 
-#endif  /* _Action_H */
+#endif  /* _ActionNew_H */
