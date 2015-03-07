@@ -25,6 +25,9 @@ public:
     sidekick_right 
   };
   
+  //number of ActionID's, has to write manual
+  static const int numOfActions = 5;
+
   ActionId myAction;
 
   virtual void print(std::ostream& stream) const
