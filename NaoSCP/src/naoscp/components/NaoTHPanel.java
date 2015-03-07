@@ -444,7 +444,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
                 File privateFolder = new File(deployConfigDir, "private");
                 FileUtils.deleteDir(privateFolder);
                 if (!privateFolder.mkdir()) {
-                    Logger.getGlobal().log(Level.SEVERE, "Could not create empty \"private\" folder: " + privateFolder.getPath());
+                    //Logger.getGlobal().log(Level.SEVERE, "Could not create empty \"private\" folder: " + privateFolder.getPath());
+                    throw new NaoSCPException("Could not create empty \"private\" folder: " + privateFolder.getPath());
                 }
 
                 try {
@@ -454,8 +455,9 @@ public class NaoTHPanel extends javax.swing.JPanel {
                     writeScheme(jSchemeBox.getSelectedItem().toString(),new File(deployConfigDir, "scheme.cfg"));
 
                 } catch(IOException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());
-                    ex.printStackTrace(System.err);
+                    //Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());
+                    //ex.printStackTrace(System.err);
+                    throw new NaoSCPException("Could not write config\n" + ex.getMessage());
                 }
             }
         }

@@ -312,6 +312,9 @@ public class NaoSCP extends javax.swing.JFrame {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    
+                    setEnabledAll(false);
+                    
                     try 
                     {
                         // STEP 1: create the deploy directory for the playerNumber
@@ -322,7 +325,7 @@ public class NaoSCP extends javax.swing.JFrame {
                         if (deployDir.isDirectory()) {
                             // backup 
                             //FileUtils.deleteDir(deployDir);
-                            if(deployDir.renameTo(new File(targetDir, "bak"))) {
+                            if(deployDir.renameTo(new File(targetDir, "deploy.bak"))) {
                                 deployDir = new File(targetDir,"deploy");
                             } else {
                                 Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
@@ -330,16 +333,21 @@ public class NaoSCP extends javax.swing.JFrame {
                         }
 
                         if (!deployDir.mkdirs()) {
-                            Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                        } else {
-                            //NaoSCP.this.setEnabledAll(false);
-                            naoTHPanel.getAction().run(new File(targetDir,"deploy"));
-                            FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-                            //NaoSCP.this.setEnabledAll(true);
-                        }
+                            //Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                            throw new NaoSCPException("Could not create deploy out directory");
+                        } 
+
+                        //NaoSCP.this.setEnabledAll(false);
+                        naoTHPanel.getAction().run(new File(targetDir,"deploy"));
+                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
+                        //NaoSCP.this.setEnabledAll(true);
+                        
+                        Logger.getGlobal().log(Level.INFO, "DONE");
                     } catch (NaoSCPException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
+                    
+                    setEnabledAll(true);
                 }
             }).start();
         }
