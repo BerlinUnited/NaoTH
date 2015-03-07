@@ -3,46 +3,10 @@
 #include <cmath>
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
-     dt(0.03),
      epsilon(10e-6)
 {
-    // state transition matrix
-    F << 1, dt, 0, 0,
-         0,  1, 0, 0,
-         0,  0, 1, dt,
-         0,  0, 0, 1;
-
-    // control matrix
-    B << 0,  0, 0,  0,
-         1, dt, 0,  0,
-         0,  0, 0,  0,
-         0,  0, 1, dt;
-
-    // covariance matrix of process noise (values taken from old kalman filter)
-    double q = 3;
-    Q << q, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, q, 0,
-         0, 0, 0, 0;
-
-    // inital covariance matrix of current state (values taken from old kalman filter)
-    double p = 250000;
-    P << p, p, 0, 0,
-         p, p, 0, 0,
-         0, 0, p, p,
-         0, 0, p, p;
-
-    // state to measurement transformation matrix
-    H << 1, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, 1, 0,
-         0, 0, 0, 0;
-
-    // covariance matrix of measurement noise (values taken from old kalman filter)
-    R << 100, 0,   0, 0,
-           0, 0,   0, 0,
-           0, 0, 100, 0,
-           0, 0,   0, 0;
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",     "draw the modelled ball on the field",  false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept", "draw the real incomming ball percept", false);
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
@@ -52,6 +16,18 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 
 void PlainKalmanFilterBallLocator::execute()
 {
+
+    if(!getBallModel().valid && getBallPercept().ballWasSeen)
+    {
+        Eigen::Vector4d x;
+        x << getBallPercept().bearingBasedOffsetOnField.x,
+             0,
+             getBallPercept().bearingBasedOffsetOnField.y,
+             0;
+
+        filter.setState(x);
+    }
+
     //////////////////////////////////
     // Odometry-update (translation): move the model into the current local coordinte system
     //////////////////////////////////
@@ -62,49 +38,36 @@ void PlainKalmanFilterBallLocator::execute()
 //    Sx[0] = h.x; Sy[0] = h.y;
 //    How to handle speed / velocity -> should be rotate
 
-    // handle friction as an input control for acceleration
-    double deceleration = 4;
-    if(fabs(x(1)) <= epsilon) {
-        u(1) = 0;
-    } else {
-        u(1) = ((x(1) < 0) ? 1 : -1) * deceleration;
-    }
+    Eigen::Vector4d x = filter.getState();
+    Eigen::Vector4d u = Eigen::Vector4d::Zero(); // control vector
 
-    if(fabs(x(3)) <= epsilon) {
-        u(3) = 0;
-    } else {
-        u(3) = ((x(3) < 0) ? 1 : -1) * deceleration;
-    }
+// handle friction as an input control for acceleration
+//    double deceleration = 4;
+//    if(fabs(x(1)) > epsilon) {
+//        u(1) = ((x(1) < 0) ? 1 : -1) * deceleration;
+//    }
+
+//    if(fabs(x(3)) > epsilon) {
+//        u(3) = ((x(3) < 0) ? 1 : -1) * deceleration;
+//    }
 
     // prediction
-    x_pre = F * x + B * u; // + w;
-
-    P_pre = F * P * F.transpose() + Q;
+    double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
+    filter.prediction(u, dt);
 
     // measurement
     newPercept = getBallPercept();
     if(newPercept.ballWasSeen)
     {
+        Eigen::Vector2d z;
         z << newPercept.bearingBasedOffsetOnField.x,
-             0,
-             newPercept.bearingBasedOffsetOnField.y,
-             0;
+             newPercept.bearingBasedOffsetOnField.y;
 
         // fusion/update
-        K = P_pre * H.transpose() * (H * P_pre * H.transpose() + R).inverse();
-
-        x_corr = x_pre + K * (z - H * x_pre );
-
-        P_corr = P_pre - K*H*P_pre;
-
-        x = x_corr;
-        P = P_corr;
+        filter.update(z);
     }
-    else
-    {
-        x = x_pre;
-        P = P_pre;
-    }
+
+    x = filter.getState();
 
     // set ball model representation
     getBallModel().position.x = x(0);
@@ -114,6 +77,13 @@ void PlainKalmanFilterBallLocator::execute()
 
     // TODO: decide whether model is valid depending on P or time
     // e.g. if (max, min, std)
+
+    if(newPercept.ballWasSeen)
+    {
+      getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
+    }
+
+
     if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0) // 10s
     {
       //reset(newPercept);
@@ -121,6 +91,52 @@ void PlainKalmanFilterBallLocator::execute()
     }
     else
     {
-     getBallModel().valid = true;
+      getBallModel().valid = true;
     }
+
+    doDebugRequest();
+
+    lastFrameInfo = getFrameInfo();
+}
+
+void PlainKalmanFilterBallLocator::doDebugRequest()
+{
+    if(getBallPercept().ballWasSeen) {
+        //to check correctness of the prediction
+        DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
+
+          PEN("FF0000", 10);
+          CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+        );
+    }
+
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field",
+      FIELD_DRAWING_CONTEXT;
+
+      PEN("FF0000", 30);
+      CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
+
+      if(getBallModel().valid)
+      {
+        if(newPercept.ballWasSeen)
+          PEN("FF9900", 20);
+        else
+          PEN("0099FF", 20);
+      }
+      else
+        PEN("999999", 20);
+
+      CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
+      ARROW( getBallModel().position.x, getBallModel().position.y,
+             getBallModel().position.x+getBallModel().speed.x,
+             getBallModel().position.y+getBallModel().speed.y);
+
+      Eigen::Matrix4d P = filter.getCovariance();
+
+      // draw the distribution
+      PEN("00FFFF", 20);
+      OVAL(getBallModel().position.x, getBallModel().position.y, P(0,0), P(2,2));
+      PEN("FF00FF", 20);
+      OVAL(getBallModel().position.x, getBallModel().position.y, P(1,1), P(3,3));
+    );
 }

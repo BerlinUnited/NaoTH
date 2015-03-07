@@ -11,23 +11,29 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include "KalmanFilter4d.h"
 
-#include <eigen3/Eigen/Eigen>
+// debug
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
-// debug
 
-//  PROVIDE(DebugDrawings)
-//  PROVIDE(DebugRequest)
+// debug stuff
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
+
+  REQUIRE(FieldInfo)
+
 //  PROVIDE(DebugModify)
 //  PROVIDE(DebugPlot)
 //  PROVIDE(DebugParameterList)
 
 //  REQUIRE(BodyState)
   REQUIRE(FrameInfo)
-//  REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
 //  REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
@@ -59,28 +65,12 @@ private:
 
     BallPercept newPercept;
 
+    FrameInfo lastFrameInfo;
+
 
 private:
-    Eigen::Matrix4d F; // state transition matrix
-    Eigen::Matrix4d B; // control matrix
-    Eigen::Vector4d x; // state x_location, x_velocity, y_location, y_velocity
-    Eigen::Vector4d u; // control vector x_velocity, x_acceleration, y_velocity, y_acceleration
-    Eigen::Vector4d x_pre;  // predicted state
-    Eigen::Vector4d x_corr; // corrected state
-    Eigen::Vector4d w; // noise
+    KalmanFilter4d filter;
 
-    Eigen::Matrix4d Q; // covariance matrix of process noise
-    Eigen::Matrix4d P; // covariance matrix of current state
-    Eigen::Matrix4d P_pre;  // covariance matrix of predicted state
-    Eigen::Matrix4d P_corr; // covariance matrix of corrected state
-
-    Eigen::Vector4d z; // measurement
-    Eigen::Matrix4d H; // state to measurement transformation matrix
-    Eigen::Matrix4d R; // covariance matrix of measurement noise
-
-    Eigen::Matrix4d K; // kalman gain
-
-    const double dt; // 30 ms
     const double epsilon; // 10e-6
 
     const BallPercept& getBallPercept() const
@@ -93,6 +83,8 @@ private:
         return PlainKalmanFilterBallLocatorBase::getBallPercept();
       }
     }
+
+    void doDebugRequest();
 };
 
 #endif // PLAINKALMANFILTERBALLLOCATOR_H
