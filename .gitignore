@@ -2,7 +2,8 @@
 dist/
 build/
 private/
-Deploy/
+deploy/
+NaoSCP/tmp/
 
 #java project files
 build.xml
