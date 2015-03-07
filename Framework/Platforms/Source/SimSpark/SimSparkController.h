@@ -7,7 +7,7 @@
  */
 
 #ifndef _SIMSPARKCONTROLLER_H
-#define  _SIMSPARKCONTROLLER_H
+#define _SIMSPARKCONTROLLER_H
 
 
 #include <glib.h>
@@ -44,6 +44,7 @@
 
 #include "sfsexp/SexpParser.h"
 #include <Extern/libb64/decode.h>
+#include <set>
 
 using namespace naoth;
 
@@ -92,6 +93,9 @@ private:
 
   TeamCommEncoder theTeamCommEncoder;
 
+  // set of unknown messages to be ignored
+  std::set<std::string> ignore;
+
 public:
   SimSparkController(const std::string& name);
 
@@ -104,7 +108,7 @@ public:
   virtual std::string getHeadNickName() const;
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 

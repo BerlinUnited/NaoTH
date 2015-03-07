@@ -95,44 +95,49 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
-	flags { "ExtraWarnings" }
-	if _OPTIONS["Wno-conversion"] == nil then
-		buildoptions {"-Wconversion"}
-		defines { "_NAOTH_CHECK_CONVERSION_" }
-	end
+    flags { "ExtraWarnings" }
+    -- disable warning "comparison always true due to limited range of data type"
+    -- this warning is caused by protobuf 2.4.1
+    buildoptions {"-Wno-type-limits"}
+    -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
+    buildoptions {"-Wno-deprecated-declarations"}
+    if _OPTIONS["Wno-conversion"] == nil then
+		  buildoptions {"-Wconversion"}
+		  defines { "_NAOTH_CHECK_CONVERSION_" }
+    end
 
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
-  configuration {"windows"}
+    configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
     buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
-				  "/wd4996", -- disable warning: "...deprecated..."
-				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
-	links {"ws2_32"}
-	debugdir "$(SolutionDir).."
+                  "/wd4996", -- disable warning: "...deprecated..."
+                  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
+    links {"ws2_32"}
+    debugdir "$(SolutionDir).."
   end
   
   configuration {"linux"}
-   if(_ACTION == "gmake") then
-     -- "position-independent code" needed to compile shared libraries.
-	 -- In our case it's only the NaoSMAL. So, we probably don't need this one.
-	 -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
-	 -- http://www.akkadia.org/drepper/dsohowto.pdf
-    buildoptions {"-fPIC"}
-    -- may be needed for newer glib2 versions, remove if not needed
-    buildoptions {"-Wno-deprecated-declarations"}
-    buildoptions {"-Wno-deprecated"}
-    flags { "ExtraWarnings" }
-    links {"pthread"}
-	
-	if _OPTIONS["Wno-conversion"] == nil then
-		buildoptions {"-Wconversion"}
-		defines { "_NAOTH_CHECK_CONVERSION_" }
-	end
-	
-	-- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
-	linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
-   end
+    if(_ACTION == "gmake") then
+      -- "position-independent code" needed to compile shared libraries.
+      -- In our case it's only the NaoSMAL. So, we probably don't need this one.
+      -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
+      -- http://www.akkadia.org/drepper/dsohowto.pdf
+      buildoptions {"-fPIC"}
+      -- may be needed for newer glib2 versions, remove if not needed
+      buildoptions {"-Wno-deprecated-declarations"}
+      buildoptions {"-Wno-deprecated"}
+      flags { "ExtraWarnings" }
+      links {"pthread"}
+    
+      if _OPTIONS["Wno-conversion"] == nil then
+        buildoptions {"-Wconversion"}
+        defines { "_NAOTH_CHECK_CONVERSION_" }
+      end
+    
+      -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
+      linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
+    end
    
   -- base
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
@@ -142,9 +147,11 @@ solution "NaoTHSoccer"
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      -- HACK: boost from NaoQI SDK makes problems
+      buildoptions {"-Wno-conversion"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
-	  kind "ConsoleApp"
-	  links { "NaoTHSoccer", "Commons" }
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
