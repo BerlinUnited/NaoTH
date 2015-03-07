@@ -214,7 +214,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
       IMG_GET(pos.x, pos.y, pixel);
       int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
-      DEBUG_REQUEST("Vision:Detectors:GoalFeatureDetector:draw_scanlines",
+       DEBUG_REQUEST("Vision:GoalFeatureDetector:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
       );
 
@@ -245,7 +245,8 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
           POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
         );
         // double edgel
-        if(begin_found && fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient) 
+        int featureWidth = (peak_point_max - peak_point_min).abs();
+        if(begin_found && fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient && featureWidth < parameters.maxFeatureWidth) 
         {
           DEBUG_REQUEST("Vision:GoalFeatureDetector:markPeaks",
             LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
