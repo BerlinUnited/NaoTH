@@ -30,7 +30,7 @@ void VoronoiBasedSituationMapProvider::execute()
     (*it).second.attractionValue = (*it).first.abs2();
   }
 
- // doDebugRequests();
+ doDebugRequests();
 
 }
 
@@ -64,41 +64,41 @@ void VoronoiBasedSituationMapProvider::doDebugRequests()
 
 
  DEBUG_REQUEST("VBSMP:drawPotentialField",{
-            FIELD_DRAWING_CONTEXT;
+     FIELD_DRAWING_CONTEXT;
 
-            double maxPotential = (*voronoiCellGraph.getCellGraph().begin()).second.attractionValue;
+     double maxPotential = (*voronoiCellGraph.getCellGraph().begin()).second.attractionValue;
 
-            for(CellGraph::iterator it=voronoiCellGraph.getCellGraph().begin();it !=voronoiCellGraph.getCellGraph().end(); it++)
-      {
-                if((*it).second.attractionValue>maxPotential)
-        {
-                    maxPotential=(*it).second.attractionValue;
+     for(CellGraph::iterator it=voronoiCellGraph.getCellGraph().begin();it !=voronoiCellGraph.getCellGraph().end(); it++)
+     {
+       if((*it).second.attractionValue>maxPotential)
+       {
+         maxPotential=(*it).second.attractionValue;
+       }
+     }
+       if(maxPotential != 0)
+       {
+         for(CellGraph::iterator it=voronoiCellGraph.getCellGraph().begin();it !=voronoiCellGraph.getCellGraph().end(); it++)
+         {
+           std::stringstream x;
+           std::stringstream y;
+
+           std::list<Vector2< double> >::iterator it2=(*it).second.pointsOfCell.begin();
+           x << (*it2).x;
+           y << (*it2).y;
+
+           for(it2=((*it).second.pointsOfCell.begin()++); it2!=(*it).second.pointsOfCell.end(); it2++)
+           {
+             x << "," << (*it2).x;
+             y << "," << (*it2).y;
+           }
+          
+           Color f(1.0,1.0,0.0,((*it).second.attractionValue/maxPotential));
+           PEN(f,10);
+           FILLPOLYGON(x.str(),y.str());
+
+           x.str("");
+           y.str("");
         }
       }
-            if(maxPotential != 0){
-        for(CellGraph::iterator it=voronoiCellGraph.getCellGraph().begin();it !=voronoiCellGraph.getCellGraph().end(); it++)
-        {
-          std::stringstream x;
-          std::stringstream y;
-
-          std::list<Vector2< double> >::iterator it2=(*it).second.pointsOfCell.begin();
-          x << (*it2).x;
-          y << (*it2).y;
-
-          for(it2=((*it).second.pointsOfCell.begin()++); it2!=(*it).second.pointsOfCell.end(); it2++)
-          {
-            x << "," << (*it2).x;
-            y << "," << (*it2).y;
-          }
-          
-          Color f(1.0,1.0,0.0,((*it).second.attractionValue/maxPotential));
-          PEN(f,10);
-          FILLPOLYGON(x.str(),y.str());
-
-          x.str("");
-          y.str("");
-        }
-           }
     });
-
 }
