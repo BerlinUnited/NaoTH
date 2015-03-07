@@ -134,11 +134,18 @@ public class NetwokPanel extends javax.swing.JPanel {
         jLabel22.setText("Broadcast");
 
         subnetFieldLAN.setText("192.168.13");
+        subnetFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                subnetFieldLANCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         netmaskFieldLAN.setText("255.255.255.0");
 
         broadcastFieldLAN.setEditable(false);
-        broadcastFieldLAN.setText("10.0.4.255");
+        broadcastFieldLAN.setText("192.168.13.255");
 
         jLabel14.setText("WLAN:");
 
@@ -149,11 +156,18 @@ public class NetwokPanel extends javax.swing.JPanel {
         jLabel23.setText("Broadcast");
 
         subnetFieldWLAN.setText("10.0.4");
+        subnetFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                subnetFieldWLANCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         netmaskFieldWLAN.setText("255.255.255.0");
 
         broadcastFieldWLAN.setEditable(false);
-        broadcastFieldWLAN.setText("192.168.13.255");
+        broadcastFieldWLAN.setText("10.0.4.255");
 
         buttonGroupWepWpa.add(radioWPA);
         radioWPA.setSelected(true);
@@ -265,6 +279,14 @@ public class NetwokPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void subnetFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_subnetFieldWLANCaretPositionChanged
+        this.broadcastFieldWLAN.setText(subnetFieldWLAN.getText()+".255");
+    }//GEN-LAST:event_subnetFieldWLANCaretPositionChanged
+
+    private void subnetFieldLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_subnetFieldLANCaretPositionChanged
+        this.broadcastFieldLAN.setText(subnetFieldLAN.getText()+".255");
+    }//GEN-LAST:event_subnetFieldLANCaretPositionChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
