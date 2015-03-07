@@ -468,7 +468,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
                       Config cfg = new Config("player");
                       cfg.values.put("PlayerNumber", String.valueOf(e.getValue()));
-                      cfg.writeToFile(bodyIdConfigFile);
+                      cfg.writeToFile(new File(bodyIdConfigFile, "player.cfg"));
                     }
                     
                 } catch(IOException ex) {
