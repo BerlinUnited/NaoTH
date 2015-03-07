@@ -195,3 +195,8 @@ ldconfig;
 # allow everyone to shutdown
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
+
+echo "initialization done, shutting down system";
+
+shutdown -h now
+
