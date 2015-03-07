@@ -30,7 +30,6 @@ PotentialActionSimulator::PotentialActionSimulator()
 
 void PotentialActionSimulator::execute()
 {
-
   // choose the goal model:
   // use the selflocator by default
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());

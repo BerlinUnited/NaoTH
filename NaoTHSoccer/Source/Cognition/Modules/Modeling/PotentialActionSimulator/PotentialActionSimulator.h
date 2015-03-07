@@ -12,7 +12,6 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
-
 #include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
@@ -27,12 +26,13 @@
 // Tools
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
+#include "Tools/DataStructures/RingBufferWithSum.h"
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
 
-#include "Tools/DataStructures/RingBufferWithSum.h"
+
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -147,7 +147,6 @@ private:
   double calculatePotential(const Vector2d& point, const Vector2d& targetPoint) const;
 
   double globalAttractorPotential(const Vector2d& p, const Vector2d& x) const;
-  double compactRepellerPotential(const Vector2d& p, const Vector2d& x) const;
 
   void calculateAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer) const;
   Vector2d outsideField(const Vector2d& relativePoint) const;
