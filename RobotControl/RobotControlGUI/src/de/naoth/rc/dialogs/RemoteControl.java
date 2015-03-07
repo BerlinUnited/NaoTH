@@ -43,7 +43,7 @@ public class RemoteControl extends AbstractDialog
     boolean w, a, s, d, q, e, shift, strg;
     int lastX;
     int lastY;
-    int lastAlpha;
+    double lastAlpha;
     int lastThrottle;
 
     public RemoteControl()
@@ -63,32 +63,9 @@ public class RemoteControl extends AbstractDialog
         lastAlpha = 0;
         lastThrottle = throttle;
         initComponents();
-        configKeyListeners();
         int x = steeringPanel.getX() + steeringPanel.getHeight() / 2 - midPoint.getHeight() / 2;
         int y = steeringPanel.getY() + steeringPanel.getWidth() / 2 - midPoint.getWidth() / 2;
         midPoint.setLocation(x, y);
-    }
-
-    public void configKeyListeners()
-    {
-        this.addKeyListener(new RemoteControlKeyListener(this));
-        this.backwardButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.backwardLeftButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.backwardRightButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.connectToRobotToggle.addKeyListener(new RemoteControlKeyListener(this));
-        this.forwardButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.forwardLeftButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.forwardRightButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.jToggleButton2.addKeyListener(new RemoteControlKeyListener(this));
-        this.jToolBar1.addKeyListener(new RemoteControlKeyListener(this));
-        this.kickButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.leftButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.midPoint.addKeyListener(new RemoteControlKeyListener(this));
-        this.rightButton.addKeyListener(new RemoteControlKeyListener(this));
-        this.steeringPanel.addKeyListener(new RemoteControlKeyListener(this));
-        this.throttleLabel.addKeyListener(new RemoteControlKeyListener(this));
-        this.throttleSlider.addKeyListener(new RemoteControlKeyListener(this));
-        this.requestFocus();
     }
 
     /**
@@ -104,6 +81,7 @@ public class RemoteControl extends AbstractDialog
         jToolBar1 = new javax.swing.JToolBar();
         connectToRobotToggle = new javax.swing.JToggleButton();
         jToggleButton2 = new javax.swing.JToggleButton();
+        standbyToggle = new javax.swing.JToggleButton();
         throttleLabel = new javax.swing.JLabel();
         throttleSlider = new javax.swing.JSlider();
         forwardButton = new javax.swing.JButton();
@@ -117,6 +95,8 @@ public class RemoteControl extends AbstractDialog
         backwardRightButton = new javax.swing.JButton();
         steeringPanel = new javax.swing.JPanel();
         midPoint = new javax.swing.JPanel();
+        turnLeftButton = new javax.swing.JButton();
+        turnRightButton = new javax.swing.JButton();
 
         jToolBar1.setRollover(true);
 
@@ -139,6 +119,20 @@ public class RemoteControl extends AbstractDialog
         jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jToggleButton2);
 
+        standbyToggle.setSelected(true);
+        standbyToggle.setText("standby");
+        standbyToggle.setFocusable(false);
+        standbyToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        standbyToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        standbyToggle.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                standbyToggleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(standbyToggle);
+
         throttleLabel.setText("Throttle = 50");
         jToolBar1.add(throttleLabel);
 
@@ -151,7 +145,7 @@ public class RemoteControl extends AbstractDialog
         });
         jToolBar1.add(throttleSlider);
 
-        forwardButton.setText("|");
+        forwardButton.setText("↑");
         forwardButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mousePressed(java.awt.event.MouseEvent evt)
@@ -164,7 +158,7 @@ public class RemoteControl extends AbstractDialog
             }
         });
 
-        backwardButton.setText("|");
+        backwardButton.setText("↓");
         backwardButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mousePressed(java.awt.event.MouseEvent evt)
@@ -177,7 +171,7 @@ public class RemoteControl extends AbstractDialog
             }
         });
 
-        rightButton.setText("->");
+        rightButton.setText("→");
         rightButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mousePressed(java.awt.event.MouseEvent evt)
@@ -190,7 +184,7 @@ public class RemoteControl extends AbstractDialog
             }
         });
 
-        leftButton.setText("<-");
+        leftButton.setText("←");
         leftButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mousePressed(java.awt.event.MouseEvent evt)
@@ -213,7 +207,7 @@ public class RemoteControl extends AbstractDialog
             }
         });
 
-        forwardRightButton.setText("/");
+        forwardRightButton.setText("↗");
         forwardRightButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mousePressed(java.awt.event.MouseEvent evt)
@@ -226,152 +220,189 @@ public class RemoteControl extends AbstractDialog
             }
         });
 
-        forwardLeftButton.setText("\\");
-            forwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
+        forwardLeftButton.setText("↖");
+        forwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
             {
-                public void mousePressed(java.awt.event.MouseEvent evt)
-                {
-                    forwardLeftButtonMousePressed(evt);
-                }
-                public void mouseReleased(java.awt.event.MouseEvent evt)
-                {
-                    forwardLeftButtonMouseReleased(evt);
-                }
-            });
-
-            backwardLeftButton.setText("/");
-            backwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
+                forwardLeftButtonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
             {
-                public void mousePressed(java.awt.event.MouseEvent evt)
-                {
-                    backwardLeftButtonMousePressed(evt);
-                }
-                public void mouseReleased(java.awt.event.MouseEvent evt)
-                {
-                    backwardLeftButtonMouseReleased(evt);
-                }
-            });
+                forwardLeftButtonMouseReleased(evt);
+            }
+        });
 
-            backwardRightButton.setText("\\");
-                backwardRightButton.addMouseListener(new java.awt.event.MouseAdapter()
-                {
-                    public void mousePressed(java.awt.event.MouseEvent evt)
-                    {
-                        backwardRightButtonMousePressed(evt);
-                    }
-                    public void mouseReleased(java.awt.event.MouseEvent evt)
-                    {
-                        backwardRightButtonMouseReleased(evt);
-                    }
-                });
+        backwardLeftButton.setText("↙");
+        backwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                backwardLeftButtonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                backwardLeftButtonMouseReleased(evt);
+            }
+        });
 
-                steeringPanel.setBackground(new java.awt.Color(153, 153, 153));
-                steeringPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-                steeringPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
-                {
-                    public void mouseDragged(java.awt.event.MouseEvent evt)
-                    {
-                        steeringPanelMouseDragged(evt);
-                    }
-                });
-                steeringPanel.addMouseListener(new java.awt.event.MouseAdapter()
-                {
-                    public void mousePressed(java.awt.event.MouseEvent evt)
-                    {
-                        steeringPanelMousePressed(evt);
-                    }
-                    public void mouseReleased(java.awt.event.MouseEvent evt)
-                    {
-                        steeringPanelMouseReleased(evt);
-                    }
-                });
+        backwardRightButton.setText("↘");
+        backwardRightButton.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                backwardRightButtonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                backwardRightButtonMouseReleased(evt);
+            }
+        });
 
-                midPoint.setBackground(new java.awt.Color(0, 0, 0));
+        steeringPanel.setBackground(new java.awt.Color(153, 153, 153));
+        steeringPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        steeringPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
+        {
+            public void mouseDragged(java.awt.event.MouseEvent evt)
+            {
+                steeringPanelMouseDragged(evt);
+            }
+        });
+        steeringPanel.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                steeringPanelMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                steeringPanelMouseReleased(evt);
+            }
+        });
 
-                javax.swing.GroupLayout midPointLayout = new javax.swing.GroupLayout(midPoint);
-                midPoint.setLayout(midPointLayout);
-                midPointLayout.setHorizontalGroup(
-                    midPointLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGap(0, 10, Short.MAX_VALUE)
-                );
-                midPointLayout.setVerticalGroup(
-                    midPointLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGap(0, 10, Short.MAX_VALUE)
-                );
+        midPoint.setBackground(new java.awt.Color(0, 0, 0));
 
-                javax.swing.GroupLayout steeringPanelLayout = new javax.swing.GroupLayout(steeringPanel);
-                steeringPanel.setLayout(steeringPanelLayout);
-                steeringPanelLayout.setHorizontalGroup(
-                    steeringPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, steeringPanelLayout.createSequentialGroup()
-                        .addContainerGap(96, Short.MAX_VALUE)
-                        .addComponent(midPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(92, 92, 92))
-                );
-                steeringPanelLayout.setVerticalGroup(
-                    steeringPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(steeringPanelLayout.createSequentialGroup()
-                        .addGap(94, 94, 94)
-                        .addComponent(midPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(94, Short.MAX_VALUE))
-                );
+        javax.swing.GroupLayout midPointLayout = new javax.swing.GroupLayout(midPoint);
+        midPoint.setLayout(midPointLayout);
+        midPointLayout.setHorizontalGroup(
+            midPointLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 10, Short.MAX_VALUE)
+        );
+        midPointLayout.setVerticalGroup(
+            midPointLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 10, Short.MAX_VALUE)
+        );
 
-                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-                this.setLayout(layout);
-                layout.setHorizontalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout steeringPanelLayout = new javax.swing.GroupLayout(steeringPanel);
+        steeringPanel.setLayout(steeringPanelLayout);
+        steeringPanelLayout.setHorizontalGroup(
+            steeringPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, steeringPanelLayout.createSequentialGroup()
+                .addContainerGap(96, Short.MAX_VALUE)
+                .addComponent(midPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(92, 92, 92))
+        );
+        steeringPanelLayout.setVerticalGroup(
+            steeringPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(steeringPanelLayout.createSequentialGroup()
+                .addGap(94, 94, 94)
+                .addComponent(midPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(94, Short.MAX_VALUE))
+        );
+
+        turnLeftButton.setText("↶");
+        turnLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                turnLeftButtonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                turnLeftButtonMouseReleased(evt);
+            }
+        });
+
+        turnRightButton.setText("↷");
+        turnRightButton.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                turnRightButtonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                turnRightButtonMouseReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(backwardLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(backwardButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(leftButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(forwardLeftButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(forwardButton, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(kickButton, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(forwardLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(leftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(backwardLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(forwardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(kickButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(backwardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(forwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addComponent(turnLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(forwardRightButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(rightButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(40, 40, 40)
-                        .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 299, Short.MAX_VALUE))
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                );
-                layout.setVerticalGroup(
-                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(turnRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(40, 40, 40)
+                .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(445, Short.MAX_VALUE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(forwardRightButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(forwardLeftButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(forwardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(leftButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(kickButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(backwardButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(backwardLeftButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(forwardLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(leftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(backwardLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(steeringPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(229, Short.MAX_VALUE))
-                );
-            }// </editor-fold>//GEN-END:initComponents
+                                .addComponent(forwardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(kickButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(backwardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(forwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(rightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(backwardRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(turnLeftButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(turnRightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(190, Short.MAX_VALUE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
 
     private void kickButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_kickButtonActionPerformed
     {//GEN-HEADEREND:event_kickButtonActionPerformed
@@ -405,7 +436,7 @@ public class RemoteControl extends AbstractDialog
 
     private void leftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_leftButtonMousePressed
     {//GEN-HEADEREND:event_leftButtonMousePressed
-        startWalking(0, -throttle, 0);
+        startWalking(0, throttle, 0);
     }//GEN-LAST:event_leftButtonMousePressed
 
     private void leftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_leftButtonMouseReleased
@@ -415,7 +446,7 @@ public class RemoteControl extends AbstractDialog
 
     private void rightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_rightButtonMousePressed
     {//GEN-HEADEREND:event_rightButtonMousePressed
-        startWalking(0, throttle, 0);
+        startWalking(0, -throttle, 0);
     }//GEN-LAST:event_rightButtonMousePressed
 
     private void rightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_rightButtonMouseReleased
@@ -425,7 +456,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_forwardLeftButtonMousePressed
-        startWalking(throttle / 2, -throttle / 2, 0);
+        startWalking(throttle / 2, throttle / 2, 0);
     }//GEN-LAST:event_forwardLeftButtonMousePressed
 
     private void forwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardLeftButtonMouseReleased
@@ -435,7 +466,7 @@ public class RemoteControl extends AbstractDialog
 
     private void forwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMousePressed
     {//GEN-HEADEREND:event_forwardRightButtonMousePressed
-        startWalking(throttle / 2, throttle / 2, 0);
+        startWalking(throttle / 2, -throttle / 2, 0);
     }//GEN-LAST:event_forwardRightButtonMousePressed
 
     private void forwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_forwardRightButtonMouseReleased
@@ -445,7 +476,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMousePressed
     {//GEN-HEADEREND:event_backwardRightButtonMousePressed
-        startWalking(-throttle / 2, throttle / 2, 0);
+        startWalking(-throttle / 2, -throttle / 2, 0);
     }//GEN-LAST:event_backwardRightButtonMousePressed
 
     private void backwardRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardRightButtonMouseReleased
@@ -455,7 +486,7 @@ public class RemoteControl extends AbstractDialog
 
     private void backwardLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMousePressed
     {//GEN-HEADEREND:event_backwardLeftButtonMousePressed
-        startWalking(-throttle / 2, -throttle / 2, 0);
+        startWalking(-throttle / 2, throttle / 2, 0);
     }//GEN-LAST:event_backwardLeftButtonMousePressed
 
     private void backwardLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_backwardLeftButtonMouseReleased
@@ -491,26 +522,59 @@ public class RemoteControl extends AbstractDialog
     {//GEN-HEADEREND:event_throttleSliderMouseDragged
         throttle = throttleSlider.getValue();
         throttleLabel.setText("Throttle = " + throttle);
-        if(throttle == 0)
+        if (throttle == 0)
         {
             stopWalking();
         }
         else
         {
-            if(lastX != 0 || lastY != 0 || lastAlpha != 0)
+            if (lastX != 0 || lastY != 0 || lastAlpha != 0)
             {
-                int x = (int)((double)lastX/lastThrottle * throttle);
-                int y =(int)((double)lastY/lastThrottle * throttle);
-                int alpha = (int)((double)lastAlpha/lastThrottle * throttle);
-                startWalking(x,y,alpha);
+                int x = (int) ((double) lastX / lastThrottle * throttle);
+                int y = (int) ((double) lastY / lastThrottle * throttle);
+                int alpha = (int) ((double) lastAlpha / lastThrottle * throttle);
+                startWalking(x, y, alpha);
             }
         }
         lastThrottle = throttle;
     }//GEN-LAST:event_throttleSliderMouseDragged
 
+    private void standbyToggleActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_standbyToggleActionPerformed
+    {//GEN-HEADEREND:event_standbyToggleActionPerformed
+        if (standbyToggle.isSelected())
+        {
+            Command command = new Command("Cognition:remoteControlRequest_STANDBY");
+            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+        }
+        else
+        {
+            stopWalking();
+        }
+    }//GEN-LAST:event_standbyToggleActionPerformed
+
+    private void turnLeftButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_turnLeftButtonMousePressed
+    {//GEN-HEADEREND:event_turnLeftButtonMousePressed
+        startWalking(0, 0, throttle);
+    }//GEN-LAST:event_turnLeftButtonMousePressed
+
+    private void turnLeftButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_turnLeftButtonMouseReleased
+    {//GEN-HEADEREND:event_turnLeftButtonMouseReleased
+        stopWalking();
+    }//GEN-LAST:event_turnLeftButtonMouseReleased
+
+    private void turnRightButtonMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_turnRightButtonMousePressed
+    {//GEN-HEADEREND:event_turnRightButtonMousePressed
+        startWalking(0, 0, -throttle);
+    }//GEN-LAST:event_turnRightButtonMousePressed
+
+    private void turnRightButtonMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_turnRightButtonMouseReleased
+    {//GEN-HEADEREND:event_turnRightButtonMouseReleased
+        stopWalking();
+    }//GEN-LAST:event_turnRightButtonMouseReleased
+
     private void stopWalking()
     {
-        if (Plugin.parent.checkConnected())
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
         {
             Command command = new Command("Cognition:remoteControlRequest_STAND");
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
@@ -520,10 +584,11 @@ public class RemoteControl extends AbstractDialog
         }
     }
 
-    private void startWalking(int x, int y, int alpha)
+    private void startWalking(int x, int y, int degree)
     {
-        if (Plugin.parent.checkConnected())
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
         {
+            double alpha = degree*Math.PI/180;
             Command command = new Command("Cognition:remoteControlRequest_WALK");
             command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
@@ -540,15 +605,29 @@ public class RemoteControl extends AbstractDialog
         double y = mouseY - steeringPanel.getHeight() / 2;
         y = y / (steeringPanel.getHeight() / 2) * (-throttle);
         //System.out.println("x = " + x + "; y = " + y + "; mouseX = " + mouseX + "; mouseY = " + mouseY);
-        startWalking((int) y, (int) x, 0);
+        if (x <= 5 && y >= -5)
+        {
+            x = 0;
+        }
+        if (y <= 5 && y >= -5)
+        {
+            y = 0;
+        }
+        if (x == 0 && y == 0)
+        {
+            stopWalking();
+        }
+        else
+        {
+            startWalking((int) y, (int) x, 0);
+        }
     }
 
     private void kick()
     {
-        if (Plugin.parent.checkConnected())
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
         {
             Command command = new Command("Cognition:remoteControlRequest_KICK");
-            //command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
         }
     }
@@ -618,32 +697,6 @@ public class RemoteControl extends AbstractDialog
 
     }
 
-    class RemoteControlKeyListener implements KeyListener
-    {
-        RemoteControl panel;
-        public RemoteControlKeyListener(RemoteControl p)
-        {
-            panel = p;
-        }
-        
-        @Override
-        public void keyTyped(KeyEvent e)
-        {
-            System.out.println("typed key: " + e.getKeyCode());
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e)
-        {
-            System.out.println("pressed key: " + e.getKeyCode());
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e)
-        {
-            System.out.println("released key: " + e.getKeyCode());
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backwardButton;
@@ -659,8 +712,11 @@ public class RemoteControl extends AbstractDialog
     private javax.swing.JButton leftButton;
     private javax.swing.JPanel midPoint;
     private javax.swing.JButton rightButton;
+    private javax.swing.JToggleButton standbyToggle;
     private javax.swing.JPanel steeringPanel;
     private javax.swing.JLabel throttleLabel;
     private javax.swing.JSlider throttleSlider;
+    private javax.swing.JButton turnLeftButton;
+    private javax.swing.JButton turnRightButton;
     // End of variables declaration//GEN-END:variables
 }

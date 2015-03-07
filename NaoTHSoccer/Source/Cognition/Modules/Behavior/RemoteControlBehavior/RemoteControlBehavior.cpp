@@ -9,25 +9,36 @@
 #include <Tools/DataConversion.h>
 
 RemoteControlBehavior::RemoteControlBehavior() 
-	: state(stand)
+	: state(standby)
 {
   REGISTER_DEBUG_COMMAND("remoteControlRequest_WALK",  "remoteControl", this);
   REGISTER_DEBUG_COMMAND("remoteControlRequest_STAND", "remoteControl", this);
   REGISTER_DEBUG_COMMAND("remoteControlRequest_KICK", "remoteControl", this);
+  REGISTER_DEBUG_COMMAND("remoteControlRequest_STANDBY", "remoteControl", this);
 }
 
 void RemoteControlBehavior::execute() 
 {
 	switch(state) 
 	{
+	case standby:
+		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;
+		getMotionRequest().id = motion::init;
+		break;
 	case stand: 
+		//getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;
 		getMotionRequest().id = motion::stand;
 		break;
 	case walk:
+		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 		getMotionRequest().id = motion::walk;
 		getMotionRequest().walkRequest.target = walkParams;
 		break;
-	case kick: break;
+	case kick:
+		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
+		//getMotionRequest().id = motion::kick;
+		state = stand;
+		break;
 	}
 }//end execute
 
@@ -69,6 +80,10 @@ void RemoteControlBehavior::executeDebugCommand(
 	}
 	else if(command == "remoteControlRequest_KICK")
 	{
-		std::cout << "kick is not implemented yet" << std::endl;
+		state = kick;
+	}
+	else if(command == "remoteControlRequest_STANDBY")
+	{
+		state = standby;
 	}
 }

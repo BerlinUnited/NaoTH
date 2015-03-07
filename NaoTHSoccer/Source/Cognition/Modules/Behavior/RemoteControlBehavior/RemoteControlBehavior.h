@@ -70,7 +70,8 @@ private:
 	enum State {
 		stand,
 		walk,
-		kick
+		kick,
+		standby
 	};
 
 	State state;

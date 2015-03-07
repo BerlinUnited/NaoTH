@@ -16,70 +16,82 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+          <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="backwardLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="backwardButton" pref="50" max="32767" attributes="0"/>
+                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="forwardLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="leftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="backwardLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="forwardButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="kickButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="backwardButton" min="-2" pref="50" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="forwardRightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="rightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="backwardRightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="leftButton" pref="50" max="32767" attributes="0"/>
-                          <Component id="forwardLeftButton" max="32767" attributes="0"/>
-                      </Group>
+                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                      <Component id="turnLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="forwardButton" pref="50" max="32767" attributes="0"/>
-                          <Component id="kickButton" pref="0" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="turnRightButton" min="-2" pref="50" max="-2" attributes="0"/>
                   </Group>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="forwardRightButton" max="32767" attributes="0"/>
-                  <Component id="rightButton" max="32767" attributes="0"/>
-                  <Component id="backwardRightButton" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
               <Component id="steeringPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="35" pref="299" max="32767" attributes="0"/>
+              <EmptySpace pref="445" max="32767" attributes="0"/>
           </Group>
           <Component id="jToolBar1" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <Component id="jToolBar1" min="-2" pref="31" max="-2" attributes="0"/>
+              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="steeringPanel" min="-2" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="forwardRightButton" max="32767" attributes="0"/>
-                          <Component id="forwardLeftButton" alignment="0" max="32767" attributes="0"/>
-                          <Component id="forwardButton" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace min="16" pref="16" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="forwardLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="leftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="backwardLeftButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="forwardButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="kickButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="backwardButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="forwardRightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="rightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="backwardRightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="leftButton" max="32767" attributes="0"/>
-                          <Component id="kickButton" max="32767" attributes="0"/>
-                          <Component id="rightButton" min="-2" pref="50" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="turnLeftButton" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="turnRightButton" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="backwardButton" max="32767" attributes="0"/>
-                          <Component id="backwardLeftButton" max="32767" attributes="0"/>
-                          <Component id="backwardRightButton" min="-2" pref="50" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="steeringPanel" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="229" max="32767" attributes="0"/>
+              <EmptySpace pref="190" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -111,6 +123,18 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JToggleButton" name="standbyToggle">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="standby"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="standbyToggleActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JLabel" name="throttleLabel">
           <Properties>
             <Property name="text" type="java.lang.String" value="Throttle = 50"/>
@@ -125,7 +149,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="forwardButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="|"/>
+        <Property name="text" type="java.lang.String" value="&#x2191;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="forwardButtonMousePressed"/>
@@ -134,7 +158,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="backwardButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="|"/>
+        <Property name="text" type="java.lang.String" value="&#x2193;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="backwardButtonMousePressed"/>
@@ -143,7 +167,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="rightButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="-&gt;"/>
+        <Property name="text" type="java.lang.String" value="&#x2192;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="rightButtonMousePressed"/>
@@ -152,7 +176,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="leftButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;-"/>
+        <Property name="text" type="java.lang.String" value="&#x2190;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="leftButtonMousePressed"/>
@@ -172,7 +196,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="forwardRightButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="/"/>
+        <Property name="text" type="java.lang.String" value="&#x2197;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="forwardRightButtonMousePressed"/>
@@ -181,7 +205,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="forwardLeftButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="\u005c" containsInvalidXMLChars="true"/>
+        <Property name="text" type="java.lang.String" value="&#x2196;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="forwardLeftButtonMousePressed"/>
@@ -190,7 +214,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="backwardLeftButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="/"/>
+        <Property name="text" type="java.lang.String" value="&#x2199;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="backwardLeftButtonMousePressed"/>
@@ -199,7 +223,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="backwardRightButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="\u005c" containsInvalidXMLChars="true"/>
+        <Property name="text" type="java.lang.String" value="&#x2198;"/>
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="backwardRightButtonMousePressed"/>
@@ -266,5 +290,23 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="turnLeftButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x21b6;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="turnLeftButtonMousePressed"/>
+        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="turnLeftButtonMouseReleased"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="turnRightButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x21b7;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="turnRightButtonMousePressed"/>
+        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="turnRightButtonMouseReleased"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
