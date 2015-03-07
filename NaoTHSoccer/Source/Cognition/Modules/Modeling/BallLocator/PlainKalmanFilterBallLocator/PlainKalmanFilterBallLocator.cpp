@@ -7,11 +7,13 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
 {
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",     "draw the modelled ball on the field",  false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept", "draw the real incomming ball percept", false);
+
+    getDebugParameterList().add(&kfParameters);
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 {
-
+    getDebugParameterList().remove(&kfParameters);
 }
 
 void PlainKalmanFilterBallLocator::execute()
