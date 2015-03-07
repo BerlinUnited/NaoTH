@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,7 +105,7 @@ public class NaoSCP extends javax.swing.JFrame {
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
         btAdvancedSimle = new javax.swing.JToggleButton();
-        txt = new javax.swing.JFormattedTextField();
+        txtRobotNumber = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -212,13 +214,13 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(btAdvancedSimle, gridBagConstraints);
 
-        txt.setColumns(3);
-        txt.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        txt.setToolTipText("");
+        txtRobotNumber.setColumns(3);
+        txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txtRobotNumber.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        getContentPane().add(txt, gridBagConstraints);
+        getContentPane().add(txtRobotNumber, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -251,7 +253,9 @@ public class NaoSCP extends javax.swing.JFrame {
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
 
                         // send stuff to robot
-                        Scp scp = new Scp("10.0.4.85", "nao", "nao");
+                        String robotIp = getIpAddress();
+                        Scp scp = new Scp(robotIp, "nao", "nao");
+                        
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
                         scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
@@ -281,6 +285,31 @@ public class NaoSCP extends javax.swing.JFrame {
         }).start();
     }//GEN-LAST:event_btDeployActionPerformed
 
+    private String getIpAddress() throws NaoSCPException, UnknownHostException, IOException 
+    {
+        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+        
+        String lan = cfg.getLan().subnet + "." + txtRobotNumber.getText();
+        Logger.getGlobal().log(Level.INFO, "check " + lan);
+        InetAddress iAddr = InetAddress.getByName(lan);
+        if(!iAddr.isReachable(2500)) {
+            Logger.getGlobal().log(Level.WARNING, lan + " not reachable");
+        } else {
+            return lan;
+        }
+        
+        String wlan = cfg.getWlan().subnet + "." + txtRobotNumber.getText();
+        Logger.getGlobal().log(Level.INFO, "check " + wlan);
+        InetAddress iAddr2 = InetAddress.getByName(wlan);
+        if(!iAddr2.isReachable(2500)) {
+            Logger.getGlobal().log(Level.WARNING, wlan + " not reachable");
+        } else {
+            return wlan;
+        }
+        
+        throw new NaoSCPException("Robot is not reachable.");
+    }
+    
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
         this.logTextPanel.clear();
 
@@ -523,6 +552,6 @@ public class NaoSCP extends javax.swing.JFrame {
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
-    private javax.swing.JFormattedTextField txt;
+    private javax.swing.JFormattedTextField txtRobotNumber;
     // End of variables declaration//GEN-END:variables
 }
