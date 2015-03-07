@@ -104,7 +104,6 @@ public class NaoSCP extends javax.swing.JFrame {
         jProgressBar = new javax.swing.JProgressBar();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
-        btAdvancedSimle = new javax.swing.JToggleButton();
         txtRobotNumber = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -201,18 +200,6 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         getContentPane().add(btInintRobot, gridBagConstraints);
-
-        btAdvancedSimle.setText("Advanced");
-        btAdvancedSimle.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAdvancedSimleActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(btAdvancedSimle, gridBagConstraints);
 
         txtRobotNumber.setColumns(3);
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
@@ -473,30 +460,6 @@ public class NaoSCP extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
-    private void btAdvancedSimleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdvancedSimleActionPerformed
-    new Thread(new Runnable() {
-                @Override
-                public void run() {
-        
-        Scp.CommandStream shell = null;
-        try {
-            //this.netwokPanel.setVisible(this.btAdvancedSimle.isSelected());
-            Scp scp = new Scp("192.168.56.104", "nao", "nao");
-            shell = scp.getShell();
-            String hostName = "virtual-nao";
-            shell.run("ls -lisah", hostName);
-            shell.run("su", hostName);
-            shell.run("wfwwfwfwfw", "fa");
-            shell.run("cd /", hostName);
-            shell.run("ls -lisah", hostName);
-            shell.close();
-        } catch (IOException | JSchException ex) {
-            Logger.getGlobal().log(Level.SEVERE, ex.getMessage(), ex);
-        }
-        }}).start();
-        
-    }//GEN-LAST:event_btAdvancedSimleActionPerformed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
             // save configuration to file
@@ -543,7 +506,6 @@ public class NaoSCP extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton btAdvancedSimle;
     private javax.swing.JButton btDeploy;
     private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
