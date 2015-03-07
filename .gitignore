@@ -4,6 +4,7 @@ build/
 private/
 deploy/
 NaoSCP/tmp/
+XabslEditor/
 
 #java project files
 build.xml
