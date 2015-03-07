@@ -1,11 +1,12 @@
 /* 
  * File:   ActionModel.h
- * Author:
- *
- */
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* Declaration of class ActionModel
+*/
 
 #ifndef _ActionModel_H
 #define _ActionModel_H
+
 
 class ActionModel : public naoth::Printable
 {
