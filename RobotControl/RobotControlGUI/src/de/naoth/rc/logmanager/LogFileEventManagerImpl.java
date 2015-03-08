@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -50,9 +51,27 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
     }
     
     @Override
-    public void fireLogFrameEvent(Collection<LogDataFrame> c) {
-        
-        if(c != null) {
+    public void fireLogFrameEvent(final Collection<LogDataFrame> c) {
+      
+      if(SwingUtilities.isEventDispatchThread()) {
+        internalFire(c);
+      }
+      else {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            internalFire(c);
+          }
+        });
+      }
+       
+    }
+    
+    private void internalFire(Collection<LogDataFrame> c) {
+       if(c != null) {
             for(LogDataFrame f: c) {
                 blackBoard.add(f);
             }
