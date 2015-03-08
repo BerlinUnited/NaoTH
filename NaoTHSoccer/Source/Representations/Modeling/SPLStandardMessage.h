@@ -10,7 +10,7 @@
 
 struct SPLStandardMessage 
 {
-  char header[5];        // "SPL "
+  char header[4];        // "SPL "
   uint8_t version;       // has to be set to SPL_STANDARD_MESSAGE_STRUCT_VERSION
   uint8_t playerNum;     // 1-5
   uint8_t teamColor;     // 0 is blue, 1 is red 
@@ -23,7 +23,7 @@ struct SPLStandardMessage
   // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
   // angle in radians, 0 along the +x axis, increasing counter clockwise
   float pose[3];      // x,y,theta
-  
+
   // the robot's target position on the field
   // the coordinate system is the same as for the pose
   // if the robot does not have any target, this attribute should be set to the robot's position
@@ -66,7 +66,12 @@ struct SPLStandardMessage
   // constructor
   SPLStandardMessage()
   {
-    strcpy( header, SPL_STANDARD_MESSAGE_STRUCT_HEADER );
+    const char* h = SPL_STANDARD_MESSAGE_STRUCT_HEADER;
+    header[0] = h[0];
+    header[1] = h[1];
+    header[2] = h[2];
+    header[3] = h[3];
+
     version = SPL_STANDARD_MESSAGE_STRUCT_VERSION;
     playerNum = 0;
     teamColor = 0;

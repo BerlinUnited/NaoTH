@@ -112,8 +112,7 @@ public class FieldViewer extends AbstractDialog
         public void newDrawing(Drawable drawing) {
             if(drawing != null)
             {
-              if(!btCollectDrawings.isSelected())
-              {
+              if(!btCollectDrawings.isSelected()) {
                 resetView();
               }
               
