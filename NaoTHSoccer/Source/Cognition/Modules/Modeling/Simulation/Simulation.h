@@ -129,6 +129,10 @@ private:
     * @param oppGoalModel Relative coordinates of the opponent goal.
     * @return Target point.
     */
+  std::vector<Action> action_local;
+
+  void calculateOneAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer, Action& loney_action) const;
+
   Vector2d getGoalTarget(const Vector2d& point, const Vector2d& leftPost, const Vector2d& rightPost) const;
 
   double calculatePotential(const Vector2d& point, const Vector2d& targetPoint) const;
