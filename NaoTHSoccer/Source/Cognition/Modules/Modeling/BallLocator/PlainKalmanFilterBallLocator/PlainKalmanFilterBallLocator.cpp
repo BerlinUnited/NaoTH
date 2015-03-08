@@ -5,10 +5,13 @@
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
      epsilon(10e-6)
 {
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",     "draw the modelled ball on the field",  false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept", "draw the real incomming ball percept", false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",     "draw the modelled ball on the field",                              false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept", "draw the real incomming ball percept",                             false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters"      , "reloads the kalman filter parameters from the kfParameter object", false);
 
     getDebugParameterList().add(&kfParameters);
+
+    reloadParameters();
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
@@ -141,4 +144,28 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
       PEN("FF00FF", 20);
       OVAL(getBallModel().position.x, getBallModel().position.y, P(1,1), P(3,3));
     );
+
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
+
+        reloadParameters();
+
+    );
+}
+
+void PlainKalmanFilterBallLocator::reloadParameters()
+{
+    Eigen::Matrix2d processNoiseCovariancesSingleDimension;
+
+    processNoiseCovariancesSingleDimension(0,0) = kfParameters.processNoiseQ00;
+    processNoiseCovariancesSingleDimension(0,1) = kfParameters.processNoiseQ01;
+    processNoiseCovariancesSingleDimension(1,0) = kfParameters.processNoiseQ10;
+    processNoiseCovariancesSingleDimension(1,1) = kfParameters.processNoiseQ11;
+
+    filter.setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
+
+    Eigen::Matrix2d measurementNoiseCovariances = Eigen::Matrix2d::Zero();
+    measurementNoiseCovariances(0,0) = kfParameters.measurementNoiseR00;
+    measurementNoiseCovariances(1,1) = kfParameters.measurementNoiseR11;
+
+    filter.setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
 }

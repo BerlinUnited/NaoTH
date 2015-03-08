@@ -13,6 +13,8 @@ public:
     void update(const Eigen::Vector2d &z);
 
     void setState(Eigen::Vector4d state);
+    void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
+    void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
     const Eigen::Vector4d& getState() const;
     const Eigen::Matrix4d& getCovariance() const;

@@ -38,8 +38,8 @@ KalmanFilter4d::KalmanFilter4d():
 
     // covariance matrix of measurement noise (values taken from old kalman filter)
     // added 100 in R(1,1) and R(3,3) to "ensure" invertiablity during kalman gain computation
-    R << 100, 0,
-           0, 100;
+    R << 10, 0,
+           0, 10;
 
 }
 
@@ -93,4 +93,13 @@ const Eigen::Matrix4d& KalmanFilter4d::getCovariance() const
 void KalmanFilter4d::setState(Eigen::Vector4d state)
 {
     x = state;
+}
+
+
+void KalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d &q){
+    Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
+}
+
+void KalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r){
+    R << r;
 }

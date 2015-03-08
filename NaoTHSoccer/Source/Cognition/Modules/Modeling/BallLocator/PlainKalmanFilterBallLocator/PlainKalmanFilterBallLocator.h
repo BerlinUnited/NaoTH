@@ -88,6 +88,8 @@ private:
 
     void doDebugRequest();
 
+    void reloadParameters();
+
     class KFParameters:  public ParameterList
     {
      public:
