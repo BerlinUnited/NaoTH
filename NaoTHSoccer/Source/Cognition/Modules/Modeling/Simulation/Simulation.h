@@ -131,7 +131,7 @@ private:
     */
   std::vector<Action> action_local;
 
-  void calculateOneAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer, Action& loney_action) const;
+  void calculateOneAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer, Action& lonely_action) const;
 
   Vector2d getGoalTarget(const Vector2d& point, const Vector2d& leftPost, const Vector2d& rightPost) const;
 
@@ -139,7 +139,6 @@ private:
 
   double globalAttractorPotential(const Vector2d& p, const Vector2d& x) const;
 
-  void calculateAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer) const;
   Vector2d outsideField(const Vector2d& relativePoint) const;
 
   std::vector<RingBufferWithSum<double, 30> > actionRingBuffer;
