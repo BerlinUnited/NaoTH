@@ -62,13 +62,17 @@ public:
 
 // from other kalman filter ball locator
 private:
-    OdometryData lastRobotOdometry; //just for prebuffered percepts
+    //OdometryData lastRobotOdometry; //just for prebuffered percepts
     //OdometryData lastRobotOdometryAll;
-
-    BallPercept newPercept;
 
     FrameInfo lastFrameInfo;
 
+private: // multi stuff?
+
+    double mahalanobisDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
+
+    // non normalized value of probability density function of measurement Z at the filters state
+    double evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
     KalmanFilter4d filter;
@@ -88,7 +92,7 @@ private:
 
     void doDebugRequest();
 
-    void reloadParameters();
+    void reloadKFParameters();
 
     class KFParameters:  public ParameterList
     {
@@ -100,8 +104,8 @@ private:
             PARAMETER_REGISTER(processNoiseQ10) = 0;
             PARAMETER_REGISTER(processNoiseQ11) = 0;
 
-            PARAMETER_REGISTER(measurementNoiseR00) = 100;
-            PARAMETER_REGISTER(measurementNoiseR11) = 100;
+            PARAMETER_REGISTER(measurementNoiseR00) = 10;
+            PARAMETER_REGISTER(measurementNoiseR11) = 10;
 
             syncWithConfig();
         }

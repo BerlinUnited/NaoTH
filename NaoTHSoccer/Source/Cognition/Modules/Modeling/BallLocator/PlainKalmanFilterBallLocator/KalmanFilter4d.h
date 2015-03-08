@@ -17,7 +17,9 @@ public:
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
     const Eigen::Vector4d& getState() const;
-    const Eigen::Matrix4d& getCovariance() const;
+    const Eigen::Vector2d& getStateInMeasurementSpace() const;
+    const Eigen::Matrix4d& getProcessCovariance() const;
+    const Eigen::Matrix2d& getMeasurementCovariance() const;
 
 private:
     Eigen::Matrix4d F; // state transition matrix

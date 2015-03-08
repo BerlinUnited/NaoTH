@@ -11,7 +11,7 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
 
     getDebugParameterList().add(&kfParameters);
 
-    reloadParameters();
+    reloadKFParameters();
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
@@ -22,15 +22,16 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 void PlainKalmanFilterBallLocator::execute()
 {
 
+    //
     if(!getBallModel().valid && getBallPercept().ballWasSeen)
     {
-        Eigen::Vector4d x;
-        x << getBallPercept().bearingBasedOffsetOnField.x,
+        Eigen::Vector4d x1;
+        x1 << getBallPercept().bearingBasedOffsetOnField.x,
              0,
              getBallPercept().bearingBasedOffsetOnField.y,
              0;
 
-        filter.setState(x);
+        filter.setState(x1);
     }
 
     //////////////////////////////////
@@ -43,8 +44,8 @@ void PlainKalmanFilterBallLocator::execute()
 //    Sx[0] = h.x; Sy[0] = h.y;
 //    How to handle speed / velocity -> should be rotate
 
-    Eigen::Vector4d x = filter.getState();
-    Eigen::Vector4d u = Eigen::Vector4d::Zero(); // control vector
+    const Eigen::Vector4d& x = filter.getState();
+    Eigen::Vector4d  u = Eigen::Vector4d::Zero(); // control vector
 
 // handle friction as an input control for acceleration
 //    double deceleration = 4;
@@ -61,18 +62,27 @@ void PlainKalmanFilterBallLocator::execute()
     filter.prediction(u, dt);
 
     // measurement
-    newPercept = getBallPercept();
-    if(newPercept.ballWasSeen)
+    if(getBallPercept().ballWasSeen)
     {
         Eigen::Vector2d z;
-        z << newPercept.bearingBasedOffsetOnField.x,
-             newPercept.bearingBasedOffsetOnField.y;
+        z << getBallPercept().bearingBasedOffsetOnField.x,
+             getBallPercept().bearingBasedOffsetOnField.y;
 
-        // fusion/update
-        filter.update(z);
+        // check plausibility
+        double evalue = evaluatePredictionWithMeasurement(filter,z);
+
+        if(evalue < epsilon)
+        {
+             // do something
+             // fusion/update
+            filter.update(z);
+        }
+        else
+        {
+            // fusion/update
+            filter.update(z);
+        }
     }
-
-    x = filter.getState();
 
     // set ball model representation
     getBallModel().position.x = x(0);
@@ -83,7 +93,7 @@ void PlainKalmanFilterBallLocator::execute()
     // TODO: decide whether model is valid depending on P or time
     // e.g. if (max, min, std)
 
-    if(newPercept.ballWasSeen)
+    if(getBallPercept().ballWasSeen)
     {
       getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
     }
@@ -102,6 +112,21 @@ void PlainKalmanFilterBallLocator::execute()
     doDebugRequest();
 
     lastFrameInfo = getFrameInfo();
+}
+
+
+double PlainKalmanFilterBallLocator::mahalanobisDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
+{
+    // reduce state covariances to location
+    Eigen::Matrix2d location_cov;
+    location_cov << filter.getProcessCovariance()(0,0), 0, filter.getProcessCovariance()(2,2), 0;
+
+    return std::sqrt(((z-filter.getStateInMeasurementSpace()).transpose() * location_cov.inverse() * (z-filter.getStateInMeasurementSpace()))(0,0));
+}
+
+double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
+{
+    return std::exp(((filter.getStateInMeasurementSpace()-z).transpose() * filter.getMeasurementCovariance().inverse() * (filter.getStateInMeasurementSpace()-z))(0,0) * (-0.5));
 }
 
 void PlainKalmanFilterBallLocator::doDebugRequest()
@@ -123,7 +148,7 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 
       if(getBallModel().valid)
       {
-        if(newPercept.ballWasSeen)
+        if(getBallPercept().ballWasSeen)
           PEN("FF9900", 20);
         else
           PEN("0099FF", 20);
@@ -136,7 +161,7 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
              getBallModel().position.x+getBallModel().speed.x,
              getBallModel().position.y+getBallModel().speed.y);
 
-      Eigen::Matrix4d P = filter.getCovariance();
+      Eigen::Matrix4d P = filter.getProcessCovariance();
 
       // draw the distribution
       PEN("00FFFF", 20);
@@ -147,12 +172,12 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
 
-        reloadParameters();
+        reloadKFParameters();
 
     );
 }
 
-void PlainKalmanFilterBallLocator::reloadParameters()
+void PlainKalmanFilterBallLocator::reloadKFParameters()
 {
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;
 
