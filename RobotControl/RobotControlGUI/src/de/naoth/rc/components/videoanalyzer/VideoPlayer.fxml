@@ -7,7 +7,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
    <bottom>
       <HBox prefHeight="34.0" prefWidth="600.0" spacing="10.0" BorderPane.alignment="CENTER">
@@ -18,9 +17,6 @@
          </children>
       </HBox>
    </bottom>
-   <left>
-      <Slider fx:id="zoomSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" orientation="VERTICAL" showTickMarks="true" snapToTicks="true" value="1.0" BorderPane.alignment="CENTER" />
-   </left>
    <center>
       <StackPane fx:id="mediaPane">
          <children>
@@ -29,10 +25,6 @@
       </StackPane>
    </center>
    <top>
-      <AnchorPane prefHeight="25.0" prefWidth="400.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="labelDebugPos" text="Label" />
-         </children>
-      </AnchorPane>
+      <AnchorPane prefHeight="25.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
    </top>
 </BorderPane>

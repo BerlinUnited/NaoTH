@@ -61,20 +61,11 @@ public class VideoPlayerController implements Initializable
   @FXML
   private Label timeCodeLabel;
   
-  @FXML
-  private Slider zoomSlider;
-  
-  @FXML
-  private Label labelDebugPos;
-  
   private Media media;
   private MediaPlayer player;
 
   private VideoAnalyzer analyzer;
   
-  private Double lastX;
-  private Double lastY;
-
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
   /**
@@ -92,32 +83,6 @@ public class VideoPlayerController implements Initializable
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
     
-    zoomSlider.valueProperty().addListener(new ChangeListener<Number>()
-    {
-      @Override
-      public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-      {
-        double origHeight = media.getHeight();
-        double origWidth = media.getWidth();
-        
-        double oldHeight = origHeight / oldValue.doubleValue();
-        double oldWidth = origWidth / oldValue.doubleValue();
-        
-        double newHeight = origHeight / newValue.doubleValue();
-        double newWidth = origWidth / newValue.doubleValue();
-       
-        Rectangle2D oldvp = mediaView.getViewport();
-        
-        double xRatio = lastX/origWidth;
-        double yRatio = lastY/origHeight;
-        
-        double newX = (origWidth - newWidth) * xRatio;
-        double newY = (origHeight - newHeight) * yRatio;
-       
-        mediaView.setViewport(new Rectangle2D(newX, newY, newWidth, newHeight));
-      }
-    });
-    
     mediaView.setOnMouseClicked(new EventHandler<MouseEvent>()
     {
 
@@ -128,44 +93,6 @@ public class VideoPlayerController implements Initializable
         {
           mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
         }
-      }
-    });
-    
-    mediaView.setOnMouseMoved(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
-      {
-        lastX = event.getX();
-        lastY = event.getY();
-        labelDebugPos.setText(""+lastX+"x"+lastY);
-      }
-    });
-    mediaView.setOnMouseExited(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
-      {
-        lastX = null;
-        lastY = null;
-      }
-    });
-    
-    mediaView.setOnScroll(new EventHandler<ScrollEvent>()
-    {
-
-      @Override
-      public void handle(ScrollEvent event)
-      {
-        double diff = event.getDeltaY()/100.0;
-        if(lastX != null && lastY != null)
-        {
-
-        }
-        zoomSlider.setValue(zoomSlider.getValue()+diff);
-//        zoomSlider.valueProperty().add(diff);
       }
     });
   }
