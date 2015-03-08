@@ -23,9 +23,15 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -102,6 +108,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         cbProcess = new javax.swing.JComboBox();
         cbModules = new javax.swing.JComboBox();
         cbRepresentations = new javax.swing.JComboBox();
+        errorIgnoreToggle = new javax.swing.JToggleButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         modulePanel = new de.naoth.rc.components.SimpleModulePanel();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -203,6 +210,20 @@ public class ModuleConfigurationViewer extends AbstractDialog
         });
         jToolBar1.add(cbRepresentations);
 
+        errorIgnoreToggle.setSelected(true);
+        errorIgnoreToggle.setText("ignorelist enabled");
+        errorIgnoreToggle.setFocusable(false);
+        errorIgnoreToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        errorIgnoreToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        errorIgnoreToggle.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                errorIgnoreToggleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(errorIgnoreToggle);
+
         jSplitPane1.setDividerLocation(600);
         jSplitPane1.setResizeWeight(1.0);
         jSplitPane1.setLeftComponent(modulePanel);
@@ -247,7 +268,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
             .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -367,9 +388,28 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
     private void errorListMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_errorListMouseClicked
     {//GEN-HEADEREND:event_errorListMouseClicked
-        ListComponent c = (ListComponent) errorList.getSelectedValue();
-        modulePanel.setNode(c.getNode());
+        if (errorList.getSelectedValue() != null)
+        {
+            ListComponent c = (ListComponent) errorList.getSelectedValue();
+            modulePanel.setNode(c.getNode());
+        }
     }//GEN-LAST:event_errorListMouseClicked
+
+    private void errorIgnoreToggleActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_errorIgnoreToggleActionPerformed
+    {//GEN-HEADEREND:event_errorIgnoreToggleActionPerformed
+        if (errorIgnoreToggle.isSelected())
+        {
+            errorIgnoreToggle.setText("ignorelist enabled");
+        }
+        else
+        {
+            errorIgnoreToggle.setText("ignorelist disabled");
+        }
+        if (Plugin.parent.checkConnected())
+        {
+            makeCheck();
+        }
+    }//GEN-LAST:event_errorIgnoreToggleActionPerformed
 
     @Override
     public JPanel getPanel()
@@ -378,8 +418,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//end getPanel
 
     @Override
-    public void errorOccured(String cause
-    )
+    public void errorOccured(String cause)
     {
         Plugin.moduleConfigurationManager.removeListener(this);
     }
@@ -444,9 +483,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
      */
     public void makeCheck()
     {
+        IgnoreList ignore = new IgnoreList();
         errorList.removeAll();
-        ArrayList<ListComponent> warnings = new ArrayList<ListComponent>();
-        ArrayList<ListComponent> errors = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> notRequired = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> notProvided = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> notRequiredButEx = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> notProvidedButEx = new ArrayList<ListComponent>();
         ArrayList<ListComponent> fatalErrors = new ArrayList<ListComponent>();
         int counterErr = 0;
         int counterRep = 0;
@@ -458,55 +500,80 @@ public class ModuleConfigurationViewer extends AbstractDialog
             if (n.isEnabled() && (n.getType() == ModuleConfiguration.NodeType.Represenation))
             {
                 counterRep++;
-                boolean req = n.isProvide();
-                boolean prov = n.isRequire();
-                if (!req && !prov)
+                if (!ignore.isOnIgnorelist(n.getName()))
                 {
-                    //nor provided nor required
-                    counterErr++;
-                    fatalErrors.add(new ListComponent(n, ("FATAL ERROR: " + n.getName() + " is nor provided nor required")));
+                    boolean req = n.isProvide();
+                    boolean prov = n.isRequire();
+                    if (!req && !prov)
+                    {
+                        //nor provided nor required
+                        counterErr++;
+                        fatalErrors.add(new ListComponent(n, ("FATAL ERROR: " + n.getName() + " is nor provided nor required")));
+                    }
+                    else
+                    {
+                        if (!prov)
+                        {
+                            //not provided
+                            counterPro++;
+                            counter++;
+                            if (n.require.isEmpty())
+                            {
+                                notProvided.add(new ListComponent(n, ("Code Error: " + n.getName() + " is not provided (no existing modules)")));
+                            }
+                            else
+                            {
+                                notProvidedButEx.add(new ListComponent(n, ("Config Error: " + n.getName() + " is not provided (all modules deactivated)")));
+                            }
+
+                        }
+                        if (!req)
+                        {
+                            //not required
+                            counterReq++;
+                            counter++;
+                            if (n.provide.isEmpty())
+                            {
+                                notRequired.add(new ListComponent(n, ("Code Warning: " + n.getName() + " is not required (no existing modules)")));
+                            }
+                            else
+                            {
+                                notProvidedButEx.add(new ListComponent(n, ("Config Warning: " + n.getName() + " is not required (all modules deactivated)")));
+                            }
+                        }
+                    }
                 }
-                else
+
+                //put data into errorList
+                ArrayList<ListComponent> listComponents = new ArrayList<ListComponent>();
+                listComponents.addAll(fatalErrors);
+                listComponents.addAll(notProvided);
+                listComponents.addAll(notProvidedButEx);
+                listComponents.addAll(notRequired);
+                listComponents.addAll(notRequiredButEx);
+                errorList.setListData(listComponents.toArray());
+
+                //description
+                String s = "";
+                if (counter != 0)
                 {
-                    if (!prov)
-                    {
-                        //not provided
-                        counterPro++;
-                        counter++;
-                        errors.add(new ListComponent(n, ("Error: " + n.getName() + " is not provided")));
-                    }
-                    if (!req)
-                    {
-                        //not required
-                        counterReq++;
-                        counter++;
-                        warnings.add(new ListComponent(n, ("Warning: " + n.getName() + " is not required")));
-                    }
+                    s = "[" + counter + " Issues: " + counterPro + " not provided, " + counterReq + " not required]\n" + s;
                 }
+                if (counterErr != 0)
+                {
+                    s = "[" + counterErr + " FATAL ERRORS]\n" + s;
+                }
+                s = "[" + counterRep + " enabled Representations checked]\n" + s;
+                s = String.format(s);
+                checkDescription.setText(s);
             }
-
-            //put data into errorList
-            ArrayList<ListComponent> listComponents = new ArrayList<ListComponent>();
-            listComponents.addAll(fatalErrors);
-            listComponents.addAll(errors);
-            listComponents.addAll(warnings);
-            errorList.setListData(listComponents.toArray());
-
-            //description
-            String s = "";
-            if (counter != 0)
-            {
-                s = "[" + counter + " Issues: " + counterPro + " not provided, " + counterReq + " not required]\n" + s;
-            }
-            if (counterErr != 0)
-            {
-                s = "[" + counterErr + " FATAL ERRORS]\n" + s;
-            }
-            s = "[" + counterRep + " enabled Representations checked]\n" + s;
-            s = String.format(s);
-            checkDescription.setText(s);
         }
 
+    }
+
+    public boolean isOnIgnorelist(String name)
+    {
+        return false;
     }
 
     /**
@@ -535,6 +602,87 @@ public class ModuleConfigurationViewer extends AbstractDialog
         {
             return message;
         }
+    }
+
+    class IgnoreList
+    {
+
+        ArrayList<String> ignorelist;
+
+        public IgnoreList()
+        {
+            ignorelist = new ArrayList<String>();
+
+            updateIgnorelist("src/de/naoth/rc/dialogs/moduleIntergretyIgnorelist");
+        }
+
+        public boolean isOnIgnorelist(String name)
+        {
+            if (!errorIgnoreToggle.isSelected())
+            {
+                return false;
+            }
+            if (ignorelist.isEmpty())
+            {
+                return false;
+            }
+            return ignorelist.contains(name);
+        }
+
+        public void updateIgnorelist(String s)
+        {
+            Scanner scanner;
+            scanner = getScanner(s);
+            if (scanner != null)
+            {
+                while (scanner.hasNextLine())
+                {
+                    ignorelist.add(scanner.nextLine());
+                }
+            }
+            else
+            {
+                System.out.println("sth went wrong here");
+            }
+        }
+
+        private Scanner getScanner(String s)
+        {
+            Scanner scanner;
+            String charsetName = "ISO-8859-1";
+            try
+            {
+                // first try to read file from local file system
+                File file = new File(s);
+                if (file.exists())
+                {
+                    scanner = new Scanner(file, charsetName);
+                    scanner.useLocale(java.util.Locale.US);
+                    return scanner;
+                }
+
+                // next try for files included in jar
+                URL url = getClass().getResource(s);
+
+                // or URL from web
+                if (url == null)
+                {
+                    url = new URL(s);
+                }
+
+                URLConnection site = url.openConnection();
+                InputStream is = site.getInputStream();
+                scanner = new Scanner(is, charsetName);
+                scanner.useLocale(java.util.Locale.US);
+                return scanner;
+            }
+            catch (IOException ioe)
+            {
+                System.err.println("Could not open " + s);
+                return null;
+            }
+        }
+
     }
 
     public class CormpareIgnoreCase implements Comparator<Object>
@@ -693,6 +841,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private javax.swing.JComboBox cbProcess;
     private javax.swing.JComboBox cbRepresentations;
     private javax.swing.JTextArea checkDescription;
+    private javax.swing.JToggleButton errorIgnoreToggle;
     private javax.swing.JList errorList;
     private de.naoth.rc.components.ExtendedFileChooser fileChooser;
     private javax.swing.JScrollPane jScrollPane;

@@ -20,7 +20,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="0" pref="631" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="639" max="32767" attributes="0"/>
           <Component id="jSplitPane1" alignment="1" pref="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -131,6 +131,18 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbRepresentationsActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="errorIgnoreToggle">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="ignorelist enabled"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="errorIgnoreToggleActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
