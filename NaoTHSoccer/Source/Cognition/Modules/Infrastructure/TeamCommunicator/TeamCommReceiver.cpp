@@ -148,7 +148,7 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
         msg.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
         for(size_t i=0; i < msg.opponents.size(); i++)
         {
-          const naothmessages::Opponent& oppMsg = userData.opponents(i);
+          const naothmessages::Opponent& oppMsg = userData.opponents((int) i);
           TeamMessage::Opponent& opp = msg.opponents[i];
           opp.playerNum = oppMsg.playernum();
           DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
