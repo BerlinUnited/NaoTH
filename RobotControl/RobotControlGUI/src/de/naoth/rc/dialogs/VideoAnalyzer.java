@@ -91,7 +91,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
   }
   
   public final static String KEY_VIDEO_FILE = "video-file";
-  public final static String KEY_OFFSET = "offset";
+  public final static String KEY_SYNC_TIME_VIDEO = "sync-time-video";
+  public final static String KEY_SYNC_TIME_LOG = "sync-time-log";
 
   private VideoPlayerController videoController;
     
@@ -114,7 +115,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   private LogFile logfile;
   
-  private Properties propLogfile = new Properties();
+  private final Properties propLogfile = new Properties();
   
   private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
   {
@@ -136,8 +137,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
       public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
       {
         setLogFrameFromVideo();
-        propLogfile.setProperty(KEY_OFFSET, newValue.toString());
-        saveLogfileProperties();
       }
     });
   }
@@ -222,7 +221,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
         if (videoController != null)
         {
           syncTimeVideo =  videoController.getElapsedSeconds();
-          updateOffset();
+          updateOffset(true);
         }
       }
     });
@@ -234,7 +233,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       public void changed(ObservableValue<? extends GameStateChange> observable, GameStateChange oldValue, GameStateChange newValue)
       {
         syncTimeLog = newValue.time;
-        updateOffset();
+        updateOffset(true);
       }
     });
 
@@ -320,11 +319,18 @@ public class VideoAnalyzer extends AbstractJFXDialog
     }
   }
 
-  private void updateOffset()
+  private void updateOffset(boolean saveProperties)
   {
     if (syncTimeLog != null && syncTimeVideo != null)
     {
       timeOffset.setValue(syncTimeLog - syncTimeVideo);
+      
+      if(saveProperties)
+      {
+        propLogfile.setProperty(KEY_SYNC_TIME_LOG, syncTimeLog.toString());
+        propLogfile.setProperty(KEY_SYNC_TIME_VIDEO, syncTimeVideo.toString());
+        saveLogfileProperties();
+      }
     }
   }
 
@@ -355,6 +361,18 @@ public class VideoAnalyzer extends AbstractJFXDialog
   {
     cbSyncLog.getItems().clear();
     cbSyncLog.getItems().addAll(newVal);
+    
+    if(syncTimeLog != null)
+    {
+      for(GameStateChange s : newVal)
+      {
+        if(s.time == syncTimeLog)
+        {
+          cbSyncLog.valueProperty().set(s);
+          break;
+        }
+      }
+    }
   }
 
   public void sendLogFrame(final int frameIdx)
@@ -394,9 +412,11 @@ public class VideoAnalyzer extends AbstractJFXDialog
               File f = new File(propLogfile.getProperty(KEY_VIDEO_FILE));
               setMedia(f);
             }
-            if(propLogfile.containsKey(KEY_OFFSET))
+            if(propLogfile.containsKey(KEY_SYNC_TIME_LOG) && propLogfile.containsKey(KEY_SYNC_TIME_VIDEO))
             {
-              timeOffset.setValue(Double.parseDouble(propLogfile.getProperty(KEY_OFFSET, "0.0")));
+              syncTimeLog = Double.parseDouble(propLogfile.getProperty(KEY_SYNC_TIME_LOG, "0.0"));
+              syncTimeVideo = Double.parseDouble(propLogfile.getProperty(KEY_SYNC_TIME_VIDEO, "0.0"));
+              updateOffset(false);
             }
           }
           catch(IOException ex)
