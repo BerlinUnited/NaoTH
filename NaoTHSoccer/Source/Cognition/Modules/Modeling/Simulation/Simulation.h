@@ -131,7 +131,7 @@ private:
     */
   std::vector<Action> action_local;
 
-  void calculateOneAction(GoalModel::Goal &oppGoalModel, std::vector<RingBufferWithSum<double, 30> > &buffer, Action& lonely_action) const;
+  void calculateOneAction(Action& lonely_action) const;
 
   Vector2d getGoalTarget(const Vector2d& point, const Vector2d& leftPost, const Vector2d& rightPost) const;
 
