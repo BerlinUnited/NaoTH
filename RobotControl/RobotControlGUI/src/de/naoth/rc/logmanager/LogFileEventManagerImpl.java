@@ -30,7 +30,7 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
     }
     
     @Override
-    public void fireLogFrameEvent(Collection<LogDataFrame> c, int number) {
+    public void fireLogFrameEvent(Collection<LogDataFrame> c) {
         
         if(c != null) {
             for(LogDataFrame f: c) {
@@ -39,7 +39,7 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
         }
         
         for(LogFrameListener l: listeners) {
-            l.newFrame(blackBoard, number);
+            l.newFrame(blackBoard);
         }
     }
 }

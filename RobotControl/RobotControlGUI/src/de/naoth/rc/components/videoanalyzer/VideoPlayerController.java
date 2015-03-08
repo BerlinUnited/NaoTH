@@ -130,6 +130,15 @@ public class VideoPlayerController implements Initializable
       }
     }
   }
+  
+  public void setTime(double newTimeSeconds)
+  {
+    if(player != null)
+    {
+      player.pause();
+      timeSlider.setValue(newTimeSeconds);
+    }
+  }
 
   public void setAnalyzer(VideoAnalyzer analyzer)
   {

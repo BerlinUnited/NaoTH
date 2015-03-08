@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -104,8 +106,20 @@ public class VideoAnalyzer extends AbstractJFXDialog
    * Maps a second (fractioned) to a log frame number
    */
   private TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
+  private TreeMap<Integer, Double> logFrame2Time;
 
   private LogFile logfile;
+  
+  private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
+  {
+
+    @Override
+    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+    {
+      setVideoTimeFromLogFrame();
+    }
+
+  };
 
   public VideoAnalyzer()
   {
@@ -129,8 +143,26 @@ public class VideoAnalyzer extends AbstractJFXDialog
       Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
       if (frame != null)
       {
-        sendLogFrame(frame.getValue());
-        frameSlider.valueProperty().set((double) frame.getValue());
+        if(frameSlider.valueProperty().get() != frame.getValue())
+        {
+          sendLogFrame(frame.getValue());
+          frameSlider.valueProperty().removeListener(frameChangeListener);
+          frameSlider.valueProperty().set((double) frame.getValue());
+          frameSlider.valueProperty().addListener(frameChangeListener);
+        }
+      }
+    }
+  }
+  
+  private void setVideoTimeFromLogFrame()
+  {
+    if(videoController != null && logFrame2Time != null)
+    {
+      int searchVal = frameSlider.valueProperty().intValue();
+      Map.Entry<Integer, Double> time = logFrame2Time.floorEntry(searchVal);
+      if (time != null)
+      {
+        videoController.setTime(time.getValue() - timeOffset.getValue());
       }
     }
   }
@@ -204,6 +236,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
     frameSlider.setMinorTickCount(0);
     frameSlider.setBlockIncrement(1.0);
     frameSlider.setMajorTickUnit(100.0);
+    
     HBox.setHgrow(frameSlider, Priority.ALWAYS);
 
     HBox upper = new HBox(btLoadLog, btLoadVideo);
@@ -291,15 +324,25 @@ public class VideoAnalyzer extends AbstractJFXDialog
     this.timeOffset.setValue(val);
   }
 
-  public void setTime2LogFrame(TreeMap<Double, Integer> time2LogFrame)
+  public void setParseResult(TreeMap<Double, Integer> time2LogFrame, 
+    TreeMap<Integer, Double> logFrame2Time)
   {
     this.time2LogFrame = time2LogFrame;
+    this.logFrame2Time = logFrame2Time;
   }
 
   public void setLogfile(LogFile logfile)
   {
     this.logfile = logfile;
+    
+    frameSlider.valueProperty().removeListener(frameChangeListener);
+    
+    frameSlider.setMin(0.0);
     frameSlider.setMax(logfile.getFrameCount());
+    frameSlider.setValue(0.0);
+    sendLogFrame(0);
+    
+    frameSlider.valueProperty().addListener(frameChangeListener);
   }
   
   public void setGameStateChanges(List<GameStateChange> newVal)
@@ -308,14 +351,15 @@ public class VideoAnalyzer extends AbstractJFXDialog
     cbSyncLog.getItems().addAll(newVal);
   }
 
-  public void sendLogFrame(final int frameNumber)
+  public void sendLogFrame(final int frameIdx)
   {
     if (logfile != null && Plugin.logFileEventManager != null)
     {
       try
       {
-        final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameNumber);
-        Plugin.logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
+        final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameIdx);
+        
+        Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
 
       } catch (IOException ex)
       {

@@ -20,10 +20,7 @@ import java.util.HashMap;
  */
 public class LogFile
 {
-  private int minFrame = Integer.MAX_VALUE;
-  private int maxFrame = Integer.MIN_VALUE;
-  private ArrayList<Frame> frameList = new ArrayList<Frame>();
-  private HashMap<Integer, Integer> framePosition = new HashMap<Integer, Integer>();
+  private final ArrayList<Frame> frameList = new ArrayList<>();
   private BasicReader reader = null;
  
   public LogFile(File file) throws IOException
@@ -61,12 +58,10 @@ public class LogFile
         int currentSize = data_in.readInt();
         fragmentFrameSize += 4;
         fragmentFrameSize += currentSize;
-        this.minFrame = Math.min(this.minFrame, frameNumber);
-        this.maxFrame = Math.max(this.maxFrame, frameNumber);
+ 
         if (currentFrameNumber != frameNumber && currentFrameNumber != -1)
         {
           Frame frame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
-          framePosition.put(frameList.size(), currentFrameNumber);
           frameList.add(frame);
           currentFramePos += currentFrameSize;
           currentFrameSize = 0;
@@ -128,29 +123,9 @@ public class LogFile
     }
   } //end class Frame
 
-  public int getMinFrame()
-  {
-    return minFrame;
-  }
-
-  public int getMaxFrame()
-  {
-    return maxFrame;
-  }
-
   public int getFrameCount()
   {
     return frameList.size();
   }
 
-  public int getFrameNumber(int n)
-  {
-    Frame frame = this.frameList.get(n);
-    if (frame == null)
-    {
-      return -1;
-    }
-    return frame.number;
-  }
-  
 }

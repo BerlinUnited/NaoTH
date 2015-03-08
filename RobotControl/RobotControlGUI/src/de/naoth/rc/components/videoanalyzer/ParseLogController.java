@@ -92,12 +92,12 @@ public class ParseLogController implements Initializable
       public void handle(WorkerStateEvent event)
       {
         parent.setLogfile(service.getValue().logfile);
-        parent.setTime2LogFrame(service.getValue().time2LogFrame);
+        parent.setParseResult(service.getValue().time2LogFrame, 
+          service.getValue().logFrame2Time);
         parent.setGameStateChanges(service.getValue().changes);
         
         parent.sendLogFrame(0);
         parent.setTimeOffset(service.getValue().firstTime);
-        
         
         Stage stage = (Stage) lblMessage.getScene().getWindow();
         stage.close();
@@ -155,6 +155,7 @@ public class ParseLogController implements Initializable
               FrameworkRepresentations.FrameInfo frame = FrameworkRepresentations.FrameInfo.parseFrom(frameRaw.getData());
               currentTime = ((double) frame.getTime()) / 1000.0;
               result.time2LogFrame.put(currentTime, i);
+              result.logFrame2Time.put(i, currentTime);
 
               if (i == 0)
               {
@@ -223,6 +224,10 @@ public class ParseLogController implements Initializable
      * Maps a second (fractioned) to a log frame number
      */
     private final TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
+    /**
+     * Maps a log frame number to a second (fractioned)
+     */
+    private final TreeMap<Integer, Double> logFrame2Time = new TreeMap<>();
     private final ArrayList<VideoAnalyzer.GameStateChange> changes = new ArrayList<>();
     private double firstTime;
     

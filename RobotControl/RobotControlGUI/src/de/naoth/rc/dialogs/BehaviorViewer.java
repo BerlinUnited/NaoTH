@@ -800,7 +800,7 @@ public class BehaviorViewer extends AbstractDialog
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b, int frameNumber) {
+    public void newFrame(BlackBoard b) {
         
         try
         {
