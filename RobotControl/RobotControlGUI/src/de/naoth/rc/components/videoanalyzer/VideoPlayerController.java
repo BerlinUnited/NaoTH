@@ -28,9 +28,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -56,6 +54,10 @@ public class VideoPlayerController implements Initializable
   
   @FXML
   private Slider timeSlider;
+  
+  @FXML 
+  private Slider frameSlider;
+  
   @FXML
   private ToggleButton playButton;
   @FXML
@@ -68,6 +70,7 @@ public class VideoPlayerController implements Initializable
   
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
+  
   /**
    * Initializes the controller class.
    */
@@ -182,9 +185,13 @@ public class VideoPlayerController implements Initializable
 
   public double getElapsedSeconds()
   {
-    return player.getCurrentTime().toSeconds();
+    if(player != null)
+    {
+      return player.getCurrentTime().toSeconds();
+    }
+    return 0.0;
   }
-
+  
   public static class TickFormatter extends StringConverter<Double>
   {
 
@@ -252,5 +259,4 @@ public class VideoPlayerController implements Initializable
     }
 
   }
-
 }

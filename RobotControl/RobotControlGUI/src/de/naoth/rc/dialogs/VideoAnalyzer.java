@@ -36,9 +36,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -95,6 +97,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
   private final Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
   private Double syncTimeLog;
   private Double syncTimeVideo;
+  
+  private Slider frameSlider;
 
   /**
    * Maps a second (fractioned) to a log frame number
@@ -126,6 +130,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       if (frame != null)
       {
         sendLogFrame(frame.getValue());
+        frameSlider.valueProperty().set((double) frame.getValue());
       }
     }
   }
@@ -192,13 +197,20 @@ public class VideoAnalyzer extends AbstractJFXDialog
         updateOffset();
       }
     });
-    
-    
+
+    frameSlider = new Slider(0.0, 0.0, 0.0);
+    frameSlider.setShowTickLabels(false);
+    frameSlider.setShowTickMarks(true);
+    frameSlider.setMinorTickCount(0);
+    frameSlider.setBlockIncrement(1.0);
+    frameSlider.setMajorTickUnit(100.0);
+    HBox.setHgrow(frameSlider, Priority.ALWAYS);
 
     HBox upper = new HBox(btLoadLog, btLoadVideo);
     HBox lower = new HBox(btSyncPointVideo, cbSyncLog, lblOffset, txtOffset);
-
-    return new VBox(upper, lower);
+    HBox sliderBox = new HBox(frameSlider);
+    
+    return new VBox(upper, lower, sliderBox);
   }
 
   @Override
@@ -287,6 +299,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
   public void setLogfile(LogFile logfile)
   {
     this.logfile = logfile;
+    frameSlider.setMax(logfile.getFrameCount());
   }
   
   public void setGameStateChanges(List<GameStateChange> newVal)
