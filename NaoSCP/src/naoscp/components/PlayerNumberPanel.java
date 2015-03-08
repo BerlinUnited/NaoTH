@@ -23,6 +23,10 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
 
     private final Map<String,Integer> bodyIdToPlayerNumber = new HashMap<String, Integer>();
     
+    public Map<String,Integer> getBodyIdToPlayerNumber() {
+        return bodyIdToPlayerNumber;
+    }
+    
     /**
      * Creates new form PlayerNumberPanel
      */
@@ -58,6 +62,7 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
             
             final JFormattedTextField input = new JFormattedTextField(formatter);
             input.setInputVerifier( new InputVerifier() {
+                @Override
                 public boolean verify(JComponent input) {
                     JFormattedTextField ftf = (JFormattedTextField)input;
                     try {

@@ -9,6 +9,7 @@ package naoscp.components;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -454,6 +455,22 @@ public class NaoTHPanel extends javax.swing.JPanel {
                     getPlayerCfg().writeToFile(new File(privateFolder, "player.cfg"));
                     writeScheme(jSchemeBox.getSelectedItem().toString(),new File(deployConfigDir, "scheme.cfg"));
 
+                    // TODO: better place?
+                    for(Map.Entry<String,Integer> e: playerNumberPanel.getBodyIdToPlayerNumber().entrySet())
+                    {
+                      File bodyIdConfigFile = new File(deployConfigDir, "/robots/" + e.getKey());
+                      if(!bodyIdConfigFile.isDirectory()) 
+                      {
+                        Logger.getGlobal().log(Level.WARNING, "Directory for the body number " 
+                          + e.getKey() + " doesn't exist! You might need to enable \"copyConfig\"");
+                        continue;
+                      }
+
+                      Config cfg = new Config("player");
+                      cfg.values.put("PlayerNumber", String.valueOf(e.getValue()));
+                      cfg.writeToFile(new File(bodyIdConfigFile, "player.cfg"));
+                    }
+                    
                 } catch(IOException ex) {
                     //Logger.getGlobal().log(Level.SEVERE, "Could not write config\n" + ex.getMessage());
                     //ex.printStackTrace(System.err);
