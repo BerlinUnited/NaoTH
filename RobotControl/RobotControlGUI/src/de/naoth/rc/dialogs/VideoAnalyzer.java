@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -313,7 +314,17 @@ public class VideoAnalyzer extends AbstractJFXDialog
   {
     if(videoController != null)
     {
-      propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
+      if(logfile != null && logfile.getOriginalFile() != null)
+      {
+        Path videoPath = file.getAbsoluteFile().toPath();
+        Path basePath = logfile.getOriginalFile().getParentFile().toPath();
+        Path relativeVideoPath = basePath.relativize(videoPath);
+        propLogfile.setProperty(KEY_VIDEO_FILE, relativeVideoPath.toString());
+      }
+      else
+      {
+        propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
+      }
       saveLogfileProperties();
       videoController.open(file);
     }
@@ -409,8 +420,9 @@ public class VideoAnalyzer extends AbstractJFXDialog
             // set the values stored in the file
             if(propLogfile.containsKey(KEY_VIDEO_FILE))
             {
-              File f = new File(propLogfile.getProperty(KEY_VIDEO_FILE));
-              setMedia(f);
+              Path basePath = origFile.getParentFile().toPath();
+              Path videoPath = basePath.resolve(propLogfile.getProperty(KEY_VIDEO_FILE));
+              setMedia(videoPath.toFile());
             }
             if(propLogfile.containsKey(KEY_SYNC_TIME_LOG) && propLogfile.containsKey(KEY_SYNC_TIME_VIDEO))
             {
