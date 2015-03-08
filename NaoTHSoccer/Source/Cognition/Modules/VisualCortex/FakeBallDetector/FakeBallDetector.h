@@ -31,14 +31,15 @@ public:
     virtual void execute();
 
 private:
-    FrameInfo activationFrame;
+    FrameInfo lastFrame;
 
     double active;
 
+    Eigen::Vector2d startPosition;
     Eigen::Vector2d position;
     Eigen::Vector2d velocity;
 
-    Eigen::Vector2d simulateConstantMovementOnField(double dt, const Eigen::Vector2d& velocity);
+    const Eigen::Vector2d simulateConstantMovementOnField(double dt, const Eigen::Vector2d& velocity);
 };
 
 #endif // FAKEBALLDETECTOR_H
