@@ -9,6 +9,8 @@ package de.naoth.rc.logmanager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -20,13 +22,31 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
     private final List<LogFrameListener> listeners = new ArrayList<>();
     private final BlackBoardImpl blackBoard = new BlackBoardImpl();
     
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    
     @Override
     public void addListener(LogFrameListener l) {
+      lock.writeLock().lock();
+      try
+      {
         listeners.add(l);
+      }
+      finally
+      {
+        lock.writeLock().unlock();
+      }
     }
     @Override
     public void removeListener(LogFrameListener l) {
+      lock.writeLock().lock();
+      try
+      {
         listeners.remove(l);
+      }
+      finally
+      {
+        lock.writeLock().unlock();
+      }
     }
     
     @Override
@@ -38,8 +58,16 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
             }
         }
         
-        for(LogFrameListener l: listeners) {
-            l.newFrame(blackBoard);
+        lock.readLock().lock();
+        try
+        {
+          for(LogFrameListener l: listeners) {
+              l.newFrame(blackBoard);
+          }
+        }
+        finally
+        {
+          lock.readLock().unlock();
         }
     }
 }
