@@ -11,6 +11,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,9 +28,15 @@ public class LogFile
   public LogFile(File file) throws IOException
   {
     this.originalFile = file;
-    //FileInputStream file_input = new FileInputStream (file);
-    //DataInputStream inputStream = new DataInputStream (file_input);
-    reader = new BasicReader(new RandomAccessFile(file, "r"));
+    FileChannel channel = FileChannel.open(file.toPath());
+    if(channel.size() >= Integer.MAX_VALUE)
+    {
+      reader = new BasicReader(new RandomAccessFile(file, "r"));
+    }
+    else
+    {
+      reader = new BasicReader(channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()));
+    }
     scan(reader);
     //this.raf = new RandomAccessFile(this.openedFile, "r");
   }
@@ -81,6 +88,11 @@ public class LogFile
 
   public HashMap<String, LogDataFrame> readFrame(int frameId) throws IOException
   {
+    if(frameId >= this.frameList.size())
+    {
+      return null;
+    }
+    
     Frame frame = this.frameList.get(frameId);
     if (frame == null)
     {

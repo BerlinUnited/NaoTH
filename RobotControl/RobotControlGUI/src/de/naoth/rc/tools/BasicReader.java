@@ -7,21 +7,24 @@ package de.naoth.rc.tools;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.BufferUnderflowException;
+import java.nio.MappedByteBuffer;
 
 /**
- *
+ * A wrapper class for either {@link MappedByteBuffer} (fast) or
+ * {@link RandomAccessFile} (slow) which has the necessary functionality
+ * to read log files.
  * @author thomas
  */
 public class BasicReader
 {
-  private InputStream streamReader = null;
+  private MappedByteBuffer memoryMapped = null;
   private RandomAccessFile rafReader = null;
 
-  public BasicReader(InputStream streamReader)
+  public BasicReader(MappedByteBuffer memoryMapped)
   {
-    this.streamReader = streamReader;
+    this.memoryMapped = memoryMapped;
   }
 
   public BasicReader(RandomAccessFile rafReader)
@@ -31,22 +34,65 @@ public class BasicReader
 
   public int read(byte[] buffer) throws IOException
   {
-    return (streamReader == null) ? this.rafReader.read(buffer) : this.streamReader.read(buffer);
+    if(memoryMapped == null)
+    {
+      return this.rafReader.read(buffer);
+    }
+    else if(buffer != null)
+    {
+      int length = Math.min(buffer.length, memoryMapped.remaining());
+      if(length > 0)
+      {
+        memoryMapped.get(buffer, 0, length);
+        return length;
+      }
+    }
+    return 0;
   }
 
   public int read() throws IOException
   {
-    return (streamReader == null) ? this.rafReader.read() : this.streamReader.read();
+    if(memoryMapped == null)
+    {
+      return this.rafReader.read();
+    }
+    else
+    {
+      try
+      {
+        return memoryMapped.get();
+      }
+      catch(BufferUnderflowException ex)
+      {
+        return -1;
+      }
+    }
   }
 
-  public long skip(int size) throws IOException
+  public int skip(int size) throws IOException
   {
-    return (streamReader == null) ? this.rafReader.skipBytes(size) : this.streamReader.skip(size);
+    if(memoryMapped == null)
+    {
+      return this.rafReader.skipBytes(size);
+    }
+    else
+    {
+      int oldPos = memoryMapped.position();
+      memoryMapped.position(oldPos+size);
+      return memoryMapped.position()-oldPos;
+    }
   }
 
   public void seek(long size) throws IOException
   {
-    this.rafReader.seek(size);
+    if(memoryMapped == null)
+    {
+      this.rafReader.seek(size);
+    }
+    else
+    {
+      memoryMapped.position((int) size);
+    }
   }
 
   public String readString() throws IOException, EOFException

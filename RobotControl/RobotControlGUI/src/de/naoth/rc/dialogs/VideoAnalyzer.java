@@ -393,10 +393,11 @@ public class VideoAnalyzer extends AbstractJFXDialog
       try
       {
         final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameIdx);
-        
-        Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
-
-      } catch (IOException ex)
+        if(frame != null)
+        {
+          Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
+        }
+      } catch (Exception ex)
       {
         Helper.handleException(ex);
       }
