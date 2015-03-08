@@ -44,9 +44,9 @@ void Serializer<AccelerometerData>::deserialize(std::istream& stream, Accelerome
   msg.ParseFromZeroCopyStream(&buf);
 
   // allow us to parse old log files
-  if(msg.legacypackeddata_size() == 4)
+  if(msg.legacypackeddata_size() == 6)
   {
-    for(int i=0; i<2; i++)
+    for(int i=0; i<3; i++)
     {
       representation.data[i] = msg.legacypackeddata(i*2);
       representation.rawData[i] = msg.legacypackeddata(i*2+1);
