@@ -17,15 +17,16 @@ import de.naoth.rc.dialogs.VideoAnalyzer.Plugin;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -88,6 +89,9 @@ public class VideoAnalyzer extends AbstractJFXDialog
       return state + " (at " + time + " seconds)";
     }
   }
+  
+  public final static String KEY_VIDEO_FILE = "video-file";
+  public final static String KEY_OFFSET = "offset";
 
   private VideoPlayerController videoController;
     
@@ -110,6 +114,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   private LogFile logfile;
   
+  private Properties propLogfile = new Properties();
+  
   private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
   {
 
@@ -130,6 +136,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
       public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
       {
         setLogFrameFromVideo();
+        propLogfile.setProperty(KEY_OFFSET, newValue.toString());
+        saveLogfileProperties();
       }
     });
   }
@@ -180,7 +188,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
         if (result != null)
         {
           fileChooser.setInitialDirectory(result.getParentFile());
-          setLogFile(result);
+          openLogFile(result);
         }
       }
     });
@@ -277,11 +285,11 @@ public class VideoAnalyzer extends AbstractJFXDialog
     return (scene);
   }
   
-  private void setLogFile(File f)
+  private void openLogFile(File f)
   {
     if (f != null && f.isFile())
     {
-
+      propLogfile.clear();
       try
       {
         FXMLLoader loader = new FXMLLoader(ParseLogController.class.getResource("ParseLog.fxml"));
@@ -304,9 +312,10 @@ public class VideoAnalyzer extends AbstractJFXDialog
 
   private void setMedia(File file)
   {
-    
     if(videoController != null)
     {
+      propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
+      saveLogfileProperties();
       videoController.open(file);
     }
   }
@@ -317,11 +326,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
     {
       timeOffset.setValue(syncTimeLog - syncTimeVideo);
     }
-  }
-
-  public void setTimeOffset(Double val)
-  {
-    this.timeOffset.setValue(val);
   }
 
   public void setParseResult(TreeMap<Double, Integer> time2LogFrame, 
@@ -343,6 +347,8 @@ public class VideoAnalyzer extends AbstractJFXDialog
     sendLogFrame(0);
     
     frameSlider.valueProperty().addListener(frameChangeListener);
+    
+    loadLogfileProperties();
   }
   
   public void setGameStateChanges(List<GameStateChange> newVal)
@@ -364,6 +370,60 @@ public class VideoAnalyzer extends AbstractJFXDialog
       } catch (IOException ex)
       {
         Helper.handleException(ex);
+      }
+    }
+  }
+  
+  private void loadLogfileProperties()
+  {
+    if(logfile != null)
+    {
+      File origFile = logfile.getOriginalFile();
+      if(origFile != null)
+      {
+        File propFile = new File(origFile.getParent(), origFile.getName() + ".videoanalyzer.properties");
+        if(propFile.isFile())
+        {
+          try(FileReader propFileReader = new FileReader(propFile))
+          {
+            propLogfile.load(propFileReader);
+
+            // set the values stored in the file
+            if(propLogfile.containsKey(KEY_VIDEO_FILE))
+            {
+              File f = new File(propLogfile.getProperty(KEY_VIDEO_FILE));
+              setMedia(f);
+            }
+            if(propLogfile.containsKey(KEY_OFFSET))
+            {
+              timeOffset.setValue(Double.parseDouble(propLogfile.getProperty(KEY_OFFSET, "0.0")));
+            }
+          }
+          catch(IOException ex)
+          {
+            Helper.handleException(ex);
+          }
+        }
+      }
+    }
+  }
+  
+  private void saveLogfileProperties()
+  {
+    if(logfile != null)
+    {
+      File origFile = logfile.getOriginalFile();
+      if(origFile != null)
+      {
+        File propFile = new File(origFile.getParent(), origFile.getName() + ".videoanalyzer.properties");
+        try(FileWriter propFileWriter = new FileWriter(propFile))
+        {
+          propLogfile.store(propFileWriter, null);
+        }
+        catch(IOException ex)
+        {
+          Helper.handleException(ex);
+        }
       }
     }
   }

@@ -20,11 +20,13 @@ import java.util.HashMap;
  */
 public class LogFile
 {
+  private final File originalFile;
   private final ArrayList<Frame> frameList = new ArrayList<>();
   private BasicReader reader = null;
  
   public LogFile(File file) throws IOException
   {
+    this.originalFile = file;
     //FileInputStream file_input = new FileInputStream (file);
     //DataInputStream inputStream = new DataInputStream (file_input);
     reader = new BasicReader(new RandomAccessFile(file, "r"));
@@ -127,5 +129,12 @@ public class LogFile
   {
     return frameList.size();
   }
+
+  public File getOriginalFile()
+  {
+    return originalFile;
+  }
+  
+  
 
 }

@@ -96,9 +96,6 @@ public class ParseLogController implements Initializable
           service.getValue().logFrame2Time);
         parent.setGameStateChanges(service.getValue().changes);
         
-        parent.sendLogFrame(0);
-        parent.setTimeOffset(service.getValue().firstTime);
-        
         Stage stage = (Stage) lblMessage.getScene().getWindow();
         stage.close();
       }
