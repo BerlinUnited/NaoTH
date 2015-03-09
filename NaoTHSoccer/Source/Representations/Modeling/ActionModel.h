@@ -8,7 +8,7 @@
 #define _ActionModel_H
 
 
-class ActionModel : public naoth::Printable
+class ActionModel
 {
 public:
 
@@ -30,11 +30,6 @@ public:
   static const int numOfActions = 5;
 
   ActionId myAction;
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "ActionModel";
-  }
 };
 
 
