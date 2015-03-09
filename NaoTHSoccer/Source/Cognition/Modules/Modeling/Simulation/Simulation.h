@@ -16,12 +16,9 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/RawAttackDirection.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/ActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Modeling/ActionNew.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -30,12 +27,10 @@
 #include <Tools/Debug/DebugParameterList.h>
 
 // Debug
-#include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
 BEGIN_DECLARE_MODULE(Simulation)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
-  PROVIDE(DebugModify)
   PROVIDE(DebugParameterList)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
@@ -66,30 +61,12 @@ public:
 	
     Parameters() : ParameterList("PotentialActionParameters")
     {
-      PARAMETER_REGISTER(goal_attractor_strength) = -0.001;
-      PARAMETER_REGISTER(goal_post_offset) = 200.0;
-      PARAMETER_REGISTER(goal_line_offset_front) = 100.0;
-      PARAMETER_REGISTER(goal_line_offset_back) = 100.0;
-
-      PARAMETER_REGISTER(player_repeller_radius) = 2000;
-      PARAMETER_REGISTER(player_repeller_strenth) = 1500;
-
       PARAMETER_REGISTER(action_sidekick_distance) = 310;
       PARAMETER_REGISTER(action_short_kick_distance) = 2200;
       PARAMETER_REGISTER(action_long_kick_distance) = 2750;
 
       syncWithConfig();
     }
-
-    // 
-    double goal_attractor_strength;
-    double goal_post_offset;
-    double goal_line_offset_front;
-    double goal_line_offset_back;
-
-    //
-    double player_repeller_radius;
-    double player_repeller_strenth;
     
     double action_sidekick_distance;
     double action_short_kick_distance;
@@ -107,17 +84,17 @@ public:
   public:
     Action(ActionModel::ActionId _id, const Vector2d& actionVector) : 
 		  _id(_id), 
-      actionVector(actionVector), 
-		  potential(-1),
-		  goodness(0)
+      actionVector(actionVector)
+		  //potential(-1), //not used 
+		  //goodness(0)    //not used
 	  {}
 	
 	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
     ActionModel::ActionId id() { return _id; }
 
     Vector2d target;
-    double potential;
-    double goodness;
+    //double potential;
+    //double goodness;
   };
 
 
@@ -125,7 +102,7 @@ private:
 
   std::vector<Action> action_local;
 
- 
+  Vector2d actionGlobal;
 
   Vector2d calculateOneAction(Action& lonely_action) const;
 

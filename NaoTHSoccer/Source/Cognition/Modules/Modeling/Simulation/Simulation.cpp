@@ -31,7 +31,7 @@ using namespace std;
  {
   Action& lonely_action = action_local[1];
 
-  Vector2d actionGlobal = calculateOneAction(lonely_action);
+  actionGlobal = calculateOneAction(lonely_action);
 
     DEBUG_REQUEST("Simulation:draw_one_action_point:global",
     FIELD_DRAWING_CONTEXT;
@@ -62,19 +62,22 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
 
   Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));
   
-  Vector2d actionGlobal;
+  Vector2d actionPoint;
 
   if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine))
   {
-    actionGlobal = getRobotPose() * lonely_action.target;
+    //actionGlobal = getRobotPose() * lonely_action.target;
+    
+    actionPoint = Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0);
+
   }
   else
   {
-    actionGlobal = getRobotPose() * lonely_action.target;
-    actionGlobal = outsideField(actionGlobal);
+    actionPoint = getRobotPose() * lonely_action.target;
+    actionPoint = outsideField(actionPoint);
   }
 
-  return actionGlobal;
+  return actionPoint;
 }
   
   //correction of distance in percentage, angle in degrees
