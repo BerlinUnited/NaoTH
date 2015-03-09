@@ -123,25 +123,13 @@ public:
 
 private:
 
-    /**
-    * Calculate the target point between the goal posts to shoot at.
-    * @param point The relative point for which the target point should be calculated.
-    * @param oppGoalModel Relative coordinates of the opponent goal.
-    * @return Target point.
-    */
   std::vector<Action> action_local;
 
-  void calculateOneAction(Action& lonely_action) const;
+ 
 
-  Vector2d getGoalTarget(const Vector2d& point, const Vector2d& leftPost, const Vector2d& rightPost) const;
-
-  double calculatePotential(const Vector2d& point, const Vector2d& targetPoint) const;
-
-  double globalAttractorPotential(const Vector2d& p, const Vector2d& x) const;
+  Vector2d calculateOneAction(Action& lonely_action) const;
 
   Vector2d outsideField(const Vector2d& relativePoint) const;
-
-  std::vector<RingBufferWithSum<double, 30> > actionRingBuffer;
 };
 
 #endif  /* _Simulation_H */

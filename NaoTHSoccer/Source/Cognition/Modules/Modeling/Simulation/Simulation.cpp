@@ -13,6 +13,7 @@ using namespace std;
   {
   DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", false);
 
+ 
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
   action_local.reserve(ActionModel::numOfActions);
@@ -26,34 +27,54 @@ using namespace std;
 
   Simulation::~Simulation(){}
 
-  void Simulation::execute()
+ void Simulation::execute()
  {
   Action& lonely_action = action_local[1];
 
-  calculateOneAction(lonely_action);
+  Vector2d actionGlobal = calculateOneAction(lonely_action);
+
+    DEBUG_REQUEST("Simulation:draw_one_action_point:global",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+
+        CIRCLE( actionGlobal.x, actionGlobal.y, 50);
+
+  );
 }//end execute
 
 
-  void Simulation::calculateOneAction(Action& lonely_action) const
+Vector2d Simulation::calculateOneAction(Action& lonely_action) const
 {
-  // reset our Model and get Ball/Goal
-  //getActionModel().myAction = ActionModel::none;
+  GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+  Vector2d oppGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.leftPost;
+  Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
+
+  //the endpoints of our line are a shortened version of the goal line
+  Vector2d leftEndpoint = oppGoalPostLeftPreview + Vector2d(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius,0);
+  Vector2d rightEndpoint = oppGoalPostRightPreview - Vector2d(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius,0);
+
+  // this is the goalline we are shooting for
+  Math::LineSegment goalLinePreview(leftEndpoint, rightEndpoint);
 
   Vector2d ballRelativePreview = getBallModel().positionPreview;
 
-    Action& action = lonely_action;
+  lonely_action.target = lonely_action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
 
-    action.target = action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
+  Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));
+  
+  Vector2d actionGlobal;
 
-    Math::LineSegment shootLine(ballRelativePreview, outsideField(action.target));
+  if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine))
+  {
+    actionGlobal = getRobotPose() * lonely_action.target;
+  }
+  else
+  {
+    actionGlobal = getRobotPose() * lonely_action.target;
+    actionGlobal = outsideField(actionGlobal);
+  }
 
-  DEBUG_REQUEST("Simulation:draw_one_action_point:global",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 1);
-       const Action& action = lonely_action;
-       Vector2d actionGlobal = getRobotPose() * lonely_action.target;
-       CIRCLE( actionGlobal.x, actionGlobal.y, 50);
-  );
+  return actionGlobal;
 }
   
   //correction of distance in percentage, angle in degrees
@@ -106,13 +127,4 @@ using namespace std;
      }
    }
 }
-
-
-
-
-
-
-
-
-
 
