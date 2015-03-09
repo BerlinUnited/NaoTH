@@ -38,7 +38,7 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
 //  REQUIRE(MotionStatus)
-  REQUIRE(KinematicChain)
+//  REQUIRE(KinematicChain)
 //  REQUIRE(SituationStatus)
 
   REQUIRE(BallPercept)
@@ -62,7 +62,7 @@ public:
 
 // from other kalman filter ball locator
 private:
-    //OdometryData lastRobotOdometry; //just for prebuffered percepts
+    OdometryData lastRobotOdometry;
     //OdometryData lastRobotOdometryAll;
 
     FrameInfo lastFrameInfo;
@@ -90,6 +90,8 @@ private:
       }
     }
 
+    void applyOdometryOnFilterState(KalmanFilter4d& filter);
+
     void doDebugRequest();
 
     void reloadKFParameters();
@@ -102,7 +104,7 @@ private:
             PARAMETER_REGISTER(processNoiseQ00) = 3;
             PARAMETER_REGISTER(processNoiseQ01) = 0;
             PARAMETER_REGISTER(processNoiseQ10) = 0;
-            PARAMETER_REGISTER(processNoiseQ11) = 0;
+            PARAMETER_REGISTER(processNoiseQ11) = 3;
 
             PARAMETER_REGISTER(measurementNoiseR00) = 10;
             PARAMETER_REGISTER(measurementNoiseR11) = 10;

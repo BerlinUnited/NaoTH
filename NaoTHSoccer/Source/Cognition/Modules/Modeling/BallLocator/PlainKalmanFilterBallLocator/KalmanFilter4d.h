@@ -12,7 +12,7 @@ public:
     void prediction(const Eigen::Vector4d& u, double dt);
     void update(const Eigen::Vector2d &z);
 
-    void setState(Eigen::Vector4d state);
+    void setState(Eigen::Vector4d& state);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 

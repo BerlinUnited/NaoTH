@@ -80,6 +80,19 @@ void KalmanFilter4d::update(const Eigen::Vector2d& z)
     P = P_corr;
 }
 
+void KalmanFilter4d::setState(Eigen::Vector4d& state)
+{
+    x = state;
+}
+
+void KalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d &q){
+    Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
+}
+
+void KalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r){
+    R << r;
+}
+
 const Eigen::Vector4d& KalmanFilter4d::getState() const
 {
     return x;
@@ -97,17 +110,4 @@ const Eigen::Matrix2d& KalmanFilter4d::getMeasurementCovariance() const
 
 const Eigen::Vector2d& KalmanFilter4d::getStateInMeasurementSpace() const {
     return H*x;
-}
-
-void KalmanFilter4d::setState(Eigen::Vector4d state)
-{
-    x = state;
-}
-
-void KalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d &q){
-    Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
-}
-
-void KalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r){
-    R << r;
 }

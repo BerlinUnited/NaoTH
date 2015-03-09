@@ -21,8 +21,7 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 
 void PlainKalmanFilterBallLocator::execute()
 {
-
-    //
+    // TODO: remove initialization
     if(!getBallModel().valid && getBallPercept().ballWasSeen)
     {
         Eigen::Vector4d x1;
@@ -34,15 +33,8 @@ void PlainKalmanFilterBallLocator::execute()
         filter.setState(x1);
     }
 
-    //////////////////////////////////
-    // Odometry-update (translation): move the model into the current local coordinte system
-    //////////////////////////////////
-
-//    Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-//    Vector2<double> h = Vector2<double>(Sx[0], Sy[0]); // translation of the model
-//    h = odometryDelta * h;
-//    Sx[0] = h.x; Sy[0] = h.y;
-//    How to handle speed / velocity -> should be rotate
+    // apply odometry on the filter state, to keep it in the robot's local coordinate system
+    applyOdometryOnFilterState(filter);
 
     const Eigen::Vector4d& x = filter.getState();
     Eigen::Vector4d  u = Eigen::Vector4d::Zero(); // control vector
@@ -111,7 +103,8 @@ void PlainKalmanFilterBallLocator::execute()
 
     doDebugRequest();
 
-    lastFrameInfo = getFrameInfo();
+    lastFrameInfo     = getFrameInfo();
+    lastRobotOdometry = getOdometryData();
 }
 
 
@@ -127,6 +120,25 @@ double PlainKalmanFilterBallLocator::mahalanobisDistanceToState(const KalmanFilt
 double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
     return std::exp(((filter.getStateInMeasurementSpace()-z).transpose() * filter.getMeasurementCovariance().inverse() * (filter.getStateInMeasurementSpace()-z))(0,0) * (-0.5));
+}
+
+void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(KalmanFilter4d& filter)
+{
+    const Eigen::Vector4d& x = filter.getState();
+    Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+
+    //rotate and translate location part of the filter's state
+    Vector2<double> location = Vector2<double>(x(0), x(2)); // translation of the model
+    location = odometryDelta * location;
+
+    //just rotate the velocity part of the filter's state
+    Vector2<double> velocity = Vector2<double>(x(1), x(3)); // translation of the model
+    velocity.rotate(odometryDelta.getAngle());
+
+    Eigen::Vector4d newStateX;
+    newStateX << location.x, velocity.x, location.y, velocity.y;
+
+    filter.setState(newStateX);
 }
 
 void PlainKalmanFilterBallLocator::doDebugRequest()
