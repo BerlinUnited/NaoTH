@@ -10,9 +10,6 @@
 
 #include <PlatformInterface/Platform.h>
 
-// debug
-#include <Tools/Debug/DebugDrawings3D.h>
-
 #include <Tools/SynchronizedFileWriter.h>
 
 
@@ -87,6 +84,7 @@ void Debug::execute()
 {
   cognitionLogger.log(getFrameInfo().getFrameNumber());
 
+  draw3D();
 
   DEBUG_REQUEST("Debug:Test:DebugDrawings:Field",
     FIELD_DRAWING_CONTEXT;
@@ -211,3 +209,104 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   }
 }
 
+void Debug::draw3D()
+{
+  Pose3D robotPose3D;
+  DEBUG_REQUEST("3DViewer:Global",
+    robotPose3D.translation.x = getRobotPose().translation.x;
+    robotPose3D.translation.y = getRobotPose().translation.y;
+    robotPose3D.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation);
+    );
+
+  DEBUG_REQUEST("3DViewer:Robot:Body", 
+    drawRobot3D(robotPose3D);
+  );
+
+  DEBUG_REQUEST("3DViewer:Robot:Camera",
+    Pose3D cameraPose = getCameraMatrix();
+    Pose3D cameraPoseTop = getCameraMatrixTop();
+
+    // transform the cameras into the robots coordinates
+		cameraPose = robotPose3D*cameraPose;
+		cameraPoseTop = robotPose3D*cameraPoseTop;
+
+    const CameraInfo& ci = getCameraInfo();
+    getDebugDrawings3D().addCamera("top", cameraPoseTop,ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
+    getDebugDrawings3D().addCamera("bottom", cameraPose,ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight);
+  );
+
+
+  DEBUG_REQUEST("3DViewer:Robot:CoM",
+    Vector3d p0 = robotPose3D * getKinematicChain().CoM;
+    Vector3d p1 = p0;
+    p1.z = 0;
+    LINE_3D(ColorClasses::red, p0, p1);
+  );
+
+  // draw ball model in 3D viewer
+  DEBUG_REQUEST("3DViewer:Ball", 
+    Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
+    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+  );
+
+  DEBUG_REQUEST("3DViewer:kinematic_chain:links",
+    drawKinematicChain3D();
+  );
+
+}//end draw3D
+
+
+void Debug::drawRobot3D(const Pose3D& robotPose)
+{
+  const Kinematics::Link* theLink = getKinematicChain().theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+    if (i != KinematicChain::Neck
+      && i != KinematicChain::LShoulder && i != KinematicChain::LElbow
+      && i != KinematicChain::RShoulder && i != KinematicChain::RElbow
+      && i != KinematicChain::Hip)
+    {
+      Pose3D p = robotPose * theLink[i].M;
+      ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), p);
+    }
+  }//end for
+}//end drawRobot3D
+
+void Debug::drawKinematicChain3D()
+{
+  const Kinematics::Link* theLink = getKinematicChain().theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+      DEBUG_REQUEST("3DViewer:kinematic_chain:mass",
+        double s = theLink[i].mass/20 + 5;
+        BOX_3D(ColorClasses::blue,s,s,s,theLink[i].M);
+      );
+
+      DEBUG_REQUEST("3DViewer:kinematic_chain:com",
+        SPHERE(ColorClasses::pink, 15, getKinematicChain().CoM);
+        Vector3d projection(getKinematicChain().CoM.x, getKinematicChain().CoM.y, 0);
+        SPHERE(ColorClasses::red, 10, projection);
+        LINE_3D(ColorClasses::red, getKinematicChain().CoM, projection);
+      );
+
+      if(theLink[i].jointID != -1) {
+        Color color(fabs(theLink[i].a.x), fabs(theLink[i].a.y), fabs(theLink[i].a.z), 0.3);
+        //NOTE: by default the cylinder is aligned along the y-axis
+        const Vector3d axsis_origin(0,1,0);
+        const Vector3d axis_target(theLink[i].a);
+        const Vector3d axis_orthogonal = (axsis_origin^axis_target).normalize();
+        const double axis_angle = acos(axsis_origin*axis_target);
+        RotationMatrix r = RotationMatrix::fromQuaternion(axis_orthogonal, axis_angle);
+
+        CYLINDER(color.toString().c_str(), 3, 30, theLink[i].M*r);
+      }
+
+      Kinematics::Link* child = theLink[i].child;
+      while(child) {
+        LINE_3D(ColorClasses::red, theLink[i].p, (*child).p);
+        child = child->sister;
+      }
+  }//end for
+}//end drawKinematicChain3D

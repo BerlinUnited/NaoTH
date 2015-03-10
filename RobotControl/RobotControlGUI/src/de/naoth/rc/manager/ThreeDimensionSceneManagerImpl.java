@@ -76,6 +76,6 @@ public class ThreeDimensionSceneManagerImpl extends AbstractManagerPlugin<Scene>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("debug_3d");
+    return new Command("Cognition:representation:getbinary").addArg("DebugDrawings3D");
   }
 }
