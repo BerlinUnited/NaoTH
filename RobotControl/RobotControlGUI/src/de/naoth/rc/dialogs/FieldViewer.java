@@ -27,6 +27,7 @@ import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
@@ -60,6 +61,8 @@ public class FieldViewer extends AbstractDialog
       public static RobotControl parent;
       @InjectPlugin
       public static DebugDrawingManager debugDrawingManager;
+      @InjectPlugin
+      public static DebugDrawingManagerMotion debugDrawingManagerMotion;
       @InjectPlugin
       public static PlotDataManager plotDataManager;
       @InjectPlugin
@@ -328,6 +331,7 @@ public class FieldViewer extends AbstractDialog
         if(Plugin.parent.checkConnected())
         {
           Plugin.debugDrawingManager.addListener(this);
+          Plugin.debugDrawingManagerMotion.addListener(this);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -338,6 +342,7 @@ public class FieldViewer extends AbstractDialog
       else
       {
         Plugin.debugDrawingManager.removeListener(this);
+        Plugin.debugDrawingManagerMotion.removeListener(this);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -430,6 +435,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   {
     btReceiveDrawings.setSelected(false);
     Plugin.debugDrawingManager.removeListener(this);
+    Plugin.debugDrawingManagerMotion.removeListener(this);
   }
   
   void resetView()
@@ -551,6 +557,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   {
     // remove all the registered listeners
     Plugin.debugDrawingManager.removeListener(this);
+    Plugin.debugDrawingManagerMotion.removeListener(this);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
   }//end dispose

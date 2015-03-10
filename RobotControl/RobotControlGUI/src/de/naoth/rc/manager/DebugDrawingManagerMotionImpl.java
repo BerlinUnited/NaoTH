@@ -17,11 +17,11 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author Heinrich Mellmann
  */
 @PluginImplementation
-public class DebugDrawingManagerImpl extends AbstractManagerPlugin<DrawingsContainer>
-  implements DebugDrawingManager
+public class DebugDrawingManagerMotionImpl extends AbstractManagerPlugin<DrawingsContainer>
+  implements DebugDrawingManagerMotion
 {
 
-  public DebugDrawingManagerImpl()
+  public DebugDrawingManagerMotionImpl()
   {
   }
 
@@ -77,7 +77,7 @@ public class DebugDrawingManagerImpl extends AbstractManagerPlugin<DrawingsConta
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("Cognition:representation:getbinary").addArg("DebugDrawings");
+    return new Command("Motion:representation:getbinary").addArg("DebugDrawings");
   }
 
 }//end class DebugDrawingManager
