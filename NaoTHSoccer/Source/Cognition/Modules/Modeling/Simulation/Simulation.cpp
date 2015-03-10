@@ -11,9 +11,9 @@ using namespace std;
 
   Simulation::Simulation()
   {
-  DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", false);
-
- 
+  DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", true);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
   action_local.reserve(ActionModel::numOfActions);
@@ -40,6 +40,8 @@ using namespace std;
         CIRCLE( actionGlobal.x, actionGlobal.y, 50);
 
   );
+
+   
 }//end execute
 
 
@@ -58,8 +60,24 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
 
   Vector2d ballRelativePreview = getBallModel().positionPreview;
 
+  DEBUG_REQUEST("Simulation:draw_ball",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+      Vector2d Ball = getRobotPose() *ballRelativePreview;
+    CIRCLE( Ball.x, Ball.y, 50);
+
+  );
+
   lonely_action.target = lonely_action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
 
+  DEBUG_REQUEST("Simulation:ActionTarget",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 1);
+
+    Vector2d Ball = getRobotPose() *lonely_action.target;
+    CIRCLE( Ball.x, Ball.y, 50);
+
+  );
   Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));
   
   Vector2d actionPoint;
