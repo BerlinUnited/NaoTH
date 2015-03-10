@@ -30,17 +30,22 @@ using namespace std;
 
  void Simulation::execute()
  {
-  Action& lonely_action = action_local[1];
+   if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1){
+     return;
+   }
+   else{
+    Action& lonely_action = action_local[1];
 
-  actionGlobal = calculateOneAction(lonely_action);
+    actionGlobal = calculateOneAction(lonely_action);
 
     DEBUG_REQUEST("Simulation:draw_one_action_point:global",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);
 
-        CIRCLE( actionGlobal.x, actionGlobal.y, 50);
+      CIRCLE( actionGlobal.x, actionGlobal.y, 50);
 
-  );
+    );
+   }
 }//end execute
 
 
@@ -77,8 +82,9 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
     CIRCLE( Ball.x, Ball.y, 50);
 
   );
-  Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));
-  
+  //Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));//hmm
+  Math::LineSegment shootLine(ballRelativePreview, lonely_action.target);
+
   Vector2d actionPoint;
 
   if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine))
