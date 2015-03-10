@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.components.videoanalyzer;
 
+import de.naoth.rc.Helper;
 import de.naoth.rc.dialogs.VideoAnalyzer;
 import java.io.File;
 import java.net.URL;
@@ -31,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
@@ -148,48 +150,55 @@ public class VideoPlayerController implements Initializable
   public void open(File file)
   {
     media = new Media(file.toURI().toASCIIString());
-    player = new MediaPlayer(media);
-    player.setOnReady(new Runnable()
+    try
     {
-      @Override
-      public void run()
+      player = new MediaPlayer(media);
+      player.setOnReady(new Runnable()
       {
-        Duration total = player.getTotalDuration();
-        if (total != Duration.UNKNOWN && total != Duration.INDEFINITE)
+        @Override
+        public void run()
         {
-          timeSlider.setMax(total.toSeconds());
-          timeSlider.setShowTickMarks(true);
-          timeSlider.setShowTickLabels(true);
+          Duration total = player.getTotalDuration();
+          if (total != Duration.UNKNOWN && total != Duration.INDEFINITE)
+          {
+            timeSlider.setMax(total.toSeconds());
+            timeSlider.setShowTickMarks(true);
+            timeSlider.setShowTickLabels(true);
 
-          if (total.toMinutes() < 1.5)
-          {
-            timeSlider.setMajorTickUnit(5.0);
-            timeSlider.setMinorTickCount(0);
-          } else
-          {
-            timeSlider.setMajorTickUnit(60.0);
-            timeSlider.setMinorTickCount(10);
+            if (total.toMinutes() < 1.5)
+            {
+              timeSlider.setMajorTickUnit(5.0);
+              timeSlider.setMinorTickCount(0);
+            } else
+            {
+              timeSlider.setMajorTickUnit(60.0);
+              timeSlider.setMinorTickCount(10);
+            }
           }
         }
-      }
-    });
-    player.currentTimeProperty().addListener(new CurrentTimeListener());
+      });
+      player.currentTimeProperty().addListener(new CurrentTimeListener());
 
-    mediaView.setMediaPlayer(player);
-    timeSlider.valueProperty().addListener(sliderChangeListener);
-    timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
+      mediaView.setMediaPlayer(player);
+      timeSlider.valueProperty().addListener(sliderChangeListener);
+      timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
       {
-        if (player != null)
+
+        @Override
+        public void handle(MouseEvent event)
         {
-          player.pause();
-          playButton.setSelected(false);
+          if (player != null)
+          {
+            player.pause();
+            playButton.setSelected(false);
+          }
         }
-      }
-    });
+      });
+    }
+    catch(MediaException ex)
+    {
+      Helper.handleException("Could not create the video output", ex);
+    }
   }
 
   public double getElapsedSeconds()
