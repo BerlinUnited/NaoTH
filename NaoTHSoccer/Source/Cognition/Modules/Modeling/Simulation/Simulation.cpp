@@ -14,6 +14,7 @@ using namespace std;
   DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
+
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
   action_local.reserve(ActionModel::numOfActions);
@@ -40,8 +41,6 @@ using namespace std;
         CIRCLE( actionGlobal.x, actionGlobal.y, 50);
 
   );
-
-   
 }//end execute
 
 
@@ -118,33 +117,28 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
      return point;
    }
    else{
-
-     if(point.y  > getFieldInfo().yPosLeftSideline ){
-       //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-       //TODO symbols, nur für 7,9 Feld
-       //TODO Throw-In line symbol
-       if( -3500 > point.x-1000) point.x = -3500;
-       else if(  3500 < point.x-1000) point.x =  3500;
+     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+     if(point.y  > getFieldInfo().yPosLeftSideline ){       
+       if(point.x-1000 < getFieldInfo().xThrowInLineOwn) point.x = getFieldInfo().xThrowInLineOwn;
        else point.x -= 1000;
-       return Vector2d(point.x, 2600);//range check
+       return Vector2d(point.x, getFieldInfo().yThrowInLineLeft);//range check
 
      }
+     //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
      else if(point.y  < getFieldInfo().yPosRightSideline){
-       //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-       if( -3500 > point.x-1000) point.x = -3500;
-       else if(  3500 < point.x-1000) point.x =  3500;
+       if(point.x-1000 < getFieldInfo().xThrowInLineOwn) point.x = getFieldInfo().xThrowInLineOwn;
        else point.x -= 1000;
-       return Vector2d(point.x, -2600);//range check
+       return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
      }
+     //hinten raus -> an der seite wo raus geht
      else if(point.x < getFieldInfo().xPosOwnGroundline){
-       //hinten raus -> an der seite wo raus geht
-       if(point.y < 0)return Vector2d(-3500, -2600);//range check
-       else return Vector2d(-3500, 2600); 
+       if(point.y < 0)return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineRight);//range check
+       else return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineLeft); 
      }
      else{ //if(point.x > getFieldInfo().xPosOpponentGroundline){
        //vorne raus -> Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-       if(point.y < 0)return Vector2d(0, -2600);//range check
-       else return Vector2d(0, 2600); 
+       if(point.y < 0)return Vector2d(0, getFieldInfo().yThrowInLineRight);//range check
+       else return Vector2d(0, getFieldInfo().yThrowInLineLeft); 
      }
    }
 }
