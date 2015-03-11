@@ -59,13 +59,13 @@ bool GoalFeatureDetector::execute(CameraInfo::CameraID id)
   Vector2d start(c.x, yc);
 
   // adjust the vectors if the parameters change
-  if((int)getGoalFeaturePercept().edgel_features.size() != parameters.numberOfScanlines) {
-    getGoalFeaturePercept().edgel_features.resize(parameters.numberOfScanlines);
+  if((int)getGoalFeaturePercept().features.size() != parameters.numberOfScanlines) {
+    getGoalFeaturePercept().features.resize(parameters.numberOfScanlines);
   }
 
   // clear the old features
-  for(size_t i = 0; i < getGoalFeaturePercept().edgel_features.size(); i++) {
-     getGoalFeaturePercept().edgel_features[i].clear();
+  for(size_t i = 0; i < getGoalFeaturePercept().features.size(); i++) {
+     getGoalFeaturePercept().features[i].clear();
   }
 
   //find feature that are candidates for goal posts along scanlines 
@@ -86,7 +86,7 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
 
   for(int scanId = 0; scanId < parameters.numberOfScanlines; scanId++)
   {
-    std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
+    std::vector<GoalBarFeature> & features = getGoalFeaturePercept().features[scanId];
     
     // adjust the start and end point for this scanline
     Vector2i pos((int) start.x, start.y + parameters.scanlinesDistance*scanId);
@@ -162,11 +162,14 @@ void GoalFeatureDetector::findfeaturesColor(const Vector2d& scanDir, const Vecto
             POINT_PX(ColorClasses::red, end.x, end.y );
           );
 
-          EdgelT<double> edgel;
-          edgel.point = Vector2d(begin + end)*0.5;
-          edgel.direction = (gradientBegin - gradientEnd).normalize();
+          GoalBarFeature postFeature;
+          postFeature.point = Vector2d(begin + end)*0.5;
+          postFeature.direction = (gradientBegin - gradientEnd).normalize();
+          //postFeature.begin = begin;
+          //postFeature.end = end;
+          postFeature.width = featureWidth;
           
-          features.push_back(edgel);
+          features.push_back(postFeature);
         }
 
         begin_found = false;
@@ -183,7 +186,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
 
   for(int scanId = 0; scanId < parameters.numberOfScanlines; scanId++)
   {
-    std::vector<EdgelT<double> >& features = getGoalFeaturePercept().edgel_features[scanId];
+    std::vector<GoalBarFeature>& features = getGoalFeaturePercept().features[scanId];
 
     // adjust the start and end point for this scanline
     Vector2i pos((int) start.x, start.y + parameters.scanlinesDistance*scanId);
@@ -253,11 +256,14 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
             POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
             POINT_PX(ColorClasses::red, peak_point_min.x, peak_point_min.y );
           );
-          EdgelT<double> edgel;
-          edgel.point = Vector2d(peak_point_max + peak_point_min)*0.5;
-          edgel.direction = (gradientBegin - gradientEnd).normalize();
+          GoalBarFeature postFeature;
+          postFeature.point = Vector2d(peak_point_max + peak_point_min)*0.5;
+          postFeature.direction = (gradientBegin - gradientEnd).normalize();
+          //postFeature.begin = peak_point_max;
+          //postFeature.end = peak_point_min;
+          postFeature.width = featureWidth;
 
-          features.push_back(edgel);
+          features.push_back(postFeature);
         }
 
         begin_found = false;

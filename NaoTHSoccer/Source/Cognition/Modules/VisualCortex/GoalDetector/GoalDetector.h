@@ -115,9 +115,13 @@ private:
   {
   private:
     std::vector<cv::Point2f> points;
-    std::vector<EdgelT<double> > edgels;
+    std::vector<GoalBarFeature> features;
+    double summedWidths;
 
   public:
+    Cluster() : summedWidths(0)
+    {}
+
     Math::Line getLine() const
     {
       ASSERT(points.size() >= 2);
@@ -137,19 +141,25 @@ private:
       return Math::Line(x, v);
     }
 
-    void add(const EdgelT<double>& edgel) {
-      edgels.push_back(edgel);
-      points.push_back(cv::Point2f((float)edgel.point.x, (float)edgel.point.y));
+    void add(const GoalBarFeature& postFeature) {
+      features.push_back(postFeature);
+      points.push_back(cv::Point2f((float)postFeature.point.x, (float)postFeature.point.y));
+      summedWidths += postFeature.width;
+    }
+
+    double getFeatureWidth()
+    {
+      return summedWidths / static_cast<double>(features.size());
     }
 
     int size() const {
       return (int)points.size();
     }
 
-    double sim(const EdgelT<double>& edgel) const {
+    double sim(const GoalBarFeature& postFeature) const {
       double max_sim = 0;
-      for(size_t i = 0; i < edgels.size(); i++) {
-        double s = edgel.sim(edgels[i]);
+      for(size_t i = 0; i < features.size(); i++) {
+        double s = postFeature.sim(features[i]);
         if(s > max_sim) {
           max_sim = s;
         }
