@@ -86,6 +86,31 @@ void FieldInfo::calculateCrossings()
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
+  ////Should be done differently
+  // 0 - right side line - sideLineRight
+  RightLineSegment = Math::LineSegment(
+    crossings[ownCornerRight].position,
+    crossings[opponentCornerRight].position
+    );
+  
+  // 1 - left side line - sideLineLeft
+  LeftLineSegment = Math::LineSegment(
+    crossings[ownCornerLeft].position,
+    crossings[opponentCornerLeft].position
+    );
+
+  // 2 - own goal line - ownGoalLine
+  OwnLineSegment = Math::LineSegment(
+    crossings[ownCornerRight].position,
+    crossings[ownCornerLeft].position
+    );
+
+  // 3 - opponent goal line - opponentGoalLine
+  OppLineSegment = Math::LineSegment(
+    crossings[opponentCornerRight].position,
+    crossings[opponentCornerLeft].position
+    );
+  ////
   //Extra Stuff end
 
 
@@ -144,7 +169,6 @@ void FieldInfo::createLinesTable()
   // HACK: remove it
   fieldLinesTable.circle_radius = centerCircleRadius;
   fieldLinesTable.penalty_area_width = xPosOpponentGoal - xPosOpponentPenaltyArea;
-
 
   // 0 - right side line - sideLineRight
   fieldLinesTable.addLine(
