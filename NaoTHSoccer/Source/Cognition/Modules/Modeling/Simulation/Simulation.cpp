@@ -17,13 +17,13 @@ Simulation::Simulation()
 
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
-  action_local.reserve(ActionModel::numOfActions);
+  action_local.reserve(ActionNew::numOfActions);
 
-  action_local.push_back(Action(ActionModel::none, Vector2d()));
-  action_local.push_back(Action(ActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
-  action_local.push_back(Action(ActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
-  action_local.push_back(Action(ActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
-  action_local.push_back(Action(ActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+  action_local.push_back(Action(ActionNew::none, Vector2d()));
+  action_local.push_back(Action(ActionNew::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
+  action_local.push_back(Action(ActionNew::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
+  action_local.push_back(Action(ActionNew::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
+  action_local.push_back(Action(ActionNew::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
 }
 
 Simulation::~Simulation(){}
