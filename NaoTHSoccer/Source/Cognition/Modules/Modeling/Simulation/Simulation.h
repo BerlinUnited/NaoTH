@@ -101,10 +101,8 @@ public:
 private:
 
   std::vector<Action> action_local;
-
-  Vector2d actionGlobal;
-
-  Vector2d calculateOneAction(Action& lonely_action) const;
+  Math::LineSegment shootLine;
+  Vector2d calculateOneAction(const Action& lonely_action) const;
 
   Vector2d outsideField(const Vector2d& relativePoint) const;
 };

@@ -9,8 +9,8 @@
 using namespace naoth;
 using namespace std;
 
-  Simulation::Simulation()
-  {
+Simulation::Simulation()
+{
   DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
@@ -24,33 +24,54 @@ using namespace std;
   action_local.push_back(Action(ActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
   action_local.push_back(Action(ActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
   action_local.push_back(Action(ActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+}
+
+Simulation::~Simulation(){}
+
+void Simulation::execute()
+{
+  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1)
+  {
+    return;
   }
+  else
+  {
+    const Action& action = action_local[1];
 
-  Simulation::~Simulation(){}
-
- void Simulation::execute()
- {
-   if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1){
-     return;
-   }
-   else{
-    Action& lonely_action = action_local[1];
-
-    actionGlobal = calculateOneAction(lonely_action);
+    Vector2d ballPositionResult = calculateOneAction(action);
 
     DEBUG_REQUEST("Simulation:draw_one_action_point:global",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 1);
-
-      CIRCLE( actionGlobal.x, actionGlobal.y, 50);
-
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 1);
+      CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
     );
-   }
+  }
 }//end execute
 
 
-Vector2d Simulation::calculateOneAction(Action& lonely_action) const
+Vector2d Simulation::calculateOneAction(const Action& action) const
 {
+  // STEP 1: predict the action outcome
+  const Vector2d& ballRelativePreview = getBallModel().positionPreview;
+
+  DEBUG_REQUEST("Simulation:draw_ball",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+    Vector2d ball = getRobotPose() * getBallModel().positionPreview;
+    CIRCLE( ball.x, ball.y, 50);
+  );
+
+  Vector2d result = action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
+
+  DEBUG_REQUEST("Simulation:ActionTarget",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 1);
+    Vector2d ball = getRobotPose() * result;
+    CIRCLE( ball.x, ball.y, 50);
+  );
+
+
+  // STEP 2: calculate the goal line
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
   Vector2d oppGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.leftPost;
   Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
@@ -62,45 +83,20 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
   // this is the goalline we are shooting for
   Math::LineSegment goalLinePreview(leftEndpoint, rightEndpoint);
 
-  Vector2d ballRelativePreview = getBallModel().positionPreview;
 
-  DEBUG_REQUEST("Simulation:draw_ball",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 1);
-      Vector2d Ball = getRobotPose() *ballRelativePreview;
-    CIRCLE( Ball.x, Ball.y, 50);
-
-  );
-
-  lonely_action.target = lonely_action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
-
-  DEBUG_REQUEST("Simulation:ActionTarget",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 1);
-
-    Vector2d Ball = getRobotPose() *lonely_action.target;
-    CIRCLE( Ball.x, Ball.y, 50);
-
-  );
+  // STEP 3: estimate external factors (shooting a goal, ball moved by referee)
   //Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));//hmm
-  Math::LineSegment shootLine(ballRelativePreview, lonely_action.target);
+  Math::LineSegment shootLine(ballRelativePreview, result);
 
-  Vector2d actionPoint;
+  Vector2d resultingBallPosition;
 
-  if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine))
-  {
-    //actionGlobal = getRobotPose() * lonely_action.target;
-    
-    actionPoint = Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0);
-
-  }
-  else
-  {
-    actionPoint = getRobotPose() * lonely_action.target;
-    actionPoint = outsideField(actionPoint);
+  if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine)) {
+    resultingBallPosition = Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0);
+  } else {
+    resultingBallPosition = outsideField(getRobotPose() * result);
   }
 
-  return actionPoint;
+  return resultingBallPosition;
 }
   
   //correction of distance in percentage, angle in degrees
@@ -115,37 +111,74 @@ Vector2d Simulation::calculateOneAction(Action& lonely_action) const
   return ball + noisyAction;
   }
 
-  //calcualte according to the rules, without the roboter position, the ball position
-  //if it goes outside the field
-  Vector2d Simulation::outsideField(const Vector2d& globalPoint) const{ 
+//calcualte according to the rules, without the roboter position, the ball position
+//if it goes outside the field
+Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
+{ 
   Vector2d point = globalPoint;
-   if(getFieldInfo().fieldRect.inside(point)){
-     return point;
-   }
-   else{
-     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-     if(point.y  > getFieldInfo().yPosLeftSideline ){       
-       if(point.x-1000 < getFieldInfo().xThrowInLineOwn) point.x = getFieldInfo().xThrowInLineOwn;
-       else point.x -= 1000;
-       return Vector2d(point.x, getFieldInfo().yThrowInLineLeft);//range check
 
-     }
-     //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-     else if(point.y  < getFieldInfo().yPosRightSideline){
-       if(point.x-1000 < getFieldInfo().xThrowInLineOwn) point.x = getFieldInfo().xThrowInLineOwn;
-       else point.x -= 1000;
-       return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
-     }
-     //hinten raus -> an der seite wo raus geht
-     else if(point.x < getFieldInfo().xPosOwnGroundline){
-       if(point.y < 0)return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineRight);//range check
-       else return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineLeft); 
-     }
-     else{ //if(point.x > getFieldInfo().xPosOpponentGroundline){
-       //vorne raus -> Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-       if(point.y < 0)return Vector2d(0, getFieldInfo().yThrowInLineRight);//range check
-       else return Vector2d(0, getFieldInfo().yThrowInLineLeft); 
-     }
-   }
+  //Schusslinie
+  Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
+
+  if(getFieldInfo().fieldRect.inside(point)){
+    return point;
+  }
+  else
+      //Nach Prioritäten geordnet - zuerst die Regeln mit dem möglichst schlimmsten Resultat
+  {   //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+      if(point.x > getFieldInfo().xPosOpponentGroundline)
+      { 
+        Vector2d OppOutPoint = getFieldInfo().OppLineSegment.point(getFieldInfo().LeftLineSegment.intersection(shootLine));
+        if(OppOutPoint.y < 0)
+        {
+          return Vector2d(0, getFieldInfo().yThrowInLineRight);//range check
+        } else
+        {
+          return Vector2d(0, getFieldInfo().yThrowInLineLeft); 
+        }
+      }
+      //Own Groundline out -  an der seite wo raus geht
+      else if(point.x < getFieldInfo().xPosOwnGroundline)
+      {
+        Vector2d OwnOutPoint = getFieldInfo().OwnLineSegment.point(getFieldInfo().LeftLineSegment.intersection(shootLine));
+        if(OwnOutPoint.y < 0)
+        {
+          return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineRight);//range check
+        } else
+        { 
+          return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineLeft); 
+        }
+      }
+      //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+      else if(point.y > getFieldInfo().yPosLeftSideline )
+      {  
+        Vector2d leftOutPoint = getFieldInfo().LeftLineSegment.point(getFieldInfo().LeftLineSegment.intersection(shootLine));
+        point.x = min(leftOutPoint.x,getRobotPose().translation.x);
+
+        if(point.x-1000 < getFieldInfo().xThrowInLineOwn)
+        { 
+          point.x = getFieldInfo().xThrowInLineOwn;
+        } else
+        { 
+          point.x -= 1000;
+        }
+        return Vector2d(point.x, getFieldInfo().yThrowInLineLeft); //range check
+      }
+      //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+      else //(point.y < getFieldInfo().yPosRightSideline)
+      { 
+        Vector2d rightOutPoint = getFieldInfo().RightLineSegment.point(getFieldInfo().LeftLineSegment.intersection(shootLine));
+        point.x = min(rightOutPoint.x,getRobotPose().translation.x);
+
+        if(point.x-1000 < getFieldInfo().xThrowInLineOwn)
+        {
+        point.x = getFieldInfo().xThrowInLineOwn;
+        } else
+        { 
+         point.x -= 1000;
+        }
+      return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
+      }
+  }
 }
 
