@@ -231,11 +231,11 @@ bool GoalCrossBarDetector::estimateCrossBarDirection(const GoalPercept::GoalPost
     }
     direction.normalize();
 
-    //calculate better start point by intersecting the goal post line with the estimated scan line
-    Math::Line scanLine(features[ii][jj].point, direction);
-    Math::Line postLine(post.basePoint, post.directionInImage);
-    double d = postLine.intersection(scanLine);
-    start = (postLine.point(d) + post.topPoint) * 0.5;
+    ////calculate better start point by intersecting the goal post line with the estimated scan line
+    //Math::Line scanLine(features[ii][jj].point, direction);
+    //Math::Line postLine(post.basePoint, post.directionInImage);
+    //double d = postLine.intersection(scanLine);
+    //start = (postLine.point(d) + post.topPoint) * 0.5;
 
     if(featureFound)
     {
