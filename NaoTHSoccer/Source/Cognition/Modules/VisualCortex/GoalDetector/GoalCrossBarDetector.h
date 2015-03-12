@@ -25,7 +25,7 @@
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
-//#include "Tools/naoth_opencv.h"
+#include "Tools/naoth_opencv.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/Filter.h"
 #include "Tools/ImageProcessing/MaximumScan.h"
@@ -90,6 +90,7 @@ private:
     {
       //PARAMETER_REGISTER(numberOfScanlines) = 9;
       PARAMETER_REGISTER(scanlinesDistance) = 20;
+      PARAMETER_REGISTER(minGoodPoints) = 3;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(useColorFeatures) = true;
@@ -98,6 +99,7 @@ private:
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
       PARAMETER_REGISTER(barWidthSimilarity) = 0.25;
+      PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
 
       syncWithConfig();
     }
@@ -107,6 +109,7 @@ private:
 
     //int numberOfScanlines;
     int scanlinesDistance;
+    int minGoodPoints;
 
     bool detectWhiteGoals;
     //bool usePrewitt;
@@ -117,12 +120,106 @@ private:
 
     double thresholdFeatureGradient;
     double barWidthSimilarity;
+    double thresholdFeatureSimilarity;
   };
 
   Parameters parameters;
 
+  class Cluster 
+  {
+  private:
+    std::vector<cv::Point2f> points;
+    std::vector<GoalBarFeature> features;
+    double summedWidths;
+
+  public:
+    Cluster() : summedWidths(0)
+    {}
+
+    Math::Line getLine() const
+    {
+      ASSERT(points.size() >= 2);
+
+      // estimate the line
+      cv::Vec4f line;
+      cv::fitLine(cv::Mat(points), line, CV_DIST_L2, 0, 0.01, 0.01);
+
+      Vector2d x(line[2], line[3]);
+      Vector2d v(line[0], line[1]);
+  
+      return Math::Line(x, v);
+    }
+
+    void add(const GoalBarFeature& postFeature) {
+      features.push_back(postFeature);
+      points.push_back(cv::Point2f((float)postFeature.point.x, (float)postFeature.point.y));
+      summedWidths += postFeature.width;
+    }
+
+    double getFeatureWidth()
+    {
+      return summedWidths / static_cast<double>(features.size());
+    }
+
+    int size() const {
+      return (int)points.size();
+    }
+
+    double sim(const GoalBarFeature& postFeature) const {
+      double max_sim = 0;
+      for(size_t i = 0; i < features.size(); i++) {
+        double s = postFeature.sim(features[i]);
+        if(s > max_sim) {
+          max_sim = s;
+        }
+      }
+      return max_sim;
+    }
+  };
+
+  std::vector<Cluster> clusters;
+
+  class CrossBar
+  {
+  public:
+    CrossBar(Vector2d& dir, double len)
+    :
+      length(len),
+      direction(dir)
+    {}
+
+    double length;
+    Vector2d direction;
+  };
+
+  class GoalCandidate
+  {
+  public:
+
+    GoalCandidate(const GoalPercept::GoalPost& postLeft, const GoalPercept::GoalPost& postRight, CrossBar& bar)
+    :
+      postCount(2),
+      goalPostLeft(postLeft),
+      goalPostRight(postRight),
+      crossBar(bar)
+    {}
+
+    GoalCandidate(const GoalPercept::GoalPost& post, CrossBar& bar)
+    :
+      postCount(1),
+      goalPost(post),
+      crossBar(bar)
+    {}
+
+    int postCount;
+    GoalPercept::GoalPost goalPostLeft;
+    GoalPercept::GoalPost goalPostRight;
+    GoalPercept::GoalPost goalPost;
+    CrossBar crossBar;
+  };
+
+  std::vector<GoalCandidate> goalCandidates;
   std::vector<std::vector<GoalBarFeature> > features;
-  std::vector<GoalBarFeature> positiveTestFeatures;
   size_t lastCrossBarScanLineId;
 
   void scanAlongCrossBar(const Vector2i& start, const Vector2i& end, const Vector2d& direction, double width);
@@ -131,12 +228,15 @@ private:
   size_t scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd);
   bool estimateCrossBarDirection(const GoalPercept::GoalPost& post, Vector2i& start, Vector2d& direction);
   Vector2d getBackProjectedTopPoint(const GoalPercept::GoalPost& post);
-  int getBackProjectedTopWidth(const GoalPercept::GoalPost& post);
+  int getBackProjectedTopBarWidth(const GoalPercept::GoalPost& post);
+  int getBackProjectedPostHeight(const GoalPercept::GoalPost& post);
 
   bool checkProjectedPostDistance(const GoalPercept::GoalPost& post0, const GoalPercept::GoalPost& post1);
   void checkSinglePost(const GoalPercept::GoalPost& post);
   void checkBothPosts(const GoalPercept::GoalPost& post0, const GoalPercept::GoalPost& post1);
 
+  void clusterEdgelFeatures();
+  void calcuateCrossBars();
 
   void testBackProjection();
 
