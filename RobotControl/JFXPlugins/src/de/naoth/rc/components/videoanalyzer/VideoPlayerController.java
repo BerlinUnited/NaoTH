@@ -45,6 +45,8 @@ import javafx.util.StringConverter;
  */
 public class VideoPlayerController implements Initializable
 {
+  
+  public static final String FXML = "VideoPlayer.fxml";
 
   @FXML
   private BorderPane rootPane;

@@ -264,7 +264,12 @@ public class VideoAnalyzer extends AbstractJFXDialog
     
     try
       {
-        FXMLLoader loader = new FXMLLoader(VideoPlayerController.class.getResource("VideoPlayer.fxml"));
+        videoController = new VideoPlayerController();
+        
+        FXMLLoader loader = new FXMLLoader(VideoPlayerController.class.getResource(VideoPlayerController.FXML));
+        
+        loader.setClassLoader(VideoAnalyzer.class.getClassLoader());
+        
         loader.load();
         videoController = loader.<VideoPlayerController>getController();
         videoController.setAnalyzer(this);
@@ -293,6 +298,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
       try
       {
         FXMLLoader loader = new FXMLLoader(ParseLogController.class.getResource("ParseLog.fxml"));
+        loader.setClassLoader(VideoAnalyzer.class.getClassLoader());
         loader.load();
         ParseLogController controller = loader.<ParseLogController>getController();
         controller.setLogFile(f);

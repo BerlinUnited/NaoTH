@@ -165,13 +165,13 @@ public class ParseLogController implements Initializable
             if (completeStatusRaw != null)
             {
               Messages.BehaviorStateComplete completeStatus = Messages.BehaviorStateComplete.parseFrom(completeStatusRaw.getData());
-              parser.parse(completeStatus);
+              parser.parseComplete(completeStatus);
             }
             LogDataFrame statusRaw = messages.get("BehaviorStateSparse");
             if (statusRaw != null)
             {
               Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(statusRaw.getData());
-              behaviorFrame = parser.parse(status);
+              behaviorFrame = parser.parseSparse(status);
             }
             // try to detect game state changes 
             if (behaviorFrame != null && currentTime != null)
