@@ -129,10 +129,11 @@ public class VideoAnalyzerController implements Initializable
     videoController.setAnalyzer(this);
   }
   
-  public void initAccelerators(Scene rootScene)
+  public void togglePlay()
   {
-    videoController.initAccelerators(rootScene);
+    videoController.togglePlay();
   }
+  
 
   public void openLogfile(ActionEvent event)
   {

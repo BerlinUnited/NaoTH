@@ -104,21 +104,11 @@ public class VideoPlayerController implements Initializable
     });
   }
   
-  
-
-  public void initAccelerators(Scene rootScene)
+  public void togglePlay()
   {
-    rootScene.getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE),
-      new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          playButton.fire();
-        }
-      });
+    playPause(null);
   }
+  
 
   @FXML
   private void playPause(ActionEvent event)

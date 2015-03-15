@@ -11,11 +11,17 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -56,39 +62,40 @@ public class VideoAnalyzer extends AbstractJFXDialog
       return state + " (at " + time + " seconds)";
     }
   }
-  
+
   public final static String KEY_VIDEO_FILE = "video-file";
   public final static String KEY_SYNC_TIME_VIDEO = "sync-time-video";
   public final static String KEY_SYNC_TIME_LOG = "sync-time-log";
-  
 
   public VideoAnalyzer()
   {
-    
-  }
 
+  }
 
   @Override
-  public Scene createScene()
+  public URL getFXMLRessource()
   {
-//    com.sun.media.jfxmedia.logging.Logger.setLevel(com.sun.media.jfxmedia.logging.Logger.DEBUG);
-    
-    try
-      {
-        FXMLLoader loader = new FXMLLoader(VideoPlayerController.class.getResource("VideoAnalyzer.fxml"));
-        loader.setClassLoader(VideoAnalyzer.class.getClassLoader());
-        loader.load();
-        
-        Scene scene = new Scene(loader.getRoot());
-        loader.<VideoAnalyzerController>getController().initAccelerators(scene);
-        return scene;
-
-        
-      } catch (IOException ex)
-      {
-        Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    return new Scene(new Label("Loading failed"));
+    return VideoPlayerController.class.getResource("VideoAnalyzer.fxml");
   }
- 
+
+  @Override
+  public Map<KeyCombination, Runnable> getGlobalShortcuts()
+  {
+    HashMap<KeyCombination, Runnable> result = new HashMap<>();
+
+    result.put(new KeyCodeCombination(KeyCode.SPACE),
+      new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          VideoAnalyzerController c = VideoAnalyzer.this.<VideoAnalyzerController>getController();
+          c.togglePlay();
+        }
+      });
+
+    return result;
+  }
+
 }
