@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.Property;
@@ -67,6 +69,8 @@ public class VideoAnalyzerController implements Initializable
   private Double syncTimeLog;
   private Double syncTimeVideo;
 
+  private ExecutorService execService = Executors.newSingleThreadExecutor();
+
   @FXML
   private Button btLoadVideo;
   @FXML
@@ -82,7 +86,7 @@ public class VideoAnalyzerController implements Initializable
 
   @FXML
   private Pane syncPane;
-  
+
   private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
   {
 
@@ -107,25 +111,23 @@ public class VideoAnalyzerController implements Initializable
       @Override
       public void changed(ObservableValue<? extends VideoAnalyzer.GameStateChange> observable, VideoAnalyzer.GameStateChange oldValue, VideoAnalyzer.GameStateChange newValue)
       {
-        if(newValue != null)
+        if (newValue != null)
         {
           syncTimeLog = newValue.time;
           updateOffset(true);
         }
       }
     });
-    
-    
+
     lblOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
-    
+
     videoController.setAnalyzer(this);
   }
-  
+
   public void togglePlay()
   {
     videoController.togglePlay();
   }
-  
 
   public void openLogfile(ActionEvent event)
   {
@@ -133,7 +135,7 @@ public class VideoAnalyzerController implements Initializable
     fileChooser.getExtensionFilters().addAll(
       new FileChooser.ExtensionFilter("Logfile (*.log)", "*.log"),
       new FileChooser.ExtensionFilter("All files", "*.*"));
-    
+
     File f = fileChooser.showOpenDialog(null);
     if (f != null)
     {
@@ -155,9 +157,9 @@ public class VideoAnalyzerController implements Initializable
           Stage stage = new Stage();
           stage.setScene(scene);
           stage.show();
-          
+
           btLoadVideo.setDisable(false);
-          
+
         } catch (IOException ex)
         {
           Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
@@ -167,16 +169,16 @@ public class VideoAnalyzerController implements Initializable
 
     }
   }
-  
+
   public void openVideo(ActionEvent event)
   {
     btLoadVideo.getScene().getRoot().requestFocus();
-    
+
     fileChooser.getExtensionFilters().clear();
     fileChooser.getExtensionFilters().addAll(
       new FileChooser.ExtensionFilter("Video files (*.mp4)", "*.mp4", "*.MP4"),
       new FileChooser.ExtensionFilter("All files", "*.*"));
-    
+
     File result = fileChooser.showOpenDialog(null);
     if (result != null)
     {
@@ -184,7 +186,7 @@ public class VideoAnalyzerController implements Initializable
       setMedia(result);
     }
   }
-  
+
   public void videoSyncPointSelected(ActionEvent event)
   {
     if (videoController != null)
@@ -214,12 +216,21 @@ public class VideoAnalyzerController implements Initializable
   {
     if (logfile != null && VideoAnalyzer.Plugin.logFileEventManager != null)
     {
+
       try
       {
         final HashMap<String, LogDataFrame> frame = logfile.readFrame(frameIdx);
         if (frame != null)
         {
-          VideoAnalyzer.Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
+          execService.submit(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              Thread.yield();
+              VideoAnalyzer.Plugin.logFileEventManager.fireLogFrameEvent(frame.values());
+            }
+          });
         }
       } catch (Exception ex)
       {
@@ -274,7 +285,7 @@ public class VideoAnalyzerController implements Initializable
   }
 
   private void setVideoTimeFromLogFrame()
-  {    
+  {
     int searchVal = frameSlider.valueProperty().intValue();
     sendLogFrame(searchVal);
     if (videoController != null && logFrame2Time != null)
@@ -373,9 +384,9 @@ public class VideoAnalyzerController implements Initializable
       }
       saveLogfileProperties();
       videoController.open(file);
-      
+
       syncPane.setDisable(false);
-      
+
     }
   }
 
