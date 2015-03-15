@@ -68,11 +68,7 @@ public class VideoAnalyzerController implements Initializable
   private Double syncTimeVideo;
 
   @FXML
-  private Button btLoadLog;
-  @FXML
   private Button btLoadVideo;
-  @FXML
-  private Button btSyncPointVideo;
   @FXML
   private ChoiceBox<VideoAnalyzer.GameStateChange> cbSyncLog;
   @FXML
@@ -105,15 +101,6 @@ public class VideoAnalyzerController implements Initializable
   @Override
   public void initialize(URL url, ResourceBundle rb)
   {
-    timeOffset.addListener(new ChangeListener<Double>()
-    {
-
-      @Override
-      public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
-      {
-        setLogFrameFromVideo();
-      }
-    });
     cbSyncLog.valueProperty().addListener(new ChangeListener<VideoAnalyzer.GameStateChange>()
     {
 

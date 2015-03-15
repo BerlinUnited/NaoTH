@@ -19,17 +19,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
@@ -49,19 +45,13 @@ public class VideoPlayerController implements Initializable
   public static final String FXML = "VideoPlayer.fxml";
 
   @FXML
-  private BorderPane rootPane;
-
-  @FXML
   private MediaView mediaView;
   @FXML
   private StackPane mediaPane;
   
   @FXML
   private Slider timeSlider;
-  
-  @FXML 
-  private Slider frameSlider;
-  
+    
   @FXML
   private ToggleButton playButton;
   @FXML
@@ -130,6 +120,7 @@ public class VideoPlayerController implements Initializable
     if(player != null)
     {
       player.pause();
+      playButton.selectedProperty().set(false);
       timeSlider.setValue(newTimeSeconds);
     }
   }

@@ -18,7 +18,7 @@
           <children>
             <HBox alignment="TOP_LEFT">
               <children>
-                <Button fx:id="btLoadLog" mnemonicParsing="false" onAction="#openLogfile" text="Open Log" />
+                <Button id="btLoadLog" mnemonicParsing="false" onAction="#openLogfile" text="Open Log" />
                 <Button fx:id="btLoadVideo" disable="true" mnemonicParsing="false" onAction="#openVideo" text="Open Video" />
               </children>
             </HBox>
@@ -34,7 +34,7 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <Button fx:id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (video)" />
+                <Button id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (video)" />
                 <Label prefHeight="-1.0" text="Offset: " />
                 <Label id="txtOffset" fx:id="lblOffset" text="0.0" />
               </children>

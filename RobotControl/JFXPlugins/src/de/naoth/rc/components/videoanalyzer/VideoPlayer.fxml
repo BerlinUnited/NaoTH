@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
 
-<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
+<BorderPane id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
   <bottom>
     <HBox prefHeight="46.0" prefWidth="400.0" spacing="10.0" BorderPane.alignment="CENTER">
       <children>
