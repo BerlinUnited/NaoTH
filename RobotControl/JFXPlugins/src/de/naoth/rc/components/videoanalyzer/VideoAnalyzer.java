@@ -53,7 +53,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
     @Override
     public String toString()
     {
-      return state + " (at " + time + " seconds)";
+      return String.format("%s (at %.0f sec)", state, time);
     }
   }
 

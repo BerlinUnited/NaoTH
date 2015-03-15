@@ -120,8 +120,11 @@ public class VideoAnalyzerController implements Initializable
       @Override
       public void changed(ObservableValue<? extends VideoAnalyzer.GameStateChange> observable, VideoAnalyzer.GameStateChange oldValue, VideoAnalyzer.GameStateChange newValue)
       {
-        syncTimeLog = newValue.time;
-        updateOffset(true);
+        if(newValue != null)
+        {
+          syncTimeLog = newValue.time;
+          updateOffset(true);
+        }
       }
     });
     
