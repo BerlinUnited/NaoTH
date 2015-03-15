@@ -213,31 +213,5 @@ public class ParseLogController implements Initializable
     this.rawFile = f;
   }
 
-  public static class ParseResult implements Serializable
-  {
-
-    private LogFile logfile;
-    /**
-     * Maps a second (fractioned) to a log frame number
-     */
-    private final TreeMap<Double, Integer> time2LogFrame = new TreeMap<>();
-    /**
-     * Maps a log frame number to a second (fractioned)
-     */
-    private final TreeMap<Integer, Double> logFrame2Time = new TreeMap<>();
-    private final ArrayList<VideoAnalyzer.GameStateChange> changes = new ArrayList<>();
-    private double firstTime;
-    
-    public TreeMap<Double, Integer> getTime2LogFrame()
-    {
-      return time2LogFrame;
-    }
-
-    public ArrayList<VideoAnalyzer.GameStateChange> getChanges()
-    {
-      return changes;
-    }
-
-  }
 
 }
