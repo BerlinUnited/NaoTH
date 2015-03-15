@@ -38,10 +38,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -77,7 +75,7 @@ public class VideoAnalyzerController implements Initializable
   @FXML
   private ChoiceBox<VideoAnalyzer.GameStateChange> cbSyncLog;
   @FXML
-  private TextField txtOffset;
+  private Label lblOffset;
   @FXML
   private Slider frameSlider;
   @FXML
@@ -124,7 +122,7 @@ public class VideoAnalyzerController implements Initializable
     });
     
     
-    txtOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
+    lblOffset.textProperty().bindBidirectional(timeOffset, new DoubleConverter());
     
     videoController.setAnalyzer(this);
   }
