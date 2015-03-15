@@ -110,7 +110,7 @@ public class VideoPlayerController implements Initializable
 
     if (player != null)
     {
-      pauseAndSeek(Duration.seconds(newTimeSeconds));
+      pauseAndSeek(Duration.seconds(newTimeSeconds), true);
     }
   }
 
@@ -155,7 +155,9 @@ public class VideoPlayerController implements Initializable
         @Override
         public void run()
         {
-          pause();
+          player.stop();
+          pauseAndSeek(Duration.ZERO);
+          timeSlider.setValue(0.0);
         }
       });
 
@@ -167,7 +169,8 @@ public class VideoPlayerController implements Initializable
         @Override
         public void changed(ObservableValue<? extends MediaPlayer.Status> observable, MediaPlayer.Status oldValue, MediaPlayer.Status newValue)
         {
-          if(newValue == MediaPlayer.Status.PLAYING)
+          if(newValue == MediaPlayer.Status.PLAYING
+            || player.getStatus() == MediaPlayer.Status.STOPPED)
           {
             timeSlider.valueProperty().addListener(sliderChangeListener);
           }
@@ -198,11 +201,13 @@ public class VideoPlayerController implements Initializable
   {
     if (player != null)
     {
-      boolean wasPlaying = player.getStatus() == MediaPlayer.Status.PLAYING;
+      boolean wasPaused = player.getStatus() == MediaPlayer.Status.PAUSED
+        || player.getStatus() == MediaPlayer.Status.STOPPED
+        || player.getStatus() == MediaPlayer.Status.READY;
 
-      internalPrepareSeek(seek, wasPlaying, fromExternal);
+      internalPrepareSeek(seek, wasPaused, fromExternal);
 
-      if(wasPlaying)
+      if(!wasPaused)
       {
         player.pause();
       }
@@ -212,9 +217,14 @@ public class VideoPlayerController implements Initializable
     }
   }
 
-  private void internalPrepareSeek(final Duration seek, boolean wasPlaying, boolean fromExternal)
+  private void internalPrepareSeek(final Duration seek, boolean wasPaused, boolean fromExternal)
   {
-    if (wasPlaying)
+    if(seek == null)
+    {
+      return;
+    }
+    
+    if (!wasPaused)
     {
       player.setOnPaused(new Runnable()
       {
@@ -225,7 +235,7 @@ public class VideoPlayerController implements Initializable
           player.seek(seek);
           if (analyzer != null)
           {
-            analyzer.setLogFrameFromVideo();
+            analyzer.setLogFrameFromVideo(seek.toSeconds());
           }
           player.setOnPaused(null);
         }
@@ -234,9 +244,9 @@ public class VideoPlayerController implements Initializable
     else
     {
       player.seek(seek);
-      if (fromExternal && analyzer != null)
+      if (!fromExternal && analyzer != null)
       {
-        analyzer.setLogFrameFromVideo();
+        analyzer.setLogFrameFromVideo(seek.toSeconds());
       }
     }
   }
@@ -323,7 +333,7 @@ public class VideoPlayerController implements Initializable
 
           if (analyzer != null && player.statusProperty().get() == MediaPlayer.Status.PLAYING)
           {
-            analyzer.setLogFrameFromVideo();
+            analyzer.setLogFrameFromVideo(newValue.toSeconds());
           }
         }
       });

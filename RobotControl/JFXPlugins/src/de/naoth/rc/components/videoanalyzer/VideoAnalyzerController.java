@@ -239,11 +239,11 @@ public class VideoAnalyzerController implements Initializable
     }
   }
 
-  public void setLogFrameFromVideo()
+  public void setLogFrameFromVideo(double timeInSeconds)
   {
     if (videoController != null)
     {
-      double searchVal = videoController.getElapsedSeconds() + timeOffset.getValue();
+      double searchVal = timeInSeconds + timeOffset.getValue();
 
       Map.Entry<Double, Integer> frame = time2LogFrame.floorEntry(searchVal);
       if (frame != null)
