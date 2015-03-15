@@ -40,6 +40,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -83,6 +84,9 @@ public class VideoAnalyzerController implements Initializable
   @FXML
   private VideoPlayerController videoController;
 
+  @FXML
+  private Pane syncPane;
+  
   private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
   {
 
@@ -156,6 +160,9 @@ public class VideoAnalyzerController implements Initializable
           Stage stage = new Stage();
           stage.setScene(scene);
           stage.show();
+          
+          btLoadVideo.setDisable(false);
+          
         } catch (IOException ex)
         {
           Logger.getLogger(VideoAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
@@ -364,6 +371,9 @@ public class VideoAnalyzerController implements Initializable
       }
       saveLogfileProperties();
       videoController.open(file);
+      
+      syncPane.setDisable(false);
+      
     }
   }
 

@@ -19,11 +19,12 @@
             <HBox alignment="TOP_LEFT">
               <children>
                 <Button fx:id="btLoadLog" mnemonicParsing="false" onAction="#openLogfile" text="Open Log" />
-                <Button fx:id="btLoadVideo" mnemonicParsing="false" onAction="#openVideo" text="Open Video" />
+                <Button fx:id="btLoadVideo" disable="true" mnemonicParsing="false" onAction="#openVideo" text="Open Video" />
               </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+            <HBox fx:id="syncPane" alignment="CENTER_LEFT" disable="true" VBox.vgrow="NEVER">
               <children>
+                <Label text="Sync. point (log):" />
                 <ChoiceBox fx:id="cbSyncLog">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -33,7 +34,7 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <Button fx:id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Video Sync Point" />
+                <Button fx:id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (video)" />
                 <Label prefHeight="-1.0" text="Offset: " />
                 <Label id="txtOffset" fx:id="lblOffset" text="0.0" />
               </children>
