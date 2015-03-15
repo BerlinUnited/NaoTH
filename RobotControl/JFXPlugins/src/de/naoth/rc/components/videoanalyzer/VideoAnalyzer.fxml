@@ -24,7 +24,7 @@
             </HBox>
             <HBox fx:id="syncPane" alignment="CENTER_LEFT" disable="true" VBox.vgrow="NEVER">
               <children>
-                <Label text="Sync. point (log):" />
+                <Label text="Sync. point (Log):" />
                 <ChoiceBox fx:id="cbSyncLog">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
@@ -34,13 +34,14 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <Button id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (video)" />
+                <Button id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (Video)" />
                 <Label prefHeight="-1.0" text="Offset: " />
                 <Label id="txtOffset" fx:id="lblOffset" text="0.0" />
               </children>
             </HBox>
             <HBox>
               <children>
+                <Label text="Log frame" />
                 <Slider fx:id="frameSlider" majorTickUnit="100.0" minorTickCount="0" showTickLabels="false" showTickMarks="true" HBox.hgrow="ALWAYS" />
               </children>
             </HBox>
