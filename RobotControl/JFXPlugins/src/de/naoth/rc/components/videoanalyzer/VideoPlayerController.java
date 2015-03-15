@@ -96,7 +96,17 @@ public class VideoPlayerController implements Initializable
   
   public void togglePlay()
   {
-    playPause(null);
+    if(player != null)
+    {
+      if(player.getStatus() == MediaPlayer.Status.PLAYING)
+      {
+        player.pause();
+      }
+      else
+      {
+        player.play();
+      }
+    }
   }
   
 

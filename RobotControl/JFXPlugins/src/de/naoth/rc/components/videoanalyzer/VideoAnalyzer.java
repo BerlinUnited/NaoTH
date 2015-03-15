@@ -77,17 +77,21 @@ public class VideoAnalyzer extends AbstractJFXDialog
   {
     HashMap<KeyCombination, Runnable> result = new HashMap<>();
 
-    result.put(new KeyCodeCombination(KeyCode.SPACE),
-      new Runnable()
-      {
+    Runnable togglePlayRunnable = new Runnable()
+    {
 
-        @Override
-        public void run()
-        {
-          VideoAnalyzerController c = VideoAnalyzer.this.<VideoAnalyzerController>getController();
-          c.togglePlay();
-        }
-      });
+      @Override
+      public void run()
+      {
+        VideoAnalyzerController c = VideoAnalyzer.this.<VideoAnalyzerController>getController();
+        c.togglePlay();
+      }
+    };
+
+    result.put(new KeyCodeCombination(KeyCode.SPACE), togglePlayRunnable);
+    result.put(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.CONTROL_ANY), 
+      togglePlayRunnable);
+    result.put(new KeyCodeCombination(KeyCode.P), togglePlayRunnable);
 
     return result;
   }

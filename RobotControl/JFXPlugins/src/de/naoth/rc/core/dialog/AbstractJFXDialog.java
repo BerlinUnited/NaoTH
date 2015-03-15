@@ -48,6 +48,7 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
       {
         Scene scene = createScene();
         container.setScene(scene);
+        scene.getAccelerators().putAll(getGlobalShortcuts());
       }
     });
   }
@@ -65,8 +66,6 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
       loader.load();
 
       Scene scene = new Scene(loader.getRoot());
-      
-      scene.getAccelerators().putAll(getGlobalShortcuts());
       
       return scene;
 
