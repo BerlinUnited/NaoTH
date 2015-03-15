@@ -14,7 +14,11 @@ import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,13 +52,13 @@ public class ParseLogController implements Initializable
 
   @FXML
   private ProgressBar progress;
-  
+
   @FXML
   private Button btCancel;
-  
+
   @FXML
   private Label lblMessage;
-  
+
   private Service<ParseResult> service;
 
   /**
@@ -92,17 +96,17 @@ public class ParseLogController implements Initializable
       public void handle(WorkerStateEvent event)
       {
         parent.setLogfile(service.getValue().logfile);
-        parent.setParseResult(service.getValue().time2LogFrame, 
+        parent.setParseResult(service.getValue().time2LogFrame,
           service.getValue().logFrame2Time);
         parent.setGameStateChanges(service.getValue().changes);
-        
+
         Stage stage = (Stage) lblMessage.getScene().getWindow();
         stage.close();
       }
     });
 
   }
-  
+
   @FXML
   private void handleCancel(ActionEvent event)
   {
@@ -118,17 +122,54 @@ public class ParseLogController implements Initializable
       ParseResult result = new ParseResult();
       try
       {
-        updateMessage("Opening file");
-        result.logfile = new LogFile(rawFile);
-        updateMessage("Mapping frames");
-        updateProgress(0.0, result.logfile.getFrameCount());
-        initFrameMap(result);
+        File cachedFile = new File(rawFile.getParent(), rawFile.getName() + ".parsed");
+        ParseResult cachedResult = getCachedParseResult(cachedFile);
+        if (cachedResult == null)
+        {
+          // parse the log file
+          updateMessage("Opening file");
+          result.logfile = new LogFile(rawFile.getAbsolutePath());
+          updateMessage("Mapping frames");
+          updateProgress(0.0, result.logfile.getFrameCount());
+          initFrameMap(result);
+
+          // cache it
+          try (ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream(cachedFile)))
+          {
+            oo.writeObject(result);
+
+          } catch (Exception ex)
+          {
+            Logger.getLogger(ParseLogController.class.getName()).log(Level.WARNING, "Could not write cached parsed log file.", ex);
+          }
+
+        } else
+        {
+          result = cachedResult;
+        }
 
       } catch (IOException ex)
       {
         Helper.handleException("Could not open logfile " + rawFile.getAbsolutePath(), ex);
       }
       return result;
+    }
+
+    private ParseResult getCachedParseResult(File cachedFile)
+    {
+      if (cachedFile.isFile())
+      {
+        // we have a cached parsed version, load it
+        try (ObjectInputStream oi = new ObjectInputStream(new FileInputStream(cachedFile)))
+        {
+          updateMessage("Reading cached filed");
+          return (ParseResult) oi.readObject();
+        } catch (Exception ex)
+        {
+          Logger.getLogger(ParseLogController.class.getName()).log(Level.WARNING, "Could not read cached parsed log file.", ex);
+        }
+      }
+      return null;
     }
 
     private void initFrameMap(ParseResult result)
@@ -212,6 +253,5 @@ public class ParseLogController implements Initializable
   {
     this.rawFile = f;
   }
-
 
 }

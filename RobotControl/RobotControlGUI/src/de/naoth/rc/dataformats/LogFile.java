@@ -22,23 +22,15 @@ import java.util.HashMap;
  */
 public class LogFile implements Serializable
 {
+
   private final String originalFile;
   private final ArrayList<Frame> frameList = new ArrayList<>();
-  private BasicReader reader = null;
-  
-  public LogFile(File file) throws IOException
+  private transient BasicReader reader = null;
+
+  public LogFile(String originalFile) throws IOException
   {
-    this.originalFile = file.getAbsolutePath();
-    FileChannel channel = FileChannel.open(file.toPath());
-    if(channel.size() >= Integer.MAX_VALUE)
-    {
-      reader = new BasicReader(new RandomAccessFile(file, "r"));
-    }
-    else
-    {
-      reader = new BasicReader(channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()));
-    }
-    scan(reader);
+    this.originalFile = originalFile;
+    getReader();
     //this.raf = new RandomAccessFile(this.openedFile, "r");
   }
 
@@ -68,7 +60,7 @@ public class LogFile implements Serializable
         int currentSize = data_in.readInt();
         fragmentFrameSize += 4;
         fragmentFrameSize += currentSize;
- 
+
         if (currentFrameNumber != frameNumber && currentFrameNumber != -1)
         {
           Frame frame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
@@ -89,34 +81,34 @@ public class LogFile implements Serializable
 
   public HashMap<String, LogDataFrame> readFrame(int frameId) throws IOException
   {
-    if(frameId >= this.frameList.size())
+    if (frameId >= this.frameList.size())
     {
       return null;
     }
-    
+
     Frame frame = this.frameList.get(frameId);
     if (frame == null)
     {
       return null;
     }
     // jump to the begin of the frame
-    reader.seek(frame.position);
+    getReader().seek(frame.position);
     int numberOfReadBytes = 0;
     HashMap<String, LogDataFrame> currentFrame = new HashMap<>();
     while (numberOfReadBytes < frame.size)
     {
-      int frameNumber = reader.readInt();
+      int frameNumber = getReader().readInt();
       numberOfReadBytes += 4;
       if (frameNumber != frame.number)
       {
         throw new IOException("corrupt frame number: " + frameNumber + " expected " + frame.number);
       }
-      String currentName = reader.readString();
+      String currentName = getReader().readString();
       numberOfReadBytes += currentName.length() + 1;
-      int currentSize = reader.readInt();
+      int currentSize = getReader().readInt();
       numberOfReadBytes += 4;
       byte[] buffer = new byte[currentSize];
-      numberOfReadBytes += reader.read(buffer);
+      numberOfReadBytes += getReader().read(buffer);
       LogDataFrame logDataFrame = new LogDataFrame(frameNumber, currentName, buffer);
       currentFrame.put(currentName, logDataFrame);
     } //end while
@@ -147,7 +139,26 @@ public class LogFile implements Serializable
   {
     return new File(originalFile);
   }
-  
-  
+
+  private BasicReader getReader() throws IOException
+  {
+    if (reader == null)
+    {
+      File file = new File(originalFile);
+      FileChannel channel = FileChannel.open(file.toPath());
+      if (channel.size() >= Integer.MAX_VALUE)
+      {
+        reader = new BasicReader(new RandomAccessFile(file, "r"));
+      } else
+      {
+        reader = new BasicReader(channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()));
+      }
+      scan(reader);
+      return reader;
+    } else
+    {
+      return reader;
+    }
+  }
 
 }
