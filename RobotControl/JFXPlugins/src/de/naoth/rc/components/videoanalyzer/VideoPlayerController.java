@@ -50,14 +50,14 @@ public class VideoPlayerController implements Initializable
   private ToggleButton playButton;
   @FXML
   private Label timeCodeLabel;
-  
+
   private Media media;
   private MediaPlayer player;
 
   private VideoAnalyzerController analyzer;
 
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
-  
+
   private final double MAX_FRAME_LENGTH = 60.0;
 
   /**
@@ -111,6 +111,7 @@ public class VideoPlayerController implements Initializable
     if (player != null)
     {
       pauseAndSeek(Duration.seconds(newTimeSeconds), true);
+      updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
     }
   }
 
@@ -157,7 +158,7 @@ public class VideoPlayerController implements Initializable
         {
           player.stop();
           pauseAndSeek(Duration.ZERO);
-          timeSlider.setValue(0.0);
+          updateGUIForTimeCode(Duration.ZERO);
         }
       });
 
@@ -169,7 +170,7 @@ public class VideoPlayerController implements Initializable
         @Override
         public void changed(ObservableValue<? extends MediaPlayer.Status> observable, MediaPlayer.Status oldValue, MediaPlayer.Status newValue)
         {
-          if(newValue == MediaPlayer.Status.PLAYING
+          if (newValue == MediaPlayer.Status.PLAYING
             || player.getStatus() == MediaPlayer.Status.STOPPED)
           {
             timeSlider.valueProperty().addListener(sliderChangeListener);
@@ -191,7 +192,7 @@ public class VideoPlayerController implements Initializable
   {
     pauseAndSeek(null, false);
   }
-  
+
   private void pauseAndSeek(final Duration seek)
   {
     pauseAndSeek(seek, false);
@@ -207,11 +208,11 @@ public class VideoPlayerController implements Initializable
 
       internalPrepareSeek(seek, wasPaused, fromExternal);
 
-      if(!wasPaused)
+      if (!wasPaused)
       {
         player.pause();
       }
-      
+
       playButton.setSelected(false);
 
     }
@@ -219,11 +220,11 @@ public class VideoPlayerController implements Initializable
 
   private void internalPrepareSeek(final Duration seek, boolean wasPaused, boolean fromExternal)
   {
-    if(seek == null)
+    if (seek == null)
     {
       return;
     }
-    
+
     if (!wasPaused)
     {
       player.setOnPaused(new Runnable()
@@ -240,8 +241,7 @@ public class VideoPlayerController implements Initializable
           player.setOnPaused(null);
         }
       });
-    }
-    else
+    } else
     {
       player.seek(seek);
       if (!fromExternal && analyzer != null)
@@ -258,6 +258,14 @@ public class VideoPlayerController implements Initializable
       player.play();
       playButton.setSelected(true);
     }
+  }
+
+  private void updateGUIForTimeCode(Duration time)
+  {
+    double minutes = Math.floor(time.toMinutes());
+    double seconds = time.toSeconds() - (minutes * 60);
+    timeCodeLabel.setText(String.format("%02d:%05.2f", (int) minutes, seconds));
+    timeSlider.setValue(time.toSeconds());
   }
 
   public double getElapsedSeconds()
@@ -325,12 +333,8 @@ public class VideoPlayerController implements Initializable
         @Override
         public void run()
         {
-          Duration elapsed = player.getCurrentTime();
-          double minutes = Math.floor(elapsed.toMinutes());
-          double seconds = elapsed.toSeconds() - (minutes * 60);
-          timeCodeLabel.setText(String.format("%02d:%05.2f", (int) minutes, seconds));
-          timeSlider.setValue(elapsed.toSeconds());
-
+          updateGUIForTimeCode(newValue);
+ 
           if (analyzer != null && player.statusProperty().get() == MediaPlayer.Status.PLAYING)
           {
             analyzer.setLogFrameFromVideo(newValue.toSeconds());

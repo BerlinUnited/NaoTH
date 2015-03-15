@@ -131,6 +131,7 @@ public class VideoAnalyzerController implements Initializable
 
   public void openLogfile(ActionEvent event)
   {
+    videoController.setTime(0.0);
     fileChooser.getExtensionFilters().clear();
     fileChooser.getExtensionFilters().addAll(
       new FileChooser.ExtensionFilter("Logfile (*.log)", "*.log"),
@@ -172,6 +173,7 @@ public class VideoAnalyzerController implements Initializable
 
   public void openVideo(ActionEvent event)
   {
+    videoController.setTime(0.0);
     btLoadVideo.getScene().getRoot().requestFocus();
 
     fileChooser.getExtensionFilters().clear();
