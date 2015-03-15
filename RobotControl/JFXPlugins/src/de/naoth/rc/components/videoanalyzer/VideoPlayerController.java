@@ -10,22 +10,16 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
@@ -41,17 +35,17 @@ import javafx.util.StringConverter;
  */
 public class VideoPlayerController implements Initializable
 {
-  
+
   public static final String FXML = "VideoPlayer.fxml";
 
   @FXML
   private MediaView mediaView;
   @FXML
   private StackPane mediaPane;
-  
+
   @FXML
   private Slider timeSlider;
-    
+
   @FXML
   private ToggleButton playButton;
   @FXML
@@ -61,10 +55,11 @@ public class VideoPlayerController implements Initializable
   private MediaPlayer player;
 
   private VideoAnalyzerController analyzer;
-  
-  private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
+  private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
   
+  private final double MAX_FRAME_LENGTH = 60.0;
+
   /**
    * Initializes the controller class.
    */
@@ -74,41 +69,25 @@ public class VideoPlayerController implements Initializable
     playButton.setGraphic(new ImageView(getClass().getResource("/de/naoth/rc/res/play.png").toString()));
     Tooltip.install(playButton, new Tooltip("Play/Pause"));
 
-    timeSlider.valueProperty().addListener(sliderChangeListener);
     timeSlider.setLabelFormatter(new TickFormatter());
 
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
-    
-    mediaView.setOnMouseClicked(new EventHandler<MouseEvent>()
-    {
-
-      @Override
-      public void handle(MouseEvent event)
-      {
-        if(event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY)
-        {
-          mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
-        }
-      }
-    });
   }
-  
+
   public void togglePlay()
   {
-    if(player != null)
+    if (player != null)
     {
-      if(player.getStatus() == MediaPlayer.Status.PLAYING)
+      if (player.getStatus() == MediaPlayer.Status.PLAYING)
       {
-        player.pause();
-      }
-      else
+        pause();
+      } else
       {
-        player.play();
+        play();
       }
     }
   }
-  
 
   @FXML
   private void playPause(ActionEvent event)
@@ -117,21 +96,21 @@ public class VideoPlayerController implements Initializable
     {
       if (playButton.isSelected())
       {
-        player.play();
+        play();
       } else
       {
-        player.pause();
+        pause();
       }
     }
   }
-  
+
   public void setTime(double newTimeSeconds)
   {
-    if(player != null)
+    timeSlider.valueProperty().removeListener(sliderChangeListener);
+
+    if (player != null)
     {
-      player.pause();
-      playButton.selectedProperty().set(false);
-      timeSlider.setValue(newTimeSeconds);
+      pauseAndSeek(Duration.seconds(newTimeSeconds));
     }
   }
 
@@ -170,39 +149,116 @@ public class VideoPlayerController implements Initializable
           }
         }
       });
-      player.currentTimeProperty().addListener(new CurrentTimeListener());
-
-      mediaView.setMediaPlayer(player);
-      timeSlider.valueProperty().addListener(sliderChangeListener);
-      timeSlider.setOnMouseClicked(new EventHandler<MouseEvent>()
+      player.setOnEndOfMedia(new Runnable()
       {
 
         @Override
-        public void handle(MouseEvent event)
+        public void run()
         {
-          if (player != null)
+          pause();
+        }
+      });
+
+      player.currentTimeProperty().addListener(new CurrentTimeListener());
+
+      player.statusProperty().addListener(new ChangeListener<MediaPlayer.Status>()
+      {
+
+        @Override
+        public void changed(ObservableValue<? extends MediaPlayer.Status> observable, MediaPlayer.Status oldValue, MediaPlayer.Status newValue)
+        {
+          if(newValue == MediaPlayer.Status.PLAYING)
           {
-            player.pause();
-            playButton.setSelected(false);
+            timeSlider.valueProperty().addListener(sliderChangeListener);
           }
         }
       });
-    }
-    catch(MediaException ex)
+
+      mediaView.setMediaPlayer(player);
+
+      timeSlider.valueProperty().addListener(sliderChangeListener);
+
+    } catch (MediaException ex)
     {
       Helper.handleException("Could not create the video output", ex);
     }
   }
 
+  private void pause()
+  {
+    pauseAndSeek(null, false);
+  }
+  
+  private void pauseAndSeek(final Duration seek)
+  {
+    pauseAndSeek(seek, false);
+  }
+
+  private void pauseAndSeek(final Duration seek, boolean fromExternal)
+  {
+    if (player != null)
+    {
+      boolean wasPlaying = player.getStatus() == MediaPlayer.Status.PLAYING;
+
+      internalPrepareSeek(seek, wasPlaying, fromExternal);
+
+      if(wasPlaying)
+      {
+        player.pause();
+      }
+      
+      playButton.setSelected(false);
+
+    }
+  }
+
+  private void internalPrepareSeek(final Duration seek, boolean wasPlaying, boolean fromExternal)
+  {
+    if (wasPlaying)
+    {
+      player.setOnPaused(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          player.seek(seek);
+          if (analyzer != null)
+          {
+            analyzer.setLogFrameFromVideo();
+          }
+          player.setOnPaused(null);
+        }
+      });
+    }
+    else
+    {
+      player.seek(seek);
+      if (fromExternal && analyzer != null)
+      {
+        analyzer.setLogFrameFromVideo();
+      }
+    }
+  }
+
+  private void play()
+  {
+    if (player != null)
+    {
+      player.play();
+      playButton.setSelected(true);
+    }
+  }
+
   public double getElapsedSeconds()
   {
-    if(player != null)
+    if (player != null)
     {
       return player.getCurrentTime().toSeconds();
     }
     return 0.0;
   }
-  
+
   public static class TickFormatter extends StringConverter<Double>
   {
 
@@ -230,28 +286,29 @@ public class VideoPlayerController implements Initializable
     @Override
     public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
     {
-      if (player != null
-        && player.getStatus() == MediaPlayer.Status.PLAYING)
-      {
-        return;
-      }
+
       final Duration duration = Duration.seconds(newValue.doubleValue());
+
       if (player != null)
       {
-        player.seek(duration);
-        if(analyzer != null)
+        Duration playerDuration = player.getCurrentTime();
+
+        double diff = Math.abs(duration.toMillis() - playerDuration.toMillis());
+
+        if (diff > MAX_FRAME_LENGTH)
         {
-          analyzer.setLogFrameFromVideo();
+          pauseAndSeek(duration);
         }
+
       }
     }
   }
 
-  private class CurrentTimeListener implements InvalidationListener
+  private class CurrentTimeListener implements ChangeListener<Duration>
   {
 
     @Override
-    public void invalidated(Observable observable)
+    public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue)
     {
       Platform.runLater(new Runnable()
       {
@@ -270,7 +327,6 @@ public class VideoPlayerController implements Initializable
           }
         }
       });
-
     }
 
   }

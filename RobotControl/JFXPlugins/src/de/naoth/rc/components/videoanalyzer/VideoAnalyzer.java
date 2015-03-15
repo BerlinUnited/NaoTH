@@ -90,8 +90,6 @@ public class VideoAnalyzer extends AbstractJFXDialog
     };
 
     result.put(new KeyCodeCombination(KeyCode.SPACE), togglePlayRunnable);
-    result.put(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.CONTROL_ANY), 
-      togglePlayRunnable);
     result.put(new KeyCodeCombination(KeyCode.P), togglePlayRunnable);
 
     return result;
