@@ -106,8 +106,6 @@ public class VideoPlayerController implements Initializable
 
   public void setTime(double newTimeSeconds)
   {
-    timeSlider.valueProperty().removeListener(sliderChangeListener);
-
     if (player != null)
     {
       pauseAndSeek(Duration.seconds(newTimeSeconds), true);
@@ -163,20 +161,6 @@ public class VideoPlayerController implements Initializable
       });
 
       player.currentTimeProperty().addListener(new CurrentTimeListener());
-
-      player.statusProperty().addListener(new ChangeListener<MediaPlayer.Status>()
-      {
-
-        @Override
-        public void changed(ObservableValue<? extends MediaPlayer.Status> observable, MediaPlayer.Status oldValue, MediaPlayer.Status newValue)
-        {
-          if (newValue == MediaPlayer.Status.PLAYING
-            || player.getStatus() == MediaPlayer.Status.STOPPED)
-          {
-            timeSlider.valueProperty().addListener(sliderChangeListener);
-          }
-        }
-      });
 
       mediaView.setMediaPlayer(player);
 
@@ -306,14 +290,24 @@ public class VideoPlayerController implements Initializable
     {
 
       final Duration duration = Duration.seconds(newValue.doubleValue());
-
+      
       if (player != null)
       {
+        boolean wasChangedManually = false;
         Duration playerDuration = player.getCurrentTime();
 
         double diff = Math.abs(duration.toMillis() - playerDuration.toMillis());
 
         if (diff > MAX_FRAME_LENGTH)
+        {
+          wasChangedManually = true;
+        }
+        else if(player.getStatus() == MediaPlayer.Status.PAUSED || player.getStatus() == MediaPlayer.Status.READY)
+        {
+          wasChangedManually = true;
+        }
+        
+        if(wasChangedManually)
         {
           pauseAndSeek(duration);
         }
