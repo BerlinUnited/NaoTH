@@ -274,10 +274,11 @@ public class VideoAnalyzerController implements Initializable
   }
 
   private void setVideoTimeFromLogFrame()
-  {
+  {    
+    int searchVal = frameSlider.valueProperty().intValue();
+    sendLogFrame(searchVal);
     if (videoController != null && logFrame2Time != null)
     {
-      int searchVal = frameSlider.valueProperty().intValue();
       Map.Entry<Integer, Double> time = logFrame2Time.floorEntry(searchVal);
       if (time != null)
       {

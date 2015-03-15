@@ -229,6 +229,10 @@ public class VideoPlayerController implements Initializable
       if (player != null)
       {
         player.seek(duration);
+        if(analyzer != null)
+        {
+          analyzer.setLogFrameFromVideo();
+        }
       }
     }
   }
@@ -250,7 +254,7 @@ public class VideoPlayerController implements Initializable
           timeCodeLabel.setText(String.format("%02d:%05.2f", (int) minutes, seconds));
           timeSlider.setValue(elapsed.toSeconds());
 
-          if (analyzer != null)
+          if (analyzer != null && player.statusProperty().get() == MediaPlayer.Status.PLAYING)
           {
             analyzer.setLogFrameFromVideo();
           }
