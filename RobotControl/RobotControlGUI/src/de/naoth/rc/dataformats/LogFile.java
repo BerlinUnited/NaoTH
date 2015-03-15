@@ -11,6 +11,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,15 +20,15 @@ import java.util.HashMap;
  *
  * @author thomas
  */
-public class LogFile
+public class LogFile implements Serializable
 {
-  private final File originalFile;
+  private final String originalFile;
   private final ArrayList<Frame> frameList = new ArrayList<>();
   private BasicReader reader = null;
- 
+  
   public LogFile(File file) throws IOException
   {
-    this.originalFile = file;
+    this.originalFile = file.getAbsolutePath();
     FileChannel channel = FileChannel.open(file.toPath());
     if(channel.size() >= Integer.MAX_VALUE)
     {
@@ -122,7 +123,7 @@ public class LogFile
     return currentFrame;
   } //end readFrame
 
-  class Frame
+  class Frame implements Serializable
   {
 
     final int number;
@@ -144,7 +145,7 @@ public class LogFile
 
   public File getOriginalFile()
   {
-    return originalFile;
+    return new File(originalFile);
   }
   
   

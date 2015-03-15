@@ -10,6 +10,7 @@ import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class VideoAnalyzer extends AbstractJFXDialog
     }
   }
 
-  public static class GameStateChange
+  public static class GameStateChange implements Serializable
   {
 
     public double time;

@@ -15,6 +15,7 @@ import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
@@ -212,7 +213,7 @@ public class ParseLogController implements Initializable
     this.rawFile = f;
   }
 
-  public static class ParseResult
+  public static class ParseResult implements Serializable
   {
 
     private LogFile logfile;
