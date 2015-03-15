@@ -6,7 +6,6 @@
 package de.naoth.rc.components.videoanalyzer;
 
 import de.naoth.rc.Helper;
-import de.naoth.rc.dialogs.VideoAnalyzer;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -20,6 +19,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -70,7 +70,7 @@ public class VideoPlayerController implements Initializable
   private Media media;
   private MediaPlayer player;
 
-  private VideoAnalyzer analyzer;
+  private VideoAnalyzerController analyzer;
   
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
@@ -106,9 +106,9 @@ public class VideoPlayerController implements Initializable
   
   
 
-  public void initAccelerators()
+  public void initAccelerators(Scene rootScene)
   {
-    rootPane.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE),
+    rootScene.getAccelerators().put(new KeyCodeCombination(KeyCode.SPACE),
       new Runnable()
       {
 
@@ -144,7 +144,7 @@ public class VideoPlayerController implements Initializable
     }
   }
 
-  public void setAnalyzer(VideoAnalyzer analyzer)
+  public void setAnalyzer(VideoAnalyzerController analyzer)
   {
     this.analyzer = analyzer;
   }

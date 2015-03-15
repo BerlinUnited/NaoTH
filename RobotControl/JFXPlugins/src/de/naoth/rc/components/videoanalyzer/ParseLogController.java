@@ -10,7 +10,6 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import de.naoth.rc.dataformats.LogFile;
-import de.naoth.rc.dialogs.VideoAnalyzer;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
@@ -43,7 +42,7 @@ import javafx.stage.Stage;
 public class ParseLogController implements Initializable
 {
 
-  private VideoAnalyzer parent;
+  private VideoAnalyzerController parent;
   private File rawFile;
 
   @FXML
@@ -203,7 +202,7 @@ public class ParseLogController implements Initializable
 
   }
 
-  public void setParent(VideoAnalyzer parent)
+  public void setParent(VideoAnalyzerController parent)
   {
     this.parent = parent;
   }
