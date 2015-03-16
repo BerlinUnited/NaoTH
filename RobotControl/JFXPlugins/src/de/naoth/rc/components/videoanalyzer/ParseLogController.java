@@ -134,6 +134,8 @@ public class ParseLogController implements Initializable
           initFrameMap(result);
 
           // cache it
+          updateMessage("Saving cached parsed log file");
+          updateProgress(-1, -1);
           try (ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream(cachedFile)))
           {
             oo.writeObject(result);
