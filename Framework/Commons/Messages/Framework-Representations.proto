@@ -85,3 +85,17 @@ message FSRData {
   repeated bool valid = 3;
 }
 
+message AccelerometerData {
+  repeated double legacyPackedData = 1 [deprecated=true];
+
+  optional DoubleVector3 data = 2;
+  optional DoubleVector3 rawData = 3;
+}
+
+message GyrometerData {
+  repeated double legacyPackedData = 1 [deprecated=true];
+
+  optional DoubleVector3 data = 2;
+  optional DoubleVector3 rawData = 3;
+  optional double ref = 4;
+}
