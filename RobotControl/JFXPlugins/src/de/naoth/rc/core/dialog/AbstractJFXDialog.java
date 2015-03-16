@@ -57,7 +57,7 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
 
   private Scene createScene()
   {
-    //    com.sun.media.jfxmedia.logging.Logger.setLevel(com.sun.media.jfxmedia.logging.Logger.DEBUG);
+//    com.sun.media.jfxmedia.logging.Logger.setLevel(com.sun.media.jfxmedia.logging.Logger.DEBUG);
 
     try
     {

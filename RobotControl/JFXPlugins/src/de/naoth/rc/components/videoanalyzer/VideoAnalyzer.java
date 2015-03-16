@@ -17,6 +17,7 @@ import java.util.Map;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.util.Duration;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -54,7 +55,11 @@ public class VideoAnalyzer extends AbstractJFXDialog
     @Override
     public String toString()
     {
-      return String.format("%s (at %.0f sec)", state, time);
+      Duration elapsed = Duration.seconds(time);
+      double minutes = Math.floor(elapsed.toMinutes());
+      double seconds = elapsed.toSeconds() - (minutes * 60);
+
+      return String.format("%s (at %02d:%02.0f)", state, (int) minutes, seconds);
     }
   }
 
