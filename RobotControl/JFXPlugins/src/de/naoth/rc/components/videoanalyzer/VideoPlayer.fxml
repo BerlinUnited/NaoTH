@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
 
-<BorderPane id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
+<BorderPane id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
   <bottom>
     <HBox prefHeight="46.0" prefWidth="400.0" spacing="10.0" BorderPane.alignment="CENTER">
       <children>
@@ -19,11 +19,11 @@
     </HBox>
   </bottom>
   <center>
-    <StackPane fx:id="mediaPane">
+    <HBox id="HBox" fx:id="mediaPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" spacing="5.0" style="">
       <children>
-        <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" />
+        <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="400.0" HBox.hgrow="ALWAYS" />
       </children>
-    </StackPane>
+    </HBox>
   </center>
   <top>
     <AnchorPane prefHeight="25.0" prefWidth="400.0" BorderPane.alignment="CENTER" />

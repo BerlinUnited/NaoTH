@@ -20,7 +20,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
@@ -41,7 +41,7 @@ public class VideoPlayerController implements Initializable
   @FXML
   private MediaView mediaView;
   @FXML
-  private StackPane mediaPane;
+  private Pane mediaPane;
 
   @FXML
   private Slider timeSlider;
@@ -71,8 +71,10 @@ public class VideoPlayerController implements Initializable
 
     timeSlider.setLabelFormatter(new TickFormatter());
 
-    mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
+    
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
+    mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
+    mediaView.setPreserveRatio(true);
   }
 
   public void togglePlay()
