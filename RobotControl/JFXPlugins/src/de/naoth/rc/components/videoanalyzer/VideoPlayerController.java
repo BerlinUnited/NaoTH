@@ -265,6 +265,10 @@ public class VideoPlayerController implements Initializable
 
   private void updateGUIForTimeCode(Duration time)
   {
+    if(time.lessThan(Duration.ZERO))
+    {
+      time = Duration.ZERO;
+    }
     double minutes = Math.floor(time.toMinutes());
     double seconds = time.toSeconds() - (minutes * 60);
     timeCodeLabel.setText(String.format("%02d:%05.2f", (int) minutes, seconds));
