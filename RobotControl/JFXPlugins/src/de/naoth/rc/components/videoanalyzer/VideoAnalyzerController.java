@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -54,6 +55,8 @@ import javafx.util.StringConverter;
  */
 public class VideoAnalyzerController implements Initializable
 {
+  
+  private SelectionMode mode;
 
   private LogFile logfile;
   private final FileChooser fileChooser = new FileChooser();
@@ -87,6 +90,9 @@ public class VideoAnalyzerController implements Initializable
   @FXML
   private Pane syncPane;
 
+  @FXML
+  private Label frameModeIndicator;
+  
   private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
   {
 
@@ -105,6 +111,8 @@ public class VideoAnalyzerController implements Initializable
   @Override
   public void initialize(URL url, ResourceBundle rb)
   {
+    setMode(SelectionMode.TIME);
+    
     cbSyncLog.valueProperty().addListener(new ChangeListener<VideoAnalyzer.GameStateChange>()
     {
 
@@ -115,6 +123,19 @@ public class VideoAnalyzerController implements Initializable
         {
           syncTimeLog = newValue.time;
           updateOffset(true);
+        }
+      }
+    });
+    
+    frameSlider.focusedProperty().addListener(new ChangeListener<Boolean>()
+    {
+
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+      {
+        if(Objects.equals(newValue, Boolean.TRUE))
+        {
+          setMode(SelectionMode.FRAME);
         }
       }
     });
@@ -390,6 +411,29 @@ public class VideoAnalyzerController implements Initializable
       syncPane.setDisable(false);
 
     }
+  }
+  
+  public void setMode(SelectionMode mode)
+  {
+    this.mode = mode;
+    frameModeIndicator.setVisible(false);
+    videoController.getTimeModeIndicator().setVisible(false);
+    
+    switch(mode)
+    {
+      case FRAME:
+        frameModeIndicator.setVisible(true);
+        break;
+      case TIME:
+        videoController.getTimeModeIndicator().setVisible(true);
+        break;
+    }
+    
+  }
+  
+  public SelectionMode getMode()
+  {
+    return mode;
   }
 
   private static class DoubleConverter extends StringConverter<Double>

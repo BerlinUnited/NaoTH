@@ -13,6 +13,7 @@
     <HBox prefHeight="46.0" prefWidth="400.0" spacing="10.0" BorderPane.alignment="CENTER">
       <children>
         <ToggleButton fx:id="playButton" contentDisplay="CENTER" graphicTextGap="0.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#playPause" prefHeight="32.0" prefWidth="32.0" text=" " textOverrun="CLIP" />
+        <Label id="FXML" fx:id="timeModeIndicator" text="*" />
         <Slider fx:id="timeSlider" blockIncrement="0.25" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="282.0" showTickLabels="true" showTickMarks="true" HBox.hgrow="SOMETIMES" />
         <Label fx:id="timeCodeLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="66.0" text="00:00.00" />
       </children>

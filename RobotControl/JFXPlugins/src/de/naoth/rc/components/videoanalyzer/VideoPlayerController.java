@@ -8,6 +8,7 @@ package de.naoth.rc.components.videoanalyzer;
 import de.naoth.rc.Helper;
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -50,6 +51,9 @@ public class VideoPlayerController implements Initializable
   private ToggleButton playButton;
   @FXML
   private Label timeCodeLabel;
+  
+  @FXML
+  private Label timeModeIndicator;
 
   private Media media;
   private MediaPlayer player;
@@ -70,6 +74,18 @@ public class VideoPlayerController implements Initializable
     Tooltip.install(playButton, new Tooltip("Play/Pause"));
 
     timeSlider.setLabelFormatter(new TickFormatter());
+    timeSlider.focusedProperty().addListener(new ChangeListener<Boolean>()
+    {
+
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+      {
+        if(analyzer != null && Objects.equals(newValue, Boolean.TRUE))
+        {
+          analyzer.setMode(SelectionMode.TIME);
+        }
+      }
+    });
 
     
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
@@ -110,7 +126,7 @@ public class VideoPlayerController implements Initializable
   {
     if (player != null)
     {
-      pauseAndSeek(Duration.seconds(newTimeSeconds), true);
+      pauseAndSeek(Duration.seconds(newTimeSeconds));
       updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
     }
   }
@@ -176,15 +192,10 @@ public class VideoPlayerController implements Initializable
 
   private void pause()
   {
-    pauseAndSeek(null, false);
+    pauseAndSeek(null);
   }
 
   private void pauseAndSeek(final Duration seek)
-  {
-    pauseAndSeek(seek, false);
-  }
-
-  private void pauseAndSeek(final Duration seek, boolean fromExternal)
   {
     if (player != null)
     {
@@ -192,7 +203,7 @@ public class VideoPlayerController implements Initializable
         || player.getStatus() == MediaPlayer.Status.STOPPED
         || player.getStatus() == MediaPlayer.Status.READY;
 
-      internalPrepareSeek(seek, wasPaused, fromExternal);
+      internalPrepareSeek(seek, wasPaused);
 
       if (!wasPaused)
       {
@@ -204,7 +215,7 @@ public class VideoPlayerController implements Initializable
     }
   }
 
-  private void internalPrepareSeek(final Duration seek, boolean wasPaused, boolean fromExternal)
+  private void internalPrepareSeek(final Duration seek, boolean wasPaused)
   {
     if (seek == null)
     {
@@ -220,7 +231,7 @@ public class VideoPlayerController implements Initializable
         public void run()
         {
           player.seek(seek);
-          if (analyzer != null)
+          if (analyzer != null && analyzer.getMode() == SelectionMode.TIME)
           {
             analyzer.setLogFrameFromVideo(seek.toSeconds());
           }
@@ -230,7 +241,7 @@ public class VideoPlayerController implements Initializable
     } else
     {
       player.seek(seek);
-      if (!fromExternal && analyzer != null)
+      if (analyzer != null && analyzer.getMode() == SelectionMode.TIME)
       {
         analyzer.setLogFrameFromVideo(seek.toSeconds());
       }
@@ -240,9 +251,15 @@ public class VideoPlayerController implements Initializable
   private void play()
   {
     if (player != null)
-    {
+    {      
       player.play();
       playButton.setSelected(true);
+      timeSlider.requestFocus();
+            
+      if(analyzer != null)
+      {
+        analyzer.setMode(SelectionMode.TIME);
+      }
     }
   }
 
@@ -262,6 +279,13 @@ public class VideoPlayerController implements Initializable
     }
     return 0.0;
   }
+
+  public Label getTimeModeIndicator()
+  {
+    return timeModeIndicator;
+  }
+  
+  
 
   public static class TickFormatter extends StringConverter<Double>
   {
@@ -331,7 +355,7 @@ public class VideoPlayerController implements Initializable
         {
           updateGUIForTimeCode(newValue);
  
-          if (analyzer != null && player.statusProperty().get() == MediaPlayer.Status.PLAYING)
+          if (analyzer != null && analyzer.getMode() == SelectionMode.TIME)
           {
             analyzer.setLogFrameFromVideo(newValue.toSeconds());
           }

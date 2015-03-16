@@ -42,6 +42,7 @@
             <HBox>
               <children>
                 <Label text="Log frame" />
+                <Label fx:id="frameModeIndicator" text="*" />
                 <Slider fx:id="frameSlider" majorTickUnit="100.0" minorTickCount="0" showTickLabels="false" showTickMarks="true" HBox.hgrow="ALWAYS" />
               </children>
             </HBox>
