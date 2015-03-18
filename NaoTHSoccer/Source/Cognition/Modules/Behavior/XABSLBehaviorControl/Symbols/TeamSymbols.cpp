@@ -121,17 +121,17 @@ bool TeamSymbols::calculateIfStriker_byTimeToBall()
     std::map<unsigned int, double>::const_iterator robotFailure = theInstance->getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
     if (robotFailure != theInstance->getTeamMessageStatisticsModel().failureProbabilities.end()) { 
       failureProbability = robotFailure->second;
-    }
-    if (robotNumber != theInstance->getPlayerInfo().gameData.playerNumber
+    } //Failure probability will be 0, if there is no entry about this robot in the TeamMessageStatistics
+    if (
+      robotNumber != theInstance->getPlayerInfo().gameData.playerNumber //If this player is not us
       && msg.wasStriker //Robot considers itself the striker
       && !msg.isPenalized
       && failureProbability < theInstance->parameters.minFailureProbability //Message is fresh
       && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + theInstance->getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime) { //Ball is fresh
-        if(msg.timeToBall < shortestTime) {
-          return false;
-        }
-      }
+      && msg.ballAge + theInstance->getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime //Ball is fresh
+      && msg.timeToBall < shortestTime) { //Other player is closer to ball than us
+      return false;
+    }
   }//end for
 
   return true;
