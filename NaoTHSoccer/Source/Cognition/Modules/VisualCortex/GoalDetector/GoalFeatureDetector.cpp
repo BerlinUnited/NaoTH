@@ -200,8 +200,7 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
     
     BresenhamLineScan scanner(pos, end);
 
-    Filter<Prewitt3x1, Vector2i, double, 3> filter;
-//    Filter<Diff5x1, Vector2i, double, 5> filter;
+    Filter<Diff5x1, Vector2i, double, 5> filter;
 
     // initialize the scanner
     Vector2i peak_point_max(pos);
@@ -221,7 +220,14 @@ void GoalFeatureDetector::findfeaturesDiff(const Vector2d& scanDir, const Vector
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
       );
 
-      filter.add(pos, pixValue);
+      if(pixValue > parameters.threshold)
+      {
+        filter.add(pos, pixValue);
+      }
+      else
+      {
+        filter.add(pos, parameters.threshold);
+      }
       if(!filter.ready()) {
         continue;
       }
