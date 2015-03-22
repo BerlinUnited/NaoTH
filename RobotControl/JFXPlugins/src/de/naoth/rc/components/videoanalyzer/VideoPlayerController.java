@@ -185,8 +185,11 @@ public class VideoPlayerController implements Initializable
         new Point2D(zoomStartPoint.getX()+zoomPreview.getWidth(), 
           zoomStartPoint.getY()+zoomPreview.getHeight()));
       
+      double width = Math.max(0.0, videoEnd.getX()-videoStart.getX());
+      double height = Math.max(0.0, videoEnd.getY()-videoStart.getY());
+      
       Rectangle2D newViewPort = new Rectangle2D(videoStart.getX(), videoStart.getY(), 
-        videoEnd.getX()-videoStart.getX(), videoEnd.getY()-videoStart.getY());
+        width, height);
       
       mediaView.setViewport(newViewPort);
     }
