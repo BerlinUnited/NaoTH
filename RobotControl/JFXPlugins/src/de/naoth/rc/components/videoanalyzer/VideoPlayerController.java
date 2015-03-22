@@ -16,16 +16,22 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
@@ -54,6 +60,12 @@ public class VideoPlayerController implements Initializable
   
   @FXML
   private Label timeModeIndicator;
+  
+  @FXML
+  private Button resetZoomButton;
+  
+  @FXML
+  private Rectangle zoomPreview;
 
   private Media media;
   private MediaPlayer player;
@@ -63,6 +75,8 @@ public class VideoPlayerController implements Initializable
   private final SliderChangedListener sliderChangeListener = new SliderChangedListener();
 
   private final double MAX_FRAME_LENGTH = 60.0;
+  
+  private Point2D zoomStartPoint = null;
 
   /**
    * Initializes the controller class.
@@ -91,6 +105,7 @@ public class VideoPlayerController implements Initializable
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
     mediaView.setPreserveRatio(true);
+    
   }
 
   public void togglePlay()
@@ -119,6 +134,85 @@ public class VideoPlayerController implements Initializable
       {
         pause();
       }
+    }
+  }
+  
+  @FXML
+  private void mediaViewDragStart(MouseEvent evt)
+  {
+    if(zoomStartPoint == null)
+    {
+      zoomPreview.setVisible(true);
+      zoomPreview.setFill(null);
+      zoomPreview.setStroke(new Color(1.0, 0.0, 0.0, 1.0));
+      zoomStartPoint = new Point2D(evt.getX(), evt.getY());
+      zoomPreview.setTranslateX(evt.getX());
+      zoomPreview.setTranslateY(evt.getY());
+      zoomPreview.setWidth(0.0);
+      zoomPreview.setHeight(0.0);
+      
+    }
+    else
+    {
+      zoomPreview.setWidth(evt.getX()-zoomStartPoint.getX());
+      zoomPreview.setHeight(evt.getY()-zoomStartPoint.getY());
+    }
+    
+  }
+  
+  private Point2D getVideoCoordinates(Point2D paneCoordinates)
+  {
+    Point2D offset = new Point2D(mediaView.getX(), mediaView.getY());
+
+    double ratio = 1.0;
+    if(media != null)
+    {
+      ratio = ((double) media.getWidth()) / mediaView.getFitWidth();
+    }
+    
+    Point2D p= paneCoordinates.add(offset).multiply(ratio);
+    
+    return p;
+  }
+  
+  @FXML
+  private void mediaViewDragEnd(MouseEvent evt)
+  {
+    if(mediaView != null && zoomStartPoint != null)
+    {
+      Point2D videoStart = getVideoCoordinates(zoomStartPoint);
+      Point2D videoEnd = getVideoCoordinates(
+        new Point2D(zoomStartPoint.getX()+zoomPreview.getWidth(), 
+          zoomStartPoint.getY()+zoomPreview.getHeight()));
+      
+      Rectangle2D newViewPort = new Rectangle2D(videoStart.getX(), videoStart.getY(), 
+        videoEnd.getX()-videoStart.getX(), videoEnd.getY()-videoStart.getY());
+      
+      mediaView.setViewport(newViewPort);
+    }
+    
+    zoomStartPoint = null;
+    zoomPreview.setVisible(false);
+  }
+  
+  @FXML
+  private void mediaClicked(MouseEvent evt)
+  {
+    if(evt.getClickCount() == 2)
+    {
+      if (mediaView != null && media != null)
+      {
+        mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
+      }  
+    }
+  }
+  
+  @FXML
+  private void resetZoom(ActionEvent evt)
+  {
+    if(mediaView != null && media != null)
+    {
+      mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
     }
   }
 

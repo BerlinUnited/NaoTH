@@ -7,6 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
+<?import javafx.scene.shape.*?>
 
 <BorderPane id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
   <bottom>
@@ -20,13 +21,18 @@
     </HBox>
   </bottom>
   <center>
-    <HBox id="HBox" fx:id="mediaPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" spacing="5.0" style="">
+    <AnchorPane id="AnchorPane" fx:id="mediaPane" minWidth="400.0" prefHeight="300.0" prefWidth="400.0" style="">
       <children>
-        <MediaView fx:id="mediaView" fitHeight="300.0" fitWidth="400.0" HBox.hgrow="ALWAYS" />
+        <MediaView fx:id="mediaView" fitHeight="180.0" fitWidth="240.0" layoutX="0.0" layoutY="0.0" onMouseClicked="#mediaClicked" onMouseDragged="#mediaViewDragStart" onMouseReleased="#mediaViewDragEnd" />
+        <Rectangle fx:id="zoomPreview" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="80.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="3.0" style="" translateX="0.0" visible="false" width="100.0" x="0.0" y="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       </children>
-    </HBox>
+    </AnchorPane>
   </center>
   <top>
-    <AnchorPane prefHeight="25.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+    <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
+      <children>
+        <Button id="FXML" fx:id="resetZoomButton" disable="false" layoutX="0.0" layoutY="0.0" mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
+      </children>
+    </AnchorPane>
   </top>
 </BorderPane>
