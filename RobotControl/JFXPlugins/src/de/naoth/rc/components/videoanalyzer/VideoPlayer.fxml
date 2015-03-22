@@ -31,7 +31,7 @@
   <top>
     <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
       <children>
-        <Button id="FXML" fx:id="resetZoomButton" disable="false" layoutX="0.0" layoutY="0.0" mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
+        <Button id="FXML" fx:id="resetZoomButton" disable="true" layoutX="0.0" layoutY="0.0" mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
       </children>
     </AnchorPane>
   </top>

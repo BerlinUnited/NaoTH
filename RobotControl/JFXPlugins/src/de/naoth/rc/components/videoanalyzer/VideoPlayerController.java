@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -67,6 +69,8 @@ public class VideoPlayerController implements Initializable
   @FXML
   private Rectangle zoomPreview;
 
+  private final BooleanProperty zoomedProperty = new SimpleBooleanProperty(false);
+  
   private Media media;
   private MediaPlayer player;
 
@@ -106,6 +110,8 @@ public class VideoPlayerController implements Initializable
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
     mediaView.setPreserveRatio(true);
     
+    resetZoomButton.disableProperty().bind(zoomedProperty.not());
+    
   }
 
   public void togglePlay()
@@ -140,24 +146,26 @@ public class VideoPlayerController implements Initializable
   @FXML
   private void mediaViewDragStart(MouseEvent evt)
   {
-    if(zoomStartPoint == null)
+    if(!zoomedProperty.get())
     {
-      zoomPreview.setVisible(true);
-      zoomPreview.setFill(null);
-      zoomPreview.setStroke(new Color(1.0, 0.0, 0.0, 1.0));
-      zoomStartPoint = new Point2D(evt.getX(), evt.getY());
-      zoomPreview.setTranslateX(evt.getX());
-      zoomPreview.setTranslateY(evt.getY());
-      zoomPreview.setWidth(0.0);
-      zoomPreview.setHeight(0.0);
-      
+      if(zoomStartPoint == null)
+      {
+        zoomPreview.setVisible(true);
+        zoomPreview.setFill(null);
+        zoomPreview.setStroke(new Color(1.0, 0.0, 0.0, 1.0));
+        zoomStartPoint = new Point2D(evt.getX(), evt.getY());
+        zoomPreview.setTranslateX(evt.getX());
+        zoomPreview.setTranslateY(evt.getY());
+        zoomPreview.setWidth(0.0);
+        zoomPreview.setHeight(0.0);
+
+      }
+      else
+      {
+        zoomPreview.setWidth(evt.getX()-zoomStartPoint.getX());
+        zoomPreview.setHeight(evt.getY()-zoomStartPoint.getY());
+      }
     }
-    else
-    {
-      zoomPreview.setWidth(evt.getX()-zoomStartPoint.getX());
-      zoomPreview.setHeight(evt.getY()-zoomStartPoint.getY());
-    }
-    
   }
   
   private Point2D getVideoCoordinates(Point2D paneCoordinates)
@@ -192,6 +200,7 @@ public class VideoPlayerController implements Initializable
         width, height);
       
       mediaView.setViewport(newViewPort);
+      zoomedProperty.set(true);
     }
     
     zoomStartPoint = null;
@@ -203,21 +212,20 @@ public class VideoPlayerController implements Initializable
   {
     if(evt.getClickCount() == 2)
     {
-      if (mediaView != null && media != null)
-      {
-        mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
-      }  
+      resetZoom();
     }
   }
   
   @FXML
-  private void resetZoom(ActionEvent evt)
+  private void resetZoom()
   {
     if(mediaView != null && media != null)
     {
       mediaView.setViewport(new Rectangle2D(0.0, 0.0, media.getWidth(), media.getHeight()));
+      zoomedProperty.set(false);
     }
   }
+  
 
   public void setTime(double newTimeSeconds)
   {
