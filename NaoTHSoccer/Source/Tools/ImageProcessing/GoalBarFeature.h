@@ -10,17 +10,15 @@
 
 #include "Edgel.h"
 
-class GoalBarFeature : public EdgelT<double>
+class GoalBarFeature : public EdgelD
 {
 public:
-  //Vector2i begin;
-  //Vector2i end;
+  EdgelD begin;
+  EdgelD end;
   double width;
 
   GoalBarFeature()
   :
-    //begin(-1,-1),
-    //end(-1, -1),
     width(0.0)
   {}
 };
