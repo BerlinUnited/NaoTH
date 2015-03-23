@@ -97,23 +97,20 @@ void GoalDetectorV2::clusterEdgelFeatures()
     for(size_t i = 0; i < scanlineOne.size(); i++) 
     {
       const GoalBarFeature& e1 = scanlineOne[i];
-
       size_t scanIdTwo = scanIdOne+1;
-      //for(size_t scanIdTwo = scanIdOne+1; scanIdTwo < features.size(); scanIdTwo++) {
-        for(size_t j = 0; j < getGoalFeaturePercept().features[scanIdTwo].size(); j++) {
-          const GoalBarFeature& e2 = getGoalFeaturePercept().features[scanIdTwo][j];
+      for(size_t j = 0; j < getGoalFeaturePercept().features[scanIdTwo].size(); j++)
+      {
+        const GoalBarFeature& e2 = getGoalFeaturePercept().features[scanIdTwo][j];
 
-          if(e1.sim(e2) > params.thresholdFeatureSimilarity) {
-            //LINE_PX(ColorClasses::red, (int)(e1.point.x+0.5), (int)(e1.point.y+0.5), (int)(e2.point.x+0.5), (int)(e2.point.y+0.5));
-
-            GoalBarFeature pair;
-            pair.point = (e1.point + e2.point)*0.5;
-            pair.direction = (e2.direction + e1.direction).normalize();
-            pair.width = (e2.width + e1.width)*0.5;
-            pairs.push_back(pair);
-          }
+        if(e1.sim(e2) > params.thresholdFeatureSimilarity) 
+        {
+          GoalBarFeature pair;
+          pair.point = (e1.point + e2.point)*0.5;
+          pair.direction = (e2.direction + e1.direction).normalize();
+          pair.width = (e2.width + e1.width)*0.5;
+          pairs.push_back(pair);
         }
-      //}
+      }
     }
   }
 
@@ -154,12 +151,6 @@ void GoalDetectorV2::calcuateGoalPosts()
     {
       Math::Line line = cluster.getLine();
 
-      //Vector2d begin, end;
-      //begin = line.getBase();
-      //end = line.getBase() + line.getDirection()*50;
-      //DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterLine",  
-      //  LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-      //);
       GoalPercept::GoalPost post;
       post.directionInImage = line.getDirection();
       post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
@@ -168,11 +159,6 @@ void GoalDetectorV2::calcuateGoalPosts()
       post.seenWidth = cluster.getFeatureWidth();
       post.seenHeight = (post.basePoint - post.topPoint).abs();
 
-      //begin = post.basePoint;
-      //end = post.topPoint;
-      //DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterLine",  
-      //  LINE_PX(ColorClasses::blue, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-      //);
       // NOTE: if the projection is not successfull, then post.position = (0,0)
       bool projectionOk = CameraGeometry::imagePixelToFieldCoord(
           getCameraMatrix(), getImage().cameraInfo,
@@ -202,7 +188,6 @@ void GoalDetectorV2::calcuateGoalPosts()
           ColorClasses::Color col;
       
           DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterBackProjected",  
-            //if( topDiff < topWidth && baseDiff < baseWidth)
             if(post.positionReliable)
             {
               col = ColorClasses::green;
@@ -244,7 +229,12 @@ void GoalDetectorV2::calcuateGoalPosts()
             LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
           );
 
-          //seen
+          DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterLine",  
+            Vector2i begin = post.basePoint;
+            Vector2i end = post.topPoint;
+            LINE_PX(ColorClasses::blue, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
+          );
+
           DEBUG_REQUEST("Vision:GoalDetectorV2:markPosts",  
             Vector2i begin;
             Vector2i end;
