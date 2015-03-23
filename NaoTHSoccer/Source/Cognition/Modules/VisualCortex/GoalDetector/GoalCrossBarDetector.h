@@ -11,7 +11,6 @@
 
 #include <ModuleFramework/Module.h>
 
-//#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/FieldInfo.h>
 #include <Representations/Infrastructure/Image.h>
 #include "Representations/Perception/ArtificialHorizon.h"
@@ -93,13 +92,14 @@ private:
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
-      PARAMETER_REGISTER(useColorFeatures) = true;
-      PARAMETER_REGISTER(threshold) = 220;
+      PARAMETER_REGISTER(useColorFeatures) = false;
+      PARAMETER_REGISTER(threshold) = 140;
       PARAMETER_REGISTER(thresholdGradient) = 40;
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
       PARAMETER_REGISTER(barWidthSimilarity) = 0.25;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
+      PARAMETER_REGISTER(maxGoalWidthRatio) = 1.5;
 
       syncWithConfig();
     }
@@ -121,6 +121,7 @@ private:
     double thresholdFeatureGradient;
     double barWidthSimilarity;
     double thresholdFeatureSimilarity;
+    double maxGoalWidthRatio;
   };
 
   Parameters parameters;
@@ -222,10 +223,10 @@ private:
   std::vector<std::vector<GoalBarFeature> > features;
   size_t lastCrossBarScanLineId;
 
-  void scanAlongCrossBar(const Vector2i& start, const Vector2i& end, const Vector2d& direction, double width);
-  size_t scanDown(size_t id, const Vector2i& downStart, const Vector2i& downEnd);
-  size_t scanDownColor(size_t id, const Vector2i& downStart, const Vector2i& downEnd);
-  size_t scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd);
+  void scanAlongCrossBar(const Vector2i& start, const Vector2i& end, const Vector2d& direction, double barWidth);
+  size_t scanDown(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth);
+  size_t scanDownColor(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth);
+  size_t scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth);
   bool estimateCrossBarDirection(const GoalPercept::GoalPost& post, Vector2i& start, Vector2d& direction);
   Vector2d getBackProjectedTopPoint(const GoalPercept::GoalPost& post);
   int getBackProjectedTopBarWidth(const GoalPercept::GoalPost& post);
