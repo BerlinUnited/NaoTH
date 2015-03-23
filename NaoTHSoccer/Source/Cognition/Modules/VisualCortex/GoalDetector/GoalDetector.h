@@ -85,7 +85,8 @@ private:
 
     Parameters() : ParameterList("GoalDetectorParameters")
     {
-      PARAMETER_REGISTER(threshold) = 60;
+      PARAMETER_REGISTER(threshold) = 140;
+      PARAMETER_REGISTER(thresholdGradient) = 30;
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
@@ -100,6 +101,7 @@ private:
     }
 
     int threshold;
+    int thresholdGradient;
     int minGoodPoints;
 
     bool detectWhiteGoals;
@@ -119,7 +121,7 @@ private:
     double summedWidths;
 
   public:
-    Cluster() : summedWidths(0)
+    Cluster() : summedWidths(0.0)
     {}
 
     Math::Line getLine() const
