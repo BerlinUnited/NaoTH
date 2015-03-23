@@ -44,6 +44,10 @@ public class Scp {
         channel.connect();
         
     }
+    
+    public boolean isConnected() {
+        return session.isConnected() && channel.isConnected();
+    }
 
     public void disconnect() {
         channel.disconnect();

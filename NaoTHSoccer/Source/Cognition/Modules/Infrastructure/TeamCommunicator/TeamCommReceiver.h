@@ -23,6 +23,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
 
+#include <Representations/Modeling/SPLStandardMessage.h>
+
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
@@ -74,6 +76,8 @@ private:
   } parameters;
 
 private:
+  bool parseSPLStandardMessage(const std::string& data, SPLStandardMessage& msg) const;
+  bool parseTeamMessage(const SPLStandardMessage& msg, TeamMessage::Data& teamMsg) const;
   void handleMessage(const std::string& data, bool allowOwn = false);
   
   bool monotonicTimeStamp(const TeamMessage::Data& data) const
