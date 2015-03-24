@@ -43,7 +43,7 @@
               <children>
                 <Label text="Log frame" />
                 <Label fx:id="frameModeIndicator" text="*" />
-                <Slider fx:id="frameSlider" majorTickUnit="100.0" minorTickCount="0" showTickLabels="false" showTickMarks="true" HBox.hgrow="ALWAYS" />
+                <Slider fx:id="frameSlider" blockIncrement="1.0" majorTickUnit="100.0" minorTickCount="0" showTickLabels="false" showTickMarks="true" HBox.hgrow="ALWAYS" />
               </children>
             </HBox>
           </children>
