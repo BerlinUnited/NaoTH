@@ -26,6 +26,8 @@ GoalDetectorV2::GoalDetectorV2()
 {
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markPostScans","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markPosts","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markValidPosts","..", true);
+  DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markInvalidPosts","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markPostCenterLine","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markPostCenterBackProjected","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2:markPostBackProjected","..", false);
@@ -143,6 +145,16 @@ void GoalDetectorV2::clusterEdgelFeatures()
 
 void GoalDetectorV2::calcuateGoalPosts()
 {
+  bool markValidPosts = false; 
+  bool markInvalidPosts = false; 
+  DEBUG_REQUEST("Vision:GoalDetectorV2:markValidPosts",  
+    markValidPosts = true;   
+  );
+  DEBUG_REQUEST("Vision:GoalDetectorV2:markInvalidPosts",  
+    markInvalidPosts = true;   
+  );
+
+
   for(size_t j = 0; j < clusters.size(); j++) 
   {
     Cluster& cluster = clusters[j];
@@ -154,6 +166,8 @@ void GoalDetectorV2::calcuateGoalPosts()
       GoalPercept::GoalPost post;
       post.directionInImage = line.getDirection();
       post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
+      //HACK: inside polygon test seems to fail on that image border
+      if(post.basePoint.y >= (int) getImage().height() - 1) post.basePoint.y--;
       post.topPoint = scanForEndPoint(line.getBase(), -post.directionInImage);
       post.positionReliable = getFieldPercept().getValidField().isInside(post.basePoint);
       post.seenWidth = cluster.getFeatureWidth();
@@ -222,11 +236,13 @@ void GoalDetectorV2::calcuateGoalPosts()
             {
               if(widthRatio > params.maxBarWidthRatio) col = ColorClasses::pink;
             }
-
-            LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
-            LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
-            LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
-            LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+            if( (markValidPosts && col == ColorClasses::skyblue) || (markInvalidPosts && col != ColorClasses::skyblue) )
+            {
+              LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
+              LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
+              LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
+              LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+            }
           );
 
           DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterLine",  
@@ -248,12 +264,14 @@ void GoalDetectorV2::calcuateGoalPosts()
             Vector2i endR = post.topPoint + postNorm;
             ColorClasses::Color col = ColorClasses::green;
             if(!post.positionReliable) col = ColorClasses::red;
-            if(widthRatio > params.maxBarWidthRatio) col = ColorClasses::pink;
-
-            LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
-            LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
-            LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
-            LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+            if(widthRatio > params.maxBarWidthRatio) col = ColorClasses::blue;
+            if( (markValidPosts && col == ColorClasses::green) || (markInvalidPosts && col != ColorClasses::green) )
+            {
+              LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
+              LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
+              LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
+              LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+            }
           );
         
           post.positionReliable &= widthRatio < params.maxBarWidthRatio;
