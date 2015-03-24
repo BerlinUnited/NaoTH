@@ -51,14 +51,25 @@ bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
   clusters.clear();
   goalCandidates.clear();
 
-  if(getGoalPercept().getNumberOfSeenPosts() == 1)
+  std::vector<int> seenReliablePosts;
+
+  for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
   {
-    checkSinglePost(getGoalPercept().getPost(0));
+    const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
+    if(post.positionReliable)
+    {
+      seenReliablePosts.push_back(i);
+    }
   }
-  else if(getGoalPercept().getNumberOfSeenPosts() == 2)
+
+  if(seenReliablePosts.size() == 1)
   {
-    const GoalPercept::GoalPost& post0 = getGoalPercept().getPost(0);
-    const GoalPercept::GoalPost& post1 = getGoalPercept().getPost(1);
+    checkSinglePost(getGoalPercept().getPost(seenReliablePosts[0]));
+  }
+  else if(seenReliablePosts.size() == 2)
+  {
+    const GoalPercept::GoalPost& post0 = getGoalPercept().getPost(seenReliablePosts[0]);
+    const GoalPercept::GoalPost& post1 = getGoalPercept().getPost(seenReliablePosts[1]);
     if(checkProjectedPostDistance(post0, post1))
     {    
       //scan from post most left in image
@@ -77,11 +88,65 @@ bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
       checkSinglePost(post1);
     }
   } 
-  else if(getGoalPercept().getNumberOfSeenPosts() > 2)
+  else if(seenReliablePosts.size() > 2)
   {
-    for(int p = 0; p < getGoalPercept().getNumberOfSeenPosts(); p++)
+    struct Goal
     {
-      checkSinglePost(getGoalPercept().getPost(p));
+      int post0;
+      int post1;
+    };
+
+    std::vector<Goal> possibleGoals;
+    for(size_t p0 = 0; p0 < seenReliablePosts.size() - 1; p0++)
+    {
+      for(size_t p1 = p0 + 1; p1 < seenReliablePosts.size(); p1++)
+      {
+        const GoalPercept::GoalPost& post0 = getGoalPercept().getPost(seenReliablePosts[p0]);
+        const GoalPercept::GoalPost& post1 = getGoalPercept().getPost(seenReliablePosts[p1]);
+        if(checkProjectedPostDistance(post0, post1))
+        {
+          Goal goal;
+          goal.post0 = seenReliablePosts[p0];
+          goal.post1 = seenReliablePosts[p1];
+          possibleGoals.push_back(goal);
+        }
+      }
+    }
+    std::vector<int> usedPosts;
+    if(possibleGoals.size() > 0)
+    {
+      for(size_t i = 0; i < possibleGoals.size(); i++)
+      {
+        const GoalPercept::GoalPost& post0 = getGoalPercept().getPost(possibleGoals[i].post0);
+        const GoalPercept::GoalPost& post1 = getGoalPercept().getPost(possibleGoals[i].post1);
+        //scan from post most left in image
+        if(post1.topPoint.x < post0.topPoint.x)
+        {
+          checkBothPosts(post1, post0);
+        }
+        else
+        {
+          checkBothPosts(post0, post1);
+        }
+        usedPosts.push_back(possibleGoals[i].post0);
+        usedPosts.push_back(possibleGoals[i].post1);
+      }
+    }
+    for(size_t p = 0; p < seenReliablePosts.size(); p++)
+    {
+      bool isUsed = false;
+      for(size_t i = 0; i < usedPosts.size(); i++)
+      {
+        if(usedPosts[i] == p) 
+        {
+          isUsed = true;
+          break;
+        }
+      }
+      if(!isUsed)
+      {
+        checkSinglePost(getGoalPercept().getPost(seenReliablePosts[p]));
+      }
     }
   }
   calcuateCrossBars();
@@ -91,15 +156,10 @@ bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
 
 void GoalCrossBarDetector::checkSinglePost(const GoalPercept::GoalPost& post)
 {
-  if(!post.positionReliable) 
-  {
-    DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_crossbar_endpoints",
-      CIRCLE_PX(ColorClasses::orange, post.topPoint.x, post.topPoint.y, (int)post.seenWidth);
-    );
-    return;
-  }
   DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_crossbar_endpoints",
-    CIRCLE_PX(ColorClasses::skyblue, post.topPoint.x, post.topPoint.y, (int)post.seenWidth);
+    Vector2d topPoint = getBackProjectedTopPoint(post);
+    int width = getBackProjectedTopBarWidth(post) / 2;
+    CIRCLE_PX(ColorClasses::skyblue, (int) topPoint.x, (int) topPoint.y, width);
   );
   Vector2i start;
   Vector2d direction;
@@ -142,17 +202,11 @@ void GoalCrossBarDetector::checkBothPosts(const GoalPercept::GoalPost& postLeft,
   Vector2i start = getBackProjectedTopPoint(postLeft);;
   Vector2i end = getBackProjectedTopPoint(postRight);;
 
-  if(!postLeft.positionReliable && !postRight.positionReliable) 
-  {
-    DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_crossbar_endpoints",
-      CIRCLE_PX(ColorClasses::red, start.x, start.y, (int) postLeft.seenWidth);
-      CIRCLE_PX(ColorClasses::red, end.x, end.y, (int) postRight.seenWidth);
-    );
-    return;
-  }
   DEBUG_REQUEST("Vision:GoalCrossBarDetector:draw_crossbar_endpoints",
-    CIRCLE_PX(ColorClasses::blue, start.x, start.y, (int) postLeft.seenWidth);
-    CIRCLE_PX(ColorClasses::blue, end.x, end.y, (int) postRight.seenWidth);
+      int widthLeft = getBackProjectedTopBarWidth(postLeft) / 2;
+      int widthRight = getBackProjectedTopBarWidth(postRight) / 2;
+      CIRCLE_PX(ColorClasses::blue, start.x, start.y, widthLeft);
+      CIRCLE_PX(ColorClasses::blue, end.x, end.y, widthRight);
   );
 
   scanAlongCrossBar(start, end, meanPostDirection, meanPostWidth);
@@ -222,12 +276,12 @@ bool GoalCrossBarDetector::estimateCrossBarDirection(const GoalPercept::GoalPost
 
   start = getBackProjectedTopPoint(post);
 
-  Vector2d scanOffset = post.directionInImage * post.seenWidth * 3.0;
+  Vector2d scanOffset = post.directionInImage * post.seenWidth * 4.0;
  
-  //Vector2i pointLeft(post.topPoint - direction * parameters.scanlinesDistance);
-  //Vector2i pointRight(post.topPoint + direction * parameters.scanlinesDistance);
-  Vector2i pointLeft(post.topPoint - direction * post.seenWidth * 1.5);
-  Vector2i pointRight(post.topPoint + direction * post.seenWidth * 1.5);
+  //Vector2i pointLeft(post.topPoint - direction * post.seenWidth * 1.5);
+  //Vector2i pointRight(post.topPoint + direction * post.seenWidth * 1.5);
+  Vector2d pointLeft(start - direction * post.seenWidth * 1.5);
+  Vector2d pointRight(start + direction * post.seenWidth * 1.5);
 
   Vector2i downStart(pointLeft - scanOffset);
   Vector2i downEnd(pointLeft + scanOffset);
@@ -501,18 +555,20 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
   BresenhamLineScan downScan(downStart, downEnd);
   Vector2i pos(downStart);
 
-//  Filter<Prewitt3x1, Vector2i, double, 3> filter;
   Filter<Diff5x1, Vector2i, double, 5> filter;
 
-  // initialize the scanner
-  Vector2i peak_point_max(pos);
-  Vector2i peak_point_min(pos);
-  MaximumScan<Vector2i,double> positiveScan(peak_point_max, parameters.thresholdGradient);
-  MaximumScan<Vector2i,double> negativeScan(peak_point_min, parameters.thresholdGradient);
-
-  bool begin_found = false;
+  bool edgeFound = false;
 
   Pixel pixel;
+
+  EdgelD lastEdgel;
+
+  Vector2i lastPos;
+
+  // initialize the scanner
+  Vector2i peak_point(pos);
+  MaximumScan<Vector2i,double> maxScan(peak_point, parameters.thresholdGradient);
+
   for(int p = 0; p < downScan.numberOfPixels; p++)
   {
     downScan.getNext(pos);
@@ -528,57 +584,101 @@ size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, 
       POINT_PX(ColorClasses::gray, pos.x, pos.y );
     );
 
-    filter.add(pos, pixValue);
+    if(pixValue > parameters.threshold)
+    {
+      filter.add(pos, pixValue);
+    }
+    else
+    {
+      filter.add(pos, parameters.threshold);
+    }
     if(!filter.ready()) {
       continue;
     }
 
-    if(positiveScan.add(filter.point(), filter.value()))
-    {
-      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
-        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
-      );
-      begin_found = true;
-    }
+    double absValue = fabs(filter.value());
 
-    if(negativeScan.add(filter.point(), -filter.value()))
+    if(maxScan.add(filter.point(), absValue))
     {
-      Vector2d gradientBegin = parameters.detectWhiteGoals ? calculateGradientY(peak_point_max) : calculateGradientUV(peak_point_max);
-      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients",
-        LINE_PX(ColorClasses::black, peak_point_max.x, peak_point_max.y, peak_point_max.x + (int)(10*gradientBegin.x+0.5), peak_point_max.y + (int)(10*gradientBegin.y+0.5));
-      );
-      Vector2d gradientEnd = parameters.detectWhiteGoals ? calculateGradientY(peak_point_min) : calculateGradientUV(peak_point_min);
-      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients",
-        LINE_PX(ColorClasses::black, peak_point_min.x, peak_point_min.y, peak_point_min.x + (int)(10*gradientEnd.x+0.5), peak_point_min.y + (int)(10*gradientEnd.y+0.5));
-      );
-      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
-        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y );
-      );
-      // double edgel
-      int featureWidth = (peak_point_max - peak_point_min).abs();
-      if
-      (
-        begin_found && 
-        fabs(gradientBegin*gradientEnd) > parameters.thresholdFeatureGradient && 
-        featureWidth < parameters.maxFeatureWidth &&
-        featureWidth >= barWidth * parameters.barWidthSimilarity
-      ) 
+      Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+      EdgelD newEdgel;
+
+      if(gradient.y < 0)
       {
-        DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
-          LINE_PX(ColorClasses::blue, peak_point_max.x, peak_point_max.y, peak_point_min.x, peak_point_min.y);
-          POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y );
-          POINT_PX(ColorClasses::red, peak_point_min.x, peak_point_min.y );
-        );
-        GoalBarFeature crossBarFeature;
-        crossBarFeature.point = Vector2d(peak_point_max + peak_point_min)*0.5;
-        crossBarFeature.direction = (gradientBegin - gradientEnd).normalize();
-        //crossBarFeature.begin = peak_point_max;
-        //crossBarFeature.end = peak_point_min;
-        crossBarFeature.width = featureWidth;
-
-        features[id].push_back(crossBarFeature);
+        gradient *= -1;
+        newEdgel.type = EdgelD::positive; 
       }
-      begin_found = false;
+      else
+      {
+        newEdgel.type = EdgelD::negative; 
+      }
+
+      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients",
+        LINE_PX(ColorClasses::black, peak_point.x, peak_point.y, peak_point.x + (int)(10*gradient.x+0.5), peak_point.y + (int)(10*gradient.y+0.5));
+      );
+      newEdgel.point = peak_point;
+      newEdgel.direction = gradient;
+
+      ColorClasses::Color col;
+      ColorClasses::Color peakCol = ColorClasses::red;
+      if(newEdgel.type == EdgelD::negative) 
+      {
+        col = ColorClasses::pink;
+      }
+      else
+      {
+        col = ColorClasses::orange;
+        peakCol = ColorClasses::pink;
+      }
+
+      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients",
+        LINE_PX(col, (int)newEdgel.point.x, (int)newEdgel.point.y, (int)newEdgel.point.x + (int)(10*newEdgel.direction.x+0.5), (int)newEdgel.point.y + (int)(10*newEdgel.direction.y+0.5));
+        POINT_PX(ColorClasses::blue, (int)newEdgel.point.x, (int)newEdgel.point.y );
+      );
+
+      if(edgeFound)
+      { 
+        double sim = lastEdgel.sim2(newEdgel);
+        if(sim > parameters.thresholdFeatureGradient)
+        {
+          GoalBarFeature feature;
+          feature.point = Vector2d(lastEdgel.point + newEdgel.point) * 0.5;
+          double featureWidth = (newEdgel.point - lastEdgel.point).abs();
+          
+          getImage().get((int)  feature.point.x, (int)  feature.point.y, pixel);
+          int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+          if
+          (
+            pixValue > parameters.threshold &&
+            featureWidth < parameters.maxFeatureWidth/* &&
+            featureWidth >= barWidth * parameters.barWidthSimilarity*/
+          )
+          {
+            GoalBarFeature crossBarFeature;
+            crossBarFeature.point = peak_point;
+            crossBarFeature.direction = (lastEdgel.direction + newEdgel.direction).normalize();;
+            crossBarFeature.width = featureWidth;
+
+            features[id].push_back(crossBarFeature);
+
+            DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
+              LINE_PX(ColorClasses::blue, (int)lastEdgel.point.x, (int)lastEdgel.point.y, (int)newEdgel.point.x,  (int)newEdgel.point.y);
+            );
+            DEBUG_REQUEST("Vision:GoalCrossBarDetector:markGradients",
+              LINE_PX(ColorClasses::green, (int) feature.point.x, (int) feature.point.y, (int) feature.point.x + (int)(10* feature.direction.x+0.5), (int) feature.point.y + (int)(10* feature.direction.y+0.5));
+              POINT_PX(ColorClasses::blue, (int) feature.point.x, (int) feature.point.y );
+            );
+          }
+        }
+      }
+      edgeFound = true;
+
+      DEBUG_REQUEST("Vision:GoalCrossBarDetector:markPeaks",
+        POINT_PX(peakCol, peak_point.x, peak_point.y );
+      );
+      lastEdgel.type = newEdgel.type;
+      lastEdgel.direction = newEdgel.direction;
+      lastEdgel.point = newEdgel.point;
     }
   }//end while
   return features[id].size();
