@@ -468,9 +468,12 @@ public class RobotControlImpl extends javax.swing.JFrame
                   return pathname.isFile() && pathname.getName().endsWith(".jar");
                 }
               });
-              for(File j : jarFiles)
+              if(jarFiles != null)
               {
-                pluginManager.addPluginsFrom(j.toURI());
+                for (File j : jarFiles)
+                {
+                  pluginManager.addPluginsFrom(j.toURI());
+                }
               }
             }
           }
