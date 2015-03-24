@@ -268,6 +268,14 @@ public class VideoPlayerController implements Initializable
               timeSlider.setMajorTickUnit(60.0);
               timeSlider.setMinorTickCount(10);
             }
+            
+            double framesPerSecond = 30.0;
+            Object framerateObject = media.getMetadata().get("framerate");
+            if(framerateObject instanceof Double)
+            {
+              framesPerSecond = (Double) framerateObject;
+            }
+            timeSlider.setBlockIncrement(1.0/framesPerSecond);
           }
         }
       });
