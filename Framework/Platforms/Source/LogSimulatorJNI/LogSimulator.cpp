@@ -15,7 +15,7 @@ LogProvider* logProvider = NULL;
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile(JNIEnv *env, jobject thisObj, jstring path)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_openLogFile(JNIEnv *env, jobject thisObj, jstring path)
 {
   // Step 1: Convert the JNI String (jstring) into C-String (char*)
   const char* inCStr = (*env).GetStringUTFChars(path, NULL);
@@ -65,42 +65,42 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile(JNIEnv *env, jo
   (*env).ReleaseStringUTFChars(path, inCStr);  // release resources
 }
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepForward(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_stepForward(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     simulator->stepForward();
   }
 }
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepBack(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_stepBack(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     simulator->stepBack();
   }
 }
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToBegin(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpToBegin(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     simulator->jumpToBegin();
   }
 }
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToEnd(JNIEnv *env, jobject thisObj)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpToEnd(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     simulator->jumpToEnd();
   }
 }
 
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpTo(JNIEnv *env, jobject thisObj, jint position)
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpTo(JNIEnv *env, jobject thisObj, jint position)
 {
   if(simulator != NULL) {
     simulator->jumpTo(position);
   }
 }
 
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getCurrentFrame(JNIEnv *env, jobject thisObj)
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getCurrentFrame(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     return simulator->getCurrentFrame();
@@ -108,7 +108,7 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getCurrentFrame(JNIEnv *env
   return -1;
 }
 
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMinFrame(JNIEnv *env, jobject thisObj)
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getMinFrame(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     return simulator->getMinFrame();
@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMinFrame(JNIEnv *env, jo
   return -1;
 }
 
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMaxFrame(JNIEnv *env, jobject thisObj)
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getMaxFrame(JNIEnv *env, jobject thisObj)
 {
   if(simulator != NULL) {
     return simulator->getMaxFrame();
@@ -125,7 +125,7 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMaxFrame(JNIEnv *env, jo
 }
 
 
-JNIEXPORT jbyteArray Java_de_naoth_rc_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name)
+JNIEXPORT jbyteArray Java_de_naoth_rc_logplayer_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name)
 {
   const char* inCStr = (*env).GetStringUTFChars(name, NULL);
   if (NULL == inCStr) { 

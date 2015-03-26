@@ -12,7 +12,7 @@ extern "C" {
  * Method:    stepForward
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepForward
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_stepForward
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepForward
  * Method:    stepBack
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepBack
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_stepBack
   (JNIEnv *, jobject);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_stepBack
  * Method:    jumpToBegin
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToBegin
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpToBegin
   (JNIEnv *, jobject);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToBegin
  * Method:    jumpToEnd
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToEnd
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpToEnd
   (JNIEnv *, jobject);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpToEnd
  * Method:    jumpTo
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpTo
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_jumpTo
   (JNIEnv *, jobject, jint);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_jumpTo
  * Method:    openLogFile
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile
+JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_openLogFile
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_LogSimulator_openLogFile
  * Method:    getCurrentFrame
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getCurrentFrame
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getCurrentFrame
   (JNIEnv *, jobject);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getCurrentFrame
  * Method:    getMinFrame
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMinFrame
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getMinFrame
   (JNIEnv *, jobject);
 
 /*
@@ -76,11 +76,11 @@ JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMinFrame
  * Method:    getMaxFrame
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_de_naoth_rc_LogSimulator_getMaxFrame
+JNIEXPORT jint JNICALL Java_de_naoth_rc_logplayer_LogSimulator_getMaxFrame
   (JNIEnv *, jobject);
 
 
-JNIEXPORT jbyteArray Java_de_naoth_rc_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name);
+JNIEXPORT jbyteArray Java_de_naoth_rc_logplayer_LogSimulator_getRepresentation(JNIEnv * env, jobject thisObj, jstring name);
 
 #ifdef __cplusplus
 }
