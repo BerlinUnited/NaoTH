@@ -21,7 +21,7 @@ import javax.swing.tree.TreePath;
 public class BehaviorTreePanel extends javax.swing.JScrollPane {
 
     private boolean showOptionsOnly = false;
-    private HashMap<String, Boolean> actionExpanded = new HashMap<>();
+    private final HashMap<String, Boolean> actionExpanded = new HashMap<>();
     
     /**
      * Creates new form BehaviorTreePanel
@@ -29,6 +29,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     public BehaviorTreePanel() {
         initComponents();
         
+        this.setViewportView(newTree);
         createNewTree(null);
     }
     
@@ -66,6 +67,8 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         return result;
     }//end actionToNode
 
+    /* 
+    // deprecated: support for Messages.XABSLAction
     public DefaultMutableTreeNode actionToNode(Messages.XABSLAction a) {
         DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
 
@@ -83,15 +86,15 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         }
         return result;
     }//end actionToNode
-
+    */
+    
+    private JTree newTree = new JTree();
     private void createNewTree(DefaultMutableTreeNode root) {
         if (root == null) {
             root = new DefaultMutableTreeNode("Behavior");
         }
 
         DefaultTreeModel model = new DefaultTreeModel(root);
-
-        JTree newTree = new JTree();
         newTree.setModel(model);
 
         // expand all by default
@@ -105,13 +108,16 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             if (o instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) o;
                 
+                /*  
+                // deprecated: support for Messages.XABSLAction
                 if (n.getUserObject() instanceof Messages.XABSLAction) {
                     Messages.XABSLAction a = (Messages.XABSLAction) n.getUserObject();
                     if (Boolean.FALSE.equals(actionExpanded.get(a.getName()))) {
                         newTree.collapsePath(new TreePath(n.getPath()));
                     }
                 }
-                else if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
+                else */
+                if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                     XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution) n.getUserObject();
                     if (Boolean.FALSE.equals(actionExpanded.get(oe.option.name))) {
                         newTree.collapsePath(new TreePath(n.getPath()));
@@ -166,7 +172,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
 
         //scrollTree.setViewportView(newTree);
         //this.removeAll();
-        this.setViewportView(newTree);
+        //this.setViewportView(newTree);
         this.validate();
     }//end createNewTree
 
