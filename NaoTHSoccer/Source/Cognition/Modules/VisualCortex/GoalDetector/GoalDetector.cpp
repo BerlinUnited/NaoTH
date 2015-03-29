@@ -11,6 +11,7 @@
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/ImageProcessing/Filter.h"
+#include "Tools/ImageProcessing/MaximumScan.h"
 
 #define IMG_GET(x,y,p) \
   if(!getImage().isInside(x,y)) { \
@@ -179,7 +180,10 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
   Pixel pixel;
   BresenhamLineScan footPointScanner(pos, direction, getImage().cameraInfo);
 
-  Filter<Gauss5x1, Vector2i, double, 5> filter;
+  // initialize the scanner
+  Vector2i peak_point(pos);
+  MaximumScan<Vector2i,double> maxScan(peak_point, params.thresholdGradient);
+  Filter<Diff5x1, Vector2i, double, 5> filter;
 
   while(footPointScanner.getNextWithCheck(pos))
   {
@@ -196,8 +200,13 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
       }
     );
 
-    if(filter.ready() && filter.value() < params.threshold) {
-      break; 
+    if(filter.ready())
+    {
+      double absValue = fabs(filter.value());
+      if( maxScan.add(filter.point(), absValue) || pixValue < params.threshold) 
+      {
+        break; 
+      }
     }
   }
 
