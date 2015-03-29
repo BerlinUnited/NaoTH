@@ -80,8 +80,8 @@ private:
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(useColorFeatures) = true;
-      PARAMETER_REGISTER(threshold) = 160;
-      PARAMETER_REGISTER(thresholdGradient) = 7;
+      PARAMETER_REGISTER(threshold) = 140;
+      PARAMETER_REGISTER(thresholdGradient) = 30;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.8;
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
 

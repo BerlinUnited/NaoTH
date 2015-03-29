@@ -86,25 +86,25 @@ void GoalDetector::execute(CameraInfo::CameraID id)
 
 void GoalDetector::clusterEdgelFeatures()
 {
-  std::vector<EdgelT<double> > pairs;
-  for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().edgel_features.size(); scanIdOne++) 
+  std::vector<GoalBarFeature> pairs;
+  for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().features.size(); scanIdOne++) 
   {
-    const std::vector<EdgelT<double> >& scanlineOne = getGoalFeaturePercept().edgel_features[scanIdOne];
+    const std::vector<GoalBarFeature>& scanlineOne = getGoalFeaturePercept().features[scanIdOne];
     for(size_t i = 0; i < scanlineOne.size(); i++) 
     {
-      const EdgelT<double>& e1 = scanlineOne[i];
+      const GoalBarFeature& e1 = scanlineOne[i];
 
       size_t scanIdTwo = scanIdOne+1;
-      //for(size_t scanIdTwo = scanIdOne+1; scanIdTwo < features.size(); scanIdTwo++) {
-        for(size_t j = 0; j < getGoalFeaturePercept().edgel_features[scanIdTwo].size(); j++) {
-          const EdgelT<double>& e2 = getGoalFeaturePercept().edgel_features[scanIdTwo][j];
+        for(size_t j = 0; j < getGoalFeaturePercept().features[scanIdTwo].size(); j++) {
+          const GoalBarFeature& e2 = getGoalFeaturePercept().features[scanIdTwo][j];
 
           if(e1.sim(e2) > params.thresholdFeatureSimilarity) {
             //LINE_PX(ColorClasses::red, (int)(e1.point.x+0.5), (int)(e1.point.y+0.5), (int)(e2.point.x+0.5), (int)(e2.point.y+0.5));
 
-            EdgelT<double> pair;
+            GoalBarFeature pair;
             pair.point = (e1.point + e2.point)*0.5;
             pair.direction = (e2.direction + e1.direction).normalize();
+            pair.width = (e2.width + e1.width)*0.5;
             pairs.push_back(pair);
           }
         }
@@ -114,7 +114,7 @@ void GoalDetector::clusterEdgelFeatures()
 
   for(size_t i = 0; i < pairs.size(); i++) 
   {
-    const EdgelT<double>& e1 = pairs[i];
+    const GoalBarFeature& e1 = pairs[i];
 
     size_t cluster_idx = 0;
     double max_sim = -1;
@@ -168,6 +168,8 @@ void GoalDetector::calcuateGoalPosts()
           post.position);
 
       post.positionReliable = post.positionReliable && projectionOk;
+      post.seenWidth = cluster.getFeatureWidth();
+      post.seenHeight = (post.basePoint - post.topPoint).abs();
 
       getGoalPercept().add(post);
     }
