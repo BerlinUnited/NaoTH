@@ -243,9 +243,10 @@ public class VideoPlayerController implements Initializable
 
   public void open(File file)
   {
-    media = new Media(file.toURI().toASCIIString());
     try
     {
+      media = new Media(file.toURI().toASCIIString());
+
       player = new MediaPlayer(media);
       player.setOnReady(new Runnable()
       {
