@@ -37,21 +37,67 @@ void PlainKalmanFilterBallLocator::execute()
     applyOdometryOnFilterState(filter);
 
     const Eigen::Vector4d& x = filter.getState();
-    Eigen::Vector4d  u = Eigen::Vector4d::Zero(); // control vector
-
-// handle friction as an input control for acceleration
-//    double deceleration = 4;
-//    if(fabs(x(1)) > epsilon) {
-//        u(1) = ((x(1) < 0) ? 1 : -1) * deceleration;
-//    }
-
-//    if(fabs(x(3)) > epsilon) {
-//        u(3) = ((x(3) < 0) ? 1 : -1) * deceleration;
-//    }
+    Eigen::Vector2d u; // control vector
 
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-    filter.prediction(u, dt);
+
+//----------- handle friction as an input control for acceleration
+
+    /*
+    rolling resistance = rolling resitance coefficient * normal force
+    F_R = d / R * F_N
+
+    F_N = g * weight
+    g = 9.81
+    weight = ballMass
+
+    deceleration = F_R/ballMass
+    */
+    double deceleration = c_RR*9810;//[mm/s^2]
+
+    // deceleration has to be in opposite direction of velocity
+    u <<  -x(1), -x(3);
+
+    // deceleration vector with absoult deceleration of deceleration
+    if(u.norm() > 0){
+        u.normalize();
+    }
+    u *= deceleration;
+
+    double time_until_vel_x_zero = 0;
+    double time_until_vel_y_zero = 0;
+
+    if(fabs(u(0)) > epsilon){
+        time_until_vel_x_zero = -x(1)/u(0);
+    }
+    if(fabs(u(1)) > epsilon){
+        time_until_vel_y_zero = -x(3)/u(1);
+    }
+
+    // 1. predict until velocity is zero
+    Eigen::Matrix<double,1,1> dummy;
+    dummy(0,0) = 5;
+
+    // predict dt seconds and handle events
+    std::vector<Event> events;
+    events.push_back(Event(dummy(0,0),                     dt, Event::finalEvent));
+    events.push_back(Event(      u(0),  time_until_vel_x_zero, Event::normalEvent));
+    events.push_back(Event(      u(1),  time_until_vel_y_zero, Event::normalEvent));
+
+    std::sort(events.begin(),events.end());
+    int index = 0;
+    double past = 0;
+    do {
+        double simTime = events[index].time - past;
+        if(simTime > epsilon){
+            filter.prediction(u,simTime);
+            past += simTime;
+        }
+        *(events[index].u_entry) = 0; // beware! u_entry is a pointer to a entry in the vector u
+    } while(events[index++].type == Event::normalEvent);
+
+//----------- handel friction end
 
     // measurement
     if(getBallPercept().ballWasSeen)
@@ -205,4 +251,8 @@ void PlainKalmanFilterBallLocator::reloadKFParameters()
     measurementNoiseCovariances(1,1) = kfParameters.measurementNoiseR11;
 
     filter.setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
+
+    // wrong function name?
+    //ballMass = kfParameters.ballMass;
+    c_RR = kfParameters.c_RR;
 }

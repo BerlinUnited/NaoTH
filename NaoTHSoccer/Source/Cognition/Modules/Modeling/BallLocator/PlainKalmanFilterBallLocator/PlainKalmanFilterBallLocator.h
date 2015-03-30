@@ -13,6 +13,8 @@
 
 #include "KalmanFilter4d.h"
 
+#include <eigen3/Eigen/Eigen>
+
 // debug
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -67,6 +69,38 @@ private:
 
     FrameInfo lastFrameInfo;
 
+private: // friction stuff
+    class Event{
+        public:
+
+            enum EventType{
+                normalEvent,
+                finalEvent
+            } type;
+
+            Event(double& u, double time, EventType type):
+                type(type),
+                u_entry(&u),
+                time(time)
+            {
+            }
+
+            double* u_entry;
+            double  time;
+
+        bool operator<(const Event& e2) const{
+            return time < e2.time;
+        }
+
+        Event& operator=(const Event& e2){
+            this->u_entry = e2.u_entry;
+            this->time    = e2.time;
+            this->type    = e2.type;
+            return *this;
+        }
+
+    };
+
 private: // multi stuff?
 
     double mahalanobisDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
@@ -78,6 +112,9 @@ private:
     KalmanFilter4d filter;
 
     const double epsilon; // 10e-6
+
+    //double ballMass;
+    double c_RR;
 
     const BallPercept& getBallPercept() const
     {
@@ -108,6 +145,8 @@ private:
 
             PARAMETER_REGISTER(measurementNoiseR00) = 10;
             PARAMETER_REGISTER(measurementNoiseR11) = 10;
+            //PARAMETER_REGISTER(ballMass) = 0.026;
+            PARAMETER_REGISTER(c_RR) = 0.0001;
 
             syncWithConfig();
         }
@@ -119,6 +158,9 @@ private:
 
         double measurementNoiseR00;
         double measurementNoiseR11;
+
+        //double ballMass;
+        double c_RR;
     } kfParameters;
 };
 

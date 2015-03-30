@@ -9,7 +9,7 @@ public:
     KalmanFilter4d();
     ~KalmanFilter4d();
 
-    void prediction(const Eigen::Vector4d& u, double dt);
+    void prediction(const Eigen::Vector2d &u, double dt);
     void update(const Eigen::Vector2d &z);
 
     void setState(Eigen::Vector4d& state);
@@ -23,7 +23,7 @@ public:
 
 private:
     Eigen::Matrix4d F; // state transition matrix
-    Eigen::Matrix4d B; // control matrix
+    Eigen::Matrix<double,4,2> B; // control matrix
     Eigen::Vector4d x; // state x_location, x_velocity, y_location, y_velocity
     Eigen::Vector4d u; // control vector x_velocity, x_acceleration, y_velocity, y_acceleration
     Eigen::Vector4d x_pre;  // predicted state

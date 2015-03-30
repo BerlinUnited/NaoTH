@@ -13,10 +13,10 @@ KalmanFilter4d::KalmanFilter4d():
     x << 0, 0, 0, 0;
 
     // control matrix
-    B << 0,  0, 0,  0,
-         1, dt, 0,  0,
-         0,  0, 0,  0,
-         0,  0, 1, dt;
+    B << dt*dt/2, 0,
+         dt     , 0,
+         0, dt*dt/2,
+         0, dt;
 
     // covariance matrix of process noise (values taken from old kalman filter)
     double q = 3;
@@ -48,15 +48,17 @@ KalmanFilter4d::~KalmanFilter4d()
 
 }
 
-void KalmanFilter4d::prediction(const Eigen::Vector4d& u, double dt)
+void KalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
 {
     // adapt state transition matrix to dt
     F(0,1) = dt;
     F(2,3) = dt;
 
     // adapt control matrix to dt
-    B(1,1) = dt;
-    B(3,3) = dt;
+    B << dt*dt/2, 0,
+         dt     , 0,
+         0      , dt*dt/2,
+         0      , dt;
 
     // predict
     x_pre = F * x + B * u;
