@@ -44,7 +44,7 @@ public:
  void removeRobotNumbers();
 
 private:
-  unsigned int nextMessage; //Time, at which the next message is to be received
+  unsigned int nextMessageTime; //Time, at which the next message is to be received
 
   class Parameters: public ParameterList
   {
@@ -54,8 +54,8 @@ private:
       PARAMETER_REGISTER(mean) = 500.0;
       PARAMETER_REGISTER(standardDeviation) = 50.0;
       PARAMETER_REGISTER(uniformDistribution) = false;
-      PARAMETER_REGISTER(uniformMin) = 10;
-      PARAMETER_REGISTER(uniformMax) = 25;
+      PARAMETER_REGISTER(uniformMin) = 413.3;
+      PARAMETER_REGISTER(uniformMax) = 586.6;
       PARAMETER_REGISTER(randomPerturbations) = false;
       
       // load from the file after registering all parameters
@@ -66,10 +66,10 @@ private:
     bool uniformDistribution; //Should the message intervals be drawn from a uniform distribution?
     bool randomPerturbations; //If true, message intervals will be drawn according to the chosen distribution at times, 
                               //but, from time to time, no messages will be received for a longer time period
-    double mean; //Mean message interval (in frames)
-    double standardDeviation; //Standard deviation of message intervals (in frames)
-    int uniformMin; //Smallest number in the uniform distribution
-    int uniformMax; //Largest number in the uniform distribution
+    double mean; //Mean message interval (in ms)
+    double standardDeviation; //Standard deviation of message intervals (in ms)
+    int uniformMin; //Smallest number in the uniform distribution (in ms)
+    int uniformMax; //Largest number in the uniform distribution (in ms)
     
     virtual ~Parameters() {
     }
