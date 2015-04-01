@@ -25,6 +25,9 @@ public:
   double expectation_xSquared; // Sum of squares of the message intervals
   bool valid;
   
+  std::map<unsigned int, double> amountsOfMessages; // Map from a robot's number to its current amount of messages
+  std::map<unsigned int, double> averages; // Map from a robot's number to its current average message interval
+  std::map<unsigned int, double> variances; // Map from a robot's number to its current failure probability
   std::map<unsigned int, double> failureProbabilities; // Map from a robot's number to its current failure probability
 
   TeamMessageStatisticsModel()
@@ -39,9 +42,17 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "Amount of Messages =                       " << amountOfMessages << std::endl;
-    stream << "Average Message Interval =                 " << avgMsgInterval << std::endl;
-    stream << "Variance of Message Intervals =  " << varianceMsgInterval << std::endl;
+    stream << "Overall Statistics:" << std::endl;
+    stream << " Amount of Messages =                       " << amountOfMessages << std::endl;
+    stream << " Average Message Interval =                 " << avgMsgInterval << std::endl;
+    stream << " Stddev of Message Intervals =  " << std::sqrt(varianceMsgInterval) << std::endl;
+    for (std::map<unsigned int, double>::const_iterator iter = amountsOfMessages.begin(); iter != amountsOfMessages.end(); iter++) {
+      unsigned int robotNumber = iter->first;
+      stream << "Statistics for robot number " << robotNumber << ":" << std::endl;
+      stream << " Amount of Messages =                       " << iter->second << std::endl;
+      stream << " Average Message Interval =                 " << averages.at(robotNumber) << std::endl;
+      stream << " Stddev of Message Intervals =  " << std::sqrt(variances.at(robotNumber)) << std::endl;
+    }
   }//end print
 };
 

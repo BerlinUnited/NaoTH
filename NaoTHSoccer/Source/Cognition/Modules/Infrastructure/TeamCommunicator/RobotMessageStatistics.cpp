@@ -59,12 +59,9 @@ void RobotMessageStatistics::messageReceived(unsigned int message_receiveTime, d
 **/
 void RobotMessageStatistics::update(unsigned int currentTime) {
   unsigned int currentTime_relative = currentTime - lastMessageReceived;
-  std::cout << "RobotNo = " << robotNumber << ", AmountOfMsg = " << amountOfMessages << ", Cur_Time = " << currentTime_relative << ", LastUpdate = " << lastUpdate << std::endl;
   if (varianceMsgInterval > 0) {
     probability_messageReceived_upToNow += probability(lastUpdate, currentTime_relative);
   }
-  std::cout << "  Probability of a message arriving before " << currentTime_relative << "ms having elapsed = " << probability_messageReceived_upToNow << std::endl;
-  std::cout << "  With mean = " << avgMsgInterval << ", stddev = " << std::sqrt(varianceMsgInterval) << std::endl;
   lastUpdate = currentTime_relative;
 }
 

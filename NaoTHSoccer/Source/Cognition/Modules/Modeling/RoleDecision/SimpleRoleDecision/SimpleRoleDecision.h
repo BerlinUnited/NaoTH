@@ -21,11 +21,17 @@
 #include "Representations/Modeling/TeamMessageStatisticsModel.h"
 
 #include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleRoleDecision)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(PlayerInfo)
@@ -37,17 +43,40 @@ END_DECLARE_MODULE(SimpleRoleDecision)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class SimpleRoleDecision : public SimpleRoleDecisionBase, public RoleDecision
+class SimpleRoleDecision : public SimpleRoleDecisionBase
 {
 public: 
 
   SimpleRoleDecision();
-  virtual ~SimpleRoleDecision(){}
-
+  virtual ~SimpleRoleDecision();
+  
   /** executes the module */
   virtual void execute();
 
   void computeStrikers();
+
+  protected:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("SimpleRoleDecision")
+    {
+      PARAMETER_REGISTER(maximumFreshTime) = 2000;
+      PARAMETER_REGISTER(strikerBonusTime) = 4000;
+      PARAMETER_REGISTER(maxBallLostTime) = 1000;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+    }
+
+    int maximumFreshTime;
+    int strikerBonusTime;
+    int maxBallLostTime;
+    double minFailureProbability;
+    
+    virtual ~Parameters() {
+    }
+  } parameters;
 
 };
 

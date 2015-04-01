@@ -29,7 +29,7 @@ public:
       stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
     }
     else {
-      stream << "Currently no second striker in use.\n";
+      stream << "Currently no first striker in use.\n";
     }
 
     if (secondStriker != -1) {

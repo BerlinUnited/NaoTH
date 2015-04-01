@@ -5,10 +5,14 @@
 #include "TeamMessageStatistics.h"
 
 TeamMessageStatistics::TeamMessageStatistics()
-{}
+{
+  getDebugParameterList().add(&parameters);
+}
 
 TeamMessageStatistics::~TeamMessageStatistics()
-{}
+{
+  getDebugParameterList().remove(&parameters);
+}
 
 void TeamMessageStatistics::execute() {   
   //Check, from which robots we have received a message, and update the corresponding statistics
@@ -24,9 +28,15 @@ void TeamMessageStatistics::execute() {
         //Update statistics for the corresponding robot
         (*r->second).messageReceived(receiveTime);
         (*r->second).lastMessageReceived_sender = receiveTime_sender;
+        getTeamMessageStatisticsModel().amountsOfMessages[robotNumber] = (*r->second).amountOfMessages;
+        getTeamMessageStatisticsModel().averages[robotNumber] = (*r->second).avgMsgInterval;
+        getTeamMessageStatisticsModel().variances[robotNumber] = (*r->second).varianceMsgInterval;
         PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(robotNumber)+std::string("):MessageInterval"), currentMessageInterval);
 
         //Update statistics for the whole team
+        if (robotNumber == getPlayerInfo().gameData.playerNumber) {
+          continue;
+        }
         double old_amountOfMessages = getTeamMessageStatisticsModel().amountOfMessages++;
         if (parameters.interpolation == 0.0 || old_amountOfMessages == 0 || 1.0/getTeamMessageStatisticsModel().amountOfMessages > parameters.interpolation) {
           //No interpolation, compute unweighted average

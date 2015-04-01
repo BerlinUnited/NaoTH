@@ -30,6 +30,7 @@
 BEGIN_DECLARE_MODULE(StableRoleDecision)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
@@ -48,12 +49,35 @@ class StableRoleDecision : public StableRoleDecisionBase, public RoleDecision
 public: 
 
   StableRoleDecision();
-  virtual ~StableRoleDecision(){}
+  virtual ~StableRoleDecision();
 
   /** executes the module */
   virtual void execute();
 
   void computeStrikers();
+  
+protected:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("StableRoleDecision")
+    {
+      PARAMETER_REGISTER(maximumFreshTime) = 2000;
+      PARAMETER_REGISTER(strikerBonusTime) = 4000;
+      PARAMETER_REGISTER(maxBallLostTime) = 1000;
+      PARAMETER_REGISTER(minFailureProbability) = 0.95;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+    }
+
+    int maximumFreshTime;
+    int strikerBonusTime;
+    int maxBallLostTime;
+    double minFailureProbability;
+    
+    virtual ~Parameters() {}
+  } parameters;
 
 };
 

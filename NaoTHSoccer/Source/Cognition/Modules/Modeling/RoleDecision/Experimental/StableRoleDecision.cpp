@@ -15,7 +15,12 @@ using namespace std;
 
 StableRoleDecision::StableRoleDecision()
 {
+  getDebugParameterList().add(&parameters);
+}
 
+StableRoleDecision::~StableRoleDecision()
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void StableRoleDecision::execute() {

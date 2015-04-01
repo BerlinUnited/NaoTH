@@ -15,7 +15,12 @@ using namespace std;
 
 SimpleRoleDecision::SimpleRoleDecision()
 {
+  getDebugParameterList().add(&parameters);
+}
 
+SimpleRoleDecision::~SimpleRoleDecision()
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void SimpleRoleDecision::execute() {
@@ -41,7 +46,8 @@ void SimpleRoleDecision::computeStrikers() {
         number != getPlayerInfo().gameData.playerNumber && // its not me...
         messageData.wasStriker // the guy wants to be striker...
         ) {
-      getRoleDecisionModel().firstStriker = number; // let him go :)
+      getRoleDecisionModel().firstStriker = number; // let him go :)      
+      PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 0);
       return;
     }
   }//end for
@@ -76,5 +82,11 @@ void SimpleRoleDecision::computeStrikers() {
   }//end for
 
   getRoleDecisionModel().firstStriker = playerNearestToBall;
+  if (playerNearestToBall == getPlayerInfo().gameData.playerNumber) {          
+    PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 1);
+  }
+  else {      
+    PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 0);
+  }
 
 }

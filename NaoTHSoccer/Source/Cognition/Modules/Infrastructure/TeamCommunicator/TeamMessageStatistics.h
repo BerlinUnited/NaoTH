@@ -12,6 +12,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Modeling/PlayerInfo.h"
 
 #include "Representations/Modeling/TeamMessage.h"
 #include <Representations/Infrastructure/TeamMessageData.h>
@@ -30,8 +31,10 @@
 BEGIN_DECLARE_MODULE(TeamMessageStatistics)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
   
   REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
 
   PROVIDE(TeamMessageStatisticsModel)
@@ -58,7 +61,7 @@ public:
  double riemann_integral(double (TeamMessageStatistics::*func)(double), double a, double b, int amountOfRectangles);
 
 private:
-   class Parameters: public ParameterList
+  class Parameters: public ParameterList
   {
   public: 
     Parameters(): ParameterList("TeamMessageStatistics") {
@@ -70,8 +73,7 @@ private:
 
     double interpolation; //Determines the weighting of newly received message intervals (set to 0 for unweighted average)
     
-    virtual ~Parameters() {
-    }
+    virtual ~Parameters() {}
   } parameters;
 
 };
