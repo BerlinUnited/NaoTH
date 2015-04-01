@@ -54,8 +54,8 @@ private:
       PARAMETER_REGISTER(mean) = 500.0;
       PARAMETER_REGISTER(standardDeviation) = 50.0;
       PARAMETER_REGISTER(uniformDistribution) = false;
-      PARAMETER_REGISTER(uniformMin) = 413.3;
-      PARAMETER_REGISTER(uniformMax) = 586.6;
+      PARAMETER_REGISTER(uniformMin) = 413;
+      PARAMETER_REGISTER(uniformMax) = 586;
       PARAMETER_REGISTER(randomPerturbations) = false;
       
       // load from the file after registering all parameters

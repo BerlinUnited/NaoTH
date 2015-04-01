@@ -11,7 +11,6 @@ void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("team.members_alive_count", &getTeamMembersAliveCount);
   engine.registerBooleanInputSymbol("team.calc_if_is_striker", &calculateIfStriker);
-  engine.registerBooleanInputSymbol("team.calc_if_is_striker_by_time_to_ball", &calculateIfStriker_byTimeToBall);
   engine.registerBooleanOutputSymbol("team.is_playing_as_striker",&setWasStriker, &getWasStriker);
   engine.registerBooleanInputSymbol("team.calc_if_is_the_last", &calculateIfTheLast);
 }
@@ -54,89 +53,9 @@ void TeamSymbols::setWasStriker(bool striker)
 
 bool TeamSymbols::calculateIfStriker()
 {
-  TeamMessage const& tm = theInstance->getTeamMessage();
-
-  // initialize with max-values. Every Robot must start with same values!
-  double shortestDistance = theInstance->getFieldInfo().xFieldLength;
-  unsigned int playerNearestToBall = 0; //nobody near to ball
-
-  //if someone is striker, leave! Goalie can be striker (while f.e. clearing ball)
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& messageData = i->second;
-    const unsigned int number = i->first;
-
-    if((theInstance->getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime) && // the message is fresh...
-        number != theInstance->getPlayerInfo().gameData.playerNumber && // its not me...
-        messageData.wasStriker // the guy wants to be striker...
-        ) {
-      return false; // let him go :)
-    }
-  }//end for
-
-  // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
-  //should check who has best position to goal etc.
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& messageData = i->second;
-    const unsigned int number = i->first;
-
-    double time_bonus = messageData.wasStriker?theInstance->parameters.strikerBonusTime:0.0;
-
-    if (!messageData.fallen
-      && !messageData.isPenalized
-      && number != 1 // goalie is not considered
-      && theInstance->getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime // its fresh
-      && (messageData.ballAge >= 0 && messageData.ballAge < theInstance->parameters.maxBallLostTime+time_bonus )// the guy sees the ball
-      ) {
-      Vector2d ballPos = messageData.ballPosition;
-      double ballDistance = ballPos.abs();
-
-      // striker bonus
-      if (messageData.wasStriker)
-        ballDistance -= 100;
-
-      // remember the closest guy
-      if(ballDistance < shortestDistance) {
-        shortestDistance = ballDistance;
-        playerNearestToBall = number;
-      }    
-    }//end if
-  }//end for
-
-  // am I the closest one?
-  return playerNearestToBall == theInstance->getPlayerInfo().gameData.playerNumber;
+  bool result = theInstance->getRoleDecisionModel().firstStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
+  return result;
 }//end calculateIfStriker
-
-bool TeamSymbols::calculateIfStriker_byTimeToBall()
-{
-  TeamMessage const& tm = theInstance->getTeamMessage();
-
-  double shortestTime = theInstance->getSoccerStrategy().timeToBall;
-  if (theInstance->getPlayerInfo().isPlayingStriker)
-    shortestTime-=100;
-
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& msg = i->second;
-    unsigned int robotNumber = i->first;
-    double failureProbability = 0.0;
-    std::map<unsigned int, double>::const_iterator robotFailure = theInstance->getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
-    if (robotFailure != theInstance->getTeamMessageStatisticsModel().failureProbabilities.end()) { 
-      failureProbability = robotFailure->second;
-    } //Failure probability will be 0, if there is no entry about this robot in the TeamMessageStatistics
-    if (
-      robotNumber != theInstance->getPlayerInfo().gameData.playerNumber //If this player is not us
-      && msg.wasStriker //Robot considers itself the striker
-      && !msg.isPenalized
-      && failureProbability < theInstance->parameters.minFailureProbability //Message is fresh
-      && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + theInstance->getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime //Ball is fresh
-      && msg.timeToBall < shortestTime) { //Other player is closer to ball than us
-      return false;
-    }
-  }//end for
-
-  return true;
-
-}//end calculateIfStriker_byTimeToBall
 
 TeamSymbols::~TeamSymbols()
 {

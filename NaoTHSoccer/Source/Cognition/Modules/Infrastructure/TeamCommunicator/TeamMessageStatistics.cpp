@@ -24,7 +24,7 @@ void TeamMessageStatistics::execute() {
         //Update statistics for the corresponding robot
         (*r->second).messageReceived(receiveTime);
         (*r->second).lastMessageReceived_sender = receiveTime_sender;
-        PLOT(std::string("MessageStatistics:Robot(")+std::to_string((long long)robotNumber)+std::string("):MessageInterval"), currentMessageInterval);
+        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(robotNumber)+std::string("):MessageInterval"), currentMessageInterval);
 
         //Update statistics for the whole team
         double old_amountOfMessages = getTeamMessageStatisticsModel().amountOfMessages++;
@@ -65,9 +65,9 @@ void TeamMessageStatistics::execute() {
   for (std::map<unsigned int, RobotMessageStatistics*>::const_iterator rms = robotMap.begin(); rms != robotMap.end(); rms++) {
     (*rms->second).update(currentTime);
     getTeamMessageStatisticsModel().failureProbabilities.insert(std::make_pair(rms->first, (*rms->second).probability_messageReceived_upToNow));  
-    PLOT(std::string("MessageStatistics:Robot(")+std::to_string((long long)rms->first)+std::string("):averageMessageInterval"), (*rms->second).avgMsgInterval);
-    PLOT(std::string("MessageStatistics:Robot(")+std::to_string((long long)rms->first)+std::string("):stddevMesssageInterval"), std::sqrt((*rms->second).varianceMsgInterval));
-    PLOT(std::string("MessageStatistics:Robot(")+std::to_string((long long)rms->first)+std::string("):probability"), 1.0-(*rms->second).probability_messageReceived_upToNow);
+    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):averageMessageInterval"), (*rms->second).avgMsgInterval);
+    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):stddevMesssageInterval"), std::sqrt((*rms->second).varianceMsgInterval));
+    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):probability"), 1.0-(*rms->second).probability_messageReceived_upToNow);
   } 
 }
 
@@ -97,7 +97,6 @@ double TeamMessageStatistics::exponentialDistribution(double x) {
 ** Computes the Riemann Integral of some function for the given interval [a, b] and an amount of rectangles.
 **/
 double TeamMessageStatistics::riemann_integral(double (TeamMessageStatistics::*func)(double), double a, double b, int amountOfRectangles) {
-	double result = 0.0;
 		
 	double *arguments = new double[amountOfRectangles];
 	for (int i = 1; i <= amountOfRectangles; i++) {
@@ -115,4 +114,5 @@ double TeamMessageStatistics::riemann_integral(double (TeamMessageStatistics::*f
 	}
 	
 	return sum;
+
 }

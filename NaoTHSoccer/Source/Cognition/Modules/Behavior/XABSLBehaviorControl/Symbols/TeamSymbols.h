@@ -18,7 +18,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamMessageStatisticsModel.h"
 #include "Representations/Motion/MotionStatus.h"
 
@@ -32,7 +32,7 @@ BEGIN_DECLARE_MODULE(TeamSymbols)
   REQUIRE(RobotPose)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
-  REQUIRE(SoccerStrategy)
+  REQUIRE(RoleDecisionModel)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageStatisticsModel)
 
@@ -82,7 +82,6 @@ private:
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();
   static bool calculateIfStriker();
-  static bool calculateIfStriker_byTimeToBall();
   static int whoIsFastestToBall();
   static bool getWasStriker();
   static void setWasStriker(bool striker);

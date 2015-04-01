@@ -18,6 +18,7 @@
 #include "Representations/Modeling/TeamMessageStatisticsModel.h"
 
 #include "Tools/Math/Common.h"
+#include <Tools/DataConversion.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"

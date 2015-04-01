@@ -13,8 +13,8 @@ RobotMessageStatistics::RobotMessageStatistics(unsigned int robotNumber):
   lastUpdate(0),
   probability_messageReceived_upToNow(0.0),
   avgMsgInterval(0.0),
-  expectation_xSquared(0.0),
-  varianceMsgInterval(0.0)
+  varianceMsgInterval(0.0),
+  expectation_xSquared(0.0)
 {}
 
 RobotMessageStatistics::~RobotMessageStatistics()
@@ -64,7 +64,7 @@ void RobotMessageStatistics::update(unsigned int currentTime) {
     probability_messageReceived_upToNow += probability(lastUpdate, currentTime_relative);
   }
   std::cout << "  Probability of a message arriving before " << currentTime_relative << "ms having elapsed = " << probability_messageReceived_upToNow << std::endl;
-  std::cout << "  With mean = " << avgMsgInterval << ", variance = " << varianceMsgInterval << std::endl;
+  std::cout << "  With mean = " << avgMsgInterval << ", stddev = " << std::sqrt(varianceMsgInterval) << std::endl;
   lastUpdate = currentTime_relative;
 }
 
@@ -93,7 +93,6 @@ double RobotMessageStatistics::probability(double lower, double upper) {
 ** Computes the Riemann Integral of some function for the given interval [a, b] and an amount of rectangles.
 **/
 double RobotMessageStatistics::riemann_integral(double (RobotMessageStatistics::*func)(double), double a, double b, int amountOfRectangles) {
-	double result = 0.0;
 		
 	double *arguments = new double[amountOfRectangles];
 	for (int i = 1; i <= amountOfRectangles; i++) {
@@ -111,4 +110,5 @@ double RobotMessageStatistics::riemann_integral(double (RobotMessageStatistics::
 	}
 	
 	return sum;
+
 }

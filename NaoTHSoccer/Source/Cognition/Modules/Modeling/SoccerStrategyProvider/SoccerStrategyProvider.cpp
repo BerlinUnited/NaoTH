@@ -68,8 +68,8 @@ void SoccerStrategyProvider::execute()
 
   //NEW:
   //getSoccerStrategy().timeToTurn_afterBallAcquisition = estimateTimeFromBallTo_GoalDir(getSoccerStrategy().attackDirection, 
-  //                                                                              getBallModel().futurePosition[BALLMODEL_MAX_FUTURE_SECONDS]);
-  //getSoccerStrategy().totalTime = getSoccerStrategy().timeToBall + getSoccerStrategy().timeToTurn_afterBallAcquisition;
+  //                                                                              getBallModel().positionPreview);
+  //getSoccerStrategy().totalTime = getSoccerStrategy().timeToBall; // + getSoccerStrategy().timeToTurn_afterBallAcquisition;
 }//end execute
 
 
@@ -141,6 +141,7 @@ double SoccerStrategyProvider::estimateTimeToBall() const
     }
   }
   return estimateTimeToPoint(getBallModel().futurePosition[BALLMODEL_MAX_FUTURE_SECONDS]);
+  // return estimateTimeToPoint(getBallModel().positionPreview);
 }//end estimateTimeToBall
 
 
@@ -256,7 +257,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p, const doub
   return t_total;
 }
 
-/* ALTERNATIVE estimateTimeToPoint
+// ALTERNATIVE estimateTimeToPoint
 double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
 {
   FrameInfo fi = getFrameInfo();
