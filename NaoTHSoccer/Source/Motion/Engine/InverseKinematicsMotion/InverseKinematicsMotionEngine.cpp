@@ -735,7 +735,7 @@ double InverseKinematicsMotionEngine::solveHandsIK(
 
   // STEP 3: copy the calculated joint angles of the arms
   const JointData& jointData = theInverseKinematics.theJointData;
-  for (int i = JointData::RShoulderRoll; i < JointData::RHipYawPitch; i++)
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
   {
     position[i] = jointData.position[i];
   }

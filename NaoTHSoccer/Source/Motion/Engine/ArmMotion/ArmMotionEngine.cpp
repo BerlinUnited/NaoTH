@@ -14,6 +14,7 @@ using namespace naoth;
 using namespace std;
 
 ArmMotionEngine::ArmMotionEngine()
+  : init(false)
 {
     getDebugParameterList().add(&theArmMotionParams);
 }
@@ -25,6 +26,11 @@ ArmMotionEngine::~ArmMotionEngine()
 
 void ArmMotionEngine::execute()
 {
+  if(!init) {
+    theMotorJointDataOld = getMotorJointData();
+    init = true;
+  }
+
   max_velocity_deg_in_second = getMotionRequest().armMotionRequest.max_velocity_deg_in_sec;
   MODIFY("ArmMotionEngine:max_vel_deg_in_second", max_velocity_deg_in_second);
   max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
