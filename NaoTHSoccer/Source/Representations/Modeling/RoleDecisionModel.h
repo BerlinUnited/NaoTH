@@ -17,15 +17,18 @@ public:
   int firstStriker;
   int secondStriker;
 
+  bool wantsToBeStriker;
+
   RoleDecisionModel():
     firstStriker(-1),
-    secondStriker(-1)
+    secondStriker(-1),
+    wantsToBeStriker(false)
   {
   }
 
   virtual void print(std::ostream& stream) const
   {
-    if (secondStriker != -1) {
+    if (firstStriker != -1) {
       stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
     }
     else {
@@ -36,9 +39,18 @@ public:
       stream << "Second Striker: " << "Robot No. " << secondStriker << "\n";
     }
     else {
-      stream << "Currently no second striker in use.\n";
+      stream << "Currently no second striker in use.\n\n";
+    }
+
+    if (wantsToBeStriker) {
+      stream << "Robot wants to be a striker in the next round.\n";
+    }
+    else {      
+      stream << "Robot does not want to be a striker in the next round.\n";
     }
   }
+
+
 
 };
 
