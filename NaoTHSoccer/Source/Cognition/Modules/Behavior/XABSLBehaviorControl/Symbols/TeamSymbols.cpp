@@ -11,6 +11,7 @@ void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("team.members_alive_count", &getTeamMembersAliveCount);
   engine.registerBooleanInputSymbol("team.calc_if_is_striker", &calculateIfStriker);
+  engine.registerBooleanInputSymbol("team.calc_if_is_secondstriker", &calculateIfSecondStriker);
   engine.registerBooleanOutputSymbol("team.is_playing_as_striker",&setWasStriker, &getWasStriker);
   engine.registerBooleanInputSymbol("team.calc_if_is_the_last", &calculateIfTheLast);
 }
@@ -53,9 +54,13 @@ void TeamSymbols::setWasStriker(bool striker)
 
 bool TeamSymbols::calculateIfStriker()
 {
-  bool result = theInstance->getRoleDecisionModel().firstStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
-  return result;
-}//end calculateIfStriker
+  return theInstance->getRoleDecisionModel().firstStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
+}
+
+bool TeamSymbols::calculateIfSecondStriker()
+{
+  return theInstance->getRoleDecisionModel().secondStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
+}
 
 TeamSymbols::~TeamSymbols()
 {

@@ -31,35 +31,51 @@ void StableRoleDecision::execute() {
 
 void StableRoleDecision::computeStrikers() {
 
+  int firstStriker = std::numeric_limits<int>::max();
+  int secondStriker = std::numeric_limits<int>::max();
+  bool wantsToBeStriker = true;
+
   TeamMessage const& tm = getTeamMessage();
 
-  double shortestTime = getSoccerStrategy().timeToBall;
+  double ownTimeToBall = getSoccerStrategy().timeToBall;
   if (getPlayerInfo().isPlayingStriker)
-    shortestTime-=100;
+    ownTimeToBall -= 300;
 
   for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& msg = i->second;
     unsigned int robotNumber = i->first;
+    const TeamMessage::Data& msg = i->second;
+
     double failureProbability = 0.0;
     std::map<unsigned int, double>::const_iterator robotFailure = getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
     if (robotFailure != getTeamMessageStatisticsModel().failureProbabilities.end()) { 
       failureProbability = robotFailure->second;
     }
-    if (robotNumber != getPlayerInfo().gameData.playerNumber
-      && msg.wasStriker //Robot considers itself the striker
-      && !msg.isPenalized
+
+    if (!msg.isPenalized
       && failureProbability < parameters.minFailureProbability //Message is fresh
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maxBallLostTime) { //Ball is fresh
-        if(msg.timeToBall < shortestTime) {
-          getRoleDecisionModel().firstStriker = robotNumber;
-          PLOT(std::string("StableRoleDecision:StrikerDecision"), 0);
-          return;
+
+        if (msg.wantsToBeStriker) { //Decision of the current round
+          if ((int)robotNumber < firstStriker) { //If two robots want to be first striker, let the smaller robot number decide
+            firstStriker = robotNumber;
+          }
+          else if ((int)robotNumber < secondStriker) {
+            secondStriker = robotNumber;
+          }
         }
+        if (msg.timeToBall < ownTimeToBall) { //Preparation for the next round's decision
+          wantsToBeStriker = false;
+        }
+
       }
   }//end for
+  
+  getRoleDecisionModel().firstStriker = firstStriker;
+  getRoleDecisionModel().secondStriker = secondStriker;
+  getRoleDecisionModel().wantsToBeStriker = wantsToBeStriker;
 
-  getRoleDecisionModel().firstStriker = getPlayerInfo().gameData.playerNumber;
-  PLOT(std::string("StableRoleDecision:StrikerDecision"), 1);
+  PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), firstStriker);
+  PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), secondStriker);
 
 }

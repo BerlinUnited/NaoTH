@@ -46,6 +46,7 @@ public:
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
+        wantsToBeStriker(false),
         isPenalized(false),
         batteryCharge(0.0f),
         temperature(0.0f),
@@ -87,6 +88,7 @@ public:
     std::string bodyID;
     unsigned int timeToBall;
     bool wasStriker;
+    bool wantsToBeStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
     float batteryCharge;
@@ -120,6 +122,7 @@ public:
       stream << "TimeSinceBallwasSeen: " << d.ballAge << std::endl;
       stream << "TimeToBall: "<< d.timeToBall << std::endl;
       stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
+      stream << "wantsToBeStriker: " << (d.wantsToBeStriker ? "yes" : "no") << std::endl;
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
       stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
       stream << "team color: " << naoth::GameData::teamColorToString(d.teamColor) << std::endl;

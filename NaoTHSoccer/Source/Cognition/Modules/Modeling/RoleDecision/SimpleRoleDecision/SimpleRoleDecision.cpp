@@ -58,7 +58,7 @@ void SimpleRoleDecision::computeStrikers() {
     const TeamMessage::Data& messageData = i->second;
     const unsigned int number = i->first;
 
-    double time_bonus = messageData.wasStriker?parameters.strikerBonusTime:0.0;
+    double time_bonus = messageData.wasStriker?parameters.strikerBonusTime:0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
       && !messageData.isPenalized

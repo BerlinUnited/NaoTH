@@ -13,6 +13,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
 
@@ -35,6 +36,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(BallModel)
   REQUIRE(BodyState)
   REQUIRE(MotionStatus)
+  REQUIRE(RoleDecisionModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   REQUIRE(BatteryData)

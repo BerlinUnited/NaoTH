@@ -63,7 +63,6 @@ private:
       PARAMETER_REGISTER(maximumFreshTime) = 2000;
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
-      PARAMETER_REGISTER(minFailureProbability) = 0.95;
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -74,14 +73,14 @@ private:
     int maxBallLostTime;
     double minFailureProbability;
     
-    virtual ~Parameters() {
-    }
+    virtual ~Parameters() {}
   } parameters;
 
 private:
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();
   static bool calculateIfStriker();
+  static bool calculateIfSecondStriker();
   static int whoIsFastestToBall();
   static bool getWasStriker();
   static void setWasStriker(bool striker);
