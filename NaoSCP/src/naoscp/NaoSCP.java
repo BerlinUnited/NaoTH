@@ -45,7 +45,7 @@ public class NaoSCP extends javax.swing.JFrame {
         initComponents();
         
         Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
-        Logger.getGlobal().setLevel(Level.FINE);
+        Logger.getGlobal().setLevel(Level.ALL);
         
         try {
             config.load(new FileReader(configPath));
