@@ -47,7 +47,7 @@ public:
                             const BallModel &ballModel,
                             const RobotPose &robotPose,
                             const BodyState &bodyState,
-                            const RoleDecisionModel &roleDecision,
+                            const RoleDecisionModel &roleDecisionModel,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
                             const BatteryData &batteryData,

@@ -56,7 +56,7 @@ void StableRoleDecision::computeStrikers() {
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maxBallLostTime) { //Ball is fresh
 
-        if (msg.wantsToBeStriker) { //Decision of the current round
+        if (msg.wasStriker) { //Decision of the current round
           if ((int)robotNumber < firstStriker) { //If two robots want to be first striker, let the smaller robot number decide
             firstStriker = robotNumber;
           }

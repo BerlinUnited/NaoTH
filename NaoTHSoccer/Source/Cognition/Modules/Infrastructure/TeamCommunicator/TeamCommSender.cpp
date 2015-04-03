@@ -79,8 +79,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.bodyID = robotInfo.bodyID;
   out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
-  out.wasStriker = playerInfo.isPlayingStriker;
-  out.wantsToBeStriker = roleDecisionModel.wantsToBeStriker;
+  out.wasStriker = roleDecisionModel.wantsToBeStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
   out.batteryCharge = (float) batteryData.charge;
   out.temperature =
