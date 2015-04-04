@@ -64,6 +64,7 @@
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 #include "Modules/Modeling/PotentialActionSimulator/PotentialActionSimulator.h"
+#include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/VoronoiBasedSituationMapProvider/VoronoiBasedSituationMapProvider.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
@@ -150,6 +151,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VoronoiBasedSituationMapProvider);
   REGISTER_MODULE(PotentialActionSimulator);
   REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(StaticDebugModelProvider);
+
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
