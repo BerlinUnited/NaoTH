@@ -103,10 +103,10 @@ public:
   Vector2d rightThrowInPointOpp;
 
   //Should be done differently
-  Math::LineSegment LeftLineSegment;
-  Math::LineSegment RightLineSegment;
-  Math::LineSegment OwnLineSegment;
-  Math::LineSegment OppLineSegment;
+  Math::LineSegment leftLineSegment;
+  Math::LineSegment rightLineSegment;
+  Math::LineSegment ownLineSegment;
+  Math::LineSegment oppLineSegment;
   //End extra stuff
 
   Geometry::Rect2d fieldRect;

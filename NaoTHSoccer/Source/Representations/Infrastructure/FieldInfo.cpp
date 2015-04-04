@@ -86,32 +86,6 @@ void FieldInfo::calculateCrossings()
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
-  ////Should be done differently
-  // 0 - right side line - sideLineRight
-  RightLineSegment = Math::LineSegment(
-    crossings[ownCornerRight].position,
-    crossings[opponentCornerRight].position
-    );
-  
-  // 1 - left side line - sideLineLeft
-  LeftLineSegment = Math::LineSegment(
-    crossings[ownCornerLeft].position,
-    crossings[opponentCornerLeft].position
-    );
-
-  // 2 - own goal line - ownGoalLine
-  OwnLineSegment = Math::LineSegment(
-    crossings[ownCornerRight].position,
-    crossings[ownCornerLeft].position
-    );
-
-  // 3 - opponent goal line - opponentGoalLine
-  OppLineSegment = Math::LineSegment(
-    crossings[opponentCornerRight].position,
-    crossings[opponentCornerLeft].position
-    );
-  ////
-  //Extra Stuff end
 
 
   // L crossings
@@ -146,6 +120,33 @@ void FieldInfo::calculateCrossings()
   ownGoalPostLeft   = Vector2d(xPosOwnGoal-25, yPosLeftGoalpost);
   ownGoalPostRight  = Vector2d(xPosOwnGoal-25, yPosRightGoalpost);
   ownGoalCenter     = Vector2d(xPosOwnGoal-25, 0.0);
+
+  ////Should be done differently
+  // 0 - right side line - sideLineRight
+  rightLineSegment = Math::LineSegment(
+    crossings[ownCornerRight].position,
+    crossings[opponentCornerRight].position
+    );
+  
+  // 1 - left side line - sideLineLeft
+  leftLineSegment = Math::LineSegment(
+    crossings[ownCornerLeft].position,
+    crossings[opponentCornerLeft].position
+    );
+
+  // 2 - own goal line - ownGoalLine
+  ownLineSegment = Math::LineSegment(
+    crossings[ownCornerRight].position,
+    crossings[ownCornerLeft].position
+    );
+
+  // 3 - opponent goal line - opponentGoalLine
+  oppLineSegment = Math::LineSegment(
+    crossings[opponentCornerRight].position,
+    crossings[opponentCornerLeft].position
+    );
+  ////
+  //Extra Stuff end
 }//end calculateCrossings
 
 
