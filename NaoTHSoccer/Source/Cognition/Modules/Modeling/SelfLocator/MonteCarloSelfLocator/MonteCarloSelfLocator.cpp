@@ -34,6 +34,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_updateByLinePoints", "", false);
 
   // resampling
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
@@ -456,8 +457,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("000000", 10);
+  DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 10);
+  );
 
   for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
@@ -465,7 +468,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
-    CIRCLE(seen_point_g.x, seen_point_g.y, 20);
+
+    DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
+      CIRCLE(seen_point_g.x, seen_point_g.y, 20);
+    );
 
     for(size_t s=0; s < sampleSet.size(); s++)
     {
