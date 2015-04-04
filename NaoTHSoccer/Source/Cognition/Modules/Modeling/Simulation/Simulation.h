@@ -19,7 +19,7 @@
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/ActionNew.h"
 #include "Representations/Motion/MotionStatus.h"
-
+//#include "Representations/Modeling/ActionModel.h"
 //Tools
 #include <Tools/Math/Vector2.h>
 #include "Tools/DataStructures/RingBufferWithSum.h"
@@ -39,9 +39,8 @@ BEGIN_DECLARE_MODULE(Simulation)
   REQUIRE(RobotPose)
   REQUIRE(BallModel)
   REQUIRE(SelfLocGoalModel)
-  REQUIRE(LocalGoalModel)
+
   REQUIRE(CompassDirection)
-  REQUIRE(PlayersModel)
   REQUIRE(MotionStatus)
   PROVIDE(ActionNew)
 END_DECLARE_MODULE(Simulation)
@@ -84,27 +83,33 @@ public:
   public:
     Action(ActionNew::ActionId _id, const Vector2d& actionVector) : 
 		  _id(_id), 
-      actionVector(actionVector)
-		  //potential(-1), //not used 
-		  //goodness(0)    //not used
+      actionVector(actionVector),
+		  potential(-1),
+		  goodness(0)
 	  {}
 	
 	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
     ActionNew::ActionId id() { return _id; }
 
     Vector2d target;
-    //double potential;
-    //double goodness;
+    double potential;
+    double goodness;
   };
 
 
 private:
 
   std::vector<Action> action_local;
-  Math::LineSegment shootLine;
+
   Vector2d calculateOneAction(const Action& lonely_action) const;
 
   Vector2d outsideField(const Vector2d& relativePoint) const;
+
+  double evaluateAction(const Vector2d& a) const;
+
+  std::vector<RingBufferWithSum<double, 30> >actionRingBuffer;
+
+  void simulate(Action& action, RingBufferWithSum<double, 30>& actionRingBuffer) const;
 };
 
 #endif  /* _Simulation_H */
