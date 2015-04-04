@@ -70,36 +70,36 @@ private:
     FrameInfo lastFrameInfo;
 
 private: // friction stuff
-    class Event{
-        public:
+//    class Event{
+//        public:
 
-            enum EventType{
-                normalEvent,
-                finalEvent
-            } type;
+//            enum EventType{
+//                normalEvent,
+//                finalEvent
+//            } type;
 
-            Event(double& u, double time, EventType type):
-                type(type),
-                u_entry(&u),
-                time(time)
-            {
-            }
+//            Event(double& u, double time, EventType type):
+//                type(type),
+//                u_entry(&u),
+//                time(time)
+//            {
+//            }
 
-            double* u_entry;
-            double  time;
+//            double* u_entry;
+//            double  time;
 
-        bool operator<(const Event& e2) const{
-            return time < e2.time;
-        }
+//        bool operator<(const Event& e2) const{
+//            return time < e2.time;
+//        }
 
-        Event& operator=(const Event& e2){
-            this->u_entry = e2.u_entry;
-            this->time    = e2.time;
-            this->type    = e2.type;
-            return *this;
-        }
+//        Event& operator=(const Event& e2){
+//            this->u_entry = e2.u_entry;
+//            this->time    = e2.time;
+//            this->type    = e2.type;
+//            return *this;
+//        }
 
-    };
+//    };
 
 private: // multi stuff?
 
@@ -128,6 +128,8 @@ private:
     }
 
     void applyOdometryOnFilterState(KalmanFilter4d& filter);
+
+    void predict(KalmanFilter4d& filter, double dt);
 
     void doDebugRequest();
 

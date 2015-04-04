@@ -36,68 +36,10 @@ void PlainKalmanFilterBallLocator::execute()
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     applyOdometryOnFilterState(filter);
 
-    const Eigen::Vector4d& x = filter.getState();
-    Eigen::Vector2d u; // control vector
-
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
 
-//----------- handle friction as an input control for acceleration
-
-    /*
-    rolling resistance = rolling resitance coefficient * normal force
-    F_R = d / R * F_N
-
-    F_N = g * weight
-    g = 9.81
-    weight = ballMass
-
-    deceleration = F_R/ballMass
-    */
-    double deceleration = c_RR*9810;//[mm/s^2]
-
-    // deceleration has to be in opposite direction of velocity
-    u <<  -x(1), -x(3);
-
-    // deceleration vector with absoult deceleration of deceleration
-    if(u.norm() > 0){
-        u.normalize();
-    }
-    u *= deceleration;
-
-    double time_until_vel_x_zero = 0;
-    double time_until_vel_y_zero = 0;
-
-    if(fabs(u(0)) > epsilon){
-        time_until_vel_x_zero = -x(1)/u(0);
-    }
-    if(fabs(u(1)) > epsilon){
-        time_until_vel_y_zero = -x(3)/u(1);
-    }
-
-    // 1. predict until velocity is zero
-    Eigen::Matrix<double,1,1> dummy;
-    dummy(0,0) = 5;
-
-    // predict dt seconds and handle events
-    std::vector<Event> events;
-    events.push_back(Event(dummy(0,0),                     dt, Event::finalEvent));
-    events.push_back(Event(      u(0),  time_until_vel_x_zero, Event::normalEvent));
-    events.push_back(Event(      u(1),  time_until_vel_y_zero, Event::normalEvent));
-
-    std::sort(events.begin(),events.end());
-    int index = 0;
-    double past = 0;
-    do {
-        double simTime = events[index].time - past;
-        if(simTime > epsilon){
-            filter.prediction(u,simTime);
-            past += simTime;
-        }
-        *(events[index].u_entry) = 0; // beware! u_entry is a pointer to a entry in the vector u
-    } while(events[index++].type == Event::normalEvent);
-
-//----------- handel friction end
+    predict(filter, dt);
 
     // measurement
     if(getBallPercept().ballWasSeen)
@@ -121,6 +63,8 @@ void PlainKalmanFilterBallLocator::execute()
             filter.update(z);
         }
     }
+
+    const Eigen::Vector4d& x = filter.getState();
 
     // set ball model representation
     getBallModel().position.x = x(0);
@@ -166,6 +110,109 @@ double PlainKalmanFilterBallLocator::mahalanobisDistanceToState(const KalmanFilt
 double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
     return std::exp(((filter.getStateInMeasurementSpace()-z).transpose() * filter.getMeasurementCovariance().inverse() * (filter.getStateInMeasurementSpace()-z))(0,0) * (-0.5));
+}
+
+void PlainKalmanFilterBallLocator::predict(KalmanFilter4d& filter, double dt)
+{
+    /*
+        rolling resistance = rolling resitance coefficient * normal force
+        F_R = d / R * F_N
+
+        F_N = g * weight
+        g = 9.81
+        weight = ballMass
+
+        deceleration = F_R/ballMass
+    */
+
+    const Eigen::Vector4d& x = filter.getState();
+    Eigen::Vector2d u; // control vector
+
+    double deceleration = c_RR*9810;//[mm/s^2]
+
+    // deceleration has to be in opposite direction of velocity
+    u <<  -x(1), -x(3);
+
+    // deceleration vector with "absoult deceleration" (length of vector) of deceleration
+    if(u.norm() > 0){
+        u.normalize();
+    }
+    u *= deceleration;
+
+    double time_until_vel_x_zero = 0;
+    double time_until_vel_y_zero = 0;
+
+    if(fabs(u(0)) > epsilon){
+        time_until_vel_x_zero = -x(1)/u(0);
+    }
+    if(fabs(u(1)) > epsilon){
+        time_until_vel_y_zero = -x(3)/u(1);
+    }
+
+    if(time_until_vel_x_zero > dt && time_until_vel_y_zero > dt)
+    {
+        filter.prediction(u,dt);
+        return;
+    }
+
+    if(time_until_vel_x_zero < epsilon && time_until_vel_y_zero < epsilon)
+    {
+        filter.prediction(Eigen::Vector2d::Zero(),dt);
+        return;
+    }
+
+    if(time_until_vel_x_zero < time_until_vel_y_zero)
+    {
+        filter.prediction(u,time_until_vel_x_zero);
+        u(0) = 0;
+        dt -= time_until_vel_x_zero;
+
+        if(time_until_vel_y_zero < dt)
+        {
+            double dt2 = time_until_vel_y_zero - time_until_vel_x_zero;
+            filter.prediction(u, dt2);
+            u(1) = 0;
+            dt -= dt2;
+        }
+
+        filter.prediction(u,dt);
+    } else {
+        filter.prediction(u,time_until_vel_y_zero);
+        u(1) = 0;
+        dt -= time_until_vel_y_zero;
+
+        if(time_until_vel_x_zero < dt)
+        {
+            double dt2 = time_until_vel_x_zero - time_until_vel_y_zero;
+            filter.prediction(u, dt2);
+            u(0) = 0;
+            dt -= dt2;
+        }
+
+        filter.prediction(u,dt);
+    }
+
+//    // 1. predict until velocity is zero
+//    Eigen::Matrix<double,1,1> dummy;
+//    dummy(0,0) = 5;
+
+//    // predict dt seconds and handle events
+//    std::vector<Event> events;
+//    events.push_back(Event(dummy(0,0),                     dt, Event::finalEvent));
+//    events.push_back(Event(      u(0),  time_until_vel_x_zero, Event::normalEvent));
+//    events.push_back(Event(      u(1),  time_until_vel_y_zero, Event::normalEvent));
+
+//    std::sort(events.begin(),events.end());
+//    int index = 0;
+//    double past = 0;
+//    do {
+//        double simTime = events[index].time - past;
+//        if(simTime > epsilon){
+//            filter.prediction(u,simTime);
+//            past += simTime;
+//        }
+//        *(events[index].u_entry) = 0; // beware! u_entry is a pointer to a entry in the vector u
+//    } while(events[index++].type == Event::normalEvent);
 }
 
 void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(KalmanFilter4d& filter)
@@ -222,9 +269,9 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
       Eigen::Matrix4d P = filter.getProcessCovariance();
 
       // draw the distribution
-      PEN("00FFFF", 20);
+      PEN("00FFFF", 20); // türkis
       OVAL(getBallModel().position.x, getBallModel().position.y, P(0,0), P(2,2));
-      PEN("FF00FF", 20);
+      PEN("FF00FF", 20); // pink
       OVAL(getBallModel().position.x, getBallModel().position.y, P(1,1), P(3,3));
     );
 

@@ -27,10 +27,10 @@ KalmanFilter4d::KalmanFilter4d():
 
     // inital covariance matrix of current state (values taken from old kalman filter)
     double p = 250000;
-    P << p, p, 0, 0,
-         p, p, 0, 0,
-         0, 0, p, p,
-         0, 0, p, p;
+    P << p, 0/*p*/, 0, 0,
+         0/*p*/, p, 0, 0,
+         0, 0, p, 0/*p*/,
+         0, 0, 0/*p*/, p;
 
     // state to measurement transformation matrix
     H << 1, 0, 0, 0,
