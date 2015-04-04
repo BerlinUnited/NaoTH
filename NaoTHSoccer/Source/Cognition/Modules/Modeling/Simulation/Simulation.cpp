@@ -38,31 +38,32 @@ void Simulation::execute()
   }
   else
   {
-    int best_action = -1;
+    int best_action = 0;
 
-    for(int i=0;i<5;i++){
+    for(size_t i=0; i<actionRingBuffer.size(); i++)
+    {
       simulate(action_local[i], actionRingBuffer[i]);
 
-      if(best_action == -1 || (action_local[i].potential > action_local[best_action].potential &&
-        (0.7 <= action_local[i].goodness && action_local[i].goodness <= 1.3)))
+      if(action_local[i].potential < action_local[best_action].potential)
       {	
-          best_action = i;
+        best_action = i;
       }
-
     }
+
     getActionNew().myAction = action_local[best_action].id();
   }
 }//end execute
+
 void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 30>& actionRingBuffer)const
 {
 
   Vector2d ballPositionResult = calculateOneAction(action);
 
-    DEBUG_REQUEST("Simulation:draw_one_action_point:global",
-      FIELD_DRAWING_CONTEXT;
-      PEN("000000", 1);
-      CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
-    );
+  DEBUG_REQUEST("Simulation:draw_one_action_point:global",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+    CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
+  );
 
   double v = evaluateAction(ballPositionResult);
 
@@ -71,7 +72,7 @@ void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 
   action.potential = actionRingBuffer.getAverage();
 
   //if there is big gap between our values(average and median), we know it is not good
-  action.goodness = actionRingBuffer.getAverage()/actionRingBuffer.getMedian();
+  //action.goodness = actionRingBuffer.getAverage()/actionRingBuffer.getMedian();
 }
 
 Vector2d Simulation::calculateOneAction(const Action& action) const
@@ -209,5 +210,5 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 
 double Simulation::evaluateAction(const Vector2d& a) const{
 
-  return (Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0)-a).abs2();  
+  return (Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0)-a).abs();  
 }
