@@ -4,17 +4,17 @@
 * Declaration of class ActionNew
 */
 
-#ifndef _ActionNew_H
-#define _ActionNew_H
+#ifndef _KickActionModel_H
+#define _KickActionModel_H
 
 
-class ActionNew
+class KickActionModel
 {
 public:
 
-  ActionNew() {}
+  KickActionModel() {}
 
-  virtual ~ActionNew() {}
+  virtual ~KickActionModel() {}
 
   // position of the most interesting point in robot coords
   enum ActionId

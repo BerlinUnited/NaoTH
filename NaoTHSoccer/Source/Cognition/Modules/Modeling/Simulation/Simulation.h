@@ -17,7 +17,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/CompassDirection.h"
-#include "Representations/Modeling/ActionNew.h"
+#include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 //#include "Representations/Modeling/ActionModel.h"
 //Tools
@@ -42,7 +42,7 @@ BEGIN_DECLARE_MODULE(Simulation)
 
   REQUIRE(CompassDirection)
   REQUIRE(MotionStatus)
-  PROVIDE(ActionNew)
+  PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
 
 class Simulation: public SimulationBase
@@ -77,11 +77,11 @@ public:
   class Action
   {
   private:
-    ActionNew::ActionId _id;
+    KickActionModel::ActionId _id;
     Vector2d actionVector;
 
   public:
-    Action(ActionNew::ActionId _id, const Vector2d& actionVector) : 
+    Action(KickActionModel::ActionId _id, const Vector2d& actionVector) : 
 		  _id(_id), 
       actionVector(actionVector),
 		  potential(-1),
@@ -89,7 +89,7 @@ public:
 	  {}
 	
 	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
-    ActionNew::ActionId id() { return _id; }
+    KickActionModel::ActionId id() { return _id; }
 
     Vector2d target;
     double potential;

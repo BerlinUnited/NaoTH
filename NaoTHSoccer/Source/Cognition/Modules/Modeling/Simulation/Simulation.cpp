@@ -15,18 +15,19 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
-
+  DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
+  
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
-  action_local.reserve(ActionNew::numOfActions);
+  action_local.reserve(KickActionModel::numOfActions);
 
-  action_local.push_back(Action(ActionNew::none, Vector2d()));
-  action_local.push_back(Action(ActionNew::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
-  action_local.push_back(Action(ActionNew::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
-  action_local.push_back(Action(ActionNew::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
-  action_local.push_back(Action(ActionNew::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+  action_local.push_back(Action(KickActionModel::none, Vector2d()));
+  action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
+  action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
+  action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
+  action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
 
-  actionRingBuffer.resize(ActionNew::numOfActions);
+  actionRingBuffer.resize(KickActionModel::numOfActions);
 }
 
 Simulation::~Simulation(){}
@@ -51,11 +52,11 @@ void Simulation::execute()
       }
     }
 
-    getActionNew().myAction = action_local[best_action].id();
+    getKickActionModel().myAction = action_local[best_action].id();
 
     DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
-    PEN("FFAA00", 4);
+    PEN("FF0000", 7);
     Vector2d actionGlobal = action_local[best_action].target;
     CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
@@ -113,12 +114,21 @@ Vector2d Simulation::calculateOneAction(const Action& action) const
   Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
 
   //the endpoints of our line are a shortened version of the goal line
-  Vector2d leftEndpoint = oppGoalPostLeftPreview + Vector2d(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius,0);
-  Vector2d rightEndpoint = oppGoalPostRightPreview - Vector2d(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius,0);
+  Vector2d goalDir = (oppGoalPostRightPreview - oppGoalPostLeftPreview).normalize();
+  Vector2d leftEndpoint = oppGoalPostLeftPreview + goalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d rightEndpoint = oppGoalPostRightPreview - goalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
 
   // this is the goalline we are shooting for
   Math::LineSegment goalLinePreview(leftEndpoint, rightEndpoint);
-
+  
+  // note: the drawing is global
+  DEBUG_REQUEST("Simulation:GoalLinePreview",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+    Vector2d globalLeft = getRobotPose() * leftEndpoint;
+    Vector2d globalRight = getRobotPose() * rightEndpoint;
+    LINE(globalLeft.x,globalLeft.y,globalRight.x,globalRight.y);
+  );
 
   // STEP 3: estimate external factors (shooting a goal, ball moved by referee)
   //Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));//hmm
