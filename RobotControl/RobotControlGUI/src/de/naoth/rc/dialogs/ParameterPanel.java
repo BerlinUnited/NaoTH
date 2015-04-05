@@ -11,9 +11,10 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -33,6 +34,12 @@ public class ParameterPanel extends AbstractDialog
     public static SwingCommandExecutor commandExecutor;
   }
 
+  //needed to synchronize the update procedure
+  private final ArrayList<ParameterListItem> parameterLists = new ArrayList<ParameterListItem>();
+  // number of sources which already performed ther update
+  private int updateSources = 0;
+  private final int EXPECTED_SOURCES = 2;
+  
   public ParameterPanel()
   {
     initComponents();
@@ -57,6 +64,37 @@ public class ParameterPanel extends AbstractDialog
     });
   }//end constructor
 
+    private void updateParameterLists() 
+    {
+        updateSources++;
+
+        if (updateSources == EXPECTED_SOURCES) {
+            
+            ParameterListItem selectedList = null;
+            if (cbParameterId.getSelectedItem() != null) {
+                selectedList = (ParameterListItem) cbParameterId.getSelectedItem();
+            }
+            
+            DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
+            for (ParameterListItem i : parameterLists) {
+                boxModel.addElement(i);
+            }
+            
+            this.cbParameterId.setModel(boxModel);
+            
+            if(selectedList != null) {
+                this.cbParameterId.setSelectedItem(selectedList);
+            } else {
+                this.cbParameterId.setSelectedIndex(0);
+            }
+            
+            parameterLists.clear();
+            updateSources = 0;
+            
+            System.out.println(selectedList);
+        }
+    }
+
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -77,7 +115,7 @@ public class ParameterPanel extends AbstractDialog
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        jToggleButtonList.setText("list");
+        jToggleButtonList.setText("update");
         jToggleButtonList.setFocusable(false);
         jToggleButtonList.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButtonList.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -160,8 +198,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
   private class ParameterListItem
   {
-      private String owner;
-      private String name;
+      public final String owner;
+      public final String name;
       
       public ParameterListItem(String owner, String name)
       {
@@ -183,6 +221,15 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
       public String toString() 
       {
           return "[" + owner + "] " + name;
+      }
+
+      @Override
+      public boolean equals(Object obj) {
+        if(obj instanceof ParameterListItem) {
+            ParameterListItem other = (ParameterListItem)obj;
+            return owner.equals(other.owner) && name.equals(other.name);
+        }
+        return false;
       }
   }
 
@@ -239,24 +286,14 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     public void newObjectReceived(byte[] object)
     {
         String strResult = new String(object);
-        String selectedList = null;
-        if(cbParameterId.getSelectedItem() != null) {
-            selectedList = cbParameterId.getSelectedItem().toString();
-        }
         
-        //cbParameterId.removeAllItems();
-        
-        String[] parameterLists = strResult.split("\n");
-        for (String parameterList : parameterLists) {
-          cbParameterId.addItem(new ParameterListItem(owner, parameterList));
-        }
-        
-        // try to set back the selection
-        if(selectedList != null) {
-            cbParameterId.setSelectedItem(selectedList);
+        String[] parameterListNames = strResult.split("\n");
+        for (String name : parameterListNames) {
+          parameterLists.add(new ParameterListItem(owner, name));
         }
         
         jToggleButtonList.setSelected(false);
+        updateParameterLists();
     }
     
     @Override
@@ -312,7 +349,6 @@ private void listParameters()
 {
     if (Plugin.parent.checkConnected())
     {
-      cbParameterId.removeAllItems();
       Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Cognition"), new Command("Cognition:ParameterList:list"));
       Plugin.commandExecutor.executeCommand(new ParameterListHandlerList("Motion"), new Command("Motion:ParameterList:list"));
     }
@@ -324,6 +360,7 @@ private void listParameters()
 
   private void getParameterList()
   {
+    System.out.println("test");
     if (Plugin.parent.checkConnected())
     {
       if (cbParameterId.getSelectedItem() != null)
