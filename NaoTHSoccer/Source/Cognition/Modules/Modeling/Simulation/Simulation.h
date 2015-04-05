@@ -64,12 +64,16 @@ public:
       PARAMETER_REGISTER(action_short_kick_distance) = 2200;
       PARAMETER_REGISTER(action_long_kick_distance) = 2750;
 
+      PARAMETER_REGISTER(distance_variance) = 0.1;
+      PARAMETER_REGISTER(angle_variance) = Math::fromDegrees(5);
       syncWithConfig();
     }
     
     double action_sidekick_distance;
     double action_short_kick_distance;
     double action_long_kick_distance;
+    double distance_variance;
+    double angle_variance;
 
   } theParameters;
 

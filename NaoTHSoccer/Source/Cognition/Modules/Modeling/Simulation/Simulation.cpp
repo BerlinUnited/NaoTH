@@ -17,8 +17,10 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
   
+  getDebugParameterList().add(&theParameters);
+
   //actionRingBuffer.resize(ActionModel::numOfActions);
-  //calculate the actions
+  //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(Action(KickActionModel::none, Vector2d()));
@@ -98,7 +100,7 @@ Vector2d Simulation::calculateOneAction(const Action& action) const
     CIRCLE( ball.x, ball.y, 50);
   );
 
-  Vector2d result = action.predict(ballRelativePreview, 0.1, Math::fromDegrees(5));
+  Vector2d result = action.predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
 
   DEBUG_REQUEST("Simulation:ActionTarget",
     FIELD_DRAWING_CONTEXT;
