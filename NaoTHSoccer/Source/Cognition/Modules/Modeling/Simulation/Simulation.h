@@ -114,6 +114,8 @@ private:
   std::vector<RingBufferWithSum<double, 30> >actionRingBuffer;
 
   void simulate(Action& action, RingBufferWithSum<double, 30>& actionRingBuffer) const;
+
+  void draw_potential_field() const;
 };
 
 #endif  /* _Simulation_H */

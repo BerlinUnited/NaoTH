@@ -16,6 +16,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   
   getDebugParameterList().add(&theParameters);
 
@@ -56,12 +57,17 @@ void Simulation::execute()
 
     getKickActionModel().myAction = action_local[best_action].id();
 
-    DEBUG_REQUEST("Simulation:draw_best_action",
+  DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 7);
     Vector2d actionGlobal = action_local[best_action].target;
     CIRCLE(actionGlobal.x, actionGlobal.y, 50);
   );
+  DEBUG_REQUEST("Simulation:draw_potential_field",
+     draw_potential_field();
+  );
+
+ 
   }
 }//end execute
 
@@ -231,6 +237,62 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 }
 
 double Simulation::evaluateAction(const Vector2d& a) const{
+  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+200, 0.0);
+  Vector2d oppDiff = oppGoal - a;
+  double value_opp = 0.1*oppDiff.x*oppDiff.x + 1*oppDiff.y*oppDiff.y;
+  
+  Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
+  Vector2d ownDiff = ownGoal - a;
+  double value_own = 0.01*ownDiff.x*ownDiff.x + 0.1*ownDiff.y*ownDiff.y;
 
-  return (Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0)-a).abs();  
+  return value_opp - value_own;  
 }
+
+void Simulation::draw_potential_field() const
+{
+  static const int ySize = 20;
+  static const int xSize = 30;
+  double yWidth = 0.5*getFieldInfo().yFieldLength/(double)ySize;
+  double xWidth = 0.5*getFieldInfo().xFieldLength/(double)xSize;
+
+  FIELD_DRAWING_CONTEXT;
+  Color white(0.0,0.0,1.0,0.5); // transparent
+  Color black(1.0,0.0,0.0,0.5);
+
+  // create new sample set
+  std::vector<double> potential(xSize*ySize);
+  int idx = 0;
+
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      potential[idx] = evaluateAction(point);
+      idx++;
+    }
+  }
+  
+  double maxValue = 0;
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      maxValue = max(maxValue, potential[idx++]);
+    }
+  }
+
+  if(maxValue == 0) return;
+
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      
+      double t = potential[idx++] / maxValue;
+      Color color = black*t + white*(1-t);
+      PEN(color, 20);
+      FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+    }
+  }
+}//end draw_closest_points
