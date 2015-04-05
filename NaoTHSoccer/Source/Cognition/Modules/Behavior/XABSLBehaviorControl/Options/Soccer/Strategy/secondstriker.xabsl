@@ -41,7 +41,7 @@ option secondstriker
     }
     action{
       situation_abortable = true;
-      go_to_ball_with_USOA(distance = 1500);
+      go_to_ball_with_USOA_slow(distance = 1500);
     }
   }
 
