@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,6 +107,7 @@ public class NaoSCP extends javax.swing.JFrame {
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
         txtRobotNumber = new javax.swing.JFormattedTextField();
+        txtDeployTag = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -143,7 +146,7 @@ public class NaoSCP extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -205,9 +208,16 @@ public class NaoSCP extends javax.swing.JFrame {
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtRobotNumber.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         getContentPane().add(txtRobotNumber, gridBagConstraints);
+
+        txtDeployTag.setColumns(10);
+        txtDeployTag.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(txtDeployTag, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -324,11 +334,19 @@ public class NaoSCP extends javax.swing.JFrame {
                         // so we have a fresh new directory
                         if (deployDir.isDirectory()) {
                             // backup 
-                            //FileUtils.deleteDir(deployDir);
-                            if(deployDir.renameTo(new File(targetDir, "deploy.bak"))) {
-                                deployDir = new File(targetDir,"deploy");
-                            } else {
-                                Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                            File commentFile = new File(deployDir, "comment.txt");
+                            if(commentFile.exists()) {
+                                String backup_name = FileUtils.readFile(commentFile);
+                                
+                                if(deployDir.renameTo(new File(targetDir, backup_name))) {
+                                    deployDir = new File(targetDir,"deploy");
+                                } else {
+                                    Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                                }
+                            }
+                            else 
+                            {
+                                FileUtils.deleteDir(deployDir);
                             }
                         }
 
@@ -338,12 +356,27 @@ public class NaoSCP extends javax.swing.JFrame {
                         } 
 
                         //NaoSCP.this.setEnabledAll(false);
-                        naoTHPanel.getAction().run(new File(targetDir,"deploy"));
+                        naoTHPanel.getAction().run(deployDir);
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                         //NaoSCP.this.setEnabledAll(true);
                         
+                        
+                        // get the current date and time
+                        //String ISO_DATE_FORMAT = "yyyy-MM-dd";
+                        String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
+                        SimpleDateFormat s = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
+                        String backup_tag = s.format(new Date());
+                        
+                        // create a tag file
+                        String tag = txtDeployTag.getText();
+                        if(tag != null && !tag.isEmpty()) {
+                            backup_tag += "-" + tag;
+                        }
+                        
+                        FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
+                        
                         Logger.getGlobal().log(Level.INFO, "DONE");
-                    } catch (NaoSCPException ex) {
+                    } catch (NaoSCPException | IOException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                     
@@ -522,6 +555,7 @@ public class NaoSCP extends javax.swing.JFrame {
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
     // End of variables declaration//GEN-END:variables
 }
