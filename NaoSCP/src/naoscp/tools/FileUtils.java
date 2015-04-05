@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,17 +31,16 @@ public class FileUtils
   
   public static String readFile(File file) throws IOException
   {
-      BufferedReader br = new BufferedReader(new FileReader(file));
-      String line = "";
-      String fileContent = "";
-      while (line != null) {
-          line = br.readLine();
-          if (line != null) {
-              fileContent += line + "\n";
-          }
+      FileReader fr = new FileReader(file);
+      BufferedReader br = new BufferedReader(fr);
+      StringBuilder sb = new StringBuilder();
+
+      while (br.ready()) {
+          sb.append((char)br.read());
       }
+      
       br.close();
-      return fileContent;
+      return sb.toString();
   }
   
   /**
