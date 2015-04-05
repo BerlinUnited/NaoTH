@@ -1,0 +1,19 @@
+/** The root option of the soccer behavior */
+option action_based_striker_test_agent {
+  
+  initial state play_soccer {
+    action {
+      // react to the game controller and handle fall down
+      basic_play();
+
+      action_based_striker_test();
+
+      // control the arms
+      arms_control();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+
+    }
+  }
+}
