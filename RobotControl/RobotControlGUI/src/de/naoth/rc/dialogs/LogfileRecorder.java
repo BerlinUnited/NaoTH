@@ -58,9 +58,6 @@ public class LogfileRecorder extends AbstractDialog
   {
     initComponents();
 
-    selectedLog = (LoggerItem) cbLogName.getSelectedItem();
-    
-    
     // TODO: make it config
     selectionLists.put("Basic Perception",     
         Arrays.asList( 
@@ -89,6 +86,8 @@ public class LogfileRecorder extends AbstractDialog
     loggerListModel.addElement(new LoggerItem("CognitionLog", "Cognition:CognitionLog"));
     loggerListModel.addElement(new LoggerItem("MotionLog", "Motion:MotionLog"));
     cbLogName.setModel(loggerListModel);
+    
+    selectedLog = (LoggerItem) cbLogName.getSelectedItem();
   }
   
   class LoggerItem

@@ -24,6 +24,7 @@ using namespace naoth;
 
 Motion::Motion()
   : ModuleManagerWithDebug(""),
+    theLogProvider(NULL),
     motionLogger("MotionLog")
 {
 
@@ -75,8 +76,10 @@ Motion::~Motion()
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  // TODO: need a better solution for this
+  // try to get the log provider
+  theLogProvider = ModuleManager::getModule("LogProvider");
 
+  // TODO: need a better solution for this
   // load the joint limits from the config 
   JointData::loadJointLimitsFromConfig();
 
@@ -131,6 +134,11 @@ void Motion::call()
 {
 
   STOPWATCH_START("MotionExecute");
+
+  // run the theLogProvider if avalieble
+  if(theLogProvider) {
+    theLogProvider->execute();
+  }
 
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");

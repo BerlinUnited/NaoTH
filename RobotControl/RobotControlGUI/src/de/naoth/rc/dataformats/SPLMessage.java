@@ -3,6 +3,8 @@
 
 package de.naoth.rc.dataformats;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.messages.Representations;
 import java.nio.ByteBuffer;
 
 /**
@@ -48,6 +50,8 @@ public class SPLMessage
   public short numOfDataBytes; // 2
   public byte[] data;
 
+  public Representations.BUUserTeamMessage user = null;
+  
   public SPLMessage(ByteBuffer buffer) throws Exception
   {
       if( buffer.get() != 'S' ||
@@ -85,5 +89,11 @@ public class SPLMessage
       this.numOfDataBytes = buffer.getShort();
       this.data = new byte[this.numOfDataBytes];
       buffer.get(this.data, 0, this.data.length);
+      
+      try {
+          this.user = Representations.BUUserTeamMessage.parseFrom(this.data);
+      } catch (InvalidProtocolBufferException ex) {
+          // it's not our message
+      }
   }
 }
