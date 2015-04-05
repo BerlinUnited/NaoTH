@@ -14,6 +14,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
 
   //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions
@@ -51,6 +52,13 @@ void Simulation::execute()
     }
 
     getActionNew().myAction = action_local[best_action].id();
+
+    DEBUG_REQUEST("Simulation:draw_best_action",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFAA00", 4);
+    Vector2d actionGlobal = action_local[best_action].target;
+    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+  );
   }
 }//end execute
 
@@ -69,7 +77,9 @@ void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 
 
   actionRingBuffer.add(v);
 
+  // HACK
   action.potential = actionRingBuffer.getAverage();
+  action.target = ballPositionResult;
 
   //if there is big gap between our values(average and median), we know it is not good
   //action.goodness = actionRingBuffer.getAverage()/actionRingBuffer.getMedian();
