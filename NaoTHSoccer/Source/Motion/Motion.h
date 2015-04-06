@@ -124,6 +124,9 @@ private:
   void updateCameraMatrix();
 
 private:
+  // HACK: needs a better solution
+  AbstractModuleCreator* theLogProvider;
+
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
