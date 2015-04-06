@@ -91,6 +91,7 @@ public:
 		  _id(_id), 
       actionVector(actionVector),
 		  potential(-1),
+      pessimistPotential(-1),
 		  goodness(0)
 	  {}
 	
@@ -99,6 +100,7 @@ public:
 
     Vector2d target;
     double potential;
+    double pessimistPotential;
     double goodness;
   };
 

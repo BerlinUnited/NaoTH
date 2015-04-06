@@ -15,6 +15,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_pessimistic_best_action","best pessimistic action",false);
   DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
@@ -59,7 +60,7 @@ void Simulation::execute()
   else
   {
     int best_action = 0;
-
+    int pessimistic_best_action = 0;
     for(size_t i=0; i<actionRingBuffer.size(); i++)
     {
       simulate(action_local[i], actionRingBuffer[i]);
@@ -68,16 +69,31 @@ void Simulation::execute()
       {	
         best_action = i;
       }
+      //The pessimistic option
+      if(action_local[i].pessimistPotential < action_local[best_action].pessimistPotential)
+      {	
+        pessimistic_best_action = i;
+      }
+
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
 
   DEBUG_REQUEST("Simulation:draw_best_action",
+  {
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 7);
     Vector2d actionGlobal = action_local[best_action].target;
     FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
-  );
+  });
+
+  DEBUG_REQUEST("Simulation:draw_pessimistic_best_action",
+  {
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 7);
+    Vector2d actionGlobal = action_local[pessimistic_best_action].target;
+    FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
+  });
   DEBUG_REQUEST("Simulation:draw_potential_field",
      draw_potential_field();
   );
@@ -86,24 +102,37 @@ void Simulation::execute()
   }
 }//end execute
 
-void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 30>& actionRingBuffer)const
+void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 30>& oneActionRingBuffer)const
 {
 
   Vector2d ballPositionResult = calculateOneAction(action);
 
   DEBUG_REQUEST("Simulation:draw_one_action_point:global",
+  {
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);
     CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
-  );
+  });
 
   double v = evaluateAction(ballPositionResult);
 
-  actionRingBuffer.add(v);
+  oneActionRingBuffer.add(v);
 
   // HACK
-  action.potential = actionRingBuffer.getAverage();
+  action.potential = oneActionRingBuffer.getAverage();
   action.target = ballPositionResult;
+  double s = 0;
+  int z = 0;
+  //Durch den Buffer durchgehen und alle Werte kleiner Average aufsummieren
+  for (int k=0; k < oneActionRingBuffer.size(); k++){
+      if(oneActionRingBuffer[k] <= action.potential){
+          s += oneActionRingBuffer[k];
+          z++;
+      }
+  }
+  action.pessimistPotential = s/z;
+  
+
 
   //if there is big gap between our values(average and median), we know it is not good
   //action.goodness = actionRingBuffer.getAverage()/actionRingBuffer.getMedian();
@@ -255,8 +284,8 @@ double Simulation::evaluateAction(const Vector2d& a) const{
   Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+200, 0.0);
   Vector2d oppDiff = oppGoal - a;
 
-  double oppValue1 = 0.1;
-  double oppValue2 = 1;
+  double oppValueX = 0.1;
+  double oppValueY = 1;
   MODIFY("Simulation:oppValueX", oppValueX);
   MODIFY("Simulation:oppValueY", oppValueY);
   double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
@@ -264,8 +293,8 @@ double Simulation::evaluateAction(const Vector2d& a) const{
   Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
   Vector2d ownDiff = ownGoal - a;
   
-  double ownValue1 = 0.01;
-  double ownValue2 = 0.1;
+  double ownValueX = 0.01;
+  double ownValueY = 0.1;
   MODIFY("Simulation:ownValueX", ownValueX);
   MODIFY("Simulation:ownValueY", ownValueY);
   double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
