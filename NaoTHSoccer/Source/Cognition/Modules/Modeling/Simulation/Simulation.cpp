@@ -17,7 +17,8 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
-  
+  DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
+
   getDebugParameterList().add(&theParameters);
 
   //actionRingBuffer.resize(ActionModel::numOfActions);
@@ -37,6 +38,20 @@ Simulation::~Simulation(){}
 
 void Simulation::execute()
 {
+  DEBUG_REQUEST("Simulation:use_Parameters",
+  action_local.clear();
+  action_local.reserve(KickActionModel::numOfActions);
+
+  action_local.push_back(Action(KickActionModel::none, Vector2d()));
+  action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
+  action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
+  action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
+  action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+
+  actionRingBuffer.resize(KickActionModel::numOfActions);
+  );
+
+  
   if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1)
   {
     return;
@@ -59,9 +74,9 @@ void Simulation::execute()
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 7);
+    PEN("FF69B4", 7);
     Vector2d actionGlobal = action_local[best_action].target;
-    CIRCLE(actionGlobal.x, actionGlobal.y, 50);
+    FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
   );
   DEBUG_REQUEST("Simulation:draw_potential_field",
      draw_potential_field();
@@ -239,11 +254,21 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 double Simulation::evaluateAction(const Vector2d& a) const{
   Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+200, 0.0);
   Vector2d oppDiff = oppGoal - a;
-  double value_opp = 0.1*oppDiff.x*oppDiff.x + 1*oppDiff.y*oppDiff.y;
+
+  double oppValue1 = 0.1;
+  double oppValue2 = 1;
+  MODIFY("Simulation:oppValueX", oppValueX);
+  MODIFY("Simulation:oppValueY", oppValueY);
+  double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
   
   Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
   Vector2d ownDiff = ownGoal - a;
-  double value_own = 0.01*ownDiff.x*ownDiff.x + 0.1*ownDiff.y*ownDiff.y;
+  
+  double ownValue1 = 0.01;
+  double ownValue2 = 0.1;
+  MODIFY("Simulation:ownValueX", ownValueX);
+  MODIFY("Simulation:ownValueY", ownValueY);
+  double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
 
   return value_opp - value_own;  
 }

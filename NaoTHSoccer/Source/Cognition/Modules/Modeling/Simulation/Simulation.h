@@ -19,16 +19,18 @@
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
-//#include "Representations/Modeling/ActionModel.h"
+
 //Tools
 #include <Tools/Math/Vector2.h>
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
+#include "Tools/Debug/DebugModify.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
 BEGIN_DECLARE_MODULE(Simulation)
+  PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
