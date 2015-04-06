@@ -1,8 +1,9 @@
 #include "KalmanFilter4d.h"
 
-KalmanFilter4d::KalmanFilter4d():
-    dt(30)
+KalmanFilter4d::KalmanFilter4d()
 {
+    double dt = 30;
+
     // state transition matrix
     F << 1, dt, 0, 0,
          0,  1, 0, 0,
@@ -26,7 +27,7 @@ KalmanFilter4d::KalmanFilter4d():
          0, 0, 0, q;
 
     // inital covariance matrix of current state (values taken from old kalman filter)
-    double p = 250000;
+    double p = 62500;
     P << p, 0/*p*/, 0, 0,
          0/*p*/, p, 0, 0,
          0, 0, p, 0/*p*/,
@@ -41,6 +42,92 @@ KalmanFilter4d::KalmanFilter4d():
     R << 10, 0,
          0, 10;
 
+}
+
+KalmanFilter4d::KalmanFilter4d(Eigen::Vector4d& state):
+    x(state)
+{
+    double dt = 30;
+
+    // state transition matrix
+    F << 1, dt, 0, 0,
+         0,  1, 0, 0,
+         0,  0, 1, dt,
+         0,  0, 0, 1;
+
+    // control matrix
+    B << dt*dt/2, 0,
+         dt     , 0,
+         0, dt*dt/2,
+         0, dt;
+
+
+    // covariance matrix of process noise (values taken from old kalman filter)
+    double q = 3;
+    Q << q, 0, 0, 0,
+         0, q, 0, 0,
+         0, 0, q, 0,
+         0, 0, 0, q;
+
+    // inital covariance matrix of current state (values taken from old kalman filter)
+    double p = 62500;
+    P << p, 0/*p*/, 0, 0,
+         0/*p*/, p, 0, 0,
+         0, 0, p, 0/*p*/,
+         0, 0, 0/*p*/, p;
+
+    // state to measurement transformation matrix
+    H << 1, 0, 0, 0,
+         0, 0, 1, 0;
+
+    // covariance matrix of measurement noise (values taken from old kalman filter)
+    // added 100 in R(1,1) and R(3,3) to "ensure" invertiablity during kalman gain computation
+    R << 10, 0,
+         0, 10;
+}
+
+
+KalmanFilter4d::KalmanFilter4d(Eigen::Vector2d& measurement)
+{
+double dt;
+
+// state transition matrix
+F << 1, dt, 0, 0,
+     0,  1, 0, 0,
+     0,  0, 1, dt,
+     0,  0, 0, 1;
+
+// control matrix
+B << dt*dt/2, 0,
+     dt     , 0,
+     0, dt*dt/2,
+     0, dt;
+
+// initial state x
+x << measurement(0), 0, measurement(1), 0;
+
+// covariance matrix of process noise (values taken from old kalman filter)
+double q = 3;
+Q << q, 0, 0, 0,
+     0, q, 0, 0,
+     0, 0, q, 0,
+     0, 0, 0, q;
+
+// inital covariance matrix of current state (values taken from old kalman filter)
+double p = 62500;
+P << p, 0/*p*/, 0, 0,
+     0/*p*/, p, 0, 0,
+     0, 0, p, 0/*p*/,
+     0, 0, 0/*p*/, p;
+
+// state to measurement transformation matrix
+H << 1, 0, 0, 0,
+     0, 0, 1, 0;
+
+// covariance matrix of measurement noise (values taken from old kalman filter)
+// added 100 in R(1,1) and R(3,3) to "ensure" invertiablity during kalman gain computation
+R << 10, 0,
+     0, 10;
 }
 
 KalmanFilter4d::~KalmanFilter4d()
@@ -87,7 +174,7 @@ void KalmanFilter4d::setState(Eigen::Vector4d& state)
     x = state;
 }
 
-void KalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d &q){
+void KalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d& q){
     Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
 }
 
@@ -110,6 +197,8 @@ const Eigen::Matrix2d& KalmanFilter4d::getMeasurementCovariance() const
     return R;
 }
 
-const Eigen::Vector2d& KalmanFilter4d::getStateInMeasurementSpace() const {
-    return H*x;
+Eigen::Vector2d KalmanFilter4d::getStateInMeasurementSpace() const {
+    Eigen::Vector2d a;
+    a = H*x;
+    return a;
 }

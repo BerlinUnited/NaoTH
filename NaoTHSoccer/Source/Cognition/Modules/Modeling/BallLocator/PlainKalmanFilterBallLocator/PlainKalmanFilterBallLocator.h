@@ -103,15 +103,18 @@ private: // friction stuff
 
 private: // multi stuff?
 
-    double mahalanobisDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
+    double euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
     // non normalized value of probability density function of measurement Z at the filters state
     double evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
-    KalmanFilter4d filter;
+    std::vector<KalmanFilter4d> filter;
+//    KalmanFilter4d filter;
 
     const double epsilon; // 10e-6
+    double distanceThreshold;
+    double stdThreshold;
 
     //double ballMass;
     double c_RR;
@@ -132,6 +135,7 @@ private:
     void predict(KalmanFilter4d& filter, double dt);
 
     void doDebugRequest();
+    void doDebugRequestBeforPredictionAndUpdate();
 
     void reloadKFParameters();
 
@@ -149,6 +153,8 @@ private:
             PARAMETER_REGISTER(measurementNoiseR11) = 10;
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0001;
+            PARAMETER_REGISTER(distanceThreshold) = 500;
+            PARAMETER_REGISTER(stdThreshold) = 500;
 
             syncWithConfig();
         }
@@ -163,6 +169,8 @@ private:
 
         //double ballMass;
         double c_RR;
+        double distanceThreshold;
+        double stdThreshold;
     } kfParameters;
 };
 

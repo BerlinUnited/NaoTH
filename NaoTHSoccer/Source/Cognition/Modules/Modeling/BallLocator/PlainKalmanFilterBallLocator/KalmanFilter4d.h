@@ -7,6 +7,9 @@ class KalmanFilter4d
 {
 public:
     KalmanFilter4d();
+    KalmanFilter4d(Eigen::Vector4d& state);
+    KalmanFilter4d(Eigen::Vector2d& measurement);
+
     ~KalmanFilter4d();
 
     void prediction(const Eigen::Vector2d &u, double dt);
@@ -17,7 +20,7 @@ public:
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
     const Eigen::Vector4d& getState() const;
-    const Eigen::Vector2d& getStateInMeasurementSpace() const;
+    Eigen::Vector2d getStateInMeasurementSpace() const;
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
 
@@ -38,8 +41,6 @@ private:
     Eigen::Matrix2d R; // covariance matrix of measurement noise
 
     Eigen::Matrix<double, 4,2> K; // kalman gain
-
-    const double dt; // 30 ms
 
 };
 
