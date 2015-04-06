@@ -13,7 +13,7 @@
 
 #include "KalmanFilter4d.h"
 
-#include <eigen3/Eigen/Eigen>
+#include <Eigen/Eigen>
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
@@ -69,38 +69,6 @@ private:
 
     FrameInfo lastFrameInfo;
 
-private: // friction stuff
-//    class Event{
-//        public:
-
-//            enum EventType{
-//                normalEvent,
-//                finalEvent
-//            } type;
-
-//            Event(double& u, double time, EventType type):
-//                type(type),
-//                u_entry(&u),
-//                time(time)
-//            {
-//            }
-
-//            double* u_entry;
-//            double  time;
-
-//        bool operator<(const Event& e2) const{
-//            return time < e2.time;
-//        }
-
-//        Event& operator=(const Event& e2){
-//            this->u_entry = e2.u_entry;
-//            this->time    = e2.time;
-//            this->type    = e2.type;
-//            return *this;
-//        }
-
-//    };
-
 private: // multi stuff?
 
     double euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
@@ -152,8 +120,8 @@ private:
             PARAMETER_REGISTER(processNoiseStdQ10) = 0;
             PARAMETER_REGISTER(processNoiseStdQ11) = 3;
 
-            PARAMETER_REGISTER(measurementNoiseStdR00) = 10;
-            PARAMETER_REGISTER(measurementNoiseStdR11) = 10;
+            PARAMETER_REGISTER(measurementNoiseStdR00) = 100;
+            PARAMETER_REGISTER(measurementNoiseStdR11) = 100;
 
             PARAMETER_REGISTER(initialStateStdP00) = 250;
             PARAMETER_REGISTER(initialStateStdP01) = 0;

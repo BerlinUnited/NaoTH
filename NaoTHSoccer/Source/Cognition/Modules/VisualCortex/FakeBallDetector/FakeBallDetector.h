@@ -9,7 +9,7 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
-#include <eigen3/Eigen/Eigen>
+#include <Eigen/Eigen>
 
 BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugRequest)

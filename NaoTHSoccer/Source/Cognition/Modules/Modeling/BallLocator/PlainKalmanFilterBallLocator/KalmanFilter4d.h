@@ -1,7 +1,7 @@
 #ifndef KALMANFILTER4D_H
 #define KALMANFILTER4D_H
 
-#include <eigen3/Eigen/Eigen>
+#include <Eigen/Eigen>
 
 class KalmanFilter4d
 {
