@@ -6,9 +6,7 @@
 class KalmanFilter4d
 {
 public:
-    KalmanFilter4d();
-    KalmanFilter4d(Eigen::Vector4d& state);
-    KalmanFilter4d(Eigen::Vector2d& measurement);
+    KalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~KalmanFilter4d();
 
@@ -25,6 +23,7 @@ public:
     const Eigen::Matrix2d& getMeasurementCovariance() const;
 
 private:
+
     Eigen::Matrix4d F; // state transition matrix
     Eigen::Matrix<double,4,2> B; // control matrix
     Eigen::Vector4d x; // state x_location, x_velocity, y_location, y_velocity

@@ -3,8 +3,7 @@
 #include <cmath>
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
-     epsilon(10e-6),
-     distanceThreshold(1000)
+     epsilon(10e-6)
 {
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",        "draw the modelled ball on the field",                              false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update",  true);
@@ -15,7 +14,7 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
 
     getDebugParameterList().add(&kfParameters);
 
-    reloadKFParameters();
+    reloadParameters();
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
@@ -48,11 +47,13 @@ void PlainKalmanFilterBallLocator::execute()
 
         if(filter.size() == 0)
         {
-            filter.push_back(KalmanFilter4d(z));
+            Eigen::Vector4d newState;
+            newState << z(0), 0, z(1), 0;
+            filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
         }
         else
         {
-            // check plausibility
+            // find best matching filter
             double dist = euclidianDistanceToState(filter[0],z);
             std::vector<KalmanFilter4d>::iterator bestPredictor = filter.begin();
 
@@ -66,7 +67,9 @@ void PlainKalmanFilterBallLocator::execute()
 
             if(dist > distanceThreshold)
             {
-                filter.push_back(KalmanFilter4d(z));
+                Eigen::Vector4d newState;
+                newState << z(0), 0, z(1), 0;
+                filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
             }
             else
             {
@@ -83,6 +86,18 @@ void PlainKalmanFilterBallLocator::execute()
         }
     }
 
+    // delete some filter if they are to bad
+    std::vector<KalmanFilter4d>::iterator iter = filter.begin();
+    while(iter != filter.end()){
+        double std_x = std::sqrt((*iter).getProcessCovariance()(0,0));
+        double std_y = std::sqrt((*iter).getProcessCovariance()(2,2));
+        if((std_x > stdThreshold) || (std_y > stdThreshold)){
+            filter.erase(iter);
+        } else {
+            iter++;
+        }
+    }
+
     // find best model
     if(filter.size() > 0)
     {
@@ -90,13 +105,14 @@ void PlainKalmanFilterBallLocator::execute()
         double evalue = (*model).getProcessCovariance()(0,0)+(*model).getProcessCovariance()(2,2);
 
         for(std::vector<KalmanFilter4d>::iterator iter = model; iter != filter.end(); iter++){
-            double temp = (*model).getProcessCovariance()(0,0)+(*model).getProcessCovariance()(2,2);
+            double temp = (*iter).getProcessCovariance()(0,0)+(*iter).getProcessCovariance()(2,2);
             if(temp < evalue){
                 evalue = temp;
                 model = iter;
             }
         }
 
+        bestModel = &(*model);
         const Eigen::Vector4d& x = (*model).getState();
 
         // set ball model representation
@@ -125,24 +141,11 @@ void PlainKalmanFilterBallLocator::execute()
         }
     }
 
-    // delete some filter if they are to bad
-    std::vector<KalmanFilter4d>::iterator iter = filter.begin();
-    while(iter != filter.end()){
-        double std_x = std::sqrt((*iter).getProcessCovariance()(0,0));
-        double std_y = std::sqrt((*iter).getProcessCovariance()(2,2));
-        if((std_x > stdThreshold) || (std_y > stdThreshold)){
-            filter.erase(iter);
-        } else {
-            iter++;
-        }
-    }
-
     doDebugRequest();
 
     lastFrameInfo     = getFrameInfo();
     lastRobotOdometry = getOdometryData();
 }
-
 
 double PlainKalmanFilterBallLocator::euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
@@ -233,28 +236,6 @@ void PlainKalmanFilterBallLocator::predict(KalmanFilter4d& filter, double dt)
 
         filter.prediction(u,dt);
     }
-
-//    // 1. predict until velocity is zero
-//    Eigen::Matrix<double,1,1> dummy;
-//    dummy(0,0) = 5;
-
-//    // predict dt seconds and handle events
-//    std::vector<Event> events;
-//    events.push_back(Event(dummy(0,0),                     dt, Event::finalEvent));
-//    events.push_back(Event(      u(0),  time_until_vel_x_zero, Event::normalEvent));
-//    events.push_back(Event(      u(1),  time_until_vel_y_zero, Event::normalEvent));
-
-//    std::sort(events.begin(),events.end());
-//    int index = 0;
-//    double past = 0;
-//    do {
-//        double simTime = events[index].time - past;
-//        if(simTime > epsilon){
-//            filter.prediction(u,simTime);
-//            past += simTime;
-//        }
-//        *(events[index].u_entry) = 0; // beware! u_entry is a pointer to a entry in the vector u
-//    } while(events[index++].type == Event::normalEvent);
 }
 
 void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(KalmanFilter4d& filter)
@@ -287,7 +268,6 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
         );
     }
 
-
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_final_ball",
         FIELD_DRAWING_CONTEXT;
         PEN("FF9900", 10);
@@ -295,106 +275,83 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
     );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field",
-      FIELD_DRAWING_CONTEXT;
-
-//      PEN("FF0000", 30);
-//      CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
-        for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
-        {
-            if(getBallModel().valid)
-            {
-                if(getBallPercept().ballWasSeen)
-                    PEN("FF9900", 20);
-                else
-                    PEN("0099FF", 20);
-            }
-            else
-                PEN("999999", 20);
-
-            const Eigen::Vector4d& state = (*iter).getState();
-
-            CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
-            ARROW( state(0), state(2),
-                   state(0)+state(1),
-                   state(2)+state(3));
-
-            const Eigen::Matrix4d& P = (*iter).getProcessCovariance();
-
-            // draw the distribution
-            PEN("00FFFF", 20); // türkis, location
-            OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
-            PEN("FF00FF", 20); // pink, velocity
-            OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
-        }
+        drawFiltersOnField();
     );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
-
-        reloadKFParameters();
-
+        reloadParameters();
     );
 }
 
 void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
 {
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_before",
-      FIELD_DRAWING_CONTEXT;
+        drawFiltersOnField();
+    );
+}
 
-//      PEN("FF0000", 30);
-//      CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
-        for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
+void PlainKalmanFilterBallLocator::drawFiltersOnField() {
+    FIELD_DRAWING_CONTEXT;
+    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
+    {
+        if(getBallModel().valid)
         {
-            if(getBallModel().valid)
+            if(bestModel == &(*iter))
             {
                 if(getBallPercept().ballWasSeen)
                     PEN("FF9900", 20);
                 else
                     PEN("0099FF", 20);
-            }
-            else
+            } else {
                 PEN("999999", 20);
-
-            const Eigen::Vector4d& state = (*iter).getState();
-
-            CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
-            ARROW( state(0), state(2),
-                   state(0)+state(1),
-                   state(2)+state(3));
-
-            const Eigen::Matrix4d& P = (*iter).getProcessCovariance();
-
-            // draw the distribution
-            PEN("00FFFF", 20); // türkis, location
-            OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
-            PEN("FF00FF", 20); // pink, velocity
-            OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
+            }
         }
-    );
+        else
+            PEN("999999", 20);
+
+        const Eigen::Vector4d& state = (*iter).getState();
+
+        CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
+        ARROW( state(0), state(2),
+               state(0)+state(1),
+               state(2)+state(3));
+
+        const Eigen::Matrix4d& P = (*iter).getProcessCovariance();
+
+        // draw the distribution
+        PEN("00FFFF", 20); // türkis, location
+        OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
+        PEN("FF00FF", 20); // pink, velocity
+        OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
+    }
 }
 
-void PlainKalmanFilterBallLocator::reloadKFParameters()
+void PlainKalmanFilterBallLocator::reloadParameters()
 {
-    Eigen::Matrix2d processNoiseCovariancesSingleDimension;
+    // parameters for initializing new filters
+    processNoiseStdSingleDimension << kfParameters.processNoiseStdQ00, kfParameters.processNoiseStdQ01,
+                                      kfParameters.processNoiseStdQ10, kfParameters.processNoiseStdQ11;
 
-    processNoiseCovariancesSingleDimension(0,0) = kfParameters.processNoiseQ00;
-    processNoiseCovariancesSingleDimension(0,1) = kfParameters.processNoiseQ01;
-    processNoiseCovariancesSingleDimension(1,0) = kfParameters.processNoiseQ10;
-    processNoiseCovariancesSingleDimension(1,1) = kfParameters.processNoiseQ11;
+    measurementNoiseStd << kfParameters.measurementNoiseStdR00, 0,
+                           0, kfParameters.measurementNoiseStdR11;
 
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
-        (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
-    }
+    initialStateStdSingleDimension << kfParameters.initialStateStdP00, kfParameters.initialStateStdP01,
+                                      kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
 
-    Eigen::Matrix2d measurementNoiseCovariances = Eigen::Matrix2d::Zero();
-    measurementNoiseCovariances(0,0) = kfParameters.measurementNoiseR00;
-    measurementNoiseCovariances(1,1) = kfParameters.measurementNoiseR11;
-
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
-        (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
-    }
-    // wrong function name?
-    //ballMass = kfParameters.ballMass;
+    // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
     distanceThreshold = kfParameters.distanceThreshold;
     stdThreshold      = kfParameters.stdThreshold;
+
+    // update existing filters with new process and measurement noise
+    Eigen::Matrix2d processNoiseCovariancesSingleDimension;
+    processNoiseCovariancesSingleDimension = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
+
+    Eigen::Matrix2d measurementNoiseCovariances = Eigen::Matrix2d::Zero();
+    measurementNoiseCovariances = measurementNoiseStd.cwiseProduct(measurementNoiseStd);
+
+    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+        (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
+        (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
+    }
 }

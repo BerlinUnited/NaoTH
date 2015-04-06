@@ -119,6 +119,8 @@ private:
     //double ballMass;
     double c_RR;
 
+    const KalmanFilter4d* bestModel;
+
     const BallPercept& getBallPercept() const
     {
       if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
@@ -134,23 +136,30 @@ private:
 
     void predict(KalmanFilter4d& filter, double dt);
 
+    /*    DEBUG STUFF    */
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
-
-    void reloadKFParameters();
+    void drawFiltersOnField();
+    void reloadParameters();
 
     class KFParameters:  public ParameterList
     {
      public:
         KFParameters() : ParameterList("KalmanFilter4dBallModel")
         {
-            PARAMETER_REGISTER(processNoiseQ00) = 3;
-            PARAMETER_REGISTER(processNoiseQ01) = 0;
-            PARAMETER_REGISTER(processNoiseQ10) = 0;
-            PARAMETER_REGISTER(processNoiseQ11) = 3;
+            PARAMETER_REGISTER(processNoiseStdQ00) = 3;
+            PARAMETER_REGISTER(processNoiseStdQ01) = 0;
+            PARAMETER_REGISTER(processNoiseStdQ10) = 0;
+            PARAMETER_REGISTER(processNoiseStdQ11) = 3;
 
-            PARAMETER_REGISTER(measurementNoiseR00) = 10;
-            PARAMETER_REGISTER(measurementNoiseR11) = 10;
+            PARAMETER_REGISTER(measurementNoiseStdR00) = 10;
+            PARAMETER_REGISTER(measurementNoiseStdR11) = 10;
+
+            PARAMETER_REGISTER(initialStateStdP00) = 250;
+            PARAMETER_REGISTER(initialStateStdP01) = 0;
+            PARAMETER_REGISTER(initialStateStdP10) = 0;
+            PARAMETER_REGISTER(initialStateStdP11) = 250;
+
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0001;
             PARAMETER_REGISTER(distanceThreshold) = 500;
@@ -159,19 +168,28 @@ private:
             syncWithConfig();
         }
 
-        double processNoiseQ00;
-        double processNoiseQ01;
-        double processNoiseQ10;
-        double processNoiseQ11;
+        double processNoiseStdQ00;
+        double processNoiseStdQ01;
+        double processNoiseStdQ10;
+        double processNoiseStdQ11;
 
-        double measurementNoiseR00;
-        double measurementNoiseR11;
+        double measurementNoiseStdR00;
+        double measurementNoiseStdR11;
+
+        double initialStateStdP00;
+        double initialStateStdP01;
+        double initialStateStdP10;
+        double initialStateStdP11;
 
         //double ballMass;
         double c_RR;
         double distanceThreshold;
         double stdThreshold;
     } kfParameters;
+
+    Eigen::Matrix2d processNoiseStdSingleDimension;
+    Eigen::Matrix2d measurementNoiseStd;
+    Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
 #endif // PLAINKALMANFILTERBALLLOCATOR_H
