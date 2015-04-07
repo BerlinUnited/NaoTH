@@ -277,7 +277,10 @@ void GoalDetectorV2::calcuateGoalPosts()
           post.positionReliable &= widthRatio < params.maxBarWidthRatio;
         }
       }
-      getGoalPercept().add(post);
+      if(post.positionReliable)
+      {
+        getGoalPercept().add(post);
+      }
     }
   }
 }

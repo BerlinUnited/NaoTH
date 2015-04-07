@@ -185,7 +185,10 @@ void GoalDetector::calcuateGoalPosts()
         LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
         LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
       );
-      getGoalPercept().add(post);
+      if(post.positionReliable)
+      {
+        getGoalPercept().add(post);
+      }
     }
   }
 }
