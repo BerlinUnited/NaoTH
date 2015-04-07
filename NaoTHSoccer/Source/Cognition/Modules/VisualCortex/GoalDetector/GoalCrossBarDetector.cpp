@@ -90,12 +90,6 @@ bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
   } 
   else if(seenReliablePosts.size() > 2)
   {
-    struct Goal
-    {
-      int post0;
-      int post1;
-    };
-
     std::vector<Goal> possibleGoals;
     for(size_t p0 = 0; p0 < seenReliablePosts.size() - 1; p0++)
     {
@@ -137,7 +131,7 @@ bool GoalCrossBarDetector::execute(CameraInfo::CameraID id)
       bool isUsed = false;
       for(size_t i = 0; i < usedPosts.size(); i++)
       {
-        if(usedPosts[i] == p) 
+        if(usedPosts[i] == (int)p) 
         {
           isUsed = true;
           break;
@@ -164,7 +158,7 @@ void GoalCrossBarDetector::checkSinglePost(const GoalPercept::GoalPost& post)
   Vector2i start;
   Vector2d direction;
   bool barFound = estimateCrossBarDirection(post, start, direction);
-  double angle = direction.angle();
+  //double angle = direction.angle();
   if(barFound)
   {
     double backProjectedBarWidth = getBackProjectedTopBarWidth(post);

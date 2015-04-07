@@ -193,8 +193,8 @@ void GoalDetectorV2::calcuateGoalPosts()
         {
           Vector2d base = getBackProjectedBasePoint(post); 
           Vector2d top = getBackProjectedTopPoint(post); 
-          double baseDiff = (post.basePoint - base).abs();
-          double topDiff = (post.topPoint - top).abs();
+          //double baseDiff = (post.basePoint - base).abs();
+          //double topDiff = (post.topPoint - top).abs();
           double baseWidth = getBackProjectedBaseBarWidth(post);
           double topWidth = getBackProjectedTopBarWidth(post);
           double meanProjectedWidth = (topWidth + baseWidth) * 0.5;            

@@ -126,6 +126,14 @@ private:
 
   Parameters parameters;
 
+  struct Goal
+  {
+    Goal() : post0(0), post1(0) {}
+
+    int post0;
+    int post1;
+  };
+
   class Cluster 
   {
   private:
