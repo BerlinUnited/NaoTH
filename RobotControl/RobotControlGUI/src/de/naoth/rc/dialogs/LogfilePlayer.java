@@ -7,7 +7,7 @@
 package de.naoth.rc.dialogs;
 
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
+//import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
