@@ -1,3 +1,7 @@
+#ifndef EIGEN_DONT_ALIGN
+#define EIGEN_DONT_ALIGN
+#endif
+
 #ifndef KALMANFILTER4D_H
 #define KALMANFILTER4D_H
 

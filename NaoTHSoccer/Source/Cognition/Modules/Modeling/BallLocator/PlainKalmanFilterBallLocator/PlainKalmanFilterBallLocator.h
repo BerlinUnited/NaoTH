@@ -13,8 +13,6 @@
 
 #include "KalmanFilter4d.h"
 
-#include <Eigen/Eigen>
-
 // debug
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
