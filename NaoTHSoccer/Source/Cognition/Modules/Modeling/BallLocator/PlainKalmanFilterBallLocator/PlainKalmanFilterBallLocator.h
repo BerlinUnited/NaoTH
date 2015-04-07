@@ -127,7 +127,7 @@ private:
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(c_RR) = 0.0001;
+            PARAMETER_REGISTER(c_RR) = 0.0045;
             PARAMETER_REGISTER(distanceThreshold) = 500;
             PARAMETER_REGISTER(stdThreshold) = 500;
 
