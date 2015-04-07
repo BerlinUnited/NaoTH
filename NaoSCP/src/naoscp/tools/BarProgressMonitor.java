@@ -14,6 +14,7 @@ import javax.swing.JProgressBar;
 public class BarProgressMonitor implements SftpProgressMonitor {
     private final JProgressBar progressBar;
     private long max = 0;
+    private long count = 0;
     
     public BarProgressMonitor(JProgressBar progressBar) {
         this.progressBar = progressBar;
@@ -22,6 +23,7 @@ public class BarProgressMonitor implements SftpProgressMonitor {
     @Override
     public void init(int op, String src, String dest, long max) {
         this.max = max;
+        this.count = 0;
         progressBar.setIndeterminate(false);
         progressBar.setValue(0);
         progressBar.setMinimum(0);
@@ -31,7 +33,8 @@ public class BarProgressMonitor implements SftpProgressMonitor {
 
     @Override
     public boolean count(long count) {
-        long percent = (count * 100) / max;
+        this.count += count;
+        long percent = (this.count * 100) / max;
         progressBar.setValue((int) percent);
         return true;
     }

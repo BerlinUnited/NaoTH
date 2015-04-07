@@ -46,7 +46,7 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
         if(str.length > 1) {
             String lower_name = name.toLowerCase();
             String hname = str[1].replaceAll("\\\\|/", ":").replaceFirst("(?i):" + lower_name + ".*", "");
-            name = hname + ":" + name;
+            name = hname.toLowerCase() + ":" + name;
         }
         
         Node moduleNode = moduleConfiguration.addNode(

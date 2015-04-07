@@ -92,6 +92,11 @@ public class NaoTHPanel extends javax.swing.JPanel {
         jLabel4.setText("Scheme:");
 
         jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
+        jSchemeBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSchemeBoxActionPerformed(evt);
+            }
+        });
 
         jButtonRefreshData.setText("Refresh");
         jButtonRefreshData.addActionListener(new java.awt.event.ActionListener() {
@@ -169,9 +174,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
                             .addComponent(jTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel24)
                             .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)))
-                    .addComponent(jButtonRefreshData, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel3))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         cbCopyLib.setText("copyLibNaoSMAL");
@@ -261,6 +267,26 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jColorBoxActionPerformed
 
+    private void jSchemeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSchemeBoxActionPerformed
+        String scheme = (String)this.jSchemeBox.getSelectedItem();
+        
+        File configDir = new File(naothProjectFile, "Config");
+        File schemeDir = new File(configDir, "/scheme/"+scheme);
+
+        if(new File(schemeDir, "player.cfg").exists()) {
+            loadPlayerCfg(schemeDir);
+        } else {
+            loadPlayerCfg(new File(configDir, "general"));
+        }
+        
+        if(new File(schemeDir, "teamcomm.cfg").exists()) {
+            loadTeamCommCfg(schemeDir);
+        } else {
+            loadTeamCommCfg(new File(configDir, "general"));
+        }
+
+    }//GEN-LAST:event_jSchemeBoxActionPerformed
+
     private void updateForm(File projectFile)
     {
         if(!projectFile.isDirectory()) {
@@ -272,9 +298,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
         
         // load the defaults for the configs
         File configDir = new File(naothProjectFile, "Config");
-        loadPlayerCfg(configDir);
+        loadPlayerCfg(new File(configDir, "general"));
+        loadTeamCommCfg(new File(configDir, "general"));
         loadConfigSchemes(configDir);
-        loadTeamCommCfg(configDir);
+        
 
         playerNumberPanel.setRobots(configDir);
         
@@ -300,13 +327,13 @@ public class NaoTHPanel extends javax.swing.JPanel {
    */
   private boolean loadConfigSchemes(File configPath)
   {
-    if( ! configPath.isDirectory())
+    if( !configPath.isDirectory() )
     {
       return false;
     }
 
     File schemePath = new File(configPath, "scheme");
-    if( ! schemePath.isDirectory())
+    if( !schemePath.isDirectory() )
     {
       return false;
     }
@@ -331,7 +358,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
   {
     try {
         Config playerCfg = new Config("player");
-        playerCfg.readFromFile(new File(configFile, "general/player.cfg"));
+        playerCfg.readFromFile(new File(configFile, "player.cfg"));
 
         String teamColor = playerCfg.values.get("TeamColor");
         if(teamColor != null) {
@@ -356,21 +383,20 @@ public class NaoTHPanel extends javax.swing.JPanel {
     return cfg;
   }
   
-  private void loadTeamCommCfg(File configFile)
-  {
-      try {
-          Config cfg = new Config("teamcomm");
-            cfg.readFromFile(new File(configFile, "general/teamcomm.cfg"));
+    private void loadTeamCommCfg(File configFile) {
+        try {
+            Config cfg = new Config("teamcomm");
+            cfg.readFromFile(new File(configFile, "teamcomm.cfg"));
 
             String port = cfg.values.get("port");
-            if(port != null) {
+            if (port != null) {
                 jTeamCommPort.setText(port);
             }
-      } catch(IOException ex) {
-          Logger.getGlobal().log(Level.SEVERE, "Could not load teamcomm.cfg\n" + ex.getMessage());
-          ex.printStackTrace(System.err);
-      }
-  }
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Could not load teamcomm.cfg\n" + ex.getMessage());
+            ex.printStackTrace(System.err);
+        }
+    }
   
   
   private Config getTeamCommCfg()

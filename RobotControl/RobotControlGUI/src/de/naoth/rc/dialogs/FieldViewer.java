@@ -50,8 +50,6 @@ import org.freehep.util.export.ExportDialog;
  * @author  Heinrich Mellmann
  */
 public class FieldViewer extends AbstractDialog
-  implements ObjectListener<DrawingsContainer>,
-  Dialog
 {
 
   @PluginImplementation
@@ -79,6 +77,8 @@ public class FieldViewer extends AbstractDialog
   private final PlotDataListener plotDataListener;
   private StrokePlot strokePlot;
 
+  private DrawingsListener drawingsListener = new DrawingsListener();
+  
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
   public static de.naoth.rc.components.DynamicCanvasPanel getCanvas() {
@@ -330,8 +330,8 @@ public class FieldViewer extends AbstractDialog
       {
         if(Plugin.parent.checkConnected())
         {
-          Plugin.debugDrawingManager.addListener(this);
-          Plugin.debugDrawingManagerMotion.addListener(this);
+          Plugin.debugDrawingManager.addListener(drawingsListener);
+          Plugin.debugDrawingManagerMotion.addListener(drawingsListener);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -341,8 +341,8 @@ public class FieldViewer extends AbstractDialog
       }
       else
       {
-        Plugin.debugDrawingManager.removeListener(this);
-        Plugin.debugDrawingManagerMotion.removeListener(this);
+        Plugin.debugDrawingManager.removeListener(drawingsListener);
+        Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -430,13 +430,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotate180ActionPerformed
 
-  @Override
-  public void errorOccured(String cause)
-  {
-    btReceiveDrawings.setSelected(false);
-    Plugin.debugDrawingManager.removeListener(this);
-    Plugin.debugDrawingManagerMotion.removeListener(this);
-  }
   
   void resetView()
   {
@@ -451,24 +444,36 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   }//end clearView
 
   
-  @Override
-  public void newObjectReceived(DrawingsContainer objectList)
+  private class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
-    if(objectList != null)
+    @Override
+    public void newObjectReceived(DrawingsContainer objectList)
     {
-      if(!this.btCollectDrawings.isSelected())
+      if(objectList != null)
       {
-        resetView();
-      }
-      DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
-      if(drawingCollection != null) {
-        this.fieldCanvas.getDrawingList().add(drawingCollection);
-      }
+        DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
+        if(drawingCollection == null || drawingCollection.isEmpty()) {
+            return;
+        }
 
-      repaint();
-    }//end if
-  }//end newObjectReceived
+        if(!btCollectDrawings.isSelected()) {
+          resetView();
+        }
 
+        fieldCanvas.getDrawingList().add(drawingCollection);
+
+        repaint();
+      }
+    }
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btReceiveDrawings.setSelected(false);
+      Plugin.debugDrawingManager.removeListener(this);
+      Plugin.debugDrawingManagerMotion.removeListener(this);
+    }
+  }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -556,8 +561,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void dispose()
   {
     // remove all the registered listeners
-    Plugin.debugDrawingManager.removeListener(this);
-    Plugin.debugDrawingManagerMotion.removeListener(this);
+    Plugin.debugDrawingManager.removeListener(drawingsListener);
+    Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
   }//end dispose

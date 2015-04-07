@@ -160,6 +160,9 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
+      kind "SharedLib"
+      links { "NaoTHSoccer", "Commons" }
   end
   
   
