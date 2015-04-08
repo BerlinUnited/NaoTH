@@ -170,15 +170,18 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   }
 
   // fill the compas
-  getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
-  for(size_t j = 0; j < edgelPairs.size(); j++)
+  if(edgelPairs.size() > 3)
   {
-    const EdgelPair& edgelPair = edgelPairs[j];
-    const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
-    const Vector2d& edgelRight = edgelProjections[edgelPair.right];
+    getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
+    for(size_t j = 0; j < edgelPairs.size(); j++)
+    {
+      const EdgelPair& edgelPair = edgelPairs[j];
+      const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
+      const Vector2d& edgelRight = edgelProjections[edgelPair.right];
 
-    double r = (edgelLeft - edgelRight).angle();
-    getProbabilisticQuadCompas().add(r, edgelPair.sim);
+      double r = (edgelLeft - edgelRight).angle();
+      getProbabilisticQuadCompas().add(r, edgelPair.sim);
+    }
   }
 
 

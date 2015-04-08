@@ -153,6 +153,8 @@ private: // local types
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
 
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = true;
+
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -192,6 +194,8 @@ private: // local types
 
     bool resampleSUS;
     bool resampleGT07;
+
+    double maxAcceptedGoalErrorWhileTracking;
   } parameters;
 
   class LineDensity {

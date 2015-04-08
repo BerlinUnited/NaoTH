@@ -153,9 +153,15 @@ void LogFileScanner::readFrame(unsigned int currentFrame, Frame& frame)
     logFile.read((char*) &dataSize, 4);
 
     // read the representation data to the current frame buffer
+    
     RepresentationData& data = frame[name];
-    data.data.resize(dataSize);
-    logFile.read(data.data.data(), dataSize);
-    data.valid = true;
+
+    if(dataSize > 0) {
+      data.data.resize(dataSize);
+      logFile.read(data.data.data(), dataSize);
+      data.valid = true;
+    } else {
+      data.valid = false;
+    }
   }
 }//end executeCurrentFrame

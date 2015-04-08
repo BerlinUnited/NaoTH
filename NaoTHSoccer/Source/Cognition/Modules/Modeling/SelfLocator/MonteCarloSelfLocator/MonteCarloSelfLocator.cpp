@@ -362,26 +362,25 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
     const GoalPercept::GoalPost& seenPost = goalPercept.getPost(i);
     
     // HACK
-    if(false)// && state == TRACKING) 
-    {
+    if(state == TRACKING && parameters.maxAcceptedGoalErrorWhileTracking > 0) {
 
       const Vector2d* leftGoalPosition = NULL;
       const Vector2d* rightGoalPosition = NULL;
 
-       if((getRobotPose()*seenPost.position).x > 0)
-       {
-          leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
-          rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
-       } else {
-          // own goals are switched (!)
-          leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
-          rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
-       }
+      if((getRobotPose()*seenPost.position).x > 0)
+      {
+        leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
+        rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
+      } else {
+        // own goals are switched (!)
+        leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
+        rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
+      }
 
-       Vector2d globalPercept = getRobotPose() * seenPost.position;
-       double amin = min((globalPercept - *rightGoalPosition).abs(),(globalPercept - *leftGoalPosition).abs());
+      Vector2d globalPercept = getRobotPose() * seenPost.position;
+      double min_dist = min((globalPercept - *rightGoalPosition).abs(),(globalPercept - *leftGoalPosition).abs());
 
-      if(amin < 3000) {
+      if(min_dist < parameters.maxAcceptedGoalErrorWhileTracking) {
         updateBySingleGoalPost(seenPost, sampleSet);
       }
     } else {
