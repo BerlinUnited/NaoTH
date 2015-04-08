@@ -48,7 +48,7 @@ option basic_goalie
 	  }
 	  action {
       motion.type = stand;
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_goalie;
 	  }
 	}  
 
