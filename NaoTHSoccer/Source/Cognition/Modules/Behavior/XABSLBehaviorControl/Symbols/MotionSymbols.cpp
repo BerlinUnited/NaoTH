@@ -47,6 +47,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("head.pitch", &getHeadPitchAngle);
   engine.registerDecimalInputSymbol("head.yaw", &getHeadYawAngle);
+  engine.registerDecimalOutputSymbol("head.angleVelocity", &getHeadMotionRequest().velocity);
 
   engine.registerEnumElement("head.camera", "head.camera.Top", naoth::CameraInfo::Top);
   engine.registerEnumElement("head.camera", "head.camera.Bottom", naoth::CameraInfo::Bottom);
@@ -349,8 +350,12 @@ void MotionSymbols::dribble(bool /*dummy*/)
   }
   else
   {
-    motionTarget.translation.x = ball.x - offsetX;    motionTarget.translation.y = ball.y - offsetY;    motionTarget.rotation = (ball.abs() > 250) ? ball.angle() : 0;
-    theInstance->getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;    theInstance->walkStyle = stable;
+    motionTarget.translation.x = ball.x - offsetX;
+    motionTarget.translation.y = ball.y - offsetY;
+    motionTarget.rotation = (ball.abs() > 250) ? ball.angle() : 0;
+
+    theInstance->getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+    theInstance->walkStyle = stable;
 
     theInstance->getMotionRequest().id = motion::walk;
   }
