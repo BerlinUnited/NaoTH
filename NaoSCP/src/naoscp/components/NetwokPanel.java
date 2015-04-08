@@ -135,10 +135,10 @@ public class NetwokPanel extends javax.swing.JPanel {
 
         subnetFieldLAN.setText("192.168.13");
         subnetFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
                 subnetFieldLANCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -157,10 +157,10 @@ public class NetwokPanel extends javax.swing.JPanel {
 
         subnetFieldWLAN.setText("10.0.4");
         subnetFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
                 subnetFieldWLANCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
 
@@ -194,13 +194,8 @@ public class NetwokPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(221, 221, 221)
-                        .addComponent(radioWEP)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(radioWPA)))
-                .addGap(30, 30, 30))
+                    .addComponent(jLabel5))
+                .addGap(340, 340, 340))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -221,16 +216,24 @@ public class NetwokPanel extends javax.swing.JPanel {
                                     .addComponent(broadcastFieldLAN, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(wlanSSID, javax.swing.GroupLayout.Alignment.LEADING))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(radioWEP)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel21)
+                                        .addComponent(jLabel19)
+                                        .addComponent(jLabel23)
+                                        .addComponent(jLabel14)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel21)
-                                    .addComponent(jLabel19)
-                                    .addComponent(jLabel23)
-                                    .addComponent(jLabel14))
-                                .addGap(21, 21, 21)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(broadcastFieldWLAN)
-                                    .addComponent(subnetFieldWLAN)
-                                    .addComponent(netmaskFieldWLAN)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(21, 21, 21)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(broadcastFieldWLAN)
+                                            .addComponent(subnetFieldWLAN)
+                                            .addComponent(netmaskFieldWLAN)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(radioWPA)
+                                        .addGap(0, 0, Short.MAX_VALUE))))
                             .addComponent(wlanKey))
                         .addContainerGap())))
         );
