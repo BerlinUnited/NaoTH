@@ -45,13 +45,13 @@ public:
     stream << "Overall Statistics:" << std::endl;
     stream << " Amount of Messages =                       " << amountOfMessages << std::endl;
     stream << " Average Message Interval =                 " << avgMsgInterval << std::endl;
-    stream << " Stddev of Message Intervals =  " << std::sqrt(varianceMsgInterval) << std::endl << std::endl;
+    stream << " Stddev of Message Intervals =              " << std::sqrt(varianceMsgInterval) << std::endl << std::endl;
     for (std::map<unsigned int, double>::const_iterator iter = amountsOfMessages.begin(); iter != amountsOfMessages.end(); iter++) {
       unsigned int robotNumber = iter->first;
       stream << "Statistics for robot number " << robotNumber << ":" << std::endl;
       stream << " Amount of Messages =                       " << iter->second << std::endl;
       stream << " Average Message Interval =                 " << averages.at(robotNumber) << std::endl;
-      stream << " Stddev of Message Intervals =  " << std::sqrt(variances.at(robotNumber)) << std::endl;
+      stream << " Stddev of Message Intervals =              " << std::sqrt(variances.at(robotNumber)) << std::endl;
     }
   }//end print
 };
