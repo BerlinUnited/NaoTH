@@ -75,8 +75,9 @@ option decide_role
   {
     action
     {
+      team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      situation_based_striker();
+      situation_based_secondstriker();
       
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

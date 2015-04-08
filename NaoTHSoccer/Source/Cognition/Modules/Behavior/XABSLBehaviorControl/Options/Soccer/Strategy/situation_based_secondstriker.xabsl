@@ -1,4 +1,4 @@
-option secondstriker 
+option situation_based_secondstriker 
 {
 
   common decision
@@ -44,7 +44,7 @@ option secondstriker
     }
     action{
       situation_abortable = true;
-      go_to_ball_with_USOA_slow(distance = 1300);
+      go_to_ball_with_slow_USOA(distance = 1300);
     }
   }
 

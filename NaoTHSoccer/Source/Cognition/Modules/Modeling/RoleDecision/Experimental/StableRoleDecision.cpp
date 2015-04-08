@@ -54,7 +54,7 @@ void StableRoleDecision::computeStrikers() {
     if (!msg.isPenalized
       && failureProbability < parameters.minFailureProbability //Message is fresh
       && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maxBallLostTime) { //Ball is fresh
+      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime) { //Ball is fresh
 
         if (msg.wasStriker) { //Decision of the current round
           if ((int)robotNumber < firstStriker) { //If two robots want to be first striker, let the smaller robot number decide
@@ -64,8 +64,8 @@ void StableRoleDecision::computeStrikers() {
             secondStriker = robotNumber;
           }
         }
-        if (msg.timeToBall < ownTimeToBall) { //Preparation for the next round's decision
-          wantsToBeStriker = false;
+        if (msg.timeToBall < ownTimeToBall) { 
+          wantsToBeStriker = false; //Preparation for the next round's decision
         }
 
       }

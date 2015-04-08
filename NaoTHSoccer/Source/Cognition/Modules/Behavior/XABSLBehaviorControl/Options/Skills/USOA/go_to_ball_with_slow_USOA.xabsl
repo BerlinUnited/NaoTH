@@ -1,5 +1,5 @@
 // go to ball with slowed down speed while avoiding obstacles using ultra sonic (for second striker)
-option go_to_ball_with_USOA_slow
+option go_to_ball_with_slow_USOA
 {
   float @distance;
 
