@@ -97,6 +97,7 @@ private:
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
       PARAMETER_REGISTER(maxBarWidthRatio) = 1.5;
+      PARAMETER_REGISTER(minGoalHeightRatio) = 0.8;
 
       syncWithConfig();
     }
@@ -113,6 +114,7 @@ private:
     double thresholdFeatureSimilarity;
     double colorRegionDeviation;
     double maxBarWidthRatio;
+    double minGoalHeightRatio;
   };
 
   Parameters params;
