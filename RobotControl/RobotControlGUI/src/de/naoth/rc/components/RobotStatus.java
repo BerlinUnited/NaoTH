@@ -110,39 +110,35 @@ public class RobotStatus extends javax.swing.JPanel {
       
       jlTemperature.setForeground(Color.black);
       jlBatteryCharge.setForeground(Color.black);
-      try
+      
+      if(msg.user != null)
       {
-        Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-        jlTemperature.setText(String.format(" %3.1f °C", user.getTemperature()));
-        jlBatteryCharge.setText(String.format("%3.1f%%", user.getBatteryCharge()*100.0f));
+        //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
+        jlTemperature.setText(String.format(" %3.1f °C", msg.user.getTemperature()));
+        jlBatteryCharge.setText(String.format("%3.1f%%", msg.user.getBatteryCharge()*100.0f));
         
-        if(user.getTemperature() >= 60.0f)
+        if(msg.user.getTemperature() >= 60.0f)
         {
           jlTemperature.setForeground(darkOrange);
         }
-        if(user.getTemperature() >= 75.0f)
+        if(msg.user.getTemperature() >= 75.0f)
         {
           jlTemperature.setForeground(Color.red);
         }
         
-        if(user.getBatteryCharge() <= 0.3f)
+        if(msg.user.getBatteryCharge() <= 0.3f)
         {
           jlBatteryCharge.setForeground(darkOrange);
         }
-        if(user.getBatteryCharge() <= 0.1f)
+        if(msg.user.getBatteryCharge() <= 0.1f)
         {
           jlBatteryCharge.setForeground(Color.red);
         }
-        
-        
-      
-      this.jlTeamNumber.setText("" + user.getTeamNumber());
-        
+
+        this.jlTeamNumber.setText("" + msg.user.getTeamNumber());
       }
-      catch(InvalidProtocolBufferException ex)
+      else
       {
-        Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, null, ex);
-        
         jlTemperature.setText("TEMP ??");
         jlBatteryCharge.setText("??");
       }
