@@ -360,7 +360,33 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
   for(int i = 0; i < goalPercept.getNumberOfSeenPosts(); i++)
   {
     const GoalPercept::GoalPost& seenPost = goalPercept.getPost(i);
-    updateBySingleGoalPost(seenPost, sampleSet);
+    
+    // HACK
+    if(false)// && state == TRACKING) 
+    {
+
+      const Vector2d* leftGoalPosition = NULL;
+      const Vector2d* rightGoalPosition = NULL;
+
+       if((getRobotPose()*seenPost.position).x > 0)
+       {
+          leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
+          rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
+       } else {
+          // own goals are switched (!)
+          leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
+          rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
+       }
+
+       Vector2d globalPercept = getRobotPose() * seenPost.position;
+       double amin = min((globalPercept - *rightGoalPosition).abs(),(globalPercept - *leftGoalPosition).abs());
+
+      if(amin < 3000) {
+        updateBySingleGoalPost(seenPost, sampleSet);
+      }
+    } else {
+      updateBySingleGoalPost(seenPost, sampleSet);
+    }
   }
 }
 
