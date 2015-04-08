@@ -38,6 +38,7 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -122,6 +123,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);

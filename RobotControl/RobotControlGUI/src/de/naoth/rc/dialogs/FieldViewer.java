@@ -152,9 +152,8 @@ public class FieldViewer extends AbstractDialog
         btReceiveDrawings = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
+        btRotate = new javax.swing.JButton();
         btImageProjection = new javax.swing.JToggleButton();
-        btRotate = new javax.swing.JToggleButton();
-        btRotate180 = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
@@ -214,6 +213,18 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(cbBackground);
 
+        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
+        btRotate.setToolTipText("Rotate the coordinates by 90°");
+        btRotate.setFocusable(false);
+        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRotate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRotateActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btRotate);
+
         btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
         btImageProjection.setToolTipText("Image Projection");
         btImageProjection.setFocusable(false);
@@ -225,30 +236,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btImageProjection);
-
-        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
-        btRotate.setFocusable(false);
-        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_cw.png"))); // NOI18N
-        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotateActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate);
-
-        btRotate180.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
-        btRotate180.setToolTipText("Rotate by 180°");
-        btRotate180.setFocusable(false);
-        btRotate180.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate180.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate180.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotate180ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate180);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -411,24 +398,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_cbBackgroundActionPerformed
 
-    private void btRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRotateActionPerformed
-    {//GEN-HEADEREND:event_btRotateActionPerformed
-        if(this.btRotate.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI*0.5);
-        } else {
-            this.fieldCanvas.setRotation(0);
-        }
+    private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
+        this.fieldCanvas.setRotation(this.fieldCanvas.getRotation() + Math.PI*0.5);
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
-
-    private void btRotate180ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotate180ActionPerformed
-        if(this.btRotate180.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI);
-        } else {
-            this.fieldCanvas.setRotation(0);
-        }
-        this.fieldCanvas.repaint();
-    }//GEN-LAST:event_btRotate180ActionPerformed
 
   
   void resetView()
@@ -573,8 +546,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btImageProjection;
     private javax.swing.JToggleButton btReceiveDrawings;
-    private javax.swing.JToggleButton btRotate;
-    private javax.swing.JToggleButton btRotate180;
+    private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
     private javax.swing.JDialog coordsPopup;
