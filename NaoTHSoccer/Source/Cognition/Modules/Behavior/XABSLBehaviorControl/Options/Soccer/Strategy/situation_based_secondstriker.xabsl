@@ -67,19 +67,19 @@ option situation_based_secondstriker
          ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
       {
         if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
-          goto sidekick;
+          goto secondstriker_sidekick;
   
         else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
                  || abs(value=attack.direction.preview)<12)
-          goto attack;
+          goto secondstriker_attack;
         else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
                 ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
-          goto sidekick;
+          goto secondstriker_sidekick;
         else if (ball.time_since_last_seen > 1500) {
           goto search;
         }
         else
-          goto turn;
+          goto secondstriker_turn;
       }
       else
         stay;
@@ -90,16 +90,16 @@ option situation_based_secondstriker
     }
   }
   
-  state turn {
+  state secondstriker_turn {
     decision{
 
       else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
-        goto sidekick;
+        goto secondstriker_sidekick;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
-        goto attack;
+        goto secondstriker_attack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
               ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
-        goto sidekick;
+        goto secondstriker_sidekick;
   
       else
         stay;
@@ -110,7 +110,7 @@ option situation_based_secondstriker
     }
   }
 
-  state sidekick {
+  state secondstriker_sidekick {
     decision {
       else if(action_done)
         goto goto_ball;
@@ -123,7 +123,7 @@ option situation_based_secondstriker
     }
   }
 
-  state sidekick_stable {
+  state secondstriker_sidekick_stable {
     decision {
       else if(action_done)
         goto goto_ball;
@@ -138,10 +138,10 @@ option situation_based_secondstriker
   }
 
 
-  state attack {
+  state secondstriker_attack {
     decision{
       else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
-        goto sidekick;
+        goto secondstriker_sidekick;
       else if(action_done)
         goto goto_ball;
       else
