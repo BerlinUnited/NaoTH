@@ -9,7 +9,9 @@
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "KalmanFilter4d.h"
 
@@ -37,8 +39,8 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 //  REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
-//  REQUIRE(MotionStatus)
-//  REQUIRE(KinematicChain)
+  REQUIRE(MotionStatus)
+  REQUIRE(KinematicChain)
 //  REQUIRE(SituationStatus)
 
   REQUIRE(BallPercept)

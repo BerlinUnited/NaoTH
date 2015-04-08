@@ -6,10 +6,10 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
      epsilon(10e-6)
 {
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",        "draw the modelled ball on the field",                              false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update",  true);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                              true);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_final_ball",           "draws the final i.e. best model",                                   true);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",            true);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
 
     getDebugParameterList().add(&kfParameters);
@@ -121,6 +121,20 @@ void PlainKalmanFilterBallLocator::execute()
         getBallModel().speed.x = x(1);
         getBallModel().speed.y = x(3);
 
+        // set preview ball model representation
+        const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+        const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
+
+        Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
+        Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
+
+        Vector2<double> ballLeftFoot  = lFootPose/getBallModel().position;
+        Vector2<double> ballRightFoot = rFootPose/getBallModel().position;
+
+        getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+        getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+        getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
+
         // TODO: decide whether model is valid depending on P or time
         // e.g. if (max, min, std)
 
@@ -128,7 +142,6 @@ void PlainKalmanFilterBallLocator::execute()
         {
             getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
         }
-
 
         if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0) // 10s
         {
@@ -139,6 +152,8 @@ void PlainKalmanFilterBallLocator::execute()
         {
             getBallModel().valid = true;
         }
+    } else {
+        getBallModel().valid = false;
     }
 
     doDebugRequest();
