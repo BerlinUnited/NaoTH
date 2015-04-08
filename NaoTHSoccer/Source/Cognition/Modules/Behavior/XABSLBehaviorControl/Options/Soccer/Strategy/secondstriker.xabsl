@@ -7,7 +7,7 @@ option secondstriker
       goto idle;
     else if(situation_abortable && ball.time_since_last_seen > 1500)
       goto search;
-    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1800)
       goto goto_ball;
   }
 
@@ -36,13 +36,122 @@ option secondstriker
 
   state goto_ball {
     decision {
+      else if (action_done) {
+        goto wait_for_firststriker;
+      }
       else
         stay;
     }
     action{
       situation_abortable = true;
-      go_to_ball_with_USOA_slow(distance = 1500);
+      go_to_ball_with_USOA_slow(distance = 1300);
     }
   }
+
+  state wait_for_firststriker {
+    decision {
+      else if (state_time > 2000) { //First striker is not reacting
+        goto interfere_with_attack;
+      }
+      else 
+        stay;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state interfere_with_attack { //Second striker now acts as a first striker
+    decision{
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+          goto sidekick;
+  
+        else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
+                 || abs(value=attack.direction.preview)<12)
+          goto attack;
+        else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+                ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+          goto sidekick;
+        else if (ball.time_since_last_seen > 1500) {
+          goto search;
+        }
+        else
+          goto turn;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = false;
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+  
+  state turn {
+    decision{
+
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
+        goto sidekick;
+      else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        goto attack;
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
+        goto sidekick;
+  
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      turn_to_attack_direction();
+    }
+  }
+
+  state sidekick {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+    }
+  }
+
+  state sidekick_stable {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+      motion.walk.style = stable;
+    }
+  }
+
+
+  state attack {
+    decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick;
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      situation_attack();
+    }
+  }
+
 
 }
