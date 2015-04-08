@@ -1,13 +1,13 @@
 /**
-* @file GoalFeatureDetector.h
+* @file GoalFeatureDetectorV2.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
-* Definition of class GoalFeatureDetector
+* Definition of class GoalFeatureDetectorV2
 */
 
-#ifndef _GoalFeatureDetector_H_
-#define _GoalFeatureDetector_H_
+#ifndef _GoalFeatureDetectorV2_H_
+#define _GoalFeatureDetectorV2_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -21,10 +21,9 @@
 #include <Tools/DataStructures/RingBuffer.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
-//#include "Tools/naoth_opencv.h"
+#include "Tools/naoth_opencv.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/Filter.h"
-#include "Tools/ImageProcessing/MaximumScan.h"
 
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -32,7 +31,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
-BEGIN_DECLARE_MODULE(GoalFeatureDetector)
+BEGIN_DECLARE_MODULE(GoalFeatureDetectorV2)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -47,15 +46,15 @@ BEGIN_DECLARE_MODULE(GoalFeatureDetector)
 
   PROVIDE(GoalFeaturePercept)
   PROVIDE(GoalFeaturePerceptTop)
-END_DECLARE_MODULE(GoalFeatureDetector)
+END_DECLARE_MODULE(GoalFeatureDetectorV2)
 
 
-class GoalFeatureDetector: private GoalFeatureDetectorBase
+class GoalFeatureDetectorV2: private GoalFeatureDetectorV2Base
 {
 public:
 
-  GoalFeatureDetector();
-  virtual ~GoalFeatureDetector();
+  GoalFeatureDetectorV2();
+  virtual ~GoalFeatureDetectorV2();
 
   // override the Module execute method
   bool execute(CameraInfo::CameraID id);
@@ -73,16 +72,15 @@ private:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("GoalFeatureParameters")
+    Parameters() : ParameterList("GoalFeatureV2Parameters")
     {
       PARAMETER_REGISTER(numberOfScanlines) = 9;
       PARAMETER_REGISTER(scanlinesDistance) = 8;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
-      PARAMETER_REGISTER(useColorFeatures) = true;
       PARAMETER_REGISTER(threshold) = 140;
-      PARAMETER_REGISTER(thresholdGradient) = 30;
-      PARAMETER_REGISTER(thresholdFeatureGradient) = 0.8;
+      PARAMETER_REGISTER(thresholdGradient) = 7;
+      PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
 
       syncWithConfig();
@@ -97,6 +95,7 @@ private:
     bool detectWhiteGoals;
     bool usePrewitt;
     bool useColorFeatures;
+    bool experimental;
     int threshold;
     int thresholdGradient;
     int maxFeatureWidth;
@@ -104,24 +103,20 @@ private:
     double thresholdFeatureGradient;
   };
 
-
-private:
   Parameters parameters;
 
-  void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
-  void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);
+  void findEdgelFeatures(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;
   Vector2d calculateGradientY(const Vector2i& point) const;
 
-private:
-  DOUBLE_CAM_PROVIDE(GoalFeatureDetector, DebugImageDrawings);
+  DOUBLE_CAM_PROVIDE(GoalFeatureDetectorV2, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(GoalFeatureDetector, Image);
-  DOUBLE_CAM_REQUIRE(GoalFeatureDetector, ArtificialHorizon);
+  DOUBLE_CAM_REQUIRE(GoalFeatureDetectorV2, Image);
+  DOUBLE_CAM_REQUIRE(GoalFeatureDetectorV2, ArtificialHorizon);
 
-  DOUBLE_CAM_PROVIDE(GoalFeatureDetector, GoalFeaturePercept);
+  DOUBLE_CAM_PROVIDE(GoalFeatureDetectorV2, GoalFeaturePercept);
 
-};//end class GoalFeatureDetector
+};//end class GoalFeatureDetectorV2
 
-#endif // _GoalFeatureDetector_H_
+#endif // _GoalFeatureDetectorV2_H_

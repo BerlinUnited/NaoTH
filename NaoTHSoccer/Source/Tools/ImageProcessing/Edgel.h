@@ -14,11 +14,19 @@ template<class T>
 class EdgelT
 {
 public:
-  EdgelT() : angle(0.0)
+  EdgelT() : type(unknown), angle(0.0)
   {}
+
+  enum Type
+  {
+    positive,
+    negative,
+    unknown
+  };
 
   Vector2<T> point;
   Vector2d direction;
+  Type type;
 
   double angle; // deprecated
 
@@ -29,6 +37,19 @@ public:
     double s = 0.0;
     if(direction*other.direction > 0) {
       Vector2d v = (other.point - point).rotateRight().normalize();
+      s = 1.0-0.5*(fabs(direction*v) + fabs(other.direction*v));
+    }
+
+    return s;
+  }
+
+  // calculate the simmilarity to the other edgel
+  // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
+  inline double sim2(const EdgelT<T>& other) const
+  {
+    double s = 0.0;
+    if(direction*other.direction > 0) {
+      Vector2d v = (other.point - point).normalize();
       s = 1.0-0.5*(fabs(direction*v) + fabs(other.direction*v));
     }
 
