@@ -66,5 +66,7 @@ public class Config {
             }
             line = reader.readLine();
         }
+        
+        reader.close();
     }
 }//end class Config
