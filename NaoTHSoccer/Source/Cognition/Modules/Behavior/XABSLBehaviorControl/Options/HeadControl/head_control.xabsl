@@ -65,7 +65,7 @@ option head_control
     action
     {
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=3000);
+      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000);
     }
   }
 
