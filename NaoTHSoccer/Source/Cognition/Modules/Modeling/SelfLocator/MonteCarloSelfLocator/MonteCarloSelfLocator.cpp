@@ -158,11 +158,7 @@ void MonteCarloSelfLocator::execute()
         } 
         else if(getPlayerInfo().gameData.gameState == GameData::set) 
         {
-          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
-            updateByGoalBox(theSampleSet);
-          } else {
-            updateByOwnHalfLookingForward(theSampleSet);
-          }
+          updateByOwnHalfLookingForward(theSampleSet);
         } // check if the game controller was alive in the last 10s ~ 300frames
         else if(getPlayerInfo().gameData.frameNumber > 0 && 
                 getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
