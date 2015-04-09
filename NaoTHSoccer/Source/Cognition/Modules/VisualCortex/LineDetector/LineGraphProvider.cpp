@@ -170,7 +170,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   }
 
   // fill the compas
-  if(edgelPairs.size() > parameters.minimalNumberOfPairs)
+  if((int)edgelPairs.size() > parameters.minimalNumberOfPairs)
   {
     getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
     for(size_t j = 0; j < edgelPairs.size(); j++)

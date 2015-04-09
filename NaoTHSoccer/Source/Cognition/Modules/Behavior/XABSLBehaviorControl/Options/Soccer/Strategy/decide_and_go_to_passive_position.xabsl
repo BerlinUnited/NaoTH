@@ -98,7 +98,7 @@ option decide_and_go_to_passive_position
     action {
     //go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
       go_to_and_keep_passive_position(
-        x = field.xPosOwnPenaltyMark,
+        x = field.xPosOwnPenaltyMark + 500, 
         y = field.yPosLeftGoal, 
         rot=-15);
     }
