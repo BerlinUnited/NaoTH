@@ -13,12 +13,30 @@ option look_around
     action{}
   }
 
+  state look_forward_from_right_to_left
+  {
+    decision
+    {
+      if (state_time > 1200)
+        goto look_left;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = 3000;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+    }
+  }
+
   state look_left
   {
     decision
     {
       if (state_time > 1200)
-        goto look_right;
+        goto look_forward_from_left_to_right;
       else 
         stay;
     }
@@ -30,13 +48,31 @@ option look_around
       head.motion_type = look_at_world_point;
     }
   }
+
+  state look_forward_from_left_to_right
+  {
+    decision
+    {
+      if (state_time > 1200)
+        goto look_right;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = 3000;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+    }
+  }
   
   state look_right
   {
     decision
     {
       if (state_time > 1200)
-        goto look_left;
+        goto look_forward_from_right_to_left;
       else 
         stay;
     }

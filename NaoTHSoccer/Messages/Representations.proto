@@ -40,6 +40,7 @@ message HeadMotionRequest {
   optional bool searchDirection = 8;
   optional DoubleVector2 targetPointOnTheGround = 9;
   optional uint32 coordinate = 10;
+  optional double velocity = 11;
 }
 
 message StepControlRequest
