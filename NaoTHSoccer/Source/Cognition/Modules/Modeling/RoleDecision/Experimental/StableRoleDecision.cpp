@@ -34,6 +34,9 @@ void StableRoleDecision::computeStrikers() {
   int firstStriker = std::numeric_limits<int>::max();
   int secondStriker = std::numeric_limits<int>::max();
   bool wantsToBeStriker = true;
+  if (getPlayerInfo().gameData.playerNumber == 1) {
+    wantsToBeStriker = false; //Goalie is not considered
+  }
 
   TeamMessage const& tm = getTeamMessage();
 
@@ -51,13 +54,16 @@ void StableRoleDecision::computeStrikers() {
       failureProbability = robotFailure->second;
     }
 
-    if (!msg.isPenalized
-      && failureProbability < parameters.minFailureProbability //Message is fresh
+    double time_bonus = msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+
+    if (!msg.fallen
+      && !msg.isPenalized
+      && (failureProbability < parameters.minFailureProbability || msg.playerNum == getPlayerInfo().gameData.playerNumber) //Message is fresh
       && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime) { //Ball is fresh
+      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) { //Ball is fresh
 
         if (msg.wasStriker) { //Decision of the current round
-          if ((int)robotNumber < firstStriker) { //If two robots want to be first striker, let the smaller robot number decide
+          if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
             firstStriker = robotNumber;
           }
           else if ((int)robotNumber < secondStriker) {
@@ -65,7 +71,7 @@ void StableRoleDecision::computeStrikers() {
           }
         }
         if (msg.timeToBall < ownTimeToBall) { 
-          wantsToBeStriker = false; //Preparation for the next round's decision
+          wantsToBeStriker = false; //Preparation for next round's decision
         }
 
       }
