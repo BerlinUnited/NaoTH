@@ -54,7 +54,7 @@ void StableRoleDecision::computeStrikers() {
       failureProbability = robotFailure->second;
     }
 
-    double time_bonus = msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+    double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
     if (!msg.fallen
       && !msg.isPenalized

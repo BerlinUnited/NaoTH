@@ -24,7 +24,7 @@ option situation_based_secondstriker
   state secondstriker_search {
     decision {
       else if(action_done)
-        goto goto_ball;
+        goto secondstriker_goto_ball;
       else
         stay;
     }
