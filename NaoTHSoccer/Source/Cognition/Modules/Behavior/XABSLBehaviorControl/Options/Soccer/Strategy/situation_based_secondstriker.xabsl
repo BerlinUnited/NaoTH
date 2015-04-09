@@ -6,22 +6,22 @@ option situation_based_secondstriker
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
     else if(situation_abortable && ball.time_since_last_seen > 1500)
-      goto search;
+      goto secondstriker_search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1800)
-      goto goto_ball;
+      goto secondstriker_goto_ball;
   }
 
   initial state idle {
     decision {
       else
-        goto search;
+        goto secondstriker_search;
     }
     action {
       situation_abortable = true;
     }
   }
 
-  state search {
+  state secondstriker_search {
     decision {
       else if(action_done)
         goto goto_ball;
@@ -34,7 +34,7 @@ option situation_based_secondstriker
     }
   }
 
-  state goto_ball {
+  state secondstriker_goto_ball {
     decision {
       else if (action_done) {
         goto wait_for_firststriker;
@@ -50,7 +50,7 @@ option situation_based_secondstriker
 
   state wait_for_firststriker {
     decision {
-      else if (state_time > 2000) { //First striker is not reacting
+      else if (state_time > 2000) { //Timeout: First striker is not reacting
         goto interfere_with_attack;
       }
       else 
@@ -76,7 +76,7 @@ option situation_based_secondstriker
                 ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
           goto secondstriker_sidekick;
         else if (ball.time_since_last_seen > 1500) {
-          goto search;
+          goto secondstriker_search;
         }
         else
           goto secondstriker_turn;
@@ -85,7 +85,7 @@ option situation_based_secondstriker
         stay;
     }
     action{
-      situation_abortable = false;
+      situation_abortable = true;
       go_to_ball_with_USOA(distance = 190);
     }
   }
@@ -113,7 +113,7 @@ option situation_based_secondstriker
   state secondstriker_sidekick {
     decision {
       else if(action_done)
-        goto goto_ball;
+        goto secondstriker_goto_ball;
       else
         stay;
     }
@@ -126,7 +126,7 @@ option situation_based_secondstriker
   state secondstriker_sidekick_stable {
     decision {
       else if(action_done)
-        goto goto_ball;
+        goto secondstriker_goto_ball;
       else
         stay;
     }
@@ -143,7 +143,7 @@ option situation_based_secondstriker
       else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
         goto secondstriker_sidekick;
       else if(action_done)
-        goto goto_ball;
+        goto secondstriker_goto_ball;
       else
         stay;
     }
