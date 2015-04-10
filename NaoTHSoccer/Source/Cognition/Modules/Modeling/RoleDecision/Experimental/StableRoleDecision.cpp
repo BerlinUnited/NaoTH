@@ -9,6 +9,7 @@
 #include  <Tools/DataConversion.h>
 
 #include <math.h>
+#include <list>
 
 using namespace std;
 
@@ -30,6 +31,9 @@ void StableRoleDecision::execute() {
 }//end execute
 
 void StableRoleDecision::computeStrikers() {
+  
+  getRoleDecisionModel().aliveRobots = *(new std::list<int>());
+  getRoleDecisionModel().deadRobots = *(new std::list<int>());
 
   int firstStriker = std::numeric_limits<int>::max();
   int secondStriker = std::numeric_limits<int>::max();
@@ -54,11 +58,23 @@ void StableRoleDecision::computeStrikers() {
       failureProbability = robotFailure->second;
     }
 
+    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().gameData.playerNumber) { //Message is not fresh
+      getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
+      continue;
+    }
+    else {
+      getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
+    }
+
     double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+
+    if (robotNumber == getPlayerInfo().gameData.playerNumber && (msg.fallen || msg.isPenalized || 
+      msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) {
+        wantsToBeStriker = false;
+    }
 
     if (!msg.fallen
       && !msg.isPenalized
-      && (failureProbability < parameters.minFailureProbability || msg.playerNum == getPlayerInfo().gameData.playerNumber) //Message is fresh
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) { //Ball is fresh
 
@@ -70,7 +86,7 @@ void StableRoleDecision::computeStrikers() {
             secondStriker = robotNumber;
           }
         }
-        if (msg.timeToBall < ownTimeToBall) { 
+        if (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall) { 
           wantsToBeStriker = false; //Preparation for next round's decision
         }
 
