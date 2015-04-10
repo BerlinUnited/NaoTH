@@ -35,7 +35,7 @@ void TeamMessageStatistics::execute() {
 
         //Update statistics for the whole team
         if (robotNumber == getPlayerInfo().gameData.playerNumber) {
-          continue;
+          continue; //Don't consider our own messages
         }
         double old_amountOfMessages = getTeamMessageStatisticsModel().amountOfMessages++;
         if (parameters.interpolation == 0.0 || old_amountOfMessages == 0 || 1.0/getTeamMessageStatisticsModel().amountOfMessages > parameters.interpolation) {

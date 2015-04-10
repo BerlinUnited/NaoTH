@@ -82,7 +82,7 @@ option decide_role
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
-      set_head = (platform.frameNumber % 3 == 0) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
+      set_head = 4;
       //for rotating
       //set_left_ear = platform.frameNumber % 10;
       //set_right_ear = platform.frameNumber % 10;
