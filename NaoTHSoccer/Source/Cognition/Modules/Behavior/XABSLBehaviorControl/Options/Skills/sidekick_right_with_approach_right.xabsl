@@ -9,7 +9,7 @@ option sidekick_right_with_approach_right
         stay;
     }
     action {
-      go_to_ball_with_foot(right = false, distance = 130);
+      go_to_ball_with_foot_dynamic(right = false, distance = 130);
     }
   }
 

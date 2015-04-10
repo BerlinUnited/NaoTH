@@ -236,11 +236,11 @@ void FieldInfo::createLinesTable()
     crossings[opponentPenaltyCornerLeft].position,
     crossings[opponentGoalTCrossingLeft].position
     );
-<<<<<<< HEAD
+
 
   // white goal box is recognized as lines (opp goal)
   //lengthen line 2.5cm to the left to connect it with other line
-=======
+
   /*
   // HACK: RC14 white goal box is recognized as lines (opp goal)
 >>>>>>> develop

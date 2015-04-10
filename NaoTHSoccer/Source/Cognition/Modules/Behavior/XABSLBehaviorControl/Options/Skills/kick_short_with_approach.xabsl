@@ -20,7 +20,7 @@ option kick_short_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot(right=true, distance=190);
+      go_to_ball_with_foot_dynamic(right=true, distance=190);
       motion.walk.style = normal;
     }
   }
@@ -46,7 +46,7 @@ option kick_short_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot(right=false, distance=190);
+      go_to_ball_with_foot_dynamic(right=false, distance=190);
       motion.walk.style = normal;
     }
   }
