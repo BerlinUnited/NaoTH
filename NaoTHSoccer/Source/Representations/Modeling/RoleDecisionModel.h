@@ -9,8 +9,6 @@
 
 using namespace std;
 
-#include <list>
-
 
 class RoleDecisionModel: public naoth::Printable
 {
@@ -19,9 +17,6 @@ public:
   int firstStriker;
   int secondStriker;
 
-  std::list<int> aliveRobots;
-  std::list<int> deadRobots;
-
   bool wantsToBeStriker;
 
   RoleDecisionModel():
@@ -29,12 +24,10 @@ public:
     secondStriker(-1),
     wantsToBeStriker(false)
   {
-    aliveRobots = *(new std::list<int>());
-    deadRobots = *(new std::list<int>());
   }
 
-  virtual void print(std::ostream& stream) const {
-
+  virtual void print(std::ostream& stream) const
+  {
     if (firstStriker != -1) {
       stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
     }
@@ -50,22 +43,13 @@ public:
     }
 
     if (wantsToBeStriker) {
-      stream << "Robot wants to be a striker in the next round.\n\n";
+      stream << "Robot wants to be a striker in the next round.\n";
     }
     else {      
-      stream << "Robot does not want to be a striker in the next round.\n\n";
+      stream << "Robot does not want to be a striker in the next round.\n";
     }
-    
-    stream << "The following robots are considered ALIVE:\n";
-    for (std::list<int>::const_iterator iter = aliveRobots.begin(); iter != aliveRobots.end(); iter++) {
-      stream << "Robot " << *iter << std::endl;
-    }
-    stream << "\nThe following robots are considered DEAD:\n";    
-    for (std::list<int>::const_iterator iter = deadRobots.begin(); iter != deadRobots.end(); iter++) {
-      stream << "Robot " << *iter << std::endl;
-    }
-
   }
+
 
 
 };
