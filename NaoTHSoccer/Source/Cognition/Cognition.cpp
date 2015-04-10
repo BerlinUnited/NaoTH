@@ -40,6 +40,7 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -47,7 +48,10 @@
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
+#include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
+#include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
+#include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
@@ -124,6 +128,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
@@ -131,7 +136,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
   REGISTER_MODULE(GoalFeatureDetector);
+  REGISTER_MODULE(GoalFeatureDetectorV2);
   REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GoalDetectorV2);
+  REGISTER_MODULE(GoalCrossBarDetector);
   REGISTER_MODULE(BallDetector);
 
   REGISTER_MODULE(VirtualVisionProcessor);

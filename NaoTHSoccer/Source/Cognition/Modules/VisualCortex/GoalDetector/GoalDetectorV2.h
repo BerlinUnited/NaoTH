@@ -1,18 +1,19 @@
 /**
-* @file GoalDetector.h
+* @file GoalDetectorV2.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * @author <a href="mailto:critter@informatik.hu-berlin.de">CNR</a>
-* Definition of class GoalDetector
+* Definition of class GoalDetectorV2
 */
 
-#ifndef _GoalDetector_H_
-#define _GoalDetector_H_
+#ifndef _GoalDetectorV2_H_
+#define _GoalDetectorV2_H_
 
 #include <ModuleFramework/Module.h>
 
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/FieldInfo.h>
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/GoalFeaturePercept.h"
 #include "Representations/Perception/Histograms.h"
@@ -32,7 +33,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
-BEGIN_DECLARE_MODULE(GoalDetector)
+BEGIN_DECLARE_MODULE(GoalDetectorV2)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -46,6 +47,8 @@ BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
+  REQUIRE(FieldInfo)
+
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
 
@@ -55,15 +58,15 @@ BEGIN_DECLARE_MODULE(GoalDetector)
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
   PROVIDE(GoalPostHistograms)
-END_DECLARE_MODULE(GoalDetector)
+END_DECLARE_MODULE(GoalDetectorV2)
 
 
-class GoalDetector: private GoalDetectorBase
+class GoalDetectorV2: private GoalDetectorV2Base
 {
 public:
 
-  GoalDetector();
-  virtual ~GoalDetector();
+  GoalDetectorV2();
+  virtual ~GoalDetectorV2();
 
   // override the Module execute method
   virtual void execute()
@@ -83,16 +86,18 @@ private:
   {
   public:
 
-    Parameters() : ParameterList("GoalDetectorParameters")
+    Parameters() : ParameterList("GoalDetectorV2Parameters")
     {
       PARAMETER_REGISTER(threshold) = 140;
-      PARAMETER_REGISTER(thresholdGradient) = 30;
+      PARAMETER_REGISTER(thresholdGradient) = 7;
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
 
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
+      PARAMETER_REGISTER(maxBarWidthRatio) = 1.5;
+      PARAMETER_REGISTER(minGoalHeightRatio) = 0.8;
 
       syncWithConfig();
     }
@@ -108,6 +113,8 @@ private:
 
     double thresholdFeatureSimilarity;
     double colorRegionDeviation;
+    double maxBarWidthRatio;
+    double minGoalHeightRatio;
   };
 
   Parameters params;
@@ -117,7 +124,7 @@ private:
   {
   private:
     std::vector<cv::Point2f> points;
-    std::vector<GoalBarFeature> features;
+    std::vector<GoalBarFeature > features;
     double summedWidths;
 
   public:
@@ -177,16 +184,23 @@ private:
 
   void debugStuff(CameraInfo::CameraID camID);
 
-  DOUBLE_CAM_PROVIDE(GoalDetector, DebugImageDrawings);
+  Vector2d getBackProjectedTopPoint(const GoalPercept::GoalPost& post);
+  Vector2d getBackProjectedBasePoint(const GoalPercept::GoalPost& post);
+  int getBackProjectedTopBarWidth(const GoalPercept::GoalPost& post);
+  int getBackProjectedBaseBarWidth(const GoalPercept::GoalPost& post);
+  int getBackProjectedPostHeight(const GoalPercept::GoalPost& post);
+
+
+  DOUBLE_CAM_PROVIDE(GoalDetectorV2, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(GoalDetector, Image);
-  DOUBLE_CAM_REQUIRE(GoalDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(GoalDetector, FieldPercept);
-  DOUBLE_CAM_REQUIRE(GoalDetector, GoalFeaturePercept);
+  DOUBLE_CAM_REQUIRE(GoalDetectorV2, Image);
+  DOUBLE_CAM_REQUIRE(GoalDetectorV2, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(GoalDetectorV2, FieldPercept);
+  DOUBLE_CAM_REQUIRE(GoalDetectorV2, GoalFeaturePercept);
 
-  DOUBLE_CAM_PROVIDE(GoalDetector, GoalPercept);
+  DOUBLE_CAM_PROVIDE(GoalDetectorV2, GoalPercept);
 
-};//end class GoalDetector
+};//end class GoalDetectorV2
 
-#endif // _GoalDetector_H_
+#endif // _GoalDetectorV2_H_

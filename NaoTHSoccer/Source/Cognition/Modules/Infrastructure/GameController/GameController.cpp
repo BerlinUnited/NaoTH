@@ -205,7 +205,8 @@ void GameController::updateLEDs()
   // show team color on left foot
   if (getPlayerInfo().gameData.teamColor == GameData::red)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 0.3;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 0.1;
   }
   else if (getPlayerInfo().gameData.teamColor == GameData::blue)
   {

@@ -113,7 +113,7 @@ private: // local types
   class Parameters: public ParameterList
   {
   public: 
-    Parameters(): ParameterList("MCSLSParameters")
+    Parameters(): ParameterList("MCSLParameters")
     {
       PARAMETER_REGISTER(thresholdCanopy) = 900;
       PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
@@ -152,6 +152,8 @@ private: // local types
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
+
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -192,6 +194,8 @@ private: // local types
 
     bool resampleSUS;
     bool resampleGT07;
+
+    double maxAcceptedGoalErrorWhileTracking;
   } parameters;
 
   class LineDensity {

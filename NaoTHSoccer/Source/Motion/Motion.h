@@ -61,7 +61,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugModify)
 
   REQUIRE(MotionStatus)
-  REQUIRE(OdometryData)
+  PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 

@@ -55,7 +55,8 @@ public:
     coordinate(Hip),
     searchCenter(0, 0, 0),
     searchSize(90, 45, 0),
-    searchDirection(true)
+    searchDirection(true),
+    velocity(300)
   {
   }
 
@@ -75,6 +76,7 @@ public:
     searchCenter = Vector3d();
     searchSize = Vector3d(90, 45, 0),
     searchDirection = true;
+    velocity = 300;
   }
 
 
@@ -106,6 +108,7 @@ public:
   Vector3<double> searchSize;
   bool searchDirection;
 
+  double velocity;
 
   /** return the name of the motion id */
   static std::string getName(HeadMotionID id);
