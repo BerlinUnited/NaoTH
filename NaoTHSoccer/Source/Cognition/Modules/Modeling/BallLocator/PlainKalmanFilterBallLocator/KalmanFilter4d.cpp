@@ -67,6 +67,23 @@ void KalmanFilter4d::update(const Eigen::Vector2d& z)
     P = P_corr;
 }
 
+
+void KalmanFilter4d::extendedUpdate(const Eigen::Matrix<double,2,4>& h, const Eigen::Vector2d& z)
+{
+    H = h;
+
+    Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
+
+    K = P_pre * H.transpose() * temp1.inverse();
+
+    x_corr = x_pre + K * (z - H * x_pre );
+
+    P_corr = P_pre - K*H*P_pre;
+
+    x = x_corr;
+    P = P_corr;
+}
+
 void KalmanFilter4d::setState(Eigen::Vector4d& state)
 {
     x = state;
@@ -99,4 +116,17 @@ Eigen::Vector2d KalmanFilter4d::getStateInMeasurementSpace() const {
     Eigen::Vector2d a;
     a = H*x;
     return a;
+}
+
+// maybe too special
+Eigen::Vector2d KalmanFilter4d::getStateInSphericalMeasurementSpace(const double height) const {
+    Eigen::Vector2d z;
+    //const double height = getCameraMatrixTop().translation.z; // part of the filter height? old (from last update) or current?
+    const double x_coord = x(0);
+    const double y_coord = x(2);
+    const double d = std::sqrt(x_coord*x_coord + y_coord*y_coord);
+
+    z << std::atan2(height,d),
+         std::atan2(x_coord,y_coord);
+    return z;
 }

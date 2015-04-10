@@ -13,6 +13,8 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/MotionStatus.h"
 
+#include "Representations/Perception/CameraMatrix.h"
+
 #include "KalmanFilter4d.h"
 
 // debug
@@ -39,8 +41,14 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 //  REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
+
+// for preview stuff
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
+
+// cooridinate change
+//  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 //  REQUIRE(SituationStatus)
 
   REQUIRE(BallPercept)
@@ -72,6 +80,7 @@ private:
 private: // multi stuff?
 
     double euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
+    double sphericalEuclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z, const double height) const;
 
     // non normalized value of probability density function of measurement Z at the filters state
     double evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;

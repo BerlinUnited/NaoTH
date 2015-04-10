@@ -20,6 +20,7 @@ public:
 
     void prediction(const Eigen::Vector2d &u, double dt);
     void update(const Eigen::Vector2d &z);
+    void extendedUpdate(const Eigen::Matrix<double,2,4>& h, const Eigen::Vector2d& z);
 
     void setState(Eigen::Vector4d& state);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
@@ -27,6 +28,7 @@ public:
 
     const Eigen::Vector4d& getState() const;
     Eigen::Vector2d getStateInMeasurementSpace() const;
+    Eigen::Vector2d getStateInSphericalMeasurementSpace(const double height) const;
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
 

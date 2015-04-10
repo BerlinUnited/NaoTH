@@ -42,19 +42,24 @@ void PlainKalmanFilterBallLocator::execute()
     if(getBallPercept().ballWasSeen)
     {
         Eigen::Vector2d z;
-        z << getBallPercept().bearingBasedOffsetOnField.x,
-             getBallPercept().bearingBasedOffsetOnField.y;
+        const double height = getCameraMatrixTop().translation.z;
+        const double x = getBallPercept().bearingBasedOffsetOnField.x;
+        const double y = getBallPercept().bearingBasedOffsetOnField.y;
+        const double d = std::sqrt(x*x + y*y);
+
+        z << std::atan2(height,d),
+             std::atan2(x,y);
 
         if(filter.size() == 0)
         {
             Eigen::Vector4d newState;
-            newState << z(0), 0, z(1), 0;
+            newState << x, 0, y, 0;
             filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
         }
         else
         {
             // find best matching filter
-            double dist = euclidianDistanceToState(filter[0],z);
+            double dist = sphericalEuclidianDistanceToState(filter[0],z,getCameraMatrixTop().translation.z);
             std::vector<KalmanFilter4d>::iterator bestPredictor = filter.begin();
 
             for(std::vector<KalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
@@ -81,7 +86,12 @@ void PlainKalmanFilterBallLocator::execute()
                     TEXT_DRAWING((z(0)+state(0))/2,(z(1)+state(1))/2,dist);
                 );
 
-                (*bestPredictor).update(z);
+                // or better a part of kalman filter???
+                Eigen::Matrix<double,2,4> H;
+                H << height*x/(d*(height*height+d*d)) , 0, height*y/(d*(height*height+d*d)), 0,
+                     y/(d*d), 0, -x/(d*d), 0;
+
+                (*bestPredictor).extendedUpdate(H, z);
             }
         }
     }
@@ -165,6 +175,11 @@ void PlainKalmanFilterBallLocator::execute()
 double PlainKalmanFilterBallLocator::euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
     return std::sqrt(((z-filter.getStateInMeasurementSpace()).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInMeasurementSpace()))(0,0));
+}
+
+double PlainKalmanFilterBallLocator::sphericalEuclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z, const double height) const
+{
+    return std::sqrt(((z-filter.getStateInSphericalMeasurementSpace(height)).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInSphericalMeasurementSpace(height)))(0,0));
 }
 
 double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
