@@ -50,6 +50,9 @@ bool TeamSymbols::getWasStriker()
 void TeamSymbols::setWasStriker(bool striker)
 {
   theInstance->getPlayerInfo().isPlayingStriker = striker;
+  if (theInstance->getPlayerInfo().gameData.playerNumber == 1) {
+    theInstance->getRoleDecisionModel().wantsToBeStriker = true;
+  }
 }
 
 bool TeamSymbols::calculateIfStriker()

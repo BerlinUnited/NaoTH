@@ -32,11 +32,11 @@ BEGIN_DECLARE_MODULE(TeamSymbols)
   REQUIRE(RobotPose)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
-  REQUIRE(RoleDecisionModel)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageStatisticsModel)
 
   PROVIDE(PlayerInfo)
+  PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(TeamSymbols)
 
 class TeamSymbols: public TeamSymbolsBase
