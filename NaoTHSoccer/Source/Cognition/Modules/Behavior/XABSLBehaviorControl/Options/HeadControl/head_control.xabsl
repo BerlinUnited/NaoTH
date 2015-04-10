@@ -60,7 +60,7 @@ option head_control
     }
   }
 
-  state search_for_ball_goalie
+  state search_for_ball_goalie
   {
     action
     {
@@ -76,7 +76,7 @@ option head_control
     {
       //search_for_ball_and_look_around();
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check=false, look_around=true);
+      search_for_ball(force_ball_model_check=false, look_around=true, look_at_ball_when_distance=1000);
     }
   }
 
@@ -94,7 +94,8 @@ option head_control
     action
     {
       head.camera.id = Top;
-      search_for_goal(own=true,opp=true);
+      search_for_goal(own=true,opp=true);
+
     }
   }
 
