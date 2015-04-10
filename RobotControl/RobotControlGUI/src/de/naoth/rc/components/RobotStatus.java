@@ -6,9 +6,7 @@
 
 package de.naoth.rc.components;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
 import java.io.IOException;
