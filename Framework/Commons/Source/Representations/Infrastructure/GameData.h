@@ -82,7 +82,9 @@ public:
   {
     blue = 0,
     red = 1,
-    numOfTeamColor = 2
+    yellow = 2,
+    black = 3,
+    numOfTeamColor = 4
   };
 
   static TeamColor teamColorFromString(const std::string& teamColor);
