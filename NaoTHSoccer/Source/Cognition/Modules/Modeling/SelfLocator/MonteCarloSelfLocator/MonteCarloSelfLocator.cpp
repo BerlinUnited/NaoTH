@@ -1010,6 +1010,12 @@ void MonteCarloSelfLocator::drawPosition() const
     case GameData::blue:
       PEN("0000FF", 20);
       break;
+    case GameData::yellow:
+      PEN("FFFF00", 20);
+      break;
+    case GameData::black:
+      PEN("000000", 20);
+      break;
     default:
       PEN("AAAAAA", 20);
       break;
