@@ -176,7 +176,7 @@ message TeamMessageCollection
 
 enum TeamColor 
 {
-  blueTeam = 0; redTeam = 1; invalidTeam = 2;
+  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
 }
 
 message TeamMessage
