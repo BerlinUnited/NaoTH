@@ -49,7 +49,6 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
 {
   out.playerNum = playerInfo.gameData.playerNumber;
   out.teamNumber = playerInfo.gameData.teamNumber;
-  out.teamColor = playerInfo.gameData.teamColor;
   out.pose = robotPose;
 
   if(ballModel.valid)
@@ -118,13 +117,17 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  splMsg.teamColor = (uint8_t) teamData.teamColor;
+  if(teamData.teamNumber < std::numeric_limits<uint8_t>::max())
+  {
+    splMsg.teamNum = (uint8_t) teamData.teamNumber;
+  }
 
   splMsg.pose[0] = (float) teamData.pose.translation.x;
   splMsg.pose[1] = (float) teamData.pose.translation.y;
   splMsg.pose[2] = (float) teamData.pose.rotation;
 
-  splMsg.ballAge = teamData.ballAge;
+  // convert milliseconds to seconds
+  splMsg.ballAge = (float) ((double) teamData.ballAge / 1000.0);
 
   splMsg.ball[0] = (float) teamData.ballPosition.x;
   splMsg.ball[1] = (float) teamData.ballPosition.y;

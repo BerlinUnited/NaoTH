@@ -110,16 +110,15 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
   msg.frameInfo = getFrameInfo();
 
   msg.playerNum = spl.playerNum;
+  msg.teamNumber = spl.teamNum;
 
-  if(spl.teamColor < GameData::numOfTeamColor) {
-    msg.teamColor = (GameData::TeamColor) spl.teamColor;
-  }
 
   msg.pose.translation.x = spl.pose[0];
   msg.pose.translation.y = spl.pose[1];
   msg.pose.rotation = spl.pose[2];
 
-  msg.ballAge = spl.ballAge;
+  // convert from seconds to milliseconds
+  msg.ballAge = (int) (spl.ballAge*1000.0f);
 
   msg.ballPosition.x = spl.ball[0];
   msg.ballPosition.y = spl.ball[1];
@@ -144,7 +143,6 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
         msg.isPenalized = userData.ispenalized();
         msg.batteryCharge = userData.batterycharge();
         msg.temperature = userData.temperature();
-        msg.teamNumber = userData.teamnumber();
         msg.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
         for(size_t i=0; i < msg.opponents.size(); i++)
         {
@@ -175,12 +173,11 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
     return;
   }
 
-
-  GameData::TeamColor teamColor = (GameData::TeamColor) spl.teamColor;
-
-  if ( teamColor == getPlayerInfo().gameData.teamColor
+  unsigned int dataTeamNum = (unsigned int)(spl.teamNum);
+  unsigned int dataPlayerNum = (unsigned int)(spl.playerNum);
+  if ( dataTeamNum == getPlayerInfo().gameData.teamNumber
        // ignore our own messages, we are adding it artficially later
-       && (allowOwn || spl.playerNum != getPlayerInfo().gameData.playerNumber)
+       && (allowOwn || dataPlayerNum != getPlayerInfo().gameData.playerNumber)
      )
   {
     TeamMessage::Data msg;
