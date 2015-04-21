@@ -128,6 +128,8 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
 
   msg.fallen = (spl.fallen == 1);
 
+  msg.wasStriker = (spl.intention == 3);
+
   // check if we can deserialize the user defined data
   if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
   {
@@ -139,7 +141,6 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
         msg.timestamp = userData.timestamp();
         msg.bodyID = userData.bodyid();
         msg.timeToBall = userData.timetoball();
-        msg.wasStriker = userData.wasstriker();
         msg.isPenalized = userData.ispenalized();
         msg.batteryCharge = userData.batterycharge();
         msg.temperature = userData.temperature();

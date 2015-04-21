@@ -143,11 +143,9 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   userMsg.set_bodyid(teamData.bodyID);
   userMsg.set_timestamp(teamData.timestamp);
   userMsg.set_timetoball(teamData.timeToBall);
-  userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_ispenalized(teamData.isPenalized);
   userMsg.set_batterycharge(teamData.batteryCharge);
   userMsg.set_temperature(teamData.temperature);
-  userMsg.set_teamnumber(teamData.teamNumber);
   for(unsigned int i=0; i < teamData.opponents.size(); i++)
   {
     naothmessages::Opponent* opp = userMsg.add_opponents();
@@ -173,6 +171,25 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   // TODO: actually set shootingTo when we are shooting to some point
   splMsg.shootingTo[0] = splMsg.pose[0];
   splMsg.shootingTo[1] = splMsg.pose[1];
+
+  // TODO: suggest something
+  for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)
+  {
+    splMsg.suggestion[i] = 0;
+  }
+
+  // TODO: map more behavior states (attacker etc.) to our intention
+  splMsg.intention = 0;
+  if(teamData.wasStriker)
+  {
+    splMsg.intention = 3;
+  }
+  else if(teamData.playerNum == 1)
+  {
+    // play keeper
+    splMsg.intention = 1;
+  }
+
 }
 
 void TeamCommSender::addSendOppModel(unsigned int oppNum,
