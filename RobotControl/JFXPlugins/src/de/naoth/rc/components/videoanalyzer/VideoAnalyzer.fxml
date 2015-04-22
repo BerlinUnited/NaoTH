@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox id="VBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="576.0" spacing="5.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoAnalyzerController">
+  <children>
+    <BorderPane VBox.vgrow="ALWAYS">
+      <center>
+        <fx:include fx:id="video" source="VideoPlayer.fxml" />
+      </center>
+      <top>
+        <VBox id="VBox" alignment="CENTER" spacing="5.0" BorderPane.alignment="TOP_CENTER">
+          <children>
+            <HBox alignment="TOP_LEFT">
+              <children>
+                <Button id="btLoadLog" mnemonicParsing="false" onAction="#openLogfile" text="Open Log" />
+                <Button fx:id="btLoadVideo" disable="true" mnemonicParsing="false" onAction="#openVideo" text="Open Video" />
+              </children>
+            </HBox>
+            <HBox fx:id="syncPane" alignment="CENTER_LEFT" disable="true" VBox.vgrow="NEVER">
+              <children>
+                <Label text="Sync. point (Log):" />
+                <ChoiceBox fx:id="cbSyncLog">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ChoiceBox>
+                <Button id="btSyncPointVideo" mnemonicParsing="false" onAction="#videoSyncPointSelected" text="Sync. point (Video)" />
+                <Label prefHeight="-1.0" text="Offset: " />
+                <Label id="txtOffset" fx:id="lblOffset" text="0.0" />
+              </children>
+            </HBox>
+            <HBox>
+              <children>
+                <Label text="Log frame" />
+                <Label fx:id="frameModeIndicator" text="*" />
+                <Slider fx:id="frameSlider" blockIncrement="1.0" majorTickUnit="100.0" minorTickCount="0" showTickLabels="false" showTickMarks="true" HBox.hgrow="ALWAYS" />
+              </children>
+            </HBox>
+          </children>
+        </VBox>
+      </top>
+    </BorderPane>
+  </children>
+</VBox>
