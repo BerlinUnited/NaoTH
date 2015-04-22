@@ -178,7 +178,7 @@ public class BehaviorViewer extends AbstractDialog
               Messages.BehaviorStateComplete behavior_msg = Messages.BehaviorStateComplete.parseFrom(object);
               
               behaviorParser = new XABSLProtoParser();
-              currentBehavior =  behaviorParser.parse(behavior_msg);
+              currentBehavior =  behaviorParser.parseComplete(behavior_msg);
             }
             catch(InvalidProtocolBufferException ex)
             {
@@ -203,7 +203,7 @@ public class BehaviorViewer extends AbstractDialog
             try
             {
               Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
-              final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+              final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
               
              
               SwingUtilities.invokeLater(new Runnable() {
@@ -800,7 +800,7 @@ public class BehaviorViewer extends AbstractDialog
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b, int frameNumber) {
+    public void newFrame(BlackBoard b) {
         
         try
         {
@@ -808,7 +808,7 @@ public class BehaviorViewer extends AbstractDialog
           Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
           
           behaviorParser = new XABSLProtoParser();
-          currentBehavior = behaviorParser.parse(status);
+          currentBehavior = behaviorParser.parseComplete(status);
         }
         catch(InvalidProtocolBufferException ex)
         {
@@ -819,7 +819,7 @@ public class BehaviorViewer extends AbstractDialog
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
           Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
           addFrame(frame);
         }
         catch(InvalidProtocolBufferException ex)
