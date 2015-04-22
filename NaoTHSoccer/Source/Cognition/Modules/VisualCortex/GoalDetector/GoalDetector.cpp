@@ -11,6 +11,7 @@
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/ImageProcessing/Filter.h"
+#include "Tools/ImageProcessing/MaximumScan.h"
 
 #define IMG_GET(x,y,p) \
   if(!getImage().isInside(x,y)) { \
@@ -24,6 +25,7 @@ GoalDetector::GoalDetector()
   cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:markPostScans","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:GoalDetector:markPosts","..", false);
 
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramBottom","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramTop","..", false);
@@ -85,25 +87,25 @@ void GoalDetector::execute(CameraInfo::CameraID id)
 
 void GoalDetector::clusterEdgelFeatures()
 {
-  std::vector<EdgelT<double> > pairs;
-  for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().edgel_features.size(); scanIdOne++) 
+  std::vector<GoalBarFeature> pairs;
+  for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().features.size(); scanIdOne++) 
   {
-    const std::vector<EdgelT<double> >& scanlineOne = getGoalFeaturePercept().edgel_features[scanIdOne];
+    const std::vector<GoalBarFeature>& scanlineOne = getGoalFeaturePercept().features[scanIdOne];
     for(size_t i = 0; i < scanlineOne.size(); i++) 
     {
-      const EdgelT<double>& e1 = scanlineOne[i];
+      const GoalBarFeature& e1 = scanlineOne[i];
 
       size_t scanIdTwo = scanIdOne+1;
-      //for(size_t scanIdTwo = scanIdOne+1; scanIdTwo < features.size(); scanIdTwo++) {
-        for(size_t j = 0; j < getGoalFeaturePercept().edgel_features[scanIdTwo].size(); j++) {
-          const EdgelT<double>& e2 = getGoalFeaturePercept().edgel_features[scanIdTwo][j];
+        for(size_t j = 0; j < getGoalFeaturePercept().features[scanIdTwo].size(); j++) {
+          const GoalBarFeature& e2 = getGoalFeaturePercept().features[scanIdTwo][j];
 
           if(e1.sim(e2) > params.thresholdFeatureSimilarity) {
             //LINE_PX(ColorClasses::red, (int)(e1.point.x+0.5), (int)(e1.point.y+0.5), (int)(e2.point.x+0.5), (int)(e2.point.y+0.5));
 
-            EdgelT<double> pair;
+            GoalBarFeature pair;
             pair.point = (e1.point + e2.point)*0.5;
             pair.direction = (e2.direction + e1.direction).normalize();
+            pair.width = (e2.width + e1.width)*0.5;
             pairs.push_back(pair);
           }
         }
@@ -113,7 +115,7 @@ void GoalDetector::clusterEdgelFeatures()
 
   for(size_t i = 0; i < pairs.size(); i++) 
   {
-    const EdgelT<double>& e1 = pairs[i];
+    const GoalBarFeature& e1 = pairs[i];
 
     size_t cluster_idx = 0;
     double max_sim = -1;
@@ -148,12 +150,6 @@ void GoalDetector::calcuateGoalPosts()
     {
       Math::Line line = cluster.getLine();
 
-      Vector2d begin, end;
-      begin = line.getBase();
-      end = line.getBase() + line.getDirection()*50;
-      DEBUG_REQUEST("Vision:GoalDetector:markPostScans",  
-        LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-      );
       GoalPercept::GoalPost post;
       post.directionInImage = line.getDirection();
       post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
@@ -167,8 +163,32 @@ void GoalDetector::calcuateGoalPosts()
           post.position);
 
       post.positionReliable = post.positionReliable && projectionOk;
+      post.seenWidth = cluster.getFeatureWidth();
+      post.seenHeight = (post.basePoint - post.topPoint).abs();
 
-      getGoalPercept().add(post);
+      DEBUG_REQUEST("Vision:GoalDetector:markPosts",  
+        Vector2i begin;
+        Vector2i end;
+        begin = post.basePoint;
+        end = post.topPoint;
+        Vector2d postNorm = Vector2d(post.topPoint - post.basePoint).normalize().rotateRight() * post.seenWidth * 0.5;
+
+        Vector2i beginL = post.basePoint - postNorm;
+        Vector2i beginR = post.basePoint + postNorm;
+        Vector2i endL = post.topPoint - postNorm;
+        Vector2i endR = post.topPoint + postNorm;
+        ColorClasses::Color col = ColorClasses::green;
+        if(!post.positionReliable) col = ColorClasses::red;
+
+        LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
+        LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
+        LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
+        LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+      );
+      if(post.positionReliable)
+      {
+        getGoalPercept().add(post);
+      }
     }
   }
 }
@@ -179,13 +199,16 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
   Pixel pixel;
   BresenhamLineScan footPointScanner(pos, direction, getImage().cameraInfo);
 
-  Filter<Gauss5x1, Vector2i, double, 5> filter;
+  // initialize the scanner
+  Vector2i peak_point(pos);
+  MaximumScan<Vector2i,double> maxScan(peak_point, params.thresholdGradient);
+  Filter<Diff5x1, Vector2i, double, 5> filter;
 
   while(footPointScanner.getNextWithCheck(pos))
   {
     IMG_GET(pos.x, pos.y, pixel);
-    int diffVU = (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
-    filter.add(pos, diffVU);
+    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    filter.add(pos, pixValue);
 
     //collect some values for statisics of colors
     getGoalPostHistograms().increaseChannelValue(pixel);
@@ -196,8 +219,13 @@ Vector2i GoalDetector::scanForEndPoint(const Vector2i& start, const Vector2d& di
       }
     );
 
-    if(filter.ready() && filter.value() < params.thresholdUV) {
-      break; 
+    if(filter.ready())
+    {
+      double absValue = fabs(filter.value());
+      if( maxScan.add(filter.point(), absValue) || pixValue < params.threshold) 
+      {
+        break; 
+      }
     }
   }
 

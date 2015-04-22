@@ -50,8 +50,6 @@ import org.freehep.util.export.ExportDialog;
  * @author  Heinrich Mellmann
  */
 public class FieldViewer extends AbstractDialog
-  implements ObjectListener<DrawingsContainer>,
-  Dialog
 {
 
   @PluginImplementation
@@ -79,6 +77,8 @@ public class FieldViewer extends AbstractDialog
   private final PlotDataListener plotDataListener;
   private StrokePlot strokePlot;
 
+  private DrawingsListener drawingsListener = new DrawingsListener();
+  
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
   public static de.naoth.rc.components.DynamicCanvasPanel getCanvas() {
@@ -152,9 +152,8 @@ public class FieldViewer extends AbstractDialog
         btReceiveDrawings = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
+        btRotate = new javax.swing.JButton();
         btImageProjection = new javax.swing.JToggleButton();
-        btRotate = new javax.swing.JToggleButton();
-        btRotate180 = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
@@ -214,6 +213,18 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(cbBackground);
 
+        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
+        btRotate.setToolTipText("Rotate the coordinates by 90°");
+        btRotate.setFocusable(false);
+        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRotate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRotateActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btRotate);
+
         btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
         btImageProjection.setToolTipText("Image Projection");
         btImageProjection.setFocusable(false);
@@ -225,30 +236,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btImageProjection);
-
-        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
-        btRotate.setFocusable(false);
-        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_cw.png"))); // NOI18N
-        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotateActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate);
-
-        btRotate180.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
-        btRotate180.setToolTipText("Rotate by 180°");
-        btRotate180.setFocusable(false);
-        btRotate180.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate180.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate180.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotate180ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate180);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -330,8 +317,8 @@ public class FieldViewer extends AbstractDialog
       {
         if(Plugin.parent.checkConnected())
         {
-          Plugin.debugDrawingManager.addListener(this);
-          Plugin.debugDrawingManagerMotion.addListener(this);
+          Plugin.debugDrawingManager.addListener(drawingsListener);
+          Plugin.debugDrawingManagerMotion.addListener(drawingsListener);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -341,8 +328,8 @@ public class FieldViewer extends AbstractDialog
       }
       else
       {
-        Plugin.debugDrawingManager.removeListener(this);
-        Plugin.debugDrawingManagerMotion.removeListener(this);
+        Plugin.debugDrawingManager.removeListener(drawingsListener);
+        Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -411,32 +398,11 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_cbBackgroundActionPerformed
 
-    private void btRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRotateActionPerformed
-    {//GEN-HEADEREND:event_btRotateActionPerformed
-        if(this.btRotate.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI*0.5);
-        } else {
-            this.fieldCanvas.setRotation(0);
-        }
+    private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
+        this.fieldCanvas.setRotation(this.fieldCanvas.getRotation() + Math.PI*0.5);
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
-    private void btRotate180ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotate180ActionPerformed
-        if(this.btRotate180.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI);
-        } else {
-            this.fieldCanvas.setRotation(0);
-        }
-        this.fieldCanvas.repaint();
-    }//GEN-LAST:event_btRotate180ActionPerformed
-
-  @Override
-  public void errorOccured(String cause)
-  {
-    btReceiveDrawings.setSelected(false);
-    Plugin.debugDrawingManager.removeListener(this);
-    Plugin.debugDrawingManagerMotion.removeListener(this);
-  }
   
   void resetView()
   {
@@ -451,24 +417,36 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   }//end clearView
 
   
-  @Override
-  public void newObjectReceived(DrawingsContainer objectList)
+  private class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
-    if(objectList != null)
+    @Override
+    public void newObjectReceived(DrawingsContainer objectList)
     {
-      if(!this.btCollectDrawings.isSelected())
+      if(objectList != null)
       {
-        resetView();
-      }
-      DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
-      if(drawingCollection != null) {
-        this.fieldCanvas.getDrawingList().add(drawingCollection);
-      }
+        DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
+        if(drawingCollection == null || drawingCollection.isEmpty()) {
+            return;
+        }
 
-      repaint();
-    }//end if
-  }//end newObjectReceived
+        if(!btCollectDrawings.isSelected()) {
+          resetView();
+        }
 
+        fieldCanvas.getDrawingList().add(drawingCollection);
+
+        repaint();
+      }
+    }
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btReceiveDrawings.setSelected(false);
+      Plugin.debugDrawingManager.removeListener(this);
+      Plugin.debugDrawingManagerMotion.removeListener(this);
+    }
+  }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -556,8 +534,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void dispose()
   {
     // remove all the registered listeners
-    Plugin.debugDrawingManager.removeListener(this);
-    Plugin.debugDrawingManagerMotion.removeListener(this);
+    Plugin.debugDrawingManager.removeListener(drawingsListener);
+    Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
   }//end dispose
@@ -568,8 +546,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btImageProjection;
     private javax.swing.JToggleButton btReceiveDrawings;
-    private javax.swing.JToggleButton btRotate;
-    private javax.swing.JToggleButton btRotate180;
+    private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
     private javax.swing.JDialog coordsPopup;

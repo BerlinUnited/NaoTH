@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +47,7 @@ public class NaoSCP extends javax.swing.JFrame {
         initComponents();
         
         Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
-        Logger.getGlobal().setLevel(Level.FINE);
+        Logger.getGlobal().setLevel(Level.ALL);
         
         try {
             config.load(new FileReader(configPath));
@@ -73,8 +75,12 @@ public class NaoSCP extends javax.swing.JFrame {
 
         tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
         tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
+        
+        File wpa_supplicant_dir = new File(setupDir, "/etc/wpa_supplicant/");
+        wpa_supplicant_dir.mkdirs();
         tmp.save(new File(setupDir,"/etc/wpa_supplicant/wpa_supplicant.conf"));
 
+        
         tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
         tmp.set("ETH_ADDR", cfg.getLan().subnet);
         tmp.set("ETH_NETMASK", cfg.getLan().mask);
@@ -83,6 +89,9 @@ public class NaoSCP extends javax.swing.JFrame {
         tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
         tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
         tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
+        
+        File conf_dir = new File(setupDir, "/etc/conf.d/");
+        conf_dir.mkdirs();
         tmp.save(new File(setupDir, "/etc/conf.d/net"));
     }
 
@@ -105,6 +114,7 @@ public class NaoSCP extends javax.swing.JFrame {
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
         txtRobotNumber = new javax.swing.JFormattedTextField();
+        txtDeployTag = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -143,7 +153,7 @@ public class NaoSCP extends javax.swing.JFrame {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -205,9 +215,16 @@ public class NaoSCP extends javax.swing.JFrame {
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtRobotNumber.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         getContentPane().add(txtRobotNumber, gridBagConstraints);
+
+        txtDeployTag.setColumns(10);
+        txtDeployTag.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        getContentPane().add(txtDeployTag, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -324,11 +341,19 @@ public class NaoSCP extends javax.swing.JFrame {
                         // so we have a fresh new directory
                         if (deployDir.isDirectory()) {
                             // backup 
-                            //FileUtils.deleteDir(deployDir);
-                            if(deployDir.renameTo(new File(targetDir, "deploy.bak"))) {
-                                deployDir = new File(targetDir,"deploy");
-                            } else {
-                                Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                            File commentFile = new File(deployDir, "comment.txt");
+                            if(commentFile.exists()) {
+                                String backup_name = FileUtils.readFile(commentFile);
+                                
+                                if(deployDir.renameTo(new File(targetDir, backup_name))) {
+                                    deployDir = new File(targetDir,"deploy");
+                                } else {
+                                    Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                                }
+                            }
+                            else 
+                            {
+                                FileUtils.deleteDir(deployDir);
                             }
                         }
 
@@ -338,12 +363,27 @@ public class NaoSCP extends javax.swing.JFrame {
                         } 
 
                         //NaoSCP.this.setEnabledAll(false);
-                        naoTHPanel.getAction().run(new File(targetDir,"deploy"));
+                        naoTHPanel.getAction().run(deployDir);
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
                         //NaoSCP.this.setEnabledAll(true);
                         
+                        
+                        // get the current date and time
+                        //String ISO_DATE_FORMAT = "yyyy-MM-dd";
+                        String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
+                        SimpleDateFormat s = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
+                        String backup_tag = s.format(new Date());
+                        
+                        // create a tag file
+                        String tag = txtDeployTag.getText();
+                        if(tag != null && !tag.isEmpty()) {
+                            backup_tag += "-" + tag;
+                        }
+                        
+                        FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
+                        
                         Logger.getGlobal().log(Level.INFO, "DONE");
-                    } catch (NaoSCPException ex) {
+                    } catch (NaoSCPException | IOException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                     
@@ -457,6 +497,7 @@ public class NaoSCP extends javax.swing.JFrame {
     }
     
     private void btSetNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSetNetworkActionPerformed
+/*
         try {
             File tmpDir = new File("./tmp");
             File setupDir = new File(tmpDir, "setup");
@@ -466,6 +507,54 @@ public class NaoSCP extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, null, ex);
         }
+        */
+        new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        File tmpDir = new File("./tmp");
+                        File setupDir = new File(tmpDir, "setup");
+                    
+                        if(setupDir.isDirectory()) {
+                            //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                            FileUtils.deleteDir(setupDir);
+                        }
+
+                        if (!setupDir.mkdirs()) {
+                            Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                        } else {
+                            
+                            setupNetwork(setupDir);
+                            
+                            FileUtils.copyFiles(new File(utilsPath,"/NaoConfigFiles/init_net.sh"), setupDir);
+                            
+                            // copy to robot
+                            String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                            Scp scp = new Scp(ip, "nao", "nao");
+                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+
+                            scp.mkdir("/home/nao/tmp");
+                            scp.cleardir("/home/nao/tmp");
+                            scp.put(setupDir, "/home/nao/tmp");
+
+                            scp.chmod(755, "/home/nao/tmp/init_net.sh");
+                            
+                            Scp.CommandStream shell =  scp.getShell();
+                            shell.run("su");
+                            shell.run("root");
+                            shell.run("cd /home/nao/tmp/");
+                            shell.run("./init_net.sh", "DONE");
+
+                            scp.disconnect();
+                            
+                            Logger.getGlobal().log(Level.INFO, "DONE");
+                        }
+                    } catch (IOException | NaoSCPException |JSchException | SftpException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                    }
+                }
+            }).start();
+        
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -522,6 +611,7 @@ public class NaoSCP extends javax.swing.JFrame {
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
     // End of variables declaration//GEN-END:variables
 }
