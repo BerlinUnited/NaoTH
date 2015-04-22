@@ -50,7 +50,6 @@ copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant
 copy ./etc/conf.d/net /etc/conf.d/net root 644
 
 # restart the network
-rc-update add net.wlan0 boot
 /etc/init.d/net.eth0 restart
 /etc/init.d/net.wlan0 restart
 

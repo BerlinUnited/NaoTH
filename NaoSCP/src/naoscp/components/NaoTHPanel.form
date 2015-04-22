@@ -23,8 +23,6 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="cbCopyConfig" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="cbEnableWifi" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
@@ -40,7 +38,6 @@
                   <Component id="cbCopyExe" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCopyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCopyLib" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="cbEnableWifi" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="playerNumberPanel" min="-2" pref="100" max="-2" attributes="0"/>
@@ -246,10 +243,5 @@
         <Property name="rows" type="int" value="2"/>
       </Layout>
     </Container>
-    <Component class="javax.swing.JCheckBox" name="cbEnableWifi">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="enableWifi"/>
-      </Properties>
-    </Component>
   </SubComponents>
 </Form>

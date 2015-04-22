@@ -9,16 +9,6 @@ if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
   /etc/init.d/naoqi stop
 fi
 
-# make sure wifi is running
-if [ -f "./deploy/disablewifi" ]; then
-  rc-update del net.wlan0 boot 
-  /etc/init.d/net.wlan0 stop
-fi
-if [ -f "./deploy/enablewifi" ]; then
-   rc-update add net.wlan0 boot
-  /etc/init.d/net.wlan0 start
-fi
-
 # backup the stuff from the robot
 rm -rf ./backup
 sudo -u nao mkdir ./backup
