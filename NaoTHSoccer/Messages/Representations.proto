@@ -196,7 +196,7 @@ message BUUserTeamMessage
 {
   optional string bodyID = 1 [default="unknown"];
   optional uint32 timeToBall = 2;
-  optional bool wasStriker = 3 [default=false, deprecated=true];
+  optional bool wasStriker = 3 [default=false];
   optional bool isPenalized = 4 [default=false];
   repeated Opponent opponents = 5;
   optional uint32 teamNumber = 6 [default=0,deprecated=true];

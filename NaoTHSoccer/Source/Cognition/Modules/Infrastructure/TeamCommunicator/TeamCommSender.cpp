@@ -137,34 +137,6 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
 
   splMsg.fallen = (uint8_t) teamData.fallen;
 
-
-  // user defined data
-  naothmessages::BUUserTeamMessage userMsg;
-  userMsg.set_bodyid(teamData.bodyID);
-  userMsg.set_timestamp(teamData.timestamp);
-  userMsg.set_timetoball(teamData.timeToBall);
-  userMsg.set_ispenalized(teamData.isPenalized);
-  userMsg.set_batterycharge(teamData.batteryCharge);
-  userMsg.set_temperature(teamData.temperature);
-  for(unsigned int i=0; i < teamData.opponents.size(); i++)
-  {
-    naothmessages::Opponent* opp = userMsg.add_opponents();
-    opp->set_playernum(teamData.opponents[i].playerNum);
-    DataConversion::toMessage(teamData.opponents[i].poseOnField, *(opp->mutable_poseonfield()));
-  }
-
-  int userSize = userMsg.ByteSize();
-  if(splMsg.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
-  {
-    splMsg.numOfDataBytes = (uint16_t) userMsg.ByteSize();
-    userMsg.SerializeToArray(splMsg.data, userSize);
-  }
-  else
-  {
-    splMsg.numOfDataBytes = 0;
-  }
-
-
   // TODO: actually set walkingTo when we are walking to some point
   splMsg.walkingTo[0] = splMsg.pose[0];
   splMsg.walkingTo[1] = splMsg.pose[1];
@@ -189,6 +161,34 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
     // play keeper
     splMsg.intention = 1;
   }
+
+  // user defined data
+  naothmessages::BUUserTeamMessage userMsg;
+  userMsg.set_bodyid(teamData.bodyID);
+  userMsg.set_wasstriker(teamData.wasStriker);
+  userMsg.set_timestamp(teamData.timestamp);
+  userMsg.set_timetoball(teamData.timeToBall);
+  userMsg.set_ispenalized(teamData.isPenalized);
+  userMsg.set_batterycharge(teamData.batteryCharge);
+  userMsg.set_temperature(teamData.temperature);
+  for(unsigned int i=0; i < teamData.opponents.size(); i++)
+  {
+    naothmessages::Opponent* opp = userMsg.add_opponents();
+    opp->set_playernum(teamData.opponents[i].playerNum);
+    DataConversion::toMessage(teamData.opponents[i].poseOnField, *(opp->mutable_poseonfield()));
+  }
+
+  int userSize = userMsg.ByteSize();
+  if(splMsg.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
+  {
+    splMsg.numOfDataBytes = (uint16_t) userMsg.ByteSize();
+    userMsg.SerializeToArray(splMsg.data, userSize);
+  }
+  else
+  {
+    splMsg.numOfDataBytes = 0;
+  }
+
 
 }
 
