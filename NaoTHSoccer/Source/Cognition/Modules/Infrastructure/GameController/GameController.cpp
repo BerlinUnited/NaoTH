@@ -134,6 +134,10 @@ void GameController::readButtons()
       if (oldColor == GameData::blue) {
         getPlayerInfo().gameData.teamColor = GameData::red;
       } else if (oldColor == GameData::red) {
+        getPlayerInfo().gameData.teamColor = GameData::yellow;
+      } else if (oldColor == GameData::yellow) {
+        getPlayerInfo().gameData.teamColor = GameData::black;
+      } else if (oldColor == GameData::black) {
         getPlayerInfo().gameData.teamColor = GameData::blue;
       }
     }
@@ -211,6 +215,15 @@ void GameController::updateLEDs()
   else if (getPlayerInfo().gameData.teamColor == GameData::blue)
   {
     getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
+  }
+  else if(getPlayerInfo().gameData.teamColor == GameData::yellow)
+  {
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 1.0;
+  }
+  else if(getPlayerInfo().gameData.teamColor == GameData::black)
+  {
+      // LED off
   }
 
   // show kickoff state on right foot and head in initial, ready and set

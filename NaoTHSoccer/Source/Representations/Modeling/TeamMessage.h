@@ -40,9 +40,8 @@ public:
   struct Data
   {
     Data ()
-      : playerNum(0), teamColor(naoth::GameData::numOfTeamColor),
+      : playerNum(0),teamNumber(0),
         ballAge(-1), fallen(false),
-        teamNumber(0),
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
@@ -56,7 +55,8 @@ public:
     naoth::FrameInfo frameInfo;
 
     unsigned int playerNum;
-    naoth::GameData::TeamColor teamColor;
+
+    unsigned int teamNumber;
 
     /**
      * @brief Own robot pose
@@ -83,7 +83,6 @@ public:
     bool fallen;
 
     // BEGIN BERLIN UNITED SPECIFIC
-    unsigned int teamNumber;
     std::string bodyID;
     unsigned int timeToBall;
     bool wasStriker;
@@ -122,7 +121,6 @@ public:
       stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
       stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
-      stream << "team color: " << naoth::GameData::teamColorToString(d.teamColor) << std::endl;
       stream << "team number: " << d.teamNumber << std::endl;
       for(unsigned int i=0; i < d.opponents.size(); i++)
       {

@@ -212,11 +212,12 @@ public class TeamCommViewer extends AbstractDialog
                     });
                     
                     // robot
-                    drawings.add(new Pen(1.0f, splMessage.teamColor == 0?Color.blue:Color.red));
+//                    drawings.add(new Pen(1.0f, splMessage.teamColor == 0?Color.blue:Color.red));
+                    drawings.add(new Pen(1.0f, Color.gray));
                     drawings.add(new Robot(splMessage.pose_x, splMessage.pose_y, splMessage.pose_a));
                     
                     // striker
-                    if(splMessage.user.getWasStriker()) {
+                    if(splMessage.intention == 3) {
                         drawings.add(new Pen(30, Color.red));
                         drawings.add(new Circle((int)splMessage.pose_x, (int)splMessage.pose_y, 150));
                     }
