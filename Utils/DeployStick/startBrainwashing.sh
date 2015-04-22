@@ -11,9 +11,11 @@ fi
 
 # make sure wifi is running
 if [ -f "./deploy/disablewifi" ]; then
+  rc-update del net.wlan0 boot 
   /etc/init.d/net.wlan0 stop
 fi
 if [ -f "./deploy/enablewifi" ]; then
+   rc-update add net.wlan0 boot
   /etc/init.d/net.wlan0 start
 fi
 
