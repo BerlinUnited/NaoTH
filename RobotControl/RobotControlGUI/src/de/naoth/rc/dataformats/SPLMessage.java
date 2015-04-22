@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 public class SPLMessage
 {
   public static final int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 6;
-  public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 800;
+  public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 780;
   public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
   public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
 
