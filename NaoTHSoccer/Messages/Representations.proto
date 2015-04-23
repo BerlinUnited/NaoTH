@@ -191,6 +191,7 @@ message TeamMessage
   optional bool fallen = 10 [default=false];
   optional BUUserTeamMessage user = 8;
   optional FrameInfo frameInfo = 9;
+  optional uint32 teamNumber = 12 [default=0];
 }
 
 message BUUserTeamMessage
