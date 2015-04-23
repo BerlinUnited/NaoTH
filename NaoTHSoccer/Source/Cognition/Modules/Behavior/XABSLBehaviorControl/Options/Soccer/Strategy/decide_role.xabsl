@@ -55,7 +55,9 @@ option decide_role
       team.is_playing_as_striker = true;
       ball_was_outside_circle = true;
       //situation_based_striker();
-      action_based_striker();
+      //action_based_striker();
+      action_situation_based_striker();
+
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

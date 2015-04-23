@@ -101,6 +101,7 @@ include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 include "Options/Soccer/Strategy/action_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
+include "Options/Soccer/Strategy/action_situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
