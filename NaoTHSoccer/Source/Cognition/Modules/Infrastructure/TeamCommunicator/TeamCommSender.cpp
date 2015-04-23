@@ -49,7 +49,6 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
 {
   out.playerNum = playerInfo.gameData.playerNumber;
   out.teamNumber = playerInfo.gameData.teamNumber;
-  out.teamColor = playerInfo.gameData.teamColor;
   out.pose = robotPose;
 
   if(ballModel.valid)
@@ -118,13 +117,17 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   {
     splMsg.playerNum = (uint8_t) teamData.playerNum;
   }
-  splMsg.teamColor = (uint8_t) teamData.teamColor;
+  if(teamData.teamNumber < std::numeric_limits<uint8_t>::max())
+  {
+    splMsg.teamNum = (uint8_t) teamData.teamNumber;
+  }
 
   splMsg.pose[0] = (float) teamData.pose.translation.x;
   splMsg.pose[1] = (float) teamData.pose.translation.y;
   splMsg.pose[2] = (float) teamData.pose.rotation;
 
-  splMsg.ballAge = teamData.ballAge;
+  // convert milliseconds to seconds
+  splMsg.ballAge = (float) ((double) teamData.ballAge / 1000.0);
 
   splMsg.ball[0] = (float) teamData.ballPosition.x;
   splMsg.ball[1] = (float) teamData.ballPosition.y;
@@ -134,17 +137,40 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
 
   splMsg.fallen = (uint8_t) teamData.fallen;
 
+  // TODO: actually set walkingTo when we are walking to some point
+  splMsg.walkingTo[0] = splMsg.pose[0];
+  splMsg.walkingTo[1] = splMsg.pose[1];
+  // TODO: actually set shootingTo when we are shooting to some point
+  splMsg.shootingTo[0] = splMsg.pose[0];
+  splMsg.shootingTo[1] = splMsg.pose[1];
+
+  // TODO: suggest something
+  for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)
+  {
+    splMsg.suggestion[i] = 0;
+  }
+
+  // TODO: map more behavior states (attacker etc.) to our intention
+  splMsg.intention = 0;
+  if(teamData.wasStriker)
+  {
+    splMsg.intention = 3;
+  }
+  else if(teamData.playerNum == 1)
+  {
+    // play keeper
+    splMsg.intention = 1;
+  }
 
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
   userMsg.set_bodyid(teamData.bodyID);
+  userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_timestamp(teamData.timestamp);
   userMsg.set_timetoball(teamData.timeToBall);
-  userMsg.set_wasstriker(teamData.wasStriker);
   userMsg.set_ispenalized(teamData.isPenalized);
   userMsg.set_batterycharge(teamData.batteryCharge);
   userMsg.set_temperature(teamData.temperature);
-  userMsg.set_teamnumber(teamData.teamNumber);
   for(unsigned int i=0; i < teamData.opponents.size(); i++)
   {
     naothmessages::Opponent* opp = userMsg.add_opponents();
@@ -164,12 +190,6 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   }
 
 
-  // TODO: actually set walkingTo when we are walking to some point
-  splMsg.walkingTo[0] = splMsg.pose[0];
-  splMsg.walkingTo[1] = splMsg.pose[1];
-  // TODO: actually set shootingTo when we are shooting to some point
-  splMsg.shootingTo[0] = splMsg.pose[0];
-  splMsg.shootingTo[1] = splMsg.pose[1];
 }
 
 void TeamCommSender::addSendOppModel(unsigned int oppNum,
