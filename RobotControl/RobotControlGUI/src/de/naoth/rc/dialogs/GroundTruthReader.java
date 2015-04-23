@@ -1,7 +1,6 @@
 package de.naoth.rc.dialogs;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
