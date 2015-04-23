@@ -11,9 +11,9 @@ using namespace std;
 
 Simulation::Simulation()
 {
-  DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", true);
-  DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", true);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", true);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   //DEBUG_REQUEST_REGISTER("Simulation:draw_pessimistic_best_action","best pessimistic action",false);
   DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
