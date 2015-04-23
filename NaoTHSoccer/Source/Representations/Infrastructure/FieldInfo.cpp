@@ -237,10 +237,8 @@ void FieldInfo::createLinesTable()
     crossings[opponentGoalTCrossingLeft].position
     );
 
-
+  // HACK: RC14, RC15 white goal box is recognized as lines (opp goal)
   /*
-  // HACK: RC14 white goal box is recognized as lines (opp goal)
-  // NOTE: lengthen line 2.5cm to the left to connect it with other line
   fieldLinesTable.addLine(
     Vector2d(opponentGoalPostLeft.x-25,opponentGoalPostLeft.y),
     Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y)

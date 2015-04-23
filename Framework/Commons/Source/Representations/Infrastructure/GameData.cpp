@@ -98,6 +98,8 @@ std::string GameData::teamColorToString(TeamColor teamColor)
   {
     case red: return "red";
     case blue: return "blue";
+    case yellow: return "yellow";
+    case black: return "black";
     default: return "unknown";
   }//end switch
 }//end teamColorToString

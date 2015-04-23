@@ -54,7 +54,10 @@ option positioning_for_own_kickoff
     {
       
 //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
+      go_to_point_with_USOA(
+        x=field.xPosOwnPenaltyMark + 500, 
+        y=field.yPosLeftGoal,
+        rot=0);
       head.control_mode = look_around;
     }
   }

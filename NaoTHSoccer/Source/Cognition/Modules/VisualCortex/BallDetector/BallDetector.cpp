@@ -74,9 +74,9 @@ void BallDetector::execute(CameraInfo::CameraID id)
     );
 
     ballEndPoints.clear();
-    spiderScan(point, ballEndPoints);
+    bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
-    if(Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
+    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
     {
       ballFound = true;
       calculateBallPercept(center, radius);
@@ -192,23 +192,31 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
 }
 
 
-void BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const
+bool BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const
 {
-  scanForEdges(start, Vector2d(1,0), endPoints);
-  scanForEdges(start, Vector2d(-1,0), endPoints);
-  scanForEdges(start, Vector2d(0,1), endPoints);
-  scanForEdges(start, Vector2d(0,-1), endPoints);
+  int goodBorderPointCount = 0;
+  goodBorderPointCount += scanForEdges(start, Vector2d(1,0), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1,0), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(0,1), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(0,-1), endPoints);
 
-  scanForEdges(start, Vector2d(1,1).normalize(), endPoints);
-  scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
-  scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
-  scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(1,1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
 
   DEBUG_REQUEST("Vision:BallDetector:drawScanEndPoints",
-    for(size_t i = 0; i < endPoints.size(); i++) {
-      POINT_PX(ColorClasses::red, endPoints[i].x, endPoints[i].y);
+    for(size_t i = 0; i < endPoints.size(); i++) 
+    {
+      ColorClasses::Color col = ColorClasses::green;
+      if(goodBorderPointCount == 0)
+      {
+        col = ColorClasses::red;
+      }
+      POINT_PX(col, endPoints[i].x, endPoints[i].y);
     }
   );
+  return goodBorderPointCount != 0;
 }
 
 bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
@@ -262,7 +270,14 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      return true;
+      if(pixel.y < params.maxBorderBrightness)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
   }//end while
 

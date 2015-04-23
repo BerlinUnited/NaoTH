@@ -11,6 +11,8 @@ option head_control
       goto look_straight_ahead;
     else if (head.control_mode == search_for_ball)
       goto search_for_ball;
+    else if (head.control_mode == search_for_ball_goalie)
+      goto search_for_ball_goalie;
     else if (head.control_mode == look_around)
       goto look_around;
     else if (head.control_mode == search_for_goal)
@@ -54,9 +56,19 @@ option head_control
     action
     {
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check = false, look_around=true);
+      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=1000);
     }
   }
+
+  state search_for_ball_goalie
+  {
+    action
+    {
+      head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000);
+    }
+  }
+
 
   state search_for_ball_and_look_around
   {
@@ -64,7 +76,7 @@ option head_control
     {
       //search_for_ball_and_look_around();
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check=false, look_around=true);
+      search_for_ball(force_ball_model_check=false, look_around=true, look_at_ball_when_distance=1000);
     }
   }
 
@@ -82,7 +94,8 @@ option head_control
     action
     {
       head.camera.id = Top;
-      search_for_goal(own=true,opp=true);
+      search_for_goal(own=true,opp=true);
+
     }
   }
 

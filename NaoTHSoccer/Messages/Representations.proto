@@ -40,6 +40,7 @@ message HeadMotionRequest {
   optional bool searchDirection = 8;
   optional DoubleVector2 targetPointOnTheGround = 9;
   optional uint32 coordinate = 10;
+  optional double velocity = 11;
 }
 
 message StepControlRequest
@@ -176,13 +177,13 @@ message TeamMessageCollection
 
 enum TeamColor 
 {
-  blueTeam = 0; redTeam = 1; invalidTeam = 2;
+  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
 }
 
 message TeamMessage
 {
   optional uint32 playerNum = 1 [default=0];
-  optional TeamColor teamColor = 11 [default=blueTeam];
+  optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
   optional Pose2D pose = 3;
   optional int32 ballAge = 4 [default=-1];
   optional DoubleVector2 ballPosition = 5;
@@ -199,7 +200,7 @@ message BUUserTeamMessage
   optional bool wasStriker = 3 [default=false];
   optional bool isPenalized = 4 [default=false];
   repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0];
+  optional uint32 teamNumber = 6 [default=0,deprecated=true];
   optional float batteryCharge = 7 [default=1.0];
   optional float temperature = 8 [default=0.0];
   optional uint64 timestamp = 9 [default=0];

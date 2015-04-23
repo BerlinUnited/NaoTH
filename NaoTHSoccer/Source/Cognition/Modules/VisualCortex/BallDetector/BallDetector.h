@@ -86,6 +86,7 @@ private:
     Parameters() : ParameterList("BallDetectorParameters")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
+      PARAMETER_REGISTER(maxBorderBrightness) = 70;
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
       PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
@@ -101,6 +102,7 @@ private:
 
 	  int stepSize;
 
+    int maxBorderBrightness;
     int minOffsetToFieldY;
     int minOffsetToFieldV;
     int minOffsetToGoalV;
@@ -122,7 +124,7 @@ private:
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
   bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
-  void spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
+  bool spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
   double estimatedBallRadius(const Vector2i& point) const;
   
   void calculateBallPercept(const Vector2i& center, double radius);

@@ -199,6 +199,9 @@ void GoalDetectorV2::calcuateGoalPosts()
           double topWidth = getBackProjectedTopBarWidth(post);
           double meanProjectedWidth = (topWidth + baseWidth) * 0.5;            
           double widthRatio = meanProjectedWidth > post.seenWidth ? meanProjectedWidth / post.seenWidth : post.seenWidth / meanProjectedWidth;
+
+          double projectedHeight = (top - base).abs();
+          double heightRatio = projectedHeight > 0 ? post.seenHeight / projectedHeight : 0.0;
           ColorClasses::Color col;
       
           DEBUG_REQUEST("Vision:GoalDetectorV2:markPostCenterBackProjected",  
@@ -265,6 +268,7 @@ void GoalDetectorV2::calcuateGoalPosts()
             ColorClasses::Color col = ColorClasses::green;
             if(!post.positionReliable) col = ColorClasses::red;
             if(widthRatio > params.maxBarWidthRatio) col = ColorClasses::blue;
+            if(heightRatio <= params.minGoalHeightRatio) col = ColorClasses::pink;
             if( (markValidPosts && col == ColorClasses::green) || (markInvalidPosts && col != ColorClasses::green) )
             {
               LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
@@ -275,6 +279,7 @@ void GoalDetectorV2::calcuateGoalPosts()
           );
         
           post.positionReliable &= widthRatio < params.maxBarWidthRatio;
+          post.positionReliable &= heightRatio > params.minGoalHeightRatio;
         }
       }
       if(post.positionReliable)

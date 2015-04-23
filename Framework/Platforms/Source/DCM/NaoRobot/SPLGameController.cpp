@@ -127,7 +127,23 @@ bool SPLGameController::update()
       {
         tinfo = dataIn.teams[i];
         teamFound = true;
-        data.teamColor = tinfo.teamColour == TEAM_BLUE ? GameData::blue : GameData::red;
+        switch(tinfo.teamColour)
+        {
+        case TEAM_BLUE:
+            data.teamColor = GameData::blue;
+            break;
+        case TEAM_RED:
+            data.teamColor = GameData::red;
+            break;
+        case TEAM_YELLOW:
+            data.teamColor = GameData::yellow;
+            break;
+        case TEAM_BLACK:
+            data.teamColor = GameData::black;
+            break;
+        default:
+            data.teamColor = GameData::blue;
+        }
         break;
       }
     }
@@ -166,12 +182,12 @@ bool SPLGameController::update()
             || data.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
-          data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::kick_off_own : GameData::kick_off_opp;
+          data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::kick_off_own : GameData::kick_off_opp;
         }
       }
       else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
       {
-        data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+        data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
       }
       else if ( dataIn.secondaryState == STATE2_OVERTIME )
       {

@@ -11,5 +11,5 @@ package de.naoth.rc.logmanager;
  * @author thomas
  */
 public interface LogFrameListener {
-    public void newFrame(BlackBoard b, int frameNumber);
+    public void newFrame(BlackBoard b);
 }

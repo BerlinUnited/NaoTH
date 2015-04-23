@@ -5,7 +5,9 @@ namespace game_symbols("Game Control Symbols") {
   enum game.team_color
   {
     red,
-    blue
+    blue,
+    yellow,
+    black
   };
   
   /* Enumeration for game states */

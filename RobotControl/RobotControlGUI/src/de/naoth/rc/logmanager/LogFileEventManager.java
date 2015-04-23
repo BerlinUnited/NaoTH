@@ -19,5 +19,5 @@ public interface LogFileEventManager extends Plugin {
 
     void removeListener(LogFrameListener l);
     
-    void fireLogFrameEvent(Collection<LogDataFrame> c, int number);
+    void fireLogFrameEvent(Collection<LogDataFrame> c);
 }

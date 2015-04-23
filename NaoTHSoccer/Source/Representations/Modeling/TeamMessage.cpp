@@ -17,7 +17,6 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     naothmessages::TeamMessage* msg = collection.add_data();
 
     msg->set_playernum(d.playerNum);
-    msg->set_teamcolor((naothmessages::TeamColor) d.teamColor);
     DataConversion::toMessage(d.pose, *(msg->mutable_pose()));
     msg->set_ballage(d.ballAge);
     DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
@@ -25,7 +24,6 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     msg->set_fallen(d.fallen);
     naothmessages::BUUserTeamMessage* userMsg = msg->mutable_user();
 
-    userMsg->set_teamnumber(d.teamNumber);
     userMsg->set_timestamp(d.timestamp);
     userMsg->set_bodyid(d.bodyID);
     userMsg->set_timetoball(d.timeToBall);
@@ -65,7 +63,6 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     TeamMessage::Data d;
 
     d.playerNum = msg.playernum();
-    d.teamColor = (GameData::TeamColor) msg.teamcolor();
     DataConversion::fromMessage(msg.pose(), d.pose);
     d.ballAge = msg.ballage();
     DataConversion::fromMessage(msg.ballposition(), d.ballPosition);
@@ -80,7 +77,6 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     {
       d.timeToBall = std::numeric_limits<unsigned int>::max();
     }
-    d.teamNumber = msg.user().teamnumber();
     d.timestamp = msg.user().timestamp();
     d.wasStriker = msg.user().wasstriker();
     d.isPenalized = msg.user().ispenalized();
