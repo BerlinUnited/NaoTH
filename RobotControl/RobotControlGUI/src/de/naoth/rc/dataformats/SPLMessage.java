@@ -4,7 +4,18 @@
 package de.naoth.rc.dataformats;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.dialogs.TeamCommViewer;
+import de.naoth.rc.drawings.Circle;
+import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.drawings.FillOval;
+import de.naoth.rc.drawings.Line;
+import de.naoth.rc.drawings.Pen;
+import de.naoth.rc.drawings.Robot;
+import de.naoth.rc.drawings.Text;
+import de.naoth.rc.math.Pose2D;
+import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Representations;
+import java.awt.Color;
 import java.nio.ByteBuffer;
 
 /**
@@ -72,6 +83,49 @@ public class SPLMessage
 
   public Representations.BUUserTeamMessage user = null;
   
+  public SPLMessage(Representations.TeamMessage msg) {
+      
+      this.averageWalkSpeed = -1;
+
+      this.ballAge = msg.getBallAge();
+
+      this.ballVel_x = (float) msg.getBallVelocity().getX();
+      this.ballVel_y = (float) msg.getBallVelocity().getY();
+      
+      this.ball_x = (float) msg.getBallPosition().getX();
+      this.ball_y = (float) msg.getBallPosition().getY();
+      
+      this.currentPositionConfidence = -1;
+      this.currentSideConfidence = -1;
+      
+      
+      this.fallen = msg.getFallen() ? (byte) 1 : (byte) 0;
+      
+      this.intention = (byte) (msg.getUser().getWasStriker() ? 3 : 0);
+      this.maxKickDistance = -1;
+      
+      this.playerNum = (byte) msg.getPlayerNum();
+     
+      this.pose_x = (float) msg.getPose().getTranslation().getX();
+      this.pose_y = (float) msg.getPose().getTranslation().getY();
+      this.pose_a = (float) msg.getPose().getRotation();
+    
+      // TODO: don't use default value
+      this.shootingTo_x = (float) msg.getPose().getTranslation().getX();
+      this.shootingTo_y = (float) msg.getPose().getTranslation().getY();
+      
+      if (msg.hasTeamNumber()) {
+          this.teamNum = (byte) msg.getTeamNumber();
+      } else if (msg.getUser().hasTeamNumber()) {
+          this.teamNum = (byte) msg.getTeamNumber();
+      }
+      
+      this.user = msg.getUser();
+      
+      this.walkingTo_x = -1;
+      this.walkingTo_y = -1;
+  }
+  
   public SPLMessage(ByteBuffer buffer) throws Exception
   {
       if( buffer.get() != 'S' ||
@@ -130,4 +184,56 @@ public class SPLMessage
           // it's not our message
       }
   }
+  
+    public void draw(DrawingCollection drawings) {
+
+        // robot
+        drawings.add(new Pen(1.0f, Color.gray));
+        drawings.add(new Robot(pose_x, pose_y, pose_a));
+
+        // striker
+        if (intention == 3) {
+            drawings.add(new Pen(30, Color.red));
+            drawings.add(new Circle((int) pose_x, (int) pose_y, 150));
+        }
+
+        // number
+        drawings.add(new Pen(1, Color.BLACK));
+        drawings.add(new Text((int) pose_x, (int) pose_y + 150, "" + playerNum));
+
+        // ball
+        if (ballAge >= 0) {
+            drawings.add(new Pen(1, Color.orange));
+
+            Vector2D ballPos = new Vector2D(ball_x, ball_y);
+            Pose2D robotPose = new Pose2D(pose_x, pose_y, pose_a);
+            Vector2D globalBall = robotPose.multiply(ballPos);
+            drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
+
+            // add a surrounding black circle so the ball is easier to see
+            drawings.add(new Pen(1, Color.black));
+            drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
+
+            {
+                // show the time since the ball was last seen
+                drawings.add(new Pen(1, Color.black));
+                double t = ballAge / 1000.0;
+
+                Text text = new Text(
+                    (int) globalBall.x + 50,
+                    (int) globalBall.y + 50,
+                    Math.round(t) + "s");
+                drawings.add(text);
+            }
+            // draw a line between robot and ball
+            {
+                drawings.add(new Pen(5, Color.darkGray));
+                Line ballLine = new Line(
+                    (int) robotPose.translation.x, (int) robotPose.translation.y,
+                    (int) globalBall.x, (int) globalBall.y);
+                drawings.add(ballLine);
+            }
+        }
+    }
+  
 }
