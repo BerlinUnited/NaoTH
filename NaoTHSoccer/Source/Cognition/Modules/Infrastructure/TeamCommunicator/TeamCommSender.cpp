@@ -42,6 +42,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const BallModel& ballModel,
                                    const RobotPose& robotPose,
                                    const BodyState& bodyState,
+                                   const RoleDecisionModel& roleDecisionModel,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
                                    const BatteryData &batteryData,
@@ -77,7 +78,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.bodyID = robotInfo.bodyID;
   out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
-  out.wasStriker = playerInfo.isPlayingStriker;
+  out.wasStriker = roleDecisionModel.wantsToBeStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
   out.batteryCharge = (float) batteryData.charge;
   out.temperature =
@@ -105,7 +106,7 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
 {
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
-              getRobotPose(), getBodyState(), getSoccerStrategy(),
+              getRobotPose(), getBodyState(), getRoleDecisionModel(), getSoccerStrategy(),
               getPlayersModel(), getBatteryData(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
