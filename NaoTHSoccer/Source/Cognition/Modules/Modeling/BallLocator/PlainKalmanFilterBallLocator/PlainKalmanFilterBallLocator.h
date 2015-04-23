@@ -21,6 +21,8 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugPlot.h"
+
 #include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -31,6 +33,7 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugPlot)
 
   REQUIRE(FieldInfo)
 

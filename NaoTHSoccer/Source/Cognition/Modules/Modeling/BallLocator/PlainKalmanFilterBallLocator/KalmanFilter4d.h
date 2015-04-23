@@ -20,7 +20,7 @@ public:
 
     void prediction(const Eigen::Vector2d &u, double dt);
     void update(const Eigen::Vector2d &z);
-    void extendedUpdate(const Eigen::Matrix<double,2,4>& h, const Eigen::Vector2d& z);
+    void extendedUpdate(const Eigen::Vector2d& z, const double height);
 
     void setState(Eigen::Vector4d& state);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);

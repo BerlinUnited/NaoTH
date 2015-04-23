@@ -1,10 +1,13 @@
 #include "PlainKalmanFilterBallLocator.h"
 
 #include <cmath>
+#include <Eigen/Eigenvalues>
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
      epsilon(10e-6)
 {
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:use_spherical_coordinates", " ", false);
+
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",        "draw the modelled ball on the field",                              false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
@@ -22,6 +25,7 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
     getDebugParameterList().remove(&kfParameters);
 }
 
+/*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
@@ -38,6 +42,13 @@ void PlainKalmanFilterBallLocator::execute()
         predict(*iter, dt);
     }
 
+    bool useSphericalCoordinates;
+    useSphericalCoordinates = false;
+
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:use_spherical_coordinates",
+                useSphericalCoordinates = true;
+    );
+
     // measurement
     if(getBallPercept().ballWasSeen)
     {
@@ -47,8 +58,13 @@ void PlainKalmanFilterBallLocator::execute()
         const double y = getBallPercept().bearingBasedOffsetOnField.y;
         const double d = std::sqrt(x*x + y*y);
 
-        z << std::atan2(height,d),
-             std::atan2(x,y);
+        if(useSphericalCoordinates)
+        {
+            z << std::atan2(height,d),
+                 std::atan2(y,x);
+        } else {
+            z << x,y;
+        }
 
         if(filter.size() == 0)
         {
@@ -59,11 +75,23 @@ void PlainKalmanFilterBallLocator::execute()
         else
         {
             // find best matching filter
-            double dist = sphericalEuclidianDistanceToState(filter[0],z,getCameraMatrixTop().translation.z);
+            double dist;
+
+            if(useSphericalCoordinates)
+                dist = sphericalEuclidianDistanceToState(filter[0],z,getCameraMatrixTop().translation.z);
+            else
+                dist = euclidianDistanceToState(filter[0],z);
+
             std::vector<KalmanFilter4d>::iterator bestPredictor = filter.begin();
 
             for(std::vector<KalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
-                double temp = euclidianDistanceToState(*iter, z);
+                double temp;
+
+                if(useSphericalCoordinates)
+                    temp = sphericalEuclidianDistanceToState(*iter,z,getCameraMatrixTop().translation.z);
+                else
+                    temp = euclidianDistanceToState(*iter,z);
+
                 if(temp < dist){
                     dist = temp;
                     bestPredictor = iter;
@@ -73,7 +101,7 @@ void PlainKalmanFilterBallLocator::execute()
             if(dist > distanceThreshold)
             {
                 Eigen::Vector4d newState;
-                newState << z(0), 0, z(1), 0;
+                newState << x, 0, y, 0;
                 filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
             }
             else
@@ -81,17 +109,25 @@ void PlainKalmanFilterBallLocator::execute()
                 DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
                     FIELD_DRAWING_CONTEXT;
                     PEN("FF0000", 10);
-                    const Eigen::Vector2d state = (*bestPredictor).getStateInMeasurementSpace();
-                    LINE(z(0),z(1),state(0),state(1));
-                    TEXT_DRAWING((z(0)+state(0))/2,(z(1)+state(1))/2,dist);
+                    const Eigen::Vector4d state = (*bestPredictor).getState();
+                    LINE(x,y,state(0),state(2));
+                    TEXT_DRAWING((x+state(0))/2,(y+state(2))/2,dist);
                 );
 
-                // or better a part of kalman filter???
-                Eigen::Matrix<double,2,4> H;
-                H << height*x/(d*(height*height+d*d)) , 0, height*y/(d*(height*height+d*d)), 0,
-                     y/(d*d), 0, -x/(d*d), 0;
+                // debug stuff -> should be in a DEBUG_REQUEST
+                Eigen::Vector2d predicted_measurement;
+                if(useSphericalCoordinates)
+                    predicted_measurement = (*bestPredictor).getStateInSphericalMeasurementSpace(height);
+                else
+                    predicted_measurement = (*bestPredictor).getStateInMeasurementSpace();
 
-                (*bestPredictor).extendedUpdate(H, z);
+                PLOT("PlainKalmanFilterBallLocator:Innovation:verticalAngle",   z(0)-predicted_measurement(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:horizontalAngle", z(1)-predicted_measurement(1));
+
+                if(useSphericalCoordinates)
+                    (*bestPredictor).extendedUpdate(z, height);
+                else
+                    (*bestPredictor).update(z);
             }
         }
     }
@@ -108,9 +144,9 @@ void PlainKalmanFilterBallLocator::execute()
         }
     }
 
-    // find best model
     if(filter.size() > 0)
     {
+        // find best model
         std::vector<KalmanFilter4d>::iterator model = filter.begin();
         double evalue = (*model).getProcessCovariance()(0,0)+(*model).getProcessCovariance()(2,2);
 
@@ -322,6 +358,9 @@ void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
 
 void PlainKalmanFilterBallLocator::drawFiltersOnField() {
     FIELD_DRAWING_CONTEXT;
+
+    Eigen::EigenSolver< Eigen::Matrix<double,2,2> > es;
+
     for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
@@ -348,11 +387,51 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() {
 
         const Eigen::Matrix4d& P = (*iter).getProcessCovariance();
 
+        Eigen::Matrix2d loc_cov;
+
+        loc_cov << P(0,0), P(0,2),
+                   P(2,0), P(2,2);
+
+        es.compute(loc_cov,true);
+
+        Eigen::MatrixXcd eVectors = es.eigenvectors();
+
+        PEN("00FFFF", 20);
+
+        LINE(state(0) - eVectors(0,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
+             state(2) - eVectors(1,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
+             state(0) + eVectors(0,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
+             state(2) + eVectors(1,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])));
+
+        LINE(state(0) - eVectors(0,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
+             state(2) - eVectors(1,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
+             state(0) + eVectors(0,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
+             state(2) + eVectors(1,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])));
+
+        double minorAbs, majorAbs, angle;
+
+        if(std::abs(es.eigenvalues()[0]) > std::abs(es.eigenvalues()[1]))
+        {
+            minorAbs = std::sqrt(std::abs(es.eigenvalues()[1]));
+            majorAbs = std::sqrt(std::abs(es.eigenvalues()[0]));
+            angle    = std::atan2(eVectors(1,1).real(),eVectors(0,1).real());
+        } else {
+            minorAbs = std::sqrt(std::abs(es.eigenvalues()[0]));
+            majorAbs = std::sqrt(std::abs(es.eigenvalues()[1]));
+            angle    = std::atan2(std::abs(eVectors(1,0)),std::abs(eVectors(0,0)));
+        }
+
+        OVAL_ROTATED(state(0),
+                     state(2),
+                     minorAbs*2.0,
+                     majorAbs*2.0,
+                     angle);
+
         // draw the distribution
-        PEN("00FFFF", 20); // türkis, location
-        OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
-        PEN("FF00FF", 20); // pink, velocity
-        OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
+        // PEN("00FFFF", 20); // türkis, location
+        // OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
+        // PEN("FF00FF", 20); // pink, velocity
+        // OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
     }
 }
 

@@ -31,19 +31,26 @@ KalmanFilter4d::~KalmanFilter4d()
 
 }
 
-void KalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
+void KalmanFilter4d::prediction(const Eigen::Vector2d& u, double /*dt*/)
 {
     // adapt state transition matrix
-    F << 1, dt, 0, 0,
+    /*F << 1, dt, 0, 0,
          0,  1, 0, 0,
          0,  0, 1, dt,
-         0,  0, 0, 1;
+         0,  0, 0, 1;*/
+
+    F = Eigen::Matrix4d::Identity();
 
     // adapt control matrix to dt
-    B << dt*dt/2, 0,
+    /*B << dt*dt/2, 0,
          dt     , 0,
          0      , dt*dt/2,
-         0      , dt;
+         0      , dt;*/
+
+    B << 0, 0,
+            0     , 0,
+            0      , 0,
+            0      , 0;
 
     // predict
     x_pre = F * x + B * u;
@@ -55,6 +62,9 @@ void KalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
 
 void KalmanFilter4d::update(const Eigen::Vector2d& z)
 {
+    H << 1, 0, 0, 0,
+         0, 0, 1, 0;
+
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
     K = P_pre * H.transpose() * temp1.inverse();
@@ -68,17 +78,28 @@ void KalmanFilter4d::update(const Eigen::Vector2d& z)
 }
 
 
-void KalmanFilter4d::extendedUpdate(const Eigen::Matrix<double,2,4>& h, const Eigen::Vector2d& z)
+void KalmanFilter4d::extendedUpdate(const Eigen::Vector2d& z, const double height)
 {
-    H = h;
+    Eigen::Vector2d predicted_measurement;
+    const double x_state = x_pre(0);
+    const double y_state = x_pre(2);
+    const double d = std::sqrt(x_state*x_state + y_state*y_state);
+
+    H << height*x_state/(d*(height*height+d*d)), 0, height*y_state/(d*(height*height+d*d)), 0,
+                                 -y_state/(d*d), 0, x_state/(d*d)                        , 0;
+
+    predicted_measurement << std::atan2(height,d),
+                             std::atan2(y_state, x_state);
 
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
     K = P_pre * H.transpose() * temp1.inverse();
 
-    x_corr = x_pre + K * (z - H * x_pre );
+    x_corr = x_pre + K * (z - predicted_measurement);
 
-    P_corr = P_pre - K*H*P_pre;
+    //P_corr = P_pre - K*H*P_pre;
+
+    P_corr = (Eigen::Matrix4d::Identity()-K*H)*P_pre;
 
     x = x_corr;
     P = P_corr;
@@ -113,6 +134,11 @@ const Eigen::Matrix2d& KalmanFilter4d::getMeasurementCovariance() const
 }
 
 Eigen::Vector2d KalmanFilter4d::getStateInMeasurementSpace() const {
+
+    Eigen::Matrix<double, 2, 4> H;
+    H << 1, 0, 0, 0,
+         0, 0, 1, 0;
+
     Eigen::Vector2d a;
     a = H*x;
     return a;
@@ -127,6 +153,7 @@ Eigen::Vector2d KalmanFilter4d::getStateInSphericalMeasurementSpace(const double
     const double d = std::sqrt(x_coord*x_coord + y_coord*y_coord);
 
     z << std::atan2(height,d),
-         std::atan2(x_coord,y_coord);
+         std::atan2(y_coord,x_coord);
+
     return z;
 }
