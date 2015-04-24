@@ -86,14 +86,13 @@ private:
     Parameters() : ParameterList("BallDetectorParameters")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
-      PARAMETER_REGISTER(thresholdGradientUV) = 6;
-
+      PARAMETER_REGISTER(maxBorderBrightness) = 70;
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
       //PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
-      PARAMETER_REGISTER(maxBorderBrightness) = 70;
-
+      PARAMETER_REGISTER(thresholdGradientUV) = 6;
+      
       syncWithConfig();
     }
 
@@ -102,14 +101,14 @@ private:
     }
 
 	  int stepSize;
-    int thresholdGradientUV;
 
+    int maxBorderBrightness;
     int minOffsetToFieldY;
     int minOffsetToFieldV;
     //int minOffsetToGoalV;
     int mitUVDifference;
     
-    int maxBorderBrightness;
+    int thresholdGradientUV;
 
   } params;
 
