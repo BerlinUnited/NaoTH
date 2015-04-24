@@ -7,8 +7,8 @@ namespace team("Team Symbols") {
   /** Whether we have been choosen as striker in dynamic role handling*/
   bool input team.calc_if_is_striker;
 
-  /** decide by time to ball instead of distance */
-  bool input team.calc_if_is_striker_by_time_to_ball;
+  /** Whether we have been chosen as the second striker in dynamic role handling */
+  bool input team.calc_if_is_secondstriker;
 
   /** Whether the robot is the 'last' player in the field */
   bool input team.calc_if_is_the_last;
