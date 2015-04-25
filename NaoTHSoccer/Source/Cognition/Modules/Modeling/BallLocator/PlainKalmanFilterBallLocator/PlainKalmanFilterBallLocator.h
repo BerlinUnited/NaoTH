@@ -16,6 +16,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 
 #include "KalmanFilter4d.h"
+#include "ExtendedKalmanFilter4d.h"
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
@@ -76,21 +77,18 @@ public:
 // from other kalman filter ball locator
 private:
     OdometryData lastRobotOdometry;
-    //OdometryData lastRobotOdometryAll;
 
     FrameInfo lastFrameInfo;
 
-private: // multi stuff?
+private:
 
-    double euclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
-    double sphericalEuclidianDistanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z, const double height) const;
+    double distanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
     // non normalized value of probability density function of measurement Z at the filters state
     double evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
     std::vector<KalmanFilter4d> filter;
-//    KalmanFilter4d filter;
 
     const double epsilon; // 10e-6
     double distanceThreshold;
