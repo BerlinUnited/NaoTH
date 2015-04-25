@@ -87,7 +87,7 @@ public class SPLMessage
       
       this.averageWalkSpeed = -1;
 
-      this.ballAge = msg.getBallAge();
+      this.ballAge = msg.getBallAge()/1000.0f;
 
       this.ballVel_x = (float) msg.getBallVelocity().getX();
       this.ballVel_y = (float) msg.getBallVelocity().getY();
@@ -217,7 +217,7 @@ public class SPLMessage
             {
                 // show the time since the ball was last seen
                 drawings.add(new Pen(1, Color.black));
-                double t = ballAge / 1000.0;
+                double t = ballAge;
 
                 Text text = new Text(
                     (int) globalBall.x + 50,

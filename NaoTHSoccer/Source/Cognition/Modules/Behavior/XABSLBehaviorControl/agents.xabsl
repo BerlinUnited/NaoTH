@@ -54,6 +54,7 @@ include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
+include "Options/Skills/USOA/go_to_ball_with_slow_USOA.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_foot_and_USOA.xabsl";
 include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
@@ -63,7 +64,7 @@ include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
 include "Options/Skills/striker_search.xabsl";
 include "Options/Skills/search_before_passive.xabsl";
-include "Options/Skills/sidekick_left_with_approach_left.xabsl";
+include "Options/Skills/sidekick_left_with_approach_left.xabsl";
 include "Options/Skills/sidekick_right_with_approach_right.xabsl";
 include "Options/Skills/kick_long_with_approach.xabsl";
 include "Options/Skills/kick_short_with_approach.xabsl";
@@ -102,10 +103,11 @@ include "Options/Soccer/Strategy/initial_striker.xabsl";
 include "Options/Soccer/Strategy/action_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/action_situation_based_striker.xabsl";
+include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
-include "Options/Soccer/Strategy/Situations/situation_selection_attack.xabsl";
+include "Options/Soccer/Strategy/Situations/situation_selection_attack.xabsl";
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
@@ -188,7 +190,8 @@ include "Options/Test/test_dribble.xabsl";
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
-include "Options/Test/ball_search/simple_search_ball_test.xabsl";
+include "Options/Test/ball_search/simple_search_ball_test.xabsl";
+
 
 // Test arms
 include "Options/Test/arm_back_test.xabsl";
@@ -262,4 +265,5 @@ agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_b
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
-agent head_test_agent("head_test_agent", head_test_agent);
+
+agent head_test_agent("head_test_agent", head_test_agent);
