@@ -147,7 +147,7 @@ public:
 
 
 protected:
-  virtual MessageQueue* createMessageQueue(const std::string& name)
+  virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
   {
     return new MessageQueue4Threads();
   }

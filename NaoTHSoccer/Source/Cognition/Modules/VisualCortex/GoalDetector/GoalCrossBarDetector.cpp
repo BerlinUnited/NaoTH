@@ -538,7 +538,7 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
   return features[id].size();
 }
 
-size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth)
+size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double /*barWidth*/)
 {
   lastCrossBarScanLineId = id;
   if(features.size() <= id)
