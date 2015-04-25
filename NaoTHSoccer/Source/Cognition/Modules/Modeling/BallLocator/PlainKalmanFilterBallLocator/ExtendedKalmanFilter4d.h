@@ -11,6 +11,8 @@
 
 #include <Eigen/Eigen>
 
+#include <Representations/Perception/BallPercept.h>
+
 class ExtendedKalmanFilter4d
 {
 public:
@@ -20,37 +22,50 @@ public:
 
     void prediction(const Eigen::Vector2d &u, double dt);
     void update(const Eigen::Vector2d &z);
-    void extendedUpdate(const Eigen::Vector2d& z, const double height);
 
+public:
+
+    static Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
+
+public:
+
+    //--- setter ---//
     void setState(Eigen::Vector4d& state);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
+    //--- getter ---//
     const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d getStateInMeasurementSpace() const;
-    Eigen::Vector2d getStateInSphericalMeasurementSpace(const double height) const;
+    Eigen::Vector2d        getStateInMeasurementSpace() const;
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
 
+
 private:
 
-    Eigen::Matrix4d F; // state transition matrix
+    // transformation matrices
+    Eigen::Matrix4d F;           // state transition matrix
     Eigen::Matrix<double,4,2> B; // control matrix
-    Eigen::Vector4d x; // state x_location, x_velocity, y_location, y_velocity
-    Eigen::Vector4d u; // control vector x_velocity, x_acceleration, y_velocity, y_acceleration
+    Eigen::Matrix<double,2,4> H; // state to measurement transformation matrix
+
+    // states and control
+    Eigen::Vector4d x;      // state x_location, x_velocity, y_location, y_velocity
+    Eigen::Vector4d u;      // control vector x_velocity, x_acceleration, y_velocity, y_acceleration
     Eigen::Vector4d x_pre;  // predicted state
     Eigen::Vector4d x_corr; // corrected state
 
-    Eigen::Matrix4d Q; // covariance matrix of process noise
-    Eigen::Matrix4d P; // covariance matrix of current state
+    // covariances
+    Eigen::Matrix4d Q;      // covariance matrix of process noise
+    Eigen::Matrix2d R;      // covariance matrix of measurement noise
+    Eigen::Matrix4d P;      // covariance matrix of current state
     Eigen::Matrix4d P_pre;  // covariance matrix of predicted state
     Eigen::Matrix4d P_corr; // covariance matrix of corrected state
 
-    Eigen::Matrix<double,2,4> H; // state to measurement transformation matrix
-    Eigen::Matrix2d R; // covariance matrix of measurement noise
+    // kalman gain
+    Eigen::Matrix<double, 4,2> K;
 
-    Eigen::Matrix<double, 4,2> K; // kalman gain
-
+    // paramter for coordinate transformation
+    static const double height = 500;
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H
