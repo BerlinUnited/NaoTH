@@ -109,6 +109,7 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  registerInput<WhistlePercept>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);
