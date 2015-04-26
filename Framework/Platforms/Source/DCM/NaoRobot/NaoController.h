@@ -167,6 +167,10 @@ protected:
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
+
+  // WhistleDetector --> NaoController
+  SharedMemoryWriter<Accessor<int> > whistleSensorData;
+
   // -- end -- shared memory access --
   
   //

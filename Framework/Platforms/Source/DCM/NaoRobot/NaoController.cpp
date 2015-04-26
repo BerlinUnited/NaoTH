@@ -39,6 +39,9 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
+
+  whistleSensorData.open("/whistleDetector.count");
+
   // end init shared memory
   
 
