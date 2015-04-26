@@ -53,6 +53,8 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
 
+  REG_INPUT(WhistlePercept);
+
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerBufferedInputChanel(getCameraMatrixBufferTop());
   platformInterface.registerInputChanel(getMotionStatus());
