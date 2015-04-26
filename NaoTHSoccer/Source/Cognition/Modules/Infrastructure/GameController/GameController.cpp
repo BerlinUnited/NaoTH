@@ -50,13 +50,11 @@ void GameController::execute()
   {
     if(getWhistlePercept().counter > whistleCountInLastSet)
     {
-      std::cout << "percept: " << getWhistlePercept().counter << " last: " << whistleCountInLastSet << std::endl;
       getPlayerInfo().gameData.gameState = GameData::playing;
     }
     if(oldState == GameData::ready)
     {
       // remember the whistle count when we entered set from ready
-      std::cout << "setting last to " << getWhistlePercept().counter;
       whistleCountInLastSet = getWhistlePercept().counter;
     }
   }
