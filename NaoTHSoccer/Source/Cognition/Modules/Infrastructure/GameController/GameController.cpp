@@ -48,15 +48,17 @@ void GameController::execute()
   // check if whistle overrides gamecontroller
   if(getPlayerInfo().gameData.gameState == GameData::set)
   {
-    if(getWhistlePercept().counter > whistleCountInLastSet)
-    {
-      getPlayerInfo().gameData.gameState = GameData::playing;
-    }
     if(oldState == GameData::ready)
     {
       // remember the whistle count when we entered set from ready
       whistleCountInLastSet = getWhistlePercept().counter;
     }
+    else if(getWhistlePercept().counter > whistleCountInLastSet)
+    {
+      // allow to switch from set to play in beginning with the second frame
+      getPlayerInfo().gameData.gameState = GameData::playing;
+    }
+
   }
 
 
