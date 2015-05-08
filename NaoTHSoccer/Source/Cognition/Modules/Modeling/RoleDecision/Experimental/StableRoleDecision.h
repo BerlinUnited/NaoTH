@@ -10,8 +10,6 @@
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
-#include "Cognition/Modules/Modeling/RoleDecision/RoleDecision.h"
-
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -44,7 +42,7 @@ END_DECLARE_MODULE(StableRoleDecision)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class StableRoleDecision : public StableRoleDecisionBase, public RoleDecision
+class StableRoleDecision : public StableRoleDecisionBase
 {
 public: 
 
