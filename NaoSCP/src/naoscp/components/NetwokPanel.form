@@ -227,7 +227,6 @@
         </Property>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="WPA PSK"/>
-        <Property name="opaque" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="radioWEP">
@@ -236,7 +235,6 @@
           <ComponentRef name="buttonGroupWepWpa"/>
         </Property>
         <Property name="text" type="java.lang.String" value="WEP"/>
-        <Property name="opaque" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
@@ -246,7 +244,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="wlanSSID">
       <Properties>
-        <Property name="text" type="java.lang.String" value="NAONET"/>
+        <Property name="text" type="java.lang.String" value="SPL_A"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
@@ -256,8 +254,11 @@
     </Component>
     <Component class="javax.swing.JTextField" name="wlanKey">
       <Properties>
-        <Property name="text" type="java.lang.String" value="a1b0a1b0a1"/>
+        <Property name="text" type="java.lang.String" value="Nao?!Nao?!"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

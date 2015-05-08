@@ -40,8 +40,8 @@ option situation_based_striker
       else if(action_done && state_time > 1000 &&
          ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
       {
-        if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
-          goto sidekick;  
+        if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && robot_pose.planned.x < 3500) // there is an obstacle (don't avoid close to opponent goal)
+          goto sidekick_stable;
 	      else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
 	               || abs(value=attack.direction.preview)<12)
 	        goto attack;
@@ -63,8 +63,8 @@ option situation_based_striker
   state turn {
     decision{
 
-      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
-        goto sidekick;
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && robot_pose.planned.x < 3500) // there is an obstacle (don't avoid close to opponent goal)
+        goto sidekick_stable;
       else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
         goto attack;
       else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
@@ -109,8 +109,8 @@ option situation_based_striker
 
   state attack {
     decision{
-      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
-        goto sidekick;
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && robot_pose.planned.x < 3500)) // there is an obstacle (don't avoid close to opponent goal)
+        goto sidekick_stable;
       else if(action_done)
         goto goto_ball;
       else

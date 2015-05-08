@@ -388,9 +388,15 @@ Vector2d GoalDetectorV2::getBackProjectedBasePoint(const GoalPercept::GoalPost& 
 int GoalDetectorV2::getBackProjectedTopBarWidth(const GoalPercept::GoalPost& post)
 {
   Vector2d p1 = post.position;
+  Vector2d p1_ = post.position;
+  p1_.rotateRight().normalize();
   double halfWidth = getFieldInfo().goalpostRadius;
-  Vector3d pt1(p1.x, p1.y - halfWidth, getFieldInfo().goalHeight);
-  Vector3d pt2(p1.x, p1.y + halfWidth, getFieldInfo().goalHeight);
+
+  Vector2d p10 = p1 - p1_ * halfWidth ;
+  Vector2d p11 = p1 + p1_ * halfWidth ;
+
+  Vector3d pt1(p10.x, p10.y, getFieldInfo().goalHeight);
+  Vector3d pt2(p11.x, p11.y, getFieldInfo().goalHeight);
 
   Vector2i topInImage1;
   Vector2i topInImage2;
@@ -403,9 +409,15 @@ int GoalDetectorV2::getBackProjectedTopBarWidth(const GoalPercept::GoalPost& pos
 int GoalDetectorV2::getBackProjectedBaseBarWidth(const GoalPercept::GoalPost& post)
 {
   Vector2d p1 = post.position;
+  Vector2d p1_ = post.position;
+  p1_.rotateRight().normalize();
   double halfWidth = getFieldInfo().goalpostRadius;
-  Vector3d pt1(p1.x, p1.y - halfWidth, 0.0);
-  Vector3d pt2(p1.x, p1.y + halfWidth, 0.0);
+
+  Vector2d p10 = p1 - p1_ * halfWidth ;
+  Vector2d p11 = p1 + p1_ * halfWidth ;
+
+  Vector3d pt1(p10.x, p10.y, 0.0);
+  Vector3d pt2(p11.x, p11.y, 0.0);
 
   Vector2i topInImage1;
   Vector2i topInImage2;

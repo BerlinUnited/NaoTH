@@ -174,7 +174,7 @@ void GoalCrossBarDetector::checkSinglePost(const GoalPercept::GoalPost& post)
     double estimatedCrossBarLength = (relWidth + relHeight) * 0.5;
     CrossBar crossBar(direction, estimatedCrossBarLength);
 
-    Vector2d offset =  direction * meanBarWidth * 0.5;
+    //Vector2d offset =  direction * meanBarWidth * 0.5;
     Vector2i end = start + direction * estimatedCrossBarLength;
     scanAlongCrossBar(start, end, direction.rotateRight(),  meanBarWidth);
     clusterEdgelFeatures();
@@ -191,7 +191,7 @@ void GoalCrossBarDetector::checkBothPosts(const GoalPercept::GoalPost& postLeft,
   Vector2d meanPostDirection = (postLeft.directionInImage + postRight.directionInImage).normalize(); 
   double meanPostWidth =  0.25 * (backProjectedBarWidthLeft + backProjectedBarWidthRight + postLeft.seenWidth + postRight.seenWidth);
 
-  Vector2d offset =  meanPostDirection * meanPostWidth * 0.5;
+  //Vector2d offset =  meanPostDirection * meanPostWidth * 0.5;
 
   Vector2i start = getBackProjectedTopPoint(postLeft);;
   Vector2i end = getBackProjectedTopPoint(postRight);;
@@ -538,7 +538,7 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
   return features[id].size();
 }
 
-size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth)
+size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double /*barWidth*/)
 {
   lastCrossBarScanLineId = id;
   if(features.size() <= id)
@@ -753,7 +753,7 @@ void GoalCrossBarDetector::calcuateCrossBars()
           double d = line.intersection(post);
           begin = line.point(d);
 
-          Vector2d lineDir = line.getDirection();
+          //Vector2d lineDir = line.getDirection();
 
           if(goalCandidates[i].crossBar.direction.x < 0)
           {

@@ -3,6 +3,7 @@
  */
 package de.naoth.rc.components.behaviorviewer;
 
+import de.naoth.rc.components.behaviorviewer.model.EnumType;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import static de.naoth.rc.dialogs.BehaviorViewer.BOLD_FONT;
 import static de.naoth.rc.dialogs.BehaviorViewer.DARK_GREEN;
@@ -59,7 +60,9 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                     } else if (s instanceof Symbol.Decimal) {
                         text.append(((Symbol.Decimal) s).value);
                     } else if (s instanceof Symbol.Enum) {
-                        text.append(((Symbol.Enum) s).value);
+                        Symbol.Enum e = (Symbol.Enum) s;
+                        EnumType.Element etypeElement =  e.enumType.elements.get(e.value);
+                        text.append(etypeElement.name);
                     }
                 }
 

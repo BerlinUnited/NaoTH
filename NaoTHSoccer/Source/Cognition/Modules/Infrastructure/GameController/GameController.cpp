@@ -3,6 +3,7 @@
 #include "Tools/Debug/DebugRequest.h"
 
 GameController::GameController()
+  : whistleCountInLastSet(0)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -44,6 +45,23 @@ void GameController::execute()
     getPlayerInfo().gameData.gameState = GameData::penalized;
   );
 
+  // check if whistle overrides gamecontroller
+  if(getPlayerInfo().gameData.gameState == GameData::set)
+  {
+    if(oldState == GameData::ready)
+    {
+      // remember the whistle count when we entered set from ready
+      whistleCountInLastSet = getWhistlePercept().counter;
+    }
+    else if(getWhistlePercept().counter > whistleCountInLastSet)
+    {
+      // allow to switch from set to play in beginning with the second frame
+      getPlayerInfo().gameData.gameState = GameData::playing;
+    }
+
+  }
+
+
   if(oldState != getPlayerInfo().gameData.gameState
     || oldTeamColor != getPlayerInfo().gameData.teamColor
     || oldPlayMode != getPlayerInfo().gameData.playMode
@@ -75,8 +93,10 @@ void GameController::readHeadButtons()
   }
 }
 
+
 void GameController::readButtons()
 {
+
   // default return message if old message was accepted
   if(getGameReturnData().message == GameReturnData::manual_penalise
      && getGameData().penaltyState != GameData::none)
@@ -134,6 +154,10 @@ void GameController::readButtons()
       if (oldColor == GameData::blue) {
         getPlayerInfo().gameData.teamColor = GameData::red;
       } else if (oldColor == GameData::red) {
+        getPlayerInfo().gameData.teamColor = GameData::yellow;
+      } else if (oldColor == GameData::yellow) {
+        getPlayerInfo().gameData.teamColor = GameData::black;
+      } else if (oldColor == GameData::black) {
         getPlayerInfo().gameData.teamColor = GameData::blue;
       }
     }
@@ -211,6 +235,15 @@ void GameController::updateLEDs()
   else if (getPlayerInfo().gameData.teamColor == GameData::blue)
   {
     getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
+  }
+  else if(getPlayerInfo().gameData.teamColor == GameData::yellow)
+  {
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 1.0;
+  }
+  else if(getPlayerInfo().gameData.teamColor == GameData::black)
+  {
+      // LED off
   }
 
   // show kickoff state on right foot and head in initial, ready and set

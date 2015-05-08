@@ -30,17 +30,17 @@ public class XABSLProtoParser {
 
     private XABSLBehavior behavior = null;
 
-    public XABSLBehaviorFrame parse(Messages.BehaviorStateSparse status) {
+    public XABSLBehaviorFrame parseSparse(Messages.BehaviorStateSparse status) {
         XABSLBehaviorFrame frame = new XABSLBehaviorFrame(status.getFrameNumber());
 
-        ArrayList<Symbol> inputSymbols = parseSparse(
+        ArrayList<Symbol> inputSymbols = XABSLProtoParser.this.parseSparse(
                 behavior.inputSymbols,
                 status.getInputSymbolList());
         for (Symbol s : inputSymbols) {
             frame.addInputSymbol(s);
         }
 
-        ArrayList<Symbol> outputSymbols = parseSparse(
+        ArrayList<Symbol> outputSymbols = XABSLProtoParser.this.parseSparse(
                 behavior.outputSymbols,
                 status.getOutputSymbolList());
         for (Symbol s : outputSymbols) {
@@ -182,7 +182,7 @@ public class XABSLProtoParser {
         }
     }
 
-    public XABSLBehavior parse(Messages.BehaviorStateComplete behavior_msg) {
+    public XABSLBehavior parseComplete(Messages.BehaviorStateComplete behavior_msg) {
         this.behavior = new XABSLBehavior();
 
         // parse the enumerations first, so they are available when symbols are parsed

@@ -212,16 +212,15 @@ void MonteCarloSelfLocator::execute()
       theSampleSet.resetLikelihood();
       updateBySensors(theSampleSet);
 
+
+      //HACK
       if(parameters.updateBySituation) {
         if(getPlayerInfo().gameData.gameState == GameData::set) 
         {
-          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
-            updateByGoalBox(theSampleSet);
-          } else {
-            updateByOwnHalfLookingForward(theSampleSet);
-          }
+          updateByOwnHalf(theSampleSet);
         }
       }
+
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
@@ -1036,6 +1035,12 @@ void MonteCarloSelfLocator::drawPosition() const
       break;
     case GameData::blue:
       PEN("0000FF", 20);
+      break;
+    case GameData::yellow:
+      PEN("FFFF00", 20);
+      break;
+    case GameData::black:
+      PEN("000000", 20);
       break;
     default:
       PEN("AAAAAA", 20);

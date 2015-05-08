@@ -103,7 +103,10 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
 
     // initialize the scanner
     Vector2i peak_point(pos);
-    MaximumScan<Vector2i,double> maxScan(peak_point, parameters.thresholdGradient);
+    Vector2i peak_point_max(pos);
+    Vector2i peak_point_min(pos);
+    MaximumScan<Vector2i,double> maxScan(peak_point_max, parameters.thresholdGradient);
+    MaximumScan<Vector2i,double> minScan(peak_point_min, parameters.thresholdGradient);
 
     bool edgeFound = false;
 
@@ -149,9 +152,19 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
         }
       );
 
-      double absValue = fabs(filter.value());
+      bool peakFound = false;
+      if(maxScan.add(filter.point(), filter.value()))
+      {
+        peakFound = true;
+        peak_point = peak_point_max;
+      }
+      else if(minScan.add(filter.point(), -filter.value()))
+      {
+        peakFound = true;
+        peak_point = peak_point_min;
+      }
 
-      if(maxScan.add(filter.point(), absValue))
+      if(peakFound)
       {
         Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
         EdgelD newEdgel;
