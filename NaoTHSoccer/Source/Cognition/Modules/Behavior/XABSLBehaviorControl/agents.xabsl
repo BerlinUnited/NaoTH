@@ -90,6 +90,9 @@ include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
+include "Options/Soccer/simple_penalty_kicker.xabsl";
+include "Options/Soccer/simple_penalty_goalie.xabsl";
+
 include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
@@ -208,6 +211,9 @@ include "Options/Test/head_control_test.xabsl";
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker);
+agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie);
+
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);

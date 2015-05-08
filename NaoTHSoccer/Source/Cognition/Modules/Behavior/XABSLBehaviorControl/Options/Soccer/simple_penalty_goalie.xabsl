@@ -1,0 +1,21 @@
+option simple_penalty_goalie {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      take_arms_back();
+
+      head_control_test();
+
+      // control the arms
+      arms_control();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+      
+    }
+  }
+}
