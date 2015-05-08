@@ -44,8 +44,6 @@ void TeamMessageStatistics::execute() {
             /getTeamMessageStatisticsModel().amountOfMessages;
           getTeamMessageStatisticsModel().expectation_xSquared = (getTeamMessageStatisticsModel().expectation_xSquared * old_amountOfMessages + 
             std::pow(currentMessageInterval, 2))/getTeamMessageStatisticsModel().amountOfMessages;
-          getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-            std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         }
         else {
           //Interpolation of message intervals
@@ -53,9 +51,9 @@ void TeamMessageStatistics::execute() {
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().avgMsgInterval;
           getTeamMessageStatisticsModel().expectation_xSquared = parameters.interpolation * std::pow(currentMessageInterval, 2) + 
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().expectation_xSquared;
-          getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-            std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         }
+        getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
+          std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         PLOT("MessageStatistics:Team:MessageInterval", currentMessageInterval);
       }
     }
