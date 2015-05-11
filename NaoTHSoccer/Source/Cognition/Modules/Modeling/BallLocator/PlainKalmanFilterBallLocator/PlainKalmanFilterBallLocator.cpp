@@ -29,7 +29,7 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 void PlainKalmanFilterBallLocator::execute()
 {
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
         applyOdometryOnFilterState(*iter);
     }
 
@@ -38,7 +38,7 @@ void PlainKalmanFilterBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
 
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
         predict(*iter, dt);
     }
 
@@ -55,9 +55,17 @@ void PlainKalmanFilterBallLocator::execute()
         Eigen::Vector2d z;
 
         if(useExtendedFilter)
+        {
+            if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
+                PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
+            {
+              z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
+            } else {
+              z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
+            }
+        } else {
             z = ExtendedKalmanFilter4d::createMeasurementVector(getBallPercept());
-        else
-            z = KalmanFilter4d::createMeasurementVector(getBallPercept());
+        }
 
         double x = getBallPercept().bearingBasedOffsetOnField.x;
         double y = getBallPercept().bearingBasedOffsetOnField.y;
@@ -66,7 +74,7 @@ void PlainKalmanFilterBallLocator::execute()
         {
             Eigen::Vector4d newState;
             newState << x, 0, y, 0;
-            filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
+            filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension, getCameraMatrix(), getCameraMatrixTop(), getCameraInfo(), getCameraInfoTop()));
         }
         else
         {
@@ -75,9 +83,9 @@ void PlainKalmanFilterBallLocator::execute()
 
             dist = distanceToState(filter[0],z);
 
-            std::vector<KalmanFilter4d>::iterator bestPredictor = filter.begin();
+            std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = filter.begin();
 
-            for(std::vector<KalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
+            for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
                 double temp;
                 temp = distanceToState(*iter,z);
 
@@ -91,7 +99,7 @@ void PlainKalmanFilterBallLocator::execute()
             {
                 Eigen::Vector4d newState;
                 newState << x, 0, y, 0;
-                filter.push_back(KalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
+                filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension, getCameraMatrix(), getCameraMatrixTop(), getCameraInfo(), getCameraInfoTop()));
             }
             else
             {
@@ -116,7 +124,7 @@ void PlainKalmanFilterBallLocator::execute()
     }
 
     // delete some filter if they are to bad
-    std::vector<KalmanFilter4d>::iterator iter = filter.begin();
+    std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
     while(iter != filter.end()){
         double std_x = std::sqrt((*iter).getProcessCovariance()(0,0));
         double std_y = std::sqrt((*iter).getProcessCovariance()(2,2));
@@ -130,10 +138,10 @@ void PlainKalmanFilterBallLocator::execute()
     if(filter.size() > 0)
     {
         // find best model
-        std::vector<KalmanFilter4d>::iterator model = filter.begin();
+        std::vector<ExtendedKalmanFilter4d>::iterator model = filter.begin();
         double evalue = (*model).getProcessCovariance()(0,0)+(*model).getProcessCovariance()(2,2);
 
-        for(std::vector<KalmanFilter4d>::iterator iter = model; iter != filter.end(); iter++){
+        for(std::vector<ExtendedKalmanFilter4d>::iterator iter = model; iter != filter.end(); iter++){
             double temp = (*iter).getProcessCovariance()(0,0)+(*iter).getProcessCovariance()(2,2);
             if(temp < evalue){
                 evalue = temp;
@@ -191,17 +199,17 @@ void PlainKalmanFilterBallLocator::execute()
     lastRobotOdometry = getOdometryData();
 }
 
-double PlainKalmanFilterBallLocator::distanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
+double PlainKalmanFilterBallLocator::distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
     return std::sqrt(((z-filter.getStateInMeasurementSpace()).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInMeasurementSpace()))(0,0));
 }
 
-double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const
+double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
     return std::exp(((filter.getStateInMeasurementSpace()-z).transpose() * filter.getMeasurementCovariance().inverse() * (filter.getStateInMeasurementSpace()-z))(0,0) * (-0.5));
 }
 
-void PlainKalmanFilterBallLocator::predict(KalmanFilter4d& filter, double dt)
+void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt)
 {
     /*
         rolling resistance = rolling resitance coefficient * normal force
@@ -282,7 +290,7 @@ void PlainKalmanFilterBallLocator::predict(KalmanFilter4d& filter, double dt)
     }
 }
 
-void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(KalmanFilter4d& filter)
+void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter)
 {
     const Eigen::Vector4d& x = filter.getState();
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
@@ -339,7 +347,7 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() {
 
     Eigen::EigenSolver< Eigen::Matrix<double,2,2> > es;
 
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
@@ -437,7 +445,7 @@ void PlainKalmanFilterBallLocator::reloadParameters()
     Eigen::Matrix2d measurementNoiseCovariances = Eigen::Matrix2d::Zero();
     measurementNoiseCovariances = measurementNoiseStd.cwiseProduct(measurementNoiseStd);
 
-    for(std::vector<KalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
     }

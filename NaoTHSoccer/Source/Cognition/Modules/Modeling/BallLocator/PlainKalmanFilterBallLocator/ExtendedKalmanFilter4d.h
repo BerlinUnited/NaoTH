@@ -13,10 +13,17 @@
 
 #include <Representations/Perception/BallPercept.h>
 
+#include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Infrastructure/CameraInfo.h>
+
+#include <Tools/Math/Vector2.h>
+#include <Tools/Math/Vector3.h>
+#include <Tools/CameraGeometry.h>
+
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension);
+    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension, const CameraMatrix& camMat, const CameraMatrixTop& camMatTop, const naoth::CameraInfo& camInfo, const naoth::CameraInfoTop& camInfoTop);
 
     ~ExtendedKalmanFilter4d();
 
@@ -25,7 +32,9 @@ public:
 
 public:
 
+    //--- modifies useCamTop! ---//
     static Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
+    static Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
 
 public:
 
@@ -35,13 +44,21 @@ public:
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
     //--- getter ---//
-    const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d        getStateInMeasurementSpace() const;
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
-
+    const Eigen::Vector4d& getState() const;
+    Eigen::Vector2d        getStateInMeasurementSpace() const;
 
 private:
+
+    static bool useCamTop;
+
+    //--- needed for the state space to measurement space transformation
+    /*const*/ CameraMatrix/*&*/ camMat;
+    /*const*/ CameraMatrixTop/*&*/ camMatTop;
+
+    /*const*/ naoth::CameraInfo/*&*/ camInfo;
+    /*const*/ naoth::CameraInfoTop/*&*/ camInfoTop;
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix
@@ -66,6 +83,7 @@ private:
 
     // paramter for coordinate transformation
     static const double height = 500;
+    static const double ball_height = 32.5;
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H

@@ -52,11 +52,17 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 
 // cooridinate change
 //  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
+//  REQUIRE(CameraMatrixTop)
 //  REQUIRE(SituationStatus)
 
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
+
+// for extended kalman filter
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
   PROVIDE(BallModel)
 END_DECLARE_MODULE(PlainKalmanFilterBallLocator)
@@ -82,13 +88,13 @@ private:
 
 private:
 
-    double distanceToState(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
+    double distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
     // non normalized value of probability density function of measurement Z at the filters state
-    double evaluatePredictionWithMeasurement(const KalmanFilter4d& filter, const Eigen::Vector2d& z) const;
+    double evaluatePredictionWithMeasurement(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
-    std::vector<KalmanFilter4d> filter;
+    std::vector<ExtendedKalmanFilter4d> filter;
 
     const double epsilon; // 10e-6
     double distanceThreshold;
@@ -97,7 +103,7 @@ private:
     //double ballMass;
     double c_RR;
 
-    const KalmanFilter4d* bestModel;
+    const ExtendedKalmanFilter4d* bestModel;
 
     const BallPercept& getBallPercept() const
     {
@@ -110,9 +116,9 @@ private:
       }
     }
 
-    void applyOdometryOnFilterState(KalmanFilter4d& filter);
+    void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
-    void predict(KalmanFilter4d& filter, double dt);
+    void predict(ExtendedKalmanFilter4d& filter, double dt);
 
     /*    DEBUG STUFF    */
     void doDebugRequest();
