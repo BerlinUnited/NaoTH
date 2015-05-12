@@ -540,6 +540,9 @@ size_t GoalCrossBarDetector::scanDownColor(size_t id, const Vector2i& downStart,
 
 size_t GoalCrossBarDetector::scanDownDiff(size_t id, const Vector2i& downStart, const Vector2i& downEnd, double barWidth)
 {
+  // this silences the unused variable warning
+  (void)barWidth;
+  
   lastCrossBarScanLineId = id;
   if(features.size() <= id)
   {
