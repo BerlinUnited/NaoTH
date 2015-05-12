@@ -127,7 +127,7 @@ private:
 
   std::vector<Action> action_local;
 
-  BallPositionCategory categorizePosition(const Vector2d& globalPoint) const;
+  void categorizePosition(const std::vector<Vector2d>& ballPositionResults, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
 
   Vector2d calculateOneAction(const Action& lonely_action) const;
 

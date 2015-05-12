@@ -70,12 +70,7 @@ void Simulation::execute()
       
       // categorize positions
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-      for(std::vector<Vector2d>::iterator ballPosition = ballPositionResults.begin(); ballPosition != ballPositionResults.end(); ballPosition++)
-      {
-        BallPositionCategory category = this->categorizePosition(*ballPosition);
-        CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, category);
-        categorizedBallPositionResults.push_back(categorizedBallPosition);
-      }
+      this->categorizePosition(ballPositionResults, categorizedBallPositionResults);
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
@@ -96,9 +91,12 @@ void Simulation::execute()
   }
 }//end execute
 
-Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& globalPoint) const
+void Simulation::categorizePosition(
+  const std::vector<Vector2d>& ballPositions, 
+  std::vector<CategorizedBallPosition>& categorizedBallPositions
+  ) const
 { 
-  Vector2d point = globalPoint;
+  // HINT: categorizedBallPositions is not necessarily empty here!
   
   // calculate the opponent goal line
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
@@ -121,47 +119,52 @@ Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& 
   Vector2d ownRightEndpoint = ownGoalPostRightPreview - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
 
   Math::LineSegment ownGoalLinePreview(ownLeftEndpoint, ownRightEndpoint);
-  
-  //Schusslinie
-  Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
+ 
+  // now loop through all positions
+  for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ballPosition++)
+  {
+    //Schusslinie
+    Math::LineSegment shootLine(getBallModel().positionPreview, *ballPosition);
 
-  BallPositionCategory cat = INFIELD;
-  // inside field
-  if(getFieldInfo().fieldRect.inside(point))
-  {
-    cat = INFIELD;
+    BallPositionCategory category = INFIELD;
+    // inside field
+    if(getFieldInfo().fieldRect.inside(*ballPosition))
+    {
+      category = INFIELD;
+    }
+    // goal!!
+    else if(shootLine.intersect(oppGoalLinePreview) && oppGoalLinePreview.intersect(shootLine)) 
+    {
+      category = OPPGOAL;
+    }
+    // own goal
+    else if(shootLine.intersect(ownGoalLinePreview) && ownGoalLinePreview.intersect(shootLine)) 
+    {
+      category = OWNGOAL;
+    }
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+    else if(ballPosition->x > getFieldInfo().xPosOpponentGroundline)
+    {
+      category = OPPOUT;
+    }
+    //Own Groundline out -  an der seite wo raus geht
+    else if(ballPosition->x < getFieldInfo().xPosOwnGroundline)
+    {
+      category = OWNOUT;
+    }
+    //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+    else if(ballPosition->y > getFieldInfo().yPosLeftSideline )
+    {  
+      category = LEFTOUT;
+    }
+    //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+    else if(ballPosition->y < getFieldInfo().yPosRightSideline)
+    { 
+      category = RIGHTOUT;
+    }
+    CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, category);
+    categorizedBallPositions.push_back(categorizedBallPosition);
   }
-  // goal!!
-  else if(shootLine.intersect(oppGoalLinePreview) && oppGoalLinePreview.intersect(shootLine)) 
-  {
-    cat = OPPGOAL;
-  }
-  // own goal
-  else if(shootLine.intersect(ownGoalLinePreview) && ownGoalLinePreview.intersect(shootLine)) 
-  {
-    cat = OWNGOAL;
-  }
-  //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-  else if(point.x > getFieldInfo().xPosOpponentGroundline)
-  {
-    cat = OPPOUT;
-  }
-  //Own Groundline out -  an der seite wo raus geht
-  else if(point.x < getFieldInfo().xPosOwnGroundline)
-  {
-    cat = OWNOUT;
-  }
-  //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-  else if(point.y > getFieldInfo().yPosLeftSideline )
-  {  
-    cat = LEFTOUT;
-  }
-  //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-  else if(point.y < getFieldInfo().yPosRightSideline)
-  { 
-    cat = RIGHTOUT;
-  }
-  return cat;
 }
 
 Vector2d Simulation::calculateOneAction(const Action& action) const
