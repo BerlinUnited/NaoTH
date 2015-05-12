@@ -62,16 +62,25 @@ void Simulation::execute()
       Vector2d ballPositionResult = calculateOneAction(action_local[i]);
       ballPositionResults.push_back(ballPositionResult);
     }
+//    DEBUG_REQUEST("Simulation:draw_one_action_point:global",
+//    {
+//      FIELD_DRAWING_CONTEXT;
+//      PEN("000000", 1);
+//      CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
+//      TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-150,action.maximum);
+//      TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-250,action.minimum);
+//    });
+
 
     getKickActionModel().myAction = action_local[best_action].id();
 
-  DEBUG_REQUEST("Simulation:draw_best_action",
-  {
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF69B4", 7);
-    Vector2d actionGlobal = action_local[best_action].target;
-    FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
-  });
+    DEBUG_REQUEST("Simulation:draw_best_action",
+    {
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF69B4", 7);
+      Vector2d actionGlobal = action_local[best_action].target;
+      FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
+    });
 
 //  DEBUG_REQUEST("Simulation:draw_potential_field",
 //     draw_potential_field();
