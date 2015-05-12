@@ -61,6 +61,7 @@ void Simulation::execute()
     {
       // physics simulator
       std::vector<Vector2d> ballPositionResults;
+      // this size needs to be exposed
       for(size_t j=0; j<30; j++)
       {
         const Vector2d& ballRelativePreview = getBallModel().positionPreview;
@@ -96,7 +97,7 @@ void Simulation::categorizePosition(
   std::vector<CategorizedBallPosition>& categorizedBallPositions
   ) const
 { 
-  // HINT: categorizedBallPositions is not necessarily empty here!
+  // HINT: categorizedBallPositions is not necessarily empty here! Maybe we should clear it
   
   // calculate the opponent goal line
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
