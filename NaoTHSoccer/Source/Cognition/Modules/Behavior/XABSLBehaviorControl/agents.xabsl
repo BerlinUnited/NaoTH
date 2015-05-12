@@ -17,7 +17,6 @@ include "Symbols/led_symbols.xabsl";
 include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
-//Experimental
 include "Symbols/field_symbols.xabsl";
 
 // Head Control
@@ -90,6 +89,8 @@ include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
+
+//Striker
 include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
@@ -108,6 +109,8 @@ include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
+include "Options/Soccer/simple_penalty_kicker.xabsl";
+include "Options/Soccer/simple_penalty_goalie.xabsl";
 
 /* Test section */
 // Test agents (options)
@@ -204,6 +207,9 @@ include "Options/Test/head_control_test.xabsl";
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker);
+agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie);
+
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
