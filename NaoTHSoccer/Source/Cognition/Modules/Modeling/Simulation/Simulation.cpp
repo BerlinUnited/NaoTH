@@ -63,7 +63,8 @@ void Simulation::execute()
       std::vector<Vector2d> ballPositionResults;
       for(size_t j=0; j<30; j++)
       {
-        Vector2d ballPositionResult = calculateOneAction(action_local[j]);
+        const Vector2d& ballRelativePreview = getBallModel().positionPreview;
+        Vector2d ballPositionResult = action_local[i].predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
         ballPositionResults.push_back(ballPositionResult);
       }
       
