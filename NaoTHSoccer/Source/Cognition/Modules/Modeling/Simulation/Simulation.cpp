@@ -56,9 +56,11 @@ void Simulation::execute()
   else
   {
     int best_action = 0;
+    std::vector<Vector2d> ballPositionResults;
     for(size_t i=0; i<action_local.size(); i++)
     {
       Vector2d ballPositionResult = calculateOneAction(action_local[i]);
+      ballPositionResults.push_back(ballPositionResult);
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
@@ -71,64 +73,13 @@ void Simulation::execute()
     FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
   });
 
-  //DEBUG_REQUEST("Simulation:draw_pessimistic_best_action",
-  //{
-  //  FIELD_DRAWING_CONTEXT;
-  //  PEN("0000FF", 7);
-  //  Vector2d actionGlobal = action_local[pessimistic_best_action].target;
-  //  FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
-  //});
-  DEBUG_REQUEST("Simulation:draw_potential_field",
-     draw_potential_field();
-  );
+//  DEBUG_REQUEST("Simulation:draw_potential_field",
+//     draw_potential_field();
+//  );
 
  
   }
 }//end execute
-
-void Simulation::simulate(Simulation::Action& action, RingBufferWithSum<double, 30>& oneActionRingBuffer)const
-{
-
-  Vector2d ballPositionResult = calculateOneAction(action);
-
-  DEBUG_REQUEST("Simulation:draw_one_action_point:global",
-  {
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 1);
-    CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
-    //TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-150,action.maximum);
-    //TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-250,action.minimum);
-  });
-
-  double v = evaluateAction(ballPositionResult);
-
-  oneActionRingBuffer.add(v);
-
-  // HACK
-  action.potential = oneActionRingBuffer.getAverage();
-  action.target = ballPositionResult;
-  //double s = 0;
-  //int z = 0;
-  ////Durch den Buffer durchgehen und alle Werte kleiner Average aufsummieren
-  //for (int k=0; k < oneActionRingBuffer.size(); k++){
-  //    if(oneActionRingBuffer[k] <= action.potential){
-  //        s += oneActionRingBuffer[k];
-  //        z++;
-  //    }
-  //}
-  //action.pessimistPotential = s/z;
-  ////Todo: als text minimum und maximum ausgeben
-  //action.minimum = oneActionRingBuffer.getMinimum();
-
-  //double max = oneActionRingBuffer[0];
-  //for(int i = 0; i < oneActionRingBuffer.size();i++)
-  //    {
-  //      if(oneActionRingBuffer[i] > max) max = oneActionRingBuffer[i];
-  //    }
-  //action.maximum = max;
-  //if there is big gap between our values(average and median), we know it is not good
-  //action.goodness = actionRingBuffer.getAverage()/actionRingBuffer.getMedian();
-}
 
 Vector2d Simulation::calculateOneAction(const Action& action) const
 {

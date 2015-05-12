@@ -91,10 +91,6 @@ public:
 		  _id(_id), 
       actionVector(actionVector),
 		  potential(-1)
-    //  pessimistPotential(-1),
-		  //goodness(0),
-    //  minimum(0),
-    //  maximum(0)
 	  {}
 	
 	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
@@ -102,10 +98,6 @@ public:
 
     Vector2d target;
     double potential;
-    //double pessimistPotential;
-    //double goodness;
-    //double minimum;
-    //double maximum;
   };
 
 
@@ -118,10 +110,6 @@ private:
   Vector2d outsideField(const Vector2d& relativePoint) const;
 
   double evaluateAction(const Vector2d& a) const;
-
-  std::vector<RingBufferWithSum<double, 30> >actionRingBuffer;
-
-  void simulate(Action& action, RingBufferWithSum<double, 30>& actionRingBuffer) const;
 
   void draw_potential_field() const;
 };
