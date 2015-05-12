@@ -105,7 +105,7 @@ Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& 
 
   BallPositionCategory cat = INFIELD;
   if(getFieldInfo().fieldRect.inside(point)){
-    return cat;
+    cat = INFIELD;
   } else
   {   
     //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
@@ -128,8 +128,8 @@ Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& 
     { 
       cat = RIGHTOUT;
     }
-    return cat;
   }
+  return cat;
 }
 
 Vector2d Simulation::calculateOneAction(const Action& action) const
