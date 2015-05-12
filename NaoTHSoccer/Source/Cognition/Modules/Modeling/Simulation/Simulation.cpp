@@ -57,25 +57,19 @@ void Simulation::execute()
   {
     int best_action = 0;
     
-    // physics simulator
-    std::vector<Vector2d> ballPositionResults;
     for(size_t i=0; i<action_local.size(); i++)
     {
-      Vector2d ballPositionResult = calculateOneAction(action_local[i]);
-      ballPositionResults.push_back(ballPositionResult);
+      // physics simulator
+      std::vector<Vector2d> ballPositionResults;
+      for(size_t j=0; j<30; j++)
+      {
+        Vector2d ballPositionResult = calculateOneAction(action_local[j]);
+        ballPositionResults.push_back(ballPositionResult);
+      }
+      
+      // categorize positions
+      std::vector<CategorizedBallPosition> categorizedBallPositionResults;
     }
-//    for ...
-//    DEBUG_REQUEST("Simulation:draw_one_action_point:global",
-//    {
-//      FIELD_DRAWING_CONTEXT;
-//      PEN("000000", 1);
-//      CIRCLE( ballPositionResult.x, ballPositionResult.y, 50);
-//      TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-150,action.maximum);
-//      TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-250,action.minimum);
-//    });
-
-    // categorize positions
-    std::vector<CategorizedBallPosition> categorizedBallPositionResults;
 
     getKickActionModel().myAction = action_local[best_action].id();
 
