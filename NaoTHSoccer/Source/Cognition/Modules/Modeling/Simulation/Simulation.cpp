@@ -70,7 +70,7 @@ void Simulation::execute()
       
       // categorize positions
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-      this->categorizePosition(ballPositionResults, categorizedBallPositionResults);
+      categorizePosition(ballPositionResults, categorizedBallPositionResults);
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
