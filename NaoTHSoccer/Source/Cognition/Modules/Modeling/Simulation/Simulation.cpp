@@ -69,6 +69,12 @@ void Simulation::execute()
       
       // categorize positions
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
+      for(std::vector<Vector2d>::iterator ballPosition = ballPositionResults.begin(); ballPosition != ballPositionResults.end(); ballPosition++)
+      {
+        CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, CategorizedBallPosition::INFIELD);
+        // do something
+        categorizedBallPositionResults.push_back(categorizedBallPosition);
+      }
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
