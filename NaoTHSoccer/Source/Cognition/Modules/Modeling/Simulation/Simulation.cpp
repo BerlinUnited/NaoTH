@@ -99,35 +99,67 @@ void Simulation::execute()
 Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& globalPoint) const
 { 
   Vector2d point = globalPoint;
+  
+  // calculate the opponent goal line
+  GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+  Vector2d oppGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.leftPost;
+  Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
 
+  Vector2d oppGoalDir = (oppGoalPostRightPreview - oppGoalPostLeftPreview).normalize();
+  Vector2d oppLeftEndpoint = oppGoalPostLeftPreview + oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d oppRightEndpoint = oppGoalPostRightPreview - oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+
+  Math::LineSegment oppGoalLinePreview(oppLeftEndpoint, oppRightEndpoint);
+  
+  // calculate the own goal line
+  GoalModel::Goal ownGoalModel = getSelfLocGoalModel().getOwnGoal(getCompassDirection(), getFieldInfo());
+  Vector2d ownGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / ownGoalModel.leftPost;
+  Vector2d ownGoalPostRightPreview = getMotionStatus().plannedMotion.hip / ownGoalModel.rightPost;
+
+  Vector2d ownGoalDir = (ownGoalPostRightPreview - ownGoalPostLeftPreview).normalize();
+  Vector2d ownLeftEndpoint = ownGoalPostLeftPreview + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d ownRightEndpoint = ownGoalPostRightPreview - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+
+  Math::LineSegment ownGoalLinePreview(ownLeftEndpoint, ownRightEndpoint);
+  
   //Schusslinie
   Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
 
   BallPositionCategory cat = INFIELD;
-  if(getFieldInfo().fieldRect.inside(point)){
+  // inside field
+  if(getFieldInfo().fieldRect.inside(point))
+  {
     cat = INFIELD;
-  } else
-  {   
-    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-    if(point.x > getFieldInfo().xPosOpponentGroundline)
-    {
-      cat = OPPOUT;
-    }
-    //Own Groundline out -  an der seite wo raus geht
-    else if(point.x < getFieldInfo().xPosOwnGroundline)
-    {
-      cat = OWNOUT;
-    }
-    //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(point.y > getFieldInfo().yPosLeftSideline )
-    {  
-      cat = LEFTOUT;
-    }
-    //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(point.y < getFieldInfo().yPosRightSideline)
-    { 
-      cat = RIGHTOUT;
-    }
+  }
+  // goal!!
+  else if(shootLine.intersect(oppGoalLinePreview) && oppGoalLinePreview.intersect(shootLine)) 
+  {
+    cat = OPPGOAL;
+  }
+  // own goal
+  else if(shootLine.intersect(ownGoalLinePreview) && ownGoalLinePreview.intersect(shootLine)) 
+  {
+    cat = OWNGOAL;
+  }
+  //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+  else if(point.x > getFieldInfo().xPosOpponentGroundline)
+  {
+    cat = OPPOUT;
+  }
+  //Own Groundline out -  an der seite wo raus geht
+  else if(point.x < getFieldInfo().xPosOwnGroundline)
+  {
+    cat = OWNOUT;
+  }
+  //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  else if(point.y > getFieldInfo().yPosLeftSideline )
+  {  
+    cat = LEFTOUT;
+  }
+  //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  else if(point.y < getFieldInfo().yPosRightSideline)
+  { 
+    cat = RIGHTOUT;
   }
   return cat;
 }

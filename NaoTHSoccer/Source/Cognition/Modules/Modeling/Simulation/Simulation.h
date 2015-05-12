@@ -106,7 +106,9 @@ public:
     OPPOUT,
     OWNOUT,
     LEFTOUT,
-    RIGHTOUT
+    RIGHTOUT,
+    OPPGOAL,
+    OWNGOAL
   };
 
   class CategorizedBallPosition
