@@ -31,8 +31,6 @@ Simulation::Simulation()
   action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
   action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
   action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
-
-  actionRingBuffer.resize(KickActionModel::numOfActions);
 }
 
 Simulation::~Simulation(){}
@@ -48,8 +46,6 @@ void Simulation::execute()
   action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
   action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
   action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
-
-  actionRingBuffer.resize(KickActionModel::numOfActions);
   );
 
   
@@ -60,21 +56,9 @@ void Simulation::execute()
   else
   {
     int best_action = 0;
-    //int pessimistic_best_action = 0;
-    for(size_t i=0; i<actionRingBuffer.size(); i++)
+    for(size_t i=0; i<action_local.size(); i++)
     {
-      simulate(action_local[i], actionRingBuffer[i]);
-
-      if(action_local[i].potential < action_local[best_action].potential)
-      {	
-        best_action = i;
-      }
-      //The pessimistic option
-      /*if(action_local[i].pessimistPotential < action_local[best_action].pessimistPotential)
-      {	
-        pessimistic_best_action = i;
-      }*/
-
+      Vector2d ballPositionResult = calculateOneAction(action_local[i]);
     }
 
     getKickActionModel().myAction = action_local[best_action].id();
