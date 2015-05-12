@@ -56,12 +56,15 @@ void Simulation::execute()
   else
   {
     int best_action = 0;
+    
+    // physics simulator
     std::vector<Vector2d> ballPositionResults;
     for(size_t i=0; i<action_local.size(); i++)
     {
       Vector2d ballPositionResult = calculateOneAction(action_local[i]);
       ballPositionResults.push_back(ballPositionResult);
     }
+//    for ...
 //    DEBUG_REQUEST("Simulation:draw_one_action_point:global",
 //    {
 //      FIELD_DRAWING_CONTEXT;
@@ -71,6 +74,8 @@ void Simulation::execute()
 //      TEXT_DRAWING(ballPositionResult.x,ballPositionResult.y-250,action.minimum);
 //    });
 
+    // categorize positions
+    std::vector<CategorizedBallPosition> categorizedBallPositionResults;
 
     getKickActionModel().myAction = action_local[best_action].id();
 

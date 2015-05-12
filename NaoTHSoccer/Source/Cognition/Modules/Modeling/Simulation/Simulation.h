@@ -100,6 +100,23 @@ public:
     double potential;
   };
 
+  class CategorizedBallPosition
+  {
+    public:
+      enum BallPositionCategory
+      {
+        INFIELD,
+        OUTFIELD
+      };
+    private:
+      Vector2d ballPosition;
+      BallPositionCategory category;
+    public:
+      CategorizedBallPosition(Vector2d position, BallPositionCategory cat):
+        ballPosition(position),
+        category(cat)
+      {}
+  };
 
 private:
 
