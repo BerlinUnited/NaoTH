@@ -72,8 +72,8 @@ void Simulation::execute()
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
       for(std::vector<Vector2d>::iterator ballPosition = ballPositionResults.begin(); ballPosition != ballPositionResults.end(); ballPosition++)
       {
-        CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, CategorizedBallPosition::INFIELD);
-        // do something
+        BallPositionCategory category = this->categorizePosition(*ballPosition);
+        CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, category);
         categorizedBallPositionResults.push_back(categorizedBallPosition);
       }
     }
@@ -95,6 +95,42 @@ void Simulation::execute()
  
   }
 }//end execute
+
+Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& globalPoint) const
+{ 
+  Vector2d point = globalPoint;
+
+  //Schusslinie
+  Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
+
+  Simulation::BallPositionCategory cat = INFIELD;
+  if(getFieldInfo().fieldRect.inside(point)){
+    return cat;
+  } else
+  {   
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+    if(point.x > getFieldInfo().xPosOpponentGroundline)
+    {
+      cat = OPPOUT;
+    }
+    //Own Groundline out -  an der seite wo raus geht
+    else if(point.x < getFieldInfo().xPosOwnGroundline)
+    {
+      cat = OWNOUT;
+    }
+    //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+    else if(point.y > getFieldInfo().yPosLeftSideline )
+    {  
+      cat = LEFTOUT;
+    }
+    //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+    else if(point.y < getFieldInfo().yPosRightSideline)
+    { 
+      cat = RIGHTOUT;
+    }
+    return cat;
+  }
+}
 
 Vector2d Simulation::calculateOneAction(const Action& action) const
 {

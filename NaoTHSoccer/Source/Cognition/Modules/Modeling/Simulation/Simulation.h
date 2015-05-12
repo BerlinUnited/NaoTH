@@ -99,15 +99,18 @@ public:
     Vector2d target;
     double potential;
   };
+  
+  enum BallPositionCategory
+  {
+    INFIELD,
+    OPPOUT,
+    OWNOUT,
+    LEFTOUT,
+    RIGHTOUT
+  };
 
   class CategorizedBallPosition
   {
-    public:
-      enum BallPositionCategory
-      {
-        INFIELD,
-        OUTFIELD
-      };
     private:
       Vector2d ballPosition;
       BallPositionCategory category;
@@ -121,6 +124,8 @@ public:
 private:
 
   std::vector<Action> action_local;
+
+  BallPositionCategory categorizePosition(const Vector2d& globalPoint) const;
 
   Vector2d calculateOneAction(const Action& lonely_action) const;
 
