@@ -103,7 +103,7 @@ Simulation::BallPositionCategory Simulation::categorizePosition(const Vector2d& 
   //Schusslinie
   Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
 
-  Simulation::BallPositionCategory cat = INFIELD;
+  BallPositionCategory cat = INFIELD;
   if(getFieldInfo().fieldRect.inside(point)){
     return cat;
   } else
