@@ -88,6 +88,13 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
+include "Options/Soccer/Strategy/newStriker/new_Striker.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_selection_attack.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_left.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_right.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_long_with_approach.xabsl";
+
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/fast_striker_agent.xabsl";
