@@ -109,7 +109,8 @@ include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
-include "Options/Soccer/simple_penalty_kicker.xabsl";
+
+include "Options/Soccer/simple_penalty_kicker.xabsl";
 include "Options/Soccer/simple_penalty_goalie.xabsl";
 
 /* Test section */
@@ -186,7 +187,8 @@ include "Options/Test/test_dribble.xabsl";
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
 include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
-include "Options/Test/ball_search/simple_search_ball_test.xabsl";
+include "Options/Test/ball_search/simple_search_ball_test.xabsl";
+
 
 // Test arms
 include "Options/Test/arm_back_test.xabsl";
@@ -196,7 +198,8 @@ include "Options/Test/arm_back_test_agent.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
-
+
+
 include "Options/Test/change_state_input_test.xabsl";
 
 
@@ -257,4 +260,5 @@ agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_b
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
-agent head_test_agent("head_test_agent", head_test_agent);
+
+agent head_test_agent("head_test_agent", head_test_agent);
