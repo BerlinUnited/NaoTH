@@ -1,9 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
+/**
  * TeamCommViewer.java
  *
  * Created on 08.11.2010, 21:41:28
@@ -48,27 +43,21 @@ public class TeamCommViewer extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
-
         @InjectPlugin
         public static RobotControl parent;
-//      @InjectPlugin
-//      public static TeamCommDrawingManager teamCommDrawingManager;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
     }//end Plugin
 
-    private final HashMap<String, RobotStatus> robotsMap;
-
     private Timer timerCheckMessages;
     private final TeamCommListener teamCommListener = new TeamCommListener();
-    
+    private final HashMap<String, RobotStatus> robotsMap = new HashMap<String, RobotStatus>();
+
     /**
      * Creates new form TeamCommViewer
      */
     public TeamCommViewer() {
         initComponents();
-
-        this.robotsMap = new HashMap<String, RobotStatus>();
     }
 
     /**
@@ -174,16 +163,11 @@ public class TeamCommViewer extends AbstractDialog {
                 if (teamCommListener.messageMap.isEmpty()) {
                     return;
                 }
-                long currentTime = System.currentTimeMillis();
-                Map<String, SPLMessage> splMessageMap = new HashMap<>();
-                
                 
                 DrawingCollection drawings = new DrawingCollection();
                 
-                for (Entry<String, TeamCommListener.Message> msg : teamCommListener.messageMap.entrySet()) {
-                    if ((currentTime - msg.getValue().timestamp) < RobotStatus.MAX_TIME_BEFORE_DEAD) {
-                        splMessageMap.put(msg.getKey(), msg.getValue().message);
-                    }
+                for (Entry<String, TeamCommListener.Message> msg : teamCommListener.messageMap.entrySet()) 
+                {
                     final String address = msg.getKey();
                     final SPLMessage splMessage = msg.getValue().message;
                     final long timestamp = msg.getValue().timestamp;
@@ -194,11 +178,11 @@ public class TeamCommViewer extends AbstractDialog {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-                                robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                                robotStatus.setStatus(timestamp, splMessage);
                                 robotsMap.put(address, robotStatus);
                                 robotStatusPanel.add(robotStatus);
                             } else {
-                                robotStatus.setStatus(splMessage.playerNum, timestamp, splMessage);
+                                robotStatus.setStatus(timestamp, splMessage);
                             }
                         }
                     });
@@ -228,12 +212,11 @@ public class TeamCommViewer extends AbstractDialog {
         private Thread trigger;
 
         private final ByteBuffer readBuffer;
-        public final Map<String, Message> messageMap;
+        public final Map<String, Message> messageMap = Collections.synchronizedMap(new TreeMap<String, Message>());
 
         public TeamCommListener() {
             this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            this.messageMap = Collections.synchronizedMap(new TreeMap<String, Message>());
         }
 
         boolean isConnected() {
@@ -269,24 +252,22 @@ public class TeamCommViewer extends AbstractDialog {
                     this.readBuffer.clear();
                     SocketAddress address = this.channel.receive(this.readBuffer);
                     this.readBuffer.flip();
+                    
                     try {
                         SPLMessage msg = new SPLMessage(this.readBuffer);
 
                         long timestamp = System.currentTimeMillis();
                         if (address instanceof InetSocketAddress) {
-
-                            synchronized (messageMap) {
-                                this.messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg));
-                            }
+                            this.messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg));
                         }
 
                     } catch (Exception ex) {
                         Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
                     }
-                    //this.messageMap.put(address.toString(), new Message(timestamp, msg));
+
                 }
             } catch (AsynchronousCloseException ex) {
-                /* socket was closet, that's fine */
+                /* socket was closed, that's fine */
             } catch (SocketException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

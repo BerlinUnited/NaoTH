@@ -36,6 +36,7 @@
 #include <Representations/Modeling/InertialModel.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
+#include <Representations/Infrastructure/WhistlePercept.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -63,6 +64,8 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
 
   PROVIDE(TeamMessageDataIn)
+
+  PROVIDE(WhistlePercept)
 
   PROVIDE(GPSData)
   PROVIDE(GameData)

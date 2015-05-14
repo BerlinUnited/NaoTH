@@ -61,7 +61,7 @@ public class RobotStatus extends javax.swing.JPanel {
         this.jlAddress.setText(this.ipAddress);
     }
 
-    public void setStatus(int playerNumber, long timestamp, SPLMessage msg)
+    public void setStatus(long timestamp, SPLMessage msg)
     {
       this.jlPlayerNumber.setText("" + msg.playerNum);
       

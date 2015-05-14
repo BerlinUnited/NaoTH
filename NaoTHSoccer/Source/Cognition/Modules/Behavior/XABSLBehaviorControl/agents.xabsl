@@ -193,6 +193,7 @@ include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/agent_test_dribble.xabsl";
 include "Options/Test/test_dribble.xabsl";
 
+
 // Test options Penalty
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
@@ -209,11 +210,9 @@ include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
 
-//Benji Test
-include "Options/Test/test_benji_agent.xabsl";
-include "Options/Test/test_benji_lv1.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
+
 
 
 include "Options/Test/head_test_agent.xabsl";
@@ -228,6 +227,7 @@ agent penalty("Penalty", play_penalty);
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
 agent role_fast_striker("fast_striker", fast_striker_agent);
+
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
@@ -245,11 +245,11 @@ agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
-agent motion_test_benji("test benji level 1", test_benji_agent);
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 
 agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
+
 agent goto_ball_in_fight("ball_in_fight_agent", ball_in_fight_test_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);
