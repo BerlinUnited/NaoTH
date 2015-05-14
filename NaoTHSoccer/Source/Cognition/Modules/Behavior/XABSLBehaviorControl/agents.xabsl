@@ -64,14 +64,10 @@ include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
 include "Options/Skills/striker_search.xabsl";
 include "Options/Skills/search_before_passive.xabsl";
-include "Options/Skills/sidekick_left_with_approach_left.xabsl";
-include "Options/Skills/sidekick_right_with_approach_right.xabsl";
-include "Options/Skills/kick_long_with_approach.xabsl";
-include "Options/Skills/kick_short_with_approach.xabsl";
+
 // Debug
 include "Options/Debug/battery.xabsl";
-include "Options/Debug/show_calibration.xabsl";
-
+include "Options/Debug/show_calibration.xabsl";
 
 // Soccer
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
@@ -88,6 +84,7 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
+//New Striker - with action Selection
 include "Options/Soccer/Strategy/newStriker/new_Striker.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_selection_attack.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_sidekick_left.xabsl";
@@ -107,14 +104,12 @@ include "Options/Soccer/Strategy/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
-include "Options/Soccer/Strategy/action_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
-include "Options/Soccer/Strategy/action_situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
-include "Options/Soccer/Strategy/Situations/situation_selection_attack.xabsl";
+
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
@@ -123,8 +118,6 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
 /* Test section */
 // Test agents (options)
-include "Options/Test/action_based_striker_test_agent.xabsl";
-include "Options/Test/action_based_striker_test.xabsl";
 // Test agents (options) Kicks
 include "Options/Test/sidekick_test_agent.xabsl";
 include "Options/Test/fast_forward_kick_test_agent.xabsl";
@@ -193,7 +186,6 @@ include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/agent_test_dribble.xabsl";
 include "Options/Test/test_dribble.xabsl";
 
-
 // Test options Penalty
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
 // Test options ball search
@@ -209,10 +201,8 @@ include "Options/Test/arm_back_test_agent.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
-
-
+
 include "Options/Test/change_state_input_test.xabsl";
-
 
 
 include "Options/Test/head_test_agent.xabsl";
@@ -220,14 +210,13 @@ include "Options/Test/head_control_test.xabsl";
 
 
 /** The soccer competition agent */
-agent action_soccer("action_based_striker", action_based_striker);
+//agent action_soccer("action_based_striker", action_based_striker);
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
 agent role_fast_striker("fast_striker", fast_striker_agent);
-
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
@@ -245,11 +234,11 @@ agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
+//agent motion_test_benji("test benji level 1", test_benji_agent);
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 
 agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
-
 agent goto_ball_in_fight("ball_in_fight_agent", ball_in_fight_test_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);

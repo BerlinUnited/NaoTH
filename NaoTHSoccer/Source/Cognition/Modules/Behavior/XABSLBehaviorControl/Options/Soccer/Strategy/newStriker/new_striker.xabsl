@@ -134,7 +134,7 @@ option new_striker
     }
     action{
       situation_abortable = true;
-      kick_long_with_approach();
+      new_kick_long_with_approach();
     }
   }
 
@@ -149,7 +149,7 @@ option new_striker
     }
     action{
       situation_abortable = true;
-      kick_short_with_approach();
+      new_kick_short_with_approach();
     }
   }
 
