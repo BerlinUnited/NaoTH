@@ -22,7 +22,6 @@ Simulation::Simulation()
 
   getDebugParameterList().add(&theParameters);
 
-  //actionRingBuffer.resize(ActionModel::numOfActions);
   //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
 
@@ -38,14 +37,14 @@ Simulation::~Simulation(){}
 void Simulation::execute()
 {
   DEBUG_REQUEST("Simulation:use_Parameters",
-  action_local.clear();
-  action_local.reserve(KickActionModel::numOfActions);
+    action_local.clear();
+    action_local.reserve(KickActionModel::numOfActions);
 
-  action_local.push_back(Action(KickActionModel::none, Vector2d()));
-  action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
-  action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
-  action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
-  action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+    action_local.push_back(Action(KickActionModel::none, Vector2d()));
+    action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
+    action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
+    action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
+    action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
   );
 
   
@@ -66,6 +65,14 @@ void Simulation::execute()
       {
         const Vector2d& ballRelativePreview = getBallModel().positionPreview;
         Vector2d ballPositionResult = action_local[i].predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
+        
+        DEBUG_REQUEST("Simulation:ActionTarget",
+          FIELD_DRAWING_CONTEXT;
+          PEN("0000FF", 1);
+          Vector2d ball = getRobotPose() * ballPositionResult;
+          CIRCLE( ball.x, ball.y, 50);
+        );
+        
         ballPositionResults.push_back(ballPositionResult);
       }
       
@@ -166,65 +173,6 @@ void Simulation::categorizePosition(
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
   }
-}
-
-Vector2d Simulation::calculateOneAction(const Action& action) const
-{
-  // STEP 1: predict the action outcome
-  const Vector2d& ballRelativePreview = getBallModel().positionPreview;
-
-  DEBUG_REQUEST("Simulation:draw_ball",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 1);
-    Vector2d ball = getRobotPose() * getBallModel().positionPreview;
-    CIRCLE( ball.x, ball.y, 50);
-  );
-
-  Vector2d result = action.predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
-
-  DEBUG_REQUEST("Simulation:ActionTarget",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 1);
-    Vector2d ball = getRobotPose() * result;
-    CIRCLE( ball.x, ball.y, 50);
-  );
-
-
-  // STEP 2: calculate the goal line
-  GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
-  Vector2d oppGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.leftPost;
-  Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
-
-  //the endpoints of our line are a shortened version of the goal line
-  Vector2d goalDir = (oppGoalPostRightPreview - oppGoalPostLeftPreview).normalize();
-  Vector2d leftEndpoint = oppGoalPostLeftPreview + goalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Vector2d rightEndpoint = oppGoalPostRightPreview - goalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-
-  // this is the goalline we are shooting for
-  Math::LineSegment goalLinePreview(leftEndpoint, rightEndpoint);
-  
-  // note: the drawing is global
-  DEBUG_REQUEST("Simulation:GoalLinePreview",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 1);
-    Vector2d globalLeft = getRobotPose() * leftEndpoint;
-    Vector2d globalRight = getRobotPose() * rightEndpoint;
-    LINE(globalLeft.x,globalLeft.y,globalRight.x,globalRight.y);
-  );
-
-  // STEP 3: estimate external factors (shooting a goal, ball moved by referee)
-  //Math::LineSegment shootLine(ballRelativePreview, outsideField(lonely_action.target));//hmm
-  Math::LineSegment shootLine(ballRelativePreview, result);
-
-  Vector2d resultingBallPosition;
-
-  if(shootLine.intersect(goalLinePreview) && goalLinePreview.intersect(shootLine)) {
-    resultingBallPosition = Vector2d(getFieldInfo().xPosOpponentGoal+200, 0.0);
-  } else {
-    resultingBallPosition = outsideField(getRobotPose() * result);
-  }
-
-  return resultingBallPosition;
 }
   
   //correction of distance in percentage, angle in degrees
