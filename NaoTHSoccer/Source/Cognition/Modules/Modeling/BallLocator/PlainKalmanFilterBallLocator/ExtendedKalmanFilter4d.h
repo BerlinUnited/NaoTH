@@ -54,11 +54,11 @@ private:
     static bool useCamTop;
 
     //--- needed for the state space to measurement space transformation
-    /*const*/ CameraMatrix/*&*/ camMat;
-    /*const*/ CameraMatrixTop/*&*/ camMatTop;
+    /*static*/ const CameraMatrix* camMat;
+    /*static*/ const CameraMatrixTop* camMatTop;
 
-    /*const*/ naoth::CameraInfo/*&*/ camInfo;
-    /*const*/ naoth::CameraInfoTop/*&*/ camInfoTop;
+    /*static*/ const naoth::CameraInfo* camInfo;
+    /*static*/ const naoth::CameraInfoTop* camInfoTop;
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix

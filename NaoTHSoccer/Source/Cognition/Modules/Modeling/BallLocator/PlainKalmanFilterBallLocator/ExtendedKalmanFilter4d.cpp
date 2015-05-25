@@ -3,10 +3,10 @@
 bool ExtendedKalmanFilter4d::useCamTop = false;
 
 ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension, const CameraMatrix& camMat, const CameraMatrixTop& camMatTop, const naoth::CameraInfo& camInfo, const naoth::CameraInfoTop& camInfoTop):
-    camMat(camMat),
-    camMatTop(camMatTop),
-    camInfo(camInfo),
-    camInfoTop(camInfoTop),
+    camMat(&camMat),
+    camMatTop(&camMatTop),
+    camInfo(&camInfo),
+    camInfoTop(&camInfoTop),
     x(state)
 {
     Eigen::Matrix2d q;
@@ -33,7 +33,7 @@ ExtendedKalmanFilter4d::~ExtendedKalmanFilter4d()
 
 }
 
-void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
+void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& /*u*/, double dt)
 {
     // adapt state transition matrix
     F << 1, dt, 0, 0,
@@ -50,7 +50,7 @@ void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
          0      , dt;
 
     // predict
-    x_pre = F * x + B * u;
+    x_pre = F * x /*+ B * u*/;
     P_pre = F * P * F.transpose() + Q;
 
     x = x_pre;
@@ -71,30 +71,30 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
 
     if(useCamTop)
     {
-        vectorToPoint = camMatTop.rotation.invert() * (point - camMatTop.translation);
+        vectorToPoint = camMatTop->rotation.invert() * (point - camMatTop->translation);
     } else {
-        vectorToPoint = camMat.rotation.invert() * (point - camMat.translation);
+        vectorToPoint = camMat->rotation.invert() * (point - camMat->translation);
     }
 
     double k = vectorToPoint.x;
     double g = vectorToPoint.y;
     double m = vectorToPoint.z;
 
-    double r21 = camMatTop.rotation.invert()[1][2];
-    double r22 = camMatTop.rotation.invert()[2][2];
-    double r11 = camMatTop.rotation.invert()[1][1];
-    double r12 = camMatTop.rotation.invert()[2][1];
-    double r31 = camMatTop.rotation.invert()[1][3];
-    double r32 = camMatTop.rotation.invert()[2][3];
+    double r21 = camMatTop->rotation.invert()[0][1];
+    double r22 = camMatTop->rotation.invert()[1][1];
+    double r11 = camMatTop->rotation.invert()[0][0];
+    double r12 = camMatTop->rotation.invert()[1][0];
+    double r31 = camMatTop->rotation.invert()[0][2];
+    double r32 = camMatTop->rotation.invert()[1][2];
 
     H << (r21*k-r11*g)/(k*k) ,0 , (r31*k-r11*m)/(k*k), 0,
          (r22*k-r12*g)/(k*k) ,0 , (r32*k-r12*m)/(k*k), 0;
 
     if(useCamTop)
     {
-        H = camInfoTop.getFocalLength() * H;
+        H = -camInfoTop->getFocalLength() * H;
     } else {
-        H = camInfo.getFocalLength() * H;
+        H = -camInfo->getFocalLength() * H;
     }
 
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
@@ -170,9 +170,9 @@ Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace() const
     Vector2d pointInImage;
 
     if(useCamTop)
-        in_front_of_plane = CameraGeometry::relativePointToImage(camMatTop, camInfoTop, point, pointInImage);
+        in_front_of_plane = CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, point, pointInImage);
     else
-        in_front_of_plane = CameraGeometry::relativePointToImage(camMat, camInfo, point, pointInImage);
+        in_front_of_plane = CameraGeometry::relativePointToImage(*camMat, *camInfo, point, pointInImage);
 
     Eigen::Vector2d z;
 

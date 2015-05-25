@@ -115,8 +115,8 @@ void PlainKalmanFilterBallLocator::execute()
                 Eigen::Vector2d predicted_measurement;
                 predicted_measurement = (*bestPredictor).getStateInMeasurementSpace();
 
-                PLOT("PlainKalmanFilterBallLocator:Innovation:verticalAngle",   z(0)-predicted_measurement(0));
-                PLOT("PlainKalmanFilterBallLocator:Innovation:horizontalAngle", z(1)-predicted_measurement(1));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:x",   z(0)-predicted_measurement(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:y", z(1)-predicted_measurement(1));
 
                 (*bestPredictor).update(z);
             }
