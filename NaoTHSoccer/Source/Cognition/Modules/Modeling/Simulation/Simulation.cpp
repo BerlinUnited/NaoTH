@@ -11,12 +11,9 @@ using namespace std;
 
 Simulation::Simulation()
 {
-  DEBUG_REQUEST_REGISTER("Simulation:draw_one_action_point:global","draw_one_action_point:global", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
-  //DEBUG_REQUEST_REGISTER("Simulation:draw_pessimistic_best_action","best pessimistic action",false);
-  DEBUG_REQUEST_REGISTER("Simulation:GoalLinePreview","GoalLinePreview",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
 
@@ -91,9 +88,9 @@ void Simulation::execute()
       FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
     });
 
-//  DEBUG_REQUEST("Simulation:draw_potential_field",
-//     draw_potential_field();
-//  );
+  DEBUG_REQUEST("Simulation:draw_potential_field",
+     draw_potential_field();
+  );
 
  
   }
