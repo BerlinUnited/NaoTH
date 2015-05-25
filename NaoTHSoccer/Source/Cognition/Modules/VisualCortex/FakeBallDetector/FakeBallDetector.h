@@ -9,6 +9,9 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include "Representations/Perception/CameraMatrix.h"
+#include <Tools/CameraGeometry.h>
+
 #include <Eigen/Eigen>
 
 BEGIN_DECLARE_MODULE(FakeBallDetector)
@@ -16,6 +19,12 @@ BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugModify)
 
   REQUIRE(FrameInfo)
+
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraMatrix)
+
+  REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrixTop)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
