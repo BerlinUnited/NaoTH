@@ -121,6 +121,8 @@ public:
         ballPosition(position),
         category(cat)
       {}
+      BallPositionCategory cat() const {return category;} 
+      const Vector2d& pos() const {return ballPosition;} 
   };
 
 private:
