@@ -84,6 +84,7 @@ void Simulation::execute()
       actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
     }
 
+    // #### FILTER ####
     // now remove actions with more than threshold precentage of outs
     // also remove actions which result in own-goals
     std::vector<size_t> goodActions;
@@ -113,6 +114,7 @@ void Simulation::execute()
         goodActions.push_back(i);
       }
     }
+    // #### EVALUATION ####
     // only continue evaluation if there are good actions
     if(goodActions.size() > 0)
     {
