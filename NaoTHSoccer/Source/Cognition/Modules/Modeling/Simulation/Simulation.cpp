@@ -179,7 +179,7 @@ void Simulation::execute()
           double sumPotential = 0.0;
           for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
           {
-            sumPotential += evaluateAction(ballPosition->pos());
+            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
           }
           // again a static cast because of size_t as I don't know a better solution
           sumPotential /= static_cast<double>(actionsConsequences[*it].size());
@@ -242,12 +242,14 @@ void Simulation::categorizePosition(
   // now loop through all positions
   for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ballPosition++)
   {
+    Vector2d globalBallPosition = getRobotPose() * (*ballPosition);
+
     //Schusslinie
-    Math::LineSegment shootLine(getBallModel().positionPreview, *ballPosition);
+    Math::LineSegment shootLine(getBallModel().positionPreview, globalBallPosition);
 
     BallPositionCategory category = INFIELD;
     // inside field
-    if(getFieldInfo().fieldRect.inside(*ballPosition))
+    if(getFieldInfo().fieldRect.inside(globalBallPosition))
     {
       category = INFIELD;
     }
@@ -262,22 +264,22 @@ void Simulation::categorizePosition(
       category = OWNGOAL;
     }
     //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-    else if(ballPosition->x > getFieldInfo().xPosOpponentGroundline)
+    else if(globalBallPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;
     }
     //Own Groundline out -  an der seite wo raus geht
-    else if(ballPosition->x < getFieldInfo().xPosOwnGroundline)
+    else if(globalBallPosition.x < getFieldInfo().xPosOwnGroundline)
     {
       category = OWNOUT;
     }
     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(ballPosition->y > getFieldInfo().yPosLeftSideline )
+    else if(globalBallPosition.y > getFieldInfo().yPosLeftSideline )
     {  
       category = LEFTOUT;
     }
     //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(ballPosition->y < getFieldInfo().yPosRightSideline)
+    else if(globalBallPosition.y < getFieldInfo().yPosRightSideline)
     { 
       category = RIGHTOUT;
     }
