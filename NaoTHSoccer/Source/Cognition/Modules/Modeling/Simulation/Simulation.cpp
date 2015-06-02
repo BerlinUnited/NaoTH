@@ -70,7 +70,13 @@ void Simulation::execute()
       // categorize positions
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
       categorizePosition(ballPositionResults, categorizedBallPositionResults);
-      
+
+      actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
+    }
+   
+    // plot projected actions
+    for(size_t i=0; i<action_local.size(); i++)
+    {
       for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
       {
         if(ballPosition->cat() == INFIELD)
@@ -99,8 +105,6 @@ void Simulation::execute()
           );
         }
       }
-
-      actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
     }
 
     // #### FILTER ####
