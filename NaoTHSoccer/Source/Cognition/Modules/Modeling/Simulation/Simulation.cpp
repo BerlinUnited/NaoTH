@@ -91,7 +91,7 @@ void Simulation::execute()
       bool ownGoal = false;
       for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
       {
-        if(ballPosition->cat() == INFIELD or ballPosition->cat() == OPPGOAL)
+        if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
         {
           good++;
         } else if(ballPosition->cat() == OWNGOAL)
