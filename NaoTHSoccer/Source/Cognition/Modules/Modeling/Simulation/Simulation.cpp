@@ -64,19 +64,41 @@ void Simulation::execute()
         const Vector2d& ballRelativePreview = getBallModel().positionPreview;
         Vector2d ballPositionResult = action_local[i].predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
         
-        DEBUG_REQUEST("Simulation:ActionTarget",
-          FIELD_DRAWING_CONTEXT;
-          PEN("0000FF", 1);
-          Vector2d ball = getRobotPose() * ballPositionResult;
-          CIRCLE( ball.x, ball.y, 50);
-        );
-        
         ballPositionResults.push_back(ballPositionResult);
       }
       
       // categorize positions
       std::vector<CategorizedBallPosition> categorizedBallPositionResults;
       categorizePosition(ballPositionResults, categorizedBallPositionResults);
+      
+      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+      {
+        if(ballPosition->cat() == INFIELD)
+        {
+          DEBUG_REQUEST("Simulation:ActionTarget",
+            FIELD_DRAWING_CONTEXT;
+            PEN("009900", 1);
+            Vector2d ball = getRobotPose() * ballPosition->pos();
+            FILLOVAL(ball.x, ball.y, 50, 50);
+          );
+        } else if(ballPosition->cat() == OPPGOAL)
+        {
+          DEBUG_REQUEST("Simulation:ActionTarget",
+            FIELD_DRAWING_CONTEXT;
+            PEN("336600", 1);
+            Vector2d ball = getRobotPose() * ballPosition->pos();
+            FILLOVAL(ball.x, ball.y, 50, 50);
+          );
+        } else
+        {
+          DEBUG_REQUEST("Simulation:ActionTarget",
+            FIELD_DRAWING_CONTEXT;
+            PEN("66FF33", 1);
+            Vector2d ball = getRobotPose() * ballPosition->pos();
+            FILLOVAL(ball.x, ball.y, 50, 50);
+          );
+        }
+      }
 
       actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
     }
