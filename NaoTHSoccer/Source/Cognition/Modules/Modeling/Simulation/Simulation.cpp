@@ -191,12 +191,12 @@ void Simulation::execute()
     getKickActionModel().myAction = action_local[best_action].id();
 
     DEBUG_REQUEST("Simulation:draw_best_action",
-    {
       FIELD_DRAWING_CONTEXT;
       PEN("FF69B4", 7);
       Vector2d actionGlobal = action_local[best_action].target;
-      FILLOVAL(actionGlobal.x, actionGlobal.y, 50,50);
-    });
+      std::string name = action_local[best_action].name();
+      TEXT_DRAWING(actionGlobal.x, actionGlobal.y, name);
+    );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
      draw_potential_field();

@@ -85,16 +85,39 @@ public:
   private:
     KickActionModel::ActionId _id;
     Vector2d actionVector;
+    std::string _name;
 
   public:
     Action(KickActionModel::ActionId _id, const Vector2d& actionVector) : 
 		  _id(_id), 
       actionVector(actionVector),
 		  potential(-1)
-	  {}
+	  {
+      switch(_id)
+      {
+        case KickActionModel::none:
+          _name = "none";
+          break;
+        case KickActionModel::kick_short:
+          _name = "kick_short";
+          break;
+        case KickActionModel::kick_long:
+          _name = "kick_long";
+          break;
+        case KickActionModel::sidekick_left:
+          _name = "sidekick_left";
+          break;
+        case KickActionModel::sidekick_right:
+          _name = "sidekick_right";
+          break;
+        default:
+          _name = "undefined";
+      }
+    }
 	
 	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
     KickActionModel::ActionId id() { return _id; }
+    std::string name() { return _name; }
 
     Vector2d target;
     double potential;
