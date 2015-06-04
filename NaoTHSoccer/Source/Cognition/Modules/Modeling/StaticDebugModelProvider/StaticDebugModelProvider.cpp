@@ -17,10 +17,11 @@ void StaticDebugModelProvider::execute()
 {
   //Roboter
   Pose2D pose;
+  double rotation = 0;
   MODIFY("StaticDebugModelProvider:Robotx", pose.translation.x);
   MODIFY("StaticDebugModelProvider:Roboty", pose.translation.y);
-  MODIFY("StaticDebugModelProvider:Robotrot", pose.rotation);
-
+  MODIFY("StaticDebugModelProvider:Robotrot", rotation);
+  pose.rotation = Math::fromDegrees(rotation);
   getRobotPose() = pose;
 
   // update the goal model based on the robot pose
