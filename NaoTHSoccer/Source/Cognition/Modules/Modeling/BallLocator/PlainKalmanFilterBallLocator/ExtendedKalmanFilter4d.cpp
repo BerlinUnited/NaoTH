@@ -26,6 +26,12 @@ ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, con
     Eigen::Matrix2d p;
     p = initialStateStdSingleDimension.cwiseProduct(initialStateStdSingleDimension);
     P << p, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), p;
+
+    P_pre = P;  // covariance matrix of predicted state
+    P_corr = P; // covariance matrix of corrected state
+
+    x_pre = x;
+    x_corr = x;
 }
 
 ExtendedKalmanFilter4d::~ExtendedKalmanFilter4d()
@@ -87,8 +93,8 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
     double r31 = camMatTop->rotation.invert()[0][2];
     double r32 = camMatTop->rotation.invert()[1][2];
 
-    H << (r21*k-r11*g)/(k*k) ,0 , (r31*k-r11*m)/(k*k), 0,
-         (r22*k-r12*g)/(k*k) ,0 , (r32*k-r12*m)/(k*k), 0;
+    H << (r21*k-r11*g)/(k*k), 0, (r22*k-r12*g)/(k*k), 0,
+         (r31*k-r11*m)/(k*k), 0, (r32*k-r12*m)/(k*k), 0;
 
     if(useCamTop)
     {
@@ -100,6 +106,11 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
     K = P_pre * H.transpose() * temp1.inverse();
+
+    // just for debugging - begin
+    x_pre = x;
+    P_pre = P;
+    // just for debugging - end
 
     x_corr = x_pre + K * (z - predicted_measurement);
 
