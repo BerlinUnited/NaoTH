@@ -44,7 +44,7 @@ void Simulation::execute()
     action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
   );
 
-  
+  //Proceed with Calculations only if ball is seen
   if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1)
   {
     return;
@@ -62,12 +62,12 @@ void Simulation::execute()
     size_t best_action = 0;
     
     std::map<size_t, std::vector<CategorizedBallPosition> > actionsConsequences;
-    for(size_t i=0; i<action_local.size(); i++)
+    for(size_t i=0; i < action_local.size(); i++)
     {
       // physics simulator
       std::vector<Vector2d> ballPositionResults;
       // this size needs to be exposed
-      for(size_t j=0; j<30; j++)
+      for(size_t j=0; j < 30; j++)
       {
         const Vector2d& ballRelativePreview = getBallModel().positionPreview;
         Vector2d ballPositionResult = action_local[i].predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
@@ -205,9 +205,8 @@ void Simulation::execute()
     DEBUG_REQUEST("Simulation:draw_best_action",
       FIELD_DRAWING_CONTEXT;
       PEN("FF69B4", 7);
-      Vector2d actionGlobal = action_local[best_action].target;
       std::string name = action_local[best_action].name();
-      TEXT_DRAWING(actionGlobal.x, actionGlobal.y, name);
+      TEXT_DRAWING(getRobotPose().translation.x, getRobotPose().translation.y, name);
     );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",

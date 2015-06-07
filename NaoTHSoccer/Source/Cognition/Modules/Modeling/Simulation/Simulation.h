@@ -90,8 +90,7 @@ public:
   public:
     Action(KickActionModel::ActionId _id, const Vector2d& actionVector) : 
 		  _id(_id), 
-      actionVector(actionVector),
-		  potential(-1)
+      actionVector(actionVector)
 	  {
       switch(_id)
       {
@@ -119,8 +118,6 @@ public:
     KickActionModel::ActionId id() { return _id; }
     std::string name() { return _name; }
 
-    Vector2d target;
-    double potential;
   };
   
   enum BallPositionCategory
@@ -153,8 +150,6 @@ private:
   std::vector<Action> action_local;
 
   void categorizePosition(const std::vector<Vector2d>& ballPositionResults, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
-
-  Vector2d calculateOneAction(const Action& lonely_action) const;
 
   Vector2d outsideField(const Vector2d& relativePoint) const;
 
