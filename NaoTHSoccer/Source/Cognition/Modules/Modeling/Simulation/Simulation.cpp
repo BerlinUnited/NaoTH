@@ -51,6 +51,14 @@ void Simulation::execute()
   }
   else
   {
+    DEBUG_REQUEST("Simulation:draw_ball",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+    Vector2d ball = getRobotPose() * getBallModel().positionPreview;
+    CIRCLE( ball.x, ball.y, 50);
+  );
+
+
     size_t best_action = 0;
     
     std::map<size_t, std::vector<CategorizedBallPosition> > actionsConsequences;
