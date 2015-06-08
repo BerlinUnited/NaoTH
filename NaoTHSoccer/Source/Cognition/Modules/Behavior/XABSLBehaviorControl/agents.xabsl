@@ -64,10 +64,7 @@ include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
 include "Options/Skills/striker_search.xabsl";
 include "Options/Skills/search_before_passive.xabsl";
-include "Options/Skills/sidekick_left_with_approach_left.xabsl";
-include "Options/Skills/sidekick_right_with_approach_right.xabsl";
-include "Options/Skills/kick_long_with_approach.xabsl";
-include "Options/Skills/kick_short_with_approach.xabsl";
+
 // Debug
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
@@ -88,6 +85,14 @@ include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
+//New Striker - with action Selection
+include "Options/Soccer/Strategy/newStriker/new_Striker.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_selection_attack.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_left.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_right.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_long_with_approach.xabsl";
+
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/fast_striker_agent.xabsl";
@@ -107,7 +112,7 @@ include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
-include "Options/Soccer/Strategy/Situations/situation_selection_attack.xabsl";
+
 // penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
@@ -211,7 +216,7 @@ include "Options/Test/head_control_test.xabsl";
 
 
 /** The soccer competition agent */
-agent action_soccer("action_based_striker", action_based_striker);
+//agent action_soccer("action_based_striker", action_based_striker);
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 

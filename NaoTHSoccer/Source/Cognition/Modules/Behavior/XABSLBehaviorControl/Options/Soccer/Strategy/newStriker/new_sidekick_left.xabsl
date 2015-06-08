@@ -1,19 +1,17 @@
-option sidekick_left_with_approach_left
+option new_sidekick_left
 {
-  initial state approach_sidekick_to_left
-  {
+ initial state approach_sidekick_to_left {
     decision {
-      if(action_done && state_time > 1000)
+      if(action_done)
         goto sidekick_to_left;
       else
         stay;
     }
     action {
+      //go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
       go_to_ball_with_foot_dynamic(right = true, distance = 130, offset.y=-10);
     }
   }
-
-
   state sidekick_to_left {
     decision{
       if(action_done)
@@ -26,7 +24,6 @@ option sidekick_left_with_approach_left
       sidekick(to = left);
     }
   }
-
   target state done
   {
     decision {

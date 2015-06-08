@@ -1,0 +1,156 @@
+option new_striker 
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
+      goto search;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
+      goto goto_ball;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto search;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state search {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision{
+
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+	      if(attack.best_action == kick_long)
+	        goto long_kick;
+	      else if(attack.best_action == kick_short)
+	        goto short_kick;
+	      else if(attack.best_action == sidekick_left)
+	        goto sidekick_left;
+	      else if(attack.best_action == sidekick_right)
+	        goto sidekick_right;
+	      else
+	        goto turn;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+  
+  state turn {
+    decision{
+
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
+        goto sidekick_stable;
+      else if(attack.best_action == kick_long)
+        goto long_kick;
+      else if(attack.best_action == kick_short)
+        goto short_kick;
+      else if(attack.best_action == sidekick_left)
+        goto sidekick_left;
+      else if(attack.best_action == sidekick_right)
+        goto sidekick_right;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      turn_to_attack_direction();
+    }
+  }
+
+  state sidekick_left {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      new_sidekick_left();
+    }
+  }
+  state sidekick_right {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      new_sidekick_right();
+    }
+  }
+
+
+  state sidekick_stable {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+      motion.walk.style = stable;
+    }
+  }
+
+
+  state long_kick {
+    decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick_stable;
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      new_kick_long_with_approach();
+    }
+  }
+
+    state short_kick {
+    decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto sidekick_stable;
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      new_kick_short_with_approach();
+    }
+  }
+
+}

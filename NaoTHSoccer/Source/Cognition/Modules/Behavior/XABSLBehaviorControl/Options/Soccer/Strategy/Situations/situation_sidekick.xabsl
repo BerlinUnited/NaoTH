@@ -73,7 +73,7 @@ option situation_sidekick
       //NOTE: this is synchronized with sidekick()->finished
       motion.type = stand;
     
-  motion.walk.stop_with_stand = true;
+      motion.walk.stop_with_stand = true;
 
       motion.walk.coordinate = hip;
       motion.walk.style = normal;

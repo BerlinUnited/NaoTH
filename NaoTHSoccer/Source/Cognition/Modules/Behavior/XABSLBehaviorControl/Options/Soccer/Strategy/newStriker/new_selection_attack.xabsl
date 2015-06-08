@@ -1,4 +1,4 @@
-option situation_selection_attack
+option new_selection_attack
 {
   initial state decide
   {
@@ -49,7 +49,7 @@ option situation_selection_attack
         stay;
     }
     action{
-      sidekick_left_with_approach_left();
+      new_sidekick_left();
       //motion.walk.style = normal;
     }
   }
@@ -62,7 +62,7 @@ option situation_selection_attack
         stay;
     }
     action{
-      sidekick_right_with_approach_right();
+      new_sidekick_right();
       //motion.walk.style = normal;
     }
   }
@@ -76,7 +76,7 @@ option situation_selection_attack
         stay;
     }
     action{
-      kick_long_with_approach();
+      new_kick_long_with_approach();
       //motion.walk.style = normal;
     }
   }
@@ -89,7 +89,7 @@ option situation_selection_attack
         stay;
     }
     action{
-      kick_short_with_approach();
+      new_kick_short_with_approach();
       //motion.walk.style = normal;
     }
   }

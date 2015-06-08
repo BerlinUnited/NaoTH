@@ -1,4 +1,4 @@
-option kick_long_with_approach
+option new_kick_long_with_approach
 {
   initial state decide
   {
