@@ -52,11 +52,11 @@ void Simulation::execute()
   else
   {
     DEBUG_REQUEST("Simulation:draw_ball",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 1);
-    Vector2d ball = getRobotPose() * getBallModel().positionPreview;
-    CIRCLE( ball.x, ball.y, 50);
-  );
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 1);
+      Vector2d ball = getRobotPose() * getBallModel().positionPreview;
+      CIRCLE( ball.x, ball.y, 50);
+    );
 
 
     size_t best_action = 0;
@@ -83,37 +83,33 @@ void Simulation::execute()
     }
    
     // plot projected actions
-    for(size_t i=0; i<action_local.size(); i++)
-    {
-      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+    DEBUG_REQUEST("Simulation:ActionTarget",
+      for(size_t i=0; i<action_local.size(); i++)
       {
-        if(ballPosition->cat() == INFIELD)
+        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
         {
-          DEBUG_REQUEST("Simulation:ActionTarget",
+          if(ballPosition->cat() == INFIELD)
+          {
             FIELD_DRAWING_CONTEXT;
             PEN("009900", 1);
             Vector2d ball = getRobotPose() * ballPosition->pos();
             FILLOVAL(ball.x, ball.y, 50, 50);
-          );
-        } else if(ballPosition->cat() == OPPGOAL)
-        {
-          DEBUG_REQUEST("Simulation:ActionTarget",
+          } else if(ballPosition->cat() == OPPGOAL)
+          {
             FIELD_DRAWING_CONTEXT;
             PEN("336600", 1);
             Vector2d ball = getRobotPose() * ballPosition->pos();
             FILLOVAL(ball.x, ball.y, 50, 50);
-          );
-        } else
-        {
-          DEBUG_REQUEST("Simulation:ActionTarget",
+          } else
+          {
             FIELD_DRAWING_CONTEXT;
             PEN("66FF33", 1);
             Vector2d ball = getRobotPose() * ballPosition->pos();
             FILLOVAL(ball.x, ball.y, 50, 50);
-          );
+          }
         }
       }
-    }
+    );
 
     // #### FILTER ####
     // now remove actions with more than threshold precentage of outs
