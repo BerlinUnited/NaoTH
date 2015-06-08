@@ -170,11 +170,6 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-message TeamMessageCollection
-{
-  repeated TeamMessage data = 1;
-}
-
 enum TeamColor 
 {
   blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
@@ -182,16 +177,20 @@ enum TeamColor
 
 message TeamMessage
 {
-  optional uint32 playerNum = 1 [default=0];
-  optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
-  optional Pose2D pose = 3;
-  optional int32 ballAge = 4 [default=-1];
-  optional DoubleVector2 ballPosition = 5;
-  optional DoubleVector2 ballVelocity = 6;
-  optional bool fallen = 10 [default=false];
-  optional BUUserTeamMessage user = 8;
-  optional FrameInfo frameInfo = 9;
-  optional uint32 teamNumber = 12 [default=0];
+  message Data
+  {
+    optional uint32 playerNum = 1 [default=0];
+    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
+    optional Pose2D pose = 3;
+    optional int32 ballAge = 4 [default=-1];
+    optional DoubleVector2 ballPosition = 5;
+    optional DoubleVector2 ballVelocity = 6;
+    optional bool fallen = 10 [default=false];
+    optional BUUserTeamMessage user = 8;
+    optional FrameInfo frameInfo = 9;
+    optional uint32 teamNumber = 12 [default=0];
+  }
+  repeated Data data = 1;
 }
 
 message BUUserTeamMessage

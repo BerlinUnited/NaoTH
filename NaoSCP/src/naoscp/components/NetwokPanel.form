@@ -244,7 +244,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="wlanSSID">
       <Properties>
-        <Property name="text" type="java.lang.String" value="SPL_A"/>
+        <Property name="text" type="java.lang.String" value="NAONET"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
@@ -254,7 +254,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="wlanKey">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Nao?!Nao?!"/>
+        <Property name="text" type="java.lang.String" value="a1b0a1b0a1"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>

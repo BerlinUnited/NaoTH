@@ -489,8 +489,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             if (frame != null) {
                 try {
                     DrawingCollection drawings = new DrawingCollection();
-                    Representations.TeamMessageCollection messageCollection = Representations.TeamMessageCollection.parseFrom(frame.getData());
-                    for(Representations.TeamMessage msg : messageCollection.getDataList()) {
+                    Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
+                    for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
                         SPLMessage spl = new SPLMessage(msg);
                         spl.draw(drawings);
                     }

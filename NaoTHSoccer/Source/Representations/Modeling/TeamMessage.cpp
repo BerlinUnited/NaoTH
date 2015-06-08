@@ -8,13 +8,13 @@ using namespace naoth;
 
 void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stream)
 {
-  naothmessages::TeamMessageCollection collection;
+  naothmessages::TeamMessage collection;
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator it=r.data.begin();
       it != r.data.end(); ++it)
   {
     const TeamMessage::Data& d = it->second;
-    naothmessages::TeamMessage* msg = collection.add_data();
+    naothmessages::TeamMessage::Data* msg = collection.add_data();
 
     msg->set_playernum(d.playerNum);
     msg->set_teamnumber(d.teamNumber);
@@ -52,14 +52,14 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
 
 void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 {
-  naothmessages::TeamMessageCollection collection;
+  naothmessages::TeamMessage collection;
 
   google::protobuf::io::IstreamInputStream buf(&stream);
   collection.ParseFromZeroCopyStream(&buf);
 
   for(int i=0; i < collection.data_size(); i++)
   {
-    const naothmessages::TeamMessage& msg = collection.data(i);
+    const naothmessages::TeamMessage::Data& msg = collection.data(i);
 
     TeamMessage::Data d;
 
