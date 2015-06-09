@@ -136,7 +136,8 @@ void Simulation::execute()
       }
       // check goal percentage, percentage needs to be exposed
       // the static_cast is messy but I don't know how to get around it
-      if(good/static_cast<double>(actionsConsequences[i].size()) > 0.85)
+      //goal_percentage = 0.85
+      if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.goal_percentage)
       {
         goodActions.push_back(i);
       }

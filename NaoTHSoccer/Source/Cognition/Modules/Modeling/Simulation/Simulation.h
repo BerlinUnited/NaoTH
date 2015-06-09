@@ -68,6 +68,8 @@ public:
 
       PARAMETER_REGISTER(distance_variance) = 0.1;
       PARAMETER_REGISTER(angle_variance) = Math::fromDegrees(5);
+
+      PARAMETER_REGISTER(goal_percentage) = 0.85;
       syncWithConfig();
     }
     
@@ -76,6 +78,8 @@ public:
     double action_long_kick_distance;
     double distance_variance;
     double angle_variance;
+
+    double goal_percentage;
 
   } theParameters;
 
