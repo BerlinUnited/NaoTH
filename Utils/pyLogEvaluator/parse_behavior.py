@@ -6,12 +6,13 @@ from Messages_pb2 import *
 from Representations_pb2 import *
 from google.protobuf import text_format
 import sys
+import argparse
 
 import matplotlib
-matplotlib.use('Qt4Agg')
+#matplotlib.use('Qt4Agg')
 #matplotlib.use('TkAgg')
 
-from matplotlib.backends import qt_compat
+#from matplotlib.backends import qt_compat
 from matplotlib import pyplot as plt
 
 import cPickle
@@ -68,17 +69,17 @@ class BehaviorParser:
     #for i in range(20000):
     while True :
       try:
-        currentFrameNumber = struct.unpack("l", file.read(4))[0]
-        
+        currentFrameNumber = struct.unpack("=l", file.read(4))[0]
+
         self.frameNumber = currentFrameNumber
         
         currentName = ""
-        c = struct.unpack("c", file.read(1))[0]
+        c = struct.unpack("=c", file.read(1))[0]
         while c != "\0":
           currentName = currentName + c
-          c = struct.unpack("c", file.read(1))[0]
+          c = struct.unpack("=c", file.read(1))[0]
           
-        currentSize = struct.unpack("l", file.read(4))[0]
+        currentSize = struct.unpack("=l", file.read(4))[0]
           
         if currentName == "BehaviorStateComplete":
           data = file.read(currentSize)
@@ -139,8 +140,14 @@ class BehaviorParser:
         break
         
 if __name__ == "__main__":
-  inFile = open("./150426-1209-Nao6026/game.log", "rb")
+  argparser = argparse.ArgumentParser(description="parse log file for balls and kicks and output to pickle file")
+  argparser.add_argument("filename", help="log file", nargs=1)
+  argparser.add_argument("-o", "--output", help="name for the output file", type=str, default="ballkick.cPickle")
+  
+  args = argparser.parse_args()
+ 
+  inFile = open(args.filename[0], "rb")
   parser = BehaviorParser()
   parser.parse(inFile)
   
-  cPickle.dump( parser.data, open( "ballkick.cPickle", "w" ) )
+  cPickle.dump(parser.data, open(args.output, "w"))
