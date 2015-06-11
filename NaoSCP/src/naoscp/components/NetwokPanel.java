@@ -185,11 +185,11 @@ public class NetwokPanel extends javax.swing.JPanel {
 
     jLabel5.setText("SSID");
 
-    wlanSSID.setText("SPL_A");
+    wlanSSID.setText("NAONET");
 
     jLabel9.setText("WLAN Key");
 
-    wlanKey.setText("Nao?!Nao?!");
+    wlanKey.setText("a1b0a1b0a1");
     wlanKey.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)

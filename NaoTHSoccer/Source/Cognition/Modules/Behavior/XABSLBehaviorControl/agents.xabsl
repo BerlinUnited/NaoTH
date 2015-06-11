@@ -193,11 +193,7 @@ include "Options/Test/arm_back_test_agent.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
-
-//Benji Test
-include "Options/Test/test_benji_agent.xabsl";
-include "Options/Test/test_benji_lv1.xabsl";
-
+
 include "Options/Test/change_state_input_test.xabsl";
 
 
@@ -229,7 +225,6 @@ agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
-agent motion_test_benji("test benji level 1", test_benji_agent);
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 

@@ -33,6 +33,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
      */
     public NaoTHPanel() {
         initComponents();
+        
+        setConfigEditable(this.cbCopyConfig.isSelected());
     }
     
     public void setEnabledAll(boolean v) {
@@ -201,6 +203,11 @@ public class NaoTHPanel extends javax.swing.JPanel {
                 cbCopyConfigItemStateChanged(evt);
             }
         });
+        cbCopyConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbCopyConfigActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -287,6 +294,17 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
     }//GEN-LAST:event_jSchemeBoxActionPerformed
 
+    private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
+        setConfigEditable(this.cbCopyConfig.isSelected());
+    }//GEN-LAST:event_cbCopyConfigActionPerformed
+
+    private void setConfigEditable(boolean v) {
+        this.jSchemeBox.setEnabled(v);
+        this.jColorBox.setEnabled(v);
+        this.jTeamNumber.setEnabled(v);
+        this.jTeamCommPort.setEnabled(v);
+    }
+    
     private void updateForm(File projectFile)
     {
         if(!projectFile.isDirectory()) {
