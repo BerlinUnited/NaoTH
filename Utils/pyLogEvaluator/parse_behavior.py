@@ -3,6 +3,7 @@ import math
 import sys
 import argparse
 import cPickle
+import os
 
 import matplotlib
 import math2d as m2d
@@ -42,6 +43,7 @@ class BehaviorData:
   def __init__(self):
     self.kicks = {}
     self.state = []
+    self.name = ""
     
 
 
@@ -75,141 +77,147 @@ class BehaviorParser:
       if optionName == "situation_sidekick":
         stateComplete = optionComplete.states[o.option.activeState]
         if stateComplete.name in ["sidekick_to_right","sidekick_to_left"] and o.option.stateTime == 0:
-          print self.frameNumber, optionName + "."+ stateComplete.name
+          #print self.frameNumber, optionName + "."+ stateComplete.name
           self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
           
       elif optionName == "situation_attack":
         stateComplete = optionComplete.states[o.option.activeState]
         if stateComplete.name in ["do_kick_with_left_foot","attack_with_left_foot","do_kick_with_right_foot","attack_with_right_foot"] and o.option.stateTime == 0:
-          print self.frameNumber, optionName + "."+ stateComplete.name
+          #print self.frameNumber, optionName + "."+ stateComplete.name
           self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
                
       for so in o.option.activeSubActions:
         self.printOptions(so)
 
         
-  def parse(self, file):
-
-    ids_decimal = {}
-    ids_decimal["robot_pose.x"] = -1
-    ids_decimal["robot_pose.y"] = -1
-    ids_decimal["robot_pose.rotation"] = -1
-    ids_decimal["ball.x"] = -1
-    ids_decimal["ball.y"] = -1
-    ids_decimal["ball.percept.x"] = -1
-    ids_decimal["ball.percept.y"] = -1
+  def parse(self, filename):
+     with open(filename, "rb") as file:
+      self.data.name = filename
+      ids_decimal = {}
+      ids_decimal["robot_pose.x"] = -1
+      ids_decimal["robot_pose.y"] = -1
+      ids_decimal["robot_pose.rotation"] = -1
+      ids_decimal["ball.x"] = -1
+      ids_decimal["ball.y"] = -1
+      ids_decimal["ball.percept.x"] = -1
+      ids_decimal["ball.percept.y"] = -1
+      
+      ids_boolean = {}
+      ids_boolean["ball.was_seen"] = -1
     
-    ids_boolean = {}
-    ids_boolean["ball.was_seen"] = -1
-  
-    currentState = WorldState()
-  
-    #for i in range(20000):
-    while True :
-      try:
-        currentFrameNumber = struct.unpack("=l", file.read(4))[0]
+      currentState = WorldState()
+    
+      #for i in range(20000):
+      while True :
+        try:
+          currentFrameNumber = struct.unpack("=l", file.read(4))[0]
 
-        # new frame
-        if self.frameNumber != currentFrameNumber:
-          if self.frameNumber != -1:
-            self.data.state.append(currentState)
-          self.frameNumber = currentFrameNumber
-          currentState = WorldState()
-          currentState.frame = self.frameNumber
-        
-        currentName = ""
-        c = struct.unpack("=c", file.read(1))[0]
-        while c != "\0":
-          currentName = currentName + c
+          # new frame
+          if self.frameNumber != currentFrameNumber:
+            if self.frameNumber != -1:
+              self.data.state.append(currentState)
+            self.frameNumber = currentFrameNumber
+            currentState = WorldState()
+            currentState.frame = self.frameNumber
+          
+          currentName = ""
           c = struct.unpack("=c", file.read(1))[0]
-          
-        currentSize = struct.unpack("=l", file.read(4))[0]
-          
-        if currentName == "FrameInfo":
-          data = file.read(currentSize)
-          message = globals()[currentName]()
-          message.ParseFromString(data)
-          
-          # should be the same as self.frameNumber
-          #currentState.frame = message.frameNumber
-          currentState.time = message.time
-          
-        elif currentName == "OdometryData":
-          data = file.read(currentSize)
-          message = globals()[currentName]()
-          message.ParseFromString(data)
-        
-          #print message.pose
-          currentState.odometry.translation.x = message.pose.translation.x
-          currentState.odometry.translation.y = message.pose.translation.y
-          currentState.odometry.rotation = message.pose.rotation
-          
-        elif currentName == "BehaviorStateComplete":
-          data = file.read(currentSize)
-          message = globals()[currentName]()
-          message.ParseFromString(data)
-          #print(message)
-          
-          #print(message.options[7])
-          self.behaviorStateComplete = message;
-          
-          for ds in message.inputSymbolList.decimal:
-            if ds.name in ids_decimal.keys():
-              ids_decimal[ds.name] = ds.id
-          
-          for ds in message.inputSymbolList.boolean:
-            if ds.name in ids_boolean.keys():
-              ids_boolean[ds.name] = ds.id
-              
-          print ids_decimal
-          print ids_boolean
-          
-        elif currentName == "BehaviorStateSparse":
-          data = file.read(currentSize)
-          message = globals()[currentName]()
-          message.ParseFromString(data)
-
-          ballPoseState = {}
-
-          #default values
-          for sn in ids_decimal.keys():
-            ballPoseState[sn] = self.behaviorStateComplete.inputSymbolList.decimal[ids_decimal[sn]].value
+          while c != "\0":
+            currentName = currentName + c
+            c = struct.unpack("=c", file.read(1))[0]
             
-          for sn in ids_decimal.keys():
-            for s in message.inputSymbolList.decimal:
-              if s.id == ids_decimal[sn]:
-                ballPoseState[sn] = s.value
+          currentSize = struct.unpack("=l", file.read(4))[0]
+            
+          if currentName == "FrameInfo":
+            data = file.read(currentSize)
+            message = globals()[currentName]()
+            message.ParseFromString(data)
+            
+            # should be the same as self.frameNumber
+            #currentState.frame = message.frameNumber
+            currentState.time = message.time
+            
+          elif currentName == "OdometryData":
+            data = file.read(currentSize)
+            message = globals()[currentName]()
+            message.ParseFromString(data)
           
-          for sn in ids_boolean.keys():
-            ballPoseState[sn] = self.behaviorStateComplete.inputSymbolList.boolean[ids_boolean[sn]].value
-          
-          for sn in ids_boolean.keys():
-            for s in message.inputSymbolList.boolean:
-              if s.id == ids_boolean[sn]:
-                ballPoseState[sn] = s.value
+            #print message.pose
+            currentState.odometry.translation.x = message.pose.translation.x
+            currentState.odometry.translation.y = message.pose.translation.y
+            currentState.odometry.rotation = message.pose.rotation
+            
+          elif currentName == "BehaviorStateComplete":
+            data = file.read(currentSize)
+            message = globals()[currentName]()
+            message.ParseFromString(data)
+            #print(message)
+            
+            #print(message.options[7])
+            self.behaviorStateComplete = message;
+            
+            for ds in message.inputSymbolList.decimal:
+              if ds.name in ids_decimal.keys():
+                ids_decimal[ds.name] = ds.id
+            
+            for ds in message.inputSymbolList.boolean:
+              if ds.name in ids_boolean.keys():
+                ids_boolean[ds.name] = ds.id
+                
+            #print ids_decimal
+            #print ids_boolean
+            
+          elif currentName == "BehaviorStateSparse":
+            data = file.read(currentSize)
+            message = globals()[currentName]()
+            message.ParseFromString(data)
 
-          # safe the data to the current state
-          getWorldState(ballPoseState, currentState)
-          
-          for o in message.activeRootActions:
-            self.printOptions(o)
-        else:
-          file.seek(currentSize,1)
-          continue
+            ballPoseState = {}
 
-      except Exception as ex:
-        print ex
-        break
+            #default values
+            for sn in ids_decimal.keys():
+              ballPoseState[sn] = self.behaviorStateComplete.inputSymbolList.decimal[ids_decimal[sn]].value
+              
+            for sn in ids_decimal.keys():
+              for s in message.inputSymbolList.decimal:
+                if s.id == ids_decimal[sn]:
+                  ballPoseState[sn] = s.value
+            
+            for sn in ids_boolean.keys():
+              ballPoseState[sn] = self.behaviorStateComplete.inputSymbolList.boolean[ids_boolean[sn]].value
+            
+            for sn in ids_boolean.keys():
+              for s in message.inputSymbolList.boolean:
+                if s.id == ids_boolean[sn]:
+                  ballPoseState[sn] = s.value
+
+            # safe the data to the current state
+            getWorldState(ballPoseState, currentState)
+            
+            for o in message.activeRootActions:
+              self.printOptions(o)
+          else:
+            file.seek(currentSize,1)
+            continue
+
+        except Exception as ex:
+          print ex
+          break
         
 if __name__ == "__main__":
   argparser = argparse.ArgumentParser(description="parse log file for balls and kicks and output to pickle file")
-  argparser.add_argument("filename", help="log file", nargs=1)
+  argparser.add_argument("path", help="log location path (will be searched recursively)", nargs=1)
   argparser.add_argument("-o", "--output", help="name for the output file", type=str, default="ballkick.cPickle")
   
   args = argparser.parse_args()
  
-  inFile = open(args.filename[0], "rb")
-  parser = BehaviorParser()
-  parser.parse(inFile)
-  print "parse ready"
-  cPickle.dump(parser.data, open(args.output, "w"))
+  logfiles = [os.path.join(root, name) for root, dirs, files in os.walk(args.path[0]) for name in files if name.endswith((".log"))]
+
+  n = 0
+  for inFileName in logfiles:
+    print n, "of", len(logfiles), ":", inFileName
+    parser = BehaviorParser()
+    parser.parse(inFileName)
+    print "parse ready"
+    cPickle.dump(parser.data, open(str(n).zfill(6) + args.output, "w"))
+    n = n + 1
