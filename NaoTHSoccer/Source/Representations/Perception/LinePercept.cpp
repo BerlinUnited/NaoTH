@@ -45,7 +45,7 @@ void Serializer<LinePercept>::serialize(const LinePercept& representation, std::
   // lines
   for(size_t i=0; i < representation.lines.size(); i++)
   {
-    naothmessages::FieldLineSegment* segment = p.add_lines();
+    naothmessages::LinePercept::FieldLineSegment* segment = p.add_lines();
     const LinePercept::FieldLineSegment& line = representation.lines[i];
 
     //lines[i].fillProtobuf(newLineSegment);
@@ -115,7 +115,7 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
   for(int i=0; i < p.lines_size(); i++)
   {
     LinePercept::FieldLineSegment line;
-    const naothmessages::FieldLineSegment& segment = p.lines(i);
+    const naothmessages::LinePercept::FieldLineSegment& segment = p.lines(i);
     //line.readFromProtobuf(&p.lines(i));
 
     // lineInImage
