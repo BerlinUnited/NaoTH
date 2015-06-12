@@ -8,7 +8,6 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.messages.CommonTypes;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
@@ -544,8 +543,8 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             } else {
                 data = b.getRepresentation("GoalPercept");
                 Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
-                List<CommonTypes.GoalPost> goalPosts = goalPercept.getPostList();
-                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                List<Representations.GoalPercept.GoalPost> goalPosts = goalPercept.getPostList();
+                for (Representations.GoalPercept.GoalPost goalPost: goalPosts) {
                     if (goalPost.hasPositionReliable()) postCount++;
                 }
             }
@@ -578,9 +577,9 @@ class LogPerceptListener implements LogSimulator.LogSimulatorActionListener
             } else {
                 data = b.getRepresentation("GoalPerceptTop");
                 Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
-                List<CommonTypes.GoalPost> goalPosts = goalPerceptTop.getPostList();
+                List<Representations.GoalPercept.GoalPost> goalPosts = goalPerceptTop.getPostList();
                 postCount = 0;
-                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                for (Representations.GoalPercept.GoalPost goalPost: goalPosts) {
                     if (goalPost.hasPositionReliable()) postCount++;
                 }
                 
