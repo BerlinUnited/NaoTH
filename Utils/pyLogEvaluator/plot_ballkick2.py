@@ -64,31 +64,33 @@ if __name__ == "__main__":
   marker["sidekick_to_right"] = 'r*'
   marker["sidekick_to_left"] = 'gs'
  
-  gs = gridspec.GridSpec(4,3)
+  gs = gridspec.GridSpec(4,4)
   speeds = [[],[]]
   for k in trajectories.keys():
     directions = []
+    if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
+      plt.subplot(gs[0,0])
+      plt.title("do_kick: "+str(len(trajectories[k])))
+    elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
+      plt.subplot(gs[1,0])
+      plt.title("attack: "+str(len(trajectories[k])))
+    elif k == "sidekick_to_left":
+      plt.subplot(gs[2,0])
+      plt.title("sidekick_to_left: "+str(len(trajectories[k])))
+    elif k == "sidekick_to_right":
+      plt.subplot(gs[3,0])
+      plt.title("sidekick_to_right: "+str(len(trajectories[k])))
+    else:
+      print "foo"
+    plt.gca().set_xlim((-500, 3000))
+    plt.gca().set_ylim((-3000, 3000))
+    plt.grid()
     for trajectory in trajectories[k]:
-      if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
-        plt.subplot(gs[0,0])
-        plt.title("do_kick")
-      if k == "attack_with_left_foot" or k == "attack_with_right_foot":
-        plt.subplot(gs[1,0])
-        plt.title("attack")
-      if k == "sidekick_to_left":
-        plt.subplot(gs[2,0])
-        plt.title("sidekick_to_left")
-      if k == "sidekick_to_right":
-        plt.subplot(gs[3,0])
-        plt.title("sidekick_to_right")
-      plt.gca().set_xlim((-500, 3000))
-      plt.gca().set_ylim((-3000, 3000))
-      plt.grid()
       # plot original data
-      plt.plot([b.x for b in trajectory], [b.y for b in trajectory], marker[k], mew=0, alpha=0.1)
-      # fit line
       x = [b.x for b in trajectory]
       y = [b.y for b in trajectory]
+      plt.plot(x, y, marker[k], mew=0)
+      # fit line
       p = np.polyfit(x, y, 1)
       xx = np.linspace(min(x), max(x), 100)
       yy = p[0]*xx+p[1]
@@ -105,23 +107,26 @@ if __name__ == "__main__":
     # plot direction histogram
     if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
       plt.subplot(gs[0,1])
-      plt.title("do_kick")
-    if k == "attack_with_left_foot" or k == "attack_with_right_foot":
+      plt.title("do_kick: "+str(len(trajectories[k])))
+    elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
       plt.subplot(gs[1,1])
-      plt.title("attack")
-    if k == "sidekick_to_left":
+      plt.title("attack: "+str(len(trajectories[k])))
+    elif k == "sidekick_to_left":
       plt.subplot(gs[2,1])
-      plt.title("sidekick_to_left")
-    if k == "sidekick_to_right":
+      plt.title("sidekick_to_left: "+str(len(trajectories[k])))
+    elif k == "sidekick_to_right":
       plt.subplot(gs[3,1])
-      plt.title("sidekick_to_right")
+      plt.title("sidekick_to_right: "+str(len(trajectories[k])))
+    else:
+      print "foo"
     plt.gca().set_xlim((-math.pi, math.pi))
     plt.grid()
     plt.hist(directions, bins=100, range=(-math.pi, math.pi))
   # plot speeds histogram
-  plt.subplot(gs[:2,2])
+  plt.subplot(gs[:2,2:4])
   plt.hexbin(speeds[0], speeds[1], extent=(0, max(speeds[0]), 0, 50))
+  plt.colorbar()
   # show plots
-  plt.gcf().set_size_inches((8, 11))
-  plt.savefig("plot_ballkick2.png", dpi=200)
+  plt.gcf().set_size_inches((gs.get_geometry()[1]*5, gs.get_geometry()[0]*5))
+  plt.savefig("plot_ballkick2.png", dpi=100)
   plt.show()
