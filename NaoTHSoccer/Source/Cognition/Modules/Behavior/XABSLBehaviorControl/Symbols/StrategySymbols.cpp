@@ -401,5 +401,5 @@ double StrategySymbols::defensePoseA() {
 }
 
 int StrategySymbols::getBestAction() {
-   return theInstance->getKickActionModel().myAction;
+   return theInstance->getKickActionModel().bestAction;
 }

@@ -44,174 +44,168 @@ void Simulation::execute()
     action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
   );
 
-  //Proceed with Calculations only if ball is seen
-  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds()+1)
+  //Proceed with Calculations only if ball is seen in the last 1 second
+  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds() + 1)
   {
     return;
   }
-  else
+ 
+  DEBUG_REQUEST("Simulation:draw_ball",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+    Vector2d ball = getRobotPose() * getBallModel().positionPreview;
+    CIRCLE( ball.x, ball.y, 50);
+  );
+
+
+  size_t best_action = 0;
+  
+  std::map<size_t, std::vector<CategorizedBallPosition> > actionsConsequences;
+  for(size_t i=0; i < action_local.size(); i++)
   {
-    DEBUG_REQUEST("Simulation:draw_ball",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF0000", 1);
-      Vector2d ball = getRobotPose() * getBallModel().positionPreview;
-      CIRCLE( ball.x, ball.y, 50);
-    );
-
-
-    size_t best_action = 0;
-    
-    std::map<size_t, std::vector<CategorizedBallPosition> > actionsConsequences;
-    for(size_t i=0; i < action_local.size(); i++)
-    {
-      // physics simulator
-      std::vector<Vector2d> ballPositionResults;
-      // this size needs to be exposed
-      for(size_t j=0; j < 30; j++)
-      {
-        const Vector2d& ballRelativePreview = getBallModel().positionPreview;
-        Vector2d ballPositionResult = action_local[i].predict(ballRelativePreview, theParameters.distance_variance, theParameters.angle_variance);
-        
-        ballPositionResults.push_back(ballPositionResult);
-      }
-      
-      // categorize positions
-      std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-      categorizePosition(ballPositionResults, categorizedBallPositionResults);
-
-      actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
+    // physics simulator
+    std::vector<Vector2d> ballPositionResults;
+    // this size needs to be exposed
+    for(size_t j=0; j < 30; j++) {
+      ballPositionResults.push_back(action_local[i].predict(getBallModel().positionPreview, theParameters.distance_variance, theParameters.angle_variance));
     }
-   
-    // plot projected actions
-    DEBUG_REQUEST("Simulation:ActionTarget",
-      for(size_t i=0; i<action_local.size(); i++)
-      {
-        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
-        {
-          if(ballPosition->cat() == INFIELD)
-          {
-            FIELD_DRAWING_CONTEXT;
-            PEN("009900", 1);
-            Vector2d ball = getRobotPose() * ballPosition->pos();
-            FILLOVAL(ball.x, ball.y, 50, 50);
-          } else if(ballPosition->cat() == OPPGOAL)
-          {
-            FIELD_DRAWING_CONTEXT;
-            PEN("336600", 1);
-            Vector2d ball = getRobotPose() * ballPosition->pos();
-            FILLOVAL(ball.x, ball.y, 50, 50);
-          } else
-          {
-            FIELD_DRAWING_CONTEXT;
-            PEN("66FF33", 1);
-            Vector2d ball = getRobotPose() * ballPosition->pos();
-            FILLOVAL(ball.x, ball.y, 50, 50);
-          }
-        }
-      }
-    );
+      
+    // categorize positions
+    std::vector<CategorizedBallPosition> categorizedBallPositionResults;
+    categorizePosition(ballPositionResults, categorizedBallPositionResults);
 
-    // #### FILTER ####
-    // now remove actions with more than threshold precentage of outs
-    // also remove actions which result in own-goals
-    std::vector<size_t> goodActions;
+    actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
+  }
+   
+  // plot projected actions
+  DEBUG_REQUEST("Simulation:ActionTarget",
     for(size_t i=0; i<action_local.size(); i++)
     {
-      int good = 0;
-      bool ownGoal = false;
-      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+      std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin();
+      for(; ballPosition != actionsConsequences[i].end(); ++ballPosition)
       {
-        if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
+        if(ballPosition->cat() == INFIELD)
         {
-          good++;
-        } else if(ballPosition->cat() == OWNGOAL)
+          FIELD_DRAWING_CONTEXT;
+          PEN("009900", 1);
+          Vector2d ball = getRobotPose() * ballPosition->pos();
+          FILLOVAL(ball.x, ball.y, 50, 50);
+        } else if(ballPosition->cat() == OPPGOAL)
         {
-          ownGoal = true;
+          FIELD_DRAWING_CONTEXT;
+          PEN("336600", 1);
+          Vector2d ball = getRobotPose() * ballPosition->pos();
+          FILLOVAL(ball.x, ball.y, 50, 50);
+        } else
+        {
+          FIELD_DRAWING_CONTEXT;
+          PEN("66FF33", 1);
+          Vector2d ball = getRobotPose() * ballPosition->pos();
+          FILLOVAL(ball.x, ball.y, 50, 50);
         }
       }
-      // if an own-goal is detected, ignore the action
-      if(ownGoal)
+    }
+  );
+
+  // #### FILTER ####
+  // now remove actions with more than threshold precentage of outs
+  // also remove actions which result in own-goals
+  std::vector<size_t> goodActions;
+  for(size_t i=0; i<action_local.size(); i++)
+  {
+    int good = 0;
+    bool ownGoal = false;
+    for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+    {
+      if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
       {
-        continue;
-      }
-      // check goal percentage, percentage needs to be exposed
-      // the static_cast is messy but I don't know how to get around it
-      //goal_percentage = 0.85
-      if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.goal_percentage)
+        good++;
+      } else if(ballPosition->cat() == OWNGOAL)
       {
-        goodActions.push_back(i);
+        ownGoal = true;
       }
     }
-    // #### EVALUATION ####
-    // only continue evaluation if there are good actions
-    if(goodActions.size() > 0)
+    // if an own-goal is detected, ignore the action
+    if(ownGoal)
     {
-      // now count the goals for the good actions
-      std::map<size_t, int> actionsGoals;
+      continue;
+    }
+    // check goal percentage, percentage needs to be exposed
+    // the static_cast is messy but I don't know how to get around it
+    //goal_percentage = 0.85
+    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.goal_percentage)
+    {
+      goodActions.push_back(i);
+    }
+  }
+  // #### EVALUATION ####
+  // only continue evaluation if there are good actions
+  if(goodActions.size() > 0)
+  {
+    // now count the goals for the good actions
+    std::map<size_t, int> actionsGoals;
+    for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
+    {
+      int goals = 0;
+      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+      {
+        if(ballPosition->cat() == OPPGOAL)
+        {
+          goals++;
+        }
+      }
+      if(goals > 0)
+      {
+        actionsGoals.insert(std::pair<size_t, int>(*it, goals));
+      }
+    }
+    // if there are goals, the best action is the one with the most goals
+    if(actionsGoals.size() > 0)
+    {
+      int mostGoals = 0;
+      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
+      {
+        if(it->second > mostGoals)
+        {
+          best_action = it->first;
+          mostGoals = it->second;
+        }
+      }
+    }
+    else // else choose the best mean of the potential field values
+    {
+      double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
       for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
       {
-        int goals = 0;
+        double sumPotential = 0.0;
         for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
         {
-          if(ballPosition->cat() == OPPGOAL)
-          {
-            goals++;
-          }
+          sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
         }
-        if(goals > 0)
+        // again a static cast because of size_t as I don't know a better solution
+        sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+        if(sumPotential < bestValue)
         {
-          actionsGoals.insert(std::pair<size_t, int>(*it, goals));
-        }
-      }
-      // if there are goals, the best action is the one with the most goals
-      if(actionsGoals.size() > 0)
-      {
-        int mostGoals = 0;
-        for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
-        {
-          if(it->second > mostGoals)
-          {
-            best_action = it->first;
-            mostGoals = it->second;
-          }
-        }
-      }
-      else // else choose the best mean of the potential field values
-      {
-        double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-        for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
-        {
-          double sumPotential = 0.0;
-          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-          {
-            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
-          }
-          // again a static cast because of size_t as I don't know a better solution
-          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
-          if(sumPotential < bestValue)
-          {
-            best_action = *it;
-            bestValue = sumPotential;
-          }
+          best_action = *it;
+          bestValue = sumPotential;
         }
       }
     }
+  }
 
-    getKickActionModel().myAction = action_local[best_action].id();
+  getKickActionModel().bestAction = action_local[best_action].id();
 
-    DEBUG_REQUEST("Simulation:draw_best_action",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF69B4", 7);
-      std::string name = action_local[best_action].name();
-      TEXT_DRAWING(getRobotPose().translation.x, getRobotPose().translation.y, name);
-    );
+  DEBUG_REQUEST("Simulation:draw_best_action",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF69B4", 7);
+    std::string name = action_local[best_action].name();
+    TEXT_DRAWING(getRobotPose().translation.x, getRobotPose().translation.y, name);
+  );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
      draw_potential_field();
   );
 
- 
-  }
 }//end execute
 
 void Simulation::categorizePosition(
@@ -244,7 +238,7 @@ void Simulation::categorizePosition(
   Math::LineSegment ownGoalLinePreview(ownLeftEndpoint, ownRightEndpoint);
  
   // now loop through all positions
-  for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ballPosition++)
+  for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ++ballPosition)
   {
     Vector2d globalBallPosition = getRobotPose() * (*ballPosition);
 

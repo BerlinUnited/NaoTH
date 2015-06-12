@@ -1,12 +1,13 @@
 /* 
- * File:   ActionNew.h
+* File:   KickActionModel.h
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
-* Declaration of class ActionNew
+* Declaration of class KickActionModel
 */
 
 #ifndef _KickActionModel_H
 #define _KickActionModel_H
 
+#include <string>
 
 class KickActionModel
 {
@@ -23,15 +24,15 @@ public:
     kick_short,
     kick_long,
     sidekick_left,
-    sidekick_right 
+    sidekick_right,
+    numOfActions
   };
-  
-  //number of ActionID's, has to write manual
-  static const int numOfActions = 5;
 
-  ActionId myAction;
+  static std::string getName(ActionId id);
+  
+  ActionId bestAction;
 };
 
 
-#endif  /* _ActionNew_H */
+#endif  /* _KickActionModel_H */
 

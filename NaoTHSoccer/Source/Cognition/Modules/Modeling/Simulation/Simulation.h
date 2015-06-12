@@ -29,31 +29,33 @@
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
+
 BEGIN_DECLARE_MODULE(Simulation)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
   REQUIRE(PlayerInfo)
 
-  REQUIRE(RobotPose)
   REQUIRE(BallModel)
+  REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
-
   REQUIRE(CompassDirection)
   REQUIRE(MotionStatus)
+
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
 
 class Simulation: public SimulationBase
 {
 public:
- Simulation();
- ~Simulation();
+  Simulation();
+  ~Simulation();
 
- virtual void execute();
+  virtual void execute();
 
    /** parameters for the module */
   class Parameters: public ParameterList
@@ -88,40 +90,20 @@ public:
   {
   private:
     KickActionModel::ActionId _id;
-    Vector2d actionVector;
     std::string _name;
-
+    Vector2d actionVector;
+    
   public:
     Action(KickActionModel::ActionId _id, const Vector2d& actionVector) : 
-		  _id(_id), 
+		  _id(_id),
+      _name(KickActionModel::getName(_id)),
       actionVector(actionVector)
 	  {
-      switch(_id)
-      {
-        case KickActionModel::none:
-          _name = "none";
-          break;
-        case KickActionModel::kick_short:
-          _name = "kick_short";
-          break;
-        case KickActionModel::kick_long:
-          _name = "kick_long";
-          break;
-        case KickActionModel::sidekick_left:
-          _name = "sidekick_left";
-          break;
-        case KickActionModel::sidekick_right:
-          _name = "sidekick_right";
-          break;
-        default:
-          _name = "undefined";
-      }
     }
-	
-	  Vector2d predict(const Vector2d& ball, double distance, double angle) const;
-    KickActionModel::ActionId id() { return _id; }
-    std::string name() { return _name; }
 
+      Vector2d predict(const Vector2d& ball, double distance, double angle) const;
+      KickActionModel::ActionId id() const { return _id; }
+      const std::string& name() const { return _name; }
   };
   
   enum BallPositionCategory
@@ -141,13 +123,14 @@ public:
       Vector2d ballPosition;
       BallPositionCategory category;
     public:
-      CategorizedBallPosition(Vector2d position, BallPositionCategory cat):
+      CategorizedBallPosition(const Vector2d& position, BallPositionCategory cat):
         ballPosition(position),
         category(cat)
       {}
       BallPositionCategory cat() const {return category;} 
       const Vector2d& pos() const {return ballPosition;} 
   };
+
 
 private:
 
