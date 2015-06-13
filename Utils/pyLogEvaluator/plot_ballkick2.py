@@ -65,28 +65,10 @@ if __name__ == "__main__":
   marker["attack_with_right_foot"] = "co"
   marker["sidekick_to_right"] = 'r*'
   marker["sidekick_to_left"] = 'gs'
- 
-  gs = gridspec.GridSpec(4,4)
+
   speeds = [[],[]]
   for k in trajectories.keys():
     directions = []
-    if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
-      plt.subplot(gs[0,0])
-      plt.title("do_kick: "+str(len(trajectories[k])))
-    elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
-      plt.subplot(gs[1,0])
-      plt.title("attack: "+str(len(trajectories[k])))
-    elif k == "sidekick_to_left":
-      plt.subplot(gs[2,0])
-      plt.title("sidekick_to_left: "+str(len(trajectories[k])))
-    elif k == "sidekick_to_right":
-      plt.subplot(gs[3,0])
-      plt.title("sidekick_to_right: "+str(len(trajectories[k])))
-    else:
-      print "foo"
-    plt.gca().set_xlim((-500, 3000))
-    plt.gca().set_ylim((-3000, 3000))
-    plt.grid()
     for trajectory in trajectories[k]:
       # original data
       x = [b.x for b in trajectory]
@@ -95,12 +77,11 @@ if __name__ == "__main__":
       # initial guess with ordinary least squares (doesn't take errors in x into account)
       p = np.polyfit(x, y, 1)
       # now construct odr fit from initial guess (takes into account errors in x AND y)
-      line = scipy.odr.Model(lambda a, b: a[0]*b+a[1])
+      line = scipy.odr.Model(lambda b, a: b[0]*a + b[1]) # (beta, x) -> y
       data = scipy.odr.Data(x, y)
       odr = scipy.odr.ODR(data, line, beta0=p)
       output = odr.run()
       beta = output.beta
-      print p, beta, output.sd_beta
       # calc fit
       xx = np.linspace(min(x), max(x), 100)
       yy = beta[0]*xx + beta[1]
@@ -113,33 +94,8 @@ if __name__ == "__main__":
       speeds[0].extend(range(len(v)))
       speeds[1].extend(v)
       # plot
-      plt.plot(xx, yy, "k-", lw=1)
+      plt.clf()
+      plt.title(k)
       plt.plot(x, y, marker[k], mew=0)
-    # plot direction histogram
-    if len(directions) > 0:
-      if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
-        plt.subplot(gs[0,1])
-        plt.title("do_kick: "+str(len(trajectories[k])))
-      elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
-        plt.subplot(gs[1,1])
-        plt.title("attack: "+str(len(trajectories[k])))
-      elif k == "sidekick_to_left":
-        plt.subplot(gs[2,1])
-        plt.title("sidekick_to_left: "+str(len(trajectories[k])))
-      elif k == "sidekick_to_right":
-        plt.subplot(gs[3,1])
-        plt.title("sidekick_to_right: "+str(len(trajectories[k])))
-      else:
-        print "foo"
-      plt.gca().set_xlim((-math.pi, math.pi))
-      plt.grid()
-      plt.hist(directions, bins=100, range=(-math.pi, math.pi))
-  if len(speeds[0]) > 0:
-    # plot speeds histogram
-    plt.subplot(gs[:2,2:4])
-    plt.hexbin(speeds[0], speeds[1], extent=(0, max(speeds[0]), 0, 50))
-    plt.colorbar()
-  # show plots
-  plt.gcf().set_size_inches((gs.get_geometry()[1]*5, gs.get_geometry()[0]*5))
-  plt.savefig("plot_ballkick2.png", dpi=100)
-  plt.show()
+      plt.plot(xx, yy, "k-", lw=1)
+      plt.show()
