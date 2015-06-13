@@ -7,6 +7,7 @@ from matplotlib import gridspec
 import cPickle
 import argparse
 import scipy.stats
+import scipy.odr
 
 import math2d as m2d
 from parse_behavior import BehaviorData, WorldState, Ball, Kick
@@ -91,27 +92,29 @@ if __name__ == "__main__":
       x = [b.x for b in trajectory]
       y = [b.y for b in trajectory]
       # fit line
-      p, residuals, rank, singular_values, rcond = np.polyfit(x, y, 1, full=True)
-      sigma = residuals[0]/(len(x)-2) # sigma of the fit
-      resTest = p[0]*np.array(x) + p[1] - np.array(y) # residuals on data
-      D, pval = scipy.stats.kstest(resTest, "norm", [0.0, sigma]) # kstest of the residuals against centered gauss with sigma
-      print "standard deviation of fit:", math.sqrt(sigma), pval 
-      if pval > 0.05:
-        print sigma, D, pval
-        # calc fit
-        xx = np.linspace(min(x), max(x), 100)
-        yy = p[0]*xx+p[1]
-        # direction
-        dx = xx[-1]-xx[0]
-        dy = yy[-1]-yy[0]
-        directions.append(math.atan2(dy, dx))
-        # calculate speed
-        v = np.hypot(np.diff(x), np.diff(y))
-        speeds[0].extend(range(len(v)))
-        speeds[1].extend(v)
-        # plot
-        plt.plot(xx, yy, "k-", lw=1)
-        plt.plot(x, y, marker[k], mew=0)
+      # initial guess with ordinary least squares (doesn't take errors in x into account)
+      p = np.polyfit(x, y, 1)
+      # now construct odr fit
+      line = scipy.odr.Model(lambda a, b: a[0]*b+a[1])
+      data = scipy.odr.Data(x, y)
+      odr = scipy.odr.ODR(data, line, beta0=p)
+      output = odr.run()
+      beta = output.beta
+      print p, beta, output.sd_beta
+      # calc fit
+      xx = np.linspace(min(x), max(x), 100)
+      yy = beta[0]*xx + beta[1]
+      # direction
+      dx = xx[-1]-xx[0]
+      dy = yy[-1]-yy[0]
+      directions.append(math.atan2(dy, dx))
+      # calculate speed
+      v = np.hypot(np.diff(x), np.diff(y))
+      speeds[0].extend(range(len(v)))
+      speeds[1].extend(v)
+      # plot
+      plt.plot(xx, yy, "k-", lw=1)
+      plt.plot(x, y, marker[k], mew=0)
     # plot direction histogram
     if len(directions) > 0:
       if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
