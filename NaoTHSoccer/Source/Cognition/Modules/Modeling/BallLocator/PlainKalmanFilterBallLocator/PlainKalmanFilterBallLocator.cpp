@@ -6,14 +6,12 @@
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
      epsilon(10e-6)
 {
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:use_extended_filter", " ", false);
-
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",        "draw the modelled ball on the field",                              false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update",  true);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                              true);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",            true);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object",  true);
 
     getDebugParameterList().add(&kfParameters);
 
@@ -29,9 +27,9 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 void PlainKalmanFilterBallLocator::execute()
 {
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
-        applyOdometryOnFilterState(*iter);
-    }
+//    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+//        applyOdometryOnFilterState(*iter);
+//    }
 
     doDebugRequestBeforPredictionAndUpdate();
 
@@ -42,29 +40,17 @@ void PlainKalmanFilterBallLocator::execute()
         predict(*iter, dt);
     }
 
-    bool useExtendedFilter;
-    useExtendedFilter = false;
-
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:use_extended_filter",
-                useExtendedFilter = true;
-    );
-
     // measurement
     if(getBallPercept().ballWasSeen)
     {
         Eigen::Vector2d z;
 
-        if(useExtendedFilter)
-        {
-            if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
+        if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
                 PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
-            {
-              z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
-            } else {
-              z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
-            }
+        {
+            z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
         } else {
-            z = ExtendedKalmanFilter4d::createMeasurementVector(getBallPercept());
+            z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
         }
 
         double x = getBallPercept().bearingBasedOffsetOnField.x;
@@ -83,11 +69,15 @@ void PlainKalmanFilterBallLocator::execute()
 
             dist = distanceToState(filter[0],z);
 
+            dist = isnan(dist) ? std::numeric_limits<double>::infinity() : dist;
+
             std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = filter.begin();
 
             for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
                 double temp;
                 temp = distanceToState(*iter,z);
+
+                temp = isnan(temp) ? std::numeric_limits<double>::infinity() : temp;
 
                 if(temp < dist){
                     dist = temp;

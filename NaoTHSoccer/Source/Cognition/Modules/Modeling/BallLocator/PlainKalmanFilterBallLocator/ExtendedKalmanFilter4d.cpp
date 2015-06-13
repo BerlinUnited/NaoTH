@@ -96,12 +96,41 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
     H << (r21*k-r11*g)/(k*k), 0, (r22*k-r12*g)/(k*k), 0,
          (r31*k-r11*m)/(k*k), 0, (r32*k-r12*m)/(k*k), 0;
 
-    if(useCamTop)
-    {
+    if(useCamTop) {
         H = -camInfoTop->getFocalLength() * H;
     } else {
         H = -camInfo->getFocalLength() * H;
     }
+
+    // approximate H with central differential quotient
+
+    bool in_front_of_plane = true;
+    double h = 0.0001;
+    Vector2d dx1, dx2, dy1, dy2;
+
+    if(useCamTop) {
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0)-h, x(2), ball_height), dx1);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0)+h, x(2), ball_height), dx2);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)-h, ball_height), dy1);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)+h, ball_height), dy2);
+    } else {
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)-h, x(2), ball_height), dx1);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)+h, x(2), ball_height), dx2);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)-h, ball_height), dy1);
+        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)+h, ball_height), dy2);
+    }
+
+    Vector2d dx = (dx2-dx1)/(2*h);
+    Vector2d dy = (dy2-dy1)/(2*h);
+
+    Eigen::Matrix<double,2,4> H_approx;
+    H_approx << dx.x, 0, dy.x, 0,
+                dx.y, 0, dy.y, 0;
+
+    // use approximation
+    H = H_approx;
+
+    //
 
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
