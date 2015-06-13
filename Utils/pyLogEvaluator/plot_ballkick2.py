@@ -6,6 +6,7 @@ from matplotlib import rcParams
 from matplotlib import gridspec
 import cPickle
 import argparse
+import scipy.stats
 
 import math2d as m2d
 from parse_behavior import BehaviorData, WorldState, Ball, Kick
@@ -86,46 +87,55 @@ if __name__ == "__main__":
     plt.gca().set_ylim((-3000, 3000))
     plt.grid()
     for trajectory in trajectories[k]:
-      # plot original data
+      # original data
       x = [b.x for b in trajectory]
       y = [b.y for b in trajectory]
-      plt.plot(x, y, marker[k], mew=0)
       # fit line
-      p = np.polyfit(x, y, 1)
-      xx = np.linspace(min(x), max(x), 100)
-      yy = p[0]*xx+p[1]
-      # plot fit
-      plt.plot(xx, yy, "k-", lw=1)
-      # direction
-      dx = xx[-1]-xx[0]
-      dy = yy[-1]-yy[0]
-      directions.append(math.atan2(dy, dx))
-      # calculate speed
-      v = np.hypot(np.diff(x), np.diff(y))
-      speeds[0].extend(range(len(v)))
-      speeds[1].extend(v)
+      p, residuals, rank, singular_values, rcond = np.polyfit(x, y, 1, full=True)
+      sigma = residuals[0]/(len(x)-2) # sigma of the fit
+      resTest = p[0]*np.array(x) + p[1] - np.array(y) # residuals on data
+      D, pval = scipy.stats.kstest(resTest, "norm", [0.0, sigma]) # kstest of the residuals against centered gauss with sigma
+      print "standard deviation of fit:", math.sqrt(sigma), pval 
+      if pval > 0.05:
+        print sigma, D, pval
+        # calc fit
+        xx = np.linspace(min(x), max(x), 100)
+        yy = p[0]*xx+p[1]
+        # direction
+        dx = xx[-1]-xx[0]
+        dy = yy[-1]-yy[0]
+        directions.append(math.atan2(dy, dx))
+        # calculate speed
+        v = np.hypot(np.diff(x), np.diff(y))
+        speeds[0].extend(range(len(v)))
+        speeds[1].extend(v)
+        # plot
+        plt.plot(xx, yy, "k-", lw=1)
+        plt.plot(x, y, marker[k], mew=0)
     # plot direction histogram
-    if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
-      plt.subplot(gs[0,1])
-      plt.title("do_kick: "+str(len(trajectories[k])))
-    elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
-      plt.subplot(gs[1,1])
-      plt.title("attack: "+str(len(trajectories[k])))
-    elif k == "sidekick_to_left":
-      plt.subplot(gs[2,1])
-      plt.title("sidekick_to_left: "+str(len(trajectories[k])))
-    elif k == "sidekick_to_right":
-      plt.subplot(gs[3,1])
-      plt.title("sidekick_to_right: "+str(len(trajectories[k])))
-    else:
-      print "foo"
-    plt.gca().set_xlim((-math.pi, math.pi))
-    plt.grid()
-    plt.hist(directions, bins=100, range=(-math.pi, math.pi))
-  # plot speeds histogram
-  plt.subplot(gs[:2,2:4])
-  plt.hexbin(speeds[0], speeds[1], extent=(0, max(speeds[0]), 0, 50))
-  plt.colorbar()
+    if len(directions) > 0:
+      if k == "do_kick_with_left_foot" or k == "do_kick_with_right_foot":
+        plt.subplot(gs[0,1])
+        plt.title("do_kick: "+str(len(trajectories[k])))
+      elif k == "attack_with_left_foot" or k == "attack_with_right_foot":
+        plt.subplot(gs[1,1])
+        plt.title("attack: "+str(len(trajectories[k])))
+      elif k == "sidekick_to_left":
+        plt.subplot(gs[2,1])
+        plt.title("sidekick_to_left: "+str(len(trajectories[k])))
+      elif k == "sidekick_to_right":
+        plt.subplot(gs[3,1])
+        plt.title("sidekick_to_right: "+str(len(trajectories[k])))
+      else:
+        print "foo"
+      plt.gca().set_xlim((-math.pi, math.pi))
+      plt.grid()
+      plt.hist(directions, bins=100, range=(-math.pi, math.pi))
+  if len(speeds[0]) > 0:
+    # plot speeds histogram
+    plt.subplot(gs[:2,2:4])
+    plt.hexbin(speeds[0], speeds[1], extent=(0, max(speeds[0]), 0, 50))
+    plt.colorbar()
   # show plots
   plt.gcf().set_size_inches((gs.get_geometry()[1]*5, gs.get_geometry()[0]*5))
   plt.savefig("plot_ballkick2.png", dpi=100)
