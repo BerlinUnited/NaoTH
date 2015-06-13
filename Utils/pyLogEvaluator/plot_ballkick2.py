@@ -94,7 +94,7 @@ if __name__ == "__main__":
       # fit line
       # initial guess with ordinary least squares (doesn't take errors in x into account)
       p = np.polyfit(x, y, 1)
-      # now construct odr fit
+      # now construct odr fit from initial guess (takes into account errors in x AND y)
       line = scipy.odr.Model(lambda a, b: a[0]*b+a[1])
       data = scipy.odr.Data(x, y)
       odr = scipy.odr.ODR(data, line, beta0=p)
