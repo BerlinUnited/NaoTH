@@ -52,7 +52,7 @@ if __name__ == "__main__":
           if len(trajectory) == 0:
             trajectory.append(ballpos)
           else:
-            if bp.frame < kick.frame + 120:
+            if bp.frame < kick.frame + 120 and math.hypot(trajectory[-1].x-ballpos.x, trajectory[-1].y-ballpos.y) < 200:
               trajectory.append(ballpos)
             else:
               break
@@ -66,6 +66,7 @@ if __name__ == "__main__":
   marker["sidekick_to_right"] = 'r*'
   marker["sidekick_to_left"] = 'gs'
 
+  n = 0
   speeds = [[],[]]
   for k in trajectories.keys():
     directions = []
@@ -98,4 +99,5 @@ if __name__ == "__main__":
       plt.title(k)
       plt.plot(x, y, marker[k], mew=0)
       plt.plot(xx, yy, "k-", lw=1)
-      plt.show()
+      plt.savefig("kick"+str(n).zfill(6)+".png", dpi=200)
+      n = n + 1
