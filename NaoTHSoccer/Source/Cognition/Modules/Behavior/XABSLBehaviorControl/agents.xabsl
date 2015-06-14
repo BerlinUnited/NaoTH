@@ -105,9 +105,9 @@ include "Options/Soccer/Strategy/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
-include "Options/Soccer/Strategy/action_based_striker.xabsl";
+
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
-include "Options/Soccer/Strategy/action_situation_based_striker.xabsl";
+
 include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
@@ -121,8 +121,7 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
 /* Test section */
 // Test agents (options)
-include "Options/Test/action_based_striker_test_agent.xabsl";
-include "Options/Test/action_based_striker_test.xabsl";
+
 // Test agents (options) Kicks
 include "Options/Test/sidekick_test_agent.xabsl";
 include "Options/Test/fast_forward_kick_test_agent.xabsl";
