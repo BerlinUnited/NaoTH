@@ -66,7 +66,7 @@ void Simulation::execute()
     // physics simulator
     std::vector<Vector2d> ballPositionResults;
     // this size needs to be exposed
-    for(size_t j=0; j < 30; j++) {
+    for(size_t j=0; j < theParameters.numParticles; j++) {
       ballPositionResults.push_back(action_local[i].predict(getBallModel().positionPreview, theParameters.distance_variance, theParameters.angle_variance));
     }
       
