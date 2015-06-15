@@ -30,6 +30,7 @@ if __name__ == "__main__":
   
   args = argparser.parse_args()
 
+  allkicks = {}
   trajectories = {}
   for filename in args.filenames:
     print filename
@@ -40,8 +41,11 @@ if __name__ == "__main__":
     origin = m2d.Pose2D()
 
     for kick in data.kicks.values():
-      if not kick.name in trajectories:
+      if kick.name not in trajectories:
         trajectories[kick.name] = []
+      if kick.name not in allkicks.keys():
+        allkicks[kick.name] = 0
+      allkicks[kick.name] = allkicks[kick.name] + 1
       
       trajectory = []
       for bp in data.state:
@@ -147,7 +151,7 @@ if __name__ == "__main__":
   plt.clf()
   for k in directions.keys():
     plt.subplot(len(directions.keys()), 1, n)
-    plt.title(k + " " + str(len(directions[k])))
+    plt.title(k + " " + str(len(directions[k]))+"/"+str(allkicks[k]))
     plt.hist(directions[k], bins=36, range=(-math.pi, math.pi))
     plt.gca().set_xlim((-math.pi, math.pi))
     n = n + 1
