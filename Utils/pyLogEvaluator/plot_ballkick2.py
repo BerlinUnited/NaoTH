@@ -161,7 +161,7 @@ if __name__ == "__main__":
     plt.hist(directions[k], bins=36, range=(-math.pi, math.pi))
     plt.gca().set_xlim((-math.pi, math.pi))
     plt.subplot(len(directions.keys()), 2, 2*n)
-    plt.title(k + ", mean speed = " + str(np.mean(speeds[k])))
+    plt.title(k + ", median speed = " + str(np.median(speeds[k])))
     plt.hist(speeds[k], bins=50, range=(0, 100))
     plt.gca().set_xlim((0, 100))
     n = n + 1
