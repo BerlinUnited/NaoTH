@@ -62,8 +62,15 @@ if __name__ == "__main__":
           if len(trajectory) == 0:
             trajectory.append(ballpos)
           else:
+            # break after 5 secs 
+            if bp.frame > kick.frame + 150:
+              break
+            # break is there are too large discontinuities in the data
+            if math.hypot(trajectory[-1].x-ballpos.x, trajectory[-1].y-ballpos.y) > 100:
+              break
             # only take points, where the ball has moved at least 50mm to take into account the kick preparation
             if math.hypot(trajectory[0].x-ballpos.x, trajectory[0].y-ballpos.y) > 50:
+              # only then append the current ballpos
               trajectory.append(ballpos)
               # a minimum amount of data is needed to do the fitting
               if len(trajectory) > 5:
@@ -81,12 +88,6 @@ if __name__ == "__main__":
                 # or if the trajectory is not a line any more (second kick etc.)
                 if math.sqrt(output.res_var) > 10.0:
                   break
-              # break after 5 secs 
-              if bp.frame > kick.frame + 150:
-                break
-              # break is there are too large jumps in the data
-              if math.hypot(trajectory[-1].x-ballpos.x, trajectory[-1].y-ballpos.y) > 100:
-                break
       # check if enough data points are left
       if len(trajectory) > 10:
         # check if data is line shaped via PCA 
