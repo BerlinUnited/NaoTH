@@ -41,11 +41,16 @@ if __name__ == "__main__":
     origin = m2d.Pose2D()
 
     for kick in data.kicks.values():
-      if kick.name not in trajectories:
-        trajectories[kick.name] = []
-      if kick.name not in allkicks.keys():
-        allkicks[kick.name] = 0
-      allkicks[kick.name] = allkicks[kick.name] + 1
+      k = kick.name
+      if "do_kick" in k:
+        k = "do_kick"
+      elif "attack" in k:
+        k = "attack"
+      if k not in trajectories:
+        trajectories[k] = []
+      if k not in allkicks.keys():
+        allkicks[k] = 0
+      allkicks[k] = allkicks[k] + 1
       
       trajectory = []
       for bp in data.state:
@@ -74,7 +79,7 @@ if __name__ == "__main__":
                 # break if the std deviation of the residuals becomes too large (empirical)
                 # this happens either after long runs (doesn't happen in practice)
                 # or if the trajectory is not a line any more (second kick etc.)
-                if math.sqrt(output.res_var) > 10:
+                if math.sqrt(output.res_var) > 10.0:
                   break
               # break after 5 secs 
               if bp.frame > kick.frame + 150:
@@ -95,23 +100,23 @@ if __name__ == "__main__":
         y = [b.x for b in trajectory]
         length = math.hypot(max(x)-min(x), max(y)-min(y))
         # actual check
-        if lineness < 0.1 and length > 150:
-          trajectories[kick.name].append(trajectory)
+        if lineness < 0.1 and length > 100:
+          trajectories[k].append(trajectory)
 
   marker = {}
-  marker["do_kick_with_left_foot"] = "bv"
-  marker["do_kick_with_right_foot"] = "bv"
-  marker["attack_with_left_foot"] = "co"
-  marker["attack_with_right_foot"] = "co"
+  marker["do_kick"] = "bv"
+  marker["attack"] = "co"
   marker["sidekick_to_right"] = 'r*'
   marker["sidekick_to_left"] = 'gs'
 
   n = 0
-  speeds = [[],[]]
+  speeds = {}
   directions = {}
   for k in trajectories.keys():
     if k not in directions.keys():
       directions[k] = []
+    if k not in speeds.keys():
+      speeds[k] = []
     for trajectory in trajectories[k]:
       # original data
       x = [b.x for b in trajectory]
@@ -126,20 +131,20 @@ if __name__ == "__main__":
       output = odr.run()
       beta = output.beta
       # calc fit
-      xx = np.linspace(min(x), max(x), 100)
+      xx = np.linspace(x[0], x[-1], 100)
       yy = beta[0]*xx + beta[1]
       # direction
       dx = xx[-1]-xx[0]
       dy = yy[-1]-yy[0]
       directions[k].append(math.atan2(dy, dx))
       # calculate speed
-      v = np.hypot(np.diff(x), np.diff(y))
-      speeds[0].extend(range(len(v)))
-      speeds[1].extend(v)
+      fmax = min(10, len(x))
+      v = np.mean(np.hypot(np.diff(x[1:fmax+1]), np.diff(y[1:fmax+1])))
+      speeds[k].append(v)
       # plot
       plt.clf()
       plt.title(k+" "+ str(math.sqrt(output.res_var)))
-      plt.plot(x, y, marker[k], mew=0)
+      plt.plot(x, y, marker[k]+"-", mew=0)
       plt.plot(trajectory[0].x, trajectory[0].y, "ko")
       plt.plot(xx, yy, "k-", lw=1)
       plt.gca().set_aspect("equal", "datalim")
@@ -150,10 +155,14 @@ if __name__ == "__main__":
   n = 1
   plt.clf()
   for k in directions.keys():
-    plt.subplot(len(directions.keys()), 1, n)
-    plt.title(k + " " + str(len(directions[k]))+"/"+str(allkicks[k]))
+    plt.subplot(len(directions.keys()), 2, 2*n-1)
+    plt.title(k + " with " + str(len(directions[k]))+"/"+str(allkicks[k]) + " kicks")
     plt.hist(directions[k], bins=36, range=(-math.pi, math.pi))
     plt.gca().set_xlim((-math.pi, math.pi))
+    plt.subplot(len(directions.keys()), 2, 2*n)
+    plt.title(k + ", mean speed = " + str(np.mean(speeds[k])))
+    plt.hist(speeds[k], bins=50, range=(0, 100))
+    plt.gca().set_xlim((0, 100))
     n = n + 1
-  plt.gcf().set_size_inches((5, len(directions.keys())*3))
+  plt.gcf().set_size_inches((8, len(directions.keys())*3))
   plt.savefig("directions.pdf", dpi=200)
