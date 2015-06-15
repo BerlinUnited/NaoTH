@@ -4,6 +4,7 @@ import matplotlib
 from matplotlib import pyplot as plt 
 from matplotlib import rcParams
 from matplotlib import gridspec
+from sklearn.decomposition import PCA
 import cPickle
 import argparse
 import scipy.stats
@@ -13,7 +14,6 @@ import math2d as m2d
 from parse_behavior import BehaviorData, WorldState, Ball, Kick
 
 import numpy as np
-
 
 def getBall(s):
   return s.odometry*s.ball.percept
@@ -49,14 +49,50 @@ if __name__ == "__main__":
           origin = ~(bp.odometry)
         if bp.frame >= kick.frame: # frame number
           ballpos = origin*getBall(bp)
+          # trajectory[0] is the "point of kick decision"
           if len(trajectory) == 0:
             trajectory.append(ballpos)
           else:
-            if bp.frame < kick.frame + 120 and math.hypot(trajectory[-1].x-ballpos.x, trajectory[-1].y-ballpos.y) < 200:
+            # only take points, where the ball has moved at least 50mm to take into account the kick preparation
+            if math.hypot(trajectory[0].x-ballpos.x, trajectory[0].y-ballpos.y) > 50:
               trajectory.append(ballpos)
-            else:
-              break
-      trajectories[kick.name].append(trajectory)
+              # a minimum amount of data is needed to do the fitting
+              if len(trajectory) > 5:
+                x = [b.x for b in trajectory]
+                y = [b.y for b in trajectory]
+                # initial guess with ordinary least squares (doesn't take errors in x into account)
+                p = np.polyfit(x, y, 1)
+                # now construct odr fit from initial guess (takes into account errors in x AND y)
+                line = scipy.odr.Model(lambda b, a: b[0]*a + b[1]) # (beta, x) -> y
+                mydata = scipy.odr.Data(x, y)
+                odr = scipy.odr.ODR(mydata, line, beta0=p)
+                output = odr.run()
+                # break if the std deviation of the residuals becomes too large (empirical)
+                # this happens either after long runs (doesn't happen in practice)
+                # or if the trajectory is not a line any more (second kick etc.)
+                if math.sqrt(output.res_var) > 10:
+                  break
+              # break after 5 secs 
+              if bp.frame > kick.frame + 150:
+                break
+              # break is there are too large jumps in the data
+              if math.hypot(trajectory[-1].x-ballpos.x, trajectory[-1].y-ballpos.y) > 100:
+                break
+      # check if enough data points are left
+      if len(trajectory) > 10:
+        # check if data is line shaped via PCA 
+        # (probably overkill but that easily finds too "circular" point clouds as opposed to line segements)
+        xy = [[b.x, b.y] for b in trajectory]
+        pca = PCA()
+        pca.fit(xy)
+        lineness = pca.explained_variance_ratio_[1] / pca.explained_variance_ratio_[0]
+        # and check if data covers enough space
+        x = [b.x for b in trajectory]
+        y = [b.x for b in trajectory]
+        length = math.hypot(max(x)-min(x), max(y)-min(y))
+        # actual check
+        if lineness < 0.1 and length > 150:
+          trajectories[kick.name].append(trajectory)
 
   marker = {}
   marker["do_kick_with_left_foot"] = "bv"
@@ -68,8 +104,10 @@ if __name__ == "__main__":
 
   n = 0
   speeds = [[],[]]
+  directions = {}
   for k in trajectories.keys():
-    directions = []
+    if k not in directions.keys():
+      directions[k] = []
     for trajectory in trajectories[k]:
       # original data
       x = [b.x for b in trajectory]
@@ -89,15 +127,29 @@ if __name__ == "__main__":
       # direction
       dx = xx[-1]-xx[0]
       dy = yy[-1]-yy[0]
-      directions.append(math.atan2(dy, dx))
+      directions[k].append(math.atan2(dy, dx))
       # calculate speed
       v = np.hypot(np.diff(x), np.diff(y))
       speeds[0].extend(range(len(v)))
       speeds[1].extend(v)
       # plot
       plt.clf()
-      plt.title(k)
+      plt.title(k+" "+ str(math.sqrt(output.res_var)))
       plt.plot(x, y, marker[k], mew=0)
+      plt.plot(trajectory[0].x, trajectory[0].y, "ko")
       plt.plot(xx, yy, "k-", lw=1)
+      plt.gca().set_aspect("equal", "datalim")
       plt.savefig("kick"+str(n).zfill(6)+".png", dpi=200)
       n = n + 1
+  
+  # plot directions histograms
+  n = 1
+  plt.clf()
+  for k in directions.keys():
+    plt.subplot(len(directions.keys()), 1, n)
+    plt.title(k + " " + str(len(directions[k])))
+    plt.hist(directions[k], bins=36, range=(-math.pi, math.pi))
+    plt.gca().set_xlim((-math.pi, math.pi))
+    n = n + 1
+  plt.gcf().set_size_inches((5, len(directions.keys())*3))
+  plt.savefig("directions.pdf", dpi=200)
