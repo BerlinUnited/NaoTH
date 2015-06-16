@@ -72,7 +72,7 @@ class BehaviorParser:
     if o.type == 0: # Option
       optionComplete = self.behaviorStateComplete.options[o.option.id]
       optionName = optionComplete.name
-      
+     
       #stateTime
       if optionName == "situation_sidekick":
         stateComplete = optionComplete.states[o.option.activeState]
@@ -83,6 +83,30 @@ class BehaviorParser:
       elif optionName == "situation_attack":
         stateComplete = optionComplete.states[o.option.activeState]
         if stateComplete.name in ["do_kick_with_left_foot","attack_with_left_foot","do_kick_with_right_foot","attack_with_right_foot"] and o.option.stateTime == 0:
+          #print self.frameNumber, optionName + "."+ stateComplete.name
+          self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
+      
+      elif optionName == "new_kick_long_with_approach":
+        stateComplete = optionComplete.states[o.option.activeState]
+        if stateComplete.name in ["do_kick_with_right_foot", "do_kick_with_left_foot"] and o.option.stateTime == 0:
+          #print self.frameNumber, optionName + "."+ stateComplete.name
+          self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
+      
+      elif optionName == "new_kick_short_with_approach":
+        stateComplete = optionComplete.states[o.option.activeState]
+        if stateComplete.name in ["attack_with_right_foot", "attack_with_left_foot"] and o.option.stateTime == 0:
+          #print self.frameNumber, optionName + "."+ stateComplete.name
+          self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
+      
+      elif optionName == "new_sidekick_left":
+        stateComplete = optionComplete.states[o.option.activeState]
+        if stateComplete.name in ["sidekick_to_left"] and o.option.stateTime == 0:
+          #print self.frameNumber, optionName + "."+ stateComplete.name
+          self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
+      
+      elif optionName == "new_sidekick_right":
+        stateComplete = optionComplete.states[o.option.activeState]
+        if stateComplete.name in ["sidekick_to_right"] and o.option.stateTime == 0:
           #print self.frameNumber, optionName + "."+ stateComplete.name
           self.data.kicks[self.frameNumber] = Kick( self.frameNumber, stateComplete.name )
                
@@ -215,7 +239,7 @@ if __name__ == "__main__":
 
   n = 0
   for inFileName in logfiles:
-    print n, "of", len(logfiles), ":", inFileName
+    print n+1, "of", len(logfiles), ":", inFileName
     parser = BehaviorParser()
     parser.parse(inFileName)
     print "parse ready"
