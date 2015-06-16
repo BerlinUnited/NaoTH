@@ -16,27 +16,6 @@ message CMD {
   repeated CMDArg args = 2;
 }
 
-
-message PlayerModel {
-  required int32 number = 1;
-  optional Pose2D poseOnField = 2;
-}
-
-// TeamComm //
-message TeamCommMessage {
-  required int32 playerNumber = 1;
-  required int32 teamNumber = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  optional double timeSinceBallWasSeen = 5;
-  optional DoubleVector2 ballPosition = 6;
-  optional Pose2D positionOnField = 7;
-  optional PlayerModel opponent = 8;
-  optional bool isFallenDown = 9 [default=false];
-  optional double timeToBall = 10;
-  optional string bodyID = 11; 
-}
-
 // pure RC messages //
 
 message StopwatchItem {
