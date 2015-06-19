@@ -94,6 +94,7 @@ include "Options/Soccer/Strategy/newStriker/new_kick_short_with_approach.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_kick_long_with_approach.xabsl";
 
 // simple soccer
+include "Options/Soccer/new_striker_agent.xabsl";
 include "Options/Soccer/basic_striker_agent.xabsl";
 include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
@@ -220,6 +221,7 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
 /** simple soccer agents **/
+agent role_new_striker("new_striker", new_striker_agent);
 agent role_basic_striker("basic_striker", basic_striker_agent);
 agent role_fast_striker("fast_striker", fast_striker_agent);
 agent role_basic_goali("basic_goali", basic_goali_agent);
