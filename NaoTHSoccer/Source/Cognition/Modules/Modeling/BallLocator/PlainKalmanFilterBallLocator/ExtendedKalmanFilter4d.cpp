@@ -69,39 +69,6 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
 
     predicted_measurement = getStateInMeasurementSpace();
 
-    // create H
-
-    Vector3d point(x(0),x(2),ball_height);
-
-    Vector3d vectorToPoint;
-
-    if(useCamTop)
-    {
-        vectorToPoint = camMatTop->rotation.invert() * (point - camMatTop->translation);
-    } else {
-        vectorToPoint = camMat->rotation.invert() * (point - camMat->translation);
-    }
-
-    double k = vectorToPoint.x;
-    double g = vectorToPoint.y;
-    double m = vectorToPoint.z;
-
-    double r21 = camMatTop->rotation.invert()[0][1];
-    double r22 = camMatTop->rotation.invert()[1][1];
-    double r11 = camMatTop->rotation.invert()[0][0];
-    double r12 = camMatTop->rotation.invert()[1][0];
-    double r31 = camMatTop->rotation.invert()[0][2];
-    double r32 = camMatTop->rotation.invert()[1][2];
-
-    H << (r21*k-r11*g)/(k*k), 0, (r22*k-r12*g)/(k*k), 0,
-         (r31*k-r11*m)/(k*k), 0, (r32*k-r12*m)/(k*k), 0;
-
-    if(useCamTop) {
-        H = -camInfoTop->getFocalLength() * H;
-    } else {
-        H = -camInfo->getFocalLength() * H;
-    }
-
     // approximate H with central differential quotient
 
     bool in_front_of_plane = true;
@@ -113,11 +80,21 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0)+h, x(2), ball_height), dx2);
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)-h, ball_height), dy1);
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)+h, ball_height), dy2);
+
+        dx1 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dx1.x,dx1.y);
+        dx2 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dx2.x,dx2.y);
+        dy1 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dy1.x,dy1.y);
+        dy2 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dy2.x,dy2.y);
     } else {
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)-h, x(2), ball_height), dx1);
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)+h, x(2), ball_height), dx2);
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)-h, ball_height), dy1);
         in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)+h, ball_height), dy2);
+
+        dx1 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dx1.x,dx1.y);
+        dx2 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dx2.x,dx2.y);
+        dy1 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dy1.x,dy1.y);
+        dy2 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dy2.x,dy2.y);
     }
 
     Vector2d dx = (dx2-dx1)/(2*h);
@@ -129,8 +106,6 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
 
     // use approximation
     H = H_approx;
-
-    //
 
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
@@ -151,9 +126,12 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
 
 Eigen::Vector2d ExtendedKalmanFilter4d::createMeasurementVector(const BallPercept& bp)
 {
+    Vector2d angles;
     Eigen::Vector2d z;
 
-    z << bp.centerInImage.x, bp.centerInImage.y;
+    angles = CameraGeometry::angleToPointInImage(*camMat,*camInfo,bp.centerInImage.x,bp.centerInImage.y);
+
+    z << angles.x, angles.y;
 
     useCamTop = false;
 
@@ -162,9 +140,12 @@ Eigen::Vector2d ExtendedKalmanFilter4d::createMeasurementVector(const BallPercep
 
 Eigen::Vector2d ExtendedKalmanFilter4d::createMeasurementVector(const BallPerceptTop& bp)
 {
+    Vector2d angles;
     Eigen::Vector2d z;
 
-    z << bp.centerInImage.x, bp.centerInImage.y;
+    angles = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,bp.centerInImage.x,bp.centerInImage.y);
+
+    z << angles.x, angles.y;
 
     useCamTop = true;
 
@@ -209,15 +190,21 @@ Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace() const
     Vector3d point(x(0), x(2), ball_height);
     Vector2d pointInImage;
 
-    if(useCamTop)
+    Vector2d angles;
+
+    if(useCamTop){
         in_front_of_plane = CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, point, pointInImage);
-    else
+        angles            = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,pointInImage.x,pointInImage.y);
+    }
+    else {
         in_front_of_plane = CameraGeometry::relativePointToImage(*camMat, *camInfo, point, pointInImage);
+        angles            = CameraGeometry::angleToPointInImage(*camMat,*camInfo,pointInImage.x,pointInImage.y);
+    }
 
     Eigen::Vector2d z;
 
     if(in_front_of_plane)
-        z << pointInImage.x, pointInImage.y;
+        z << angles.x, angles.y;// angle horizontal, angle vertical
     else
         z << std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
 

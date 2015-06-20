@@ -26,10 +26,10 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 /*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
-    // apply odometry on the filter state, to keep it in the robot's local coordinate system
-//    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
-//        applyOdometryOnFilterState(*iter);
-//    }
+//     apply odometry on the filter state, to keep it in the robot's local coordinate system
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+        applyOdometryOnFilterState(*iter);
+    }
 
     doDebugRequestBeforPredictionAndUpdate();
 
@@ -47,10 +47,10 @@ void PlainKalmanFilterBallLocator::execute()
 
         if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
                 PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
-        {
-            z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
+        {   // should be part of the kalman filter
+            z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
         } else {
-            z = ExtendedKalmanFilter4d::createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
+            z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
         }
 
         double x = getBallPercept().bearingBasedOffsetOnField.x;
@@ -439,4 +439,28 @@ void PlainKalmanFilterBallLocator::reloadParameters()
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
     }
+}
+
+Eigen::Vector2d PlainKalmanFilterBallLocator::createMeasurementVector(const BallPercept& bp)
+{
+    Vector2d angles;
+    Eigen::Vector2d z;
+
+    angles = CameraGeometry::angleToPointInImage(getCameraMatrix(),getCameraInfo(),bp.centerInImage.x,bp.centerInImage.y);
+
+    z << angles.x, angles.y;
+
+    return z;
+}
+
+Eigen::Vector2d PlainKalmanFilterBallLocator::createMeasurementVector(const BallPerceptTop& bp)
+{
+    Vector2d angles;
+    Eigen::Vector2d z;
+
+    angles = CameraGeometry::angleToPointInImage(getCameraMatrixTop(),getCameraInfoTop(),bp.centerInImage.x,bp.centerInImage.y);
+
+    z << angles.x, angles.y;
+
+    return z;
 }

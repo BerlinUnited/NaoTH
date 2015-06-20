@@ -88,6 +88,10 @@ private:
 
 private:
 
+    // copied from extended kalman filter due to some static-function-member-variable-representation-access-problem-as-non-module-class-stuff
+    Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
+    Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
+
     double distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
     // non normalized value of probability density function of measurement Z at the filters state

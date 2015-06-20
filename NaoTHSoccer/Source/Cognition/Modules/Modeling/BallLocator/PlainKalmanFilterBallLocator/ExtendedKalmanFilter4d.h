@@ -33,8 +33,8 @@ public:
 public:
 
     //--- modifies useCamTop! ---//
-    static Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
-    static Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
+    Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
+    Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
 
 public:
 
@@ -47,18 +47,20 @@ public:
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d        getStateInMeasurementSpace() const;
+    Eigen::Vector2d        getStateInMeasurementSpace() const; // horizontal, vertical
 
 private:
 
     static bool useCamTop;
 
     //--- needed for the state space to measurement space transformation
-    /*static*/ const CameraMatrix* camMat;
-    /*static*/ const CameraMatrixTop* camMatTop;
+    const CameraMatrix* camMat;
+    const CameraMatrixTop* camMatTop;
 
-    /*static*/ const naoth::CameraInfo* camInfo;
-    /*static*/ const naoth::CameraInfoTop* camInfoTop;
+    const naoth::CameraInfo* camInfo;
+    const naoth::CameraInfoTop* camInfoTop;
+
+private:
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix
