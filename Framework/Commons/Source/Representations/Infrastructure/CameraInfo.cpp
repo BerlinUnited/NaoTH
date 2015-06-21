@@ -124,5 +124,4 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.params.focus = msg.focus();
   r.params.openingAngleDiagonal = msg.openinganglediagonal();
   r.params.pixelSize = msg.pixelsize();
-  
 }

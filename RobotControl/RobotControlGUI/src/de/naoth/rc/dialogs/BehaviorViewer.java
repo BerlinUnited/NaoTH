@@ -26,7 +26,6 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 
 import de.naoth.rc.messages.Messages;
-import de.naoth.rc.messages.Messages.XABSLParameter;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -159,15 +157,6 @@ public class BehaviorViewer extends AbstractDialog
 
     this.behaviorBuffer = new ArrayList<>();
   }
-
-  class SymbolComperator implements Comparator<Messages.XABSLParameter>
-  {
-    @Override
-    public int compare(XABSLParameter o1, XABSLParameter o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }//end SymbolComperator
-
 
   class BehaviorListener implements ObjectListener<byte[]>
   {
@@ -768,7 +757,7 @@ public class BehaviorViewer extends AbstractDialog
         //System.out.println(selectedAgent);
 
         Command command = new Command(setAgentCommand)
-                .addArg(setAgentCommandParam, selectedAgent.toString());
+                .addArg(setAgentCommandParam, selectedAgent);
         sendCommand(command);
       }//end if
     }//GEN-LAST:event_cbAgentsItemStateChanged

@@ -13,16 +13,6 @@
 using namespace naoth;
 using namespace std;
 
-VirtualVision::VirtualVision()
-{
-
-}
-
-VirtualVision::~VirtualVision()
-{
-  
-}
-
 void VirtualVision::clear()
 {
   data.clear();
@@ -33,7 +23,7 @@ void VirtualVision::print(ostream& stream) const
 {
   if ( data.empty() && lines.empty() )
   {
-    stream<<"EMPTY";
+    stream << "EMPTY";
     return;
   }
 

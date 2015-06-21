@@ -36,7 +36,6 @@
 
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
-#include "TeamCommEncoder.h"
 
 #include "PlatformInterface/PlatformInterface.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -44,9 +43,13 @@
 
 #include "sfsexp/SexpParser.h"
 #include <Extern/libb64/decode.h>
+#include <Extern/libb64/encode.h>
 #include <set>
 
 using namespace naoth;
+
+// TODO: make this better
+#define MAX_TEAM_MESSAGE_SIZE 1024
 
 class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
@@ -58,6 +61,8 @@ private:
   std::map<std::string, JointData::JointID> theJointSensorNameMap;
   std::map<JointData::JointID, std::string> theJointMotorNameMap;
 
+  char* theTeamMessageReceiveBuffer;
+
   char* theImageData;
   unsigned int theImageSize;
   bool isNewImage;
@@ -65,6 +70,7 @@ private:
   VirtualVision theVirtualVision;
   VirtualVisionTop theVirtualVisionTop;
   base64::Decoder theBase64Decoder;
+  base64::Encoder theBase64Encoder;
 
   SensorJointData theLastSensorJointData;
   GyrometerData theGyroData;
@@ -90,8 +96,6 @@ private:
   std::list<MotorJointData> theMotorJointData;
   std::string theSync;
   bool theSyncMode;
-
-  TeamCommEncoder theTeamCommEncoder;
 
   // set of unknown messages to be ignored
   std::set<std::string> ignore;
