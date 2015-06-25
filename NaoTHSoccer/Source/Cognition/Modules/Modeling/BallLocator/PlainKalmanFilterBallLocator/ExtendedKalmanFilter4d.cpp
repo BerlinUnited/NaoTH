@@ -47,8 +47,6 @@ void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& /*u*/, double dt)
          0,  0, 1, dt,
          0,  0, 0, 1;
 
-    F = Eigen::Matrix4d::Identity();
-
     // adapt control matrix to dt
     B << dt*dt/2, 0,
          dt     , 0,
@@ -56,7 +54,7 @@ void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& /*u*/, double dt)
          0      , dt;
 
     // predict
-    x_pre = F * x /*+ B * u*/;
+    x_pre = F * x + B * u;
     P_pre = F * P * F.transpose() + Q;
 
     x = x_pre;
