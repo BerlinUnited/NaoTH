@@ -49,8 +49,12 @@ void PlainKalmanFilterBallLocator::execute()
                 PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
         {   // should be part of the kalman filter
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
         } else {
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
         }
 
         double x = getBallPercept().bearingBasedOffsetOnField.x;
