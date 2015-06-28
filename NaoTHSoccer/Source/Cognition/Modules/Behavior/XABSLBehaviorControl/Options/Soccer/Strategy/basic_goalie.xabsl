@@ -48,7 +48,7 @@ option basic_goalie
 	  }
 	  action {
       motion.type = stand;
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_goalie;
 	  }
 	}  
 
@@ -58,7 +58,7 @@ option basic_goalie
        else if (action_done 
            || (ball.distance > 1500 && ball.time_since_last_seen < 1000)
            || (ball.time_since_last_seen > 2000)
-           || robot_pose.planned.x > field.xPosOwnPenaltyArea + 1000)
+           || ball.position.field.x > field.xPosOwnPenaltyArea + 1000)
        {
          goto go_to_strategy_point;
        }

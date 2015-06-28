@@ -88,11 +88,6 @@
         <Property name="text" type="java.lang.String" value="FT"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jlTeamColor">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="NONE"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="jlBallAge">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">

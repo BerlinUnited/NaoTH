@@ -3,7 +3,7 @@
  * http://www.orbital-computer.de/JComboBox/
  */
 
-package de.naoth.rc.dialogs.Tools;
+package de.naoth.rc.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -54,6 +54,7 @@ include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
+include "Options/Skills/USOA/go_to_ball_with_slow_USOA.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_foot_and_USOA.xabsl";
 include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
@@ -97,6 +98,7 @@ include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
+include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
@@ -191,11 +193,7 @@ include "Options/Test/arm_back_test_agent.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/role_change_test_agent.xabsl";
 include "Options/Test/passive_behavior_test_agent.xabsl";
-
-//Benji Test
-include "Options/Test/test_benji_agent.xabsl";
-include "Options/Test/test_benji_lv1.xabsl";
-
+
 include "Options/Test/change_state_input_test.xabsl";
 
 
@@ -227,7 +225,6 @@ agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 // Test agents Walk
-agent motion_test_benji("test benji level 1", test_benji_agent);
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 

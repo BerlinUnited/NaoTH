@@ -10,6 +10,7 @@
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/WhistlePercept.h"
 
 using namespace naoth;
 
@@ -17,6 +18,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(ButtonState)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
+  REQUIRE(WhistlePercept)
 
   PROVIDE(DebugRequest)
   PROVIDE(GameReturnData)
@@ -36,6 +38,9 @@ private:
   void readButtons();
   void readHeadButtons();
   void updateLEDs();
+
+private:
+  int whistleCountInLastSet;
 };
 
 #endif // GAMECONTROLLER_H

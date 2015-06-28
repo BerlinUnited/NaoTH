@@ -27,7 +27,9 @@
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamMessageStatistics.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
@@ -38,6 +40,7 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -45,7 +48,10 @@
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
+#include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
+#include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
+#include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -58,6 +64,8 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/Experimental/StableRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -109,6 +117,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(TeamCommReceiveEmulator);
+  REGISTER_MODULE(TeamMessageStatistics);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
@@ -122,6 +132,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
@@ -129,7 +140,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
   REGISTER_MODULE(GoalFeatureDetector);
+  REGISTER_MODULE(GoalFeatureDetectorV2);
   REGISTER_MODULE(GoalDetector);
+  REGISTER_MODULE(GoalDetectorV2);
+  REGISTER_MODULE(GoalCrossBarDetector);
   REGISTER_MODULE(BallDetector);
 
   REGISTER_MODULE(FakeCameraMatrixFinder);
@@ -142,6 +156,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(SimpleRoleDecision);
+  REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);

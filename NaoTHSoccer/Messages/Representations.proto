@@ -23,6 +23,22 @@ message BallPercept {
 }
 
 message GoalPercept {
+  message GoalPost {
+    enum PostType
+    {
+      rightPost = 0;
+      leftPost = 1;
+      unknownPost = 2;
+    };
+    
+    optional IntVector2 basePoint = 1;
+    optional DoubleVector2 position = 2;
+    optional Color color = 3;
+    optional PostType type = 4;
+    optional bool positionReliable = 5;
+    optional double seenHeight = 6;
+  }
+
   optional double angleToSeenGoal = 1;
   optional DoubleVector3 goalCentroid = 2;
   optional int32 numberOfSeenPosts = 3;
@@ -40,6 +56,7 @@ message HeadMotionRequest {
   optional bool searchDirection = 8;
   optional DoubleVector2 targetPointOnTheGround = 9;
   optional uint32 coordinate = 10;
+  optional double velocity = 11;
 }
 
 message StepControlRequest
@@ -100,7 +117,20 @@ message MotionRequest {
   optional ArmMotionRequest armMotionRequest = 11;
 }
 
+
 message LinePercept {
+  message FieldLineSegment {
+    optional LineSegment lineInImage = 1;
+    optional LineSegment lineOnField = 2;
+    optional int32 beginExtendCount = 3;
+    optional int32 endExtendCount = 4;
+    optional double thickness = 5;
+    optional double slope = 6;
+    optional double angle = 7;
+
+    optional bool valid = 8;
+  }
+
   repeated FieldLineSegment lines = 1;
   repeated Intersection intersections = 2;
   optional DoubleVector2 middleCircleCenter = 3;
@@ -169,27 +199,27 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-message TeamMessageCollection
-{
-  repeated TeamMessage data = 1;
-}
-
 enum TeamColor 
 {
-  blueTeam = 0; redTeam = 1; invalidTeam = 2;
+  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
 }
 
 message TeamMessage
 {
-  optional uint32 playerNum = 1 [default=0];
-  optional TeamColor teamColor = 11 [default=blueTeam];
-  optional Pose2D pose = 3;
-  optional int32 ballAge = 4 [default=-1];
-  optional DoubleVector2 ballPosition = 5;
-  optional DoubleVector2 ballVelocity = 6;
-  optional bool fallen = 10 [default=false];
-  optional BUUserTeamMessage user = 8;
-  optional FrameInfo frameInfo = 9;
+  message Data
+  {
+    optional uint32 playerNum = 1 [default=0];
+    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
+    optional Pose2D pose = 3;
+    optional int32 ballAge = 4 [default=-1];
+    optional DoubleVector2 ballPosition = 5;
+    optional DoubleVector2 ballVelocity = 6;
+    optional bool fallen = 10 [default=false];
+    optional BUUserTeamMessage user = 8;
+    optional FrameInfo frameInfo = 9;
+    optional uint32 teamNumber = 12 [default=0];
+  }
+  repeated Data data = 1;
 }
 
 message BUUserTeamMessage
@@ -199,7 +229,7 @@ message BUUserTeamMessage
   optional bool wasStriker = 3 [default=false];
   optional bool isPenalized = 4 [default=false];
   repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0];
+  optional uint32 teamNumber = 6 [default=0,deprecated=true];
   optional float batteryCharge = 7 [default=1.0];
   optional float temperature = 8 [default=0.0];
   optional uint64 timestamp = 9 [default=0];

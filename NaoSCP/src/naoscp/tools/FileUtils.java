@@ -47,7 +47,7 @@ public class FileUtils
    * recursively delete local dir
    * @param dir File dir
    */
-  public static void deleteDir(File dir)
+  public static void deleteDir(File dir) throws NaoSCPException
   {
     if(dir.isDirectory())
     {
@@ -58,7 +58,9 @@ public class FileUtils
         deleteDir(file);
       }
     }
-    dir.delete();
+    if(!dir.delete()) {
+        throw new NaoSCPException("could not delete " + dir.getAbsolutePath());
+    }
   }//end deleteDir
 
   

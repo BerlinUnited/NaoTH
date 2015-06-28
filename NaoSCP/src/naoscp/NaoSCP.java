@@ -75,8 +75,12 @@ public class NaoSCP extends javax.swing.JFrame {
 
         tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
         tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
+        
+        File wpa_supplicant_dir = new File(setupDir, "/etc/wpa_supplicant/");
+        wpa_supplicant_dir.mkdirs();
         tmp.save(new File(setupDir,"/etc/wpa_supplicant/wpa_supplicant.conf"));
 
+        
         tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
         tmp.set("ETH_ADDR", cfg.getLan().subnet);
         tmp.set("ETH_NETMASK", cfg.getLan().mask);
@@ -85,6 +89,9 @@ public class NaoSCP extends javax.swing.JFrame {
         tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
         tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
         tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
+        
+        File conf_dir = new File(setupDir, "/etc/conf.d/");
+        conf_dir.mkdirs();
         tmp.save(new File(setupDir, "/etc/conf.d/net"));
     }
 
@@ -490,6 +497,7 @@ public class NaoSCP extends javax.swing.JFrame {
     }
     
     private void btSetNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSetNetworkActionPerformed
+/*
         try {
             File tmpDir = new File("./tmp");
             File setupDir = new File(tmpDir, "setup");
@@ -499,6 +507,54 @@ public class NaoSCP extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, null, ex);
         }
+        */
+        new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        File tmpDir = new File("./tmp");
+                        File setupDir = new File(tmpDir, "setup");
+                    
+                        if(setupDir.isDirectory()) {
+                            //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                            FileUtils.deleteDir(setupDir);
+                        }
+
+                        if (!setupDir.mkdirs()) {
+                            Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                        } else {
+                            
+                            setupNetwork(setupDir);
+                            
+                            FileUtils.copyFiles(new File(utilsPath,"/NaoConfigFiles/init_net.sh"), setupDir);
+                            
+                            // copy to robot
+                            String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                            Scp scp = new Scp(ip, "nao", "nao");
+                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+
+                            scp.mkdir("/home/nao/tmp");
+                            scp.cleardir("/home/nao/tmp");
+                            scp.put(setupDir, "/home/nao/tmp");
+
+                            scp.chmod(755, "/home/nao/tmp/init_net.sh");
+                            
+                            Scp.CommandStream shell =  scp.getShell();
+                            shell.run("su");
+                            shell.run("root");
+                            shell.run("cd /home/nao/tmp/");
+                            shell.run("./init_net.sh", "DONE");
+
+                            scp.disconnect();
+                            
+                            Logger.getGlobal().log(Level.INFO, "DONE");
+                        }
+                    } catch (IOException | NaoSCPException |JSchException | SftpException ex) {
+                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                    }
+                }
+            }).start();
+        
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

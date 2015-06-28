@@ -41,6 +41,8 @@ namespace motion_symbols("Motion Symbols") {
   float output head.search.size.y [mm];
   float output head.search.size.z [mm];
   bool output head.search.direction;
+
+  float output head.angleVelocity; // [degree / s]
   
   enum head.camera
   {

@@ -227,7 +227,6 @@
         </Property>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="WPA PSK"/>
-        <Property name="opaque" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="radioWEP">
@@ -236,7 +235,6 @@
           <ComponentRef name="buttonGroupWepWpa"/>
         </Property>
         <Property name="text" type="java.lang.String" value="WEP"/>
-        <Property name="opaque" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
@@ -258,6 +256,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="a1b0a1b0a1"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

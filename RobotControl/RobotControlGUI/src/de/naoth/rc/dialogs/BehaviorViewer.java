@@ -26,7 +26,6 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 
 import de.naoth.rc.messages.Messages;
-import de.naoth.rc.messages.Messages.XABSLParameter;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -160,15 +158,6 @@ public class BehaviorViewer extends AbstractDialog
     this.behaviorBuffer = new ArrayList<>();
   }
 
-  class SymbolComperator implements Comparator<Messages.XABSLParameter>
-  {
-    @Override
-    public int compare(XABSLParameter o1, XABSLParameter o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }//end SymbolComperator
-
-
   class BehaviorListener implements ObjectListener<byte[]>
   {
         @Override
@@ -178,7 +167,7 @@ public class BehaviorViewer extends AbstractDialog
               Messages.BehaviorStateComplete behavior_msg = Messages.BehaviorStateComplete.parseFrom(object);
               
               behaviorParser = new XABSLProtoParser();
-              currentBehavior =  behaviorParser.parse(behavior_msg);
+              currentBehavior =  behaviorParser.parseComplete(behavior_msg);
             }
             catch(InvalidProtocolBufferException ex)
             {
@@ -203,7 +192,7 @@ public class BehaviorViewer extends AbstractDialog
             try
             {
               Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
-              final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+              final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
               
              
               SwingUtilities.invokeLater(new Runnable() {
@@ -768,7 +757,7 @@ public class BehaviorViewer extends AbstractDialog
         //System.out.println(selectedAgent);
 
         Command command = new Command(setAgentCommand)
-                .addArg(setAgentCommandParam, selectedAgent.toString());
+                .addArg(setAgentCommandParam, selectedAgent);
         sendCommand(command);
       }//end if
     }//GEN-LAST:event_cbAgentsItemStateChanged
@@ -800,7 +789,7 @@ public class BehaviorViewer extends AbstractDialog
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b, int frameNumber) {
+    public void newFrame(BlackBoard b) {
         
         try
         {
@@ -808,7 +797,7 @@ public class BehaviorViewer extends AbstractDialog
           Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
           
           behaviorParser = new XABSLProtoParser();
-          currentBehavior = behaviorParser.parse(status);
+          currentBehavior = behaviorParser.parseComplete(status);
         }
         catch(InvalidProtocolBufferException ex)
         {
@@ -819,7 +808,7 @@ public class BehaviorViewer extends AbstractDialog
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
           Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
           addFrame(frame);
         }
         catch(InvalidProtocolBufferException ex)

@@ -197,7 +197,7 @@ void FieldInfo::createLinesTable()
     crossings[opponentGoalTCrossingLeft].position
     );
 
-  // white goal box is recognized as lines (opp goal)
+  // HACK: RC14, RC15 white goal box is recognized as lines (opp goal)
   fieldLinesTable.addLine(
     opponentGoalPostLeft,
     Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y)
@@ -211,7 +211,7 @@ void FieldInfo::createLinesTable()
     Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
     );
 
-  // white goal box is recognized as lines (own goal)
+  // HACK: RC14 white goal box is recognized as lines (own goal)
   fieldLinesTable.addLine(
     ownGoalPostLeft,
     Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y)
@@ -224,7 +224,6 @@ void FieldInfo::createLinesTable()
     Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y),
     Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
     );
-
 
   // center circle approximated by sequence of lines
   double numberOfSegments = 12;
