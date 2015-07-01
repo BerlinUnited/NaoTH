@@ -213,32 +213,8 @@ public class Plott2D extends AbstractDialog {
         this.plotPanel.setPaintGrid(this.cbShowGrid.isSelected());
     }//GEN-LAST:event_cbShowGridActionPerformed
 
-    private int name_count = 0;
     private void btExportCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExportCSVActionPerformed
-    /*
-        for (String name : plotTraces.keySet()) {
-            ITrace2D trace = plotTraces.get(name);
-            Iterator<ITracePoint2D> pi = trace.iterator();
-
-            try {
-                String fileName = name.replace(':', '_') + name_count + ".txt";
-                PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-                //System.out.println(name  + "X, " + name + "Y");
-
-                while (pi.hasNext()) {
-                    ITracePoint2D p = pi.next();
-                    //System.out.println(p.getX() + ", " + p.getY());
-                    writer.println("" + p.getX() + ", " + p.getY());
-                }
-
-                writer.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        name_count++;
-        */
+        this.plotPanel.exportCSV();
     }//GEN-LAST:event_btExportCSVActionPerformed
 
     private void btExportGraphActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExportGraphActionPerformed
@@ -252,7 +228,7 @@ public class Plott2D extends AbstractDialog {
         export.addExportFileType(new JAVAExportFileType());
         export.addExportFileType(new PNGExportFileType());
 
-        //export.showExportDialog(this, "Export view as ...", this.chart, "export");
+        export.showExportDialog(this, "Export view as ...", this.plotPanel.getChart(), "export");
     }//GEN-LAST:event_btExportGraphActionPerformed
 
 

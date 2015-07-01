@@ -1,5 +1,6 @@
 package de.naoth.rc.components;
 
+import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IRangePolicy;
 import info.monitorenter.gui.chart.ITrace2D;
@@ -10,8 +11,6 @@ import info.monitorenter.gui.chart.pointpainters.APointPainter;
 import info.monitorenter.gui.chart.rangepolicies.ARangePolicy;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
-import info.monitorenter.gui.util.ColorIterator;
-import info.monitorenter.gui.util.ColorIterator.HueStepper;
 import info.monitorenter.util.Range;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -118,6 +117,9 @@ public class PlotPanel extends javax.swing.JPanel {
         }
     }
     
+    public Chart2D getChart() {
+        return this.chart;
+    }
     
     public void addValue(final String name, double x, double y) {
         if (Double.isInfinite(x) || Double.isInfinite(y)) {
@@ -200,12 +202,13 @@ public class PlotPanel extends javax.swing.JPanel {
         }
     }
     
-    public void exportCSV(String fileName) {
+    public void exportCSV() {
         for (String name : plotTraces.keySet()) {
             ITrace2D trace = plotTraces.get(name);
             Iterator<ITracePoint2D> pi = trace.iterator();
 
             try {
+                String fileName = name.replace(':', '_') + ".txt";
                 PrintWriter writer = new PrintWriter(fileName, "UTF-8");
 
                 while (pi.hasNext()) {
@@ -220,10 +223,7 @@ public class PlotPanel extends javax.swing.JPanel {
                 ex.printStackTrace();
             }
         }
-
-        //name_count++;
     }
-    
     
     class DragListener implements MouseListener, MouseMotionListener {
 
