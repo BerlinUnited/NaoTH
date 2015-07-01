@@ -1,7 +1,7 @@
 /***
   Title: NaoTH Soccer
   Platform: Aldebaran Nao V3.2~4 (RoboCup edition).
-  Software-Environment: NaoTH 2014
+  Software-Environment: NaoTH 2015
 */
 
 // Symbols
@@ -83,6 +83,9 @@ include "Options/Soccer/Strategy/basic_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
+include "Options/Soccer/Strategy/passive_behavior.xabsl";
+include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
+include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 
 // simple soccer
 include "Options/Soccer/basic_striker_agent.xabsl";
@@ -94,9 +97,6 @@ include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
 include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
-include "Options/Soccer/Strategy/passive_behavior.xabsl";
-include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
-include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
@@ -110,8 +110,8 @@ include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
-include "Options/Soccer/simple_penalty_kicker.xabsl";
-include "Options/Soccer/simple_penalty_goalie.xabsl";
+include "Options/Soccer/simple_penalty_kicker_agent.xabsl";
+include "Options/Soccer/simple_penalty_goalie_agent.xabsl";
 
 /* Test section */
 // Test agents (options)
@@ -220,8 +220,8 @@ include "Options/Test/head_control_test.xabsl";
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
-agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker);
-agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie);
+agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent);
+agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
 
 
 /** simple soccer agents **/

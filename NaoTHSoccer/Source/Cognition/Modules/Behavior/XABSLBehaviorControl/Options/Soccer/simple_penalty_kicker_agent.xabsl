@@ -1,5 +1,5 @@
 /** Kick with foot tester */
-option simple_penalty_kicker {
+option simple_penalty_kicker_agent {
 
   initial state test {    
     action {

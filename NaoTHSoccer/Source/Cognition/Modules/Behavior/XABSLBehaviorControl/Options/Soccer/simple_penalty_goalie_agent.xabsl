@@ -1,4 +1,4 @@
-option simple_penalty_goalie {
+option simple_penalty_goalie_agent {
 
   initial state test {    
     action {
