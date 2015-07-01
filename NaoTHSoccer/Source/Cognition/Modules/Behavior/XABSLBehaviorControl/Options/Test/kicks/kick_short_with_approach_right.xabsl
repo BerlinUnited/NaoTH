@@ -1,0 +1,99 @@
+option kick_short_with_approach_right
+{
+  common decision
+   {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
+      goto search;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
+      goto goto_ball;
+  }
+  
+  initial state idle {
+    decision {
+      else
+        goto search;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state search {
+    decision {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+    state goto_ball {
+    decision{
+
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        goto approach_for_right;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+
+  state approach_for_right {
+    decision{
+      else if (action_done) 
+          goto attack_with_right_foot;
+      else 
+        stay;
+    }
+    action{
+      go_to_ball_with_foot_dynamic(right=true, distance=160);
+      motion.walk.style = normal;
+    }
+  }
+
+  state attack_with_right_foot {
+    decision {
+      else if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      fast_forward_kick(foot = right);
+    }
+  }
+
+
+
+  target state done
+  {
+    decision{
+    else
+      stay;
+    }
+    action{
+      //NOTE: this is synchronized with fast_forward_kick()->finished
+      motion.type = stand;
+    
+      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}
