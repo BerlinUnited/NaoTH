@@ -1,5 +1,5 @@
 /** The root option of a simple ball following behavior */
-option agent_test_dribble {
+option dribble_test_agent {
 
   initial state test {    
     action {

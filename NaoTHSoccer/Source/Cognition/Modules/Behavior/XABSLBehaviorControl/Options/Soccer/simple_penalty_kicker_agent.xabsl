@@ -7,7 +7,7 @@ option simple_penalty_kicker_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      kick_with_foot_test();
+      kick_with_foot_test();//ersetzen durch  kick_long_with_approach_right(); oder kick short
       
       // control the arms
       arms_control();
