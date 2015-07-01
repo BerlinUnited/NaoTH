@@ -125,7 +125,6 @@ include "Options/Test/agent/sidekick_test_agent.xabsl";
 include "Options/Test/agent/fast_forward_kick_test_agent.xabsl";
 include "Options/Test/agent/kick_direction_test_agent.xabsl";
 include "Options/Test/agent/kick_attack_direction_test_agent.xabsl";
-include "Options/Test/agent/omnidirectional_kick_test_agent.xabsl";
 include "Options/Test/agent/kick_with_foot_test_agent.xabsl";
 include "Options/Test/agent/walk_against_ball_test_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_left_agent.xabsl";
@@ -173,7 +172,6 @@ include "Options/Test/kicks/sidekick_test.xabsl";
 include "Options/Test/kicks/fast_forward_kick_test.xabsl";
 include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
-include "Options/Test/kicks/omnidirectional_kick_test.xabsl";
 include "Options/Test/kicks/kick_with_foot_test.xabsl";
 include "Options/Test/kicks/walk_against_ball_test.xabsl";
 include "Options/Test/kicks/kick_long_with_approach_right.xabsl";
@@ -211,8 +209,7 @@ include "Options/Test/change_state_input_test.xabsl"; // Useless?
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent);
-agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
-
+agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
@@ -229,10 +226,8 @@ agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
 agent kick_sidekick_test("sidekick_test_agent", sidekick_test_agent);
 agent kick_fast_forward_kick_test("fast_forward_kick_test_agent", fast_forward_kick_test_agent);
-agent kick_omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
 agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent);
-agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
-
+agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 agent kick_long_right("kick_long_right", kick_long_with_approach_right_agent);
 agent kick_long_left("kick_long_left", kick_long_with_approach_left_agent);
