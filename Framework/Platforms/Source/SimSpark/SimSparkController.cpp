@@ -18,10 +18,13 @@
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
 
+#include <Tools/Communication/ASCIIEncoder.h>
+
 using namespace std;
 
 SimSparkController::SimSparkController(const std::string& name)
 : PlatformInterface(name, 20),
+  theTeamMessageReceiveBuffer(NULL),
   theImageData(NULL),
   theImageSize(0),
   isNewImage(false),
@@ -135,6 +138,9 @@ SimSparkController::SimSparkController(const std::string& name)
     g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
     g_error_free (err);
   }
+
+  // HACK: fixed size is bad
+  theTeamMessageReceiveBuffer = new char[MAX_TEAM_MESSAGE_SIZE];
 }
 
 SimSparkController::~SimSparkController()
@@ -155,6 +161,10 @@ SimSparkController::~SimSparkController()
 
   if (theImageData != NULL) {
     delete [] theImageData;
+  }
+
+  if(theTeamMessageReceiveBuffer != NULL) {
+    delete [] theTeamMessageReceiveBuffer;
   }
 }
 
@@ -256,6 +266,8 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << playerNumber << "))" << theSync << send;
   
+  // this is to detect whether the game data has been updated
+  theGameData.playerNumber = 0;
   // wait the response
   while (theGameData.playerNumber == 0)
   {
@@ -1450,29 +1462,19 @@ void SimSparkController::get(CurrentCameraSettings& data)
 
 void SimSparkController::say()
 {
-  if ( theGameData.numOfPlayers == 0 )
+  if ( theGameData.numOfPlayers == 0 ) {
     return;
+  }
 
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber ) {
     return;
+  }
 
   if ( g_mutex_trylock(theCognitionOutputMutex) )
   {
-    string& msg = theTeamMessageDataOut.data;
-    if (!msg.empty()){
-      if (msg.size()<=20)
-      {
-        if (msg != "")
-        {
-          theActData << ("(say "+msg+")");
-        }
-        msg.clear();
-      }
-      else
-      {
-        cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
-      }
+    if (!theTeamMessageDataOut.data.empty()) {
+      theActData << "(say " << theTeamMessageDataOut.data << ")";
     }
     g_mutex_unlock(theCognitionOutputMutex);
   }
@@ -1613,10 +1615,13 @@ void SimSparkController::get(TeamMessageDataIn& data)
   for(vector<string>::const_iterator iter=theTeamMessageDataIn.data.begin();
       iter!=theTeamMessageDataIn.data.end(); ++iter)
   {
-    string msg = theTeamCommEncoder.decode(*iter);
-    if ( !msg.empty() )
+    if ( !(*iter).empty() )
     {
-      data.data.push_back( msg );
+      // TODO: make this faster
+      ASSERT(iter->size() < MAX_TEAM_MESSAGE_SIZE); 
+      int len = theBase64Decoder.decode( iter->c_str(), iter->size(), theTeamMessageReceiveBuffer);
+      
+      data.data.push_back( std::string(theTeamMessageReceiveBuffer, len) );
     }
   }
   theTeamMessageDataIn.data.clear();
@@ -1626,7 +1631,7 @@ void SimSparkController::set(const TeamMessageDataOut& data)
 {
   if ( !data.data.empty() )
   {
-    theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
+    theTeamMessageDataOut.data = theBase64Encoder.encode(data.data.c_str(),(int)data.data.size());
   }
 }
 

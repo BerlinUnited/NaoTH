@@ -99,3 +99,10 @@ message GyrometerData {
   optional DoubleVector3 rawData = 3;
   optional double ref = 4;
 }
+
+message InertialSensorData {
+  repeated double legacyPackedData = 1 [deprecated=true];
+  
+  optional DoubleVector2 data = 2;
+}
+

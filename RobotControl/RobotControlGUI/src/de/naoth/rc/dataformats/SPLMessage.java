@@ -4,7 +4,6 @@
 package de.naoth.rc.dataformats;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.dialogs.TeamCommViewer;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FillOval;
@@ -83,7 +82,7 @@ public class SPLMessage
 
   public Representations.BUUserTeamMessage user = null;
   
-  public SPLMessage(Representations.TeamMessage msg) {
+  public SPLMessage(Representations.TeamMessage.Data msg) {
       
       this.averageWalkSpeed = -1;
 
@@ -235,5 +234,5 @@ public class SPLMessage
             }
         }
     }
-  
+
 }

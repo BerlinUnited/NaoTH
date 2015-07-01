@@ -2,6 +2,7 @@
 
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 using namespace std;
@@ -15,18 +16,27 @@ void InertialSensorData::print(ostream& stream) const
 
 void Serializer<InertialSensorData>::serialize(const InertialSensorData& representation, std::ostream& stream)
 {
-  naothmessages::DoubleVector msg;
-  msg.add_v(representation.data.x);
-  msg.add_v(representation.data.y);
+  naothmessages::InertialSensorData msg;
+  
+  naoth::DataConversion::toMessage(representation.data, *msg.mutable_data());
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
 }
 
 void Serializer<InertialSensorData>::deserialize(std::istream& stream, InertialSensorData& representation)
 {
-  naothmessages::DoubleVector msg;
+  naothmessages::InertialSensorData msg;
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
-  representation.data.x = msg.v(0);
-  representation.data.y = msg.v(1);
+
+  // allows to parse old log files
+  if(msg.legacypackeddata_size() == 2) {
+    representation.data.x = msg.legacypackeddata(0);
+    representation.data.y = msg.legacypackeddata(1);
+  }
+
+  if(msg.has_data()) {
+    naoth::DataConversion::fromMessage(*msg.mutable_data(), representation.data);
+  }
 }

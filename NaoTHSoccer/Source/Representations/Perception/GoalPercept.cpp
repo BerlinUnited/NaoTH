@@ -29,7 +29,7 @@ void Serializer<GoalPercept>::serialize(const GoalPercept& representation, std::
   // post
   for(unsigned int i=0; i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
   {
-    naothmessages::GoalPost* p = g.add_post();
+    naothmessages::GoalPercept::GoalPost* p = g.add_post();
     const GoalPercept::GoalPost& post = representation.post[i];
 
     // basePoint
@@ -43,7 +43,7 @@ void Serializer<GoalPercept>::serialize(const GoalPercept& representation, std::
     p->set_color((naothmessages::Color) post.color);
 
     // type
-    p->set_type((naothmessages::GoalPost_PostType) post.type);
+    p->set_type((naothmessages::GoalPercept::GoalPost::PostType) post.type);
 
     // positionReliable
     p->set_positionreliable(post.positionReliable);
@@ -94,7 +94,7 @@ void Serializer<GoalPercept>::deserialize(std::istream& stream, GoalPercept& rep
   // post
   for(unsigned int i=0; i < (unsigned int)g.post_size() && i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
   {
-    const naothmessages::GoalPost& p = g.post(i);
+    const naothmessages::GoalPercept::GoalPost& p = g.post(i);
     GoalPercept::GoalPost& post = representation.post[i];
 
     // basePoint
