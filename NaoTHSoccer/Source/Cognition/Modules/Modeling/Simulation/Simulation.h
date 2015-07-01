@@ -22,6 +22,7 @@
 
 //Tools
 #include <Tools/Math/Vector2.h>
+#include <Tools/Math/Probabilistics.h>
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
@@ -57,6 +58,22 @@ public:
 
   virtual void execute();
 
+  class ActionParams
+  {
+    public:
+      ActionParams():
+        speed(0.0),
+        speed_std(0.0),
+        angle(0.0),
+        angle_std(0.0)
+      {}
+    public:
+      double speed;
+      double speed_std;
+      double angle;
+      double angle_std;
+  };
+
    /** parameters for the module */
   class Parameters: public ParameterList
   {
@@ -64,25 +81,37 @@ public:
 	
     Parameters() : ParameterList("PotentialActionParameters")
     {
-      PARAMETER_REGISTER(action_sidekick_distance) = 310;
-      PARAMETER_REGISTER(action_short_kick_distance) = 2200;
-      PARAMETER_REGISTER(action_long_kick_distance) = 2750;
-
-      PARAMETER_REGISTER(distance_variance) = 0.1;
-      PARAMETER_REGISTER(angle_variance) = Math::fromDegrees(5);
+      PARAMETER_REGISTER(sidekick_right.speed) = 750;
+      PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
+      PARAMETER_REGISTER(sidekick_right.angle) = Math::fromDegrees(85);
+      PARAMETER_REGISTER(sidekick_right.angle_std) = Math::fromDegrees(15);
+      PARAMETER_REGISTER(sidekick_left.speed) = 750;
+      PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
+      PARAMETER_REGISTER(sidekick_left.angle) = Math::fromDegrees(-85);
+      PARAMETER_REGISTER(sidekick_left.angle_std) = Math::fromDegrees(15);
+      PARAMETER_REGISTER(kick_short.speed) = 780;
+      PARAMETER_REGISTER(kick_short.speed_std) = 150;
+      PARAMETER_REGISTER(kick_short.angle) = Math::fromDegrees(0.0);
+      PARAMETER_REGISTER(kick_short.angle_std) = Math::fromDegrees(10);
+      PARAMETER_REGISTER(kick_long.speed) = 1020;
+      PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      PARAMETER_REGISTER(kick_long.angle) = Math::fromDegrees(0.0);
+      PARAMETER_REGISTER(kick_long.angle_std) = Math::fromDegrees(10);
+      PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(goal_percentage) = 0.85;
       PARAMETER_REGISTER(numParticles) = 30; 
+      
       syncWithConfig();
     }
     
-    double action_sidekick_distance;
-    double action_short_kick_distance;
-    double action_long_kick_distance;
-    double distance_variance;
-    double angle_variance;
-    double numParticles;
+    ActionParams sidekick_right;
+    ActionParams sidekick_left;
+    ActionParams kick_short;
+    ActionParams kick_long;
+    double friction;
     double goal_percentage;
+    double numParticles;
 
   } theParameters;
 
@@ -92,19 +121,28 @@ public:
   private:
     KickActionModel::ActionId _id;
     std::string _name;
-    Vector2d actionVector;
+    double action_speed;
+    double action_speed_std;
+    double action_angle;
+    double action_angle_std;
+    double friction;
+
     
   public:
-    Action(KickActionModel::ActionId _id, const Vector2d& actionVector) : 
-		  _id(_id),
+    Action(KickActionModel::ActionId _id, const ActionParams& params, double friction) : 
+		  _id(_id), 
       _name(KickActionModel::getName(_id)),
-      actionVector(actionVector)
+      action_speed(params.speed),
+      action_speed_std(params.speed_std),
+      action_angle(params.angle),
+      action_angle_std(params.angle_std),
+      friction(friction)
 	  {
     }
 
-      Vector2d predict(const Vector2d& ball, double distance, double angle) const;
-      KickActionModel::ActionId id() const { return _id; }
-      const std::string& name() const { return _name; }
+    Vector2d predict(const Vector2d& ball) const;
+    KickActionModel::ActionId id() const { return _id; }
+    const std::string& name() const { return _name; }
   };
   
   enum BallPositionCategory

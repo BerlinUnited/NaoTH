@@ -22,11 +22,11 @@ Simulation::Simulation()
   //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
 
-  action_local.push_back(Action(KickActionModel::none, Vector2d()));
-  action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
-  action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
-  action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
-  action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+  action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
+  action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
+  action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
+  action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
 }
 
 Simulation::~Simulation(){}
@@ -37,11 +37,11 @@ void Simulation::execute()
     action_local.clear();
     action_local.reserve(KickActionModel::numOfActions);
 
-    action_local.push_back(Action(KickActionModel::none, Vector2d()));
-    action_local.push_back(Action(KickActionModel::kick_long, Vector2d(theParameters.action_long_kick_distance, 0))); // long
-    action_local.push_back(Action(KickActionModel::kick_short, Vector2d(theParameters.action_short_kick_distance, 0))); // short
-    action_local.push_back(Action(KickActionModel::sidekick_right, Vector2d(0, -theParameters.action_sidekick_distance))); // right
-    action_local.push_back(Action(KickActionModel::sidekick_left, Vector2d(0, theParameters.action_sidekick_distance))); // left
+    action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
+    action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
+    action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
+    action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+    action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
   );
 
   //Proceed with Calculations only if ball is seen in the last 1 second
@@ -67,7 +67,7 @@ void Simulation::execute()
     std::vector<Vector2d> ballPositionResults;
     // this size needs to be exposed
     for(size_t j=0; j < theParameters.numParticles; j++) {
-      ballPositionResults.push_back(action_local[i].predict(getBallModel().positionPreview, theParameters.distance_variance, theParameters.angle_variance));
+      ballPositionResults.push_back(action_local[i].predict(getBallModel().positionPreview));
     }
       
     // categorize positions
@@ -287,16 +287,17 @@ void Simulation::categorizePosition(
 }
 
 //correction of distance in percentage, angle in degrees
-Vector2d Simulation::Action::predict(const Vector2d& ball, double distance_variance, double angle_variance) const
-  {
-  double random_length = 2.0*Math::random()-1.0;
-  double random_angle = 2.0*Math::random()-1.0;
+Vector2d Simulation::Action::predict(const Vector2d& ball) const
+{
+  double gforce = 9.80665e3; // mm/s/s
+  double speed = action_speed + Math::sampleNormalDistribution(action_speed_std);
+  double distance = speed*speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+  double angle = action_angle + Math::sampleNormalDistribution(action_angle_std); 
+  Vector2d noisyAction(distance, 0.0);
+  noisyAction.rotate(angle);
 
-  Vector2d noisyAction = actionVector + actionVector*(distance_variance*random_length);
-  noisyAction.rotate(angle_variance*random_angle);
-
-  return ball + noisyAction;
-  }
+return ball + noisyAction;
+}
 
 //calcualte according to the rules, without the roboter position, the ball position
 //if it goes outside the field
