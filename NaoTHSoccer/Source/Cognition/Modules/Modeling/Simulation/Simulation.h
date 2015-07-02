@@ -83,11 +83,11 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = Math::fromDegrees(85);
+      PARAMETER_REGISTER(sidekick_right.angle) = Math::fromDegrees(-85);
       PARAMETER_REGISTER(sidekick_right.angle_std) = Math::fromDegrees(15);
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = Math::fromDegrees(-85);
+      PARAMETER_REGISTER(sidekick_left.angle) = Math::fromDegrees(85);
       PARAMETER_REGISTER(sidekick_left.angle_std) = Math::fromDegrees(15);
       PARAMETER_REGISTER(kick_short.speed) = 780;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
