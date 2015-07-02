@@ -218,46 +218,38 @@ void Simulation::categorizePosition(
   // HINT: categorizedBallPositions is not necessarily empty here! Maybe we should clear it
   
   // calculate the opponent goal line
-  GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
-  Vector2d oppGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.leftPost;
-  Vector2d oppGoalPostRightPreview = getMotionStatus().plannedMotion.hip / oppGoalModel.rightPost;
+  Vector2d oppGoalDir = (getFieldInfo().opponentGoalPostRight - getFieldInfo().opponentGoalPostLeft).normalize();
+  Vector2d oppLeftEndpoint = getFieldInfo().opponentGoalPostLeft + oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d oppRightEndpoint = getFieldInfo().opponentGoalPostRight - oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Math::LineSegment oppGoalLineGlobal(oppLeftEndpoint, oppRightEndpoint);
 
-  Vector2d oppGoalDir = (oppGoalPostRightPreview - oppGoalPostLeftPreview).normalize();
-  Vector2d oppLeftEndpoint = oppGoalPostLeftPreview + oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Vector2d oppRightEndpoint = oppGoalPostRightPreview - oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  DEBUG_REQUEST("Simulation:OppGoal",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF69B4", 7);
+    LINE(oppGoalLineGlobal.begin().x,oppGoalLineGlobal.begin().y,
+         oppGoalLineGlobal.end().x,oppGoalLineGlobal.end().y);
+  );
 
-  Math::LineSegment oppGoalLinePreview(oppLeftEndpoint, oppRightEndpoint);
-    DEBUG_REQUEST("Simulation:OppGoal",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF69B4", 7);
-      Vector2d oppleft = getRobotPose()*oppLeftEndpoint;
-      Vector2d oppright = getRobotPose()*oppRightEndpoint;
-      LINE(oppright.x,oppright.y,oppleft.x,oppleft.y);
-    );
   // calculate the own goal line
-  GoalModel::Goal ownGoalModel = getSelfLocGoalModel().getOwnGoal(getCompassDirection(), getFieldInfo());
-  Vector2d ownGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / ownGoalModel.leftPost;
-  Vector2d ownGoalPostRightPreview = getMotionStatus().plannedMotion.hip / ownGoalModel.rightPost;
+  Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
+  Vector2d ownLeftEndpoint = getFieldInfo().ownGoalPostLeft + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Math::LineSegment ownGoalLineGlobal(ownLeftEndpoint, ownRightEndpoint);
 
-  Vector2d ownGoalDir = (ownGoalPostRightPreview - ownGoalPostLeftPreview).normalize();
-  Vector2d ownLeftEndpoint = ownGoalPostLeftPreview + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Vector2d ownRightEndpoint = ownGoalPostRightPreview - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  DEBUG_REQUEST("Simulation:OwnGoal",
+    FIELD_DRAWING_CONTEXT;
+    PEN("DADADA", 7);
+    LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
+         ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
+  );
 
-  Math::LineSegment ownGoalLinePreview(ownLeftEndpoint, ownRightEndpoint);
-     DEBUG_REQUEST("Simulation:OwnGoal",
-      FIELD_DRAWING_CONTEXT;
-      PEN("DADADA", 7);
-      Vector2d ownleft = getRobotPose()*ownLeftEndpoint;
-      Vector2d ownright = getRobotPose()*ownRightEndpoint;
-      LINE(ownright.x,ownright.y,ownleft.x,ownleft.y);
-      );
   // now loop through all positions
   for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ++ballPosition)
   {
     Vector2d globalBallPosition = getRobotPose() * (*ballPosition);
 
     //Schusslinie
-    Math::LineSegment shootLine(getBallModel().positionPreview, globalBallPosition);
+    Math::LineSegment shootLine(getRobotPose() * getBallModel().positionPreview, globalBallPosition);
 
     BallPositionCategory category = INFIELD;
     // inside field
@@ -266,13 +258,13 @@ void Simulation::categorizePosition(
       category = INFIELD;
     }
     // goal!!
-    else if(shootLine.intersect(oppGoalLinePreview) && oppGoalLinePreview.intersect(shootLine)) 
+    else if(shootLine.intersect(oppGoalLineGlobal) && oppGoalLineGlobal.intersect(shootLine)) 
     {
       category = OPPGOAL;
 
     }
     // own goal
-    else if(shootLine.intersect(ownGoalLinePreview) && ownGoalLinePreview.intersect(shootLine)) 
+    else if(shootLine.intersect(ownGoalLineGlobal) && ownGoalLineGlobal.intersect(shootLine)) 
     {
       category = OWNGOAL;
     }
