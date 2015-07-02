@@ -16,6 +16,9 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
+  DEBUG_REQUEST_REGISTER("Simulation:OppGoal","OppGoal",false);
+  DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
+  
 
   getDebugParameterList().add(&theParameters);
 
@@ -224,7 +227,13 @@ void Simulation::categorizePosition(
   Vector2d oppRightEndpoint = oppGoalPostRightPreview - oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
 
   Math::LineSegment oppGoalLinePreview(oppLeftEndpoint, oppRightEndpoint);
-  
+    DEBUG_REQUEST("Simulation:OppGoal",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF69B4", 7);
+      Vector2d oppleft = getRobotPose()*oppLeftEndpoint;
+      Vector2d oppright = getRobotPose()*oppRightEndpoint;
+      LINE(oppright.x,oppright.y,oppleft.x,oppleft.y);
+    );
   // calculate the own goal line
   GoalModel::Goal ownGoalModel = getSelfLocGoalModel().getOwnGoal(getCompassDirection(), getFieldInfo());
   Vector2d ownGoalPostLeftPreview = getMotionStatus().plannedMotion.hip / ownGoalModel.leftPost;
@@ -235,7 +244,13 @@ void Simulation::categorizePosition(
   Vector2d ownRightEndpoint = ownGoalPostRightPreview - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
 
   Math::LineSegment ownGoalLinePreview(ownLeftEndpoint, ownRightEndpoint);
- 
+     DEBUG_REQUEST("Simulation:OwnGoal",
+      FIELD_DRAWING_CONTEXT;
+      PEN("DADADA", 7);
+      Vector2d ownleft = getRobotPose()*ownLeftEndpoint;
+      Vector2d ownright = getRobotPose()*ownRightEndpoint;
+      LINE(ownright.x,ownright.y,ownleft.x,ownleft.y);
+      );
   // now loop through all positions
   for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ++ballPosition)
   {
@@ -254,6 +269,7 @@ void Simulation::categorizePosition(
     else if(shootLine.intersect(oppGoalLinePreview) && oppGoalLinePreview.intersect(shootLine)) 
     {
       category = OPPGOAL;
+
     }
     // own goal
     else if(shootLine.intersect(ownGoalLinePreview) && ownGoalLinePreview.intersect(shootLine)) 
