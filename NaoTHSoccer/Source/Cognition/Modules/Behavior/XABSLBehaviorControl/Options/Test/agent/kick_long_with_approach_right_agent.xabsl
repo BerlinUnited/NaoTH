@@ -1,5 +1,4 @@
-/** The root option of a simple ball following behavior */
-option agent_test_dribble {
+option kick_long_with_approach_right_agent {
 
   initial state test {    
     action {
@@ -7,8 +6,11 @@ option agent_test_dribble {
       // react to the game controller and handle fall down
       basic_play();
 
-      test_dribble();
+      kick_long_with_approach_right();
       
+      // control the arms
+      arms_control();
+
       // control head movement according to value of head.control_mode
       head_control();
     }

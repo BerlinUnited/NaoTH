@@ -2,6 +2,7 @@ option only_goal_looking{
   initial state search{
     action{
       basic_play();
+	  
       head.control_mode = search_for_goal;
 
       head_control();

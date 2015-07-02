@@ -2,6 +2,7 @@ option only_ball_looking{
   initial state search{
     action{
       basic_play();
+	  
       head.control_mode = search_for_ball;
 
       head_control();
