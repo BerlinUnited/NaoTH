@@ -1,12 +1,6 @@
 #include "ExtendedKalmanFilter4d.h"
 
-bool ExtendedKalmanFilter4d::useCamTop = false;
-
-ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension, const CameraMatrix& camMat, const CameraMatrixTop& camMatTop, const naoth::CameraInfo& camInfo, const naoth::CameraInfoTop& camInfoTop):
-    camMat(&camMat),
-    camMatTop(&camMatTop),
-    camInfo(&camInfo),
-    camInfoTop(&camInfoTop),
+ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension):
     x(state)
 {
     Eigen::Matrix2d q;
@@ -61,46 +55,29 @@ void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
     P = P_pre;
 }
 
-void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
+void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_Function_H& h)
 {
     Eigen::Vector2d predicted_measurement;
 
-    predicted_measurement = getStateInMeasurementSpace();
+    predicted_measurement = getStateInMeasurementSpace(h);
 
     // approximate H with central differential quotient
 
-    bool in_front_of_plane = true;
-    double h = 0.0001;
-    Vector2d dx1, dx2, dy1, dy2;
+    double e = 0.0001;
+    Eigen::Vector2d dx1, dx2, dy1, dy2;
 
-    if(useCamTop) {
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0)-h, x(2), ball_height), dx1);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0)+h, x(2), ball_height), dx2);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)-h, ball_height), dy1);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, Vector3d(x(0), x(2)+h, ball_height), dy2);
+    dx1 = h(x(0)-e,x(2));
+    dx2 = h(x(0)+e,x(2));
 
-        dx1 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dx1.x,dx1.y);
-        dx2 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dx2.x,dx2.y);
-        dy1 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dy1.x,dy1.y);
-        dy2 = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,dy2.x,dy2.y);
-    } else {
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)-h, x(2), ball_height), dx1);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0)+h, x(2), ball_height), dx2);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)-h, ball_height), dy1);
-        in_front_of_plane = in_front_of_plane && CameraGeometry::relativePointToImage(*camMat, *camInfo, Vector3d(x(0), x(2)+h, ball_height), dy2);
+    dy1 = h(x(0),x(2)-e);
+    dy2 = h(x(0),x(2)+e);
 
-        dx1 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dx1.x,dx1.y);
-        dx2 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dx2.x,dx2.y);
-        dy1 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dy1.x,dy1.y);
-        dy2 = CameraGeometry::angleToPointInImage(*camMat,*camInfo,dy2.x,dy2.y);
-    }
-
-    Vector2d dx = (dx2-dx1)/(2*h);
-    Vector2d dy = (dy2-dy1)/(2*h);
+    Eigen::Vector2d dx = (dx2-dx1)/(2*e);
+    Eigen::Vector2d dy = (dy2-dy1)/(2*e);
 
     Eigen::Matrix<double,2,4> H_approx;
-    H_approx << dx.x, 0, dy.x, 0,
-                dx.y, 0, dy.y, 0;
+    H_approx << dx(0), 0, dy(0), 0,
+                dx(1), 0, dy(1), 0;
 
     // use approximation
     H = H_approx;
@@ -120,34 +97,6 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z)
 
     x = x_corr;
     P = P_corr;
-}
-
-Eigen::Vector2d ExtendedKalmanFilter4d::createMeasurementVector(const BallPercept& bp)
-{
-    Vector2d angles;
-    Eigen::Vector2d z;
-
-    angles = CameraGeometry::angleToPointInImage(*camMat,*camInfo,bp.centerInImage.x,bp.centerInImage.y);
-
-    z << angles.x, angles.y;
-
-    useCamTop = false;
-
-    return z;
-}
-
-Eigen::Vector2d ExtendedKalmanFilter4d::createMeasurementVector(const BallPerceptTop& bp)
-{
-    Vector2d angles;
-    Eigen::Vector2d z;
-
-    angles = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,bp.centerInImage.x,bp.centerInImage.y);
-
-    z << angles.x, angles.y;
-
-    useCamTop = true;
-
-    return z;
 }
 
 //--- setter ---//
@@ -182,29 +131,7 @@ const Eigen::Matrix2d& ExtendedKalmanFilter4d::getMeasurementCovariance() const
     return R;
 }
 
-Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace() const
+Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(Measurement_Function_H h) const
 {
-    bool in_front_of_plane;
-    Vector3d point(x(0), x(2), ball_height);
-    Vector2d pointInImage;
-
-    Vector2d angles;
-
-    if(useCamTop){
-        in_front_of_plane = CameraGeometry::relativePointToImage(*camMatTop, *camInfoTop, point, pointInImage);
-        angles            = CameraGeometry::angleToPointInImage(*camMatTop,*camInfoTop,pointInImage.x,pointInImage.y);
-    }
-    else {
-        in_front_of_plane = CameraGeometry::relativePointToImage(*camMat, *camInfo, point, pointInImage);
-        angles            = CameraGeometry::angleToPointInImage(*camMat,*camInfo,pointInImage.x,pointInImage.y);
-    }
-
-    Eigen::Vector2d z;
-
-    if(in_front_of_plane)
-        z << angles.x, angles.y;// angle horizontal, angle vertical
-    else
-        z << std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
-
-    return z;
+    return h(x(0),x(2));
 }

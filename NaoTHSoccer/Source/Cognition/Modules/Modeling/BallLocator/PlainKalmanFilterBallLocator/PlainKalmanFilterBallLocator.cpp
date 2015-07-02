@@ -13,6 +13,8 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",            true);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object",  true);
 
+    h.ball_height = 32.5;
+
     getDebugParameterList().add(&kfParameters);
 
     reloadParameters();
@@ -49,10 +51,18 @@ void PlainKalmanFilterBallLocator::execute()
                 PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
         {   // should be part of the kalman filter
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
+
+            h.camMat = getCameraMatrixTop();
+            h.camInfo = getCameraInfoTop();
+
             PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
             PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
         } else {
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
+
+            h.camMat = getCameraMatrix();
+            h.camInfo = getCameraInfo();
+
             PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
             PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
         }
@@ -64,7 +74,7 @@ void PlainKalmanFilterBallLocator::execute()
         {
             Eigen::Vector4d newState;
             newState << x, 0, y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension, getCameraMatrix(), getCameraMatrixTop(), getCameraInfo(), getCameraInfoTop()));
+            filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
         }
         else
         {
@@ -93,7 +103,7 @@ void PlainKalmanFilterBallLocator::execute()
             {
                 Eigen::Vector4d newState;
                 newState << x, 0, y, 0;
-                filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension, getCameraMatrix(), getCameraMatrixTop(), getCameraInfo(), getCameraInfoTop()));
+                filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
             }
             else
             {
@@ -107,12 +117,12 @@ void PlainKalmanFilterBallLocator::execute()
 
                 // debug stuff -> should be in a DEBUG_REQUEST
                 Eigen::Vector2d predicted_measurement;
-                predicted_measurement = (*bestPredictor).getStateInMeasurementSpace();
+                predicted_measurement = (*bestPredictor).getStateInMeasurementSpace(h);
 
                 PLOT("PlainKalmanFilterBallLocator:Innovation:x",   z(0)-predicted_measurement(0));
                 PLOT("PlainKalmanFilterBallLocator:Innovation:y", z(1)-predicted_measurement(1));
 
-                (*bestPredictor).update(z);
+                (*bestPredictor).update(z,h);
             }
         }
     }
@@ -159,8 +169,8 @@ void PlainKalmanFilterBallLocator::execute()
         Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
         Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
 
-        Vector2<double> ballLeftFoot  = lFootPose/getBallModel().position;
-        Vector2<double> ballRightFoot = rFootPose/getBallModel().position;
+        Vector2d ballLeftFoot  = lFootPose/getBallModel().position;
+        Vector2d ballRightFoot = rFootPose/getBallModel().position;
 
         getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
         getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
@@ -195,12 +205,7 @@ void PlainKalmanFilterBallLocator::execute()
 
 double PlainKalmanFilterBallLocator::distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
-    return std::sqrt(((z-filter.getStateInMeasurementSpace()).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInMeasurementSpace()))(0,0));
-}
-
-double PlainKalmanFilterBallLocator::evaluatePredictionWithMeasurement(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const
-{
-    return std::exp(((filter.getStateInMeasurementSpace()-z).transpose() * filter.getMeasurementCovariance().inverse() * (filter.getStateInMeasurementSpace()-z))(0,0) * (-0.5));
+    return std::sqrt(((z-filter.getStateInMeasurementSpace(h)).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInMeasurementSpace(h)))(0,0));
 }
 
 void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt)
@@ -290,11 +295,11 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
 
     //rotate and translate location part of the filter's state
-    Vector2<double> location = Vector2<double>(x(0), x(2)); // translation of the model
+    Vector2d location = Vector2d(x(0), x(2)); // translation of the model
     location = odometryDelta * location;
 
     //just rotate the velocity part of the filter's state
-    Vector2<double> velocity = Vector2<double>(x(1), x(3)); // translation of the model
+    Vector2d velocity = Vector2d(x(1), x(3)); // translation of the model
     velocity.rotate(odometryDelta.getAngle());
 
     Eigen::Vector4d newStateX;

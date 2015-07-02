@@ -15,8 +15,8 @@
 
 #include "Representations/Perception/CameraMatrix.h"
 
-#include "KalmanFilter4d.h"
 #include "ExtendedKalmanFilter4d.h"
+#include "MeasurementFunctions.h"
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
@@ -73,7 +73,6 @@ END_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 class PlainKalmanFilterBallLocator : private PlainKalmanFilterBallLocatorBase
 {
 
-
 public:
     PlainKalmanFilterBallLocator();
     virtual ~PlainKalmanFilterBallLocator();
@@ -93,9 +92,6 @@ private:
     Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
 
     double distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
-
-    // non normalized value of probability density function of measurement Z at the filters state
-    double evaluatePredictionWithMeasurement(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
     std::vector<ExtendedKalmanFilter4d> filter;
@@ -140,8 +136,8 @@ private:
             PARAMETER_REGISTER(processNoiseStdQ10) = 0;
             PARAMETER_REGISTER(processNoiseStdQ11) = 3;
 
-            PARAMETER_REGISTER(measurementNoiseStdR00) = 100;
-            PARAMETER_REGISTER(measurementNoiseStdR11) = 100;
+            PARAMETER_REGISTER(measurementNoiseStdR00) = 0.01745329251; //[rad]
+            PARAMETER_REGISTER(measurementNoiseStdR11) = 0.01745329251; //[rad]
 
             PARAMETER_REGISTER(initialStateStdP00) = 250;
             PARAMETER_REGISTER(initialStateStdP01) = 0;
@@ -150,7 +146,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0045;
-            PARAMETER_REGISTER(distanceThreshold) = 500;
+            PARAMETER_REGISTER(distanceThreshold) = 0.17453292519;
             PARAMETER_REGISTER(stdThreshold) = 500;
 
             syncWithConfig();
@@ -174,6 +170,8 @@ private:
         double distanceThreshold;
         double stdThreshold;
     } kfParameters;
+
+    Measurement_Function_H h;
 
     Eigen::Matrix2d processNoiseStdSingleDimension;
     Eigen::Matrix2d measurementNoiseStd;

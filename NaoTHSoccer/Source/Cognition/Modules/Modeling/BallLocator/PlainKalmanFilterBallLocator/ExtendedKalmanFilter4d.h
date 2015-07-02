@@ -20,21 +20,17 @@
 #include <Tools/Math/Vector3.h>
 #include <Tools/CameraGeometry.h>
 
+#include "MeasurementFunctions.h"
+
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension, const CameraMatrix& camMat, const CameraMatrixTop& camMatTop, const naoth::CameraInfo& camInfo, const naoth::CameraInfoTop& camInfoTop);
+    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~ExtendedKalmanFilter4d();
 
     void prediction(const Eigen::Vector2d &u, double dt);
-    void update(const Eigen::Vector2d &z);
-
-public:
-
-    //--- modifies useCamTop! ---//
-    Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
-    Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
+    void update(const Eigen::Vector2d &z, const Measurement_Function_H& h);
 
 public:
 
@@ -47,18 +43,7 @@ public:
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d        getStateInMeasurementSpace() const; // horizontal, vertical
-
-private:
-
-    static bool useCamTop;
-
-    //--- needed for the state space to measurement space transformation
-    const CameraMatrix* camMat;
-    const CameraMatrixTop* camMatTop;
-
-    const naoth::CameraInfo* camInfo;
-    const naoth::CameraInfoTop* camInfoTop;
+    Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
 
 private:
 
@@ -83,9 +68,6 @@ private:
     // kalman gain
     Eigen::Matrix<double, 4,2> K;
 
-    // paramter for coordinate transformation
-    static const double height = 500;
-    static const double ball_height = 32.5;
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H
