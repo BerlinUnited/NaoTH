@@ -87,10 +87,6 @@ private:
 
 private:
 
-    // copied from extended kalman filter due to some static-function-member-variable-representation-access-problem-as-non-module-class-stuff
-    Eigen::Vector2d createMeasurementVector(const BallPercept& bp);
-    Eigen::Vector2d createMeasurementVector(const BallPerceptTop& bp);
-
     double distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
 
 private:
@@ -104,17 +100,6 @@ private:
     double c_RR;
 
     const ExtendedKalmanFilter4d* bestModel;
-
-    const BallPercept& getBallPercept() const
-    {
-      if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
-          PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
-      {
-        return PlainKalmanFilterBallLocatorBase::getBallPerceptTop();
-      } else {
-        return PlainKalmanFilterBallLocatorBase::getBallPercept();
-      }
-    }
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 

@@ -43,35 +43,46 @@ void PlainKalmanFilterBallLocator::execute()
     }
 
     // measurement
-    if(getBallPercept().ballWasSeen)
-    {
+    if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
+
         Eigen::Vector2d z;
+        double x,y;
 
-        if(!PlainKalmanFilterBallLocatorBase::getBallPercept().ballWasSeen &&
-                PlainKalmanFilterBallLocatorBase::getBallPerceptTop().ballWasSeen)
-        {   // should be part of the kalman filter
-            z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
+        if(!getBallPercept().ballWasSeen && getBallPerceptTop().ballWasSeen) {
 
-            h.camMat  = getCameraMatrixTop();
-            h.camInfo = getCameraInfoTop();
+            Vector2d angles = CameraGeometry::angleToPointInImage(getCameraMatrixTop(),getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
+
+            z << angles.x, angles.y;
 
             PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
             PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
-        } else {
-            z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
 
-            h.camMat  = getCameraMatrix();
-            h.camInfo = getCameraInfo();
+            // set camera top in functional
+            h.camMat  = getCameraMatrixTop();
+            h.camInfo = getCameraInfoTop();
+
+            // needed if a new filter has to be created
+            x = getBallPerceptTop().bearingBasedOffsetOnField.x;
+            y = getBallPerceptTop().bearingBasedOffsetOnField.y;
+        } else {
+
+            Vector2d angles = CameraGeometry::angleToPointInImage(getCameraMatrix(),getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
+
+            z << angles.x, angles.y;
 
             PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
             PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
+
+            // set camera bottom in functional
+            h.camMat  = getCameraMatrix();
+            h.camInfo = getCameraInfo();
+
+            // needed if a new filter has to be created
+            x = getBallPercept().bearingBasedOffsetOnField.x;
+            y = getBallPercept().bearingBasedOffsetOnField.y;
         }
 
-        double x = getBallPercept().bearingBasedOffsetOnField.x;
-        double y = getBallPercept().bearingBasedOffsetOnField.y;
-
-        if(filter.size() == 0)
-        {
+        if(filter.size() == 0) {
             Eigen::Vector4d newState;
             newState << x, 0, y, 0;
             filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
@@ -448,28 +459,4 @@ void PlainKalmanFilterBallLocator::reloadParameters()
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
     }
-}
-
-Eigen::Vector2d PlainKalmanFilterBallLocator::createMeasurementVector(const BallPercept& bp)
-{
-    Vector2d angles;
-    Eigen::Vector2d z;
-
-    angles = CameraGeometry::angleToPointInImage(getCameraMatrix(),getCameraInfo(),bp.centerInImage.x,bp.centerInImage.y);
-
-    z << angles.x, angles.y;
-
-    return z;
-}
-
-Eigen::Vector2d PlainKalmanFilterBallLocator::createMeasurementVector(const BallPerceptTop& bp)
-{
-    Vector2d angles;
-    Eigen::Vector2d z;
-
-    angles = CameraGeometry::angleToPointInImage(getCameraMatrixTop(),getCameraInfoTop(),bp.centerInImage.x,bp.centerInImage.y);
-
-    z << angles.x, angles.y;
-
-    return z;
 }
