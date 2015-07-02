@@ -133,7 +133,7 @@ void Simulation::execute()
     // check goal percentage, percentage needs to be exposed
     // the static_cast is messy but I don't know how to get around it
     //goal_percentage = 0.85
-    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.goal_percentage)
+    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.good_threshold_percentage)
     {
       goodActions.push_back(i);
     }
@@ -171,8 +171,7 @@ void Simulation::execute()
           mostGoals = it->second;
         }
       }
-    }
-    else // else choose the best mean of the potential field values
+    } else // else choose the best mean of the potential field values
     {
       double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
       for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)

@@ -99,7 +99,7 @@ public:
       PARAMETER_REGISTER(kick_long.angle_std) = Math::fromDegrees(10);
       PARAMETER_REGISTER(friction) = 0.0275;
 
-      PARAMETER_REGISTER(goal_percentage) = 0.85;
+      PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
       PARAMETER_REGISTER(numParticles) = 30; 
       
       syncWithConfig();
@@ -110,7 +110,7 @@ public:
     ActionParams kick_short;
     ActionParams kick_long;
     double friction;
-    double goal_percentage;
+    double good_threshold_percentage;
     double numParticles;
 
   } theParameters;
