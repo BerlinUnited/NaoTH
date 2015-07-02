@@ -18,9 +18,6 @@ import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.server.Command;
-import info.monitorenter.gui.chart.ITracePoint2D;
-import info.monitorenter.gui.chart.pointpainters.APointPainter;
-import java.awt.Graphics;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -251,15 +248,13 @@ public class Plott2D extends AbstractDialog {
         public void newObjectReceived(byte[] object) {
             try {
                 if (object != null) {
-                    synchronized (Plott2D.this) {
-                        Plots plots = Plots.parseFrom(object);
-                        for (PlotStroke2D stroke : plots.getPlotstrokesList()) {
-                            for (DoubleVector2 point : stroke.getPointsList()) {
-                                Plott2D.this.plotPanel.addValue(stroke.getName(), point.getX(), point.getY());
-                            }
+                    Plots plots = Plots.parseFrom(object);
+                    for (PlotStroke2D stroke : plots.getPlotstrokesList()) {
+                        for (DoubleVector2 point : stroke.getPointsList()) {
+                            Plott2D.this.plotPanel.addValue(stroke.getName(), point.getX(), point.getY());
                         }
-                    }//end synchronized
-                }//end if
+                    }
+                }
             } catch (InvalidProtocolBufferException ex) {
                 Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, new String(object), ex);
             }
