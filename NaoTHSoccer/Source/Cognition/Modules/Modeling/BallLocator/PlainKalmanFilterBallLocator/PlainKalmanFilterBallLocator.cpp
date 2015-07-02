@@ -52,7 +52,7 @@ void PlainKalmanFilterBallLocator::execute()
         {   // should be part of the kalman filter
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPerceptTop());
 
-            h.camMat = getCameraMatrixTop();
+            h.camMat  = getCameraMatrixTop();
             h.camInfo = getCameraInfoTop();
 
             PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
@@ -60,7 +60,7 @@ void PlainKalmanFilterBallLocator::execute()
         } else {
             z = createMeasurementVector(PlainKalmanFilterBallLocatorBase::getBallPercept());
 
-            h.camMat = getCameraMatrix();
+            h.camMat  = getCameraMatrix();
             h.camInfo = getCameraInfo();
 
             PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));

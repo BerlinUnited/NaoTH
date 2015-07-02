@@ -131,7 +131,7 @@ const Eigen::Matrix2d& ExtendedKalmanFilter4d::getMeasurementCovariance() const
     return R;
 }
 
-Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(Measurement_Function_H h) const
+Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(const Measurement_Function_H& h) const
 {
     return h(x(0),x(2));
 }
