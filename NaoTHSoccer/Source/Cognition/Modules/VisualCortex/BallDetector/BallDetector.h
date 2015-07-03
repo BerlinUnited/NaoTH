@@ -88,7 +88,7 @@ private:
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(maxBorderBrightness) = 70;
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
-      PARAMETER_REGISTER(minOffsetToGoalV) = 10;
+      //PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(thresholdGradientUV) = 6;
@@ -105,7 +105,7 @@ private:
     int maxBorderBrightness;
     int minOffsetToFieldY;
     int minOffsetToFieldV;
-    int minOffsetToGoalV;
+    //int minOffsetToGoalV;
     int mitUVDifference;
     
     int thresholdGradientUV;
@@ -118,8 +118,8 @@ private:
     return
       pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
       pixel.v > pixel.u + params.mitUVDifference && // y-u has to be high (this filter out the jerseys)
-      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV &&
-      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
+      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV;
+//      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
   }
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;

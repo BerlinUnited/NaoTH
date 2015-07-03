@@ -26,7 +26,9 @@ void TeamCommSender::execute()
     SPLStandardMessage msg;
     createMessage(msg);
 
-    getTeamMessageDataOut().data.assign((char*) &msg, sizeof(SPLStandardMessage));
+    ASSERT(msg.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE);
+    // copy only the part of the message which is actually used
+    getTeamMessageDataOut().data.assign((char*) &msg, sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE + msg.numOfDataBytes);
 
     lastSentTimestamp = getFrameInfo().getTime();
   }

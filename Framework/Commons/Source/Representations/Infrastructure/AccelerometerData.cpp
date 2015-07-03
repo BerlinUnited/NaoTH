@@ -1,6 +1,8 @@
+
 #include "Representations/Infrastructure/AccelerometerData.h"
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 using namespace std;
@@ -24,13 +26,8 @@ void Serializer<AccelerometerData>::serialize(const AccelerometerData& represent
 {
   naothmessages::AccelerometerData msg;
 
-  msg.mutable_data()->set_x(representation.data.x);
-  msg.mutable_data()->set_y(representation.data.y);
-  msg.mutable_data()->set_z(representation.data.z);
-
-  msg.mutable_rawdata()->set_x(representation.rawData.x);
-  msg.mutable_rawdata()->set_y(representation.rawData.y);
-  msg.mutable_rawdata()->set_z(representation.rawData.z);
+  naoth::DataConversion::toMessage(representation.data, *msg.mutable_data());
+  naoth::DataConversion::toMessage(representation.rawData, *msg.mutable_rawdata());
 
   ::google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
@@ -43,7 +40,7 @@ void Serializer<AccelerometerData>::deserialize(std::istream& stream, Accelerome
   ::google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  // allow us to parse old log files
+  // allows to parse old log files
   if(msg.legacypackeddata_size() == 6)
   {
     for(int i=0; i<3; i++)
@@ -54,17 +51,11 @@ void Serializer<AccelerometerData>::deserialize(std::istream& stream, Accelerome
   }
 
   // always use the non-deprecated fields if possible
-  if(msg.has_data())
-  {
-    representation.data.x = msg.data().x();
-    representation.data.y = msg.data().y();
-    representation.data.z = msg.data().z();
+  if(msg.has_data()) {
+    naoth::DataConversion::fromMessage(msg.data(),representation.data);
   }
-  if(msg.has_rawdata())
-  {
-    representation.rawData.x = msg.rawdata().x();
-    representation.rawData.y = msg.rawdata().y();
-    representation.rawData.z = msg.rawdata().z();
+  if(msg.has_rawdata()) {
+    naoth::DataConversion::fromMessage(msg.rawdata(),representation.rawData);
   }
 }
 

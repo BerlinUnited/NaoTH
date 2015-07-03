@@ -7,7 +7,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.logplayer.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.messages.CommonTypes;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.io.BufferedWriter;
@@ -901,9 +900,9 @@ public class GroundTruthReader extends AbstractDialog {
                  */
                 data = b.getRepresentation("GoalPercept");
                 Representations.GoalPercept goalPercept = Representations.GoalPercept.parseFrom(data);
-                List<CommonTypes.GoalPost> goalPosts = goalPercept.getPostList();
+                List<Representations.GoalPercept.GoalPost> goalPosts = goalPercept.getPostList();
                 int postCount = 0;
-                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                for (Representations.GoalPercept.GoalPost goalPost: goalPosts) {
                     if (goalPost.hasPositionReliable()) postCount++;
                 }
                 Integer goalHere = bottomGoal.get(frameNumber);
@@ -925,7 +924,7 @@ public class GroundTruthReader extends AbstractDialog {
                 Representations.GoalPercept goalPerceptTop = Representations.GoalPercept.parseFrom(data);
                 goalPosts = goalPerceptTop.getPostList();
                 postCount = 0;
-                for (CommonTypes.GoalPost goalPost: goalPosts) {
+                for (Representations.GoalPercept.GoalPost goalPost: goalPosts) {
                     if (goalPost.hasPositionReliable()) postCount++;
                 }
                 goalHere = topGoal.get(frameNumber);

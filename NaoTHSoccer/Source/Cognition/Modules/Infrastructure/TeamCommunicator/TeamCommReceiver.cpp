@@ -85,7 +85,7 @@ bool TeamCommReceiver::parseSPLStandardMessage(const std::string& data, SPLStand
     return false;
   }
 
-  memcpy(&msg, data.c_str(), sizeof(SPLStandardMessage));
+  memcpy(&msg, data.c_str(), data.size()); // data.size() <= sizeof(SPLStandardMessage)
 
   // furter sanity check for header and version
   if(msg.header[0] != 'S' ||

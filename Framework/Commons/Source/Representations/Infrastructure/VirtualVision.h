@@ -20,10 +20,6 @@ namespace naoth
   class VirtualVision : public Printable
   {
   public:
-    VirtualVision();
-
-    ~VirtualVision();
-
     typedef std::map<std::string, Vector3d> PointMap;
     PointMap data;
 
