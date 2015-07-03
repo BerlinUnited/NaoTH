@@ -63,7 +63,7 @@ option new_striker
   state turn {
     decision{
 
-      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400 && robot_pose.planned.x < 3500) // there is an obstacle
         goto sidekick_stable;
       else if(attack.best_action == kick_long)
         goto long_kick;
