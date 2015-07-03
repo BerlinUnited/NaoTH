@@ -12,6 +12,7 @@ using namespace std;
 Simulation::Simulation()
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
@@ -243,25 +244,71 @@ void Simulation::categorizePosition(
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
 
+  
+  Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
+  Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
+
+
+  vector<Math::LineSegment> goalBackSides;
+  goalBackSides.reserve(3);
+  goalBackSides.push_back(Math::LineSegment(oppGoalBackLeft, oppGoalBackRight));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostLeft, oppGoalBackLeft));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, oppGoalBackRight));
+
+  Geometry::Rect2d oppGoalBox(oppGoalBackRight, getFieldInfo().opponentGoalPostLeft);
+  
   // now loop through all positions
   for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ++ballPosition)
   {
-    Vector2d globalBallPosition = getRobotPose() * (*ballPosition);
+    Vector2d globalBallEndPosition = getRobotPose() * (*ballPosition);
+    Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
 
     //Schusslinie
-    Math::LineSegment shootLine(getRobotPose() * getBallModel().positionPreview, globalBallPosition);
+    Math::LineSegment shootLine(globalBallStartPosition, globalBallEndPosition);
+
+    // collide with goal
+    double t_min = shootLine.getLength();
+    bool collisionWithGoal = false;
+    for(size_t i = 0; i < goalBackSides.size(); i++) {
+      const Math::LineSegment& side = goalBackSides[i];
+      double t = shootLine.Line::intersection(side);
+
+      if(t >= 0 && t < t_min && side.intersect(shootLine)) {
+        t_min = t;
+        collisionWithGoal = true;
+      }
+    }
+
+    if(collisionWithGoal) {
+      shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(t_min-getFieldInfo().ballRadius));
+      globalBallEndPosition = shootLine.end();
+      
+      DEBUG_REQUEST("Simulation:draw_goal_collisions",
+        FIELD_DRAWING_CONTEXT;
+      
+        PEN("000000", 10);
+        BOX(oppGoalBox.min().x,oppGoalBox.min().y,oppGoalBox.max().x,oppGoalBox.max().y);
+
+        if(oppGoalBox.inside(globalBallEndPosition)) {
+          PEN("0000AA66", 1);
+        } else {
+          PEN("FF00AA66", 1);
+        }
+        FILLOVAL(shootLine.end().x, shootLine.end().y, 50, 50);
+      );
+    }
+
 
     BallPositionCategory category = INFIELD;
     // inside field
-    if(getFieldInfo().fieldRect.inside(globalBallPosition))
+    if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
     {
       category = INFIELD;
     }
     // goal!!
-    else if(shootLine.intersect(oppGoalLineGlobal) && oppGoalLineGlobal.intersect(shootLine)) 
+    else if(oppGoalBox.inside(globalBallEndPosition)) 
     {
       category = OPPGOAL;
-
     }
     // own goal
     else if(shootLine.intersect(ownGoalLineGlobal) && ownGoalLineGlobal.intersect(shootLine)) 
@@ -269,22 +316,22 @@ void Simulation::categorizePosition(
       category = OWNGOAL;
     }
     //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-    else if(globalBallPosition.x > getFieldInfo().xPosOpponentGroundline)
+    else if(globalBallEndPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;
     }
     //Own Groundline out -  an der seite wo raus geht
-    else if(globalBallPosition.x < getFieldInfo().xPosOwnGroundline)
+    else if(globalBallEndPosition.x < getFieldInfo().xPosOwnGroundline)
     {
       category = OWNOUT;
     }
     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(globalBallPosition.y > getFieldInfo().yPosLeftSideline )
+    else if(globalBallEndPosition.y > getFieldInfo().yPosLeftSideline )
     {  
       category = LEFTOUT;
     }
     //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(globalBallPosition.y < getFieldInfo().yPosRightSideline)
+    else if(globalBallEndPosition.y < getFieldInfo().yPosRightSideline)
     { 
       category = RIGHTOUT;
     }
@@ -296,14 +343,14 @@ void Simulation::categorizePosition(
 //correction of distance in percentage, angle in degrees
 Vector2d Simulation::Action::predict(const Vector2d& ball) const
 {
-  double gforce = 9.80665e3; // mm/s/s
+  double gforce = Math::g*1e3; // mm/s^2
   double speed = action_speed + Math::sampleNormalDistribution(action_speed_std);
   double distance = speed*speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
   double angle = action_angle + Math::sampleNormalDistribution(action_angle_std); 
   Vector2d noisyAction(distance, 0.0);
   noisyAction.rotate(angle);
 
-return ball + noisyAction;
+  return ball + noisyAction;
 }
 
 //calcualte according to the rules, without the roboter position, the ball position
@@ -367,12 +414,12 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 
         if(point.x-1000 < getFieldInfo().xThrowInLineOwn)
         {
-        point.x = getFieldInfo().xThrowInLineOwn;
+          point.x = getFieldInfo().xThrowInLineOwn;
         } else
         { 
-         point.x -= 1000;
+          point.x -= 1000;
         }
-      return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
+        return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
       }
   }
 }

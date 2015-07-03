@@ -67,6 +67,7 @@ public:
   // goal
   double goalWidth;
   double goalHeight;
+  double goalDepth;
   double goalpostRadius;
 
 
