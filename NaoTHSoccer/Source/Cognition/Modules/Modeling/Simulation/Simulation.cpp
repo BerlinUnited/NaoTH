@@ -6,7 +6,6 @@
 
 #include "Simulation.h"
 
-
 using namespace naoth;
 using namespace std;
 
@@ -385,9 +384,9 @@ size_t Simulation::decide(
 Vector2d Simulation::Action::predict(const Vector2d& ball) const
 {
   double gforce = Math::g*1e3; // mm/s^2
-  double speed = action_speed + Math::sampleNormalDistribution(action_speed_std);
+  double speed = Math::generateGaussianNoise(action_speed_std, action_speed);
   double distance = speed*speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-  double angle = action_angle + Math::sampleNormalDistribution(action_angle_std); 
+  double angle = Math::generateGaussianNoise(action_angle_std, action_angle); 
   Vector2d noisyAction(distance, 0.0);
   noisyAction.rotate(angle);
 
