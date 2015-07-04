@@ -252,6 +252,7 @@ size_t Simulation::decide(
   const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences
 ) const
 {
+  // TAKE CARE: This assumes that none is the first action!
   size_t best_action = 0;
 
   // #### FILTER ####
