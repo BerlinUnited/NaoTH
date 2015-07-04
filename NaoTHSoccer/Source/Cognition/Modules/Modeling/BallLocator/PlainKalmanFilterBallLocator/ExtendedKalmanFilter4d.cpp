@@ -53,6 +53,8 @@ void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
 
     x = x_pre;
     P = P_pre;
+
+    updateEllipse();
 }
 
 void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_Function_H& h)
@@ -97,6 +99,8 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_F
 
     x = x_corr;
     P = P_corr;
+
+    updateEllipse();
 }
 
 //--- setter ---//
@@ -134,4 +138,32 @@ const Eigen::Matrix2d& ExtendedKalmanFilter4d::getMeasurementCovariance() const
 Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(const Measurement_Function_H& h) const
 {
     return h(x(0),x(2));
+}
+
+void ExtendedKalmanFilter4d::updateEllipse()
+{
+    Eigen::EigenSolver< Eigen::Matrix<double,2,2> > es;
+
+    Eigen::Matrix2d loc_cov;
+
+    loc_cov << P(0,0), P(0,2),
+               P(2,0), P(2,2);
+
+    es.compute(loc_cov,true);
+
+    if(std::abs(es.eigenvalues()[0]) > std::abs(es.eigenvalues()[1]))
+    {
+        ellipse.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse.major = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse.angle = std::atan2(es.eigenvectors()(1,1).real(),es.eigenvectors()(0,1).real());
+    } else {
+        ellipse.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse.major = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse.angle = std::atan2(es.eigenvectors()(1,0).real(),es.eigenvectors()(0,0).real());
+    }
+}
+
+const Ellipse2d& ExtendedKalmanFilter4d::getEllipse() const
+{
+    return ellipse;
 }

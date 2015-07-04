@@ -94,7 +94,7 @@ private:
 
     const double epsilon; // 10e-6
     double distanceThreshold;
-    double stdThreshold;
+    double area95Threshold;
 
     //double ballMass;
     double c_RR;
@@ -132,7 +132,7 @@ private:
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0045;
             PARAMETER_REGISTER(distanceThreshold) = 0.17453292519;
-            PARAMETER_REGISTER(stdThreshold) = 500;
+            PARAMETER_REGISTER(area95Threshold) = 1000*1000;
 
             syncWithConfig();
         }
@@ -153,7 +153,7 @@ private:
         //double ballMass;
         double c_RR;
         double distanceThreshold;
-        double stdThreshold;
+        double area95Threshold;
     } kfParameters;
 
     Measurement_Function_H h;

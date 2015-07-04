@@ -64,6 +64,7 @@ void PlainKalmanFilterBallLocator::execute()
             // needed if a new filter has to be created
             x = getBallPerceptTop().bearingBasedOffsetOnField.x;
             y = getBallPerceptTop().bearingBasedOffsetOnField.y;
+
         } else {
 
             Vector2d angles = CameraGeometry::angleToPointInImage(getCameraMatrix(),getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
@@ -80,6 +81,7 @@ void PlainKalmanFilterBallLocator::execute()
             // needed if a new filter has to be created
             x = getBallPercept().bearingBasedOffsetOnField.x;
             y = getBallPercept().bearingBasedOffsetOnField.y;
+
         }
 
         if(filter.size() == 0) {
@@ -130,7 +132,7 @@ void PlainKalmanFilterBallLocator::execute()
                 Eigen::Vector2d predicted_measurement;
                 predicted_measurement = (*bestPredictor).getStateInMeasurementSpace(h);
 
-                PLOT("PlainKalmanFilterBallLocator:Innovation:x",   z(0)-predicted_measurement(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:x", z(0)-predicted_measurement(0));
                 PLOT("PlainKalmanFilterBallLocator:Innovation:y", z(1)-predicted_measurement(1));
 
                 (*bestPredictor).update(z,h);
@@ -139,14 +141,14 @@ void PlainKalmanFilterBallLocator::execute()
     }
 
     // delete some filter if they are to bad
-    std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
-    while(iter != filter.end()){
-        double std_x = std::sqrt((*iter).getProcessCovariance()(0,0));
-        double std_y = std::sqrt((*iter).getProcessCovariance()(2,2));
-        if((std_x > stdThreshold) || (std_y > stdThreshold)){
-            filter.erase(iter);
-        } else {
-            iter++;
+    if(filter.size() != 1) {
+        std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
+        while(iter != filter.end()){
+            if((*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI > area95Threshold){
+                filter.erase(iter);
+            } else {
+                iter++;
+            }
         }
     }
 
@@ -154,10 +156,10 @@ void PlainKalmanFilterBallLocator::execute()
     {
         // find best model
         std::vector<ExtendedKalmanFilter4d>::iterator model = filter.begin();
-        double evalue = (*model).getProcessCovariance()(0,0)+(*model).getProcessCovariance()(2,2);
+        double evalue = (*model).getEllipse().major * (*model).getEllipse().minor *M_PI;
 
         for(std::vector<ExtendedKalmanFilter4d>::iterator iter = model; iter != filter.end(); iter++){
-            double temp = (*iter).getProcessCovariance()(0,0)+(*iter).getProcessCovariance()(2,2);
+            double temp = (*iter).getEllipse().major * (*iter).getEllipse().minor *M_PI;;
             if(temp < evalue){
                 evalue = temp;
                 model = iter;
@@ -187,18 +189,16 @@ void PlainKalmanFilterBallLocator::execute()
         getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
         getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-        // TODO: decide whether model is valid depending on P or time
-        // e.g. if (max, min, std)
-
-        if(getBallPercept().ballWasSeen)
+        if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
         {
             getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
         }
 
-        if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0) // 10s
+        if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0
+           || (*model).getEllipse().major * (*model).getEllipse().minor * M_PI > area95Threshold) // 10s
         {
-            //reset(newPercept);
-            getBallModel().valid = false; // model is not valid enymore after 10s
+            // model is not valid enymore after 10s or if the best model does not match the threshold
+            getBallModel().valid = false;
         }
         else
         {
@@ -316,17 +316,23 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     Eigen::Vector4d newStateX;
     newStateX << location.x, velocity.x, location.y, velocity.y;
 
+    // rotate P?
+
     filter.setState(newStateX);
 }
 
 void PlainKalmanFilterBallLocator::doDebugRequest()
 {
-    if(getBallPercept().ballWasSeen) {
+    if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
         //to check correctness of the prediction
         DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
           FIELD_DRAWING_CONTEXT;
           PEN("FF0000", 10);
-          CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+          if(getBallPercept().ballWasSeen) {
+              CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+          } else {
+              CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, getBallPerceptTop().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
+          }
         );
     }
 
@@ -355,15 +361,13 @@ void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
 void PlainKalmanFilterBallLocator::drawFiltersOnField() {
     FIELD_DRAWING_CONTEXT;
 
-    Eigen::EigenSolver< Eigen::Matrix<double,2,2> > es;
-
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
             if(bestModel == &(*iter))
             {
-                if(getBallPercept().ballWasSeen)
+                if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
                     PEN("FF9900", 20);
                 else
                     PEN("0099FF", 20);
@@ -376,58 +380,20 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() {
 
         const Eigen::Vector4d& state = (*iter).getState();
 
+        const Ellipse2d& ellipse = (*iter).getEllipse();
+
         CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
         ARROW( state(0), state(2),
                state(0)+state(1),
                state(2)+state(3));
 
-        const Eigen::Matrix4d& P = (*iter).getProcessCovariance();
-
-        Eigen::Matrix2d loc_cov;
-
-        loc_cov << P(0,0), P(0,2),
-                   P(2,0), P(2,2);
-
-        es.compute(loc_cov,true);
-
-        Eigen::MatrixXcd eVectors = es.eigenvectors();
-
         PEN("00FFFF", 20);
-
-        LINE(state(0) - eVectors(0,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
-             state(2) - eVectors(1,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
-             state(0) + eVectors(0,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])),
-             state(2) + eVectors(1,0).real() * std::sqrt(std::abs(es.eigenvalues()[0])));
-
-        LINE(state(0) - eVectors(0,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
-             state(2) - eVectors(1,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
-             state(0) + eVectors(0,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])),
-             state(2) + eVectors(1,1).real() * std::sqrt(std::abs(es.eigenvalues()[1])));
-
-        double minorAbs, majorAbs, angle;
-
-        if(std::abs(es.eigenvalues()[0]) > std::abs(es.eigenvalues()[1]))
-        {
-            minorAbs = std::sqrt(std::abs(es.eigenvalues()[1]));
-            majorAbs = std::sqrt(std::abs(es.eigenvalues()[0]));
-            angle    = std::atan2(eVectors(1,1).real(),eVectors(0,1).real());
-        } else {
-            minorAbs = std::sqrt(std::abs(es.eigenvalues()[0]));
-            majorAbs = std::sqrt(std::abs(es.eigenvalues()[1]));
-            angle    = std::atan2(std::abs(eVectors(1,0)),std::abs(eVectors(0,0)));
-        }
 
         OVAL_ROTATED(state(0),
                      state(2),
-                     minorAbs*2.0,
-                     majorAbs*2.0,
-                     angle);
-
-        // draw the distribution
-        // PEN("00FFFF", 20); // türkis, location
-        // OVAL(state(0), state(2), std::sqrt(P(0,0)), std::sqrt(P(2,2)));
-        // PEN("FF00FF", 20); // pink, velocity
-        // OVAL(state(0), state(2), std::sqrt(P(1,1)), std::sqrt(P(3,3)));
+                     ellipse.minor,
+                     ellipse.major,
+                     ellipse.angle);
     }
 }
 
@@ -446,7 +412,7 @@ void PlainKalmanFilterBallLocator::reloadParameters()
     // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
     distanceThreshold = kfParameters.distanceThreshold;
-    stdThreshold      = kfParameters.stdThreshold;
+    area95Threshold      = kfParameters.area95Threshold;
 
     // update existing filters with new process and measurement noise
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;

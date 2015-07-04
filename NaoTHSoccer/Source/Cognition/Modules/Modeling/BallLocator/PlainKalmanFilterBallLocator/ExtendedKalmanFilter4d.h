@@ -22,6 +22,12 @@
 
 #include "MeasurementFunctions.h"
 
+struct Ellipse2d{
+    double angle;
+    double minor;
+    double major;
+};
+
 class ExtendedKalmanFilter4d
 {
 public:
@@ -44,6 +50,12 @@ public:
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
     Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
+
+    const Ellipse2d& getEllipse() const;
+
+private:
+
+    void updateEllipse();
 
 private:
 
@@ -68,6 +80,7 @@ private:
     // kalman gain
     Eigen::Matrix<double, 4,2> K;
 
+    Ellipse2d ellipse;
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H
