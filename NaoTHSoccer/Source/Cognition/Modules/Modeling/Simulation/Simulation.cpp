@@ -166,14 +166,48 @@ void Simulation::execute()
     // if there are goals, the best action is the one with the most goals
     if(actionsGoals.size() > 0)
     {
+      // find number of goals for best action(s)
       int mostGoals = 0;
       for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
       {
         if(it->second > mostGoals)
         {
-          best_action = it->first;
           mostGoals = it->second;
         }
+      }
+      // now check how many actions lead to this number of goals
+      std::vector<size_t> bestActions;
+      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
+      {
+        if(it->second == mostGoals)
+        {
+          bestActions.push_back(it->first);
+        }
+      }
+      if(bestActions.size() > 1)
+      {
+        // find the action with the most goals and the best potential field
+        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL
+        best_action = bestActions[0];
+        double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+        for(std::vector<size_t>::iterator it = bestActions.begin(); it != bestActions.end(); it++)
+        {
+          double sumPotential = 0.0;
+          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+          {
+            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
+          }
+          // again a static cast because of size_t as I don't know a better solution
+          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+          if(sumPotential < bestValue)
+          {
+            best_action = *it;
+            bestValue = sumPotential;
+          }
+        }
+      } else
+      {
+        best_action = bestActions[0];
       }
     } else // else choose the best mean of the potential field values
     {
@@ -247,7 +281,6 @@ void Simulation::categorizePosition(
   
   Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
   Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
-
 
   vector<Math::LineSegment> goalBackSides;
   goalBackSides.reserve(3);
