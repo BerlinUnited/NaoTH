@@ -335,7 +335,7 @@ void Simulation::categorizePosition(
     { 
       category = RIGHTOUT;
     }
-    CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(*ballPosition, category);
+    CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
   }
 }
