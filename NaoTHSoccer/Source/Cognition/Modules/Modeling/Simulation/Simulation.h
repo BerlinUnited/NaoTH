@@ -175,7 +175,7 @@ private:
 
   std::vector<Action> action_local;
 
-  void simConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
+  void simulateConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
 
   size_t decide(const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences) const;
 

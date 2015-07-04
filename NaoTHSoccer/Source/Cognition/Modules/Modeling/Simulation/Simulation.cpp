@@ -53,7 +53,8 @@ void Simulation::execute()
   {
     return;
   }
- 
+
+  // draw the ball
   DEBUG_REQUEST("Simulation:draw_ball",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
@@ -67,7 +68,7 @@ void Simulation::execute()
   for(size_t i=0; i < action_local.size(); i++)
   {
     std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-    simConsequences(action_local[i], categorizedBallPositionResults);
+    simulateConsequences(action_local[i], categorizedBallPositionResults);
     actionsConsequences[i] = categorizedBallPositionResults;
   }
    
@@ -119,25 +120,14 @@ void Simulation::execute()
 
 }//end execute
 
-void Simulation::simConsequences(
+void Simulation::simulateConsequences(
   const Action& action,
   std::vector<CategorizedBallPosition>& categorizedBallPositions
   ) const
 { 
+  // just as a safety measure
   categorizedBallPositions.clear();
   categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
-  // calculate the opponent goal line
-  Vector2d oppGoalDir = (getFieldInfo().opponentGoalPostRight - getFieldInfo().opponentGoalPostLeft).normalize();
-  Vector2d oppLeftEndpoint = getFieldInfo().opponentGoalPostLeft + oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Vector2d oppRightEndpoint = getFieldInfo().opponentGoalPostRight - oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Math::LineSegment oppGoalLineGlobal(oppLeftEndpoint, oppRightEndpoint);
-
-  DEBUG_REQUEST("Simulation:OppGoal",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF69B4", 7);
-    LINE(oppGoalLineGlobal.begin().x,oppGoalLineGlobal.begin().y,
-         oppGoalLineGlobal.end().x,oppGoalLineGlobal.end().y);
-  );
 
   // calculate the own goal line
   Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
@@ -145,16 +135,18 @@ void Simulation::simConsequences(
   Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
   Math::LineSegment ownGoalLineGlobal(ownLeftEndpoint, ownRightEndpoint);
 
+  // draw own goal line
   DEBUG_REQUEST("Simulation:OwnGoal",
     FIELD_DRAWING_CONTEXT;
     PEN("DADADA", 7);
     LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
-  
+
+  // calculate opponent goal lines and box
   Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
   Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
-
+  
   vector<Math::LineSegment> goalBackSides;
   goalBackSides.reserve(3);
   goalBackSides.push_back(Math::LineSegment(oppGoalBackLeft, oppGoalBackRight));
@@ -166,10 +158,9 @@ void Simulation::simConsequences(
   // now generate predictions and categorize
   for(size_t j=0; j < theParameters.numParticles; j++) 
   {
+    // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
     Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
-
-    //Schusslinie
     Math::LineSegment shootLine(globalBallStartPosition, globalBallEndPosition);
 
     // collide with goal
@@ -185,10 +176,12 @@ void Simulation::simConsequences(
       }
     }
 
+    // if there are collisions with the back goal lines, calulate where the ball will stop
     if(collisionWithGoal) {
       shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(t_min-getFieldInfo().ballRadius));
       globalBallEndPosition = shootLine.end();
       
+      // draw balls and goal box if there are collisions
       DEBUG_REQUEST("Simulation:draw_goal_collisions",
         FIELD_DRAWING_CONTEXT;
       
@@ -205,6 +198,7 @@ void Simulation::simConsequences(
     }
 
 
+    // now categorize the position
     BallPositionCategory category = INFIELD;
     // inside field
     if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
@@ -242,6 +236,7 @@ void Simulation::simConsequences(
       category = RIGHTOUT;
     }
 
+    // save the calculated end position and category, i.e., the consequence
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
   }
