@@ -384,9 +384,9 @@ size_t Simulation::decide(
 Vector2d Simulation::Action::predict(const Vector2d& ball) const
 {
   double gforce = Math::g*1e3; // mm/s^2
-  double speed = Math::generateGaussianNoise(action_speed_std, action_speed);
+  double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
   double distance = speed*speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-  double angle = Math::generateGaussianNoise(action_angle_std, action_angle); 
+  double angle = Math::generateGaussianNoise(action_angle, action_angle_std); 
   Vector2d noisyAction(distance, 0.0);
   noisyAction.rotate(angle);
 
