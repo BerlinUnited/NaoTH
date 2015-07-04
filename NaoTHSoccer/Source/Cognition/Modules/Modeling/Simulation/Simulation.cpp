@@ -113,9 +113,9 @@ void Simulation::execute()
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
-    PEN("FF69B4", 7);
+    PEN("FF69B4", 35);
     std::string name = action_local[best_action].name();
-    TEXT_DRAWING(getRobotPose().translation.x, getRobotPose().translation.y, name);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
