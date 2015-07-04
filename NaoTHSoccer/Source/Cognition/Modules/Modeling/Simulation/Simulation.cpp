@@ -154,49 +154,54 @@ void Simulation::simulateConsequences(
   goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, oppGoalBackRight));
 
   Geometry::Rect2d oppGoalBox(oppGoalBackRight, getFieldInfo().opponentGoalPostLeft);
+   
+  // current ball position
+  Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
   
   // now generate predictions and categorize
   for(size_t j=0; j < theParameters.numParticles; j++) 
   {
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
-    Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
     Math::LineSegment shootLine(globalBallStartPosition, globalBallEndPosition);
 
-    // collide with goal
-    double t_min = shootLine.getLength();
-    bool collisionWithGoal = false;
-    for(size_t i = 0; i < goalBackSides.size(); i++) {
-      const Math::LineSegment& side = goalBackSides[i];
-      double t = shootLine.Line::intersection(side);
+    // check if collision detection with goal has to be performed
+    if(not(getFieldInfo().fieldRect.inside(globalBallStartPosition) && getFieldInfo().fieldRect.inside(globalBallEndPosition)))
+    {
+      // collide with goal
+      double t_min = shootLine.getLength();
+      bool collisionWithGoal = false;
+      for(size_t i = 0; i < goalBackSides.size(); i++) {
+        const Math::LineSegment& side = goalBackSides[i];
+        double t = shootLine.Line::intersection(side);
 
-      if(t >= 0 && t < t_min && side.intersect(shootLine)) {
-        t_min = t;
-        collisionWithGoal = true;
+        if(t >= 0 && t < t_min && side.intersect(shootLine)) {
+          t_min = t;
+          collisionWithGoal = true;
+        }
+      }
+
+      // if there are collisions with the back goal lines, calulate where the ball will stop
+      if(collisionWithGoal) {
+        shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(t_min-getFieldInfo().ballRadius));
+        globalBallEndPosition = shootLine.end();
+        
+        // draw balls and goal box if there are collisions
+        DEBUG_REQUEST("Simulation:draw_goal_collisions",
+          FIELD_DRAWING_CONTEXT;
+        
+          PEN("000000", 10);
+          BOX(oppGoalBox.min().x,oppGoalBox.min().y,oppGoalBox.max().x,oppGoalBox.max().y);
+
+          if(oppGoalBox.inside(globalBallEndPosition)) {
+            PEN("0000AA66", 1);
+          } else {
+            PEN("FF00AA66", 1);
+          }
+          FILLOVAL(shootLine.end().x, shootLine.end().y, 50, 50);
+        );
       }
     }
-
-    // if there are collisions with the back goal lines, calulate where the ball will stop
-    if(collisionWithGoal) {
-      shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(t_min-getFieldInfo().ballRadius));
-      globalBallEndPosition = shootLine.end();
-      
-      // draw balls and goal box if there are collisions
-      DEBUG_REQUEST("Simulation:draw_goal_collisions",
-        FIELD_DRAWING_CONTEXT;
-      
-        PEN("000000", 10);
-        BOX(oppGoalBox.min().x,oppGoalBox.min().y,oppGoalBox.max().x,oppGoalBox.max().y);
-
-        if(oppGoalBox.inside(globalBallEndPosition)) {
-          PEN("0000AA66", 1);
-        } else {
-          PEN("FF00AA66", 1);
-        }
-        FILLOVAL(shootLine.end().x, shootLine.end().y, 50, 50);
-      );
-    }
-
 
     // now categorize the position
     BallPositionCategory category = INFIELD;
