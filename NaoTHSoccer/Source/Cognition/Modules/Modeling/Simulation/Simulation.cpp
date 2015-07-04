@@ -64,7 +64,7 @@ void Simulation::execute()
 
   size_t best_action = 0;
   
-  std::map<size_t, std::vector<CategorizedBallPosition> > actionsConsequences;
+  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences(action_local.size());
   for(size_t i=0; i < action_local.size(); i++)
   {
     // physics simulator
@@ -78,7 +78,7 @@ void Simulation::execute()
     std::vector<CategorizedBallPosition> categorizedBallPositionResults;
     categorizePosition(ballPositionResults, categorizedBallPositionResults);
 
-    actionsConsequences.insert(std::pair<size_t, std::vector<CategorizedBallPosition> >(i, categorizedBallPositionResults));
+    actionsConsequences[i] = categorizedBallPositionResults;
   }
    
   // plot projected actions
