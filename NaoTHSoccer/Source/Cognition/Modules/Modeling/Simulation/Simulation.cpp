@@ -162,6 +162,8 @@ void Simulation::simulateConsequences(
   // current ball position
   Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
   
+  // virtual ultrasound obstacle line
+  Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
   // now generate predictions and categorize
   for(size_t j=0; j < theParameters.numParticles; j++) 
   {
@@ -207,11 +209,16 @@ void Simulation::simulateConsequences(
         );
       }
     }
-
+    //Obstacle Detection
+    bool obstacleCollision = getObstacleModel().frontDistance < 400 && getObstacleModel().blockedTime >100;
     // now categorize the position
     BallPositionCategory category = INFIELD;
+    if(obstacleCollision && obstacleLine.intersect(shootLine) && shootLine.intersect(obstacleLine))
+    { 
+      category = COLLISION;
+    }
     // inside field
-    if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
+    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
     {
       category = INFIELD;
     }
@@ -245,7 +252,6 @@ void Simulation::simulateConsequences(
     { 
       category = RIGHTOUT;
     }
-
     // save the calculated end position and category, i.e., the consequence
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);

@@ -19,6 +19,7 @@
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -42,7 +43,7 @@ BEGIN_DECLARE_MODULE(Simulation)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
   REQUIRE(PlayerInfo)
-
+  REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
@@ -155,7 +156,8 @@ public:
     LEFTOUT,
     RIGHTOUT,
     OPPGOAL,
-    OWNGOAL
+    OWNGOAL,
+    COLLISION
   };
 
   class CategorizedBallPosition
