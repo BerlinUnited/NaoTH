@@ -6,6 +6,7 @@
 
 #include "Simulation.h"
 
+
 using namespace naoth;
 using namespace std;
 
@@ -31,6 +32,8 @@ Simulation::Simulation()
   action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
   action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
   action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+
+  actionsConsequences.resize(action_local.size());
 }
 
 Simulation::~Simulation(){}
@@ -46,6 +49,8 @@ void Simulation::execute()
     action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
     action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
     action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+
+    actionsConsequences.resize(action_local.size());
   );
 
   //Proceed with Calculations only if ball is seen in the last 1 second
@@ -64,13 +69,11 @@ void Simulation::execute()
 
 
   // simulate the consequences for all actions
-  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences(action_local.size());
-  for(size_t i=0; i < action_local.size(); i++)
-  {
-    std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-    simulateConsequences(action_local[i], categorizedBallPositionResults);
-    actionsConsequences[i] = categorizedBallPositionResults;
+  STOPWATCH_START("Simulation:simulateConsequences");
+  for(size_t i=0; i < action_local.size(); i++) {
+    simulateConsequences(action_local[i], actionsConsequences[i]);
   }
+  STOPWATCH_STOP("Simulation:simulateConsequences");
    
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget",
@@ -103,7 +106,9 @@ void Simulation::execute()
   );
   
   // now decide which action to execture given their consequences
+  STOPWATCH_START("Simulation:decide");
   size_t best_action = decide(actionsConsequences);
+  STOPWATCH_STOP("Simulation:decide");
 
   getKickActionModel().bestAction = action_local[best_action].id();
 
@@ -167,7 +172,7 @@ void Simulation::simulateConsequences(
 
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
-    if(not(getFieldInfo().fieldRect.inside(globalBallEndPosition) && getFieldInfo().fieldRect.inside(globalBallStartPosition)))
+    if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
     {
       // collide with goal
       double t_min = shootLine.getLength();

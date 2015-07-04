@@ -27,6 +27,7 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
+#include <Representations/Debug/Stopwatch.h>
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(Simulation)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
+  PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
@@ -174,6 +176,8 @@ public:
 private:
 
   std::vector<Action> action_local;
+  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences;
+
 
   void simulateConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
 
