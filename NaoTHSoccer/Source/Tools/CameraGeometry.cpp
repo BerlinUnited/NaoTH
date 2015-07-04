@@ -25,6 +25,19 @@ Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cam
   return pixelVector;
 }//end imagePixelCameraCoords
 
+Vector2d CameraGeometry::relativePointToCameraAngle( 
+  const CameraMatrix& cameraMatrix,
+  const CameraInfo& cameraInfo,
+  const Vector3d& point)
+{
+  // vector: O ---> point (in camera coordinates)
+  Vector3d vectorToPoint = cameraMatrix.invert()*point;
+
+  return Vector2d(
+      atan2(vectorToPoint.y, vectorToPoint.x), // angle horizontal
+      atan2(vectorToPoint.z, vectorToPoint.x) // angle vertical
+      );
+}//end relativePointToImageDouble
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
@@ -78,6 +91,23 @@ Vector2<double> CameraGeometry::angleToPointInImage( const CameraMatrix& cameraM
       atan2(direction.z, direction.x) // angle vertical
       );
 }//end angleToPointInImage
+
+
+Vector2<double> CameraGeometry::pixelToAngles( const CameraMatrix& cameraMatrix,
+                                        const naoth::CameraInfo& cameraInfo,
+                                        const double imgX,
+                                        const double imgY)
+{
+  Vector3d pixelVector;
+  pixelVector.x = cameraInfo.getFocalLength();
+  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
+  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
+
+  return Vector2d(
+      atan2(pixelVector.y, pixelVector.x), // angle horizontal
+      atan2(pixelVector.z, pixelVector.x) // angle vertical
+      );
+}
 
 
 bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 

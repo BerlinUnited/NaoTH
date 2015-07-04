@@ -38,10 +38,6 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 
   REQUIRE(FieldInfo)
 
-//  PROVIDE(DebugModify)
-//  PROVIDE(DebugPlot)
-//  PROVIDE(DebugParameterList)
-
 //  REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
@@ -49,11 +45,6 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 // for preview stuff
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
-
-// cooridinate change
-//  REQUIRE(CameraMatrix)
-//  REQUIRE(CameraMatrixTop)
-//  REQUIRE(SituationStatus)
 
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
@@ -91,6 +82,7 @@ private:
 
 private:
     std::vector<ExtendedKalmanFilter4d> filter;
+    std::vector<ExtendedKalmanFilter4d>::const_iterator bestModel;
 
     const double epsilon; // 10e-6
     double distanceThreshold;
@@ -99,16 +91,14 @@ private:
     //double ballMass;
     double c_RR;
 
-    const ExtendedKalmanFilter4d* bestModel;
-
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
-    void predict(ExtendedKalmanFilter4d& filter, double dt);
+    void predict(ExtendedKalmanFilter4d& filter, double dt) const;
 
     /*    DEBUG STUFF    */
     void doDebugRequest();
-    void doDebugRequestBeforPredictionAndUpdate();
-    void drawFiltersOnField();
+    void doDebugRequestBeforPredictionAndUpdate() const;
+    void drawFiltersOnField() const;
     void reloadParameters();
 
     class KFParameters:  public ParameterList
@@ -121,8 +111,8 @@ private:
             PARAMETER_REGISTER(processNoiseStdQ10) = 0;
             PARAMETER_REGISTER(processNoiseStdQ11) = 3;
 
-            PARAMETER_REGISTER(measurementNoiseStdR00) = 0.01745329251; //[rad]
-            PARAMETER_REGISTER(measurementNoiseStdR11) = 0.01745329251; //[rad]
+            PARAMETER_REGISTER(measurementNoiseStdR00) = Math::fromDegrees(1); //[rad]
+            PARAMETER_REGISTER(measurementNoiseStdR11) = Math::fromDegrees(1); //[rad]
 
             PARAMETER_REGISTER(initialStateStdP00) = 250;
             PARAMETER_REGISTER(initialStateStdP01) = 0;
@@ -131,7 +121,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0045;
-            PARAMETER_REGISTER(distanceThreshold) = 0.17453292519;
+            PARAMETER_REGISTER(distanceThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(area95Threshold) = 1000*1000;
 
             syncWithConfig();

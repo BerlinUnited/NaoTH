@@ -1,6 +1,5 @@
 #include "PlainKalmanFilterBallLocator.h"
 
-#include <cmath>
 #include <Eigen/Eigenvalues>
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
@@ -29,7 +28,7 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 void PlainKalmanFilterBallLocator::execute()
 {
 //     apply odometry on the filter state, to keep it in the robot's local coordinate system
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
     }
 
@@ -48,26 +47,10 @@ void PlainKalmanFilterBallLocator::execute()
         Eigen::Vector2d z;
         double x,y;
 
-        if(!getBallPercept().ballWasSeen && getBallPerceptTop().ballWasSeen) {
-
-            Vector2d angles = CameraGeometry::angleToPointInImage(getCameraMatrixTop(),getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
-
-            z << angles.x, angles.y;
-
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
-
-            // set camera top in functional
-            h.camMat  = getCameraMatrixTop();
-            h.camInfo = getCameraInfoTop();
-
-            // needed if a new filter has to be created
-            x = getBallPerceptTop().bearingBasedOffsetOnField.x;
-            y = getBallPerceptTop().bearingBasedOffsetOnField.y;
-
-        } else {
-
-            Vector2d angles = CameraGeometry::angleToPointInImage(getCameraMatrix(),getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
+        // allways use the bottom percept if available
+        if(getBallPercept().ballWasSeen)
+        {
+            Vector2d angles = CameraGeometry::pixelToAngles(getCameraMatrix(),getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
 
             z << angles.x, angles.y;
 
@@ -81,8 +64,25 @@ void PlainKalmanFilterBallLocator::execute()
             // needed if a new filter has to be created
             x = getBallPercept().bearingBasedOffsetOnField.x;
             y = getBallPercept().bearingBasedOffsetOnField.y;
-
         }
+        else 
+        {
+            Vector2d angles = CameraGeometry::pixelToAngles(getCameraMatrixTop(),getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
+
+            z << angles.x, angles.y;
+
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
+            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
+
+            // set camera top in functional
+            h.camMat  = getCameraMatrixTop();
+            h.camInfo = getCameraInfoTop();
+
+            // needed if a new filter has to be created
+            x = getBallPerceptTop().bearingBasedOffsetOnField.x;
+            y = getBallPerceptTop().bearingBasedOffsetOnField.y;
+        }
+        
 
         if(filter.size() == 0) {
             Eigen::Vector4d newState;
@@ -92,21 +92,15 @@ void PlainKalmanFilterBallLocator::execute()
         else
         {
             // find best matching filter
-            double dist;
-
-            dist = distanceToState(filter[0],z);
-
-            dist = isnan(dist) ? std::numeric_limits<double>::infinity() : dist;
+            double dist = distanceToState(filter.front(),z);
 
             std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = filter.begin();
 
-            for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); iter++){
-                double temp;
-                temp = distanceToState(*iter,z);
+            for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); ++iter)
+            {
+                double temp = distanceToState(*iter,z);
 
-                temp = isnan(temp) ? std::numeric_limits<double>::infinity() : temp;
-
-                if(temp < dist){
+                if(temp < dist) {
                     dist = temp;
                     bestPredictor = iter;
                 }
@@ -129,45 +123,45 @@ void PlainKalmanFilterBallLocator::execute()
                 );
 
                 // debug stuff -> should be in a DEBUG_REQUEST
-                Eigen::Vector2d predicted_measurement;
-                predicted_measurement = (*bestPredictor).getStateInMeasurementSpace(h);
+                Eigen::Vector2d prediction_error;
+                prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
 
-                PLOT("PlainKalmanFilterBallLocator:Innovation:x", z(0)-predicted_measurement(0));
-                PLOT("PlainKalmanFilterBallLocator:Innovation:y", z(1)-predicted_measurement(1));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
 
                 (*bestPredictor).update(z,h);
             }
         }
-    }
+    }// end if
 
     // delete some filter if they are to bad
-    if(filter.size() != 1) {
+    if(filter.size() > 1) {
         std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
         while(iter != filter.end()){
             if((*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI > area95Threshold){
                 filter.erase(iter);
             } else {
-                iter++;
+                ++iter;
             }
         }
     }
 
-    if(filter.size() > 0)
+    // find the best model for the ball
+    if(!filter.empty())
     {
         // find best model
-        std::vector<ExtendedKalmanFilter4d>::iterator model = filter.begin();
-        double evalue = (*model).getEllipse().major * (*model).getEllipse().minor *M_PI;
+        bestModel = filter.begin();
+        double evalue = (*bestModel).getEllipse().major * (*bestModel).getEllipse().minor *M_PI;
 
-        for(std::vector<ExtendedKalmanFilter4d>::iterator iter = model; iter != filter.end(); iter++){
-            double temp = (*iter).getEllipse().major * (*iter).getEllipse().minor *M_PI;;
-            if(temp < evalue){
+        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
+            double temp = (*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI;
+            if(temp < evalue) {
                 evalue = temp;
-                model = iter;
+                bestModel = iter;
             }
         }
 
-        bestModel = &(*model);
-        const Eigen::Vector4d& x = (*model).getState();
+        const Eigen::Vector4d& x = (*bestModel).getState();
 
         // set ball model representation
         getBallModel().position.x = x(0);
@@ -195,7 +189,7 @@ void PlainKalmanFilterBallLocator::execute()
         }
 
         if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0
-           || (*model).getEllipse().major * (*model).getEllipse().minor * M_PI > area95Threshold) // 10s
+           || (*bestModel).getEllipse().major * (*bestModel).getEllipse().minor * M_PI > area95Threshold) // 10s
         {
             // model is not valid enymore after 10s or if the best model does not match the threshold
             getBallModel().valid = false;
@@ -216,10 +210,11 @@ void PlainKalmanFilterBallLocator::execute()
 
 double PlainKalmanFilterBallLocator::distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const
 {
-    return std::sqrt(((z-filter.getStateInMeasurementSpace(h)).transpose() * Eigen::Matrix2d::Identity() * (z-filter.getStateInMeasurementSpace(h)))(0,0));
+  Eigen::Vector2d diff = z-filter.getStateInMeasurementSpace(h);
+  return std::sqrt((diff.transpose() * Eigen::Matrix2d::Identity() * diff)(0,0));
 }
 
-void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt)
+void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) const
 {
     /*
         rolling resistance = rolling resitance coefficient * normal force
@@ -377,21 +372,21 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
     );
 }
 
-void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
+void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate() const
 {
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_before",
         drawFiltersOnField();
     );
 }
 
-void PlainKalmanFilterBallLocator::drawFiltersOnField() {
+void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
     FIELD_DRAWING_CONTEXT;
 
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++)
+    for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
-            if(bestModel == &(*iter))
+            if(bestModel == iter)
             {
                 if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
                     PEN("FF9900", 20);

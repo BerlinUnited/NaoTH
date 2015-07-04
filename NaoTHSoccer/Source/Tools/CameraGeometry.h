@@ -35,6 +35,9 @@ public:
                                                    const double imgX,
                                                    const double imgY);
 
+  static Vector2d relativePointToCameraAngle( const CameraMatrix& cameraMatrix,
+                                              const naoth::CameraInfo& cameraInfo,
+                                              const Vector3d& point);
 
   /**
   * the same as relativePointToImage but without rounding to int
@@ -64,6 +67,11 @@ public:
                                               const naoth::CameraInfo& cameraInfo,
                                               const double imgX,
                                               const double imgY);
+
+  static Vector2<double> pixelToAngles( const CameraMatrix& cameraMatrix,
+                                        const naoth::CameraInfo& cameraInfo,
+                                        const double imgX,
+                                        const double imgY);
 
 
   /**
