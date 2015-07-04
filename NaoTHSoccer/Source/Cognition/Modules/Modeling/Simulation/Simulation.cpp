@@ -458,7 +458,7 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 }
 
 double Simulation::evaluateAction(const Vector2d& a) const{
-  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+200, 0.0);
+  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
   Vector2d oppDiff = oppGoal - a;
 
   double oppValueX = 0.1;
