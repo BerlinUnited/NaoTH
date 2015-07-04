@@ -240,7 +240,7 @@ void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, doubl
     // deceleration has to be in opposite direction of velocity
     u <<  -x(1), -x(3);
 
-    // deceleration vector with "absoult deceleration" (length of vector) of deceleration
+    // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
     if(u.norm() > 0){
         u.normalize();
     }
@@ -316,9 +316,35 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     Eigen::Vector4d newStateX;
     newStateX << location.x, velocity.x, location.y, velocity.y;
 
-    // rotate P?
+    // rotate P
+    double s=sin(odometryDelta.getAngle());
+    double c=cos(odometryDelta.getAngle());
+
+    Eigen::Matrix2d rotation;
+    rotation << c, -s,
+                s,  c;
+
+    Eigen::Matrix4d P = filter.getProcessCovariance();
+
+    Eigen::Matrix2d location_cov;
+    location_cov << P(0,0),P(0,2),
+                    P(2,0),P(0,0);
+
+    Eigen::Matrix2d velocity_cov;
+    velocity_cov << P(1,1),P(1,3),
+                    P(3,1),P(3,3);
+
+    location_cov = rotation * location_cov;
+    velocity_cov = rotation * velocity_cov;
+
+    Eigen::Matrix4d new_P;
+    new_P << location_cov(0,0), 0                , location_cov(0,1), 0                ,
+             0                , velocity_cov(0,0), 0                , velocity_cov(0,1),
+             location_cov(1,0), 0                , location_cov(1,1), 0                ,
+             0                , velocity_cov(1,0), 0                , velocity_cov(1,1);
 
     filter.setState(newStateX);
+    filter.setCovarianceOfState(new_P);
 }
 
 void PlainKalmanFilterBallLocator::doDebugRequest()

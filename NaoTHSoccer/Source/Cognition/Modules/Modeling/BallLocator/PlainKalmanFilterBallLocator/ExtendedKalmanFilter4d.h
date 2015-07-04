@@ -42,6 +42,7 @@ public:
 
     //--- setter ---//
     void setState(Eigen::Vector4d& state);
+    void setCovarianceOfState(const Eigen::Matrix4d& p1);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
@@ -50,8 +51,7 @@ public:
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
     Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
-
-    const Ellipse2d& getEllipse() const;
+    const Ellipse2d&       getEllipse() const;
 
 private:
 

@@ -114,6 +114,10 @@ void ExtendedKalmanFilter4d::setCovarianceOfProcessNoise(const Eigen::Matrix2d& 
     Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
 }
 
+void ExtendedKalmanFilter4d::setCovarianceOfState(const Eigen::Matrix4d& p){
+    P << p;
+}
+
 void ExtendedKalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r){
     R << r;
 }
