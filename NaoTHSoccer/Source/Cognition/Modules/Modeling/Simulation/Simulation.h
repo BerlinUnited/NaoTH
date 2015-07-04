@@ -177,6 +177,8 @@ private:
 
   void simConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
 
+  size_t decide(const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences) const;
+
   Vector2d outsideField(const Vector2d& relativePoint) const;
 
   double evaluateAction(const Vector2d& a) const;

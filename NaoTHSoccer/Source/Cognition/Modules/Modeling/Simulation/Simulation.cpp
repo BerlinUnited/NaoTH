@@ -62,8 +62,6 @@ void Simulation::execute()
   );
 
 
-  size_t best_action = 0;
- 
   // simulate the consequences for all actions
   std::vector<std::vector<CategorizedBallPosition> > actionsConsequences(action_local.size());
   for(size_t i=0; i < action_local.size(); i++)
@@ -102,125 +100,9 @@ void Simulation::execute()
       }
     }
   );
-
-  // #### FILTER ####
-  // now remove actions with more than threshold precentage of outs
-  // also remove actions which result in own-goals
-  std::vector<size_t> goodActions;
-  for(size_t i=0; i<action_local.size(); i++)
-  {
-    int good = 0;
-    bool ownGoal = false;
-    for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
-    {
-      if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
-      {
-        good++;
-      } else if(ballPosition->cat() == OWNGOAL)
-      {
-        ownGoal = true;
-      }
-    }
-    // if an own-goal is detected, ignore the action
-    if(ownGoal)
-    {
-      continue;
-    }
-    // check goal percentage, percentage needs to be exposed
-    // the static_cast is messy but I don't know how to get around it
-    //goal_percentage = 0.85
-    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.good_threshold_percentage)
-    {
-      goodActions.push_back(i);
-    }
-  }
-  // #### EVALUATION ####
-  // only continue evaluation if there are good actions
-  if(goodActions.size() > 0)
-  {
-    // now count the goals for the good actions
-    std::map<size_t, int> actionsGoals;
-    for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
-    {
-      int goals = 0;
-      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-      {
-        if(ballPosition->cat() == OPPGOAL)
-        {
-          goals++;
-        }
-      }
-      if(goals > 0)
-      {
-        actionsGoals.insert(std::pair<size_t, int>(*it, goals));
-      }
-    }
-    // if there are goals, the best action is the one with the most goals
-    if(actionsGoals.size() > 0)
-    {
-      // find number of goals for best action(s)
-      int mostGoals = 0;
-      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
-      {
-        if(it->second > mostGoals)
-        {
-          mostGoals = it->second;
-        }
-      }
-      // now check how many actions lead to this number of goals
-      std::vector<size_t> bestActions;
-      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
-      {
-        if(it->second == mostGoals)
-        {
-          bestActions.push_back(it->first);
-        }
-      }
-      if(bestActions.size() > 1)
-      {
-        // find the action with the most goals and the best potential field
-        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL
-        best_action = bestActions[0];
-        double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-        for(std::vector<size_t>::iterator it = bestActions.begin(); it != bestActions.end(); it++)
-        {
-          double sumPotential = 0.0;
-          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-          {
-            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
-          }
-          // again a static cast because of size_t as I don't know a better solution
-          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
-          if(sumPotential < bestValue)
-          {
-            best_action = *it;
-            bestValue = sumPotential;
-          }
-        }
-      } else
-      {
-        best_action = bestActions[0];
-      }
-    } else // else choose the best mean of the potential field values
-    {
-      double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-      for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
-      {
-        double sumPotential = 0.0;
-        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-        {
-          sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
-        }
-        // again a static cast because of size_t as I don't know a better solution
-        sumPotential /= static_cast<double>(actionsConsequences[*it].size());
-        if(sumPotential < bestValue)
-        {
-          best_action = *it;
-          bestValue = sumPotential;
-        }
-      }
-    }
-  }
+  
+  // now decide which action to execture given their consequences
+  size_t best_action = decide(actionsConsequences);
 
   getKickActionModel().bestAction = action_local[best_action].id();
 
@@ -363,6 +245,133 @@ void Simulation::simConsequences(
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
   }
+}
+
+size_t Simulation::decide(
+  const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences
+) const
+{
+  size_t best_action = 0;
+
+  // #### FILTER ####
+  // now remove actions with more than threshold precentage of outs
+  // also remove actions which result in own-goals
+  std::vector<size_t> goodActions;
+  for(size_t i=0; i<action_local.size(); i++)
+  {
+    int good = 0;
+    bool ownGoal = false;
+    for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+    {
+      if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
+      {
+        good++;
+      } else if(ballPosition->cat() == OWNGOAL)
+      {
+        ownGoal = true;
+      }
+    }
+    // if an own-goal is detected, ignore the action
+    if(ownGoal)
+    {
+      continue;
+    }
+    // check goal percentage, percentage needs to be exposed
+    // the static_cast is messy but I don't know how to get around it
+    //goal_percentage = 0.85
+    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.good_threshold_percentage)
+    {
+      goodActions.push_back(i);
+    }
+  }
+  // #### EVALUATION ####
+  // only continue evaluation if there are good actions
+  if(goodActions.size() > 0)
+  {
+    // now count the goals for the good actions
+    std::map<size_t, int> actionsGoals;
+    for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
+    {
+      int goals = 0;
+      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+      {
+        if(ballPosition->cat() == OPPGOAL)
+        {
+          goals++;
+        }
+      }
+      if(goals > 0)
+      {
+        actionsGoals.insert(std::pair<size_t, int>(*it, goals));
+      }
+    }
+    // if there are goals, the best action is the one with the most goals
+    if(actionsGoals.size() > 0)
+    {
+      // find number of goals for best action(s)
+      int mostGoals = 0;
+      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
+      {
+        if(it->second > mostGoals)
+        {
+          mostGoals = it->second;
+        }
+      }
+      // now check how many actions lead to this number of goals
+      std::vector<size_t> bestActions;
+      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
+      {
+        if(it->second == mostGoals)
+        {
+          bestActions.push_back(it->first);
+        }
+      }
+      if(bestActions.size() > 1)
+      {
+        // find the action with the most goals and the best potential field
+        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL
+        best_action = bestActions[0];
+        double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+        for(std::vector<size_t>::iterator it = bestActions.begin(); it != bestActions.end(); it++)
+        {
+          double sumPotential = 0.0;
+          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+          {
+            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
+          }
+          // again a static cast because of size_t as I don't know a better solution
+          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+          if(sumPotential < bestValue)
+          {
+            best_action = *it;
+            bestValue = sumPotential;
+          }
+        }
+      } else
+      {
+        best_action = bestActions[0];
+      }
+    } else // else choose the best mean of the potential field values
+    {
+      double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+      for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
+      {
+        double sumPotential = 0.0;
+        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+        {
+          sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
+        }
+        // again a static cast because of size_t as I don't know a better solution
+        sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+        if(sumPotential < bestValue)
+        {
+          best_action = *it;
+          bestValue = sumPotential;
+        }
+      }
+    }
+  }
+  return best_action;
 }
 
 //correction of distance in percentage, angle in degrees
