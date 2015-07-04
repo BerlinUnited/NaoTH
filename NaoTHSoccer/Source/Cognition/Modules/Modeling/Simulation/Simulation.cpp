@@ -19,6 +19,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
   DEBUG_REQUEST_REGISTER("Simulation:OppGoal","OppGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
+  DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
   
 
   getDebugParameterList().add(&theParameters);
@@ -209,8 +210,21 @@ void Simulation::simulateConsequences(
         );
       }
     }
-    //Obstacle Detection
-    bool obstacleCollision = getObstacleModel().frontDistance < 400 && getObstacleModel().blockedTime >100;
+    
+    // Obstacle Detection
+    bool obstacleCollision = false;
+    if(getObstacleModel().frontDistance < 400 && getObstacleModel().blockedTime > 100)
+    {
+      obstacleCollision = true;
+      // draw obstacle line
+      DEBUG_REQUEST("Simulation:ObstacleLine",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000", 25);
+        LINE(obstacleLine.begin().x, obstacleLine.begin().y,
+             obstacleLine.end().x, obstacleLine.end().y);
+      );
+    }
+
     // now categorize the position
     BallPositionCategory category = INFIELD;
     if(obstacleCollision && obstacleLine.intersect(shootLine) && shootLine.intersect(obstacleLine))
@@ -252,6 +266,7 @@ void Simulation::simulateConsequences(
     { 
       category = RIGHTOUT;
     }
+
     // save the calculated end position and category, i.e., the consequence
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
