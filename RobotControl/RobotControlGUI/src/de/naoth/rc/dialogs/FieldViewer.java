@@ -44,7 +44,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
 import org.freehep.graphicsio.java.JAVAExportFileType;
@@ -85,9 +84,9 @@ public class FieldViewer extends AbstractDialog
 
   private final PlotDataListener plotDataListener;
   private final LogListener logListener = new LogListener();
-  private StrokePlot strokePlot;
+  private final StrokePlot strokePlot;
 
-  private DrawingsListener drawingsListener = new DrawingsListener();
+  private final DrawingsListener drawingsListener = new DrawingsListener();
   
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
@@ -99,7 +98,6 @@ public class FieldViewer extends AbstractDialog
   {
     initComponents();
     
-    // 
     this.cbBackground.setModel(
         new javax.swing.DefaultComboBoxModel(
         new Drawable[] 
@@ -130,22 +128,19 @@ public class FieldViewer extends AbstractDialog
               }
               
               fieldCanvas.getDrawingList().add(drawing);
-              FieldViewer.this.repaint();
+              fieldCanvas.repaint();
             }
         }
     });
-  }
-
-  @Init
-  @Override
-  public void init()
-  {
+    
+    // intialize the field
     this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
 
     this.strokePlot = new StrokePlot(300);
   }
+
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -360,7 +355,6 @@ private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//G
   
   ExportDialog export = new ExportDialog("FieldViewer", false);
   
-  
   // add the image types for export
   export.addExportFileType(new SVGExportFileType());
   export.addExportFileType(new PlainPDFExportFileType());
@@ -432,8 +426,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         } else {
             Plugin.logFileEventManager.removeListener(logListener);
         }
-         
-       
     }//GEN-LAST:event_btLogActionPerformed
 
   
@@ -467,8 +459,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
 
         fieldCanvas.getDrawingList().add(drawingCollection);
-
-        repaint();
+        fieldCanvas.repaint();
       }
     }
 
@@ -500,10 +491,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                 } catch (InvalidProtocolBufferException ex) {
                     Helper.handleException(ex);
                 }
-                
             }
         }
-
     }
 
   class PlotDataListener implements ObjectListener<Plots>
@@ -558,7 +547,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       {
         btImageProjection.setSelected(false);
         Plugin.imageManager.removeListener(this);
-      }//end errorOccured
+      }
   }//end ImageListener
 
 
@@ -596,7 +585,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
-  }//end dispose
+  }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btAntializing;
