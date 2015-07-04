@@ -63,21 +63,13 @@ void Simulation::execute()
 
 
   size_t best_action = 0;
-  
+ 
+  // simulate the consequences for all actions
   std::vector<std::vector<CategorizedBallPosition> > actionsConsequences(action_local.size());
   for(size_t i=0; i < action_local.size(); i++)
   {
-    // physics simulator
-    std::vector<Vector2d> ballPositionResults;
-    // this size needs to be exposed
-    for(size_t j=0; j < theParameters.numParticles; j++) {
-      ballPositionResults.push_back(action_local[i].predict(getBallModel().positionPreview));
-    }
-      
-    // categorize positions
     std::vector<CategorizedBallPosition> categorizedBallPositionResults;
-    categorizePosition(ballPositionResults, categorizedBallPositionResults);
-
+    simConsequences(action_local[i], categorizedBallPositionResults);
     actionsConsequences[i] = categorizedBallPositionResults;
   }
    
@@ -245,13 +237,13 @@ void Simulation::execute()
 
 }//end execute
 
-void Simulation::categorizePosition(
-  const std::vector<Vector2d>& ballPositions, 
+void Simulation::simConsequences(
+  const Action& action,
   std::vector<CategorizedBallPosition>& categorizedBallPositions
   ) const
 { 
-  // HINT: categorizedBallPositions is not necessarily empty here! Maybe we should clear it
-  
+  categorizedBallPositions.clear();
+  categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
   // calculate the opponent goal line
   Vector2d oppGoalDir = (getFieldInfo().opponentGoalPostRight - getFieldInfo().opponentGoalPostLeft).normalize();
   Vector2d oppLeftEndpoint = getFieldInfo().opponentGoalPostLeft + oppGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
@@ -277,7 +269,6 @@ void Simulation::categorizePosition(
     LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
-
   
   Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
   Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
@@ -290,10 +281,10 @@ void Simulation::categorizePosition(
 
   Geometry::Rect2d oppGoalBox(oppGoalBackRight, getFieldInfo().opponentGoalPostLeft);
   
-  // now loop through all positions
-  for(std::vector<Vector2d>::const_iterator ballPosition = ballPositions.begin(); ballPosition != ballPositions.end(); ++ballPosition)
+  // now generate predictions and categorize
+  for(size_t j=0; j < theParameters.numParticles; j++) 
   {
-    Vector2d globalBallEndPosition = getRobotPose() * (*ballPosition);
+    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
     Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
 
     //Schusslinie
@@ -368,6 +359,7 @@ void Simulation::categorizePosition(
     { 
       category = RIGHTOUT;
     }
+
     CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
     categorizedBallPositions.push_back(categorizedBallPosition);
   }

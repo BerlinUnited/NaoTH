@@ -175,7 +175,7 @@ private:
 
   std::vector<Action> action_local;
 
-  void categorizePosition(const std::vector<Vector2d>& ballPositionResults, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
+  void simConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
 
   Vector2d outsideField(const Vector2d& relativePoint) const;
 
