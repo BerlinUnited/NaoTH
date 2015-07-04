@@ -166,7 +166,8 @@ void Simulation::simulateConsequences(
     Math::LineSegment shootLine(globalBallStartPosition, globalBallEndPosition);
 
     // check if collision detection with goal has to be performed
-    if(not(getFieldInfo().fieldRect.inside(globalBallStartPosition) && getFieldInfo().fieldRect.inside(globalBallEndPosition)))
+    // if the ball start and end positions are inside of the field, you don't need to check
+    if(not(getFieldInfo().fieldRect.inside(globalBallEndPosition) && getFieldInfo().fieldRect.inside(globalBallStartPosition)))
     {
       // collide with goal
       double t_min = shootLine.getLength();
