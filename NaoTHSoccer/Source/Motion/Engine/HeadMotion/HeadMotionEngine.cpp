@@ -273,8 +273,8 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
         getCameraInfo().getOpticalCenterX(),
         getCameraInfo().getOpticalCenterY());
 
-  Vector3d direction = CameraGeometry::imagePixelToCameraCoords(
-    cameraMatrix, 
+  // projectionPointInImage --> head coordinates
+  Vector3d direction = cameraMatrix.rotation * CameraGeometry::imagePixelToCameraCoords(
     getCameraInfo(),
     projectionPointInImage.x, 
     projectionPointInImage.y);

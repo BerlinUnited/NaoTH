@@ -12,11 +12,14 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",            true);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object",  true);
 
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:kick_left",          "simulate a kick left",  false);
+
     h.ball_height = 32.5;
 
     getDebugParameterList().add(&kfParameters);
 
     reloadParameters();
+    kickTime = getFrameInfo().getTime();
 }
 
 PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
@@ -27,6 +30,13 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 /*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
+
+  DEBUG_REQUEST("PlainKalmanFilterBallLocator:kick_left",
+    if(getFrameInfo().getTimeSince(kickTime) > 5000) {
+      kickTime = getFrameInfo().getTime();
+    }
+  );
+
 //     apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
@@ -37,8 +47,21 @@ void PlainKalmanFilterBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
 
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:kick_left",
+      if(kickTime == getFrameInfo().getTime()) {
+        Eigen::Vector2d u;
+        u(0) = 0.0;
+        u(1) = 1000*Math::g;
+
+        ExtendedKalmanFilter4d n = filter.front();
+        n.prediction(u,dt);
+        filter.push_back(n);
+      }
+    );
+    
+
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
-        predict(*iter, dt);
+      predict(*iter, dt);
     }
 
     // measurement
@@ -50,7 +73,7 @@ void PlainKalmanFilterBallLocator::execute()
         // allways use the bottom percept if available
         if(getBallPercept().ballWasSeen)
         {
-            Vector2d angles = CameraGeometry::pixelToAngles(getCameraMatrix(),getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
+            Vector2d angles = CameraGeometry::pixelToAngles(getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
 
             z << angles.x, angles.y;
 
@@ -67,7 +90,7 @@ void PlainKalmanFilterBallLocator::execute()
         }
         else 
         {
-            Vector2d angles = CameraGeometry::pixelToAngles(getCameraMatrixTop(),getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
+            Vector2d angles = CameraGeometry::pixelToAngles(getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
 
             z << angles.x, angles.y;
 
@@ -134,12 +157,13 @@ void PlainKalmanFilterBallLocator::execute()
         }
     }// end if
 
+
     // delete some filter if they are to bad
     if(filter.size() > 1) {
         std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
         while(iter != filter.end()){
             if((*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI > area95Threshold){
-                filter.erase(iter);
+                iter = filter.erase(iter);
             } else {
                 ++iter;
             }

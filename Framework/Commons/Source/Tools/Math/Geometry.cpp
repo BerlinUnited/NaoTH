@@ -9,44 +9,44 @@
 
 #include "Geometry.h"
 
-double Geometry::angleTo(const Pose2D& from, const Vector2<double>& to)
+double Geometry::angleTo(const Pose2D& from, const Vector2d& to)
 {
   return (Pose2D(to) - from).translation.angle();
-}//end angleTo
+}
 
-double Geometry::distanceTo(const Pose2D& from, const Vector2<double>& to)
+double Geometry::distanceTo(const Pose2D& from, const Vector2d& to)
 {
   return (Pose2D(to) - from).translation.abs();
-}//end distanceTo
+}
 
-Vector2<double> Geometry::vectorTo(const Pose2D& from, const Vector2<double>& to)
+Vector2d Geometry::vectorTo(const Pose2D& from, const Vector2d& to)
 {
   return (Pose2D(to) - from).translation;
-}//end vectorTo
+}
 
 
-Vector2<double> Geometry::fieldCoordToRelative(const Pose2D& robotPose, const Vector2<double>& fieldCoord)
+Vector2d Geometry::fieldCoordToRelative(const Pose2D& robotPose, const Vector2d& fieldCoord)
 {
   // this is the same as robotPose.invert()*fieldCoord or robotPose/fieldCoord
   return (fieldCoord - robotPose.translation).rotate(-robotPose.rotation);
-}//end fieldCoordToRelative
+}
 
 
-Vector2<double> Geometry::relativeToFieldCoord(const Pose2D& robotPose, const Vector2<double>& relativeCoord)
+Vector2d Geometry::relativeToFieldCoord(const Pose2D& robotPose, const Vector2d& relativeCoord)
 {
   return robotPose * relativeCoord;
-}//end relativeToFieldCoord
+}
 
 
 bool Geometry::getIntersectionPointsOfLineAndRectangle(
-  const Vector2<int>& bottomLeft, 
-  const Vector2<int>& topRight,
+  const Vector2i& bottomLeft, 
+  const Vector2i& topRight,
   const Math::Line& line,
-  Vector2<int>& point1, 
-  Vector2<int>& point2)
+  Vector2i& point1, 
+  Vector2i& point2)
 {
   int foundPoints=0;
-  Vector2<double> point[2];
+  Vector2d point[2];
   if (line.getDirection().x!=0)
   {
     double y1=line.getBase().y+(bottomLeft.x-line.getBase().x)*line.getDirection().y/line.getDirection().x;

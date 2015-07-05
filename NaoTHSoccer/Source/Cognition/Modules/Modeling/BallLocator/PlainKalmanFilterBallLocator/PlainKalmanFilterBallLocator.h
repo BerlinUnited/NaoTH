@@ -91,6 +91,8 @@ private:
     //double ballMass;
     double c_RR;
 
+    unsigned int kickTime;
+
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
