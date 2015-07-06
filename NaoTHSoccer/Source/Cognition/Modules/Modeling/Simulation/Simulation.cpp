@@ -227,7 +227,13 @@ void Simulation::simulateConsequences(
 
     // now categorize the position
     BallPositionCategory category = INFIELD;
-    if(obstacleCollision && obstacleLine.intersect(shootLine) && shootLine.intersect(obstacleLine))
+    // goal!!
+    if(oppGoalBox.inside(globalBallEndPosition)) 
+    {
+      category = OPPGOAL;
+    }
+    // obstacle collision
+    else if(obstacleCollision && obstacleLine.intersect(shootLine) && shootLine.intersect(obstacleLine))
     { 
       category = COLLISION;
     }
@@ -235,11 +241,6 @@ void Simulation::simulateConsequences(
     else if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
     {
       category = INFIELD;
-    }
-    // goal!!
-    else if(oppGoalBox.inside(globalBallEndPosition)) 
-    {
-      category = OPPGOAL;
     }
     // own goal
     else if(shootLine.intersect(ownGoalLineGlobal) && ownGoalLineGlobal.intersect(shootLine)) 
