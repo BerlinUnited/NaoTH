@@ -10,12 +10,12 @@ fi
 
 if [ -f /etc/conf.d/hostname ]
 then
-    echo 'hostname="$1"' > /etc/conf.d/hostname;
+    echo "hostname=\"$1\"" > /etc/conf.d/hostname;
 else
     echo "/etc/conf.d/hostname is missing";
 fi
 
-
+hostname $1
 
 
 

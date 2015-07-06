@@ -185,7 +185,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # ----------------------
 
