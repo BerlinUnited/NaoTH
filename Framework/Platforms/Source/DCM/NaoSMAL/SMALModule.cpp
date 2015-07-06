@@ -267,14 +267,12 @@ void SMALModule::motionCallbackPre()
   }//end if
   */
 
-  bool leddata_set = false;
-
   // NOTE: the LEDs are only set if stiffness was not set in this cycle
   // get the LEDData from the shared memory and put them to the DCM
   if(!stiffness_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-    leddata_set = theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    theDCMHandler.setSingleLED(commandData->get(), dcmTime);
   }
 
   // get the UltraSoundSendData from the shared memory and put them to the DCM
