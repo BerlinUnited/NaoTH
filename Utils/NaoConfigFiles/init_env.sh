@@ -69,6 +69,9 @@ copy ./etc/naoqi/autoload.ini /etc/naoqi/autoload.ini root 644
 # copy ld.so.conf
 copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 
+# copy new fstab
+copy ./etc/fstab /etc/fstab root 644
+
 # create the local lib directory
 if [ ! -d /home/nao/lib ]
 then
@@ -114,6 +117,27 @@ then
     echo "setting link to NaoTH Config directory";
     ln -s /home/nao/naoqi/Config /home/nao/Config;
 fi
+
+# create the local Media directory
+if [ ! -d /home/nao/naoqi/Media ]
+then
+    mkdir -p /home/nao/naoqi/Media;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/naoqi/Media"
+    else
+        chown nao:nao /home/nao/naoqi/Media;
+        chmod 744 /home/nao/naoqi/Media;
+    fi
+fi
+
+# add link to the Config directory
+if [ ! -h /home/nao/Media ]
+then
+    echo "setting link to NaoTH Media directory";
+    ln -s /home/nao/naoqi/Media /home/nao/Media;
+fi
+
 # ----------- stop naoqi -----------
 
 /etc/init.d/naoqi stop
@@ -132,6 +156,13 @@ fi
 cp -r ./home/nao/naoqi/Config/* /home/nao/Config
 chown -R nao:nao /home/nao/naoqi/Config;
 
+if [ -d "/home/nao/naoqi/Media" ]; then
+  rm -rf /home/nao/naoqi/Media/*
+fi
+
+cp -r ./home/nao/naoqi/Media/* /home/nao/Media
+chown -R nao:nao /home/nao/naoqi/Media;
+
 # ----------- copy libs -----------
 if [ -d "/home/nao/lib" ]; then
   rm -rf /home/nao/lib/*
@@ -145,6 +176,11 @@ cp -r ./home/nao/lib/* /home/nao/lib
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
 ./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable proxydaemon=disable";
+
+# disable the hal-prestarter that takes quite a long time on boot
+if [ -f /usr/libexec/hal-prestarter ] ; then
+  mv -n /usr/libexec/hal-prestarter /usr/libexec/hal-prestarter.orig
+fi
 
 # allow everyone to shutdown
 chmod +s /sbin/shutdown
@@ -185,7 +221,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # ----------------------
 
