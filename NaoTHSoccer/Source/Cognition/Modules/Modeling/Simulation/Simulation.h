@@ -86,20 +86,20 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = Math::fromDegrees(-85);
-      PARAMETER_REGISTER(sidekick_right.angle_std) = Math::fromDegrees(15);
+      PARAMETER_REGISTER(sidekick_right.angle) = -85;
+      PARAMETER_REGISTER(sidekick_right.angle_std) = 15;
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = Math::fromDegrees(85);
-      PARAMETER_REGISTER(sidekick_left.angle_std) = Math::fromDegrees(15);
+      PARAMETER_REGISTER(sidekick_left.angle) = 85;
+      PARAMETER_REGISTER(sidekick_left.angle_std) = 15;
       PARAMETER_REGISTER(kick_short.speed) = 780;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = Math::fromDegrees(0.0);
-      PARAMETER_REGISTER(kick_short.angle_std) = Math::fromDegrees(10);
+      PARAMETER_REGISTER(kick_short.angle) = 0.0;
+      PARAMETER_REGISTER(kick_short.angle_std) = 10;
       PARAMETER_REGISTER(kick_long.speed) = 1020;
       PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = Math::fromDegrees(0.0);
-      PARAMETER_REGISTER(kick_long.angle_std) = Math::fromDegrees(10);
+      PARAMETER_REGISTER(kick_long.angle) = 0.0;
+      PARAMETER_REGISTER(kick_long.angle_std) = 10;
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
