@@ -47,6 +47,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
   // STEP 1: find the starting point for the search
   listOfRedPoints.clear();
+  //??? single condition
   if(!findMaximumRedPoint(listOfRedPoints) || listOfRedPoints.empty()) {
     return;
   }
@@ -56,6 +57,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
   // the points are sorted - the most red points are at the end
   double radius = -1;
   Vector2d center;
+  //Liste von rotenPunkten durchgehen
   for(int i = (int)listOfRedPoints.size()-1; i >= 0 ; i--) 
   {
     const Vector2i& point = listOfRedPoints[i];
@@ -65,14 +67,16 @@ void BallDetector::execute(CameraInfo::CameraID id)
       continue;
     }
 
+    //3d Projection -> Aus der Entfernung der Punktes die ungefähre Ballposition berechenen
     double estimatedRadius = estimatedBallRadius(point);
     
     DEBUG_REQUEST("Vision:BallDetector:draw_ball_estimated",
+      //estimatedRadius <=0 possible? will be a problem  in "radius < 2*estimatedRadius"
       if(estimatedRadius > 0) {
         CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
       }
     );
-
+    ///***********///
     ballEndPoints.clear();
     bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
@@ -195,14 +199,14 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
 bool BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const
 {
   int goodBorderPointCount = 0;
-  goodBorderPointCount += scanForEdges(start, Vector2d(1,0), endPoints);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1,0), endPoints);
-  goodBorderPointCount += scanForEdges(start, Vector2d(0,1), endPoints);
-  goodBorderPointCount += scanForEdges(start, Vector2d(0,-1), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 0), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 0), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 0, 1), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 0,-1), endPoints);
 
-  goodBorderPointCount += scanForEdges(start, Vector2d(1,1).normalize(), endPoints);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1,1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 1).normalize(), endPoints);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1,-1).normalize(), endPoints);
   goodBorderPointCount += scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
 
   DEBUG_REQUEST("Vision:BallDetector:drawScanEndPoints",
@@ -262,7 +266,7 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
       POINT_PX(ColorClasses::blue, point.x, point.y);
     );
 
-    // jum down found
+    // jump down found
     // NOTE: we scale the filter value with the stepLength to acount for diagonal scans
     if(negativeScan.add(filter.point(), -filter.value()/stepLength))
     {

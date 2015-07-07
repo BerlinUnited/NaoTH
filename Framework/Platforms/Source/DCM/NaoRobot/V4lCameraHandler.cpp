@@ -773,12 +773,10 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
     }
     else
     {
-      //HACK (FadeToBlack and Sharpness)
+      //HACK (Sharpness)
       if(id == csConst[CameraSettings::Sharpness]) {
         return control_g.value>7?(control_g.value - (1 << 16)):control_g.value;
-      } else if(id == csConst[CameraSettings::FadeToBlack]) {
-        return control_g.value >> 3;
-      } else {
+      }  else {
         return control_g.value;
       }
     }

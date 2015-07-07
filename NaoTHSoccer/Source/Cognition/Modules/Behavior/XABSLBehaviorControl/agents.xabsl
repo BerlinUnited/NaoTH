@@ -1,7 +1,7 @@
 /***
   Title: NaoTH Soccer
   Platform: Aldebaran Nao V3.2~4 (RoboCup edition).
-  Software-Environment: NaoTH 2014
+  Software-Environment: NaoTH 2015
 */
 
 // Symbols
@@ -17,13 +17,12 @@ include "Symbols/led_symbols.xabsl";
 include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
-//Experimental
 include "Symbols/field_symbols.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
-include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
+//include "Options/HeadControl/search_for_ball_and_look_around.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
@@ -35,7 +34,9 @@ include "Options/Skills/take_arms_back.xabsl";
 // Common Skills
 include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/treat_lifted.xabsl";
+include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/move_around_ball.xabsl";
+//
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_ball_with_foot.xabsl";
@@ -43,119 +44,149 @@ include "Options/Skills/go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 include "Options/Skills/go_to_ball_in_fight.xabsl";
+//
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
 include "Options/Skills/fast_forward_kick.xabsl";
-include "Options/Skills/fast_forward_kick_with_right.xabsl";
-include "Options/Skills/fast_forward_kick_with_left.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
-include "Options/Skills/stand_up.xabsl";
+//
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_slow_USOA.xabsl";
 include "Options/Skills/USOA/go_to_ball_with_foot_and_USOA.xabsl";
-include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
 include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
+//
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
-include "Options/Skills/striker_search.xabsl";
-include "Options/Skills/search_before_passive.xabsl";
+//
+//include "Options/Skills/striker_search.xabsl";
+//include "Options/Skills/search_before_passive.xabsl";
+
+//include "Options/Skills/fast_forward_kick_with_right.xabsl";
+//include "Options/Skills/fast_forward_kick_with_left.xabsl";
+//include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 
 // Debug
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
 
-
 // Soccer
+include "Options/Soccer/spl_play_soccer.xabsl";
+include "Options/Soccer/Strategy/basic_play.xabsl"; //Verschieben
+include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_passive_position.xabsl";
-include "Options/Soccer/Strategy/decide_and_go_to_passive_pos_b.xabsl";
-include "Options/Soccer/Strategy/go_to_and_keep_passive_position.xabsl";
+//include "Options/Soccer/Strategy/decide_and_go_to_passive_pos_b.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
-include "Options/Soccer/Strategy/play_soccer.xabsl";
-include "Options/Soccer/Strategy/basic_play.xabsl";
-include "Options/Soccer/spl_play_soccer.xabsl";
-include "Options/Soccer/Strategy/basic_goalie.xabsl";
-include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
-
-// simple soccer
-include "Options/Soccer/basic_striker_agent.xabsl";
-include "Options/Soccer/fast_striker_agent.xabsl";
-include "Options/Soccer/passive_player_agent.xabsl";
-include "Options/Soccer/basic_goali_agent.xabsl";
-include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
-include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
-include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
+include "Options/Soccer/Strategy/go_to_and_keep_passive_position.xabsl";
 include "Options/Soccer/Strategy/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
+//include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
+ //unused
+//Goalie
+include "Options/Soccer/Strategy/basic_goalie.xabsl";
+//Striker
+//include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
+include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
+include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_sidekick.xabsl";
 include "Options/Soccer/Strategy/Situations/turn_to_attack_direction.xabsl";
-
-// penalty
+// Penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
+include "Options/Soccer/simple_penalty_kicker_agent.xabsl";
+include "Options/Soccer/simple_penalty_goalie_agent.xabsl";
 
 /* Test section */
-// Test agents (options)
-// Test agents (options) Kicks
-include "Options/Test/sidekick_test_agent.xabsl";
-include "Options/Test/fast_forward_kick_test_agent.xabsl";
-include "Options/Test/kick_direction_test_agent.xabsl";
-include "Options/Test/kick_attack_direction_test_agent.xabsl";
-include "Options/Test/omnidirectional_kick_test_agent.xabsl";
-include "Options/Test/kick_with_foot_test_agent.xabsl";
-include "Options/Test/walk_against_ball_test_agent.xabsl";
-// Test agents (options) Walk
-include "Options/Test/test_walk_lv1_agent.xabsl";
-include "Options/Test/test_walk_lv2_agent.xabsl";
-include "Options/Test/follow_ball_test_agent.xabsl";
-include "Options/Test/go_to_ball_test_agent.xabsl";
-include "Options/Test/ball_in_fight_test_agent.xabsl";
-include "Options/Test/go_to_ball_with_foot_test_agent.xabsl";
-include "Options/Test/go_to_ball_with_foot_and_USOA_test_agent.xabsl";
-include "Options/Test/go_to_ball_with_USOA_test_agent.xabsl";
-include "Options/Test/go_to_point_with_USOA_test_agent.xabsl";
-include "Options/Test/turn_around_ball_test_agent.xabsl";
-include "Options/Test/clown_walk_test_agent.xabsl";
-include "Options/Test/obstacle_test_agent.xabsl";
+// Test agents Head Control
+
+include "Options/Test/agent/search_test_agent.xabsl";
+include "Options/Test/agent/search_ball_back_rot_test_agent.xabsl";
+include "Options/Test/agent/simple_search_ball_test_agent.xabsl";
+include "Options/Test/agent/only_ball_looking_agent.xabsl";
+include "Options/Test/agent/only_goal_looking_agent.xabsl";
+include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
+// Test agents Arms
+include "Options/Test/agent/arm_back_test_agent.xabsl";
+// Test agents Kicks
+include "Options/Test/agent/sidekick_test_agent.xabsl";
+include "Options/Test/agent/fast_forward_kick_test_agent.xabsl";
+include "Options/Test/agent/kick_direction_test_agent.xabsl";
+include "Options/Test/agent/kick_attack_direction_test_agent.xabsl";
+include "Options/Test/agent/kick_with_foot_test_agent.xabsl";
+include "Options/Test/agent/walk_against_ball_test_agent.xabsl";
+include "Options/Test/agent/kick_short_with_approach_left_agent.xabsl";
+include "Options/Test/agent/kick_short_with_approach_right_agent.xabsl";
+include "Options/Test/agent/kick_long_with_approach_right_agent.xabsl";
+include "Options/Test/agent/kick_long_with_approach_left_agent.xabsl";
+
+include "Options/Test/agent/sidekick_left_agent.xabsl";
+include "Options/Test/agent/sidekick_right_agent.xabsl";
+// Test agents Walk
+include "Options/Test/agent/test_walk_lv1_agent.xabsl";
+include "Options/Test/agent/test_walk_lv2_agent.xabsl";
+include "Options/Test/agent/follow_ball_test_agent.xabsl";
+include "Options/Test/agent/go_to_ball_test_agent.xabsl";
+include "Options/Test/agent/ball_in_fight_test_agent.xabsl";
+include "Options/Test/agent/go_to_ball_with_foot_test_agent.xabsl";
+include "Options/Test/agent/go_to_ball_with_foot_and_USOA_test_agent.xabsl";
+include "Options/Test/agent/go_to_ball_with_USOA_test_agent.xabsl";
+include "Options/Test/agent/go_to_point_with_USOA_test_agent.xabsl";
+include "Options/Test/agent/turn_around_ball_test_agent.xabsl";
+include "Options/Test/agent/clown_walk_test_agent.xabsl";
+include "Options/Test/agent/obstacle_test_agent.xabsl";
+include "Options/Test/agent/dribble_test_agent.xabsl";
 // Test agents (options) Penalty
-include "Options/Test/penalty_kicker_test_agent.xabsl";
-// Test agents (options) ball search
-include "Options/Test/search_ball_test.xabsl";
-include "Options/Test/search_test_agent.xabsl";
-include "Options/Test/search_ball_back_rot_test_agent.xabsl";
-include "Options/Test/simple_search_ball_test_agent.xabsl";
-include "Options/Test/ball_search/only_ball_looking.xabsl";
-include "Options/Test/ball_search/only_goal_looking.xabsl";
-include "Options/Test/ball_search/searching_for_ball_and_look_around.xabsl";
+include "Options/Test/agent/penalty_kicker_test_agent.xabsl";
+// Test agents (options) Behaviour Tests
+include "Options/Soccer/basic_striker_agent.xabsl";
+include "Options/Soccer/fast_striker_agent.xabsl";
+include "Options/Soccer/passive_player_agent.xabsl";
+include "Options/Soccer/basic_goali_agent.xabsl";
+include "Options/Test/agent/role_change_test_agent.xabsl";
+include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 
 
 
-include "Options/Test/change_state_input_test_agent.xabsl";
+include "Options/Test/agent/change_state_input_test_agent.xabsl";
+ //Useless?
 
-// Test options
+// Test options Headcontrol
+include "Options/Test/agent/head_test_agent.xabsl";
+include "Options/Test/head/head_control_test.xabsl";
+include "Options/Test/head/search_ball_test.xabsl";
+include "Options/Test/head/search_ball_back_rot_test.xabsl";
+include "Options/Test/head/simple_search_ball_test.xabsl";
+// Test options Arms
+include "Options/Test/arm_back_test.xabsl";
 // Test options Kicks
 include "Options/Test/kicks/sidekick_test.xabsl";
 include "Options/Test/kicks/fast_forward_kick_test.xabsl";
 include "Options/Test/kicks/kick_direction_test.xabsl";
 include "Options/Test/kicks/kick_attack_direction_test.xabsl";
-include "Options/Test/kicks/omnidirectional_kick_test.xabsl";
 include "Options/Test/kicks/kick_with_foot_test.xabsl";
 include "Options/Test/kicks/walk_against_ball_test.xabsl";
+include "Options/Test/kicks/kick_long_with_approach_right.xabsl";
+include "Options/Test/kicks/kick_long_with_approach_left.xabsl";
+include "Options/Test/kicks/kick_short_with_approach_right.xabsl";
+include "Options/Test/kicks/kick_short_with_approach_left.xabsl";
+
+include "Options/Test/kicks/sidekick_right_test.xabsl";
+include "Options/Test/kicks/sidekick_left_test.xabsl";
 // Test options Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
@@ -175,35 +206,22 @@ include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
-
-include "Options/Test/agent_test_dribble.xabsl";
 include "Options/Test/test_dribble.xabsl";
-
 // Test options Penalty
 include "Options/Test/penalty/penalty_kicker_test.xabsl";
-// Test options ball search
-include "Options/Test/ball_search/search_ball_back_rot_test.xabsl";
-include "Options/Test/ball_search/simple_search_ball_test.xabsl";
-
-// Test arms
-include "Options/Test/arm_back_test.xabsl";
-include "Options/Test/arm_back_test_agent.xabsl";
-
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
-include "Options/Test/role_change_test_agent.xabsl";
-include "Options/Test/passive_behavior_test_agent.xabsl";
-
+
+
 include "Options/Test/change_state_input_test.xabsl";
-
-
-include "Options/Test/head_test_agent.xabsl";
-include "Options/Test/head_control_test.xabsl";
-
+ // Useless?
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent);
+agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
+
 
 /** simple soccer agents **/
 agent role_basic_striker("basic_striker", basic_striker_agent);
@@ -220,10 +238,16 @@ agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
 agent kick_sidekick_test("sidekick_test_agent", sidekick_test_agent);
 agent kick_fast_forward_kick_test("fast_forward_kick_test_agent", fast_forward_kick_test_agent);
-agent kick_omnidirectional_kick_test("omnidirectional_kick_test_agent", omnidirectional_kick_test_agent);
 agent kick_with_foot_test("kick_with_foot_test_agent", kick_with_foot_test_agent);
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
+agent sidekick_left("sidekick_left", sidekick_left_agent);
+agent sidekick_right("sidekick_right", sidekick_right_agent);
+
+agent kick_long_right("kick_long_right", kick_long_with_approach_right_agent);
+agent kick_long_left("kick_long_left", kick_long_with_approach_left_agent);
+agent kick_short_right("kick_short_right", kick_short_with_approach_right_agent);
+agent kick_short_left("kick_short_left", kick_short_with_approach_left_agent);
 // Test agents Walk
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
@@ -240,7 +264,7 @@ agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ba
 agent goto_ball_with_foot_and_USOA_test_agent("go_to_ball_with_foot_and_USOA_test_agent", go_to_ball_with_foot_and_USOA_test_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
-agent agent_test_dribble("agent_test_dribble", agent_test_dribble);
+agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
@@ -251,4 +275,5 @@ agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_b
 agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
-agent head_test_agent("head_test_agent", head_test_agent);
+
+agent head_test_agent("head_test_agent", head_test_agent);

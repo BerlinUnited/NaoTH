@@ -1,0 +1,17 @@
+/** The root option of a simple ball following behavior */
+option dribble_test_agent {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      test_dribble();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}
+ 

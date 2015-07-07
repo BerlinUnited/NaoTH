@@ -1,5 +1,5 @@
-/** Omnidirectional kick tester */
-option omnidirectional_kick_test_agent {
+/** Sidekick tester */
+option sidekick_right_agent {
 
   initial state test {    
     action {
@@ -7,8 +7,11 @@ option omnidirectional_kick_test_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      omnidirectional_kick_test();
+      sidekick_right_test();
       
+      // control the arms
+      arms_control();
+
       // control head movement according to value of head.control_mode
       head_control();
     }
