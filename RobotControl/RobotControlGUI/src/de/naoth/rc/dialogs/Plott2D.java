@@ -50,6 +50,8 @@ public class Plott2D extends AbstractDialog {
 
     public Plott2D() {
         initComponents();
+        
+        this.plotPanel.setDontScrollOnStaticRegionData(cbDontScrollOnStaticRegionData.isSelected());
     }
     
 
@@ -114,6 +116,11 @@ public class Plott2D extends AbstractDialog {
         cbDontScrollOnStaticRegionData.setFocusable(false);
         cbDontScrollOnStaticRegionData.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         cbDontScrollOnStaticRegionData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        cbDontScrollOnStaticRegionData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbDontScrollOnStaticRegionDataActionPerformed(evt);
+            }
+        });
         jToolBar1.add(cbDontScrollOnStaticRegionData);
 
         btFitToData.setText("Fit to Data");
@@ -227,6 +234,10 @@ public class Plott2D extends AbstractDialog {
 
         export.showExportDialog(this, "Export view as ...", this.plotPanel.getChart(), "export");
     }//GEN-LAST:event_btExportGraphActionPerformed
+
+    private void cbDontScrollOnStaticRegionDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDontScrollOnStaticRegionDataActionPerformed
+        this.plotPanel.setDontScrollOnStaticRegionData(cbDontScrollOnStaticRegionData.isSelected());
+    }//GEN-LAST:event_cbDontScrollOnStaticRegionDataActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
