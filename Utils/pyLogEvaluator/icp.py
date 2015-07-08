@@ -5,6 +5,7 @@ import random
 from sklearn.neighbors import NearestNeighbors
 from hyperopt import hp, fmin, tpe, Trials
 from scipy.optimize import minimize
+import time
 
 class Optimizer:
   def __init__(self, gt, mes):
@@ -23,7 +24,7 @@ class Optimizer:
     p = Pose2D()
     p.translation = Vector2(best[0], best[1])
     p.rotation = best[2]
-    return p
+    return p, res.fun
   def objective(self, args):
     p = Pose2D()
     p.translation = Vector2(args[0], args[1])
@@ -35,34 +36,50 @@ class Optimizer:
 
 if __name__ == "__main__":
 
-  gt = [Vector2(0.0, 0.0)]
-  for i  in range(10):
-    gt.append(gt[-1] + Vector2(0.1, 0.0))
-  for i  in range(20):
-    gt.append(gt[-1] + Vector2(0.0, 0.1))
-  for i  in range(10):
-    gt.append(gt[-1] + Vector2(-0.1, 0.0))
-  for i  in range(20):
-    gt.append(gt[-1] + Vector2(0.0, -0.1))
-  plt.plot([x.x for x in gt], [x.y for x in gt])
+  dx = 10.0
+  xLength = 9000;
+  yLength = 6000;
+  gt = []
+  gt.extend([Vector2(x, 0.0) for x in np.arange(0.0, xLength, dx)])
+  gt.extend([Vector2(x, yLength) for x in np.arange(0.0, xLength, dx)])
+  gt.extend([Vector2(0.0, y) for y in np.arange(0.0, yLength, dx)])
+  gt.extend([Vector2(xLength, y) for y in np.arange(0.0, yLength, dx)])
+  xPenaltyAreaLength = 600;
+  yPenaltyAreaLength = 2200;
+  gt.extend([Vector2(x, yLength/2.0-yPenaltyAreaLength/2.0) for x in np.arange(0.0, xPenaltyAreaLength, dx)])
+  gt.extend([Vector2(x, yLength/2.0+yPenaltyAreaLength/2.0) for x in np.arange(0.0, xPenaltyAreaLength, dx)])
+  gt.extend([Vector2(xPenaltyAreaLength, y) for y in np.arange(yLength/2.0-yPenaltyAreaLength/2.0, yLength/2.0+yPenaltyAreaLength/2.0, dx)])
+  gt.extend([Vector2(xLength-x, yLength/2.0-yPenaltyAreaLength/2.0) for x in np.arange(0.0, xPenaltyAreaLength, dx)])
+  gt.extend([Vector2(xLength-x, yLength/2.0+yPenaltyAreaLength/2.0) for x in np.arange(0.0, xPenaltyAreaLength, dx)])
+  gt.extend([Vector2(xLength - xPenaltyAreaLength, y) for y in np.arange(yLength/2.0-yPenaltyAreaLength/2.0, yLength/2.0+yPenaltyAreaLength/2.0, dx)])
+  gt.extend([Vector2(xLength/2, y) for y in np.arange(0.0, yLength, dx)])
+  centerCircleRadius = 750;
+  gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, centerCircleRadius/dx)])
+  plt.plot([x.x for x in gt], [x.y for x in gt], "k.")
 
   diff = Pose2D()
   diff.translation = Vector2(-1.0, 2.0)
   diff.rotation = math.pi/4.0
 
-  mes = [diff*x for x in gt[10:40]]
-  noise = 0.05
+  mes = []
+  while(len(mes) < 20):
+    i = random.randint(0, len(gt)-1)
+    if gt[i].x > -1000 and gt[i].x < 3000 and gt[i].y > 1000 and gt[i].y < 3000:
+      mes.append(diff*gt[i])
+
+  noise = 100
   mes = [Vector2(x.x + random.gauss(0.0, noise), x.y + random.gauss(0.0, noise)) for x in mes]
-  plt.plot([x.x for x in mes], [x.y for x in mes])
+  plt.plot([x.x for x in mes], [x.y for x in mes], "b.")
 
   solution = []
   for i in range(5):
     opt = Optimizer(gt, mes)
-    antidiff = opt.optimize()
+    antidiff, fun = opt.optimize()
+    print fun
 
     solution = [antidiff * x for x in mes]
     mes = solution
-  plt.plot([x.x for x in solution], [x.y for x in solution], "r")
+  plt.plot([x.x for x in solution], [x.y for x in solution], "r.")
   
   plt.gca().set_aspect("equal", "datalim")
   plt.show()
