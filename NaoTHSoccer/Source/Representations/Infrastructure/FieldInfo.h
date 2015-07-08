@@ -33,6 +33,7 @@ private:
 public:
   FieldInfo();
 
+  void draw(DrawingCanvas2D& canvas) const;
   virtual void print(std::ostream& stream) const;
 
   // some tools
@@ -66,6 +67,7 @@ public:
   // goal
   double goalWidth;
   double goalHeight;
+  double goalDepth;
   double goalpostRadius;
 
 
@@ -87,6 +89,26 @@ public:
 
   double yPosRightGoalpost;
   double yPosLeftGoalpost;
+
+  //Extra Stuff for the Simulator
+  double xThrowInLineOwn;
+  double xThrowInLineOpp;
+
+  double yThrowInLineLeft;
+  double yThrowInLineRight;
+
+  Vector2d leftThrowInPointOwn;
+  Vector2d rightThrowInPointOwn;
+
+  Vector2d leftThrowInPointOpp;
+  Vector2d rightThrowInPointOpp;
+
+  //Should be done differently
+  Math::LineSegment leftLineSegment;
+  Math::LineSegment rightLineSegment;
+  Math::LineSegment ownLineSegment;
+  Math::LineSegment oppLineSegment;
+  //End extra stuff
 
   Geometry::Rect2d fieldRect;
   Geometry::Rect2d carpetRect;

@@ -73,7 +73,13 @@ include "Options/Skills/search_ball.xabsl";
 // Debug
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
-
+//New Striker - with action Selection
+include "Options/Soccer/Strategy/newStriker/new_Striker.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_selection_attack.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_left.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_sidekick_right.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_kick_long_with_approach.xabsl";
 // Soccer
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl"; //Verschieben

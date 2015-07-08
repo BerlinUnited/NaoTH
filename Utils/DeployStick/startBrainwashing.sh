@@ -1,5 +1,5 @@
 #!/bin/bash
-aplay /usr/share/naoqi/wav/chimes_short.wav
+sudo -u nao aplay /home/nao/naoqi/Media/usb_stop.wav
 
 # stop naoqi and/or naoth if they are to replace
 if [ -f "./deploy/home/nao/bin/naoth" ]; then
