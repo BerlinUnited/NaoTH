@@ -106,8 +106,8 @@ option new_striker
       new_sidekick_right();
     }
   }
-
-
+/*
+//currently unused
   state sidekick_stable {
     decision {
       else if(action_done)
@@ -121,12 +121,10 @@ option new_striker
       motion.walk.style = stable;
     }
   }
-
+*/
 
   state long_kick {
     decision{
-      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
-        goto sidekick_stable;
       else if(action_done)
         goto goto_ball;
       else
@@ -140,8 +138,6 @@ option new_striker
 
     state short_kick {
     decision{
-      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
-        goto sidekick_stable;
       else if(action_done)
         goto goto_ball;
       else
