@@ -38,7 +38,7 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
   DEBUG_REQUEST_REGISTER( "PerceptionsVisualizer:image:draw_field_polygon", "draw field boundaries in image", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:lines_table", "", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
 }
 
 void PerceptionsVisualizer::execute()
@@ -50,9 +50,9 @@ void PerceptionsVisualizer::execute()
     execute(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("PerceptionsVisualizer:field:lines_table",
+  DEBUG_REQUEST("PerceptionsVisualizer:field:field_info",
     FIELD_DRAWING_CONTEXT;
-    getFieldInfo().fieldLinesTable.draw(getDebugDrawings());
+    getFieldInfo().draw(getDebugDrawings());
   );
 }
 
