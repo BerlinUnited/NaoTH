@@ -3,25 +3,40 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 from sklearn.neighbors import NearestNeighbors
+from hyperopt import hp, fmin, tpe, Trials
 from scipy.optimize import minimize
 
 class Optimizer:
-  def __init__(self, gt, mes):
-    self.n_select = random.randint(0.1*len(mes), len(mes)-1)
+  def __init__(self, gt):
+    self.n_select = 1
     self.gt = gt
-    self.mes = mes
+    self.mes = []
     self.knn = NearestNeighbors(n_neighbors=1).fit([[x.x, x.y] for x  in self.gt])
     self.nbrs = []
     self.selected = []
-  def optimize(self):
+  def optimize(self, mes, method="BFGS"):
+    self.mes = mes
+    self.n_select = random.randint(int(0.2*len(mes)), int(0.8*(len(mes)-1)))
     self.selected = np.random.choice(self.mes, self.n_select)
     self.nbrs = [self.gt[self.knn.kneighbors([x.x, x.y])[1][0][0]] for x in self.selected]
-    res = minimize(self.objective, [0.0, 0.0, 0.0])
-    best = res.x 
-    p = Pose2D()
-    p.translation = Vector2(best[0], best[1])
-    p.rotation = best[2]
-    return p, res.fun
+    if method == "hyperopt":
+      space = [hp.uniform("x", -5.0, 5.0), hp.uniform("y", -5, 5), hp.uniform("theta", -math.pi, math.pi)]
+      trials = Trials()
+      best = fmin(self.objective, space, algo=tpe.suggest, max_evals=100, trials=trials)
+      p = Pose2D()
+      p.translation = Vector2(best["x"], best["y"])
+      p.rotation = best["theta"]
+      fun = trials.average_best_error()
+      return p, fun/self.n_select
+    elif method == "BFGS":
+      res = minimize(self.objective, [0.0, 0.0, 0.0])
+      best = res.x 
+      p = Pose2D()
+      p.translation = Vector2(best[0], best[1])
+      p.rotation = best[2]
+      return p, res.fun/self.n_select
+    else:
+      return
   def objective(self, args):
     p = Pose2D()
     p.translation = Vector2(args[0], args[1])
@@ -31,7 +46,7 @@ class Optimizer:
     distances = np.hypot([x.x for x in diffs], [x.y for x in diffs])
     # throw away worst 10%
     distances = np.sort(distances)
-    metric = np.sum(np.square(distances[:len(distances)-0.1*len(distances)]))
+    metric = np.sum(np.square(distances[:len(distances)-int(0.1*len(distances))]))
     return metric
 
 if __name__ == "__main__":
@@ -72,9 +87,10 @@ if __name__ == "__main__":
   plt.ion()
 
   solution = [Vector2(x.x, x.y) for x in mes]
+  opt = Optimizer(gt)
   for i in range(40):
-    opt = Optimizer(gt, solution)
-    antidiff, fun = opt.optimize()
+    antidiff = Pose2D()
+    antidiff, fun = opt.optimize(solution, "BFGS")
     print fun
 
     solution = [antidiff * x for x in solution]
