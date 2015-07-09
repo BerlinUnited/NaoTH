@@ -2,6 +2,8 @@
 * @file StableRoleDecision.h
 *
 * @author <a href="mailto:schahin.tofangchi@hu-berlin.de">Schahin Tofangchi</a>
+*
+* Compute which player should be a striker
 */
 
 #ifndef _StableRoleDecision_h_
@@ -49,12 +51,9 @@ public:
   StableRoleDecision();
   virtual ~StableRoleDecision();
 
-  /** executes the module */
   virtual void execute();
-
-  void computeStrikers();
   
-protected:
+private:
   class Parameters: public ParameterList
   {
   public: 

@@ -6,8 +6,8 @@
 * Representation of message statistics
 */
 
-#ifndef __TeamMessageStatisticsModel_H
-#define __TeamMessageStatisticsModel_H
+#ifndef _TeamMessageStatisticsModel_H_
+#define _TeamMessageStatisticsModel_H_
 
 #include <Tools/DataStructures/Printable.h>
 
@@ -16,7 +16,6 @@
 
 class TeamMessageStatisticsModel : public naoth::Printable
 {
-
 public:
   
   unsigned int amountOfMessages; // Total amount of messages received
@@ -54,6 +53,18 @@ public:
       stream << " Stddev of Message Intervals =              " << std::sqrt(variances.at(robotNumber)) << std::endl;
     }
   }//end print
+
+public:
+
+  // return the probability for a robot to be dead
+  double getFailureProbability(int playerNumber) const {
+    std::map<unsigned int, double>::const_iterator robotFailure = failureProbabilities.find(playerNumber);
+    if (robotFailure != failureProbabilities.end()) { 
+      return robotFailure->second;
+    } else {
+      return 0.0; // there no information regarding this player
+    }
+  }
 };
 
 #endif// __TeamMessageStatistics_H

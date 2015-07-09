@@ -95,13 +95,14 @@ public:
 
   };
 
-  std::map<unsigned int, Data> data;
+  typedef std::map<unsigned int, Data> PlayerMessageMap;
+  PlayerMessageMap data;
 
   virtual ~TeamMessage() {}
 
   virtual void print(std::ostream& stream) const
   {
-    for(std::map<unsigned int, Data>::const_iterator i=data.begin();
+    for(PlayerMessageMap::const_iterator i=data.begin();
         i != data.end(); ++i)
     {
       const Data& d = i->second;

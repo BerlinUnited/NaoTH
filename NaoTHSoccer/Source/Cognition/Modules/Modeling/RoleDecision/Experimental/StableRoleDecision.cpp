@@ -5,11 +5,6 @@
 */
 
 #include "StableRoleDecision.h"
-#include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
-
-#include <math.h>
-#include <list>
 
 using namespace std;
 
@@ -24,84 +19,82 @@ StableRoleDecision::~StableRoleDecision()
   getDebugParameterList().remove(&parameters);
 }
 
-void StableRoleDecision::execute() {
-
-  computeStrikers();
-
-}//end execute
-
-void StableRoleDecision::computeStrikers() {
-  
+void StableRoleDecision::execute() 
+{
   getRoleDecisionModel().aliveRobots.clear();
   getRoleDecisionModel().deadRobots.clear();
 
+  // player numbers for the first and second striker
   int firstStriker = std::numeric_limits<int>::max();
   int secondStriker = std::numeric_limits<int>::max();
+
   bool wantsToBeStriker = true;
+  //Goalie is not considered
   if (getPlayerInfo().gameData.playerNumber == 1) {
-    wantsToBeStriker = false; //Goalie is not considered
+    wantsToBeStriker = false; 
   }
 
-  TeamMessage const& tm = getTeamMessage();
-
   double ownTimeToBall = getSoccerStrategy().timeToBall;
+  // bonus for the striker to prevent oscillations
   if (getPlayerInfo().isPlayingStriker) {
     ownTimeToBall -= 300;
   }
 
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
+  TeamMessage::PlayerMessageMap::const_iterator i=getTeamMessage().data.begin();
+  for (; i != getTeamMessage().data.end(); ++i) 
+  {
     unsigned int robotNumber = i->first;
     const TeamMessage::Data& msg = i->second;
 
-    double failureProbability = 0.0;
-    std::map<unsigned int, double>::const_iterator robotFailure = getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
-    if (robotFailure != getTeamMessageStatisticsModel().failureProbabilities.end()) { 
-      failureProbability = robotFailure->second;
-    }
+    double failureProbability = getTeamMessageStatisticsModel().getFailureProbability(robotNumber);
 
     if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().gameData.playerNumber) { //Message is not fresh
       getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
       continue;
-    }
-    else {
+    } else {
       getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
     }
 
     double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
     if (robotNumber == getPlayerInfo().gameData.playerNumber && (msg.fallen || msg.isPenalized || 
-      msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) {
-        wantsToBeStriker = false;
+      msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
+    {
+      wantsToBeStriker = false;
     }
 
     if (!msg.fallen
       && !msg.isPenalized
       && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) { //Ball is fresh
-
-        if (msg.wasStriker) { //Decision of the current round
-          if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
-            firstStriker = robotNumber;
-          }
-          else if ((int)robotNumber < secondStriker) {
-            if (firstStriker != 1) { // No one else will be a striker, if goalie is a striker
-              secondStriker = robotNumber;
-            }
-          }
+      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
+    { 
+      if (msg.wasStriker) { //Decision of the current round
+        // If two robots want to be striker, the one with a smaller number is favoured
+        // NOTE: goalie is always favoured for the first striker
+        if ((int)robotNumber < firstStriker) { 
+          firstStriker = robotNumber;
         }
-        if (wantsToBeStriker && 
-          (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall)) { 
-          wantsToBeStriker = false; //Preparation for next round's decision
+        else if ((int)robotNumber < secondStriker) {
+          secondStriker = robotNumber;
         }
-
       }
+
+      // another player is closer than me
+      if ( robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall ) { 
+        wantsToBeStriker = false; //Preparation for next round's decision
+      }
+    }
   }//end for
   
+  // there is no second striker, if goalie is a striker
+  if (firstStriker == 1) {
+    secondStriker = std::numeric_limits<int>::max();
+  }
+
   getRoleDecisionModel().firstStriker = firstStriker;
   getRoleDecisionModel().secondStriker = secondStriker;
   getRoleDecisionModel().wantsToBeStriker = wantsToBeStriker;
 
   PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), firstStriker);
   PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), secondStriker);
-
 }
