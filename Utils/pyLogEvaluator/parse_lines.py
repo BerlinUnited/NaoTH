@@ -103,6 +103,7 @@ if __name__ == "__main__":
   for edgel in log[-1][1].edgels:
     w = project(edgel.point.x, edgel.point.y, cm)
     plt.plot(w.x, w.y, "k*")
+  plt.gca().set_aspect("equal", "datalim")
   plt.show()
 #  poses = []
 #  for i in range(5):
