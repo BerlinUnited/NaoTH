@@ -90,7 +90,7 @@ void StableRoleDecision::computeStrikers() {
           }
         }
         if (wantsToBeStriker && 
-          (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall + parameters.timeToBall_uncertainty < ownTimeToBall)) { 
+          (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall)) { 
           wantsToBeStriker = false; //Preparation for next round's decision
         }
 

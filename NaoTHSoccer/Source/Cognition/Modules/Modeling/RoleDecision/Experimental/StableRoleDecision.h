@@ -64,7 +64,6 @@ protected:
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
       PARAMETER_REGISTER(minFailureProbability) = 0.85;
-      PARAMETER_REGISTER(timeToBall_uncertainty) = 750;
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -74,7 +73,6 @@ protected:
     int strikerBonusTime;
     int maxBallLostTime;
     double minFailureProbability;
-    int timeToBall_uncertainty; // If the difference between the time_to_ball of two robots lies within the uncertainty, both will go to the ball
     
     virtual ~Parameters() {}
   } parameters;
