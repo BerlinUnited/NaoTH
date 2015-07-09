@@ -52,8 +52,10 @@ if __name__ == "__main__":
 
   log = []
   logm = []
+  logp = []
 
   #while True :
+  names = []
   for i in range(9020):
     try:
       currentFrameNumber = struct.unpack("=l", inFile.read(4))[0]
@@ -64,6 +66,8 @@ if __name__ == "__main__":
       while c != "\0":
         currentName = currentName + c
         c = struct.unpack("=c", inFile.read(1))[0]
+      if currentName not in names:
+        names.append(currentName)
       #print currentName
       
       currentSize = struct.unpack("=l", inFile.read(4))[0]
@@ -79,14 +83,23 @@ if __name__ == "__main__":
         data = inFile.read(currentSize)
         message = globals()["CameraMatrix"]()
         message.ParseFromString(data)
-        
         p = m3.Pose3D()
         p.translation = parseVector3(message.pose.translation)
         p.rotation.c1 = parseVector3(message.pose.rotation[0])
         p.rotation.c2 = parseVector3(message.pose.rotation[1])
         p.rotation.c3 = parseVector3(message.pose.rotation[2])
-        
         logm.append([currentFrameNumber, p])
+      elif currentName == "BehaviorStateComplete":
+        data = inFile.read(currentSize)
+        message = globals()["BehaviorStateComplete"]()
+        message.ParseFromString(data)
+      elif currentName == "TeamMessage":
+        data = inFile.read(currentSize)
+        message = globals()[currentName]()
+        message.ParseFromString(data)
+        if len(message.data) > 0:
+          continue
+        logp.append([currentFrameNumber, message])
         
       else:
         inFile.seek(currentSize,1)
@@ -97,6 +110,9 @@ if __name__ == "__main__":
       break
 
   #cPickle.dump( log, open( "tmp.json", "w" ) )
+
+  names.sort()
+  print names
 
   points = []
   commonlength = min(len(logm), len(log))
