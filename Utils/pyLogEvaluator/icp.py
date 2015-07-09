@@ -16,7 +16,7 @@ class Optimizer:
     self.selected = []
   def optimize(self, mes, method="BFGS"):
     self.mes = mes
-    self.n_select = random.randint(int(0.2*len(mes)), int(0.8*(len(mes)-1)))
+    self.n_select = int(0.1*len(mes))
     self.selected = np.random.choice(self.mes, self.n_select)
     self.nbrs = [self.gt[self.knn.kneighbors([x.x, x.y])[1][0][0]] for x in self.selected]
     if method == "hyperopt":
