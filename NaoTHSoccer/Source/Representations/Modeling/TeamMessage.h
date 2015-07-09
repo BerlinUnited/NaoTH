@@ -86,7 +86,7 @@ public:
     // BEGIN BERLIN UNITED SPECIFIC
     std::string bodyID;
     unsigned int timeToBall;
-    bool wasStriker; //TODO: depricated - rename to wantsToBeStriker
+    bool wasStriker; //TODO: deprecated - rename to isPlayingStriker
     bool wantsToBeStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
