@@ -66,19 +66,13 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
     out.ballVelocity.x = 0;
     out.ballVelocity.y = 0;
   }
-  if(bodyState.fall_down_state == BodyState::upright)
-  {
-    out.fallen = false;
-  }
-  else
-  {
-    out.fallen = true;
-  }
-
+  
+  out.fallen = bodyState.fall_down_state != BodyState::upright;
   out.bodyID = robotInfo.bodyID;
   out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
-  out.wasStriker = roleDecisionModel.wantsToBeStriker;
+  out.wasStriker = playerInfo.isPlayingStriker;
+  out.wantsToBeStriker = roleDecisionModel.wantsToBeStriker;
   out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
   out.batteryCharge = (float) batteryData.charge;
   out.temperature =
@@ -86,10 +80,10 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
 
   out.opponents.clear();
   out.opponents.reserve(playersModel.opponents.size());
-  for(unsigned int i=0; i < playersModel.opponents.size(); i++)
+  for(size_t i=0; i < playersModel.opponents.size(); i++)
   {
     const PlayersModel::Player& p = playersModel.opponents[i];
-    // only add the players that where seen in this frame
+    // only add the players that were seen in this frame
     if(p.frameInfoWhenWasSeen.getFrameNumber() == frameInfo.getFrameNumber())
     {
       TeamMessage::Opponent opp;
@@ -98,7 +92,6 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
       out.opponents.push_back(opp);
     }
   }
-
 
 }
 
@@ -167,6 +160,7 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   naothmessages::BUUserTeamMessage userMsg;
   userMsg.set_bodyid(teamData.bodyID);
   userMsg.set_wasstriker(teamData.wasStriker);
+  userMsg.set_wantstobestriker(teamData.wantsToBeStriker);
   userMsg.set_timestamp(teamData.timestamp);
   userMsg.set_timetoball(teamData.timeToBall);
   userMsg.set_ispenalized(teamData.isPenalized);

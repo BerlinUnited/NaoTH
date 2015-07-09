@@ -68,7 +68,7 @@ void StableRoleDecision::execute()
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
-      if (msg.wasStriker) { //Decision of the current round
+      if (msg.wantsToBeStriker) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured
         // NOTE: goalie is always favoured for the first striker
         if ((int)robotNumber < firstStriker) { 

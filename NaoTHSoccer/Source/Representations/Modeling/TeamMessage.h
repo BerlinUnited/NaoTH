@@ -45,6 +45,7 @@ public:
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
+        wantsToBeStriker(false),
         isPenalized(false),
         batteryCharge(0.0f),
         temperature(0.0f),
@@ -85,7 +86,8 @@ public:
     // BEGIN BERLIN UNITED SPECIFIC
     std::string bodyID;
     unsigned int timeToBall;
-    bool wasStriker;
+    bool wasStriker; //TODO: depricated - rename to wantsToBeStriker
+    bool wantsToBeStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
     float batteryCharge;

@@ -139,6 +139,7 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
         msg.timestamp = userData.timestamp();
         msg.bodyID = userData.bodyid();
         msg.wasStriker = userData.wasstriker();
+        msg.wantsToBeStriker = userData.wantstobestriker();
         msg.timeToBall = userData.timetoball();
         msg.isPenalized = userData.ispenalized();
         msg.batteryCharge = userData.batterycharge();
