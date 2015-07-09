@@ -3,38 +3,30 @@ import numpy as np
 from matplotlib import pyplot as plt
 import random
 from sklearn.neighbors import NearestNeighbors
-from hyperopt import hp, fmin, tpe, Trials
 from scipy.optimize import minimize
-import time
 
 class Optimizer:
   def __init__(self, gt, mes):
+    self.n_select = min(10, len(mes))
     self.gt = gt
     self.mes = mes
     self.knn = NearestNeighbors(n_neighbors=1).fit([[x.x, x.y] for x  in self.gt])
     self.nbrs = []
+    self.selected = []
   def optimize(self):
-    self.nbrs = [gt[self.knn.kneighbors([x.x, x.y])[1][0][0]] for x in mes]
-    space = [hp.uniform("x", -5.0, 5.0), hp.uniform("y", -5, 5), hp.uniform("theta", -math.pi, math.pi)]
-    trials = Trials()
-    best = fmin(self.objective, space, algo=tpe.suggest, max_evals=100, trials=trials)
+    self.selected = np.random.choice(self.mes, self.n_select)
+    self.nbrs = [self.gt[self.knn.kneighbors([x.x, x.y])[1][0][0]] for x in self.selected]
+    res = minimize(self.objective, [0.0, 0.0, 0.0])
+    best = res.x 
     p = Pose2D()
-    p.translation = Vector2(best["x"], best["y"])
-    p.rotation = best["theta"]
-    fun = trials.average_best_error()
-    return p, fun
-#    res = minimize(self.objective, [0.0, 0.0, 0.0])
-#    best = res.x 
-#    p = Pose2D()
-#    p.translation = Vector2(best[0], best[1])
-#    p.rotation = best[2]
-#    return p, res.fun
+    p.translation = Vector2(best[0], best[1])
+    p.rotation = best[2]
+    return p, res.fun
   def objective(self, args):
     p = Pose2D()
     p.translation = Vector2(args[0], args[1])
     p.rotation = args[2]
-    guess = [p * Vector2(x.x, x.y) for x in self.mes]
-#    distances = [self.knn.kneighbors([x.x, x.y])[0][0][0] for x in guess]
+    guess = [p * Vector2(x.x, x.y) for x in self.selected]
     diffs = [x1-x2 for x1,x2 in zip(guess, self.nbrs)]
     distances = np.hypot([x.x for x in diffs], [x.y for x in diffs])
     metric = np.sum(np.square(distances))
@@ -42,7 +34,7 @@ class Optimizer:
 
 if __name__ == "__main__":
 
-  dx = 10.0
+  dx = 100.0
   xLength = 9000;
   yLength = 6000;
   gt = []
@@ -60,7 +52,7 @@ if __name__ == "__main__":
   gt.extend([Vector2(xLength - xPenaltyAreaLength, y) for y in np.arange(yLength/2.0-yPenaltyAreaLength/2.0, yLength/2.0+yPenaltyAreaLength/2.0, dx)])
   gt.extend([Vector2(xLength/2, y) for y in np.arange(0.0, yLength, dx)])
   centerCircleRadius = 750;
-  gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, centerCircleRadius/dx)])
+  gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, 2*math.pi*centerCircleRadius/dx)])
 
   diff = Pose2D()
   diff.translation = Vector2(-1.0, 2.0)
@@ -77,14 +69,13 @@ if __name__ == "__main__":
 
   plt.ion()
 
-  solution = []
+  solution = [Vector2(x.x, x.y) for x in mes]
   for i in range(25):
-    opt = Optimizer(gt, mes)
+    opt = Optimizer(gt, solution)
     antidiff, fun = opt.optimize()
     print fun
 
-    solution = [antidiff * x for x in mes]
-    mes = solution
+    solution = [antidiff * x for x in solution]
     plt.clf()
     plt.plot([x.x for x in gt], [x.y for x in gt], "k.")
     plt.plot([x.x for x in mes], [x.y for x in mes], "b.")
