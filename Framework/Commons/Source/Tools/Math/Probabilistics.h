@@ -13,6 +13,9 @@
 #include "Common.h"
 #include <algorithm>
 
+#define _STD	::std::
+#define _CSTD	::
+
 namespace Math {
 
 /** constant for triangular distribution*/
@@ -33,6 +36,31 @@ inline double randomGauss()
   } while (r >= 1.0 || r==0);
   const double fac(sqrt(-2.0*log(r)/r));
   return v1*fac;
+}
+
+inline double generateGaussianNoise(double mu, double sigma)
+{
+	const double epsilon = std::numeric_limits<double>::min();
+
+	static double z0, z1;
+	static bool generate;
+	generate = !generate;
+
+	if (!generate)
+	   return z1 * sigma + mu;
+
+	double u1, u2;
+	do
+	{
+	  u1 = rand() * (1.0 / RAND_MAX);
+	  u2 = rand() * (1.0 / RAND_MAX);
+	}
+	while ( u1 <= epsilon );
+
+  double logu = sqrt(-2.0 * log(u1));
+  z0 = logu * cos(pi2 * u2);
+  z1 = logu * sin(pi2 * u2);
+	return z0 * sigma + mu;
 }
 
 /**
