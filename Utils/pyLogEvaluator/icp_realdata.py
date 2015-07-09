@@ -76,6 +76,15 @@ if __name__ == "__main__":
   gt.extend([Vector2(xLength/2, y) for y in np.arange(0.0, yLength, dx)])
   centerCircleRadius = 750;
   gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, 2*math.pi*centerCircleRadius/dx)])
+  goalWidth = 1500;
+  goalpostRadius = 50;
+  goalDepth = 400 + 2*goalpostRadius;
+  gt.extend([Vector2(xLength+x, yLength/2.0-goalWidth/2.0) for x in np.arange(0.0, goalDepth, dx)])
+  gt.extend([Vector2(xLength+x, yLength/2.0+goalWidth/2.0) for x in np.arange(0.0, goalDepth, dx)])
+  gt.extend([Vector2(xLength + goalDepth, y) for y in np.arange(yLength/2.0-goalWidth/2.0, yLength/2.0+goalWidth/2.0, dx)])
+  gt.extend([Vector2(-x, yLength/2.0-goalWidth/2.0) for x in np.arange(0.0, goalDepth, dx)])
+  gt.extend([Vector2(-x, yLength/2.0+goalWidth/2.0) for x in np.arange(0.0, goalDepth, dx)])
+  gt.extend([Vector2(-goalDepth, y) for y in np.arange(yLength/2.0-goalWidth/2.0, yLength/2.0+goalWidth/2.0, dx)])
 
   data = cPickle.load(open("lines.pick", "rb"))
 
