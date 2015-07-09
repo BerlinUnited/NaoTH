@@ -34,11 +34,12 @@ class Optimizer:
       metrics = [[self.objective(guess), guess] for guess in random_guesses]
       metrics.sort(key=lambda x:x[0])
       res = minimize(self.objective, metrics[0][1])
-      best = res.x 
+      best = res.x
+      fun = res.fun
       p = Pose2D()
       p.translation = Vector2(best[0], best[1])
       p.rotation = best[2]
-      return p, res.fun/self.n_select
+      return p, fun/self.n_select
     else:
       return
   def objective(self, args):
@@ -90,18 +91,25 @@ if __name__ == "__main__":
   plt.ion()
 
   solution = [Vector2(x.x, x.y) for x in mes]
+  history = []
   opt = Optimizer(gt)
   for i in range(100):
     antidiff = Pose2D()
     antidiff, fun = opt.optimize(solution, "BFGS")
+    history.append(fun)
     print fun
     if fun < 100:
       break
 
     solution = [antidiff * x for x in solution]
     plt.clf()
+    plt.subplot(211)
     plt.plot([x.x for x in gt], [x.y for x in gt], "k.")
     plt.plot([x.x for x in mes], [x.y for x in mes], "b.")
     plt.plot([x.x for x in solution], [x.y for x in solution], "r.")
     plt.gca().set_aspect("equal", "datalim")
+    plt.subplot(212)
+    plt.plot(history)
+    plt.gca().set_yscale("log")
+    plt.grid()
     plt.draw()
