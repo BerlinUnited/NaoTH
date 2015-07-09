@@ -32,8 +32,8 @@ void StableRoleDecision::execute() {
 
 void StableRoleDecision::computeStrikers() {
   
-  getRoleDecisionModel().aliveRobots = *(new std::list<int>());
-  getRoleDecisionModel().deadRobots = *(new std::list<int>());
+  getRoleDecisionModel().aliveRobots.clear();
+  getRoleDecisionModel().deadRobots.clear();
 
   int firstStriker = std::numeric_limits<int>::max();
   int secondStriker = std::numeric_limits<int>::max();
@@ -45,8 +45,9 @@ void StableRoleDecision::computeStrikers() {
   TeamMessage const& tm = getTeamMessage();
 
   double ownTimeToBall = getSoccerStrategy().timeToBall;
-  if (getPlayerInfo().isPlayingStriker)
+  if (getPlayerInfo().isPlayingStriker) {
     ownTimeToBall -= 300;
+  }
 
   for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
     unsigned int robotNumber = i->first;
@@ -86,7 +87,8 @@ void StableRoleDecision::computeStrikers() {
             secondStriker = robotNumber;
           }
         }
-        if (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall) { 
+        if (wantsToBeStriker && 
+          (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall + parameters.timeToBall_uncertainty < ownTimeToBall)) { 
           wantsToBeStriker = false; //Preparation for next round's decision
         }
 
