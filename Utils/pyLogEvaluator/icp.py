@@ -29,7 +29,11 @@ class Optimizer:
       fun = trials.average_best_error()
       return p, fun/self.n_select
     elif method == "BFGS":
-      res = minimize(self.objective, [0.0, 0.0, 0.0])
+      random_guesses = [[random.gauss(0.0, 1000), random.gauss(0.0, 1000), random.uniform(-math.pi, math.pi)] for i in range(100)]
+      random_guesses.append([0.0, 0.0, 0.0])
+      metrics = [[self.objective(guess), guess] for guess in random_guesses]
+      metrics.sort(key=lambda x:x[0])
+      res = minimize(self.objective, metrics[0][1])
       best = res.x 
       p = Pose2D()
       p.translation = Vector2(best[0], best[1])
@@ -50,7 +54,6 @@ class Optimizer:
     return metric
 
 if __name__ == "__main__":
-
   dx = 100.0
   xLength = 9000;
   yLength = 6000;
@@ -72,8 +75,8 @@ if __name__ == "__main__":
   gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, 2*math.pi*centerCircleRadius/dx)])
 
   diff = Pose2D()
-  diff.translation = Vector2(random.uniform(-1000, 1000), random.uniform(-1000, 1000))
-  diff.rotation = random.uniform(-math.pi/4, math.pi/4)
+  diff.translation = Vector2(random.uniform(-2000, 2000), random.uniform(-2000, 2000))
+  diff.rotation = random.uniform(-math.pi, math.pi)
 
   mes = []
   while(len(mes) < 100):
@@ -88,10 +91,12 @@ if __name__ == "__main__":
 
   solution = [Vector2(x.x, x.y) for x in mes]
   opt = Optimizer(gt)
-  for i in range(40):
+  for i in range(100):
     antidiff = Pose2D()
     antidiff, fun = opt.optimize(solution, "BFGS")
     print fun
+    if fun < 100:
+      break
 
     solution = [antidiff * x for x in solution]
     plt.clf()
