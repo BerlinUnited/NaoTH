@@ -98,13 +98,17 @@ if __name__ == "__main__":
 
   #cPickle.dump( log, open( "tmp.json", "w" ) )
 
-  cm = logm[-1][1]
-  print cm.translation
-  for edgel in log[-1][1].edgels:
-    w = project(edgel.point.x, edgel.point.y, cm)
-    plt.plot(w.x, w.y, "k*")
-  plt.gca().set_aspect("equal", "datalim")
-  plt.show()
+  points = []
+  commonlength = min(len(logm), len(log))
+  for frame in zip(logm[:commonlength], log[:commonlength]):
+    if frame[0][0] == frame[1][0]:
+      cm = frame[0][1]
+      linepoints = [project(edgel.point.x, edgel.point.y, cm) for edgel in frame[1][1].edgels]
+      points.append(linepoints)
+  cPickle.dump(points, open("lines.pick", "wb"))
+#    plt.plot(w.x, w.y, "k*")
+#  plt.gca().set_aspect("equal", "datalim")
+#  plt.show()
 #  poses = []
 #  for i in range(5):
 #    poses.extend([msg[1].data[i].pose for msg in log if len(msg[1].data) > 0])
