@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 
 class Optimizer:
   def __init__(self, gt, mes):
-    self.n_select = min(10, len(mes))
+    self.n_select = random.randint(0.1*len(mes), len(mes)-1)
     self.gt = gt
     self.mes = mes
     self.knn = NearestNeighbors(n_neighbors=1).fit([[x.x, x.y] for x  in self.gt])
@@ -29,7 +29,9 @@ class Optimizer:
     guess = [p * Vector2(x.x, x.y) for x in self.selected]
     diffs = [x1-x2 for x1,x2 in zip(guess, self.nbrs)]
     distances = np.hypot([x.x for x in diffs], [x.y for x in diffs])
-    metric = np.sum(np.square(distances))
+    # throw away worst 10%
+    distances = np.sort(distances)
+    metric = np.sum(np.square(distances[:len(distances)-0.1*len(distances)]))
     return metric
 
 if __name__ == "__main__":
@@ -55,22 +57,22 @@ if __name__ == "__main__":
   gt.extend([Vector2(xLength/2+math.cos(a)*centerCircleRadius, yLength/2+math.sin(a)*centerCircleRadius) for a in np.linspace(0, math.pi*2, 2*math.pi*centerCircleRadius/dx)])
 
   diff = Pose2D()
-  diff.translation = Vector2(-1.0, 2.0)
-  diff.rotation = math.pi/4.0
+  diff.translation = Vector2(random.uniform(-1000, 1000), random.uniform(-1000, 1000))
+  diff.rotation = random.uniform(-math.pi/4, math.pi/4)
 
   mes = []
-  while(len(mes) < 20):
+  while(len(mes) < 100):
     i = random.randint(0, len(gt)-1)
-    if gt[i].x > -1000 and gt[i].x < 3000 and gt[i].y > 1000 and gt[i].y < 3000:
+    if gt[i].x > -1000 and gt[i].x < 5000 and gt[i].y > -1000 and gt[i].y < 3000:
       mes.append(diff*gt[i])
 
-  noise = 0
+  noise = 10
   mes = [Vector2(x.x + random.gauss(0.0, noise), x.y + random.gauss(0.0, noise)) for x in mes]
 
   plt.ion()
 
   solution = [Vector2(x.x, x.y) for x in mes]
-  for i in range(25):
+  for i in range(40):
     opt = Optimizer(gt, solution)
     antidiff, fun = opt.optimize()
     print fun
