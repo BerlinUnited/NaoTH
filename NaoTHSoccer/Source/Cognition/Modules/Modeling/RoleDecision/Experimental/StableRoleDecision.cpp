@@ -84,7 +84,9 @@ void StableRoleDecision::computeStrikers() {
             firstStriker = robotNumber;
           }
           else if ((int)robotNumber < secondStriker) {
-            secondStriker = robotNumber;
+            if (firstStriker != 1) { // No one else will be a striker, if goalie is a striker
+              secondStriker = robotNumber;
+            }
           }
         }
         if (wantsToBeStriker && 
