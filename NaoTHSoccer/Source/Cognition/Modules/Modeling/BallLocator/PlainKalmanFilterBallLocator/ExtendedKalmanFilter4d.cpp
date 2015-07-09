@@ -33,7 +33,7 @@ ExtendedKalmanFilter4d::~ExtendedKalmanFilter4d()
 
 }
 
-void ExtendedKalmanFilter4d::prediction(const Eigen::Vector2d& u, double dt)
+void ExtendedKalmanFilter4d::predict(const Eigen::Vector2d& u, double dt)
 {
     // adapt state transition matrix
     F << 1, dt, 0, 0,

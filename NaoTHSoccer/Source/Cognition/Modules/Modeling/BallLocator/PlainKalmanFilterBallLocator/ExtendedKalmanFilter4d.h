@@ -35,7 +35,7 @@ public:
 
     ~ExtendedKalmanFilter4d();
 
-    void prediction(const Eigen::Vector2d &u, double dt);
+    void predict(const Eigen::Vector2d &u, double dt);
     void update(const Eigen::Vector2d &z, const Measurement_Function_H& h);
 
 public:

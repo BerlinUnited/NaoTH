@@ -51,10 +51,10 @@ void PlainKalmanFilterBallLocator::execute()
       if(kickTime == getFrameInfo().getTime()) {
         Eigen::Vector2d u;
         u(0) = 0.0;
-        u(1) = 1000*Math::g;
+        u(1) = 750.0/dt;
 
         ExtendedKalmanFilter4d n = filter.front();
-        n.prediction(u,dt);
+        n.predict(u,dt);
         filter.push_back(n);
       }
     );
@@ -68,7 +68,7 @@ void PlainKalmanFilterBallLocator::execute()
     if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
 
         Eigen::Vector2d z;
-        double x,y;
+        Vector2d p;
 
         // allways use the bottom percept if available
         if(getBallPercept().ballWasSeen)
@@ -85,8 +85,7 @@ void PlainKalmanFilterBallLocator::execute()
             h.camInfo = getCameraInfo();
 
             // needed if a new filter has to be created
-            x = getBallPercept().bearingBasedOffsetOnField.x;
-            y = getBallPercept().bearingBasedOffsetOnField.y;
+            p = getBallPercept().bearingBasedOffsetOnField;
         }
         else 
         {
@@ -102,58 +101,49 @@ void PlainKalmanFilterBallLocator::execute()
             h.camInfo = getCameraInfoTop();
 
             // needed if a new filter has to be created
-            x = getBallPerceptTop().bearingBasedOffsetOnField.x;
-            y = getBallPerceptTop().bearingBasedOffsetOnField.y;
+            p = getBallPerceptTop().bearingBasedOffsetOnField;
         }
         
 
-        if(filter.size() == 0) {
+        // find best matching filter
+        double dist = std::numeric_limits<double>::infinity();
+        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = filter.begin();
+
+        for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); ++iter)
+        {
+            double temp = distanceToState(*iter,z);
+
+            if(temp < dist) {
+                dist = temp;
+                bestPredictor = iter;
+            }
+        }
+
+        // if no sutable filter found create a new one 
+        if(dist > distanceThreshold || bestPredictor == filter.end())
+        {
             Eigen::Vector4d newState;
-            newState << x, 0, y, 0;
+            newState << p.x, 0, p.y, 0;
             filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
         }
         else
         {
-            // find best matching filter
-            double dist = distanceToState(filter.front(),z);
+            DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
+                FIELD_DRAWING_CONTEXT;
+                PEN("FF0000", 10);
+                const Eigen::Vector4d state = (*bestPredictor).getState();
+                LINE(p.x,p.y,state(0),state(2));
+                TEXT_DRAWING((p.x+state(0))/2,(p.y+state(2))/2,dist);
+            );
 
-            std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = filter.begin();
+            // debug stuff -> should be in a DEBUG_REQUEST
+            Eigen::Vector2d prediction_error;
+            prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
 
-            for(std::vector<ExtendedKalmanFilter4d>::iterator iter = bestPredictor; iter != filter.end(); ++iter)
-            {
-                double temp = distanceToState(*iter,z);
+            PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
+            PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
 
-                if(temp < dist) {
-                    dist = temp;
-                    bestPredictor = iter;
-                }
-            }
-
-            if(dist > distanceThreshold)
-            {
-                Eigen::Vector4d newState;
-                newState << x, 0, y, 0;
-                filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseStd, initialStateStdSingleDimension));
-            }
-            else
-            {
-                DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
-                    FIELD_DRAWING_CONTEXT;
-                    PEN("FF0000", 10);
-                    const Eigen::Vector4d state = (*bestPredictor).getState();
-                    LINE(x,y,state(0),state(2));
-                    TEXT_DRAWING((x+state(0))/2,(y+state(2))/2,dist);
-                );
-
-                // debug stuff -> should be in a DEBUG_REQUEST
-                Eigen::Vector2d prediction_error;
-                prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
-
-                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
-                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
-
-                (*bestPredictor).update(z,h);
-            }
+            (*bestPredictor).update(z,h);
         }
     }// end if
 
@@ -254,7 +244,7 @@ void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, doubl
     const Eigen::Vector4d& x = filter.getState();
     Eigen::Vector2d u; // control vector
 
-    double deceleration = c_RR*9810;//[mm/s^2]
+    double deceleration = c_RR*Math::g*1e3;//[mm/s^2]
 
     // deceleration has to be in opposite direction of velocity
     u <<  -x(1), -x(3);
@@ -267,7 +257,7 @@ void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, doubl
 
     double time_until_vel_x_zero = 0;
     double time_until_vel_y_zero = 0;
-
+    
     if(fabs(u(0)) > epsilon){
         time_until_vel_x_zero = -x(1)/u(0);
     }
@@ -277,45 +267,45 @@ void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, doubl
 
     if(time_until_vel_x_zero > dt && time_until_vel_y_zero > dt)
     {
-        filter.prediction(u,dt);
+        filter.predict(u,dt);
         return;
     }
 
     if(time_until_vel_x_zero < epsilon && time_until_vel_y_zero < epsilon)
     {
-        filter.prediction(Eigen::Vector2d::Zero(),dt);
+        filter.predict(Eigen::Vector2d::Zero(),dt);
         return;
     }
 
     if(time_until_vel_x_zero < time_until_vel_y_zero)
     {
-        filter.prediction(u,time_until_vel_x_zero);
+        filter.predict(u,time_until_vel_x_zero);
         u(0) = 0;
         dt -= time_until_vel_x_zero;
 
         if(time_until_vel_y_zero < dt)
         {
             double dt2 = time_until_vel_y_zero - time_until_vel_x_zero;
-            filter.prediction(u, dt2);
+            filter.predict(u, dt2);
             u(1) = 0;
             dt -= dt2;
         }
 
-        filter.prediction(u,dt);
+        filter.predict(u,dt);
     } else {
-        filter.prediction(u,time_until_vel_y_zero);
+        filter.predict(u,time_until_vel_y_zero);
         u(1) = 0;
         dt -= time_until_vel_y_zero;
 
         if(time_until_vel_x_zero < dt)
         {
             double dt2 = time_until_vel_x_zero - time_until_vel_y_zero;
-            filter.prediction(u, dt2);
+            filter.predict(u, dt2);
             u(0) = 0;
             dt -= dt2;
         }
 
-        filter.prediction(u,dt);
+        filter.predict(u,dt);
     }
 }
 
