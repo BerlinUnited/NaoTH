@@ -15,7 +15,7 @@ import matplotlib
 #matplotlib.use('Qt4Agg')
 #matplotlib.use('TkAgg')
 
-from matplotlib.backends import qt_compat
+#from matplotlib.backends import qt_compat
 from matplotlib import pyplot as plt
 
 import cPickle
@@ -54,8 +54,9 @@ if __name__ == "__main__":
   logm = []
   logp = []
 
+  player_number = -1
+
   #while True :
-  names = []
   for i in range(9020):
     try:
       currentFrameNumber = struct.unpack("=l", inFile.read(4))[0]
@@ -66,13 +67,10 @@ if __name__ == "__main__":
       while c != "\0":
         currentName = currentName + c
         c = struct.unpack("=c", inFile.read(1))[0]
-      if currentName not in names:
-        names.append(currentName)
       #print currentName
       
       currentSize = struct.unpack("=l", inFile.read(4))[0]
       
-      # parse only the TeamMessages
       if currentName == "ScanLineEdgelPerceptTop":
         data = inFile.read(currentSize)
         message = globals()["ScanLineEdgelPercept"]()
@@ -93,13 +91,19 @@ if __name__ == "__main__":
         data = inFile.read(currentSize)
         message = globals()["BehaviorStateComplete"]()
         message.ParseFromString(data)
+        for foo in message.inputSymbolList.decimal:
+          if "game.player_number" == foo.name:
+            player_number = int(foo.value)
       elif currentName == "TeamMessage":
         data = inFile.read(currentSize)
         message = globals()[currentName]()
         message.ParseFromString(data)
-        if len(message.data) > 0:
+        if len(message.data) == 0:
           continue
-        logp.append([currentFrameNumber, message])
+        for foo in message.data:
+          print foo.playerNum, player_number
+          if foo.playerNum == player_number:
+            logp.append([currentFrameNumber, message])
         
       else:
         inFile.seek(currentSize,1)
@@ -111,8 +115,6 @@ if __name__ == "__main__":
 
   #cPickle.dump( log, open( "tmp.json", "w" ) )
 
-  names.sort()
-  print names
 
   points = []
   commonlength = min(len(logm), len(log))
