@@ -132,7 +132,8 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
-  csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
 
