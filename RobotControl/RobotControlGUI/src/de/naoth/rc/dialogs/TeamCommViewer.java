@@ -51,7 +51,10 @@ public class TeamCommViewer extends AbstractDialog {
 
     private Timer timerCheckMessages;
     private final TeamCommListener teamCommListener = new TeamCommListener();
-    private final HashMap<String, RobotStatus> robotsMap = new HashMap<String, RobotStatus>();
+    private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    
+    private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
+
 
     /**
      * Creates new form TeamCommViewer
@@ -134,8 +137,8 @@ public class TeamCommViewer extends AbstractDialog {
 
                 this.teamCommListener.disconnect();
 
-                synchronized (this.teamCommListener.messageMap) {
-                    this.teamCommListener.messageMap.clear();
+                synchronized (messageMap) {
+                    messageMap.clear();
                     this.robotsMap.clear();
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
@@ -155,18 +158,18 @@ public class TeamCommViewer extends AbstractDialog {
     public void dispose() {
     }
 
-    class TeamCommListenTask extends TimerTask {
+    private class TeamCommListenTask extends TimerTask {
 
         @Override
         public void run() {
-            synchronized (teamCommListener.messageMap) {
-                if (teamCommListener.messageMap.isEmpty()) {
+            synchronized (messageMap) {
+                if (messageMap.isEmpty()) {
                     return;
                 }
                 
                 DrawingCollection drawings = new DrawingCollection();
                 
-                for (Entry<String, TeamCommListener.Message> msg : teamCommListener.messageMap.entrySet()) 
+                for (Entry<String, TeamCommListener.Message> msg : messageMap.entrySet()) 
                 {
                     final String address = msg.getKey();
                     final SPLMessage splMessage = msg.getValue().message;
@@ -212,8 +215,7 @@ public class TeamCommViewer extends AbstractDialog {
         private Thread trigger;
 
         private final ByteBuffer readBuffer;
-        public final Map<String, Message> messageMap = Collections.synchronizedMap(new TreeMap<String, Message>());
-
+        
         public TeamCommListener() {
             this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -258,7 +260,7 @@ public class TeamCommViewer extends AbstractDialog {
 
                         long timestamp = System.currentTimeMillis();
                         if (address instanceof InetSocketAddress) {
-                            this.messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg));
+                            messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg));
                         }
 
                     } catch (Exception ex) {
