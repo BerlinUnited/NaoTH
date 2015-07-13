@@ -57,18 +57,28 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
     setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), (sizeof(int)));
   #endif
 
+  queryBroadcastAddress(interfaceName, port);
+
+  socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
+  ASSERT(socketThread != NULL);
+  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+}
+
+bool BroadCaster::queryBroadcastAddress(const std::string& interfaceName, unsigned int port)
+{
   string broadcast = NetAddr::getBroadcastAddr(interfaceName);
   if("unknown" != broadcast)
   {
     GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
+    if(broadcastAddress != NULL) {
+      g_object_unref(broadcastAddress);
+    }
     broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
     g_object_unref(address);
+    g_message("BroadCaster configured (%s, %d)", broadcast.c_str(), port);
+    return true;
   }
-
-  g_message("BroadCaster start thread (%s, %d)", broadcast.c_str(), port);
-  socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
-  ASSERT(socketThread != NULL);
-  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+  return false;
 }
 
 BroadCaster::~BroadCaster()

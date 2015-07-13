@@ -31,6 +31,8 @@ public:
 private:
   void socketSend(const std::string& data);
 
+  bool queryBroadcastAddress(const std::string &interfaceName, unsigned int port);
+
 private:
   bool exiting;
   GSocket* socket;
