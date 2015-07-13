@@ -31,7 +31,7 @@ public:
 private:
   void socketSend(const std::string& data);
 
-  bool queryBroadcastAddress(const std::string &interfaceName, unsigned int port);
+  bool queryBroadcastAddress();
 
 private:
   bool exiting;
@@ -42,6 +42,10 @@ private:
   GCond* messageCond;
   std::string message;
   std::list<std::string> messages;
+  const std::string& interfaceName;
+  const unsigned int port;
+  /** Number of frame where no broadcast information was available since the interface was down */
+  int framesWithoutInterface;
 };
 
 

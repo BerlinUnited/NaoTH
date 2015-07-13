@@ -30,7 +30,9 @@ void* broadcaster_static_loop(void* b)
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
-    socketThread(NULL), messageMutex(NULL), messageCond(NULL)
+    socketThread(NULL), messageMutex(NULL), messageCond(NULL),
+    interfaceName(interfaceName), port(port),
+    framesWithoutInterface(0)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
@@ -57,17 +59,17 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
     setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), (sizeof(int)));
   #endif
 
-  queryBroadcastAddress(interfaceName, port);
+  queryBroadcastAddress();
 
   socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
   ASSERT(socketThread != NULL);
   g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
 }
 
-bool BroadCaster::queryBroadcastAddress(const std::string& interfaceName, unsigned int port)
+bool BroadCaster::queryBroadcastAddress()
 {
   string broadcast = NetAddr::getBroadcastAddr(interfaceName);
-  if("unknown" != broadcast)
+  if("unknown" != broadcast && "" != broadcast)
   {
     GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
     if(broadcastAddress != NULL) {
@@ -125,8 +127,6 @@ void BroadCaster::send(std::list<std::string>& msgs)
 
 void BroadCaster::loop()
 {
-  if(broadcastAddress==NULL) return;
-
   while(!exiting)
   {
     g_mutex_lock(messageMutex);
@@ -157,6 +157,12 @@ void BroadCaster::socketSend(const std::string& data)
 {
 
   if(broadcastAddress == NULL) {
+    framesWithoutInterface++;
+    if(framesWithoutInterface % 150 == 0)
+    {
+      // attempt to get a the broadcast address from the interface again
+      queryBroadcastAddress();
+    }
     return;
   }
 
