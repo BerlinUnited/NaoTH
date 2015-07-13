@@ -9,6 +9,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Math/Geometry.h"
 
+
 LineGraphProvider::LineGraphProvider()
 :
   cameraID(CameraInfo::Top)
@@ -22,12 +23,29 @@ LineGraphProvider::LineGraphProvider()
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_lines_point_model", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_LineGraphPercept", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_lines_point_samples_transform", "", false);
+
+  // create model point for the icp test
+  for(size_t i = 0; i < getFieldInfo().fieldLinesTable.getLines().size(); i++)
+  {
+    const Math::LineSegment& segment = getFieldInfo().fieldLinesTable.getLines()[i];
+    for(double t = 0; t < segment.getLength(); t += 100) {
+      Vector2d p = segment.getBase() + segment.getDirection()*t;
+      lines_point_model.push_back(p.x);
+      lines_point_model.push_back(p.y);
+    }
+  }
+  icp = new IcpPointToPoint(getFieldInfo().fieldLinesTable, lines_point_model.data(),lines_point_model.size()/2,2);
+
   getDebugParameterList().add(&parameters);
 }
 
 
 LineGraphProvider::~LineGraphProvider()
 {
+  delete icp;
   getDebugParameterList().remove(&parameters);
 }
 
@@ -215,6 +233,11 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     }
   );
 }//end execute
+
+void LineGraphProvider::test_icp() const
+{
+
+}
 
 double LineGraphProvider::edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2)
 {

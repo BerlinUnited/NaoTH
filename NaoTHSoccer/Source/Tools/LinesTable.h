@@ -120,7 +120,7 @@ public:
   void addLine(const Vector2d& begin, const Vector2d& end)
   {
     lines.push_back(Math::LineSegment(begin, end));
-  }//end addLine
+  }
 
   /** some getter */
   const std::vector<Math::LineSegment>& getLines() const { return lines; }
@@ -131,7 +131,7 @@ public:
   Math::LineSegment getNearestLine(const Pose2D& pose) const
   {
     return lines[getNearestLine(pose.translation, all_lines)];
-  }//end getNearestLine
+  }
 
 
   /**
