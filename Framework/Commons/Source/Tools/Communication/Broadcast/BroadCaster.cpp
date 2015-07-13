@@ -32,7 +32,8 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
     socketThread(NULL), messageMutex(NULL), messageCond(NULL),
     interfaceName(interfaceName), port(port),
-    framesWithoutInterface(0)
+    framesWithoutInterface(0),
+    queryAddressPause(33)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
@@ -158,7 +159,7 @@ void BroadCaster::socketSend(const std::string& data)
 
   if(broadcastAddress == NULL) {
     framesWithoutInterface++;
-    if(framesWithoutInterface % 150 == 0)
+    if(framesWithoutInterface % queryAddressPause == 0)
     {
       // attempt to get a the broadcast address from the interface again
       queryBroadcastAddress();
