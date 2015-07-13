@@ -44,9 +44,9 @@ private:
   std::list<std::string> messages;
   const std::string& interfaceName;
   const unsigned int port;
-  /** Number of frame where no broadcast information was available since the interface was down */
-  int framesWithoutInterface;
-  /** The number of frames we should wait before re-attempting to query the broadcast address */
+  /** Number of message where no broadcast information was available since the interface was down */
+  int messagesWithoutInterface;
+  /** The number of message we should wait before re-attempting to query the broadcast address */
   const int queryAddressPause;
 };
 
