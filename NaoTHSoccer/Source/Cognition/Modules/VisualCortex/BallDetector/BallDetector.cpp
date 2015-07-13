@@ -54,7 +54,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
   bool ballFound = false;
 
-  // the points are sorted - the most red points are at the end
+  //NOTE: the points are sorted - the most red points are at the end
   double radius = -1;
   Vector2d center;
   //Liste von rotenPunkten durchgehen
@@ -274,14 +274,7 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      if(pixel.y < params.maxBorderBrightness)
-      {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+      return pixel.y < params.maxBorderBrightness;
     }
   }//end while
 
