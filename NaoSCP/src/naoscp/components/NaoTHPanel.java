@@ -457,7 +457,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
             // HACK: check if there is anything to be done
             if(!cbCopyLib.isSelected() && 
                !cbCopyExe.isSelected() &&
-               !cbCopyConfig.isSelected()) 
+               !cbCopyConfig.isSelected() && 
+               !cbEnableWifi.isSelected()) 
             {
                 throw new NaoSCPException("Set up deploy directory: no action selected");
             }
