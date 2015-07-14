@@ -79,9 +79,10 @@ bool BroadCaster::queryBroadcastAddress()
     }
     broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
     g_object_unref(address);
-    g_message("BroadCaster configured (%s, %d)", broadcast.c_str(), port);
+    g_message("BroadCaster configured (%s, %s, %d)", interfaceName.c_str(), broadcast.c_str(), port);
     return true;
   }
+//  g_message("BroadCaster was not able to determine broadcast address (%s, %d)", interfaceName.c_str(), port);
   return false;
 }
 
