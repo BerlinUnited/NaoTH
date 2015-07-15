@@ -24,6 +24,12 @@ void TeamBallLocator::execute()
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=msgData.begin(); i != msgData.end(); ++i) {
 
+    // collect messages
+    Vector2dTS ballPosTS;
+    ballPosTS.vec = msg.pose * msg.ballPosition;
+    ballPosTS.t = msg.frameInfo.getTimeInSeconds();
+    ballPosHist.push_back(ballPosTS);
+
     //if (getTeamMessage().messageReceived[i])
     //{
       //const naothmessages::TeamCommMessage& msg = getTeamMessage().message[i];
@@ -72,6 +78,33 @@ void TeamBallLocator::execute()
     getTeamBallModel().positionOnField /= num;
   }
   getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
+
+  // find oldest messages and erase them
+  double maxTimeOffset = 1.0;
+  sort(ballPosHist.begin(), ballPosHist.end());
+  std::vector<Vector2dTS>::iterator cutOff;
+  size_t cutOff = 0;
+  for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
+  {
+    if(cutOff->t >= getTeamBallModel().time - maxTimeOffset)
+    {
+      break;
+    }
+  }
+  ballPosHist.erase(ballPosHist.begin(), cutOff);
+  // median in x and y
+  std::vector<double> x(ballPosHist.size());
+  std::vector<double> y(ballPosHist.size());
+  for(size_t i = 0; i < ballPosHist.size(); i++)
+  {
+    x.push_back(ballPosHist.vec.x);
+    y.push_back(ballPosHist.vec.y);
+  }
+  sort(x.begin(), x.end());
+  sort(y.begin(), y.end());
+  Vector2d teamball;
+  teamball.x = x[x.size()/2];
+  teamball.y = y[y.size()/2];
 
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;

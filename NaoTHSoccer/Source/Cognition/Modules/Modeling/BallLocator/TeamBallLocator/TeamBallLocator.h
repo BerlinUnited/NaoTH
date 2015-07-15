@@ -8,6 +8,7 @@
 #define __TeamBallLocator_h_
 
 #include <ModuleFramework/Module.h>
+#include <algorithm>
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"
@@ -38,6 +39,20 @@ public:
 
 private:
   std::map<unsigned int, TeamMessage::Data> msgData;
+  std::vector<Vector2dTS> ballPosHist;
+
+  class Vector2dTS
+  {
+    public:
+      Vector2dTS() {}
+      bool operator< (const Vector2dTS &v1, const Vector2dTS &v2) const
+      {
+        return v1.t < v2.t;
+      }
+    private:
+      Vector2d vec;
+      double t;
+  }
 };
 
 #endif //__TeamBallLocator_h_
