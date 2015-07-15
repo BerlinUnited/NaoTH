@@ -31,10 +31,12 @@ END_DECLARE_MODULE(TeamBallLocator)
 class TeamBallLocator : protected TeamBallLocatorBase
 {
   public:
+    // time stamped Vector2d
     class Vector2dTS
     {
       public:
         Vector2dTS() {}
+        // this may be implemented the wrong way round
         bool operator< (const Vector2dTS &v2) const
         {
           return this->t < v2.t;
@@ -46,7 +48,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
 
   public:
     TeamBallLocator();
-    ~TeamBallLocator(){}
+    ~TeamBallLocator() {}
 
     virtual void execute();
 
@@ -56,6 +58,3 @@ class TeamBallLocator : protected TeamBallLocatorBase
 };
 
 #endif //__TeamBallLocator_h_
-
-
-

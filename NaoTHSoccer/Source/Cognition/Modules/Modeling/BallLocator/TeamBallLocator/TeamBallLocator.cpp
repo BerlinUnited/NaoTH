@@ -21,15 +21,14 @@ void TeamBallLocator::execute()
     const TeamMessage::Data& msg = i->second;
     const unsigned int& playerNumber = i->first;
     
-    // collect messages
-    Vector2dTS ballPosTS;
-    ballPosTS.vec = msg.pose * msg.ballPosition;
-    ballPosTS.t = msg.frameInfo.getTimeInSeconds();
-    ballPosHist.push_back(ballPosTS);
-
     // set time and legacy stuff
-    if (msg.ballAge >= 0)
+    if(msg.ballAge >= 0) // -1 means invalid ball
     {
+      // collect messages
+      Vector2dTS ballPosTS;
+      ballPosTS.vec = msg.pose * msg.ballPosition;
+      ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
+      ballPosHist.push_back(ballPosTS);
 
       if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
       {
