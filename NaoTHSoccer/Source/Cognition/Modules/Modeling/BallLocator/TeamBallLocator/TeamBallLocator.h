@@ -30,29 +30,29 @@ END_DECLARE_MODULE(TeamBallLocator)
 
 class TeamBallLocator : protected TeamBallLocatorBase
 {
+  public:
+    class Vector2dTS
+    {
+      public:
+        Vector2dTS() {}
+        bool operator< (const Vector2dTS &v2) const
+        {
+          return this->t < v2.t;
+        }
+      private:
+        Vector2d vec;
+        double t;
+    };
 
-public:
-  TeamBallLocator();
-  ~TeamBallLocator(){}
+  public:
+    TeamBallLocator();
+    ~TeamBallLocator(){}
 
-  virtual void execute();
+    virtual void execute();
 
-private:
-  std::map<unsigned int, TeamMessage::Data> msgData;
-  std::vector<Vector2dTS> ballPosHist;
-
-  class Vector2dTS
-  {
-    public:
-      Vector2dTS() {}
-      bool operator< (const Vector2dTS &v1, const Vector2dTS &v2) const
-      {
-        return v1.t < v2.t;
-      }
-    private:
-      Vector2d vec;
-      double t;
-  }
+  private:
+    std::map<unsigned int, TeamMessage::Data> msgData;
+    std::vector<Vector2dTS> ballPosHist;
 };
 
 #endif //__TeamBallLocator_h_
