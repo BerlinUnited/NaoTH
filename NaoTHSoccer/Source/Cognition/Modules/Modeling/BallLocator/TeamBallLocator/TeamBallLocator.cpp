@@ -9,10 +9,7 @@
 
 TeamBallLocator::TeamBallLocator()
 {
-
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
-  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_locally", "draw the team ball model on the local coordination", false);
-
 }
 
 void TeamBallLocator::execute()
