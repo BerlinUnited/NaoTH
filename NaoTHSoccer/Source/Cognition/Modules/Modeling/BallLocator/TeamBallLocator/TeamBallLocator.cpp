@@ -17,67 +17,46 @@ TeamBallLocator::TeamBallLocator()
 
 void TeamBallLocator::execute()
 {
-  int num = 0;
-  //for (int i = 0; i < MAX_NUM_PLAYERS; i++) {
-
   msgData = getTeamMessage().data;
 
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=msgData.begin(); i != msgData.end(); ++i) {
-
+  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=msgData.begin(); i != msgData.end(); ++i) 
+  {
+    const TeamMessage::Data& msg = i->second;
+    const unsigned int& playerNumber = i->first;
+    
     // collect messages
     Vector2dTS ballPosTS;
     ballPosTS.vec = msg.pose * msg.ballPosition;
     ballPosTS.t = msg.frameInfo.getTimeInSeconds();
     ballPosHist.push_back(ballPosTS);
 
-    //if (getTeamMessage().messageReceived[i])
-    //{
-      //const naothmessages::TeamCommMessage& msg = getTeamMessage().message[i];
-      const TeamMessage::Data& msg = i->second;
-      if ( msg.ballAge >= 0)
+    // set time and legacy stuff
+    if (msg.ballAge >= 0)
+    {
+
+      if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
       {
-        Vector2d ballPos = msg.ballPosition;
-        Pose2D robotPos = msg.pose;
-        ballPos = robotPos * ballPos;
-
-        if ( i->second.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
-        {
-          getTeamBallModel().positionOnField =  ballPos ;
-          //getTeamBallModel().time = getTeamMessage().timeWhenReceived[i];
-          ASSERT(i->second.frameInfo.getTimeInSeconds() >= 0);
-          getTeamBallModel().time = (unsigned int)i->second.frameInfo.getTimeInSeconds();
-          num = 1;
-        }
-        else if ( i->second.frameInfo.getTimeInSeconds() == getTeamBallModel().time )
-        {
-          getTeamBallModel().positionOnField += ballPos;
-          num++;
-        }
-
-        // goalie
-        if(i->first == 1) 
-        {
-          getTeamBallModel().goaliePositionOnField = ballPos;
-          getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-          getTeamBallModel().goalieTime = i->second.frameInfo.getTime();
-        }
-
-        // striker
-        if (msg.wasStriker)
-        {
-          getTeamBallModel().strikerPositionOnField = ballPos;
-          getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-          getTeamBallModel().strikerTime = i->second.frameInfo.getTime();
-        }
+        ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
+        getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
       }
-    //}
-  }
 
-  if ( num > 0 )
-  {
-    getTeamBallModel().positionOnField /= num;
+      // goalie
+      if(playerNumber == 1) 
+      {
+        getTeamBallModel().goaliePositionOnField = ballPos;
+        getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
+        getTeamBallModel().goalieTime = msg.frameInfo.getTime();
+      }
+
+      // striker
+      if (msg.wasStriker)
+      {
+        getTeamBallModel().strikerPositionOnField = ballPos;
+        getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+        getTeamBallModel().strikerTime = msg.frameInfo.getTime();
+      }
+    }
   }
-  getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
 
   // find oldest messages and erase them
   double maxTimeOffset = 1.0;
@@ -92,6 +71,7 @@ void TeamBallLocator::execute()
     }
   }
   ballPosHist.erase(ballPosHist.begin(), cutOff);
+  
   // median in x and y
   std::vector<double> x(ballPosHist.size());
   std::vector<double> y(ballPosHist.size());
@@ -105,17 +85,15 @@ void TeamBallLocator::execute()
   Vector2d teamball;
   teamball.x = x[x.size()/2];
   teamball.y = y[y.size()/2];
+  
+  // write result and transform  
+  getTeamBallModel().positionOnField = teamball;
+  getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
 
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 20);
     CIRCLE(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 45);
-    TEXT_DRAWING(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, num);
-    );
-/*
-  DEBUG_REQUEST("TeamBallLocator:draw_ball_locally",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FFFFFF", 30);
-    CIRCLE(getTeamBallModel().position.x, getTeamBallModel().position.y, 45);
-    );*/
-}//end execute
+    TEXT_DRAWING(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, ballPosHist.size());
+  );
+}
