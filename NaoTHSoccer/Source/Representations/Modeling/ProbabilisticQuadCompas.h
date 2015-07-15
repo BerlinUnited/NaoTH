@@ -32,10 +32,10 @@ public:
     assert(bins > 0);
   }
 
-  inline void add(double angle, double wight = 1.0) {
+  inline void add(double angle, double weight = 1.0) {
     for(size_t i = 0; i < angles.size(); i++) {
       double x = ((double) i)*bin_size;
-      angles[i] += exp(-Math::sqr(sin(2.0*(angle - x)) / smoothing))*wight;
+      angles[i] += exp(-Math::sqr(sin(2.0*(angle - x)) / smoothing))*weight;
     }
     normalized = false;
   }

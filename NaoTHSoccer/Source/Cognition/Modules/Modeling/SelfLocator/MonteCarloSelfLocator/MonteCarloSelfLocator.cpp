@@ -47,6 +47,11 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_position","draw robots position (self locator)", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_deviation", "", false);
 
+  DEBUG_REQUEST_REGISTER("MCSLS:state:KIDNAPPED", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:BLIND", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:LOCALIZE", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
+
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
   getDebugParameterList().add(&parameters);
 }
@@ -109,6 +114,11 @@ void MonteCarloSelfLocator::execute()
       state = BLIND;
     }
   }
+
+  DEBUG_REQUEST("MCSLS:state:KIDNAPPED", state = KIDNAPPED; );
+  DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
+  DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
+  DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",
