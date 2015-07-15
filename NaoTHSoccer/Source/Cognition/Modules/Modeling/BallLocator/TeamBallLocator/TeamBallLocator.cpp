@@ -21,8 +21,8 @@ void TeamBallLocator::execute()
     const TeamMessage::Data& msg = i->second;
     const unsigned int& playerNumber = i->first;
     
-    // set time and legacy stuff
-    if(msg.ballAge >= 0) // -1 means invalid ball
+    // -1 means invalid ball
+    if(msg.ballAge >= 0)
     {
       // collect messages
       Vector2dTS ballPosTS;
@@ -30,9 +30,11 @@ void TeamBallLocator::execute()
       ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
       ballPosHist.push_back(ballPosTS);
 
+      // set time
       if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
       {
         ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
+        // are full seconds really the way to go?
         getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
       }
 
@@ -59,8 +61,10 @@ void TeamBallLocator::execute()
   sort(ballPosHist.begin(), ballPosHist.end());
   std::vector<Vector2dTS>::iterator cutOff;
   size_t cutOff = 0;
+  // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
+    // take care: getTeamBallModel().time are unsigned int seconds
     if(cutOff->t >= getTeamBallModel().time - maxTimeOffset)
     {
       break;
@@ -69,18 +73,18 @@ void TeamBallLocator::execute()
   ballPosHist.erase(ballPosHist.begin(), cutOff);
   
   // median in x and y
-  std::vector<double> x(ballPosHist.size());
-  std::vector<double> y(ballPosHist.size());
+  std::vector<double> xHist(ballPosHist.size());
+  std::vector<double> yHist(ballPosHist.size());
   for(size_t i = 0; i < ballPosHist.size(); i++)
   {
-    x.push_back(ballPosHist.vec.x);
-    y.push_back(ballPosHist.vec.y);
+    xHist.push_back(ballPosHist.vec.x);
+    yHist.push_back(ballPosHist.vec.y);
   }
-  sort(x.begin(), x.end());
-  sort(y.begin(), y.end());
+  sort(xHist.begin(), xHist.end());
+  sort(yHist.begin(), yHist.end());
   Vector2d teamball;
-  teamball.x = x[x.size()/2];
-  teamball.y = y[y.size()/2];
+  teamball.x = xHist[xHist.size()/2];
+  teamball.y = yHist[yHist.size()/2];
   
   // write result and transform  
   getTeamBallModel().positionOnField = teamball;
