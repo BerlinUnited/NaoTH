@@ -13,6 +13,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.drawings.Rotation;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -131,12 +132,15 @@ public class TeamCommViewer extends AbstractDialog {
 
         try {
             if (this.btListen.isSelected()) {
-                int portOwn = Integer.parseInt(portNumberOwn.getText().trim());
-                listenerOwn.connect(portOwn);
+                String ownPortRaw = portNumberOwn.getText().trim();
+                if(!ownPortRaw.isEmpty()) {
+                    int portOwn = Integer.parseInt(ownPortRaw);
+                    listenerOwn.connect(portOwn);
+                }
                 String opponentPortRaw = portNumberOpponent.getText().trim();
                 if (!opponentPortRaw.isEmpty()) {
                     int portOpponent = Integer.parseInt(opponentPortRaw);
-                    listenerOpponent.connect(portOwn);
+                    listenerOpponent.connect(portOpponent);
                 }
 
                 this.timerCheckMessages = new Timer();
@@ -189,9 +193,7 @@ public class TeamCommViewer extends AbstractDialog {
                     final String address = msg.getKey();
                     final SPLMessage splMessage = msg.getValue().message;
                     final long timestamp = msg.getValue().timestamp;
-                    if (msg.getValue().isOpponent()) {
-
-                    }
+               
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -207,6 +209,10 @@ public class TeamCommViewer extends AbstractDialog {
                             }
                         }
                     });
+                    
+                    if(msg.getValue().isOpponent()) {
+                        drawings.add(new Rotation((float) Math.PI));
+                    }
                     splMessage.draw(drawings, msg.getValue().isOpponent() ? Color.RED : Color.GRAY);
                 }
 

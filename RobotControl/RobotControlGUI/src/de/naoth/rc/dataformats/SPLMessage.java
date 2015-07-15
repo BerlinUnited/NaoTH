@@ -177,24 +177,6 @@ public class SPLMessage {
         }
     }
     
-    /**
-     * Mirrors all global positions in this SPLMessage (pose, walking_to, shooting_to).
-     * Will change the original object.
-     */
-    public void mirror()
-    {
-        pose_x = -pose_x;
-        pose_y = -pose_y;
-        pose_a = pose_a + (float) Math.PI;
-        
-        walkingTo_x = -walkingTo_x;
-        walkingTo_y = -walkingTo_y;
-        
-        shootingTo_x = -shootingTo_x;
-        shootingTo_y = -shootingTo_y;
-        
-    }
-
     public void draw(DrawingCollection drawings, Color robotColor) {
 
         // robot
