@@ -10,6 +10,8 @@
 TeamBallLocator::TeamBallLocator()
 {
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamballw
+  ", false);
 }
 
 void TeamBallLocator::execute()
@@ -71,6 +73,15 @@ void TeamBallLocator::execute()
     }
   }
   ballPosHist.erase(ballPosHist.begin(), cutOff);
+  
+  DEBUG_REQUEST("TeamBallLocator:draw_teamball_input",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 20);
+    for(size_t i = 0; i < ballPosHist.size(); i++)
+    {
+      CIRCLE(ballPosHist[i].vec.x, ballPosHist[i].vec.y, 50);
+    }
+  );
   
   // median in x and y
   std::vector<double> xHist(ballPosHist.size());
