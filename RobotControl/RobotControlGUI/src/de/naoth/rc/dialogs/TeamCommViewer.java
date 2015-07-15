@@ -13,6 +13,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -43,6 +44,7 @@ public class TeamCommViewer extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
+
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
@@ -50,12 +52,11 @@ public class TeamCommViewer extends AbstractDialog {
     }//end Plugin
 
     private Timer timerCheckMessages;
-    private final TeamCommListener listenerOwn = new TeamCommListener();
-    private final TeamCommListener listenerOpponent = new TeamCommListener();
+    private final TeamCommListener listenerOwn = new TeamCommListener(false);
+    private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
-    
-    private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
 
+    private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
 
     /**
      * Creates new form TeamCommViewer
@@ -133,7 +134,7 @@ public class TeamCommViewer extends AbstractDialog {
                 int portOwn = Integer.parseInt(portNumberOwn.getText().trim());
                 listenerOwn.connect(portOwn);
                 String opponentPortRaw = portNumberOpponent.getText().trim();
-                if(!opponentPortRaw.isEmpty()) {
+                if (!opponentPortRaw.isEmpty()) {
                     int portOpponent = Integer.parseInt(opponentPortRaw);
                     listenerOpponent.connect(portOwn);
                 }
@@ -181,14 +182,16 @@ public class TeamCommViewer extends AbstractDialog {
                 if (messageMap.isEmpty()) {
                     return;
                 }
-                
+
                 DrawingCollection drawings = new DrawingCollection();
-                
-                for (Entry<String, TeamCommListener.Message> msg : messageMap.entrySet()) 
-                {
+
+                for (Entry<String, TeamCommListener.Message> msg : messageMap.entrySet()) {
                     final String address = msg.getKey();
                     final SPLMessage splMessage = msg.getValue().message;
                     final long timestamp = msg.getValue().timestamp;
+                    if (msg.getValue().isOpponent()) {
+
+                    }
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -204,16 +207,16 @@ public class TeamCommViewer extends AbstractDialog {
                             }
                         }
                     });
-                    splMessage.draw(drawings);
+                    splMessage.draw(drawings, msg.getValue().isOpponent() ? Color.RED : Color.GRAY);
                 }
-                
+
                 TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
-                
+
             } // end synchronized
         } // end run
     }
 
-    class TeamCommListener implements Runnable {
+    public class TeamCommListener implements Runnable {
 
         public class Message {
 
@@ -224,16 +227,23 @@ public class TeamCommViewer extends AbstractDialog {
 
             public final long timestamp;
             public final SPLMessage message;
+
+            public boolean isOpponent() {
+                return TeamCommListener.this.isOpponent;
+            }
         }
 
         private DatagramChannel channel;
         private Thread trigger;
 
         private final ByteBuffer readBuffer;
-        
-        public TeamCommListener() {
+
+        private final boolean isOpponent;
+
+        public TeamCommListener(boolean isOpponent) {
             this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            this.isOpponent = isOpponent;
         }
 
         boolean isConnected() {
@@ -269,7 +279,7 @@ public class TeamCommViewer extends AbstractDialog {
                     this.readBuffer.clear();
                     SocketAddress address = this.channel.receive(this.readBuffer);
                     this.readBuffer.flip();
-                    
+
                     try {
                         SPLMessage msg = new SPLMessage(this.readBuffer);
 

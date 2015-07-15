@@ -1,6 +1,5 @@
 /*
  */
-
 package de.naoth.rc.dataformats;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -21,173 +20,185 @@ import java.nio.ByteBuffer;
  *
  * @author Heinrich Mellmann
  */
-public class SPLMessage
-{
-  public static final int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 6;
-  public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 780;
-  public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
-  public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+public class SPLMessage {
+
+    public static final int SPL_STANDARD_MESSAGE_STRUCT_VERSION = 6;
+    public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 780;
+    public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
+    public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
 
   //public byte header[4]; // 4
-  //public byte version; // 1
-  public byte playerNum; // 1
-  public byte teamNum; // 1 
-  public byte fallen; // 1
-  public float pose_x; // 4
-  public float pose_y; // 4
-  public float pose_a; // 4
-  
-  public float walkingTo_x; // 4
-  public float walkingTo_y; // 4
-    
-  public float shootingTo_x; // 4
-  public float shootingTo_y; // 4
-  
-  public float ballAge; // 4
-  public float ball_x; // 4
-  public float ball_y; // 4
-  public float ballVel_x; // 4
-  public float ballVel_y; // 4
-  
-  
-  public byte[] suggestion = new byte[SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS]; // 5
-  
+    //public byte version; // 1
+    public byte playerNum; // 1
+    public byte teamNum; // 1 
+    public byte fallen; // 1
+    public float pose_x; // 4
+    public float pose_y; // 4
+    public float pose_a; // 4
+
+    public float walkingTo_x; // 4
+    public float walkingTo_y; // 4
+
+    public float shootingTo_x; // 4
+    public float shootingTo_y; // 4
+
+    public float ballAge; // 4
+    public float ball_x; // 4
+    public float ball_y; // 4
+    public float ballVel_x; // 4
+    public float ballVel_y; // 4
+
+    public byte[] suggestion = new byte[SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS]; // 5
+
   // describes what the robot intends to do:
-  // 0 - nothing particular (default)
-  // 1 - wants to be keeper
-  // 2 - wants to play defense
-  // 3 - wants to play the ball
-  // 4 - robot is lost
-  // (the second byte is a padding byte)
-  public byte intention; // 1
-  
-  public short averageWalkSpeed; // 2
-  public short maxKickDistance; // 2
-  
+    // 0 - nothing particular (default)
+    // 1 - wants to be keeper
+    // 2 - wants to play defense
+    // 3 - wants to play the ball
+    // 4 - robot is lost
+    // (the second byte is a padding byte)
+    public byte intention; // 1
+
+    public short averageWalkSpeed; // 2
+    public short maxKickDistance; // 2
+
   // [MANDATORY]
-  // describes the current confidence of a robot about its self-location,
-  // the unit is percent [0,..100]
-  // the value should be updated in the course of the game
-  public byte currentPositionConfidence; // 1
-  
+    // describes the current confidence of a robot about its self-location,
+    // the unit is percent [0,..100]
+    // the value should be updated in the course of the game
+    public byte currentPositionConfidence; // 1
+
   // [MANDATORY]
-  // describes the current confidence of a robot about playing in the right direction,
-  // the unit is percent [0,..100]
-  // the value should be updated in the course of the game
-  public byte currentSideConfidence; // 1
-  
-  public short numOfDataBytes; // 2
-  
-  public byte[] data;
+    // describes the current confidence of a robot about playing in the right direction,
+    // the unit is percent [0,..100]
+    // the value should be updated in the course of the game
+    public byte currentSideConfidence; // 1
 
-  public Representations.BUUserTeamMessage user = null;
-  
-  public SPLMessage(Representations.TeamMessage.Data msg) {
-      
-      this.averageWalkSpeed = -1;
+    public short numOfDataBytes; // 2
 
-      this.ballAge = msg.getBallAge()/1000.0f;
+    public byte[] data;
 
-      this.ballVel_x = (float) msg.getBallVelocity().getX();
-      this.ballVel_y = (float) msg.getBallVelocity().getY();
-      
-      this.ball_x = (float) msg.getBallPosition().getX();
-      this.ball_y = (float) msg.getBallPosition().getY();
-      
-      this.currentPositionConfidence = -1;
-      this.currentSideConfidence = -1;
-      
-      
-      this.fallen = msg.getFallen() ? (byte) 1 : (byte) 0;
-      
-      this.intention = (byte) (msg.getUser().getWasStriker() ? 3 : 0);
-      this.maxKickDistance = -1;
-      
-      this.playerNum = (byte) msg.getPlayerNum();
-     
-      this.pose_x = (float) msg.getPose().getTranslation().getX();
-      this.pose_y = (float) msg.getPose().getTranslation().getY();
-      this.pose_a = (float) msg.getPose().getRotation();
+    public Representations.BUUserTeamMessage user = null;
+
+    public SPLMessage(Representations.TeamMessage.Data msg) {
+
+        this.averageWalkSpeed = -1;
+
+        this.ballAge = msg.getBallAge() / 1000.0f;
+
+        this.ballVel_x = (float) msg.getBallVelocity().getX();
+        this.ballVel_y = (float) msg.getBallVelocity().getY();
+
+        this.ball_x = (float) msg.getBallPosition().getX();
+        this.ball_y = (float) msg.getBallPosition().getY();
+
+        this.currentPositionConfidence = -1;
+        this.currentSideConfidence = -1;
+
+        this.fallen = msg.getFallen() ? (byte) 1 : (byte) 0;
+
+        this.intention = (byte) (msg.getUser().getWasStriker() ? 3 : 0);
+        this.maxKickDistance = -1;
+
+        this.playerNum = (byte) msg.getPlayerNum();
+
+        this.pose_x = (float) msg.getPose().getTranslation().getX();
+        this.pose_y = (float) msg.getPose().getTranslation().getY();
+        this.pose_a = (float) msg.getPose().getRotation();
+
+        // TODO: don't use default value
+        this.shootingTo_x = (float) msg.getPose().getTranslation().getX();
+        this.shootingTo_y = (float) msg.getPose().getTranslation().getY();
+
+        if (msg.hasTeamNumber()) {
+            this.teamNum = (byte) msg.getTeamNumber();
+        } else if (msg.getUser().hasTeamNumber()) {
+            this.teamNum = (byte) msg.getTeamNumber();
+        }
+
+        this.user = msg.getUser();
+
+        this.walkingTo_x = -1;
+        this.walkingTo_y = -1;
+    }
+
+    public SPLMessage(ByteBuffer buffer) throws Exception {
+        if (buffer.get() != 'S'
+            || buffer.get() != 'P'
+            || buffer.get() != 'L'
+            || buffer.get() != ' ') {
+            throw new Exception("Not an SPL Message.");
+            //System.out.println("Not an SPL Message.");
+        }
+
+        byte version = buffer.get();
+        if (version != SPL_STANDARD_MESSAGE_STRUCT_VERSION) {
+            throw new Exception("Wrong version: reveived " + version + ", but expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
+            //System.out.println("Wrong version " + version + ", expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
+        }
+
+        this.playerNum = buffer.get();
+        this.teamNum = buffer.get();
+        this.fallen = buffer.get();
+        this.pose_x = buffer.getFloat();
+        this.pose_y = buffer.getFloat();
+        this.pose_a = buffer.getFloat();
+        this.walkingTo_x = buffer.getFloat();
+        this.walkingTo_y = buffer.getFloat();
+        this.shootingTo_x = buffer.getFloat();
+        this.shootingTo_y = buffer.getFloat();
+        this.ballAge = buffer.getFloat();
+        this.ball_x = buffer.getFloat();
+        this.ball_y = buffer.getFloat();
+        this.ballVel_x = buffer.getFloat();
+        this.ballVel_y = buffer.getFloat();
+
+        // skip the suggestion array
+        for (int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; i++) {
+            this.suggestion[i] = buffer.get();
+        }
+
+        this.intention = buffer.get();
+
+        this.averageWalkSpeed = buffer.getShort();
+        this.maxKickDistance = buffer.getShort();
+
+        this.currentPositionConfidence = buffer.get();
+        this.currentSideConfidence = buffer.get();
+
+        this.numOfDataBytes = buffer.getShort();
+        this.data = new byte[this.numOfDataBytes];
+        buffer.get(this.data, 0, this.data.length);
+
+        try {
+            this.user = Representations.BUUserTeamMessage.parseFrom(this.data);
+        } catch (InvalidProtocolBufferException ex) {
+            // it's not our message
+        }
+    }
     
-      // TODO: don't use default value
-      this.shootingTo_x = (float) msg.getPose().getTranslation().getX();
-      this.shootingTo_y = (float) msg.getPose().getTranslation().getY();
-      
-      if (msg.hasTeamNumber()) {
-          this.teamNum = (byte) msg.getTeamNumber();
-      } else if (msg.getUser().hasTeamNumber()) {
-          this.teamNum = (byte) msg.getTeamNumber();
-      }
-      
-      this.user = msg.getUser();
-      
-      this.walkingTo_x = -1;
-      this.walkingTo_y = -1;
-  }
-  
-  public SPLMessage(ByteBuffer buffer) throws Exception
-  {
-      if( buffer.get() != 'S' ||
-          buffer.get() != 'P' ||
-          buffer.get() != 'L' ||
-          buffer.get() != ' ')
-      {
-          throw new Exception("Not an SPL Message.");
-          //System.out.println("Not an SPL Message.");
-      }
+    /**
+     * Mirrors all global positions in this SPLMessage (pose, walking_to, shooting_to).
+     * Will change the original object.
+     */
+    public void mirror()
+    {
+        pose_x = -pose_x;
+        pose_y = -pose_y;
+        pose_a = pose_a + (float) Math.PI;
+        
+        walkingTo_x = -walkingTo_x;
+        walkingTo_y = -walkingTo_y;
+        
+        shootingTo_x = -shootingTo_x;
+        shootingTo_y = -shootingTo_y;
+        
+    }
 
-      byte version = buffer.get();
-      if(version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
-      {
-          throw new Exception("Wrong version: reveived " + version + ", but expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
-          //System.out.println("Wrong version " + version + ", expected " + SPL_STANDARD_MESSAGE_STRUCT_VERSION);
-      }
-
-      this.playerNum = buffer.get();
-      this.teamNum = buffer.get();
-      this.fallen = buffer.get();
-      this.pose_x = buffer.getFloat();
-      this.pose_y = buffer.getFloat();
-      this.pose_a = buffer.getFloat();
-      this.walkingTo_x = buffer.getFloat();
-      this.walkingTo_y = buffer.getFloat();
-      this.shootingTo_x = buffer.getFloat();
-      this.shootingTo_y = buffer.getFloat();
-      this.ballAge = buffer.getFloat();
-      this.ball_x = buffer.getFloat();
-      this.ball_y = buffer.getFloat();
-      this.ballVel_x = buffer.getFloat();
-      this.ballVel_y = buffer.getFloat();
-      
-      // skip the suggestion array
-      for(int i=0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; i++)
-      {
-        this.suggestion[i] = buffer.get();
-      }
-      
-      this.intention = buffer.get();
-      
-      this.averageWalkSpeed = buffer.getShort();
-      this.maxKickDistance = buffer.getShort();
-      
-      this.currentPositionConfidence = buffer.get();
-      this.currentSideConfidence = buffer.get();
-      
-      this.numOfDataBytes = buffer.getShort();
-      this.data = new byte[this.numOfDataBytes];
-      buffer.get(this.data, 0, this.data.length);
-      
-      try {
-          this.user = Representations.BUUserTeamMessage.parseFrom(this.data);
-      } catch (InvalidProtocolBufferException ex) {
-          // it's not our message
-      }
-  }
-  
-    public void draw(DrawingCollection drawings) {
+    public void draw(DrawingCollection drawings, Color robotColor) {
 
         // robot
-        drawings.add(new Pen(1.0f, Color.gray));
+        drawings.add(new Pen(1.0f, robotColor));
         drawings.add(new Robot(pose_x, pose_y, pose_a));
 
         // striker
