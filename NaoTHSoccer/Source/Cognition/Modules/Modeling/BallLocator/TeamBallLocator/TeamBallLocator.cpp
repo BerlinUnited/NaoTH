@@ -84,19 +84,29 @@ void TeamBallLocator::execute()
   );
   
   // median in x and y
-  std::vector<double> xHist(ballPosHist.size());
-  std::vector<double> yHist(ballPosHist.size());
+//  std::vector<double> xHist(ballPosHist.size());
+//  std::vector<double> yHist(ballPosHist.size());
+//  for(size_t i = 0; i < ballPosHist.size(); i++)
+//  {
+//    xHist.push_back(ballPosHist.vec.x);
+//    yHist.push_back(ballPosHist.vec.y);
+//  }
+//  sort(xHist.begin(), xHist.end());
+//  sort(yHist.begin(), yHist.end());
+//  Vector2d teamball;
+//  teamball.x = xHist[xHist.size()/2];
+//  teamball.y = yHist[yHist.size()/2];
+ 
+  // canopy clustering
+  CanopyClustering canopyClustering(0, 100);
+  SampleSet sampleSet(ballPosHist.size());
   for(size_t i = 0; i < ballPosHist.size(); i++)
   {
-    xHist.push_back(ballPosHist.vec.x);
-    yHist.push_back(ballPosHist.vec.y);
+    sampleSet[i] = ballPosHist[i].vec;
   }
-  sort(xHist.begin(), xHist.end());
-  sort(yHist.begin(), yHist.end());
-  Vector2d teamball;
-  teamball.x = xHist[xHist.size()/2];
-  teamball.y = yHist[yHist.size()/2];
-  
+  canopyClustering.cluster(sampleSet);
+  Vector2d teamball(canopyClustering.getLargestCluster().center());
+
   // write result and transform  
   getTeamBallModel().positionOnField = teamball;
   getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
