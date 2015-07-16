@@ -13,6 +13,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -28,7 +30,11 @@ import java.util.List;
  *
  * @author  Heinrich Mellmann
  */
-public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotionListener, MouseListener, MouseWheelListener
+public class DynamicCanvasPanel extends javax.swing.JPanel 
+                                implements MouseMotionListener, 
+                                           MouseListener, 
+                                           MouseWheelListener,
+                                           KeyListener
 {
 
   private double offsetX;
@@ -58,6 +64,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
       this.addMouseMotionListener(this);
       this.addMouseListener(this);
       this.addMouseWheelListener(this);
+      this.addKeyListener(this);
     }
     this.setOpaque(true);
 
@@ -268,7 +275,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   {
     this.dragOffsetX = offsetX - e.getX();
     this.dragOffsetY = offsetY - e.getY();
-  }//end mousePressed
+  }
 
   @Override
   public void mouseReleased(MouseEvent e)
@@ -294,6 +301,46 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
   public void mouseClicked(MouseEvent e)
   {
   }
+
+    @Override
+    public void keyTyped(KeyEvent ke) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent ke) {
+        int k = ke.getKeyCode();
+        if(ke.getKeyCode() == KeyEvent.VK_PLUS) {
+            scale += scale * 0.1;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_MINUS) {
+            scale -= scale * 0.1;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_A) {
+            this.offsetX -= 50;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_D) {
+            this.offsetX += 50;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_S) {
+            this.offsetY += 50;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_W) {
+            this.offsetY -= 50;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_E) {
+            this.rotation += Math.PI*0.5;
+            repaint();
+        } else if(ke.getKeyCode() == KeyEvent.VK_Q) {
+            this.rotation -= Math.PI*0.5;
+            repaint();
+        } 
+    }
+
+    @Override
+    public void keyReleased(KeyEvent ke) {
+    }
+  
+  
 
   // </editor-fold>
   // <editor-fold defaultstate="collapsed" desc="Getter and Setter">
