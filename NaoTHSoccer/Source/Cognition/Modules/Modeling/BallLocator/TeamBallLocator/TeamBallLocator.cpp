@@ -10,8 +10,7 @@
 TeamBallLocator::TeamBallLocator()
 {
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
-  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamballw
-  ", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamball", false);
 }
 
 void TeamBallLocator::execute()
@@ -43,7 +42,7 @@ void TeamBallLocator::execute()
       // goalie
       if(playerNumber == 1) 
       {
-        getTeamBallModel().goaliePositionOnField = ballPos;
+        getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
         getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
         getTeamBallModel().goalieTime = msg.frameInfo.getTime();
       }
@@ -51,7 +50,7 @@ void TeamBallLocator::execute()
       // striker
       if (msg.wasStriker)
       {
-        getTeamBallModel().strikerPositionOnField = ballPos;
+        getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
         getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
         getTeamBallModel().strikerTime = msg.frameInfo.getTime();
       }
@@ -62,7 +61,6 @@ void TeamBallLocator::execute()
   double maxTimeOffset = 1.0;
   sort(ballPosHist.begin(), ballPosHist.end());
   std::vector<Vector2dTS>::iterator cutOff;
-  size_t cutOff = 0;
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
@@ -88,8 +86,8 @@ void TeamBallLocator::execute()
 //  std::vector<double> yHist(ballPosHist.size());
 //  for(size_t i = 0; i < ballPosHist.size(); i++)
 //  {
-//    xHist.push_back(ballPosHist.vec.x);
-//    yHist.push_back(ballPosHist.vec.y);
+//    xHist.push_back(ballPosHist[i].vec.x);
+//    yHist.push_back(ballPosHist[i].vec.y);
 //  }
 //  sort(xHist.begin(), xHist.end());
 //  sort(yHist.begin(), yHist.end());
@@ -98,11 +96,11 @@ void TeamBallLocator::execute()
 //  teamball.y = yHist[yHist.size()/2];
  
   // canopy clustering
-  CanopyClustering canopyClustering(0, 100);
+  CanopyClustering<SampleSet> canopyClustering(500, 10);
   SampleSet sampleSet(ballPosHist.size());
   for(size_t i = 0; i < ballPosHist.size(); i++)
   {
-    sampleSet[i] = ballPosHist[i].vec;
+    sampleSet[i].translation = ballPosHist[i].vec;
   }
   canopyClustering.cluster(sampleSet);
   Vector2d teamball(canopyClustering.getLargestCluster().center());

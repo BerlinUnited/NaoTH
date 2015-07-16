@@ -46,7 +46,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
         {
           return this->t < v2.t;
         }
-      private:
+      public:
         Vector2d vec;
         double t;
     };
