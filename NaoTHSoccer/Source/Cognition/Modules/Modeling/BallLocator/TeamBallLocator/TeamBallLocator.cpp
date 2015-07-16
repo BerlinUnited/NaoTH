@@ -22,45 +22,37 @@ void TeamBallLocator::execute()
     const TeamMessage::Data& msg = i->second;
     const unsigned int& playerNumber = i->first;
     
-    if(playerNumber != getGameData().playerNumber)
+    // -1 means invalid ball
+    if(msg.ballAge >= 0)
     {
-      // -1 means invalid ball
-      if(msg.ballAge >= 0)
+      // collect messages
+      Vector2dTS ballPosTS;
+      ballPosTS.vec = msg.pose * msg.ballPosition;
+      ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
+      ballPosHist.push_back(ballPosTS);
+
+      // set time
+      if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
       {
-        // collect messages
-        Vector2dTS ballPosTS;
-        ballPosTS.vec = msg.pose * msg.ballPosition;
-        ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
-        ballPosHist.push_back(ballPosTS);
+        ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
+        // this is a relict from the old version
+        getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
+      }
 
-        if(msg.frameInfo.getTimeInSeconds() > currTime)
-        {
-          currTime = msg.frameInfo.getTimeInSeconds();
-        }
+      // goalie
+      if(playerNumber == 1) 
+      {
+        getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
+        getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
+        getTeamBallModel().goalieTime = msg.frameInfo.getTime();
+      }
 
-        // set time
-        if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
-        {
-          ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
-          // this is a relict from the old version
-          getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
-        }
-
-        // goalie
-        if(playerNumber == 1) 
-        {
-          getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
-          getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-          getTeamBallModel().goalieTime = msg.frameInfo.getTime();
-        }
-
-        // striker
-        if (msg.wasStriker)
-        {
-          getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
-          getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-          getTeamBallModel().strikerTime = msg.frameInfo.getTime();
-        }
+      // striker
+      if (msg.wasStriker)
+      {
+        getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
+        getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+        getTeamBallModel().strikerTime = msg.frameInfo.getTime();
       }
     }
   }
@@ -73,7 +65,7 @@ void TeamBallLocator::execute()
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
     // take care: getTeamBallModel().time are unsigned int seconds
-    if(cutOff->t >= currTime - maxTimeOffset)
+    if(cutOff->t >= getTeamBallModel().time - maxTimeOffset)
     {
       break;
     }
@@ -89,33 +81,42 @@ void TeamBallLocator::execute()
     }
   );
   
-  // median in x and y
-//  std::vector<double> xHist(ballPosHist.size());
-//  std::vector<double> yHist(ballPosHist.size());
-//  for(size_t i = 0; i < ballPosHist.size(); i++)
-//  {
-//    xHist.push_back(ballPosHist[i].vec.x);
-//    yHist.push_back(ballPosHist[i].vec.y);
-//  }
-//  sort(xHist.begin(), xHist.end());
-//  sort(yHist.begin(), yHist.end());
-//  Vector2d teamball;
-//  teamball.x = xHist[xHist.size()/2];
-//  teamball.y = yHist[yHist.size()/2];
+  std::cout << "ballPosHist: " << ballPosHist.size() << " " << std::endl;
+  
+  if(ballPosHist.size() > 0)
+  {
+    // median in x and y
+    std::vector<double> xHist(ballPosHist.size());
+    std::vector<double> yHist(ballPosHist.size());
+    for(size_t i = 0; i < ballPosHist.size(); i++)
+    {
+      xHist.push_back(ballPosHist[i].vec.x);
+      yHist.push_back(ballPosHist[i].vec.y);
+    }
+    sort(xHist.begin(), xHist.end());
+    sort(yHist.begin(), yHist.end());
+    Vector2d teamball;
+    teamball.x = xHist[xHist.size()/2];
+    teamball.y = yHist[yHist.size()/2];
+  
+    // write result and transform  
+    getTeamBallModel().positionOnField = teamball;
+    getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
+  }
  
   // canopy clustering
-  CanopyClustering<SampleSet> canopyClustering(500, 10);
-  SampleSet sampleSet(ballPosHist.size());
-  for(size_t i = 0; i < ballPosHist.size(); i++)
-  {
-    sampleSet[i].translation = ballPosHist[i].vec;
-  }
-  canopyClustering.cluster(sampleSet);
-  Vector2d teamball(canopyClustering.getLargestCluster().center());
-
-  // write result and transform  
-  getTeamBallModel().positionOnField = teamball;
-  getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
+//  CanopyClustering<SampleSet> canopyClustering(500, 10);
+//  SampleSet sampleSet(ballPosHist.size());
+//  for(size_t i = 0; i < ballPosHist.size(); i++)
+//  {
+//    sampleSet[i].translation = ballPosHist[i].vec;
+//  }
+//  canopyClustering.cluster(sampleSet);
+//  Vector2d teamball(canopyClustering.getLargestCluster().center());
+//
+//  // write result and transform  
+//  getTeamBallModel().positionOnField = teamball;
+//  getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
 
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
