@@ -151,10 +151,12 @@ public class TeamCommViewer extends AbstractDialog {
 
             } else {
 
-                this.timerCheckMessages.cancel();
-                this.timerCheckMessages.purge();
-                this.timerCheckMessages = null;
-
+                if(this.timerCheckMessages != null) {
+                    this.timerCheckMessages.cancel();
+                    this.timerCheckMessages.purge();
+                    this.timerCheckMessages = null;
+                }
+                
                 listenerOwn.disconnect();
                 listenerOpponent.disconnect();;
 
