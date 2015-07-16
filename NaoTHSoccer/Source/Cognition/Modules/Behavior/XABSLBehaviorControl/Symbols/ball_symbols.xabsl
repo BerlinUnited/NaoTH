@@ -61,14 +61,6 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.team.position.x "mm";
   float input ball.team.position.y "mm";
 
-  float input ball.team.goalie.time_since_last_update [ms];
-  float input ball.team.goalie.position.x [mm];
-  float input ball.team.goalie.position.y [mm];
-
-  float input ball.team.striker.time_since_last_update [ms];
-  float input ball.team.striker.position.x [mm];
-  float input ball.team.striker.position.y [mm];
-
   /** Position of the ball in x direction relative to the left foot */
   float input ball.left_foot.x "mm";
   /** Position of the ball in y direction relative to the left foot */

@@ -15,12 +15,11 @@ TeamBallLocator::TeamBallLocator()
 
 void TeamBallLocator::execute()
 {
-  msgData = getTeamMessage().data;
+  const std::map<unsigned int, TeamMessage::Data>& msgData = getTeamMessage().data;
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=msgData.begin(); i != msgData.end(); ++i) 
   {
     const TeamMessage::Data& msg = i->second;
-    const unsigned int& playerNumber = i->first;
     
     // -1 means invalid ball
     if(msg.ballAge >= 0)
@@ -37,22 +36,6 @@ void TeamBallLocator::execute()
         ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
         // this is a relict from the old version
         getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
-      }
-
-      // goalie
-      if(playerNumber == 1) 
-      {
-        getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
-        getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-        getTeamBallModel().goalieTime = msg.frameInfo.getTime();
-      }
-
-      // striker
-      if (msg.wasStriker)
-      {
-        getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
-        getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-        getTeamBallModel().strikerTime = msg.frameInfo.getTime();
       }
     }
   }

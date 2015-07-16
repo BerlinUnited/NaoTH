@@ -94,8 +94,6 @@ private:
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
   static double getTeamBallTimeSinceLastUpdate();
-  static double getTeamBallGoalieTimeSinceLastUpdate();
-  static double getTeamBallStrikerTimeSinceLastUpdate();
 
   // some local members
   Vector2d ballPositionField;

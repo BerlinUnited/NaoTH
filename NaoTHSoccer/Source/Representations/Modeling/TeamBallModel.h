@@ -12,9 +12,7 @@ class TeamBallModel
 {
 public:
   TeamBallModel()
-      : time(0),
-        goalieTime(0),
-        strikerTime(0)
+      : time(0)
   {
   }
 
@@ -26,14 +24,6 @@ public:
 
   // the time of message
   unsigned int time;
-
-  Vector2<double> goaliePositionOnField;
-  Vector2<double> goaliePosition;
-  unsigned int goalieTime;
-
-  Vector2<double> strikerPositionOnField;
-  Vector2<double> strikerPosition;
-  unsigned int strikerTime;
 
   virtual ~TeamBallModel()
   {

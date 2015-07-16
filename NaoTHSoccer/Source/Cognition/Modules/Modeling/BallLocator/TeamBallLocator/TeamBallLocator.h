@@ -60,8 +60,6 @@ class TeamBallLocator : protected TeamBallLocatorBase
     virtual void execute();
 
   private:
-    double currTime;
-    std::map<unsigned int, TeamMessage::Data> msgData;
     std::vector<Vector2dTS> ballPosHist;
 };
 
