@@ -22,37 +22,45 @@ void TeamBallLocator::execute()
     const TeamMessage::Data& msg = i->second;
     const unsigned int& playerNumber = i->first;
     
-    // -1 means invalid ball
-    if(msg.ballAge >= 0)
+    if(playerNumber != getGameData().playerNumber)
     {
-      // collect messages
-      Vector2dTS ballPosTS;
-      ballPosTS.vec = msg.pose * msg.ballPosition;
-      ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
-      ballPosHist.push_back(ballPosTS);
-
-      // set time
-      if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
+      // -1 means invalid ball
+      if(msg.ballAge >= 0)
       {
-        ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
-        // are full seconds really the way to go?
-        getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
-      }
+        // collect messages
+        Vector2dTS ballPosTS;
+        ballPosTS.vec = msg.pose * msg.ballPosition;
+        ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
+        ballPosHist.push_back(ballPosTS);
 
-      // goalie
-      if(playerNumber == 1) 
-      {
-        getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
-        getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-        getTeamBallModel().goalieTime = msg.frameInfo.getTime();
-      }
+        if(msg.frameInfo.getTimeInSeconds() > currTime)
+        {
+          currTime = msg.frameInfo.getTimeInSeconds();
+        }
 
-      // striker
-      if (msg.wasStriker)
-      {
-        getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
-        getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-        getTeamBallModel().strikerTime = msg.frameInfo.getTime();
+        // set time
+        if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
+        {
+          ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
+          // this is a relict from the old version
+          getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
+        }
+
+        // goalie
+        if(playerNumber == 1) 
+        {
+          getTeamBallModel().goaliePositionOnField = msg.pose * msg.ballPosition;
+          getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
+          getTeamBallModel().goalieTime = msg.frameInfo.getTime();
+        }
+
+        // striker
+        if (msg.wasStriker)
+        {
+          getTeamBallModel().strikerPositionOnField = msg.pose * msg.ballPosition;
+          getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+          getTeamBallModel().strikerTime = msg.frameInfo.getTime();
+        }
       }
     }
   }
@@ -65,7 +73,7 @@ void TeamBallLocator::execute()
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
     // take care: getTeamBallModel().time are unsigned int seconds
-    if(cutOff->t >= getTeamBallModel().time - maxTimeOffset)
+    if(cutOff->t >= currTime - maxTimeOffset)
     {
       break;
     }

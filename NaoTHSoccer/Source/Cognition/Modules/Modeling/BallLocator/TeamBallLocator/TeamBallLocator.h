@@ -18,6 +18,7 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Infrastructure/GameData.h"
 
 // Canopy Clustering
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
@@ -29,6 +30,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
   PROVIDE(DebugDrawings)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
+  REQUIRE(GameData)
 
   PROVIDE(TeamBallModel)
 END_DECLARE_MODULE(TeamBallLocator)
@@ -58,6 +60,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
     virtual void execute();
 
   private:
+    double currTime;
     std::map<unsigned int, TeamMessage::Data> msgData;
     std::vector<Vector2dTS> ballPosHist;
 };
