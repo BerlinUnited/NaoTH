@@ -483,7 +483,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                     Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
                     for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
                         SPLMessage spl = new SPLMessage(msg);
-                        spl.draw(drawings, Color.GRAY);
+                        spl.draw(drawings, Color.GRAY, false);
                     }
                     
                     TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);

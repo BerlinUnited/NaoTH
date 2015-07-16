@@ -214,10 +214,7 @@ public class TeamCommViewer extends AbstractDialog {
                         }
                     });
                     
-                    if(msg.getValue().isOpponent()) {
-                        drawings.add(new Rotation((float) Math.PI));
-                    }
-                    splMessage.draw(drawings, msg.getValue().isOpponent() ? Color.RED : Color.GRAY);
+                    splMessage.draw(drawings, msg.getValue().isOpponent() ? Color.RED : Color.BLUE, msg.getValue().isOpponent());
                 }
 
                 TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);

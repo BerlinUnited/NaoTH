@@ -9,6 +9,7 @@ import de.naoth.rc.drawings.FillOval;
 import de.naoth.rc.drawings.Line;
 import de.naoth.rc.drawings.Pen;
 import de.naoth.rc.drawings.Robot;
+import de.naoth.rc.drawings.Rotation;
 import de.naoth.rc.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
@@ -27,7 +28,7 @@ public class SPLMessage {
     public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
 
-  //public byte header[4]; // 4
+    //public byte header[4]; // 4
     //public byte version; // 1
     public byte playerNum; // 1
     public byte teamNum; // 1 
@@ -50,7 +51,7 @@ public class SPLMessage {
 
     public byte[] suggestion = new byte[SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS]; // 5
 
-  // describes what the robot intends to do:
+    // describes what the robot intends to do:
     // 0 - nothing particular (default)
     // 1 - wants to be keeper
     // 2 - wants to play defense
@@ -62,13 +63,13 @@ public class SPLMessage {
     public short averageWalkSpeed; // 2
     public short maxKickDistance; // 2
 
-  // [MANDATORY]
+    // [MANDATORY]
     // describes the current confidence of a robot about its self-location,
     // the unit is percent [0,..100]
     // the value should be updated in the course of the game
     public byte currentPositionConfidence; // 1
 
-  // [MANDATORY]
+    // [MANDATORY]
     // describes the current confidence of a robot about playing in the right direction,
     // the unit is percent [0,..100]
     // the value should be updated in the course of the game
@@ -176,36 +177,42 @@ public class SPLMessage {
             // it's not our message
         }
     }
-    
-    public void draw(DrawingCollection drawings, Color robotColor) {
 
+    public void draw(DrawingCollection drawings, Color robotColor, boolean mirror) {
+        
+        
+        Vector2D ballPos = new Vector2D(ball_x, ball_y);
+        Pose2D robotPose = mirror ? new Pose2D(-pose_x, -pose_y, pose_a + Math.PI)
+            : new Pose2D(pose_x, pose_y, pose_a);
+        
+        Vector2D globalBall = robotPose.multiply(ballPos);
+        
         // robot
         drawings.add(new Pen(1.0f, robotColor));
-        drawings.add(new Robot(pose_x, pose_y, pose_a));
+        drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
+        
+        // number
+        drawings.add(new Pen(1, Color.BLACK));
+        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+
 
         // striker
         if (intention == 3) {
             drawings.add(new Pen(30, Color.red));
-            drawings.add(new Circle((int) pose_x, (int) pose_y, 150));
+            drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
         }
 
-        // number
-        drawings.add(new Pen(1, Color.BLACK));
-        drawings.add(new Text((int) pose_x, (int) pose_y + 150, "" + playerNum));
-
+        
         // ball
         if (ballAge >= 0) {
             drawings.add(new Pen(1, Color.orange));
 
-            Vector2D ballPos = new Vector2D(ball_x, ball_y);
-            Pose2D robotPose = new Pose2D(pose_x, pose_y, pose_a);
-            Vector2D globalBall = robotPose.multiply(ballPos);
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
 
             // add a surrounding black circle so the ball is easier to see
             drawings.add(new Pen(1, Color.black));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
-
+            
             {
                 // show the time since the ball was last seen
                 drawings.add(new Pen(1, Color.black));
@@ -217,6 +224,7 @@ public class SPLMessage {
                     Math.round(t) + "s");
                 drawings.add(text);
             }
+
             // draw a line between robot and ball
             {
                 drawings.add(new Pen(5, Color.darkGray));
