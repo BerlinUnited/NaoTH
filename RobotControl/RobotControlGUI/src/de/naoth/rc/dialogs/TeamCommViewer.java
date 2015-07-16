@@ -146,6 +146,7 @@ public class TeamCommViewer extends AbstractDialog {
                 this.timerCheckMessages = new Timer();
                 this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
                 this.portNumberOwn.setEnabled(false);
+                this.portNumberOpponent.setEnabled(false);
                 this.robotStatusPanel.setVisible(true);
 
             } else {
@@ -163,6 +164,7 @@ public class TeamCommViewer extends AbstractDialog {
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
                     this.portNumberOwn.setEnabled(true);
+                    this.portNumberOpponent.setEnabled(true);
                 }
             }
         } catch (NumberFormatException ex) {
