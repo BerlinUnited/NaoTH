@@ -20,23 +20,26 @@ void TeamBallLocator::execute()
     it != getTeamMessage().data.end(); 
     it++) 
   {
-    const unsigned int playerNumber = it->first;
-    const TeamMessage::Data& msg = it->second;
-    
-    // -1 means invalid ball
-    if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
+    if(it->first != getGameData().playerNumber)
     {
-      lastMessages[playerNumber] = msg.frameInfo.getTime();
-      // collect messages
-      Vector2dTS ballPosTS;
-      ballPosTS.vec = msg.pose * msg.ballPosition;
-      ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
-      ballPosHist.push_back(ballPosTS);
-
-      // set time
-      if (msg.frameInfo.getTime() > getTeamBallModel().time )
+      const unsigned int& playerNumber = it->first;
+      const TeamMessage::Data& msg = it->second;
+      
+      // -1 means invalid ball
+      if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
       {
-        getTeamBallModel().time = msg.frameInfo.getTime();
+        lastMessages[playerNumber] = msg.frameInfo.getTime();
+        // collect messages
+        Vector2dTS ballPosTS;
+        ballPosTS.vec = msg.pose * msg.ballPosition;
+        ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
+        ballPosHist.push_back(ballPosTS);
+
+        // set time
+        if (msg.frameInfo.getTime() > getTeamBallModel().time )
+        {
+          getTeamBallModel().time = msg.frameInfo.getTime();
+        }
       }
     }
   }
