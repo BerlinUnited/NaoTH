@@ -50,7 +50,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
         }
       public:
         Vector2d vec;
-        double t;
+        unsigned int t;
     };
 
   public:

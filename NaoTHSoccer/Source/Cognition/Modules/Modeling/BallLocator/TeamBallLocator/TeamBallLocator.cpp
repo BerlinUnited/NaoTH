@@ -15,11 +15,12 @@ TeamBallLocator::TeamBallLocator()
 
 void TeamBallLocator::execute()
 {
-  const std::map<unsigned int, TeamMessage::Data>& msgData = getTeamMessage().data;
-
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=msgData.begin(); i != msgData.end(); ++i) 
+  for(
+    std::map<unsigned int, TeamMessage::Data>::const_iterator it=getTeamMessage().data.begin();
+    it != getTeamMessage().data.end(); 
+    it++) 
   {
-    const TeamMessage::Data& msg = i->second;
+    const TeamMessage::Data& msg = it->second;
     
     // -1 means invalid ball
     if(msg.ballAge >= 0)
@@ -27,21 +28,19 @@ void TeamBallLocator::execute()
       // collect messages
       Vector2dTS ballPosTS;
       ballPosTS.vec = msg.pose * msg.ballPosition;
-      ballPosTS.t = msg.frameInfo.getTimeInSeconds(); // maybe +msg.BallAge ?
+      ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
       ballPosHist.push_back(ballPosTS);
 
       // set time
-      if (msg.frameInfo.getTimeInSeconds() > getTeamBallModel().time )
+      if (msg.frameInfo.getTime() > getTeamBallModel().time )
       {
-        ASSERT(msg.frameInfo.getTimeInSeconds() >= 0);
-        // this is a relict from the old version
-        getTeamBallModel().time = (unsigned int)msg.frameInfo.getTimeInSeconds();
+        getTeamBallModel().time = msg.frameInfo.getTime();
       }
     }
   }
 
   // find oldest messages and erase them
-  double maxTimeOffset = 1.0;
+  int maxTimeOffset = 1000;
   sort(ballPosHist.begin(), ballPosHist.end());
   std::vector<Vector2dTS>::iterator cutOff;
   // we are iterating through the sorted array from small (old) to high (new) times
