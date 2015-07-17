@@ -84,7 +84,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
     {
       ballFound = true;
       calculateBallPercept(center, radius);
-      //break;
+      break;
     }
   }
 
