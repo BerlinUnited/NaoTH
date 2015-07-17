@@ -19,6 +19,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 // Canopy Clustering
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
@@ -31,6 +32,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   REQUIRE(GameData)
+  REQUIRE(FrameInfo)
 
   PROVIDE(TeamBallModel)
 END_DECLARE_MODULE(TeamBallLocator)

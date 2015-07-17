@@ -38,6 +38,15 @@ void TeamBallLocator::execute()
       }
     }
   }
+ 
+  std::cout << "getTeamBallModel().time: " << getTeamBallModel().time << std::endl;
+  std::cout << "getFrameInfo().getTime(): " << getFrameInfo().getTime() << std::endl;
+  std::cout << "ballPosHist before erase: " << ballPosHist.size() << " " << std::endl;
+  for(size_t i = 0; i < ballPosHist.size(); i++)
+  {
+    std::cout << ballPosHist[i].t << " ";
+  }
+  std::cout << std::endl;
 
   // find oldest messages and erase them
   int maxTimeOffset = 1000;
@@ -63,7 +72,12 @@ void TeamBallLocator::execute()
     }
   );
   
-  std::cout << "ballPosHist: " << ballPosHist.size() << " " << std::endl;
+  std::cout << "ballPosHist after erase: " << ballPosHist.size() << " " << std::endl;
+  for(size_t i = 0; i < ballPosHist.size(); i++)
+  {
+    std::cout << ballPosHist[i].t << " ";
+  }
+  std::cout << std::endl;
   
   if(ballPosHist.size() > 0)
   {
@@ -102,8 +116,8 @@ void TeamBallLocator::execute()
 
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 20);
-    CIRCLE(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 45);
+    PEN("0000FF", 20);
+    FILLOVAL(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 50, 50);
     TEXT_DRAWING(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, ballPosHist.size());
   );
 }
