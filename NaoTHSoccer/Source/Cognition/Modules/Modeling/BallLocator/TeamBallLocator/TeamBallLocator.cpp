@@ -39,8 +39,8 @@ void TeamBallLocator::execute()
     }
   }
  
-  std::cout << "getTeamBallModel().time: " << getTeamBallModel().time << std::endl;
-  std::cout << "ballPosHist before erase: " << ballPosHist.size() << " " << std::endl;
+//  std::cout << "getTeamBallModel().time: " << getTeamBallModel().time << std::endl;
+//  std::cout << "ballPosHist before erase: " << ballPosHist.size() << " " << std::endl;
   for(size_t i = 0; i < ballPosHist.size(); i++)
   {
     std::cout << ballPosHist[i].t << " ";
@@ -71,12 +71,12 @@ void TeamBallLocator::execute()
     }
   );
   
-  std::cout << "ballPosHist after erase: " << ballPosHist.size() << " " << std::endl;
-  for(size_t i = 0; i < ballPosHist.size(); i++)
-  {
-    std::cout << ballPosHist[i].t << " ";
-  }
-  std::cout << std::endl;
+//  std::cout << "ballPosHist after erase: " << ballPosHist.size() << " " << std::endl;
+//  for(size_t i = 0; i < ballPosHist.size(); i++)
+//  {
+//    std::cout << ballPosHist[i].t << " ";
+//  }
+//  std::cout << std::endl;
   
   if(ballPosHist.size() > 0)
   {
@@ -85,15 +85,23 @@ void TeamBallLocator::execute()
     std::vector<double> yHist(ballPosHist.size());
     for(size_t i = 0; i < ballPosHist.size(); i++)
     {
-      xHist.push_back(ballPosHist[i].vec.x);
-      yHist.push_back(ballPosHist[i].vec.y);
+      xHist[i] = ballPosHist[i].vec.x;
+      yHist[i] = ballPosHist[i].vec.y;
     }
+    std::cout << std::endl;
     sort(xHist.begin(), xHist.end());
     sort(yHist.begin(), yHist.end());
+//    for(size_t i = 0; i < ballPosHist.size(); i++)
+//    {
+//      std::cout << "(" << xHist[i] << "," << yHist[i] << ") ";
+//    }
+//    std::cout << std::endl;
+
     Vector2d teamball;
     teamball.x = xHist[xHist.size()/2];
     teamball.y = yHist[yHist.size()/2];
-  
+ 
+//    std::cout << "teamball: " << teamball.x << " " << teamball.y << std::endl;
     // write result and transform  
     getTeamBallModel().positionOnField = teamball;
     getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
