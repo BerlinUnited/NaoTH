@@ -50,6 +50,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
+#include <Tools/DataStructures/ParameterList.h>
+
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
@@ -113,10 +115,25 @@ public:
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
 private:
-  
   void processSensorData();
   
   void postProcess();
+
+private:
+  
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("Motion") 
+    {
+      PARAMETER_REGISTER(useGyroRotationOdometry) = true;
+
+      syncWithConfig();
+    }
+
+    bool useGyroRotationOdometry;
+
+  } parameter;
   
 
 private:

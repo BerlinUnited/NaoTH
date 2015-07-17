@@ -33,6 +33,9 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalDepth) = 500;
   PARAMETER_REGISTER(goalpostRadius) = 50;
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
+
+  PARAMETER_REGISTER(goalBoxAsLines) = false;
+
   syncWithConfig();
 
   calculateValues();
@@ -239,35 +242,34 @@ void FieldInfo::createLinesTable()
     );
 
   // HACK: RC14, RC15 white goal box is recognized as lines (opp goal)
-  /*
-  fieldLinesTable.addLine(
-    Vector2d(opponentGoalPostLeft.x-25,opponentGoalPostLeft.y),
-    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y)
-    );
-  fieldLinesTable.addLine(
-    Vector2d(opponentGoalPostRight.x-25,opponentGoalPostRight.y),
-    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
-    );
-  fieldLinesTable.addLine(
-    Vector2d(opponentGoalPostLeft.x + 500, opponentGoalPostLeft.y),
-    Vector2d(opponentGoalPostRight.x + 500, opponentGoalPostRight.y)
-    );
+  if(goalBoxAsLines)
+  {
+    fieldLinesTable.addLine(
+      Vector2d(opponentGoalPostLeft.x-25,opponentGoalPostLeft.y),
+      Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y)
+      );
+    fieldLinesTable.addLine(
+      Vector2d(opponentGoalPostRight.x-25,opponentGoalPostRight.y),
+      Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
+      );
+    fieldLinesTable.addLine(
+      Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y),
+      Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
+      );
 
-  // HACK: RC14 white goal box is recognized as lines (own goal)
-  // NOTE: lengthen line 2.5cm to the right to connect it with other line
-  fieldLinesTable.addLine(
-    Vector2d(ownGoalPostLeft.x+25,ownGoalPostLeft.y),
-    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y)
-    );
-  fieldLinesTable.addLine(
-    Vector2d(ownGoalPostRight.x+25,ownGoalPostRight.y),
-    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
-    );
-  fieldLinesTable.addLine(
-    Vector2d(ownGoalPostLeft.x - 500, ownGoalPostLeft.y),
-    Vector2d(ownGoalPostRight.x - 500, ownGoalPostRight.y)
-    );
-  */
+    fieldLinesTable.addLine(
+      Vector2d(ownGoalPostLeft.x+25,ownGoalPostLeft.y),
+      Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y)
+      );
+    fieldLinesTable.addLine(
+      Vector2d(ownGoalPostRight.x+25,ownGoalPostRight.y),
+      Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y)
+      );
+    fieldLinesTable.addLine(
+      Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y),
+      Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y)
+      );
+  }
 
   // center circle approximated by sequence of lines
   double numberOfSegments = 12;
