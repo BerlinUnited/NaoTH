@@ -45,14 +45,6 @@ void TeamBallLocator::execute()
       }
     }
   }
- 
-//  std::cout << "getTeamBallModel().time: " << getTeamBallModel().time << std::endl;
-//  std::cout << "ballPosHist before erase: " << ballPosHist.size() << " " << std::endl;
-//  for(size_t i = 0; i < ballPosHist.size(); i++)
-//  {
-//    std::cout << ballPosHist[i].t << " ";
-//  }
-//  std::cout << std::endl;
 
   // find oldest messages and erase them
   sort(ballPosHist.begin(), ballPosHist.end());
@@ -60,7 +52,6 @@ void TeamBallLocator::execute()
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
-    // take care: getTeamBallModel().time are unsigned int seconds
     if(cutOff->t >= getTeamBallModel().time - theParameters.maxTimeOffset)
     {
       break;
@@ -77,13 +68,6 @@ void TeamBallLocator::execute()
     }
   );
   
-//  std::cout << "ballPosHist after erase: " << ballPosHist.size() << " " << std::endl;
-//  for(size_t i = 0; i < ballPosHist.size(); i++)
-//  {
-//    std::cout << ballPosHist[i].t << " ";
-//  }
-//  std::cout << std::endl;
-  
   if(ballPosHist.size() > 0)
   {
     // median in x and y
@@ -96,36 +80,15 @@ void TeamBallLocator::execute()
     }
     sort(xHist.begin(), xHist.end());
     sort(yHist.begin(), yHist.end());
-//    for(size_t i = 0; i < ballPosHist.size(); i++)
-//    {
-//      std::cout << "(" << xHist[i] << "," << yHist[i] << ") ";
-//    }
-//    std::cout << std::endl;
-
     Vector2d teamball;
     teamball.x = xHist[xHist.size()/2];
     teamball.y = yHist[yHist.size()/2];
- 
-//    std::cout << "teamball: " << teamball.x << " " << teamball.y << std::endl;
+
     // write result and transform  
     getTeamBallModel().positionOnField = teamball;
     getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
   }
  
-  // canopy clustering
-//  CanopyClustering<SampleSet> canopyClustering(500, 10);
-//  SampleSet sampleSet(ballPosHist.size());
-//  for(size_t i = 0; i < ballPosHist.size(); i++)
-//  {
-//    sampleSet[i].translation = ballPosHist[i].vec;
-//  }
-//  canopyClustering.cluster(sampleSet);
-//  Vector2d teamball(canopyClustering.getLargestCluster().center());
-//
-//  // write result and transform  
-//  getTeamBallModel().positionOnField = teamball;
-//  getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
-
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
