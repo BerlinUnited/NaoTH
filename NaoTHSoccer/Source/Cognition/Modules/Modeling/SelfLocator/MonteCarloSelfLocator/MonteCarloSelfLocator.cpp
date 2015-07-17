@@ -77,7 +77,7 @@ void MonteCarloSelfLocator::execute()
   // (keednapped)
 
   // only in stand, walk or init(!)
-  bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
+  bool motion_ok_kidnap = getMotionStatus().currentMotion == motion::stand ||
                    getMotionStatus().currentMotion == motion::init ||
                    getMotionStatus().currentMotion == motion::walk;
 
@@ -87,18 +87,24 @@ void MonteCarloSelfLocator::execute()
                       !getBodyState().standByRightFoot && // no foot is on the ground
                        getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp; // we lose the ground contact for some time
 
-  if(parameters.treatLiftUp && motion_ok && body_lift_up) {
+  if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
   }
 
-  bool motion_not_ok = getMotionStatus().currentMotion != motion::stand &&
-                       getMotionStatus().currentMotion != motion::walk;
+  bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
+                        getMotionStatus().lastMotion == motion::walk;                    
 
-  bool body_not_upright = getBodyState().fall_down_state != BodyState::upright;
+  bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
+                    getMotionStatus().currentMotion == motion::walk)
+                   // hack: give stand some time in case the last motion was not walk or stand
+                   // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
+                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+
+  bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (motion_not_ok || body_not_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
+    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
     {
       state = BLIND;
     }
@@ -152,11 +158,11 @@ void MonteCarloSelfLocator::execute()
       // use prior knowledge
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
-        if(getSituationStatus().oppHalf) 
+        if(getSituationStatus().oppHalf)
         {
           updateByOppHalf(theSampleSet);
         } 
-        else if(getPlayerInfo().gameData.gameState == GameData::set) 
+        else if(getPlayerInfo().gameData.gameState == GameData::set)
         {
           updateByOwnHalfLookingForward(theSampleSet);
         } // check if the game controller was alive in the last 10s ~ 300frames
@@ -1030,21 +1036,11 @@ void MonteCarloSelfLocator::drawPosition() const
   {
     switch( getPlayerInfo().gameData.teamColor )
     {
-    case GameData::red:
-      PEN("FF0000", 20);
-      break;
-    case GameData::blue:
-      PEN("0000FF", 20);
-      break;
-    case GameData::yellow:
-      PEN("FFFF00", 20);
-      break;
-    case GameData::black:
-      PEN("000000", 20);
-      break;
-    default:
-      PEN("AAAAAA", 20);
-      break;
+    case GameData::red:    PEN("FF0000", 20); break;
+    case GameData::blue:   PEN("0000FF", 20); break;
+    case GameData::yellow: PEN("FFFF00", 20); break;
+    case GameData::black:  PEN("000000", 20); break;
+    default: PEN("AAAAAA", 20); break;
     }
   }
   else
@@ -1076,15 +1072,6 @@ void MonteCarloSelfLocator::drawPosition() const
                  getRobotPose().principleAxisMajor.abs()*2.0,
                  getRobotPose().principleAxisMinor.angle());
   );
-
-  /*
-  static Vector2<double> oldPose = getRobotPose().translation;
-  if((oldPose - getRobotPose().translation).abs() > 100)
-  {
-    PLOT("MCSL:position_trace",getRobotPose().translation.x, getRobotPose().translation.y);
-    oldPose = getRobotPose().translation;
-  }
-  */
 }//end drawPosition
 
 void MonteCarloSelfLocator::draw_sensor_belief() const

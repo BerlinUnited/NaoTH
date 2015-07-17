@@ -70,6 +70,9 @@ public:
   double goalDepth;
   double goalpostRadius;
 
+  // white goal box is treated as lines
+  bool goalBoxAsLines;
+
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;

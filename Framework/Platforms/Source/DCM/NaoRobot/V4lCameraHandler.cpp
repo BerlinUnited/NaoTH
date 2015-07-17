@@ -810,11 +810,11 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
   // clip value
   if (value < queryctrl.minimum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " = " << value << std::endl;
+    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
   }
   if (value > queryctrl.maximum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " = " << value << std::endl;
+    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.maximum << std::endl;
     value = queryctrl.maximum;
   }
   //std::cout << "  -  (" << queryctrl.minimum << ", " << queryctrl.default_value << ", " << queryctrl.maximum << ")" << std::endl;

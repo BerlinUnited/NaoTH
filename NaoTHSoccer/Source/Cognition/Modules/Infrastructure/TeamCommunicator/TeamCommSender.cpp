@@ -129,6 +129,10 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   splMsg.pose[1] = (float) teamData.pose.translation.y;
   splMsg.pose[2] = (float) teamData.pose.rotation;
 
+  // TODO: how can we measure/express the confidence to our positon and side?
+  splMsg.currentPositionConfidence = 100;
+  splMsg.currentSideConfidence = 100;
+
   // convert milliseconds to seconds
   splMsg.ballAge = (float) ((double) teamData.ballAge / 1000.0);
 
@@ -164,6 +168,10 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
     // play keeper
     splMsg.intention = 1;
   }
+
+  // TODO: make this configurable
+  splMsg.averageWalkSpeed = 200; // mm/s
+  splMsg.maxKickDistance = 3000; //mm -> 3 meter
 
   // user defined data
   naothmessages::BUUserTeamMessage userMsg;
