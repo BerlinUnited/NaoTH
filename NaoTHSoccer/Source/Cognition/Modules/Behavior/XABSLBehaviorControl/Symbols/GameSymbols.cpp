@@ -48,7 +48,6 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   for(int i = 0; i < GameData::numOfPlayMode; i++)
   {
     string str("game.playmode.");
-    //str.append(playerInfo.getPlayModeName((GameData::PlayMode)i));
     str.append(GameData::playModeToString((GameData::PlayMode)i));
     engine.registerEnumElement("game.playmode", str.c_str(), i);
   }
