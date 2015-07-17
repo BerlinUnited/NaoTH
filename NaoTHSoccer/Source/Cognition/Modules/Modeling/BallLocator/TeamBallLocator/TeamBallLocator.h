@@ -13,6 +13,8 @@
 // Debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // Representations
 #include "Representations/Modeling/TeamMessage.h"
@@ -21,14 +23,20 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+// Tools
+#include "Tools/DataStructures/ParameterList.h"
+
 // Canopy Clustering
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/SampleSet.h"
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/Sample.h"
 
 BEGIN_DECLARE_MODULE(TeamBallLocator)
+  PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   REQUIRE(GameData)
@@ -54,6 +62,21 @@ class TeamBallLocator : protected TeamBallLocatorBase
         Vector2d vec;
         unsigned int t;
     };
+    // parameters
+    class Parameters: public ParameterList
+    {
+    public:
+      Parameters() : ParameterList("TeamBallParameters")
+      {
+        PARAMETER_REGISTER(maxTimeOffset) = 1000;
+        
+        syncWithConfig();
+      }
+      
+      unsigned int maxTimeOffset;
+
+    } theParameters;
+
 
   public:
     TeamBallLocator();

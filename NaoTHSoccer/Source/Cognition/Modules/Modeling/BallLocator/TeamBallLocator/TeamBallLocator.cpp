@@ -11,6 +11,8 @@ TeamBallLocator::TeamBallLocator()
 {
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamball", false);
+  
+  getDebugParameterList().add(&theParameters);
 }
 
 void TeamBallLocator::execute()
@@ -53,14 +55,13 @@ void TeamBallLocator::execute()
 //  std::cout << std::endl;
 
   // find oldest messages and erase them
-  int maxTimeOffset = 1000;
   sort(ballPosHist.begin(), ballPosHist.end());
   std::vector<Vector2dTS>::iterator cutOff;
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ballPosHist.begin(); cutOff != ballPosHist.end(); cutOff++)
   {
     // take care: getTeamBallModel().time are unsigned int seconds
-    if(cutOff->t >= getTeamBallModel().time - maxTimeOffset)
+    if(cutOff->t >= getTeamBallModel().time - theParameters.maxTimeOffset)
     {
       break;
     }
