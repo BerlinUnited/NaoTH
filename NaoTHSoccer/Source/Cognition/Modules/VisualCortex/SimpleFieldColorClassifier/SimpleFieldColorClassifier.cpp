@@ -14,9 +14,11 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
   cameraID(CameraInfo::Bottom),
   uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
-  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markYClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markCbClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:markYClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:markCbClassification", "", false);
   DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:BottomCam:markCrClassification", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:SimpleFieldColorClassifier:TopCam:mark_green", "", false);
@@ -81,17 +83,23 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
     }
     else
     {
-      f = gauss(parameters.filterFactorY * quadSpan, start + halfSpan, i);
+      if(i < start + halfSpan)
+      {
+        f = gauss(parameters.preFilterYdeviationLow * quadSpan, start + halfSpan, i);
+      }
+      else
+      {
+        f = gauss(parameters.preFilterYdeviationHigh * quadSpan, start + halfSpan, i);
+      }
     }
-    //f = gauss(parameters.filterFactorY * quadSpan, start + halfSpan, i);
 
     int val = (int) Math::round(getColorChannelHistograms().histogramY.rawData[i] * f);
     filteredHistogramY.add(i, val);
   }
   filteredHistogramY.calculate();
 
-  double lowBorderY = filteredHistogramY.median - parameters.filterFactorY * filteredHistogramY.sigma;
-  double highBorderY = filteredHistogramY.median + parameters.filterFactorY * filteredHistogramY.sigma;
+  double lowBorderY = filteredHistogramY.median - parameters.preFilterYdeviationLow * filteredHistogramY.sigma;
+  double highBorderY = filteredHistogramY.median + parameters.preFilterYdeviationHigh * filteredHistogramY.sigma;
   Pixel pixel;
 
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
@@ -218,18 +226,67 @@ void SimpleFieldColorClassifier::execute(const CameraInfo::CameraID id)
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         const Pixel& pixel = getImage().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
-          POINT_PX(ColorClasses::red, x, y);
+          if(pixel.y < lowBorderY || pixel.y > highBorderY)
+          {
+            POINT_PX(ColorClasses::pink, x, y);
+          }
+          else
+          {
+            POINT_PX(ColorClasses::red, x, y);
+          }
         }
       }
     }
   );
+  DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markCbClassification",
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
+        const Pixel& pixel = getImage().get(x, y);
+        if(abs(static_cast<int>(pixel.v-maxWeightedIndexCr)) < (int)getParameters().fieldColorMax.v && abs(static_cast<int>(pixel.v-maxWeightedIndexCb)) < (int)getParameters().fieldColorMax.u) {
+          if(pixel.y < lowBorderY || pixel.y > highBorderY)
+          {
+            POINT_PX(ColorClasses::pink, x, y);
+          }
+          else
+          {
+            POINT_PX(ColorClasses::skyblue, x, y);
+          }
+        }
+      }
+    }
+  );
+
   cameraID = CameraInfo::Top;
   DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markCrClassification",
     for(unsigned int x = 0; x < getImage().width(); x+=4) {
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         const Pixel& pixel = getImage().get(x, y);
         if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)getParameters().fieldColorMax.v) {
-          POINT_PX(ColorClasses::red, x, y);
+          if(pixel.y < lowBorderY || pixel.y > highBorderY)
+          {
+            POINT_PX(ColorClasses::pink, x, y);
+          }
+          else
+          {
+            POINT_PX(ColorClasses::red, x, y);
+          }
+        }
+      }
+    }
+  );
+  DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:TopCam:markCbClassification",
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
+        const Pixel& pixel = getImage().get(x, y);
+        if(abs(static_cast<int>(pixel.v-maxWeightedIndexCr)) < (int)getParameters().fieldColorMax.v && abs(static_cast<int>(pixel.v-maxWeightedIndexCb)) < (int)getParameters().fieldColorMax.u) {
+          if(pixel.y < lowBorderY || pixel.y > highBorderY)
+          {
+            POINT_PX(ColorClasses::pink, x, y);
+          }
+          else
+          {
+            POINT_PX(ColorClasses::skyblue, x, y);
+          }
         }
       }
     }
