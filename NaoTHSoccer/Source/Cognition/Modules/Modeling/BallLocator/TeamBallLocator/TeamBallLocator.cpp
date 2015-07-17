@@ -40,7 +40,6 @@ void TeamBallLocator::execute()
   }
  
   std::cout << "getTeamBallModel().time: " << getTeamBallModel().time << std::endl;
-  std::cout << "getFrameInfo().getTime(): " << getFrameInfo().getTime() << std::endl;
   std::cout << "ballPosHist before erase: " << ballPosHist.size() << " " << std::endl;
   for(size_t i = 0; i < ballPosHist.size(); i++)
   {
