@@ -21,6 +21,9 @@ public:
 
   // the position of ball in local coordination
   Vector2<double> position;
+  
+  // root mean squared error of the estimate [m]
+  double rmse;
 
   // the time of message [ms]
   unsigned int time;

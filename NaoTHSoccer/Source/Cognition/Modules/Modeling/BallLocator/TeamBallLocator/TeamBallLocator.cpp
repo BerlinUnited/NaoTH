@@ -83,6 +83,15 @@ void TeamBallLocator::execute()
     Vector2d teamball;
     teamball.x = xHist[xHist.size()/2];
     teamball.y = yHist[yHist.size()/2];
+    
+    // root mean squared error
+    getTeamBallModel().rmse = 0.0;
+    for(size_t i = 0; i < ballPosHist.size(); i++)
+    {
+      getTeamBallModel().rmse += (teamball.x - xHist[i])*(teamball.x - xHist[i]) + (teamball.y - yHist[i])*(teamball.y - yHist[i]);
+    }
+    getTeamBallModel().rmse = getTeamBallModel().rmse / static_cast<double>(ballPosHist.size());
+    getTeamBallModel().rmse = sqrt(getTeamBallModel().rmse);
 
     // write result and transform  
     getTeamBallModel().positionOnField = teamball;
@@ -93,6 +102,7 @@ void TeamBallLocator::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
     FILLOVAL(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 50, 50);
-    TEXT_DRAWING(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, ballPosHist.size());
+    TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y+100, ballPosHist.size());
+    TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y-100, getTeamBallModel().rmse);
   );
 }
