@@ -74,7 +74,7 @@ include "Options/Skills/search_ball.xabsl";
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
 //New Striker - with action Selection
-include "Options/Soccer/Strategy/newStriker/new_Striker.xabsl";
+include "Options/Soccer/Strategy/newStriker/new_striker.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_selection_attack.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_sidekick_left.xabsl";
 include "Options/Soccer/Strategy/newStriker/new_sidekick_right.xabsl";
