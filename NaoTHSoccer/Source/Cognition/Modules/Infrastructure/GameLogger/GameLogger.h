@@ -5,6 +5,7 @@
 #include <Tools/Logfile/LogfileManager.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
 #include <Representations/Modeling/BehaviorStateSparse.h>
 #include <Representations/Modeling/PlayerInfo.h>
@@ -21,6 +22,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(RobotInfo)
 
   REQUIRE(BehaviorStateSparse)
   REQUIRE(BehaviorStateComplete)
