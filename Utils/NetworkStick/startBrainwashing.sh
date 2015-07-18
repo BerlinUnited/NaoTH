@@ -39,7 +39,7 @@ copy(){
 # determine the head number, e.g., hostname=Nao82 => N=82
 N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
 rm -f ./etc/conf.d/net
-echo "config_wlan0=\"10.0.4.$N netmask 255.255.255.0 brd 10.0.4.255\"" > ./etc/conf.d/net
+echo "config_wlan0=\"10.0.4.$N netmask 255.255.0.0 brd 10.0.255.255\"" > ./etc/conf.d/net
 echo "config_eth0=\"192.168.13.$N netmask 255.255.255.0 brd 192.168.13.255\"" >> ./etc/conf.d/net
 echo "wpa_supplicant_wlan0=\"-Dnl80211\"" >> ./etc/conf.d/net
 
