@@ -23,7 +23,7 @@ Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
 
 Vector2d CameraGeometry::relativePointToCameraAngle( 
   const CameraMatrix& cameraMatrix,
-  const CameraInfo& cameraInfo,
+  const CameraInfo& /*cameraInfo*/,
   const Vector3d& point)
 {
   // vector: O ---> point (in camera coordinates)
