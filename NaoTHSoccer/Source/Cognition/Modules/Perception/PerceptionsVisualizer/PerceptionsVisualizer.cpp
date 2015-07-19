@@ -39,6 +39,7 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER( "PerceptionsVisualizer:image:draw_field_polygon", "draw field boundaries in image", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:robot_pose", "", false);
 }
 
 void PerceptionsVisualizer::execute()
@@ -53,6 +54,11 @@ void PerceptionsVisualizer::execute()
   DEBUG_REQUEST("PerceptionsVisualizer:field:field_info",
     FIELD_DRAWING_CONTEXT;
     getFieldInfo().draw(getDebugDrawings());
+  );
+
+  DEBUG_REQUEST("PerceptionsVisualizer:field:robot_pose",
+    FIELD_DRAWING_CONTEXT;
+    getRobotPose().draw(getDebugDrawings());
   );
 }
 

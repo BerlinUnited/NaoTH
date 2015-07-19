@@ -86,8 +86,7 @@ public:
 
   static std::string getBroadcastAddr(const std::string& name)
   {
-    //HACK!!!! only valid in RoboCup 2013 Eindhoven!!!!
-    std::string ip("10.0.4.255");
+    std::string ip("unknown");
     /* Mac & Windows dont have that define */
 #ifdef SIOCGIFHWADDR
     struct ifaddrs * ifAddrStruct=NULL;

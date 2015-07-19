@@ -86,6 +86,7 @@ public:
       PARAMETER_REGISTER(pixel_border_y) = 3;
       PARAMETER_REGISTER(green_sampling_points) = 3;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
+      PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -101,6 +102,7 @@ public:
     int green_sampling_points; // number of the random samples to determine whether a segment is green 
 
     double double_edgel_angle_threshold;
+    double minEndPointGreenDensity;
   } theParameters;
 
 private:
