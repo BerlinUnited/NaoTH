@@ -20,15 +20,13 @@ void GameLogger::execute()
       getBehaviorStateSparse().state.IsInitialized())
   {
     bool something_recorded = false;
-    //std::stringstream& streamFrameInfo = logfileManager.log(getFrameInfo().getFrameNumber(), "FrameInfo");
-    //Serializer<FrameInfo>::serialize(getFrameInfo(), streamFrameInfo);
 
     // write out the complete behavior state when it was just created in this frame
     if(getBehaviorStateComplete().state.framenumber() >= lastCompleteFrameNumber)
     {
-      //std::stringstream& streamBehavior = logfileManager.log(getFrameInfo().getFrameNumber(), "BehaviorStateComplete");
-      //Serializer<BehaviorStateComplete>::serialize(getBehaviorStateComplete(), streamBehavior);
       LOGSTUFF(BehaviorStateComplete);
+      LOGSTUFF(RobotInfo);
+
 
       lastCompleteFrameNumber = getFrameInfo().getFrameNumber();
       something_recorded = true;
@@ -39,10 +37,6 @@ void GameLogger::execute()
     if( (getPlayerInfo().gameData.gameState != GameData::initial || !ignore_init_state) && 
         getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber())
     {
-      /*
-      std::stringstream& streamBehavior = logfileManager.log(getFrameInfo().getFrameNumber(), "BehaviorStateSparse");
-      Serializer<BehaviorStateSparse>::serialize(getBehaviorStateSparse(), streamBehavior);
-      */
       LOGSTUFF(BehaviorStateSparse);
 
       LOGSTUFF(OdometryData);

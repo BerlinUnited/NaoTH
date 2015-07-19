@@ -28,6 +28,7 @@ BallDetector::BallDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:drawScanEndPoints", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_estimated","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_radius_match", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball","..", false);  
 
   getDebugParameterList().add(&params);
@@ -76,15 +77,22 @@ void BallDetector::execute(CameraInfo::CameraID id)
         CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
       }
     );
-    ///***********///
+    
     ballEndPoints.clear();
     bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
-    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
+    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius)) 
     {
-      ballFound = true;
-      calculateBallPercept(center, radius);
-      //break;
+      DEBUG_REQUEST("Vision:BallDetector:draw_ball_radius_match",
+        CIRCLE_PX(ColorClasses::yellow, (int)(center.x+0.5), (int)(center.y+0.5), (int)(radius+0.5));
+      );
+
+
+      if(radius > 0 && radius < 2*estimatedRadius) {
+        ballFound = true;
+        calculateBallPercept(center, radius);
+        break;
+      }
     }
   }
 
@@ -220,7 +228,7 @@ bool BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endP
       POINT_PX(col, endPoints[i].x, endPoints[i].y);
     }
   );
-  return goodBorderPointCount != 0;
+  return goodBorderPointCount > 0;
 }
 
 bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const

@@ -79,6 +79,14 @@ message FrameInfo {
   required uint32 time = 2;
 }
 
+message RobotInfo {
+  optional string platform = 1;
+  optional string bodyNickName = 2;
+  optional string headNickName = 3;
+  optional string bodyID = 4;
+  optional uint32 basicTimeStep = 5;
+}
+
 message FSRData {
   repeated double force = 1;
   repeated double data = 2;
