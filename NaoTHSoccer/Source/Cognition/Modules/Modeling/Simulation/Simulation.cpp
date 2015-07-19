@@ -501,7 +501,7 @@ double Simulation::evaluateAction(const Vector2d& a) const{
     value = 0.1*(x-4500)*(x-4500) + fabs(x-1500)/4500*y*y;
   else
     value = -1.0*(0.1*(x+4500)*(x+4500) + fabs(x-1500)/4500*y*y);
-  return value;
+  return -value;
   
   //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
   //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
