@@ -9,16 +9,11 @@ option kick_with_foot
   {
     decision
     {
-      if (state_time > 500)
-      {
-	      if (@foot == right && executed_motion.step_control.left_movable)
-	        goto prepare_right_kick;
-	      else if(@foot == left && executed_motion.step_control.right_movable)
-	        goto prepare_left_kick;
-        else
-          stay;
-      }
-      else 
+      if (@foot == right && executed_motion.step_control.left_movable)
+        goto prepare_right_kick;
+      else if(@foot == left && executed_motion.step_control.right_movable)
+        goto prepare_left_kick;
+      else
         stay;
 	  }
     action
