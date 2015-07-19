@@ -494,8 +494,8 @@ double Simulation::evaluateAction(const Vector2d& a) const{
   double oppValueY = 1;
   MODIFY("Simulation:oppValueX", oppValueX);
   MODIFY("Simulation:oppValueY", oppValueY);
-  double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
+  //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
+  double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
   //double value_opp = abs(oppDiff.y)+oppDiff.x;
   //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
   //Vector2d ownDiff = ownGoal - a;
