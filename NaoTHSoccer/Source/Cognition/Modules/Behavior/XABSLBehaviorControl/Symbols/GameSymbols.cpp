@@ -18,7 +18,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
     string str("game.team_color");
     str.append(GameData::teamColorToString((GameData::TeamColor)i));
     engine.registerEnumElement("game.team_color", str.c_str(), i);
-  }//end for
+  }
 
   engine.registerEnumeratedInputSymbol("game.own_team_color", "game.team_color", &getOwnTeamColor);
   engine.registerEnumeratedInputSymbol("game.opponent_team_color", "game.team_color", &getOpponentTeamColor);
@@ -48,10 +48,9 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   for(int i = 0; i < GameData::numOfPlayMode; i++)
   {
     string str("game.playmode.");
-    //str.append(playerInfo.getPlayModeName((GameData::PlayMode)i));
     str.append(GameData::playModeToString((GameData::PlayMode)i));
     engine.registerEnumElement("game.playmode", str.c_str(), i);
-  }//end for
+  }
 
   // register the play mode
   // (int*)&playerInfo.playMode
