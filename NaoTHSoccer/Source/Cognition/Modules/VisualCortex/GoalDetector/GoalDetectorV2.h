@@ -72,10 +72,12 @@ public:
   virtual void execute()
   {
     execute(CameraInfo::Top);
-    execute(CameraInfo::Bottom);
+    // HACK: RC15 don't check for goals in the bottom camera
+    //execute(CameraInfo::Bottom);
 
     debugStuff(CameraInfo::Top);
-    debugStuff(CameraInfo::Bottom);
+    // HACK: RC15 don't check for goals in the bottom camera
+    //debugStuff(CameraInfo::Bottom);
   }
 
 private:
