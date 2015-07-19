@@ -487,15 +487,24 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
 }
 
 double Simulation::evaluateAction(const Vector2d& a) const{
-  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
-  Vector2d oppDiff = oppGoal - a;
-
-  double oppValueX = 0.1;
-  double oppValueY = 1;
-  MODIFY("Simulation:oppValueX", oppValueX);
-  MODIFY("Simulation:oppValueY", oppValueY);
+//  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
+//  Vector2d oppDiff = oppGoal - a;
+//
+//  double oppValueX = 0.1;
+//  double oppValueY = 1;
+//  MODIFY("Simulation:oppValueX", oppValueX);
+//  MODIFY("Simulation:oppValueY", oppValueY);
+  double x = a.x;
+  double y = a.x;
+  double value;
+  if(x < -1500)
+    value = 0.1*(x-4500)*(x-4500) + fabs(x-1500)/4500*y*y;
+  else
+    value = -1.0*(0.1*(x+4500)*(x+4500) + fabs(x-1500)/4500*y*y);
+  return value;
+  
   //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
+  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
   //double value_opp = abs(oppDiff.y)+oppDiff.x;
   //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
   //Vector2d ownDiff = ownGoal - a;
@@ -507,7 +516,7 @@ double Simulation::evaluateAction(const Vector2d& a) const{
   //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
 
   //return value_opp - value_own;
-  return value_opp;
+  //return value_opp;
 }
 
 void Simulation::draw_potential_field() const
