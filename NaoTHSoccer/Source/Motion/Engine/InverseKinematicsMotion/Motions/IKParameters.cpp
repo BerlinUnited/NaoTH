@@ -48,6 +48,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.limits.maxStepLengthBack) = 50;
   PARAMETER_REGISTER(walk.limits.maxStepWidth) = 50;
   PARAMETER_REGISTER(walk.limits.maxStepChange) = 0.5;
+  PARAMETER_REGISTER(walk.limits.maxStepChangeLength) = 0.2;
 
   // step control
   PARAMETER_REGISTER(walk.limits.maxCtrlTurn) = 30;

@@ -72,6 +72,7 @@ public:
       double maxStepLengthBack;
       double maxStepWidth;
       double maxStepChange; // (0 - 1]
+      double maxStepChangeLength;
 
       // step control
       double maxCtrlTurn;

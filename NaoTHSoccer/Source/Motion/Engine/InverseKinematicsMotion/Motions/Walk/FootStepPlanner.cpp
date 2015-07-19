@@ -44,7 +44,7 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
 
   theFootOffsetY = NaoInfo::HipOffsetY + parameters.footOffsetY;
   
-  theMaxChangeTurn = theMaxStepTurn * parameters.walk.limits.maxStepChange;
+  theMaxChangeTurn = theMaxStepTurn * parameters.walk.limits.maxStepChangeLength;
   theMaxChangeX = theMaxStepLength * parameters.walk.limits.maxStepChange;
   theMaxChangeY = theMaxStepWidth * parameters.walk.limits.maxStepChange;
 }//end updateParameters
