@@ -11,6 +11,7 @@ TeamBallLocator::TeamBallLocator()
 {
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamball", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ownball", "draw all the balls uses for teamball", false);
   
   getDebugParameterList().add(&theParameters);
 }
@@ -43,6 +44,21 @@ void TeamBallLocator::execute()
           getTeamBallModel().time = msg.frameInfo.getTime();
         }
       }
+    } else
+    {
+      const unsigned int& playerNumber = it->first;
+      const TeamMessage::Data& msg = it->second;
+      
+      // -1 means invalid ball
+      if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
+      {
+        lastMessages[playerNumber] = msg.frameInfo.getTime();
+        // collect messages
+        Vector2dTS ballPosTS;
+        ballPosTS.vec = msg.pose * msg.ballPosition;
+        ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
+        ownballPosHist.push_back(ballPosTS);
+      }
     }
   }
 
@@ -59,12 +75,33 @@ void TeamBallLocator::execute()
   }
   ballPosHist.erase(ballPosHist.begin(), cutOff);
   
+  // find oldest messages and erase them
+  sort(ownballPosHist.begin(), ownballPosHist.end());
+  // we are iterating through the sorted array from small (old) to high (new) times
+  for(cutOff = ownballPosHist.begin(); cutOff != ownballPosHist.end(); cutOff++)
+  {
+    if(cutOff->t >= getTeamBallModel().time - theParameters.maxTimeOffset)
+    {
+      break;
+    }
+  }
+  ownballPosHist.erase(ownballPosHist.begin(), cutOff);
+  
   DEBUG_REQUEST("TeamBallLocator:draw_teamball_input",
     FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 20);
+    PEN("0000FF", 20);
     for(size_t i = 0; i < ballPosHist.size(); i++)
     {
       CIRCLE(ballPosHist[i].vec.x, ballPosHist[i].vec.y, 50);
+    }
+  );
+  
+  DEBUG_REQUEST("TeamBallLocator:draw_ownball",
+    FIELD_DRAWING_CONTEXT;
+    PEN("66FFFF", 20);
+    for(size_t i = 0; i < ownballPosHist.size(); i++)
+    {
+      CIRCLE(ownballPosHist[i].vec.x, ownballPosHist[i].vec.y, 50);
     }
   );
   

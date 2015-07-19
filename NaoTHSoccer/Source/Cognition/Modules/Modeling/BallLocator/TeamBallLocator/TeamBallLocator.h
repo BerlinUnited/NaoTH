@@ -86,6 +86,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
 
   private:
     std::vector<Vector2dTS> ballPosHist;
+    std::vector<Vector2dTS> ownballPosHist;
     std::map<unsigned int, unsigned int> lastMessages;
 };
 
