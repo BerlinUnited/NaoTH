@@ -16,6 +16,13 @@ option sidekick
     }
     action
     {
+      // in case we have to make an additional step to prepare
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -42,6 +49,10 @@ option sidekick
       motion.walk.step_control.speed_direction = -90;
       motion.walk.step_control.time = 300;
 
+      // in case we have to make an additional step to prepare
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
@@ -71,6 +82,11 @@ option sidekick
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 90;
       motion.walk.step_control.time = 300;
+
+      // in case we have to make an additional step to prepare
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
 
       //look at percept
       head.control_mode = look_at_ball_percept;
