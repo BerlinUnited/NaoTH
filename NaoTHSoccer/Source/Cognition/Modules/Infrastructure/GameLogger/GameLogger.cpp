@@ -25,6 +25,8 @@ void GameLogger::execute()
     if(getBehaviorStateComplete().state.framenumber() >= lastCompleteFrameNumber)
     {
       LOGSTUFF(BehaviorStateComplete);
+      LOGSTUFF(RobotInfo);
+
 
       lastCompleteFrameNumber = getFrameInfo().getFrameNumber();
       something_recorded = true;
