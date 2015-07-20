@@ -494,13 +494,11 @@ double Simulation::evaluateAction(const Vector2d& a) const{
 //  double oppValueY = 1;
 //  MODIFY("Simulation:oppValueX", oppValueX);
 //  MODIFY("Simulation:oppValueY", oppValueY);
-  double x = a.x;
-  double y = a.x;
-  double value;
-  if(x < -1500)
-    value = 0.1*(x-4500)*(x-4500) + fabs(x-1500)/4500*y*y;
-  else
-    value = -1.0*(0.1*(x+4500)*(x+4500) + fabs(x-1500)/4500*y*y);
+  double x = a.x/1000.0;
+  double y = a.y/1000.0;
+  double own = getFieldInfo().xPosOwnGoal/1000.0;
+  double opp = (getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth)/1000;
+  double value = sqrt(y*y+(x-opp)*(x-opp)) - 1.5*sqrt(y*y+(x-own)*(x-own)) + 0.1*y*y;
   return value;
   
   //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
