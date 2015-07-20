@@ -206,6 +206,10 @@ private: // local types
     double angleDeviation;
 
   public:
+    LineDensity()
+    {
+    }
+
     LineDensity(
       const Vector2d& start, const Vector2d& end, 
       double angle, double distDeviation, double angleDeviation)
