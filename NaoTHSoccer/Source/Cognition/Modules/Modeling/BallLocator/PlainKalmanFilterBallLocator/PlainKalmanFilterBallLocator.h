@@ -108,10 +108,10 @@ private:
      public:
         KFParameters() : ParameterList("KalmanFilter4dBallModel")
         {
-            PARAMETER_REGISTER(processNoiseStdQ00) = 3;
+            PARAMETER_REGISTER(processNoiseStdQ00) = 15;
             PARAMETER_REGISTER(processNoiseStdQ01) = 0;
             PARAMETER_REGISTER(processNoiseStdQ10) = 0;
-            PARAMETER_REGISTER(processNoiseStdQ11) = 3;
+            PARAMETER_REGISTER(processNoiseStdQ11) = 20;
 
             PARAMETER_REGISTER(measurementNoiseStdR00) = Math::fromDegrees(1); //[rad]
             PARAMETER_REGISTER(measurementNoiseStdR11) = Math::fromDegrees(1); //[rad]
@@ -122,7 +122,7 @@ private:
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(c_RR) = 0.0045;
+            PARAMETER_REGISTER(c_RR) = 0.0245;
             PARAMETER_REGISTER(distanceThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(area95Threshold) = 1000*1000;
 
