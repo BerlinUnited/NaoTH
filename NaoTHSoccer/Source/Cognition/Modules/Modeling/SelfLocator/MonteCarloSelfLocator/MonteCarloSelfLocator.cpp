@@ -544,13 +544,26 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
-  for(size_t i = 0; i < sampleSet.size(); i++) {
-    if(sampleSet[i].translation.y > 0) {
-      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
-    } else {
-      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
-    }
+  //  for(size_t i = 0; i < sampleSet.size(); i++) {
+  //    if(sampleSet[i].translation.y > 0) {
+  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+  //    } else {
+  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+  //    }
+  //  }
+
+  /*---- HACK BEGIN ----*/
+  LineDensity startingLine;
+  if(getPlayerInfo().gameData.playerNumber < 4) {
+      startingLine = leftStartingLine;
+  } else {
+      startingLine = rightStartingLine;
   }
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+  }
+  /*---- HACK END ----*/
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
