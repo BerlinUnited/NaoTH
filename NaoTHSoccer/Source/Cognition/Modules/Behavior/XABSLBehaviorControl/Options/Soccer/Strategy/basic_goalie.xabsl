@@ -43,6 +43,8 @@ option basic_goalie
 	  decision {
       else if (ball.distance < 1500 && ball.time_since_last_seen < 1000)
         goto clear_ball;
+      else if ((ball.distance < 4000) && (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10))
+         goto rotate;
       else 
         stay;
 	  }
@@ -52,6 +54,26 @@ option basic_goalie
 	  }
 	}  
 
+  state rotate {
+    decision {
+      else if (ball.time_seen > 3000)
+        goto go_to_strategy_point;
+      else if (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) < 5)
+        goto stand_and_look_at_ball;
+      else 
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk.coordinate = hip;
+
+      motion.walk_speed.rot = normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x));
+ 
+      head.control_mode = search_for_ball_goalie;
+    }
+  }
 
   state clear_ball {   
    decision {
