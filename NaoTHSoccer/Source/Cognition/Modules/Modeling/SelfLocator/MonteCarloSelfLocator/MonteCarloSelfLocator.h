@@ -265,7 +265,7 @@ private: // workers
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   // A-Priori knowledge based on the game state
-  void updateByStartPositions(SampleSet& sampleSet) const;
+  void updateByStartPositions(SampleSet& sampleSet, bool single_side) const;
   void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
   void updateByOppHalf(SampleSet& sampleSet) const;

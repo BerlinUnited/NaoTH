@@ -179,7 +179,7 @@ void MonteCarloSelfLocator::execute()
         else if(getPlayerInfo().gameData.frameNumber > 0 && 
                 getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
         {
-          updateByStartPositions(theSampleSet);
+          updateByStartPositions(theSampleSet, getPlayerInfo().gameData.gameState == GameData::ready);
         }
         else
         {
@@ -532,7 +532,7 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
 }//end updateByLinePoints
 
 
-void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet, bool single_side) const
 {
   double offserY = 0;
   Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
@@ -544,26 +544,31 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
-  //  for(size_t i = 0; i < sampleSet.size(); i++) {
-  //    if(sampleSet[i].translation.y > 0) {
-  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
-  //    } else {
-  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
-  //    }
-  //  }
-
+  if(!single_side)
+  {
+    for(size_t i = 0; i < sampleSet.size(); i++) {
+      if(sampleSet[i].translation.y > 0) {
+        sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+      } else {
+        sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+      }
+    }
+  }
+  else
+  {
   /*---- HACK BEGIN ----*/
-  LineDensity startingLine;
-  if(getPlayerInfo().gameData.playerNumber < 4) {
-      startingLine = leftStartingLine;
-  } else {
-      startingLine = rightStartingLine;
-  }
+    LineDensity startingLine;
+    if(getPlayerInfo().gameData.playerNumber < 4) {
+        startingLine = leftStartingLine;
+    } else {
+        startingLine = rightStartingLine;
+    }
 
-  for(size_t i = 0; i < sampleSet.size(); i++) {
-      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
-  }
+    for(size_t i = 0; i < sampleSet.size(); i++) {
+        sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+    }
   /*---- HACK END ----*/
+  }
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
