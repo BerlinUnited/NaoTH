@@ -44,6 +44,7 @@
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
+#include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
@@ -135,6 +136,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
