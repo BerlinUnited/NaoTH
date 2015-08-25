@@ -68,13 +68,15 @@ public:
   void execute()
   {
     execute(CameraInfo::Bottom);
-    DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:plotV",
+    DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:HistogramPlot",
       plot("Histograms:BottomCam:V", histogramV);
+      plot("Histograms:BottomCam:U", histogramU);
     );
 
     execute(CameraInfo::Top);
-    DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:plotV",
+    DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:HistogramPlot",
       plot("Histograms:TopCam:V", histogramV);
+      plot("Histograms:TopCam:U", histogramU);
     );
   }
 
@@ -82,7 +84,8 @@ private:
   void execute(const CameraInfo::CameraID id);
 
   UniformGrid uniformGrid; // subsampling of the image
-  Statistics::Histogram<256> histogramV;
+  Statistics::Histogram<64> histogramV;
+  Statistics::Histogram<64> histogramU;
 
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const

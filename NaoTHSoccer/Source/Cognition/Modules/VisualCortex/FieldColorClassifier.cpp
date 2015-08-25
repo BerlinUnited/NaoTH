@@ -15,10 +15,13 @@ FieldColorClassifier::FieldColorClassifier()
   uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:markCbClassification", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:plotV", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:plotV", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markCrClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markCbClassification", "", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:HistogramPlot", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:HistogramPlot", "", false);
 }
 
 FieldColorClassifier::~FieldColorClassifier()
@@ -34,7 +37,9 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 
   // reset stuff
   histogramV.clear();
+  histogramU.clear();
   const int SCALE_FACTOR = 265 / histogramV.size;
+
 
   // calculate the histogram in the V channel
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
@@ -46,7 +51,6 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       POINT_PX(ColorClasses::red, point.x, point.y);
       unsigned char v = getImage().getV(point.x, point.y);
       histogramV.add(v / SCALE_FACTOR);
-      
     }
   }
 
@@ -130,6 +134,102 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
     }
   );
 
+
+  //STEP 2
+  Pixel pixel;
+  for(unsigned int i = 0; i < uniformGrid.size(); i++)
+  {
+    const Vector2i& point = uniformGrid.getPoint(i);
+    
+    if(!getBodyContour().isOccupied(point) && point.y > getArtificialHorizon().point(point.x).y )
+    {
+      POINT_PX(ColorClasses::red, point.x, point.y);
+      getImage().get(point.x, point.y, pixel);
+      
+      //if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr ) {
+        histogramU.add(pixel.u / SCALE_FACTOR);
+      //}
+    }
+  }
+
+  double maxWeightedCb = 0.0;
+  int maxWeightedIndexCb = -1;
+
+  // the histogram is weighted with the function 
+  // max^2(0,128-i)/128, i.e., we are interested only in the first half of it
+  const int cb_max = histogramU.size/2;
+  for(int i = 0; i < cb_max; i++)
+  {
+    // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
+    double wCb =  ((double)(cb_max - i)) / (double)cb_max;
+    double weightedCb = wCb * (double) histogramU.rawData[i];
+
+    //HACK:
+    histogramU.rawData[i] = (int)(1000*weightedCb+0.5);
+
+    // search for maximum in the wighted Cr channel
+    if(weightedCb > maxWeightedCb)
+    {
+      maxWeightedCb = weightedCb;
+      maxWeightedIndexCb = i;
+    }
+  }
+
+  // no green candidates found
+  if(maxWeightedIndexCb < 0) {
+    return;
+  }
+
+  for(int i = cb_max; i < histogramU.size; i++)
+  {
+    histogramU.rawData[i] = 0;
+  }
+
+  // ..and find optCr maxDiffs
+  int maxIndexUpCb = maxWeightedIndexCb;
+  int maxIndexDownCb = maxWeightedIndexCb;
+
+  for (int i = maxWeightedIndexCb; i < histogramU.size; i++)
+  {
+    if (histogramU.rawData[i] > maxWeightedCb/8)
+      maxIndexUpCb = i*SCALE_FACTOR + SCALE_FACTOR/2;
+    else
+      break;
+  }
+  for (int i = maxWeightedIndexCb; i >= 0; i--)
+  {
+    if (histogramU.rawData[i] > maxWeightedCb/8)
+      maxIndexDownCb = i*SCALE_FACTOR + SCALE_FACTOR/2;
+    else
+      break;
+  }
+
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:markCbClassification",
+    if(cameraID == CameraInfo::Bottom)
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
+        getImage().get(x, y, pixel);
+        
+        if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr && pixel.u > maxIndexDownCb && pixel.u < maxIndexUpCb ) {
+          POINT_PX(ColorClasses::yellow, x, y);
+        }
+      }
+    }
+  );
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:markCbClassification",
+    if(cameraID == CameraInfo::Top)
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
+        getImage().get(x, y, pixel);
+        
+        if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr && pixel.u > maxIndexDownCb && pixel.u < maxIndexUpCb ) {
+          POINT_PX(ColorClasses::yellow, x, y);
+        }
+      }
+    }
+  );
 
 }//end execute
 
