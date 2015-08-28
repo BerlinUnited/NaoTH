@@ -15,18 +15,12 @@ FieldColorClassifier::FieldColorClassifier()
   uniformGrid(getImage().width(), getImage().height(), 60, 40),
   cameraID(CameraInfo::Bottom)
 {
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:markCbClassification", "", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markCrClassification", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markCbClassification", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:markGreen", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:markGreen", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:histogramUV", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:histogramUV", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:clearHistogramUV","", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:BottomCam:HistogramPlot", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:HistogramPlot", "", false);
 
   histogramUV.resize(256);
   for(size_t i = 0; i < histogramUV.size(); i++) {
@@ -46,18 +40,14 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   cameraID = id;
   Pixel pixel;
 
-
   // EXPERIMENTS 2D
-  double alpha = 0.01;
-  MODIFY("Vision:FieldColorClassifier:alpha", alpha);
-
-  //DEBUG_REQUEST("Vision:FieldColorClassifier:clearHistogramUV",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:clearHistogramUV",
     for(size_t i = 0; i < histogramUV.size(); i++) {
       for(size_t j = 0; j < histogramUV[i].size(); j++) {
         histogramUV[i][j] = 0;
       }
     }
-  //);
+  );
 
   double blackOffset = 50;
   MODIFY("Vision:FieldColorClassifier:blackOffset",blackOffset);
@@ -73,11 +63,8 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   Vector2d centroidGlobal = momentsGlobal.getCentroid();
   momentsGlobal.reset();
 
+  // local moments
   Moments2<2> moments;
-
-  hMax = 0;
-  double yThreshold = 30;
-  MODIFY("Vision:FieldColorClassifier:yThreshold", yThreshold);
 
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
@@ -91,7 +78,8 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       double gamma = 512 - pixel.v - pixel.u;
       gamma /= 512;
 
-      if( pixel.u < 150 && pixel.v < 150 ) {
+      if( pixel.u < 150 && pixel.v < 150 ) // NOTE: this makes problems
+      {
         // cut the conus
         double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
         if( (Vector2d(128,128) - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset) 
@@ -129,94 +117,13 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
     if(cameraID == CameraInfo::Top) draw_histogramUV();
   );
 
-  // END EXPERIMENT
-
-
-
-
-  // reset stuff
-  histogramV.clear();
-  histogramU.clear();
-  const int SCALE_FACTOR = 265 / histogramV.size;
-
-
-  // calculate the histogram in the V channel
-  for(unsigned int i = 0; i < uniformGrid.size(); i++)
-  {
-    const Vector2i& point = uniformGrid.getPoint(i);
-    
-    if(!getBodyContour().isOccupied(point) && point.y > getArtificialHorizon().point(point.x).y )
-    {
-      //POINT_PX(ColorClasses::red, point.x, point.y);
-      unsigned char v = getImage().getV(point.x, point.y);
-      histogramV.add(v / SCALE_FACTOR);
-    }
-  }
-
-  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:HistogramPlot",
-    plot((cameraID == CameraInfo::Top)?"Histograms:TopCam:V":"Histograms:BottomCam:V", histogramV);
-  );
-
-  // STEP 1: search for the maximal value in the weighted Cr histogramm 
-  // CAUTION: the histogram created by the grid provider in the last frame is used
-  double maxWeightedCr = 0.0;
-  int maxWeightedIndexCr = -1;
-
-  // the histogram is weighted with the function 
-  // max^2(0,128-i)/128, i.e., we are interested only in the first half of it
-  const int cr_max = histogramV.size/2 - histogramV.size/32;
-  for(int i = 0; i < cr_max; i++)
-  {
-    // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
-    double wCr =  ((double)(cr_max - i)) / (double)cr_max;
-    double weightedCr = wCr * (double) histogramV.rawData[i];
-
-    //HACK:
-    histogramV.rawData[i] = (int)(1000*weightedCr+0.5);
-
-    // search for maximum in the wighted Cr channel
-    if(weightedCr > maxWeightedCr)
-    {
-      maxWeightedCr = weightedCr;
-      maxWeightedIndexCr = i;
-    }
-  }
-
-  // no green candidates found
-  if(maxWeightedIndexCr < 0) {
-    return;
-  }
-
-  for(int i = cr_max; i < histogramV.size; i++)
-  {
-    histogramV.rawData[i] = 0;
-  }
-
-  // ..and find optCr maxDiffs
-  int maxIndexUpCr = maxWeightedIndexCr;
-  int maxIndexDownCr = maxWeightedIndexCr;
-
-  for (int i = maxWeightedIndexCr; i < histogramV.size; i++)
-  {
-    if (histogramV.rawData[i] > maxWeightedCr/8)
-      maxIndexUpCr = i*SCALE_FACTOR + SCALE_FACTOR/2;
-    else
-      break;
-  }
-  for (int i = maxWeightedIndexCr; i >= 0; i--)
-  {
-    if (histogramV.rawData[i] > maxWeightedCr/8)
-      maxIndexDownCr = i*SCALE_FACTOR + SCALE_FACTOR/2;
-    else
-      break;
-  }
-
+  // UV eigenspace transormation matrix
   Matrix2d mx(principleAxisMajor, principleAxisMinor);
   if(fabs(mx.det()) < 1e-12) return;
   mx = mx.invert();
 
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:markCrClassification",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:markGreen",
     if(cameraID == CameraInfo::Bottom)
     for(unsigned int x = 0; x < getImage().width(); x+=4) {
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
@@ -234,7 +141,7 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 
 
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:markCrClassification",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:markGreen",
     if(cameraID == CameraInfo::Top)
     for(unsigned int x = 0; x < getImage().width(); x+=4) {
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
@@ -245,111 +152,6 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 
         if( (Vector2d(128,128) - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) { //(mx*diff).abs() < sigmaThreshold ) {
           POINT_PX(ColorClasses::red, x, y); 
-        }
-      }
-    }
-  );
-
-
-  //STEP 2
-  for(unsigned int i = 0; i < uniformGrid.size(); i++)
-  {
-    const Vector2i& point = uniformGrid.getPoint(i);
-    
-    if(!getBodyContour().isOccupied(point) && point.y > getArtificialHorizon().point(point.x).y )
-    {
-      //POINT_PX(ColorClasses::red, point.x, point.y);
-      getImage().get(point.x, point.y, pixel);
-      
-      //if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr ) {
-        histogramU.add(pixel.u / SCALE_FACTOR);
-      //}
-    }
-  }
-
-  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:HistogramPlot",
-    plot((cameraID == CameraInfo::Top)?"Histograms:TopCam:U":"Histograms:BottomCam:U", histogramU);
-  );
-
-  double maxWeightedCb = 0.0;
-  int maxWeightedIndexCb = -1;
-
-  // the histogram is weighted with the function 
-  // max^2(0,128-i)/128, i.e., we are interested only in the first half of it
-  const int cb_max = histogramU.size/2;
-  for(int i = 0; i < cb_max; i++)
-  {
-    // apply the weght max(0,128-i)/128 = 1-i/128 for i <= 128
-    double wCb =  ((double)(cb_max - i)) / (double)cb_max;
-    double weightedCb = wCb * (double) histogramU.rawData[i];
-
-    //HACK:
-    histogramU.rawData[i] = (int)(1000*weightedCb+0.5);
-
-    // search for maximum in the wighted Cr channel
-    if(weightedCb > maxWeightedCb)
-    {
-      maxWeightedCb = weightedCb;
-      maxWeightedIndexCb = i;
-    }
-  }
-
-  // no green candidates found
-  if(maxWeightedIndexCb < 0) {
-    return;
-  }
-
-  for(int i = cb_max; i < histogramU.size; i++)
-  {
-    histogramU.rawData[i] = 0;
-  }
-
-  // ..and find optCr maxDiffs
-  int maxIndexUpCb = maxWeightedIndexCb;
-  int maxIndexDownCb = maxWeightedIndexCb;
-
-  for (int i = maxWeightedIndexCb; i < histogramU.size; i++)
-  {
-    if (histogramU.rawData[i] > maxWeightedCb/8)
-      maxIndexUpCb = i*SCALE_FACTOR + SCALE_FACTOR/2;
-    else
-      break;
-  }
-  for (int i = maxWeightedIndexCb; i >= 0; i--)
-  {
-    if (histogramU.rawData[i] > maxWeightedCb/8)
-      maxIndexDownCb = i*SCALE_FACTOR + SCALE_FACTOR/2;
-    else
-      break;
-  }
-
-
-  DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:markCbClassification",
-    if(cameraID == CameraInfo::Bottom)
-    for(unsigned int x = 0; x < getImage().width(); x+=4) {
-      for(unsigned int y = 0; y < getImage().height(); y+=4) {
-        getImage().get(x, y, pixel);
-        
-        if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr && pixel.u > maxIndexDownCb && pixel.u < maxIndexUpCb ) {
-          POINT_PX(ColorClasses::yellow, x, y);
-        }
-      }
-    }
-  );
-
-  maxIndexDownCr = 105 - 10;
-  maxIndexUpCr   = 105 + 10;
-  maxIndexDownCb = 115 - 10;
-  maxIndexUpCb   = 115 + 10;
-
-  DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:markCbClassification",
-    if(cameraID == CameraInfo::Top)
-    for(unsigned int x = 0; x < getImage().width(); x+=4) {
-      for(unsigned int y = 0; y < getImage().height(); y+=4) {
-        getImage().get(x, y, pixel);
-        
-        if( pixel.v > maxIndexDownCr && pixel.v < maxIndexUpCr && pixel.u > maxIndexDownCb && pixel.u < maxIndexUpCb ) {
-          POINT_PX(ColorClasses::yellow, x, y);
         }
       }
     }
