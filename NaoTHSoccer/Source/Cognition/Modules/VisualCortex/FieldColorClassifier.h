@@ -28,10 +28,13 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DoubleCamHelpers.h"
+
+#include "Tools/Math/Moments2.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -40,6 +43,7 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
@@ -68,24 +72,19 @@ public:
   void execute()
   {
     execute(CameraInfo::Bottom);
-    DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:HistogramPlot",
-      plot("Histograms:BottomCam:V", histogramV);
-      plot("Histograms:BottomCam:U", histogramU);
-    );
-
     execute(CameraInfo::Top);
-    DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:HistogramPlot",
-      plot("Histograms:TopCam:V", histogramV);
-      plot("Histograms:TopCam:U", histogramU);
-    );
   }
 
 private:
   void execute(const CameraInfo::CameraID id);
 
   UniformGrid uniformGrid; // subsampling of the image
-  Statistics::Histogram<64> histogramV;
-  Statistics::Histogram<64> histogramU;
+  Statistics::Histogram<256> histogramV;
+  Statistics::Histogram<256> histogramU;
+  Moments2<2> momentsGlobalArray[CameraInfo::numOfCamera];
+
+  std::vector<std::vector<double> > histogramUV;
+  double hMax;
 
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const
@@ -94,6 +93,8 @@ private: // debug
       PLOT_GENERIC(id + ":rawHistogram", i, histogram.rawData[i]);
     }
   }
+
+  void draw_histogramUV() const;
 
 private: // doublecam
   
