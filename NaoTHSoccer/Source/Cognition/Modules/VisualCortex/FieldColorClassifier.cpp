@@ -38,7 +38,9 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 {
   // TODO: set this global
   cameraID = id;
+
   Pixel pixel;
+  const Vector2d centerUV(128,128);
 
   // EXPERIMENTS 2D
   DEBUG_REQUEST("Vision:FieldColorClassifier:clearHistogramUV",
@@ -66,6 +68,8 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   // local moments
   Moments2<2> moments;
 
+  bool fistRun = momentsGlobal.getRawMoment(0,0) == 0;
+
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
@@ -73,22 +77,29 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
     if(!getBodyContour().isOccupied(point) && point.y > getArtificialHorizon().point(point.x).y )
     {
       getImage().get(point.x, point.y, pixel);
-      histogramUV[pixel.v][pixel.u]++;
+      histogramUV[pixel.u][pixel.v]++;
 
-      double gamma = 512 - pixel.v - pixel.u;
+      double gamma = 512 - pixel.u - pixel.v;
       gamma /= 512;
 
-      if( pixel.u < 150 && pixel.v < 150 ) // NOTE: this makes problems
+      if( pixel.u < 128 && pixel.v < 128 ) // NOTE: this makes problems
       {
         // cut the conus
         double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
-        if( (Vector2d(128,128) - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset) 
+        if( (centerUV - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset) 
         {
-          Vector2i p(pixel.v, pixel.u);
-          momentsGlobal.add(p, gamma);
+          Vector2i p(pixel.u, pixel.v);
+
+          if(fistRun) {
+            momentsGlobal.add(p);
+          }
 
           if((Vector2d(p) - centroidGlobal).abs() < 2*principleAxisMajorGlobal.abs()) {
             moments.add(p);
+
+            if(!fistRun) {
+              momentsGlobal.add(p);
+            }
           }
         }
       }
@@ -129,10 +140,11 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
         
-        Vector2d diff = Vector2d(pixel.v, pixel.u) - centroid;
+        Vector2d p(pixel.u, pixel.v);
+        Vector2d diff = p - centroid;
         double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
 
-        if( (Vector2d(128,128) - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) { //(mx*diff).abs() < sigmaThreshold ) {
+        if( (Vector2d(128,128) - p).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) {
           POINT_PX(ColorClasses::red, x, y); 
         }
       }
@@ -147,10 +159,11 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
         
-        Vector2d diff = Vector2d(pixel.v, pixel.u) - centroid;
+        Vector2d p(pixel.u, pixel.v);
+        Vector2d diff = p - centroid;
         double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
 
-        if( (Vector2d(128,128) - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) { //(mx*diff).abs() < sigmaThreshold ) {
+        if( (Vector2d(128,128) - p).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) {
           POINT_PX(ColorClasses::red, x, y); 
         }
       }

@@ -129,7 +129,7 @@ public:
     stream << "max value in Cb (U) channel = " << maxU << std::endl;
     stream << "distance in Cr (V) channel = " << distV << std::endl;
     stream << "index in Cr (V) channel = " << indexV << std::endl;
-  }//end print
+  }
 
 };
 
