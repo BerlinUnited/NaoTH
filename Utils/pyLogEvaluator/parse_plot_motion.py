@@ -16,6 +16,7 @@ import matplotlib
 #matplotlib.use('TkAgg')
 #from matplotlib.backends import qt_compat
 from matplotlib import pyplot as plt
+from matplotlib import rcParams
 import sys
 import numpy as np
 import cPickle
@@ -67,6 +68,13 @@ def smooth(x,window_len=11,window='hanning'):
 
 if __name__ == "__main__":
   inFile = open(sys.argv[1], "rb")
+    
+  rcParams["font.family"] = "serif"
+  rcParams["xtick.labelsize"] = 6
+  rcParams["ytick.labelsize"] = 6
+  rcParams["axes.labelsize"] = 6
+  rcParams["axes.titlesize"] = 6
+  rcParams["legend.fontsize"] = 6
 
   JointID = {}
   JointID["HeadPitch"] = 0
@@ -154,10 +162,15 @@ if __name__ == "__main__":
   plotJoints = list(set([key[1:] for key in plotJoints]))
 
   for i in range(len(plotJoints)):
-    #left
-    plt.subplot(len(plotJoints),2,2*i+1)
-    plt.title("left")
-    for joint in ["L" + plotJoints[i]]:
+    for side in ["L", "R"]:
+      joint = side + plotJoints[i]
+      if side == "L":
+        plt.subplot(len(plotJoints),2,2*i+1)
+      elif side == "R":
+        plt.subplot(len(plotJoints),2,2*(i+1))
+      plt.grid()
+      sidename = "left" if side == "L" else "right"
+      plt.title(sidename+": "+joint)
       # motorjointdata
       fm_m = [jd[0] for jd in mjd]
       jointpos_m = [jd[1].position[JointID[joint]] for jd in mjd]
@@ -168,50 +181,15 @@ if __name__ == "__main__":
       jointpos_s = [jd[1].jointData.position[JointID[joint]] for jd in sjd]
       jointdp_s = [jd[1].jointData.dp[JointID[joint]] for jd in sjd]
       jointddp_s = [jd[1].jointData.ddp[JointID[joint]] for jd in sjd]
-      jointcurrent_s = smooth(np.array([jd[1].electricCurrent[JointID[joint]] for jd in sjd]))
-      plt.plot(fm_m, jointpos_m, "b.-", label=joint+"_pos_m")
-      plt.plot(fm_s, jointpos_s, "g.-", label=joint+"_pos_s")
-      plt.plot(fm_m, jointdp_m, "r.-", label=joint+"_dp_m")
-      plt.plot(fm_m, jointdp_s, "y.-", label=joint+"_dp_s")
-      plt.plot(fm_s, jointcurrent_s, ".-", label=joint+"_curr_s")
-      plt.legend(loc="upper left")
+      jointcurrent_s = [jd[1].electricCurrent[JointID[joint]] for jd in sjd]
+      plt.plot(fm_m, jointpos_m, "b-", label=joint+"_pos_motor")
+      plt.plot(fm_s, jointpos_s, "c-", label=joint+"_pos_sensor")
+      plt.plot(fm_m, jointdp_m, "r-", label=joint+"_dp_motor")
+      plt.plot(fm_m, jointdp_s, "y-", label=joint+"_dp_sensor")
+      plt.plot(fm_s, jointcurrent_s, "k-", label=joint+"_curr_sensor")
+      plt.legend()
       for sc in scd_start:
-        plt.plot([sc[0], sc[0]], [-20,20], "g-")
+        plt.plot([sc[0], sc[0]], [-20,20], "m-")
       for sc in scd_end:
-        plt.plot([sc[0], sc[0]], [-20,20], "r-")
-      plt.twinx()
-      plt.plot(fm_m, jointddp_s, "c.-", label=joint+"_ddp_s")
-      plt.plot(fm_m, jointddp_m, "m.-", label=joint+"_ddp_m")
-      plt.legend(loc="upper right")
-    plt.grid()
-    #right
-    plt.subplot(len(plotJoints),2,2*(i+1))
-    plt.title("right")
-    for joint in ["R" + plotJoints[i]]:
-      # motorjointdata
-      fm_m = [jd[0] for jd in mjd]
-      jointpos_m = [jd[1].position[JointID[joint]] for jd in mjd]
-      jointdp_m = [jd[1].dp[JointID[joint]] for jd in mjd]
-      jointddp_m = [jd[1].ddp[JointID[joint]] for jd in mjd]
-      #sensorjointdata
-      fm_s = [jd[0] for jd in sjd]
-      jointpos_s = [jd[1].jointData.position[JointID[joint]] for jd in sjd]
-      jointdp_s = [jd[1].jointData.dp[JointID[joint]] for jd in sjd]
-      jointddp_s = [jd[1].jointData.ddp[JointID[joint]] for jd in sjd]
-      jointcurrent_s = smooth(np.array([jd[1].electricCurrent[JointID[joint]] for jd in sjd]))
-      plt.plot(fm_m, jointpos_m, "b.-", label=joint+"_pos_m")
-      plt.plot(fm_s, jointpos_s, "g.-", label=joint+"_pos_s")
-      plt.plot(fm_m, jointdp_m, "r.-", label=joint+"_dp_m")
-      plt.plot(fm_m, jointdp_s, "y.-", label=joint+"_dp_s")
-      plt.plot(fm_s, jointcurrent_s, ".-", label=joint+"_curr_s")
-      plt.legend(loc="upper left")
-      for sc in scd_start:
         plt.plot([sc[0], sc[0]], [-20,20], "g-")
-      for sc in scd_end:
-        plt.plot([sc[0], sc[0]], [-20,20], "r-")
-      plt.twinx()
-      plt.plot(fm_m, jointddp_s, "c.-", label=joint+"_ddp_s")
-      plt.plot(fm_m, jointddp_m, "m.-", label=joint+"_ddp_m")
-      plt.legend(loc="upper right")
-    plt.grid()
   plt.show()
