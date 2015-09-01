@@ -150,8 +150,8 @@ if __name__ == "__main__":
     for joint in JointID.keys():
       jointcurrent_s = [jd[1].electricCurrent[JointID[joint]] for jd in sjd]
       currents.append(jointcurrent_s)
-    
-    current = [sum([c[i] for c in currents]) for i in range(len(fm_s))]
+   
+    current = np.sum(np.vstack([np.array(c) for c in currents]), 0)
 
     plt.plot(fm_s, np.cumsum(current), label=filename)
   plt.grid()
