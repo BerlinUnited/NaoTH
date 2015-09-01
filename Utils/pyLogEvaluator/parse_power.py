@@ -69,11 +69,11 @@ def smooth(x,window_len=11,window='hanning'):
 if __name__ == "__main__":
     
   rcParams["font.family"] = "serif"
-  rcParams["xtick.labelsize"] = 6
-  rcParams["ytick.labelsize"] = 6
-  rcParams["axes.labelsize"] = 6
-  rcParams["axes.titlesize"] = 6
-  rcParams["legend.fontsize"] = 6
+  rcParams["xtick.labelsize"] = 10
+  rcParams["ytick.labelsize"] = 10
+  rcParams["axes.labelsize"] = 10
+  rcParams["axes.titlesize"] = 10
+  rcParams["legend.fontsize"] = 10
 
   JointID = {}
   JointID["HeadPitch"] = 0
