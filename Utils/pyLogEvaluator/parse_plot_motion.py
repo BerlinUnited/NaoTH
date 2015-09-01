@@ -63,8 +63,8 @@ def smooth(x,window_len=11,window='hanning'):
     w=np.ones(window_len,'d')
   else:  
     w=eval('np.'+window+'(window_len)')
-    y=np.convolve(w/w.sum(),s,mode='same')
-    return y[window_len:-window_len+1]
+  y=np.convolve(w/w.sum(),s,mode='same')
+  return y[window_len:-window_len+1]
 
 if __name__ == "__main__":
   inFile = open(sys.argv[1], "rb")
