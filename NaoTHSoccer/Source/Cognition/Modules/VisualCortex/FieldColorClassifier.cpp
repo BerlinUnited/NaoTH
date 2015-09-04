@@ -22,9 +22,17 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:TopCam:histogramUV", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:clearHistogramUV","", false);
 
-  histogramUV.resize(256);
-  for(size_t i = 0; i < histogramUV.size(); i++) {
-    histogramUV[i].resize(256);
+  for(int i = 0; i < CameraInfo::numOfCamera; i++) {
+    Histogram2D& histogramUV = histogramUVArray[i];
+    histogramUV.resize(256);
+
+    Histogram2D& histogramUVY = histogramUVYArray[i];
+    histogramUVY.resize(256);
+
+    for(size_t i = 0; i < histogramUV.size(); i++) {
+      histogramUV[i].resize(256);
+      histogramUVY[i].resize(256);
+    }
   }
 }
 
@@ -33,11 +41,14 @@ FieldColorClassifier::~FieldColorClassifier()
 
 }
 
-
 void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 {
   // TODO: set this global
   cameraID = id;
+
+  Histogram2D& histogramUV = histogramUVArray[cameraID];
+  Histogram2D& histogramUVY = histogramUVYArray[cameraID];
+  
 
   Pixel pixel;
   const Vector2d centerUV(128,128);
@@ -46,7 +57,8 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:FieldColorClassifier:clearHistogramUV",
     for(size_t i = 0; i < histogramUV.size(); i++) {
       for(size_t j = 0; j < histogramUV[i].size(); j++) {
-        histogramUV[i][j] = 0;
+        histogramUV[i][j] *= 0.99;
+        histogramUVY[i][j] *= 0.99;
       }
     }
   );
@@ -55,20 +67,7 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   MODIFY("Vision:FieldColorClassifier:blackOffset",blackOffset);
   double brightnesConeRadiusUV = 50;
   MODIFY("Vision:FieldColorClassifier:brightnesConeRadiusUV",brightnesConeRadiusUV);
-  double sigmaThresholdUV = 1;
-  MODIFY("Vision:FieldColorClassifier:sigmaThresholdUV",sigmaThresholdUV);
 
-  Moments2<2>& momentsGlobal = momentsGlobalArray[cameraID];
-  
-  Vector2d principleAxisMajorGlobal, principleAxisMinorGlobal;
-  momentsGlobal.getAxes(principleAxisMajorGlobal, principleAxisMinorGlobal);
-  Vector2d centroidGlobal = momentsGlobal.getCentroid();
-  momentsGlobal.reset();
-
-  // local moments
-  Moments2<2> moments;
-
-  bool fistRun = momentsGlobal.getRawMoment(0,0) == 0;
 
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
@@ -77,61 +76,31 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
     if(!getBodyContour().isOccupied(point) && point.y > getArtificialHorizon().point(point.x).y )
     {
       getImage().get(point.x, point.y, pixel);
-      histogramUV[pixel.u][pixel.v]++;
 
-      double gamma = 512 - pixel.u - pixel.v;
-      gamma /= 512;
+      double yy = max(1.0,((double)pixel.y)-blackOffset) / 255.0;
+      Vector2d dp = Vector2d(pixel.u, pixel.v) - centerUV;
+        
+      double center = -Math::pi + Math::pi_4;
+      double sigma = Math::pi_4;
 
-      if( pixel.u < 128 && pixel.v < 128 ) // NOTE: this makes problems
-      {
-        // cut the conus
-        double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
-        if( (centerUV - Vector2d(pixel.u,pixel.v)).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset) 
-        {
-          Vector2i p(pixel.u, pixel.v);
-
-          if(fistRun) {
-            momentsGlobal.add(p);
-          }
-
-          if((Vector2d(p) - centroidGlobal).abs() < 2*principleAxisMajorGlobal.abs()) {
-            moments.add(p);
-
-            if(!fistRun) {
-              momentsGlobal.add(p);
-            }
-          }
-        }
+      if( dp.abs() > yy*brightnesConeRadiusUV ) {
+        histogramUV[pixel.u][pixel.v] += 0.01;
+      } else {
+        histogramUVY[pixel.u][pixel.v] += 0.01;
       }
     }
   }
 
-
-  Vector2d principleAxisMajor, principleAxisMinor;
-  moments.getAxes(principleAxisMajor, principleAxisMinor);
-  Vector2d centroid = moments.getCentroid();
-
-  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  PEN("FF0000", 1);
-  OVAL_ROTATED(centroid.x, 
-               centroid.y, 
-               principleAxisMinor.abs(),
-               principleAxisMajor.abs(),
-               principleAxisMinor.angle());
-
-
-
   DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:histogramUV",
-    if(cameraID == CameraInfo::Bottom) draw_histogramUV();
+    if(cameraID == CameraInfo::Bottom) {
+      draw_histogramUV(histogramUV, histogramUVY);
+    }
   );
   DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:histogramUV",
-    if(cameraID == CameraInfo::Top) draw_histogramUV();
+    if(cameraID == CameraInfo::Top) {
+      draw_histogramUV(histogramUV, histogramUVY);
+    }
   );
-
-  // UV eigenspace transormation matrix
-  Matrix2d mx(principleAxisMajor, principleAxisMinor);
-  if(fabs(mx.det()) < 1e-12) return;
-  mx = mx.invert();
 
 
   DEBUG_REQUEST("Vision:FieldColorClassifier:BottomCam:markGreen",
@@ -140,17 +109,18 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
         
-        Vector2d p(pixel.u, pixel.v);
-        Vector2d diff = p - centroid;
-        double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
+        double yy = max(1.0,((double)pixel.y)-blackOffset) / 255.0;
+        Vector2d dp = Vector2d(pixel.u, pixel.v) - centerUV;
+        
+        double center = -Math::pi + Math::pi_4;
+        double sigma = Math::pi_4;
 
-        if( (Vector2d(128,128) - p).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) {
-          POINT_PX(ColorClasses::red, x, y); 
+        if( dp.angle() > center - Math::pi_4 && dp.angle() < center + sigma && dp.abs() > yy*brightnesConeRadiusUV ) {
+            POINT_PX(ColorClasses::red, x, y); 
         }
       }
     }
   );
-
 
 
   DEBUG_REQUEST("Vision:FieldColorClassifier:TopCam:markGreen",
@@ -159,12 +129,13 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
         
-        Vector2d p(pixel.u, pixel.v);
-        Vector2d diff = p - centroid;
-        double yy = max(0.0,((double)pixel.y)-blackOffset) / 255.0;
+        double yy = max(1.0,((double)pixel.y)-blackOffset) / 255.0;
+        Vector2d dp = Vector2d(pixel.u, pixel.v) - centerUV;
+        double center = -Math::pi + Math::pi_4;
+        double sigma = Math::pi_4;
 
-        if( (Vector2d(128,128) - p).abs() > yy*brightnesConeRadiusUV && pixel.y > blackOffset && (mx*diff).abs() < sigmaThresholdUV ) {
-          POINT_PX(ColorClasses::red, x, y); 
+        if( dp.angle() > center - Math::pi_4 && dp.angle() < center + sigma && dp.abs() > yy*brightnesConeRadiusUV ) {
+            POINT_PX(ColorClasses::red, x, y); 
         }
       }
     }
@@ -173,37 +144,39 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 }//end execute
 
 
-void FieldColorClassifier::draw_histogramUV() const
+void FieldColorClassifier::draw_histogramUV(const Histogram2D& histUV, const Histogram2D& histUVY) const
 {
   static const int ySize = 256;
   static const int xSize = 256;
   double yWidth = 0.5;
   double xWidth = 0.5;
 
-  FIELD_DRAWING_CONTEXT;
-  Color white(1.0,1.0,1.0);
-  Color black(0.0,0.0,0.0);
+  double maxValueUV = 0;
+  double maxValueUVY = 0;
 
-  double maxValue = 0;
-  for(size_t i = 0; i < histogramUV.size(); i++) {
-    for(size_t j = 0; j < histogramUV[i].size(); j++) {
-      double l = histogramUV[i][j];//log(histogramUV[i][j]+1);
-      maxValue = max(maxValue, l);
+  for(size_t i = 0; i < histUV.size(); i++) {
+    for(size_t j = 0; j < histUV[i].size(); j++) {
+      maxValueUV = max(maxValueUV, log(histUV[i][j]+1));
+      maxValueUVY = max(maxValueUVY, log(histUVY[i][j]+1));
     }
   }
 
-  if(maxValue <= 0) return;
+  if(maxValueUV <= 0 || maxValueUVY <= 0) return;
 
   for (int x = 0; x < xSize; x++) {
     for (int y = 0; y < ySize; y++)
     {
       Vector2d point(xWidth*(2*x), yWidth*(2*y));
       
-      double t = /*log(histogramUV[x][y]+1)*/ histogramUV[x][y] / maxValue;
-      Color color = black*t + white*(1-t);
-      //PEN(color, 20);
-      //FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      getDebugImageDrawings().drawPointToImage((unsigned char)(t*254), 128, 128, x,y);
+      double t = log(histUV[x][y]+1) / maxValueUV; //histogramUV[x][y];
+      double s = log(histUVY[x][y]+1) / maxValueUVY;
+      
+      unsigned int c = 128;
+      if(max(t,s) > 0 && t > s) {
+        c = 0;
+      }
+
+      getDebugImageDrawings().drawPointToImage((unsigned char)(max(t,s)*254), c, c, x,y);
     }
   }
 }//end draw_closest_points

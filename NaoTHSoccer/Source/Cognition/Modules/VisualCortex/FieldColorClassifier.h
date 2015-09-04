@@ -80,18 +80,19 @@ private:
 
   UniformGrid uniformGrid; // subsampling of the image
 
-  std::vector<std::vector<double> > histogramUV;
-  Moments2<2> momentsGlobalArray[CameraInfo::numOfCamera];
+  typedef std::vector<std::vector<double> > Histogram2D;
+  Histogram2D histogramUVArray[CameraInfo::numOfCamera];
+  Histogram2D histogramUVYArray[CameraInfo::numOfCamera];
 
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const
   {
     for(int i = 0; i < histogram.size; i++) {
-      PLOT_GENERIC(id + ":rawHistogram", i, histogram.rawData[i]);
+      PLOT_GENERIC(id + ":rawHistogram" + ((cameraID == CameraInfo::Top)?"Top":"Bottom"), i, histogram.rawData[i]);
     }
   }
 
-  void draw_histogramUV() const;
+  void draw_histogramUV(const Histogram2D& histUV, const Histogram2D& histUVY) const;
 
 private: // doublecam
   
