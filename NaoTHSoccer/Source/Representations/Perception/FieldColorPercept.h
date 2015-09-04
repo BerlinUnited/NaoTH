@@ -59,64 +59,27 @@ class FieldColorPercept : public naoth::Printable
     }
   };
 
-
 public:
-  bool valid;
-  double distY;
-  double distU;
-  double distV;
-  int indexY;
-  int indexU;
-  int indexV;
-
-  double maxRateY;
-  double maxRateU;
-  double maxRateV;
-
-  int borderLeftV;
-  int borderRightV;
-
-  int maxY;
-  int maxU;
-  int minU;
-
-
   FrameInfo lastUpdated;
   ColorRange range;
   Pixel histogramField;
 
 
-  FieldColorPercept()  
-  : 
-  valid(false),
-  distY(5),
-  distU(5),
-  distV(5),
-  indexY(0),
-  indexU(0),
-  indexV(0),
-  maxRateY(0.0),
-  maxRateU(0.0),
-  maxRateV(0.0),
-  borderLeftV(0),
-  borderRightV(0),
-  maxY(127),
-  maxU(127),
-  minU(0)
-  {}
+  FieldColorPercept(){}
+  ~FieldColorPercept(){}
 
-  ~FieldColorPercept()
-  {}
-
-  void set()
-  {
-    borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
-    borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
-    range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
+  inline bool isFieldColorOld(int y, int u, int v) const {
+    return range.inside(y, u, v);
   }
 
   inline bool isFieldColor(int y, int u, int v) const {
-    return range.inside(y, u, v);
+    Vector2d dp = Vector2d(u, v) - Vector2d(128,128);
+    double center = -Math::pi + Math::pi_4;
+    double sigma = Math::pi_4;
+    double blackOffset = 50;
+    double brightnesConeRadiusUV = 50;
+    double yy = std::max(1.0,((double)y)-blackOffset) / 255.0;
+    return dp.angle() > center - sigma && dp.angle() < center + sigma && dp.abs() > yy*brightnesConeRadiusUV;
   }
 
   inline bool isFieldColor(const Pixel& pixel) const {
@@ -125,10 +88,6 @@ public:
 
   inline void print(std::ostream& stream) const
   {
-    stream << "max value in Y channel = " << maxY << std::endl;
-    stream << "max value in Cb (U) channel = " << maxU << std::endl;
-    stream << "distance in Cr (V) channel = " << distV << std::endl;
-    stream << "index in Cr (V) channel = " << indexV << std::endl;
   }
 
 };
