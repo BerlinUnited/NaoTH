@@ -99,7 +99,9 @@ if __name__ == "__main__":
   JointID["RAnkleRoll"] = 20
   JointID["LAnkleRoll"] = 21
   
- 
+
+  slopes = []
+
   for filename in sys.argv[1:]:
     inFile = open(filename, "rb")
     
@@ -145,15 +147,29 @@ if __name__ == "__main__":
         break
 
     
-    fm_s = [jd[0]-sjd[0][0] for jd in sjd]
-    currents = []
-    for joint in JointID.keys():
-      jointcurrent_s = [jd[1].electricCurrent[JointID[joint]] for jd in sjd]
-      currents.append(np.array(jointcurrent_s))
+    fm_s = np.array([jd[0]-sjd[0][0] for jd in sjd])
    
+    filters = ["Knee", "Ankle", "Hip"]
+
+    currents = [[jd[1].electricCurrent[JointID[joint]] for jd in sjd] for joint in JointID.keys() if sum([1 for fil in filters if fil in joint]) > 0]
     current = np.sum(np.vstack(currents), 0)
 
     plt.plot(fm_s, np.cumsum(current), label=filename)
+    
+    pad = int(0.1*len(fm_s))
+
+    p = np.polyfit(fm_s[pad:-pad], np.cumsum(current)[pad:-pad], 1)
+    x = np.linspace(fm_s[pad], fm_s[-pad], 100)
+    y = np.polyval(p, x)
+    plt.plot(x,y, "k:")
+
+    slopes.append([filename, p[0]])
+  
+  slopes.sort(key=lambda x:x[1])
+
+  for filename, m in slopes:
+    print filename, m
+
   plt.grid()
   plt.legend()
   plt.show()
