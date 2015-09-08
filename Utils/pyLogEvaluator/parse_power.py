@@ -148,25 +148,27 @@ if __name__ == "__main__":
 
     
     fm_s = np.array([jd[0]-sjd[0][0] for jd in sjd])
-   
+  
+    # filter
     filters = ["Knee", "Ankle", "Hip"]
 
     currents = [[jd[1].electricCurrent[JointID[joint]] for jd in sjd] for joint in JointID.keys() if sum([1 for fil in filters if fil in joint]) > 0]
     current = np.sum(np.vstack(currents), 0)
 
+    # plot data
     plt.plot(fm_s, np.cumsum(current), label=filename)
-    
+   
+    # this is to discard the start and end
     pad = int(0.1*len(fm_s))
-
+    # fit linear model for slopes
     p = np.polyfit(fm_s[pad:-pad], np.cumsum(current)[pad:-pad], 1)
+    slopes.append([filename, p[0]])
+    # plot fit
     x = np.linspace(fm_s[pad], fm_s[-pad], 100)
     y = np.polyval(p, x)
     plt.plot(x,y, "k:")
-
-    slopes.append([filename, p[0]])
   
   slopes.sort(key=lambda x:x[1])
-
   for filename, m in slopes:
     print filename, m
 
