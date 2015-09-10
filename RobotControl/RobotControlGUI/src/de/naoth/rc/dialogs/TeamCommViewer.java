@@ -13,7 +13,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.drawings.Rotation;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
