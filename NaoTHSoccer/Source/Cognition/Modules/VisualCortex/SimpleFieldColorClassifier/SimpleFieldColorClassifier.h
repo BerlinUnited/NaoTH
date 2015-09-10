@@ -75,8 +75,8 @@ public:
     }
 
     cameraID = CameraInfo::Bottom;
-    double lowBorderY = filteredHistogramY.median - parameters.filterFactorY * filteredHistogramY.sigma;
-    double highBorderY = filteredHistogramY.median + parameters.filterFactorY * filteredHistogramY.sigma;
+    double lowBorderY = filteredHistogramY.median - parameters.preFilterYdeviationLow * filteredHistogramY.sigma;
+    double highBorderY = filteredHistogramY.median + parameters.preFilterYdeviationHigh * filteredHistogramY.sigma;
 
     DEBUG_REQUEST("Vision:SimpleFieldColorClassifier:BottomCam:markYClassification",
       for(unsigned int x = 0; x < getImage().width(); x+=4) {
@@ -135,7 +135,8 @@ private:
     {
       PARAMETER_REGISTER(fieldColorMax.u) = 16;
       PARAMETER_REGISTER(fieldColorMax.v) = 16;
-      PARAMETER_REGISTER(filterFactorY) = 4;
+      PARAMETER_REGISTER(preFilterYdeviationLow) = 2.0;
+      PARAMETER_REGISTER(preFilterYdeviationHigh) = 4.0;
       PARAMETER_REGISTER(classifyInBothImages) = 1;
       PARAMETER_REGISTER(collectionTimeSpan) = 5;
 
@@ -146,7 +147,8 @@ private:
 
     DoublePixel fieldColorMax;
     DoublePixel fieldColorMin;
-    double filterFactorY;
+    double preFilterYdeviationLow;
+    double preFilterYdeviationHigh;
     int classifyInBothImages;
     int collectionTimeSpan;
   } parameters;

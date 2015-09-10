@@ -131,19 +131,16 @@ public class Scp {
                 
                 boolean check = false;
                 StringBuilder sb = new StringBuilder();
-                while (!check) {
+                while (!check) 
+                {
                     while(pis.available() > 0)
                     {
-                        //String ln = isr.readLine();
-                        int k = pis.read();
-                        char ch = (char)k;
-                        if(k != 13) {
+                        char ch = (char)pis.read();
+                        if(ch != 13) {
                             sb.append(ch);
                         }
                         System.err.print(ch);
-                        if(sb.toString().contains(expect)) {
-                            check = true;
-                        }
+                        check = sb.toString().contains(expect);
                     }
                     try{Thread.sleep(100);}catch(Exception e){System.out.println(e);}
                 }
