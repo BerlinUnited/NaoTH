@@ -100,13 +100,9 @@ if __name__ == "__main__":
   JointID["LAnkleRoll"] = 21
   
 
-  slopes = {}
-  filenames = sys.argv[1:]
-  joints = JointID.keys()
+  slopes = []
 
-  joints.sort(key=lambda x:x[1:])
-
-  for filename in filenames:
+  for filename in sys.argv[1:]:
     inFile = open(filename, "rb")
     
     mjd = []
@@ -147,23 +143,39 @@ if __name__ == "__main__":
           continue
          
       except Exception as ex:
-        pass
+        print ex
         break
 
     
     fm_s = np.array([jd[0]-sjd[0][0] for jd in sjd])
-    pad = int(0.1*len(fm_s))
-    
-    slopes[filename] = {}
-    for joint in joints:
-      current = [jd[1].electricCurrent[JointID[joint]] for jd in sjd]
-
-      # this is to discard the start and end
-      # fit linear model for slopes
-      p = np.polyfit(fm_s[pad:-pad], np.cumsum(current)[pad:-pad], 1)
-      slopes[filename][joint] = p[0]
- 
   
-  print ";".join(["filename"] + [joint for joint in joints])
-  for filename in filenames:
-    print ";".join([filename] + ["{:.6f}".format(slopes[filename][joint]) for joint in joints])
+    # filter
+    filters = ["Knee", "Ankle", "Hip"]
+
+    currents = [[jd[1].electricCurrent[JointID[joint]] for jd in sjd] for joint in JointID.keys() if sum([1 for fil in filters if fil in joint]) > 0]
+    current = np.sum(np.vstack(currents), 0)
+
+    # plot data
+    plt.plot(fm_s, np.cumsum(current), label=filename)
+   
+    # this is to discard the start and end
+    pad = int(0.1*len(fm_s))
+    # fit linear model for slopes
+    p = np.polyfit(fm_s[pad:-pad], np.cumsum(current)[pad:-pad], 1)
+    slopes.append([filename, p[0]])
+    # plot fit
+    x = np.linspace(fm_s[pad], fm_s[-pad], 100)
+    y = np.polyval(p, x)
+    plt.plot(x,y, "k:")
+  
+  slopes.sort(key=lambda x:x[1])
+  # norm to lowest
+  norm = slopes[0][1]
+  for i in range(len(slopes)):
+    slopes[i][1] = slopes[i][1] / norm
+  for filename, m in slopes:
+    print filename, m
+
+  plt.grid()
+  plt.legend()
+  plt.show()
