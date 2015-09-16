@@ -54,7 +54,7 @@ void ExtendedKalmanFilter4d::predict(const Eigen::Vector2d& u, double dt)
     x = x_pre;
     P = P_pre;
 
-    updateEllipse();
+    updateEllipses();
 }
 
 void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_Function_H& h)
@@ -100,7 +100,7 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_F
     x = x_corr;
     P = P_corr;
 
-    updateEllipse();
+    updateEllipses();
 }
 
 //--- setter ---//
@@ -144,10 +144,11 @@ Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(const Measure
     return h(x(0),x(2));
 }
 
-void ExtendedKalmanFilter4d::updateEllipse()
+void ExtendedKalmanFilter4d::updateEllipses()
 {
     Eigen::EigenSolver< Eigen::Matrix<double,2,2> > es;
 
+    // determine error ellipse for the location
     Eigen::Matrix2d loc_cov;
 
     loc_cov << P(0,0), P(0,2),
@@ -157,17 +158,41 @@ void ExtendedKalmanFilter4d::updateEllipse()
 
     if(std::abs(es.eigenvalues()[0]) > std::abs(es.eigenvalues()[1]))
     {
-        ellipse.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
-        ellipse.major = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
-        ellipse.angle = std::atan2(es.eigenvectors()(1,1).real(),es.eigenvectors()(0,1).real());
+        ellipse_location.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse_location.major = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse_location.angle = std::atan2(es.eigenvectors()(1,1).real(),es.eigenvectors()(0,1).real());
     } else {
-        ellipse.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
-        ellipse.major = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
-        ellipse.angle = std::atan2(es.eigenvectors()(1,0).real(),es.eigenvectors()(0,0).real());
+        ellipse_location.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse_location.major = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse_location.angle = std::atan2(es.eigenvectors()(1,0).real(),es.eigenvectors()(0,0).real());
+    }
+
+    // determine error ellipse of the velocity
+    Eigen::Matrix2d vol_cov;
+
+    vol_cov << P(1,1), P(1,3),
+               P(3,1), P(3,3);
+
+    es.compute(vol_cov,true);
+
+    if(std::abs(es.eigenvalues()[0]) > std::abs(es.eigenvalues()[1]))
+    {
+        ellipse_velocity.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse_velocity.major = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse_velocity.angle = std::atan2(es.eigenvectors()(1,1).real(),es.eigenvectors()(0,1).real());
+    } else {
+        ellipse_velocity.minor = std::sqrt(5.99*std::abs(es.eigenvalues()[0]));
+        ellipse_velocity.major = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
+        ellipse_velocity.angle = std::atan2(es.eigenvectors()(1,0).real(),es.eigenvectors()(0,0).real());
     }
 }
 
-const Ellipse2d& ExtendedKalmanFilter4d::getEllipse() const
+const Ellipse2d& ExtendedKalmanFilter4d::getEllipseLocation() const
 {
-    return ellipse;
+    return ellipse_location;
+}
+
+const Ellipse2d& ExtendedKalmanFilter4d::getEllipseVelocity() const
+{
+    return ellipse_velocity;
 }

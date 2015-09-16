@@ -51,11 +51,12 @@ public:
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
     Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
-    const Ellipse2d&       getEllipse() const;
+    const Ellipse2d&       getEllipseLocation() const;
+    const Ellipse2d&       getEllipseVelocity() const;
 
 private:
 
-    void updateEllipse();
+    void updateEllipses();
 
 private:
 
@@ -80,7 +81,8 @@ private:
     // kalman gain
     Eigen::Matrix<double, 4,2> K;
 
-    Ellipse2d ellipse;
+    Ellipse2d ellipse_location;
+    Ellipse2d ellipse_velocity;
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H

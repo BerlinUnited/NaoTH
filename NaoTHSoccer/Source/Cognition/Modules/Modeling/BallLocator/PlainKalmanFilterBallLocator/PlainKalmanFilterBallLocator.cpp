@@ -133,7 +133,7 @@ void PlainKalmanFilterBallLocator::execute()
     if(filter.size() > 1) {
         std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
         while(iter != filter.end()){
-            if((*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI > area95Threshold){
+            if((*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -146,10 +146,10 @@ void PlainKalmanFilterBallLocator::execute()
     {
         // find best model
         bestModel = filter.begin();
-        double evalue = (*bestModel).getEllipse().major * (*bestModel).getEllipse().minor *M_PI;
+        double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
 
         for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-            double temp = (*iter).getEllipse().major * (*iter).getEllipse().minor * M_PI;
+            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
             if(temp < evalue) {
                 evalue = temp;
                 bestModel = iter;
@@ -184,7 +184,7 @@ void PlainKalmanFilterBallLocator::execute()
         }
 
         if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0
-           || (*bestModel).getEllipse().major * (*bestModel).getEllipse().minor * M_PI > area95Threshold) // 10s
+           || (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor * M_PI > area95Threshold) // 10s
         {
             // model is not valid enymore after 10s or if the best model does not match the threshold
             getBallModel().valid = false;
@@ -327,6 +327,7 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     location_cov = rotation * location_cov;
     velocity_cov = rotation * velocity_cov;
 
+    // TODO: setting to 0 can't be correct
     Eigen::Matrix4d new_P;
     new_P << location_cov(0,0), 0                , location_cov(0,1), 0                ,
              0                , velocity_cov(0,0), 0                , velocity_cov(0,1),
@@ -396,8 +397,6 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
 
         const Eigen::Vector4d& state = (*iter).getState();
 
-        const Ellipse2d& ellipse = (*iter).getEllipse();
-
         CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
         ARROW( state(0), state(2),
                state(0)+state(1),
@@ -405,11 +404,23 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
 
         PEN("00FFFF", 20);
 
+        // draw error ellipses for the location
+        const Ellipse2d& ellipse_loc = (*iter).getEllipseLocation();
         OVAL_ROTATED(state(0),
                      state(2),
-                     ellipse.minor,
-                     ellipse.major,
-                     ellipse.angle);
+                     ellipse_loc.minor,
+                     ellipse_loc.major,
+                     ellipse_loc.angle);
+
+        PEN("FF00FF", 20);
+
+        // draw error ellipse for the velocity
+        const Ellipse2d& ellipse_vel = (*iter).getEllipseVelocity();
+        OVAL_ROTATED(state(0)+state(1),
+                     state(2)+state(3),
+                     ellipse_vel.minor,
+                     ellipse_vel.major,
+                     ellipse_vel.angle);
     }
 }
 
