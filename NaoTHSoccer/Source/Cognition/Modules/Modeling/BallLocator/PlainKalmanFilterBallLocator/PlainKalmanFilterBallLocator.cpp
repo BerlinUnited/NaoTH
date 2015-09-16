@@ -11,8 +11,7 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",            true);
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object",  true);
-
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:kick_left",          "simulate a kick left",  false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
 
     h.ball_height = 32.5;
 
@@ -30,13 +29,6 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 /*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
-
-  DEBUG_REQUEST("PlainKalmanFilterBallLocator:kick_left",
-    if(getFrameInfo().getTimeSince(kickTime) > 5000) {
-      kickTime = getFrameInfo().getTime();
-    }
-  );
-
 //     apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
@@ -46,19 +38,6 @@ void PlainKalmanFilterBallLocator::execute()
 
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:kick_left",
-      if(kickTime == getFrameInfo().getTime()) {
-        Eigen::Vector2d u;
-        u(0) = 0.0;
-        u(1) = 750.0/dt;
-
-        ExtendedKalmanFilter4d n = filter.front();
-        n.predict(u,dt);
-        filter.push_back(n);
-      }
-    );
-    
 
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
       predict(*iter, dt);
@@ -119,7 +98,7 @@ void PlainKalmanFilterBallLocator::execute()
             }
         }
 
-        // if no sutable filter found create a new one 
+        // if no suitable filter found create a new one
         if(dist > distanceThreshold || bestPredictor == filter.end())
         {
             Eigen::Vector4d newState;
@@ -137,11 +116,13 @@ void PlainKalmanFilterBallLocator::execute()
             );
 
             // debug stuff -> should be in a DEBUG_REQUEST
-            Eigen::Vector2d prediction_error;
-            prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
+            DEBUG_REQUEST("PlainKalmanFilterBallLocator:plot_prediction_error",
+                Eigen::Vector2d prediction_error;
+                prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
 
-            PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
-            PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
+            );
 
             (*bestPredictor).update(z,h);
         }
