@@ -291,44 +291,29 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     const Eigen::Vector4d& x = filter.getState();
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
 
-    //rotate and translate location part of the filter's state
-    Vector2d location = Vector2d(x(0), x(2)); // translation of the model
-    location = odometryDelta * location;
-
-    //just rotate the velocity part of the filter's state
-    Vector2d velocity = Vector2d(x(1), x(3)); // translation of the model
-    velocity.rotate(odometryDelta.getAngle());
-
     Eigen::Vector4d newStateX;
-    newStateX << location.x, velocity.x, location.y, velocity.y;
+    newStateX << x;
 
-    // rotate P
-    double s=sin(odometryDelta.getAngle());
-    double c=cos(odometryDelta.getAngle());
+    // construct rotation matrix
+    double s = sin(odometryDelta.getAngle());
+    double c = cos(odometryDelta.getAngle());
 
-    Eigen::Matrix2d rotation;
-    rotation << c, -s,
-                s,  c;
+    Eigen::Matrix4d rotation;
+    rotation << c, -s, 0,  0,
+                0,  0, c, -s,
+                s,  c, 0,  0,
+                0,  0, s,  c;
 
+    newStateX = rotation*newStateX;
+
+    // translate the location of the filters state (velocity is relative so translating it doesn't make sense)
+    newStateX(0) = newStateX(0) + odometryDelta.translation.x;
+    newStateX(2) = newStateX(2) + odometryDelta.translation.y;
+
+    // rotate P (translation doesn't affect the covariances)
     Eigen::Matrix4d P = filter.getProcessCovariance();
 
-    Eigen::Matrix2d location_cov;
-    location_cov << P(0,0),P(0,2),
-                    P(2,0),P(0,0);
-
-    Eigen::Matrix2d velocity_cov;
-    velocity_cov << P(1,1),P(1,3),
-                    P(3,1),P(3,3);
-
-    location_cov = rotation * location_cov;
-    velocity_cov = rotation * velocity_cov;
-
-    // TODO: setting to 0 can't be correct
-    Eigen::Matrix4d new_P;
-    new_P << location_cov(0,0), 0                , location_cov(0,1), 0                ,
-             0                , velocity_cov(0,0), 0                , velocity_cov(0,1),
-             location_cov(1,0), 0                , location_cov(1,1), 0                ,
-             0                , velocity_cov(1,0), 0                , velocity_cov(1,1);
+    Eigen::Matrix4d new_P = rotation * P * rotation.transpose();
 
     filter.setState(newStateX);
     filter.setCovarianceOfState(new_P);
