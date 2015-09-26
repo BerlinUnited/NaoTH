@@ -31,7 +31,7 @@ struct Ellipse2d{
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension);
+    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~ExtendedKalmanFilter4d();
 
@@ -51,11 +51,13 @@ public:
     const Eigen::Matrix2d& getMeasurementCovariance() const;
     const Eigen::Vector4d& getState() const;
     Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
+    Eigen::Matrix2d        getStateCovarianceInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
     const Ellipse2d&       getEllipseLocation() const;
     const Ellipse2d&       getEllipseVelocity() const;
 
 private:
 
+    Eigen::Matrix<double,2,4> approximateH(const Measurement_Function_H& h) const;
     void updateEllipses();
 
 private:

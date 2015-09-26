@@ -1,6 +1,6 @@
 #include "ExtendedKalmanFilter4d.h"
 
-ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseStd, const Eigen::Matrix2d& initialStateStdSingleDimension):
+ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
     x(state)
 {
     Eigen::Matrix2d q;
@@ -9,11 +9,9 @@ ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, con
     // covariance matrix of process noise (values taken from old kalman filter)
     Q << q, Eigen::Matrix2d::Zero(), Eigen::Matrix2d::Zero(), q;
 
+    // covariance matrix of measurement noise
     Eigen::Matrix2d r;
-    r = measurementNoiseStd.cwiseProduct(measurementNoiseStd);
-
-    // covariance matrix of measurement noise (values taken from old kalman filter)
-    R << r;
+    R << measurementNoiseCovariances;
 
     // inital covariance matrix of current state (values taken from old kalman filter)
     //double p = 62500;
@@ -64,25 +62,7 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_F
     predicted_measurement = getStateInMeasurementSpace(h);
 
     // approximate H with central differential quotient
-
-    double e = 0.0001;
-    Eigen::Vector2d dx1, dx2, dy1, dy2;
-
-    dx1 = h(x(0)-e,x(2));
-    dx2 = h(x(0)+e,x(2));
-
-    dy1 = h(x(0),x(2)-e);
-    dy2 = h(x(0),x(2)+e);
-
-    Eigen::Vector2d dx = (dx2-dx1)/(2*e);
-    Eigen::Vector2d dy = (dy2-dy1)/(2*e);
-
-    Eigen::Matrix<double,2,4> H_approx;
-    H_approx << dx(0), 0, dy(0), 0,
-                dx(1), 0, dy(1), 0;
-
-    // use approximation
-    H = H_approx;
+    H = approximateH(h);
 
     Eigen::Matrix2d temp1 = H * P_pre * H.transpose() + R;
 
@@ -101,6 +81,26 @@ void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_F
     P = P_corr;
 
     updateEllipses();
+}
+
+Eigen::Matrix<double,2,4> ExtendedKalmanFilter4d::approximateH(const Measurement_Function_H &h) const {
+    double e = 1e-4;
+    Eigen::Vector2d dx1, dx2, dy1, dy2;
+
+    dx1 = h(x(0)-e,x(2));
+    dx2 = h(x(0)+e,x(2));
+
+    dy1 = h(x(0),x(2)-e);
+    dy2 = h(x(0),x(2)+e);
+
+    Eigen::Vector2d dx = (dx2-dx1)/(2*e);
+    Eigen::Vector2d dy = (dy2-dy1)/(2*e);
+
+    Eigen::Matrix<double,2,4> H_approx;
+    H_approx << dx(0), 0, dy(0), 0,
+                dx(1), 0, dy(1), 0;
+
+    return H_approx;
 }
 
 //--- setter ---//
@@ -142,6 +142,15 @@ const Eigen::Matrix2d& ExtendedKalmanFilter4d::getMeasurementCovariance() const
 Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(const Measurement_Function_H& h) const
 {
     return h(x(0),x(2));
+}
+
+Eigen::Matrix2d ExtendedKalmanFilter4d::getStateCovarianceInMeasurementSpace(const Measurement_Function_H& h) const // horizontal, vertical
+{
+    Eigen::Matrix<double,2,4> H_approx;
+
+    H_approx = approximateH(h);
+
+    return H_approx * P * H_approx.transpose();
 }
 
 void ExtendedKalmanFilter4d::updateEllipses()

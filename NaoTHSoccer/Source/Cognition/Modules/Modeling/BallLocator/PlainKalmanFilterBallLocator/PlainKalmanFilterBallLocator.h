@@ -16,6 +16,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 
 #include "ExtendedKalmanFilter4d.h"
+#include "UpdateAssociationFunctions.h"
 #include "MeasurementFunctions.h"
 
 // debug
@@ -77,10 +78,6 @@ private:
     FrameInfo lastFrameInfo;
 
 private:
-
-    double distanceToState(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z) const;
-
-private:
     std::vector<ExtendedKalmanFilter4d> filter;
     std::vector<ExtendedKalmanFilter4d>::const_iterator bestModel;
 
@@ -99,7 +96,7 @@ private:
 
     /*    DEBUG STUFF    */
     void doDebugRequest();
-    void doDebugRequestBeforPredictionAndUpdate() const;
+    void doDebugRequestBeforPredictionAndUpdate();
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -113,8 +110,10 @@ private:
             PARAMETER_REGISTER(processNoiseStdQ10) = 0;
             PARAMETER_REGISTER(processNoiseStdQ11) = 20;
 
-            PARAMETER_REGISTER(measurementNoiseStdR00) = Math::fromDegrees(1); //[rad]
-            PARAMETER_REGISTER(measurementNoiseStdR11) = Math::fromDegrees(1); //[rad]
+            // experimental determined
+            PARAMETER_REGISTER(measurementNoiseR00) =  0.00130217; //[rad^2]
+            PARAMETER_REGISTER(measurementNoiseR10) = -0.00041764; //[rad^2]
+            PARAMETER_REGISTER(measurementNoiseR11) =  0.00123935; //[rad^2]
 
             PARAMETER_REGISTER(initialStateStdP00) = 250;
             PARAMETER_REGISTER(initialStateStdP01) = 0;
@@ -134,8 +133,9 @@ private:
         double processNoiseStdQ10;
         double processNoiseStdQ11;
 
-        double measurementNoiseStdR00;
-        double measurementNoiseStdR11;
+        double measurementNoiseR00;
+        double measurementNoiseR10;
+        double measurementNoiseR11;
 
         double initialStateStdP00;
         double initialStateStdP01;
@@ -149,9 +149,15 @@ private:
     } kfParameters;
 
     Measurement_Function_H h;
+    UpdateAssociationFunction* updateAssociationFunction;
+
+    // available update association value functions
+    EuclideanUAVF   euclid;
+    MahalanobisUAVF mahalanobis;
+    LikelihoodUAVF  likelihood;
 
     Eigen::Matrix2d processNoiseStdSingleDimension;
-    Eigen::Matrix2d measurementNoiseStd;
+    Eigen::Matrix2d measurementNoiseCovariances;
     Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
