@@ -109,12 +109,16 @@ if __name__ == "__main__":
   if len(angles) > 0:
       data = np.array(angles).transpose()
       cov  = np.cov(data)
+      print("bottom cam number of samples:")
+      print(len(angles))
       print("covariance matrix of the bottom cam:")
       print(cov)
 
-  if len(anglesTop):
+  if len(anglesTop) > 0:
       dataTop = np.array(anglesTop).transpose()
       covTop  = np.cov(dataTop)
+      print("top cam number of samples:")
+      print(len(anglesTop))
       print("covariance matrix of the top cam:")
       print(covTop)
 
