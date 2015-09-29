@@ -15,7 +15,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/SoundData.h"
-
+#include "Representations/Modeling/OdometryData.h"
 #include "Representations/Perception/BallPercept.h"
 //#include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/BallModel.h"
@@ -43,6 +43,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   REQUIRE(MotionStatus)
   REQUIRE(BallPercept)
   REQUIRE(BallModel)
+  REQUIRE(OdometryData)
   //REQUIRE(AttentionModel)
   //REQUIRE(PlayersPercept)
 
@@ -64,6 +65,13 @@ private:
   void testHead();
   void testMotion();
   void testLED();
+
+  Pose2D startRobotOdometry;
+  Pose2D currentRobotOdometry;
+  Pose2D standRobotOdometry;
+  bool once;
+  int state;
+
 
 };//end class ImageProcessor
 
