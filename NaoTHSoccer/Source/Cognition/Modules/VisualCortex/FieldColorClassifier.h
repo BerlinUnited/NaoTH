@@ -1,9 +1,7 @@
 /* 
  * File:   FieldColorClassifier.h
- * Author: claas
  * Author: Heinrich Mellmann
  *
- * Created on 15. März 2011, 15:56
  */
 
 #ifndef _FieldColorClassifier_H_
@@ -71,18 +69,83 @@ public:
 
   void execute()
   {
-    execute(CameraInfo::Bottom);
-    execute(CameraInfo::Top);
+    // set the percept
+    getFieldColorPercept().greenHSISeparator.setBrightness(parameters.brightnesConeOffset,parameters.brightnesConeRadiusWhite, parameters.brightnesConeRadiusBlack);
+    getFieldColorPercept().greenHSISeparator.setColor(parameters.greenColorAngleCenter, parameters.greenColorAngleWith);
+
+    // run debug stuff
+    DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", execute(CameraInfo::Bottom); );
+    DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", execute(CameraInfo::Top); );
   }
 
 private:
   void execute(const CameraInfo::CameraID id);
 
+  class Parameters: public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("FieldColorClassifier")
+    {
+      PARAMETER_REGISTER(brightnesConeOffset) = 16;
+      PARAMETER_REGISTER(brightnesConeRadiusWhite) = 16;
+      PARAMETER_REGISTER(brightnesConeRadiusBlack) = 2.0;
+
+      PARAMETER_REGISTER(greenColorAngleCenter) = 4.0;
+      PARAMETER_REGISTER(greenColorAngleWith) = 1;
+
+      syncWithConfig();
+    }
+
+    ~Parameters() {}
+
+    int brightnesConeOffset;
+    double brightnesConeRadiusWhite;
+    double brightnesConeRadiusBlack;
+
+    double greenColorAngleCenter;
+    double greenColorAngleWith;
+  } parameters;
+
+
+private:
   UniformGrid uniformGrid; // subsampling of the image
 
-  typedef std::vector<std::vector<double> > Histogram2D;
+  class Histogram2D
+  {
+  private:
+    std::vector<std::vector<double> > data;
+  public:
+    void setSize(size_t size) {
+      data.resize(size);
+
+      for(size_t i = 0; i < data.size(); i++) {
+        data[i].resize(size);
+      }
+    }
+
+    void clear() {
+      for(size_t i = 0; i < data.size(); i++) {
+        for(size_t j = 0; j < data[i].size(); j++) {
+          data[i][j] = 0.0;
+        }
+      }
+    }
+
+    double& operator() (int x, int y) {
+      return data[x][y];
+    }
+
+    double operator() (int x, int y) const {
+      return data[x][y];
+    }
+
+    size_t size() const {
+      return data.size();
+    }
+  };
+
+  Histogram2D histogramYCromaArray[CameraInfo::numOfCamera];
   Histogram2D histogramUVArray[CameraInfo::numOfCamera];
-  Histogram2D histogramUVYArray[CameraInfo::numOfCamera];
 
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const
@@ -92,7 +155,7 @@ private: // debug
     }
   }
 
-  void draw_histogramUV(const Histogram2D& histUV, const Histogram2D& histUVY) const;
+  void draw_histogramUV(const Histogram2D& histUV) const;
 
 private: // doublecam
   
