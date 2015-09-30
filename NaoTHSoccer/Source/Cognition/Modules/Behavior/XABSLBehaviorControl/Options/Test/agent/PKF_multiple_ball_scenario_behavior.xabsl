@@ -19,7 +19,7 @@ option PKF_multiple_ball_scenario_behavior{
   {
     decision
     {
-      if(executed_motion.type == stand){
+      else if(executed_motion.type == stand){
         goto forwards;
       } else {
         stay;
@@ -35,7 +35,7 @@ option PKF_multiple_ball_scenario_behavior{
   {
     decision
     {
-      if(state_time>5000){
+      else if(action_done){
        goto rotate_left;
       } else {
        stay;
@@ -43,10 +43,8 @@ option PKF_multiple_ball_scenario_behavior{
     }
     action
     {
-      motion.type = walk;
-      motion.walk_speed.x = 100;
-      motion.walk.style = fast;
-      test_walk.last_state=forwards;
+      go_to_ball(distance=250);
+      head.control_mode = look_at_ball_percept;
     }
   }
 
@@ -54,7 +52,7 @@ option PKF_multiple_ball_scenario_behavior{
   {
     decision
     {
-      if(state_time>5000){
+      else if(state_time>2000){
        goto forwards;
       } else {
        stay;
@@ -65,6 +63,8 @@ option PKF_multiple_ball_scenario_behavior{
       motion.type = walk;
       motion.walk_speed.rot = 18;
       motion.walk.style = fast;
+
+      head.control_mode = look_straight_ahead;
     }
   }
 
