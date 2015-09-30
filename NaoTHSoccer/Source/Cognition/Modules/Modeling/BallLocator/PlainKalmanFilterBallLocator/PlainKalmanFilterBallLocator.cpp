@@ -25,7 +25,7 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
 
     h.ball_height = 32.5;
 
-    updateAssociationFunction = &likelihood;
+    updateAssociationFunction = &euclid;
 
     getDebugParameterList().add(&kfParameters);
 
@@ -100,7 +100,6 @@ void PlainKalmanFilterBallLocator::execute()
         std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
 
         // if no suitable filter found create a new one
-        //if(updateAssociationValueFunction->inRange(dist > distanceThreshold || bestPredictor == filter.end())
         if(!updateAssociationFunction->inRange() || bestPredictor == filter.end())
         {
             Eigen::Vector4d newState;
@@ -431,8 +430,12 @@ void PlainKalmanFilterBallLocator::reloadParameters()
 
     // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
-    distanceThreshold = kfParameters.distanceThreshold;
     area95Threshold   = kfParameters.area95Threshold;
+
+    // UAF thresholds
+    euclid.setThreshold(kfParameters.euclidThreshold);
+    mahalanobis.setThreshold(kfParameters.mahalanobisThreshold);
+    likelihood.setThreshold(kfParameters.maximumLikelihoodThreshold);
 
     // update existing filters with new process and measurement noise
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;

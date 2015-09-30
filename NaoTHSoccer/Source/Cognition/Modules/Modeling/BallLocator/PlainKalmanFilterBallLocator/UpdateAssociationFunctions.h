@@ -5,9 +5,10 @@
 #include "ExtendedKalmanFilter4d.h"
 
 struct UpdateAssociationFunction{
-    private:
+    protected:
         std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor;
         double score;
+        double threshold;
 
     public:
         std::vector<ExtendedKalmanFilter4d>::iterator getBestPredictor() const
@@ -17,6 +18,10 @@ struct UpdateAssociationFunction{
 
         double getScore() const {
             return score;
+        }
+
+        void setThreshold(double new_threshold) {
+            threshold = new_threshold;
         }
 
         virtual void determineBestPredictor(std::vector<ExtendedKalmanFilter4d>& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
@@ -47,11 +52,11 @@ struct UpdateAssociationFunction{
         }
 
         virtual bool inRange() const {
-            return true;
+            return score < threshold;
         }
 };
 
-struct EuclideanUAVF : UpdateAssociationFunction
+struct EuclideanUAF : UpdateAssociationFunction
 {
     double associationScore(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h) const
     {
@@ -60,7 +65,7 @@ struct EuclideanUAVF : UpdateAssociationFunction
     }
 };
 
-struct MahalanobisUAVF : UpdateAssociationFunction
+struct MahalanobisUAF : UpdateAssociationFunction
 {
     double associationScore(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h) const
     {
@@ -72,7 +77,7 @@ struct MahalanobisUAVF : UpdateAssociationFunction
     }
 };
 
-struct LikelihoodUAVF : UpdateAssociationFunction
+struct LikelihoodUAF : UpdateAssociationFunction
 {
     double associationScore(const ExtendedKalmanFilter4d& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h) const
     {
@@ -97,7 +102,7 @@ struct LikelihoodUAVF : UpdateAssociationFunction
     }
 
     bool inRange() const {
-        return true;
+        return score > threshold;
     }
 };
 

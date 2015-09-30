@@ -82,7 +82,6 @@ private:
     std::vector<ExtendedKalmanFilter4d>::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double distanceThreshold;
     double area95Threshold;
 
     //double ballMass;
@@ -122,8 +121,12 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(distanceThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(area95Threshold) = 1000*1000;
+
+            //thresholds for association functions
+            PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
+            PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
+            PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.005;
 
             syncWithConfig();
         }
@@ -144,17 +147,20 @@ private:
 
         //double ballMass;
         double c_RR;
-        double distanceThreshold;
         double area95Threshold;
+
+        double euclidThreshold;
+        double mahalanobisThreshold;
+        double maximumLikelihoodThreshold;
     } kfParameters;
 
     Measurement_Function_H h;
     UpdateAssociationFunction* updateAssociationFunction;
 
     // available update association value functions
-    EuclideanUAVF   euclid;
-    MahalanobisUAVF mahalanobis;
-    LikelihoodUAVF  likelihood;
+    EuclideanUAF   euclid;
+    MahalanobisUAF mahalanobis;
+    LikelihoodUAF  likelihood;
 
     Eigen::Matrix2d processNoiseStdSingleDimension;
     Eigen::Matrix2d measurementNoiseCovariances;
