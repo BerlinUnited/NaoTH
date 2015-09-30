@@ -1,0 +1,71 @@
+option PKF_multiple_ball_scenario_behavior{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto stand;
+    }
+    action {
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if(executed_motion.type == stand){
+        goto forwards;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  state forwards
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto rotate_left;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = fast;
+      test_walk.last_state=forwards;
+    }
+  }
+
+   state rotate_left
+  {
+    decision
+    {
+      if(state_time>5000){
+       goto forwards;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = 18;
+      motion.walk.style = fast;
+    }
+  }
+
+}
