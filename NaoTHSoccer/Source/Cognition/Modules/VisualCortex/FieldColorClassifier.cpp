@@ -63,7 +63,7 @@ void FieldColorClassifier::debug()
     }
   }
 
-  const int SCALE = 256 / histogramUV.size();
+  const size_t SCALE = 256 / histogramUV.size();
 
   Pixel pixel;
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
@@ -189,7 +189,7 @@ void FieldColorClassifier::draw_histogramUV(const Histogram2D& histUV) const
     for (size_t y = 0; y < histUV.size(); y++)
     {
       double t = log(histUV(x,y)+1) / maxValueUV;
-      getDebugImageDrawings().drawPointToImage((unsigned char)min(t*2*254, 254.0), (t > 0.1)?0:128, 128, x,y);
+      getDebugImageDrawings().drawPointToImage((unsigned char)min(t*2*254, 254.0), (t > 0.1)?0:128, 128, static_cast<int>(x), static_cast<int>(y));
     }
   }
 }//end draw_histogramUV
