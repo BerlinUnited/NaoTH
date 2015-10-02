@@ -14,18 +14,21 @@ class BodyStatus : public naoth::Printable
 {
 public:
   BodyStatus():
-  currentSum()
+  currentSum(),
+  currentSumFiltered()
   {}
 
   ~BodyStatus(){}
 
   double currentSum[JointData::numOfJoint];
+  double currentSumFiltered[JointData::numOfJoint];
 
   virtual void print(std::ostream& stream) const
   {
     for(int i=0; i < JointData::numOfJoint; i++)
     {
       stream << JointData::getJointName((JointData::JointID) i) << " " << currentSum[i] << std::endl;
+      stream << JointData::getJointName((JointData::JointID) i) << " Filtered" << currentSumFiltered[i] << std::endl;
     }
    
   }//end print
