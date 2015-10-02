@@ -298,10 +298,10 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     double c = cos(odometryDelta.getAngle());
 
     Eigen::Matrix4d rotation;
-    rotation << c, -s, 0,  0,
-                0,  0, c, -s,
-                s,  c, 0,  0,
-                0,  0, s,  c;
+    rotation << c, 0, -s,  0,
+                0, c,  0, -s,
+                s, 0,  c,  0,
+                0, s,  0,  c;
 
     newStateX = rotation*newStateX;
 
