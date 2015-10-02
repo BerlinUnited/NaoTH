@@ -9,6 +9,7 @@
 #define __BodyStatus_h_
 
 #include "Tools/DataStructures/Printable.h"
+#include "Representations/Infrastructure/JointData.h"
 
 class BodyStatus : public naoth::Printable
 {
@@ -20,18 +21,29 @@ public:
 
   ~BodyStatus(){}
 
-  double currentSum[JointData::numOfJoint];
-  double currentSumFiltered[JointData::numOfJoint];
+  double currentSum[naoth::JointData::numOfJoint];
+  double currentSumFiltered[naoth::JointData::numOfJoint];
 
   virtual void print(std::ostream& stream) const
   {
-    for(int i=0; i < JointData::numOfJoint; i++)
+    for(int i=0; i < naoth::JointData::numOfJoint; i++)
     {
-      stream << JointData::getJointName((JointData::JointID) i) << " " << currentSum[i] << std::endl;
-      stream << JointData::getJointName((JointData::JointID) i) << " Filtered" << currentSumFiltered[i] << std::endl;
+      stream << naoth::JointData::getJointName((naoth::JointData::JointID) i) << " " << currentSum[i] << std::endl;
+      stream << naoth::JointData::getJointName((naoth::JointData::JointID) i) << " Filtered " << currentSumFiltered[i] << std::endl;
     }
-   
   }//end print
+
+
 };
 
+  namespace naoth
+  {
+    template<>
+    class Serializer<BodyStatus>
+    {
+    public:
+      static void serialize(const BodyStatus& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, BodyStatus& representation);
+    };
+  }
 #endif// __BodyStatus_h_

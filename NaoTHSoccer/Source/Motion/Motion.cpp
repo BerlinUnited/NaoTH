@@ -117,6 +117,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getOdometryData());
   platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
+  platformInterface.registerOutputChanel(getBodyStatus());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -242,6 +243,14 @@ void Motion::processSensorData()
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+
+    double alpha = 1e-4;
+    MODIFY("Filter",alpha);
+    for(int i=0; i < JointData::numOfJoint; i++)
+    {
+      getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
+      getBodyStatus().currentSumFiltered[i] =  getBodyStatus().currentSum[i]*(1-alpha) + getSensorJointData().electricCurrent[i]*alpha;
+    }
 
   debugPlots();
 }//end processSensorData
