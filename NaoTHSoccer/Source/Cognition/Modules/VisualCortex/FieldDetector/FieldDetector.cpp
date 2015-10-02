@@ -142,19 +142,21 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         badPoints.push_back(i);
       }
     }
+    // remove outliers
     if(badPoints.size() > 0)
     {
       for(size_t i = 0; i < badPoints.size(); i++)
       {
         points.erase(points.begin()+badPoints[i] - i);
       }
-      vector<Vector2i> result = ConvexHull::convexHull(points);
+      result = ConvexHull::convexHull(points);
       for(size_t i = 0; i < result.size(); i++)
       {
         fieldPoly.add(result[i]);
       }
     }
 
+    // add field to percept
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
     // check result
     if(fieldPoly.getArea() >= 5600)
