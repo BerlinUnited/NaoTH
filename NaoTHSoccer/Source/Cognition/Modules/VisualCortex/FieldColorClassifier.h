@@ -131,11 +131,11 @@ private:
       }
     }
 
-    double& operator() (int x, int y) {
+    double& operator() (size_t x, size_t y) {
       return data[x][y];
     }
 
-    double operator() (int x, int y) const {
+    double operator() (size_t x, size_t y) const {
       return data[x][y];
     }
 
