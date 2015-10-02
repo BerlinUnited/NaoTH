@@ -17,10 +17,11 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamTop", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamBottom", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColors", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColorsGreen", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColorsRed", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramYCroma", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramYChroma", "", false);
 
   getDebugParameterList().add(&parameters);
 
@@ -39,6 +40,17 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 {
   // TODO: set this global
   cameraID = id;
+
+  // set the percept
+  getFieldColorPercept().greenHSISeparator.set(parameters.green);
+  getFieldColorPercept().redHSISeparator.set(parameters.red);
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(); } );
+}
+
+void FieldColorClassifier::debug()
+{
   Histogram2D& histogramUV = histogramUVArray[cameraID];
   Histogram2D& histogramYCroma = histogramYCromaArray[cameraID];
   
@@ -64,9 +76,9 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 
     //if(fabs(Math::normalize(parameters.colorAngleCenter - a)) < parameters.colorAngleWith)
     {
-      dp.rotate(-parameters.greenColorAngleCenter);
+      dp.rotate(-parameters.green.colorAngleCenter);
       int value = (int)(dp.x + 128 + 0.5);
-      histogramYCroma(value/SCALE, (256 - pixel.y)/SCALE) += (1.0 - alpha);
+      histogramYCroma(value/SCALE, (255 - pixel.y)/SCALE) += (1.0 - alpha);
     }
 
     if( !getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
@@ -75,7 +87,7 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   }
 
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:markColors",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:markColorsGreen",
     for(unsigned int x = 0; x < getImage().width(); x+=4) {
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
@@ -88,25 +100,30 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
       }
     }
   );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:markColorsRed",
+    for(unsigned int x = 0; x < getImage().width(); x+=4) {
+      for(unsigned int y = 0; y < getImage().height(); y+=4) {
+        getImage().get(x, y, pixel);
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramYCroma",
+        if( getFieldColorPercept().redHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
+          POINT_PX(ColorClasses::red, x, y);
+        } else if( getFieldColorPercept().redHSISeparator.isColor(pixel.y, pixel.u, pixel.v) ) {
+          POINT_PX(ColorClasses::blue, x, y);
+        }
+      }
+    }
+  );
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramYChroma",
     draw_histogramUV(histogramYCroma);
 
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
 
-    Vector2d p0(parameters.brightnesConeRadiusBlack, 0);
-    Vector2d p1(parameters.brightnesConeRadiusBlack, parameters.brightnesConeOffset);
-    Vector2d p2(parameters.brightnesConeRadiusWhite, 256);
+    PEN("99FF9999", 1);
+    draw_YChromaSeparator(parameters.green.brightnesConeOffset, parameters.green.brightnesConeRadiusBlack, parameters.green.brightnesConeRadiusWhite);
 
-    PEN("FFFFFF99", 1);
-    LINE(128 - p0.x, 256 - p0.y, 128 - p1.x, 256 - p1.y);
-    LINE(128 - p1.x, 256 - p1.y, 128 - p2.x, 256 - p2.y);
-
-    LINE(128 + p0.x, 256 - p0.y, 128 + p1.x, 256 - p1.y);
-    LINE(128 + p1.x, 256 - p1.y, 128 + p2.x, 256 - p2.y);
-
-    PEN("FFFFFF99", 1);
-    LINE(128, 0, 128, 256);
+    PEN("FF999999", 1);
+    draw_YChromaSeparator(parameters.red.brightnesConeOffset, parameters.red.brightnesConeRadiusBlack, parameters.red.brightnesConeRadiusWhite);
   );
 
   DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV",
@@ -114,23 +131,45 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
 
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
 
-    Vector2d p0(128.0, 0.0);
-    p0.rotate(parameters.greenColorAngleCenter);
+    PEN("99FF9999", 1);
+    draw_UVSeparator(parameters.green.colorAngleCenter, parameters.green.colorAngleWith);
 
-    Vector2d p1(128.0, 0.0);
-    p1.rotate(parameters.greenColorAngleCenter - parameters.greenColorAngleWith);
-
-    Vector2d p2(128.0, 0.0);
-    p2.rotate(parameters.greenColorAngleCenter + parameters.greenColorAngleWith);
-
-    PEN("FFFFFF99", 1);
-    LINE(128, 128, 128+p0.x, 128+p0.y);
-    LINE(128, 128, 128+p1.x, 128+p1.y);
-    LINE(128, 128, 128+p2.x, 128+p2.y);
+    PEN("FF999999", 1);
+    draw_UVSeparator(parameters.red.colorAngleCenter, parameters.red.colorAngleWith);
   );
 
 }//end execute
 
+void FieldColorClassifier::draw_UVSeparator(double angleCenter, double angleWidth) const
+{
+  Vector2d p0(128.0, 0.0);
+  p0.rotate(angleCenter);
+
+  Vector2d p1(128.0, 0.0);
+  p1.rotate(angleCenter - angleWidth);
+
+  Vector2d p2(128.0, 0.0);
+  p2.rotate(angleCenter + angleWidth);
+
+  LINE(128, 128, 128+p0.x, 128+p0.y);
+  LINE(128, 128, 128+p1.x, 128+p1.y);
+  LINE(128, 128, 128+p2.x, 128+p2.y);
+}
+
+void FieldColorClassifier::draw_YChromaSeparator(double brightnesConeOffset, double brightnesConeRadiusBlack, double brightnesConeRadiusWhite) const
+{
+  Vector2d p0(brightnesConeRadiusBlack, 0);
+  Vector2d p1(brightnesConeRadiusBlack, brightnesConeOffset);
+  Vector2d p2(brightnesConeRadiusWhite, 255);
+
+  LINE(128 - p0.x, 255 - p0.y, 128 - p1.x, 256 - p1.y);
+  LINE(128 - p1.x, 255 - p1.y, 128 - p2.x, 256 - p2.y);
+
+  LINE(128 + p0.x, 255 - p0.y, 128 + p1.x, 256 - p1.y);
+  LINE(128 + p1.x, 255 - p1.y, 128 + p2.x, 256 - p2.y);
+
+  LINE(128, 0, 128, 255);
+}
 
 void FieldColorClassifier::draw_histogramUV(const Histogram2D& histUV) const
 {
