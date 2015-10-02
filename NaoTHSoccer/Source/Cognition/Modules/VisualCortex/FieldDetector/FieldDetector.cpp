@@ -113,8 +113,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
     }
     // calculate the convex hull
-    vector<Vector2i > result = ConvexHull::convexHull(points);
-
+    vector<Vector2i> result = ConvexHull::convexHull(points);
+    
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
 
@@ -123,7 +123,40 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       fieldPoly.add(result[i]);
     }
 
+    // check outliers
+    std::vector<size_t> badPoints;
+    for(size_t i = 0; i < points.size(); i++)
+    {
+      std::vector<Vector2i> pointsCheck = points;
+      pointsCheck.erase(pointsCheck.begin()+i);
+      
+      vector<Vector2i> resultCheck = ConvexHull::convexHull(pointsCheck);
+      
+      FieldPercept::FieldPoly fieldPolyCheck;
+      for(size_t j = 0; j < resultCheck.size(); j++)
+      {
+        fieldPolyCheck.add(resultCheck[j]);
+      }
+      if(fieldPolyCheck.getArea() / fieldPoly.getArea() < 0.9)
+      {
+        badPoints.push_back(i);
+      }
+    }
+    if(badPoints.size() > 0)
+    {
+      for(size_t i = 0; i < badPoints.size(); i++)
+      {
+        points.erase(points.begin()+badPoints[i] - i);
+      }
+      vector<Vector2i> result = ConvexHull::convexHull(points);
+      for(size_t i = 0; i < result.size(); i++)
+      {
+        fieldPoly.add(result[i]);
+      }
+    }
+
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
+    // check result
     if(fieldPoly.getArea() >= 5600)
     {
       getFieldPercept().valid = true;
