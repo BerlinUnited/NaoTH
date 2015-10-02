@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef _Histogram_H
-#define  _Histogram_H
+#ifndef _Histogram_H_
+#define _Histogram_H_
 
 #include <vector>
 #include "Tools/Debug/NaoTHAssert.h"
