@@ -205,6 +205,7 @@ public:
 
   inline void print(std::ostream& stream) const
   {
+    static_cast<void>(stream);
   }
 
 };
