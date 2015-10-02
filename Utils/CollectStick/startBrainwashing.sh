@@ -1,6 +1,6 @@
 #!/bin/bash
 
-aplay /usr/share/naoqi/wav/chimes_short.wav
+sudo -u nao aplay /home/nao/naoqi/Media/usb_stop.wav
 
 infoFile="/home/nao/Config/nao.info"
 

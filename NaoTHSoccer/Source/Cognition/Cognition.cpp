@@ -44,6 +44,7 @@
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
+#include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
@@ -71,6 +72,9 @@
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+#include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
+
+#include "Modules/Modeling/Simulation/Simulation.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -132,6 +136,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
@@ -159,7 +164,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
-  
+  REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(StaticDebugModelProvider);
+
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);

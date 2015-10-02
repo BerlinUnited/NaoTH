@@ -451,7 +451,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
                             
                             // copy to robot
-                            String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                            String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
                             scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
@@ -463,10 +463,15 @@ public class NaoSCP extends javax.swing.JFrame {
                             
                             //scp.runStream("su\nroot\ncd /home/nao/tmp\n./init_env.sh");
                             //scp.run("/home/nao/tmp", "./init_env.sh");
-                            Scp.CommandStream shell = scp.getShell();
-                            shell.run("ls");
-                            shell.close();
+                            //Scp.CommandStream shell = scp.getShell();
+                            //shell.run("ls");
+                            //shell.close();
                             
+                            Scp.CommandStream shell =  scp.getShell();
+                            shell.run("su");
+                            shell.run("root");
+                            shell.run("cd /home/nao/tmp/");
+                            shell.run("./init_env.sh", "DONE");
 
                             scp.disconnect();
 

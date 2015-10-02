@@ -28,6 +28,7 @@ BallDetector::BallDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:drawScanEndPoints", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_estimated","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_radius_match", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball","..", false);  
 
   getDebugParameterList().add(&params);
@@ -47,15 +48,17 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
   // STEP 1: find the starting point for the search
   listOfRedPoints.clear();
+  //??? single condition
   if(!findMaximumRedPoint(listOfRedPoints) || listOfRedPoints.empty()) {
     return;
   }
 
   bool ballFound = false;
 
-  // the points are sorted - the most red points are at the end
+  //NOTE: the points are sorted - the most red points are at the end
   double radius = -1;
   Vector2d center;
+  //Liste von rotenPunkten durchgehen
   for(int i = (int)listOfRedPoints.size()-1; i >= 0 ; i--) 
   {
     const Vector2i& point = listOfRedPoints[i];
@@ -65,22 +68,31 @@ void BallDetector::execute(CameraInfo::CameraID id)
       continue;
     }
 
+    //3d Projection -> Aus der Entfernung der Punktes die ungefähre Ballposition berechenen
     double estimatedRadius = estimatedBallRadius(point);
     
     DEBUG_REQUEST("Vision:BallDetector:draw_ball_estimated",
+      //estimatedRadius <=0 possible? will be a problem  in "radius < 2*estimatedRadius"
       if(estimatedRadius > 0) {
         CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
       }
     );
-
+    
     ballEndPoints.clear();
     bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
-    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
+    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius)) 
     {
-      ballFound = true;
-      calculateBallPercept(center, radius);
-      //break;
+      DEBUG_REQUEST("Vision:BallDetector:draw_ball_radius_match",
+        CIRCLE_PX(ColorClasses::yellow, (int)(center.x+0.5), (int)(center.y+0.5), (int)(radius+0.5));
+      );
+
+
+      if(radius > 0 && radius < 2*estimatedRadius) {
+        ballFound = true;
+        calculateBallPercept(center, radius);
+        break;
+      }
     }
   }
 
@@ -216,7 +228,7 @@ bool BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endP
       POINT_PX(col, endPoints[i].x, endPoints[i].y);
     }
   );
-  return goodBorderPointCount != 0;
+  return goodBorderPointCount > 0;
 }
 
 bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
@@ -270,14 +282,7 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      if(pixel.y < params.maxBorderBrightness)
-      {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+      return pixel.y < params.maxBorderBrightness;
     }
   }//end while
 

@@ -7,4 +7,4 @@ cd /
 umount -l /media/brainwasher
 rmdir /media/brainwasher
 #play something
-play /usr/share/naoqi/wav/jingle_earing.wav
+sudo -u nao aplay /home/nao/naoqi/Media/usb_start.wav

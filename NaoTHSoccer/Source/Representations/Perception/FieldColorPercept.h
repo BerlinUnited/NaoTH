@@ -59,26 +59,94 @@ class FieldColorPercept : public naoth::Printable
     }
   };
 
+  class HSISeparatorOptimized
+  {
+  
+  private:
+    int brightnesConeOffset;
+    double brightnesConeRadiusWhite;
+    double brightnesConeRadiusBlack;
+    double brightnesAlpha; // calculated
+
+    //double colorAngleCenter;
+    //double colorAngleWith;
+    Vector2i normalMin;
+    int distMin;
+    Vector2i normalMax;
+    int distMax;
+
+    int brightnessThreshold[256];
+
+  public:
+    void setColor(double colorAngleCenter, double colorAngleWith) {
+      normalMin = Vector2i(1024,0);
+      normalMin.rotate(colorAngleCenter - colorAngleWith + Math::pi_2);
+
+      distMin = normalMin*Vector2i(128,128);
+
+      normalMax = Vector2i(1024,0);
+      normalMax.rotate(colorAngleCenter + colorAngleWith + Math::pi_2);
+
+      distMax = normalMax*Vector2i(128,128);
+    }
+
+    void setBrightness(int brightnesConeOffset, double brightnesConeRadiusWhite, double brightnesConeRadiusBlack) {
+      this->brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
+      
+      for(int i = 0; i < 256; i++) {
+        double t = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(i-brightnesConeOffset));
+        brightnessThreshold[i] = (int)(t*t + 0.5);
+      }
+
+      this->brightnesConeOffset = brightnesConeOffset;
+      this->brightnesConeRadiusWhite = brightnesConeRadiusWhite;
+      this->brightnesConeRadiusBlack = brightnesConeRadiusBlack;
+    }
+
+    inline bool isColor(int y, int u, int v) const {
+      return !noColor(y,u,v) && 
+              normalMin.x*u + normalMin.y*v > distMin && 
+              normalMax.x*u + normalMax.y*v < distMax;
+    }
+
+    inline bool noColor(int y, int u, int v) const {
+      //double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
+      return Math::sqr(u - 128) + Math::sqr(v - 128) < brightnessThreshold[y]; //Vector2d(u - 128, v - 128).abs() < brightnessThreshold[y];
+    }
+  };
+
+  class HSISeparator
+  {
+  public:
+    int brightnesConeOffset;
+    double brightnesConeRadiusWhite;
+    double brightnesConeRadiusBlack;
+
+    double colorAngleCenter;
+    double colorAngleWith;
+
+    inline bool isColor(int y, int u, int v) const {
+      
+      const double brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
+
+      Vector2d dp(u - 128, v - 128);
+      double d = dp.abs();
+      double a = dp.angle();
+
+      double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
+      return d > cromaThreshold && fabs(Math::normalize(colorAngleCenter - a)) < colorAngleWith;
+    }
+
+    inline bool noColor(int y, int u, int v) const {
+      const double brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
+      double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
+      return Vector2d(u - 128, v - 128).abs() < cromaThreshold;
+    }
+  };
 
 public:
-  bool valid;
-  double distY;
-  double distU;
-  double distV;
-  int indexY;
-  int indexU;
-  int indexV;
 
-  double maxRateY;
-  double maxRateU;
-  double maxRateV;
-
-  int borderLeftV;
-  int borderRightV;
-
-  int maxY;
-  int maxU;
-  int minU;
+  HSISeparatorOptimized greenHSISeparator;
 
 
   FrameInfo lastUpdated;
@@ -86,37 +154,15 @@ public:
   Pixel histogramField;
 
 
-  FieldColorPercept()  
-  : 
-  valid(false),
-  distY(5),
-  distU(5),
-  distV(5),
-  indexY(0),
-  indexU(0),
-  indexV(0),
-  maxRateY(0.0),
-  maxRateU(0.0),
-  maxRateV(0.0),
-  borderLeftV(0),
-  borderRightV(0),
-  maxY(127),
-  maxU(127),
-  minU(0)
-  {}
+  FieldColorPercept(){}
+  ~FieldColorPercept(){}
 
-  ~FieldColorPercept()
-  {}
-
-  void set()
-  {
-    borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
-    borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
-    range.set(0, minU, borderLeftV, maxY, maxU, borderRightV);
+  inline bool isFieldColorOld(int y, int u, int v) const {
+    return range.inside(y, u, v);
   }
 
   inline bool isFieldColor(int y, int u, int v) const {
-    return range.inside(y, u, v);
+    return greenHSISeparator.isColor(y,u,v);
   }
 
   inline bool isFieldColor(const Pixel& pixel) const {
@@ -125,11 +171,7 @@ public:
 
   inline void print(std::ostream& stream) const
   {
-    stream << "max value in Y channel = " << maxY << std::endl;
-    stream << "max value in Cb (U) channel = " << maxU << std::endl;
-    stream << "distance in Cr (V) channel = " << distV << std::endl;
-    stream << "index in Cr (V) channel = " << indexV << std::endl;
-  }//end print
+  }
 
 };
 
