@@ -115,11 +115,13 @@ private:
 
 private:
   inline bool isOrange(const Pixel& pixel) const {
+    return getFieldColorPercept().isRedColor(pixel);
+    /*
     return
       pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
       pixel.v > pixel.u + params.mitUVDifference && // y-u has to be high (this filter out the jerseys)
       pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV;
-//      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
+//      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; */
   }
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;

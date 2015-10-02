@@ -149,7 +149,7 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
     stepSizeAdjusted *= 2;
   }
 
-  int maxRedPeak = getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
+  int maxRedPeak = 128;//getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
   Vector2i point;
   Pixel pixel;
   Vector2i redPeak;
@@ -200,7 +200,7 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
   );
 
   // maxRedPeak is larger than its initial value
-  return maxRedPeak > getFieldColorPercept().range.getMax().v;
+  return maxRedPeak > 128;//getFieldColorPercept().range.getMax().v;
 }
 
 
@@ -282,7 +282,8 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      return pixel.y < params.maxBorderBrightness;
+      //return pixel.y < params.maxBorderBrightness;
+      return !getFieldColorPercept().greenHSISeparator.noColor(pixel);
     }
   }//end while
 
