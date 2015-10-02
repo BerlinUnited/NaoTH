@@ -27,6 +27,8 @@
 //#include "Representations/Modeling/AttentionModel.h"
 
 #include <Representations/Infrastructure/LEDRequest.h>
+#include "Representations/Infrastructure/JointData.h"
+#include "Representations/Modeling/BodyStatus.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -37,7 +39,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
   //PROVIDE(DebugDrawingsField)
-  
+  REQUIRE(SensorJointData)  
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(MotionStatus)
@@ -51,6 +53,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(MotionRequest)
   PROVIDE(SoundPlayData)
   PROVIDE(BehaviorLEDRequest)
+  PROVIDE(BodyStatus)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase
@@ -71,7 +74,6 @@ private:
   Pose2D standRobotOdometry;
   bool once;
   int state;
-
 
 };//end class ImageProcessor
 

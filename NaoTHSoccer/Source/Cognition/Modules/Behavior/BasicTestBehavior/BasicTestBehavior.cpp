@@ -209,7 +209,13 @@ void BasicTestBehavior::testMotion()
     getMotionRequest().walkRequest.target.translation.x = 500;
   );
   
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_back_and_forth",
+ DEBUG_REQUEST("BasicTestBehavior:motion:walk_back_and_forth",
+
+    for(int i=0; i < JointData::numOfJoint; i++)
+    {
+      getBodyStatus().currentSum[i] = getSensorJointData().electricCurrent[i];
+    }
+
     if(state == 0){
       currentRobotOdometry = getOdometryData();
       Vector2d distancetest;
