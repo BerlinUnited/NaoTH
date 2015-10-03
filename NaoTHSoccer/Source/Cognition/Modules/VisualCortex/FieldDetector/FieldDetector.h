@@ -18,6 +18,9 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugParameterList.h>
+#include "Tools/Debug/DebugModify.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -25,6 +28,7 @@ BEGIN_DECLARE_MODULE(FieldDetector)
   PROVIDE(DebugRequest)  
   PROVIDE(DebugImageDrawings)  
   PROVIDE(DebugImageDrawingsTop)  
+  PROVIDE(DebugParameterList)
   
   REQUIRE(Image)
   REQUIRE(ImageTop)
@@ -57,6 +61,18 @@ public:
   void execute(CameraInfo::CameraID id);
 
   static bool myVecCompareX(const Vector2i &first, const Vector2i &second);
+  
+  class Parameters: public ParameterList
+  {
+  public:
+	
+    Parameters() : ParameterList("FieldDetectorParameters")
+    {
+      PARAMETER_REGISTER(pruneThresholdArea) = 0.99;
+      syncWithConfig();
+    }
+    double pruneThresholdArea;
+  } theParameters;
 
 private:
   CameraInfo::CameraID cameraID;

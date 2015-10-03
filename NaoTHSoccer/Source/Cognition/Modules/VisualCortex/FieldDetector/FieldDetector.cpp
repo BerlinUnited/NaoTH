@@ -19,6 +19,8 @@ FieldDetector::FieldDetector()
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:setHoleImageAsField", "mark hole image as if field were detected", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_old", "mark polygonal boundary of the detected field before outlier detection", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_new", "mark new polygonal boundary of the detected field after outlier detection", false);
+
+  getDebugParameterList().add(&theParameters);
 }
 
 
@@ -174,7 +176,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         {
           fieldPolyCheck.add(resultCheck[j]);
         }
-        if(fieldPolyCheck.getArea() / fieldPoly.getArea() < 0.99)
+        if(fieldPolyCheck.getArea() / fieldPoly.getArea() < theParameters.pruneThresholdArea)
         {
           badPoints.push_back(i);
         }
