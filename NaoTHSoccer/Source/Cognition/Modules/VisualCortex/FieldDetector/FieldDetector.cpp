@@ -17,8 +17,8 @@ FieldDetector::FieldDetector()
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon", "mark polygonal boundary of the detected field cutted by horizon on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:setHoleImageAsField", "mark hole image as if field were detected", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_old", "mark old polygonal boundary of the detected field", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_new", "mark new polygonal boundary of the detected field", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_old", "mark polygonal boundary of the detected field before outlier detection", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_new", "mark new polygonal boundary of the detected field after outlier detection", false);
 }
 
 
@@ -124,7 +124,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     {
       fieldPoly.add(result[i]);
     }
-    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_old",
+    DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_old",
       int idx = 0;
       for(int i = 1; i < fieldPoly.length; i++)
       {
@@ -155,7 +155,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       for(size_t i = 0; i < badPoints.size(); i++)
       {
         // badPoints are ordered so the small indices are removed first
-        points.erase(points.begin()+badPoints[i] - i);
+        points.erase(points.begin() + badPoints[i] - i);
       }
     }
     // check outliers but keep first and last point in any case
@@ -185,7 +185,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         for(size_t i = 0; i < badPoints.size(); i++)
         {
           // badPoints are ordered so the small indices are removed first
-          points.erase(points.begin()+badPoints[i] - i);
+          points.erase(points.begin() + badPoints[i] - i);
         }
         result = ConvexHull::convexHull(points);
         // clear old polygon
@@ -199,7 +199,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         break;
       }
     }
-    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_new",
+    DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_new",
       int idx = 0;
       for(int i = 1; i < fieldPoly.length; i++)
       {
