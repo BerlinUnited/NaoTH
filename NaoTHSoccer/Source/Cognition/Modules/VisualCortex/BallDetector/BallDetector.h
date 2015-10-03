@@ -131,6 +131,7 @@ private:
   
   void calculateBallPercept(const Vector2i& center, double radius);
   void estimateCircleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;
+  bool sanityCheck(const Vector2i& center, double radius);
   
 private: //data members
   std::vector<Vector2i> listOfRedPoints;
