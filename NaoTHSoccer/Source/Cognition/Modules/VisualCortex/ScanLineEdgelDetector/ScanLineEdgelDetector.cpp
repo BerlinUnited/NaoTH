@@ -249,10 +249,12 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     else
     {
       //HACK break if darker than field
+      /*
       if(pixel.y < getFieldColorPercept().range.getMin().y)
       {
         break;
       }
+      */
       movingWindow.add(0.0);
     }
 

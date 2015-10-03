@@ -69,41 +69,41 @@ public:
 
   void execute()
   {
-    // set the percept
-    getFieldColorPercept().greenHSISeparator.setBrightness(parameters.brightnesConeOffset,parameters.brightnesConeRadiusWhite, parameters.brightnesConeRadiusBlack);
-    getFieldColorPercept().greenHSISeparator.setColor(parameters.greenColorAngleCenter, parameters.greenColorAngleWith);
-
-    // run debug stuff
-    DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", execute(CameraInfo::Bottom); );
-    DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", execute(CameraInfo::Top); );
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
   }
 
 private:
   void execute(const CameraInfo::CameraID id);
+  void debug();
 
   class Parameters: public ParameterList
   {
   public:
     Parameters() : ParameterList("FieldColorClassifier")
     {
-      PARAMETER_REGISTER(brightnesConeOffset) = 16;
-      PARAMETER_REGISTER(brightnesConeRadiusWhite) = 16;
-      PARAMETER_REGISTER(brightnesConeRadiusBlack) = 2.0;
+      PARAMETER_REGISTER(green.brightnesConeOffset) = 30;
+      PARAMETER_REGISTER(green.brightnesConeRadiusBlack) = 2;
+      PARAMETER_REGISTER(green.brightnesConeRadiusWhite) = 50;
 
-      PARAMETER_REGISTER(greenColorAngleCenter) = 4.0;
-      PARAMETER_REGISTER(greenColorAngleWith) = 1;
+      PARAMETER_REGISTER(green.colorAngleCenter) = -2.4;
+      PARAMETER_REGISTER(green.colorAngleWith) = 0.8;
+
+
+      PARAMETER_REGISTER(red.brightnesConeOffset) = 16;
+      PARAMETER_REGISTER(red.brightnesConeRadiusBlack) = 10;
+      PARAMETER_REGISTER(red.brightnesConeRadiusWhite) = 70;
+
+      PARAMETER_REGISTER(red.colorAngleCenter) = -4.4;
+      PARAMETER_REGISTER(red.colorAngleWith) = 0.4;
 
       syncWithConfig();
     }
 
     ~Parameters() {}
 
-    int brightnesConeOffset;
-    double brightnesConeRadiusWhite;
-    double brightnesConeRadiusBlack;
-
-    double greenColorAngleCenter;
-    double greenColorAngleWith;
+    FieldColorPercept::HSISeparatorOptimized::Parameter green;
+    FieldColorPercept::HSISeparatorOptimized::Parameter red;
   } parameters;
 
 
@@ -131,11 +131,11 @@ private:
       }
     }
 
-    double& operator() (int x, int y) {
+    double& operator() (size_t x, size_t y) {
       return data[x][y];
     }
 
-    double operator() (int x, int y) const {
+    double operator() (size_t x, size_t y) const {
       return data[x][y];
     }
 
@@ -155,6 +155,8 @@ private: // debug
     }
   }
 
+  void draw_UVSeparator(double angleCenter, double angleWidth) const;
+  void draw_YChromaSeparator(double brightnesConeOffset, double brightnesConeRadiusBlack, double brightnesConeRadiusWhite) const;
   void draw_histogramUV(const Histogram2D& histUV) const;
 
 private: // doublecam
