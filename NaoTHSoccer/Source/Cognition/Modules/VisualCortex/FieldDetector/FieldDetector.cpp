@@ -17,6 +17,8 @@ FieldDetector::FieldDetector()
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon", "mark polygonal boundary of the detected field cutted by horizon on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:setHoleImageAsField", "mark hole image as if field were detected", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_old", "mark old polygonal boundary of the detected field", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_new", "mark new polygonal boundary of the detected field", false);
 }
 
 
@@ -122,6 +124,17 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     {
       fieldPoly.add(result[i]);
     }
+    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_old",
+      int idx = 0;
+      for(int i = 1; i < fieldPoly.length; i++)
+      {
+        LINE_PX(ColorClasses::red, fieldPoly[idx].x, fieldPoly[idx].y, fieldPoly[i].x, fieldPoly[i].y);
+        idx = i;
+      }
+    );    
+
+    // sort points by x value
+    sort(points.begin(), points.end(), this->myVecCompareX);
 
     // check outliers
     std::vector<size_t> badPoints;
@@ -137,7 +150,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       {
         fieldPolyCheck.add(resultCheck[j]);
       }
-      if(fieldPolyCheck.getArea() / fieldPoly.getArea() < 0.9)
+      if(fieldPolyCheck.getArea() / fieldPoly.getArea() < 0.99)
       {
         badPoints.push_back(i);
       }
@@ -151,11 +164,21 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         points.erase(points.begin()+badPoints[i] - i);
       }
       result = ConvexHull::convexHull(points);
+      // clear old polygon
+      fieldPoly = FieldPercept::FieldPoly();
       for(size_t i = 0; i < result.size(); i++)
       {
         fieldPoly.add(result[i]);
       }
     }
+    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_new",
+      int idx = 0;
+      for(int i = 1; i < fieldPoly.length; i++)
+      {
+        LINE_PX(ColorClasses::green, fieldPoly[idx].x, fieldPoly[idx].y, fieldPoly[i].x, fieldPoly[i].y);
+        idx = i;
+      }
+    );    
 
     // add field to percept
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
@@ -191,3 +214,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     );    
   }
 }//end execute
+
+bool FieldDetector::myVecCompareX(const Vector2i &first, const Vector2i &second) 
+{ 
+  return (first.x<second.x); 
+}
