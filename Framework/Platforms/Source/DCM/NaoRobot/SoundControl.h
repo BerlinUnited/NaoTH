@@ -57,17 +57,11 @@ public:
 private:
   string media_path;
   int err;
-  snd_pcm_t *playback_handle;
-  snd_pcm_hw_params_t *hw_params;
-  WaveHeader header;
-  snd_pcm_uframes_t periodSize;
   SoundPlayData theSoundDataCopy;
   pthread_t playThreadID;
-  char *filename;
+  std::string filename;
   bool is_running;
 
-  int init();
-  void deinit();
   void change_volume(const SoundPlayData::SpeakerID id,const int volume);
   void change_mute(const bool mute);
 

@@ -184,6 +184,13 @@ message OdometryData
   required Pose2D pose = 1;
 }
 
+message BodyStatus
+{
+  repeated double currentSum = 1;
+  //repeated double currentSumFiltered = 2;
+  required uint32 timestamp = 3;
+}
+
 message CalibrationData
 {
   optional DoubleVector2 inertialSensorOffset = 1;

@@ -53,6 +53,8 @@ public:
 
   void execute(CameraInfo::CameraID id);
 
+  static bool myVecCompareX(const Vector2i &first, const Vector2i &second);
+
 private:
   CameraInfo::CameraID cameraID;
 
