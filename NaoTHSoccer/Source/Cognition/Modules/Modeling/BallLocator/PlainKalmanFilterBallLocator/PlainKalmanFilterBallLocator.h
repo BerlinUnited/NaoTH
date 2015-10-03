@@ -96,6 +96,7 @@ private:
     /*    DEBUG STUFF    */
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
+    void doDebugRequestBeforUpdate();
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -126,7 +127,7 @@ private:
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
-            PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.005;
+            PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.0001;
 
             syncWithConfig();
         }
