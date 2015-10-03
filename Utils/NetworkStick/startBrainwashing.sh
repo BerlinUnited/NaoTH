@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo -u nao aplay /home/nao/naoqi/Media/usb_stop.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
 
 # copy function
 copy(){
