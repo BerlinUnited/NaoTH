@@ -5,11 +5,9 @@ package naoscp;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,11 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import naoscp.components.NetwokPanel;
-import naoscp.tools.BarProgressMonitor;
-import naoscp.tools.FileUtils;
-import naoscp.tools.NaoSCPException;
-import naoscp.tools.Scp;
-import naoscp.tools.SwingTools;
+import naoscp.tools.*;
 
 /**
  *
@@ -31,11 +25,12 @@ import naoscp.tools.SwingTools;
  */
 public class NaoSCP extends javax.swing.JFrame {
 
-    private final String utilsPath = "./../Utils";
+    private final String projectPath = getBasePath();
+    private final String utilsPath = projectPath + "/Utils";
+    
     private final String deployStickScriptPath = utilsPath + "/DeployStick/startBrainwashing.sh";
     
-    private static final String configlocation = System.getProperty("user.home")
-        + "/.naoth/naoscp/";
+    private static final String configlocation = System.getProperty("user.home") + "/.naoth/naoscp/";
     private final File configPath = new File(configlocation, "config");
     
     private final Properties config = new Properties();
@@ -51,11 +46,37 @@ public class NaoSCP extends javax.swing.JFrame {
         
         try {
             config.load(new FileReader(configPath));
+            config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
             naoTHPanel.setProperties(config);
         } catch(IOException ex) {
             Logger.getGlobal().log(Level.INFO, 
                 "Could not open the config file. It will be created after the first execution.");
         }
+    }
+
+    public String getBasePath()
+    {
+      String path = "./..";
+      try
+      {
+        String ResourceName = "naoscp/NaoSCP.class";
+        String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
+        programPath = programPath.replace("file:", "");
+        //path replacement if NaoScp is being started from console directly
+        programPath = programPath.replace("/NaoSCP/dist/NaoSCP.jar!/naoscp/NaoSCP.class", "");
+        //path replacement if NaoScp is started from IDE (Netbeans)
+        programPath = programPath.replace("/NaoSCP/build/classes/naoscp/NaoSCP.class", "");
+        File ProgramDir = new File(programPath);
+        if(ProgramDir.exists())
+        {
+          path = ProgramDir.getAbsolutePath();
+        }
+      }
+      catch(UnsupportedEncodingException ueEx)
+      {
+      }
+      System.out.println(path);
+      return path;
     }
     
     public void setEnabledAll(boolean v) {
