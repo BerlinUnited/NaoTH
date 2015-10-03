@@ -136,9 +136,9 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     // sort points by x value
     sort(points.begin(), points.end(), this->myVecCompareX);
 
-    // check outliers
+    // check outliers but keep first and last point in any case
     std::vector<size_t> badPoints;
-    for(size_t i = 0; i < points.size(); i++)
+    for(size_t i = 2; i+2 < points.size(); i++)
     {
       std::vector<Vector2i> pointsCheck = points;
       pointsCheck.erase(pointsCheck.begin()+i);
