@@ -244,13 +244,16 @@ void Motion::processSensorData()
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
 
-    double alpha = 1e-4;
-    MODIFY("Filter",alpha);
-    for(int i=0; i < JointData::numOfJoint; i++)
-    {
-      getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
-      getBodyStatus().currentSumFiltered[i] =  getBodyStatus().currentSumFiltered[i]*(1-alpha) + getSensorJointData().electricCurrent[i]*alpha;
-    }
+  // update the body status
+  double alpha = 1e-4;
+  MODIFY("Filter",alpha);
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
+    getBodyStatus().currentSumFiltered[i] =  getBodyStatus().currentSumFiltered[i]*(1-alpha) + getSensorJointData().electricCurrent[i]*alpha;
+  }
+  getBodyStatus().timestamp = getFrameInfo().getTime();
+
 
   debugPlots();
 }//end processSensorData
