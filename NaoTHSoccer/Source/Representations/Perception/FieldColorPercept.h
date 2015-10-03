@@ -132,6 +132,10 @@ public:
       return Math::sqr(u - 128) + Math::sqr(v - 128) < brightnessThreshold[y]; //Vector2d(u - 128, v - 128).abs() < brightnessThreshold[y];
     }
 
+    inline bool noColor(const Pixel& pixel) const {
+      return noColor(pixel.y, pixel.u, pixel.v);
+    }
+
     private:
       Parameter p;
       double brightnesAlpha; // calculated
@@ -209,6 +213,7 @@ public:
 
   inline void print(std::ostream& stream) const
   {
+    static_cast<void>(stream);
   }
 
 };

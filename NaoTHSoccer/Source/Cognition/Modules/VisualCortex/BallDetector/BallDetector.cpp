@@ -282,7 +282,8 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      return pixel.y < params.maxBorderBrightness;
+      //return pixel.y < params.maxBorderBrightness;
+      return !getFieldColorPercept().greenHSISeparator.noColor(pixel);
     }
   }//end while
 
