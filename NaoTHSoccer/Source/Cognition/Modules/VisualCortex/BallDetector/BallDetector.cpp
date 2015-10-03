@@ -30,6 +30,7 @@ BallDetector::BallDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_estimated","..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_radius_match", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_sanity_samples","draw samples used for ball sanity check", false);  
 
   getDebugParameterList().add(&params);
 }
@@ -392,11 +393,16 @@ bool BallDetector::sanityCheck(const Vector2i& center, double radius)
     if(isOrange(pixel))
     {
       goodPoints++;
-      POINT_PX(ColorClasses::green, x, y);
-    } else
-    {
-      POINT_PX(ColorClasses::white, x, y);
     }
+    DEBUG_REQUEST("Vision:BallDetector:draw_sanity_samples",
+      if(isOrange(pixel))
+      {
+        POINT_PX(ColorClasses::green, x, y);
+      } else
+      {
+        POINT_PX(ColorClasses::blue, x, y);
+      }
+    );
   }
 
   return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > 0.5;
