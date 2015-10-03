@@ -45,7 +45,7 @@ static void motion_wrapper_post()
 void* shutdownCallback(void* /*ref*/)
 {
   // play a sound that the user knows we recognized his shutdown request
-  system("/usr/bin/aplay /usr/share/naoqi/wav/bip_gentle.wav");
+  system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
 
   // stop the user program
   std::cout << "stopping naoth" << std::endl;
