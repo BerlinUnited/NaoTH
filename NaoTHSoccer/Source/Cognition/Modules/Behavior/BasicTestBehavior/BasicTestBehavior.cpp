@@ -26,7 +26,6 @@ BasicTestBehavior::BasicTestBehavior()
 
   // walk
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_back_and_forth", "walk back and forth", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_backward", "Walk backward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_left", "Set the motion request to 'strafe'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_right", "Set the motion request to 'strafe'.", false);
@@ -72,9 +71,6 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:01_arms_back", "set arms request to back", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:02_arms_down", "set arms request to down", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:03_arms_none", "set arms request to none", false);
-
-  once = true;
-  state = 0;
 }
 
 void BasicTestBehavior::execute() 
@@ -82,10 +78,6 @@ void BasicTestBehavior::execute()
   // reset some stuff by default
   getMotionRequest().forced = false;
   getMotionRequest().standHeight = -1; // sit in a stable position
-  if(once){
-    once = false;
-    startRobotOdometry = getOdometryData();
-  }
 
   testHead();
 
@@ -207,79 +199,6 @@ void BasicTestBehavior::testMotion()
   DEBUG_REQUEST("BasicTestBehavior:motion:walk_forward",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.x = 500;
-  );
-  
- DEBUG_REQUEST("BasicTestBehavior:motion:walk_back_and_forth",
-
-    if(state == 0){
-      currentRobotOdometry = getOdometryData();
-      Vector2d distancetest;
-      distancetest.x = currentRobotOdometry.translation.x - startRobotOdometry.translation.x;
-      distancetest.y = currentRobotOdometry.translation.y - startRobotOdometry.translation.y;
-      double distance = distancetest.abs();
-      if(distance < 500){
-        getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.target.translation.x = 1000;
-      }else{
-        standRobotOdometry = getOdometryData();
-        getMotionRequest().id = motion::stand;
-        state = 1;
-      }
-
-    }
-    else if(state == 1){
-      currentRobotOdometry = getOdometryData();
-      double targetRotation = Math::normalize(standRobotOdometry.rotation+Math::pi);
-
-      Pose2D previewStuff;
-      previewStuff = getMotionStatus().plannedMotion.hip+currentRobotOdometry;
-
-      if(fabs(previewStuff.rotation-targetRotation) > Math::fromDegrees(10)){
-        getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(20);
-      }else{
-        getMotionRequest().id = motion::stand;
-        state = 3;
-      }
-    }
-    else if(state == 3){
-      startRobotOdometry = getOdometryData();
-      state = 4;
-    }
-    else if(state == 4){
-      currentRobotOdometry = getOdometryData();
-      Vector2d distancetest;
-      distancetest.x = currentRobotOdometry.translation.x - startRobotOdometry.translation.x;
-      distancetest.y = currentRobotOdometry.translation.y - startRobotOdometry.translation.y;
-      double distance = distancetest.abs();
-      if(distance < 500){
-        getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.target.translation.x = 1000;
-      }else{
-        standRobotOdometry = getOdometryData();
-        getMotionRequest().id = motion::stand;
-        state = 5;
-      }
-    }
-    else if(state == 5){
-      currentRobotOdometry = getOdometryData();
-      double targetRotation = Math::normalize(standRobotOdometry.rotation+Math::pi);
-
-      Pose2D previewStuff;
-      previewStuff = getMotionStatus().plannedMotion.hip+currentRobotOdometry;
-
-      if(fabs(previewStuff.rotation-targetRotation) > Math::fromDegrees(10)){
-        getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(-20);
-      }else{
-        getMotionRequest().id = motion::stand;
-        state = 6;
-      }
-    }
-    else if(state == 6){
-      startRobotOdometry = getOdometryData();
-      state = 4;
-    }
   );
 
   DEBUG_REQUEST("BasicTestBehavior:motion:walk_backward",

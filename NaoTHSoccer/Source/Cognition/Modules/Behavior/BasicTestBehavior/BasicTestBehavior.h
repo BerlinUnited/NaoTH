@@ -68,13 +68,6 @@ private:
   void testHead();
   void testMotion();
   void testLED();
-
-  Pose2D startRobotOdometry;
-  Pose2D currentRobotOdometry;
-  Pose2D standRobotOdometry;
-  bool once;
-  int state;
-
 };//end class ImageProcessor
 
 #endif // _BasicTestBehavior_H_
