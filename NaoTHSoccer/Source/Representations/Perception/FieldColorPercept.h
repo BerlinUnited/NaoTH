@@ -59,25 +59,36 @@ class FieldColorPercept : public naoth::Printable
     }
   };
 
+public:
   class HSISeparatorOptimized
   {
-  
-  private:
-    int brightnesConeOffset;
-    double brightnesConeRadiusWhite;
-    double brightnesConeRadiusBlack;
-    double brightnesAlpha; // calculated
+  public:
 
-    //double colorAngleCenter;
-    //double colorAngleWith;
-    Vector2i normalMin;
-    int distMin;
-    Vector2i normalMax;
-    int distMax;
+    class Parameter {
+    public:
+      Parameter() 
+        :
+        brightnesConeOffset(0),
+        brightnesConeRadiusWhite(0),
+        brightnesConeRadiusBlack(0),
+        colorAngleCenter(0),
+        colorAngleWith(0)
+      {}
+      int brightnesConeOffset;
+      double brightnesConeRadiusWhite;
+      double brightnesConeRadiusBlack;
 
-    int brightnessThreshold[256];
+      double colorAngleCenter; 
+      double colorAngleWith;
+    };
 
   public:
+
+    void set(const Parameter& p) {
+      setColor(p.colorAngleCenter, p.colorAngleWith);
+      setBrightness(p.brightnesConeOffset, p.brightnesConeRadiusBlack, p.brightnesConeRadiusWhite);
+    }
+
     void setColor(double colorAngleCenter, double colorAngleWith) {
       normalMin = Vector2i(1024,0);
       normalMin.rotate(colorAngleCenter - colorAngleWith + Math::pi_2);
@@ -88,9 +99,12 @@ class FieldColorPercept : public naoth::Printable
       normalMax.rotate(colorAngleCenter + colorAngleWith + Math::pi_2);
 
       distMax = normalMax*Vector2i(128,128);
+
+      p.colorAngleCenter = colorAngleCenter;
+      p.colorAngleWith = colorAngleWith;
     }
 
-    void setBrightness(int brightnesConeOffset, double brightnesConeRadiusWhite, double brightnesConeRadiusBlack) {
+    void setBrightness(int brightnesConeOffset, double brightnesConeRadiusBlack, double brightnesConeRadiusWhite) {
       this->brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
       
       for(int i = 0; i < 256; i++) {
@@ -98,9 +112,9 @@ class FieldColorPercept : public naoth::Printable
         brightnessThreshold[i] = (int)(t*t + 0.5);
       }
 
-      this->brightnesConeOffset = brightnesConeOffset;
-      this->brightnesConeRadiusWhite = brightnesConeRadiusWhite;
-      this->brightnesConeRadiusBlack = brightnesConeRadiusBlack;
+      p.brightnesConeOffset = brightnesConeOffset;
+      p.brightnesConeRadiusWhite = brightnesConeRadiusWhite;
+      p.brightnesConeRadiusBlack = brightnesConeRadiusBlack;
     }
 
     inline bool isColor(int y, int u, int v) const {
@@ -113,6 +127,23 @@ class FieldColorPercept : public naoth::Printable
       //double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
       return Math::sqr(u - 128) + Math::sqr(v - 128) < brightnessThreshold[y]; //Vector2d(u - 128, v - 128).abs() < brightnessThreshold[y];
     }
+
+    inline bool noColor(const Pixel& pixel) const {
+      return noColor(pixel.y, pixel.u, pixel.v);
+    }
+
+    private:
+      Parameter p;
+      double brightnesAlpha; // calculated
+
+      //double colorAngleCenter;
+      //double colorAngleWith;
+      Vector2i normalMin;
+      int distMin;
+      Vector2i normalMax;
+      int distMax;
+
+      int brightnessThreshold[256];
   };
 
   class HSISeparator
@@ -147,7 +178,7 @@ class FieldColorPercept : public naoth::Printable
 public:
 
   HSISeparatorOptimized greenHSISeparator;
-
+  HSISeparatorOptimized redHSISeparator;
 
   FrameInfo lastUpdated;
   ColorRange range;
@@ -157,9 +188,6 @@ public:
   FieldColorPercept(){}
   ~FieldColorPercept(){}
 
-  inline bool isFieldColorOld(int y, int u, int v) const {
-    return range.inside(y, u, v);
-  }
 
   inline bool isFieldColor(int y, int u, int v) const {
     return greenHSISeparator.isColor(y,u,v);
@@ -169,8 +197,19 @@ public:
     return isFieldColor(pixel.y, pixel.u, pixel.v);
   }
 
+  inline bool isRedColor(int y, int u, int v) const {
+    return redHSISeparator.isColor(y,u,v);
+  }
+
+  inline bool isRedColor(const Pixel& pixel) const {
+    return isRedColor(pixel.y, pixel.u, pixel.v);
+  }
+
+
+
   inline void print(std::ostream& stream) const
   {
+    static_cast<void>(stream);
   }
 
 };
