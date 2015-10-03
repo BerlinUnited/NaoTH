@@ -372,7 +372,7 @@ void BallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoints, 
 bool BallDetector::sanityCheck(const Vector2i& center, double radius)
 {
   size_t sampleSize = 21;
-  double maxSquareSize = sqrt(radius*radius/2.0);
+  double maxSquareSize = sqrt(2.0*radius*2.0*radius/2.0);
   int searchSize = int(maxSquareSize/2.0);
   int width = static_cast<int>(getImage().width());
   int height = static_cast<int>(getImage().height());
