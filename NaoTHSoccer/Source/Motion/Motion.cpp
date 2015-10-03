@@ -249,7 +249,7 @@ void Motion::processSensorData()
     for(int i=0; i < JointData::numOfJoint; i++)
     {
       getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
-      getBodyStatus().currentSumFiltered[i] =  getBodyStatus().currentSum[i]*(1-alpha) + getSensorJointData().electricCurrent[i]*alpha;
+      getBodyStatus().currentSumFiltered[i] =  getBodyStatus().currentSumFiltered[i]*(1-alpha) + getSensorJointData().electricCurrent[i]*alpha;
     }
 
   debugPlots();
