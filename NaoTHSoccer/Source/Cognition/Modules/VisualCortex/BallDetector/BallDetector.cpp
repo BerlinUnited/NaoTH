@@ -376,26 +376,27 @@ bool BallDetector::sanityCheck(const Vector2i& center, double radius)
   int width = static_cast<int>(getImage().width());
   int height = static_cast<int>(getImage().height());
 
-  double yMean = 0.0;
-  double uMean = 0.0;
-  double vMean = 0.0;
+  int minX = Math::clamp(center.x - searchSize, 0, width);
+  int maxX = Math::clamp(center.x + searchSize, 0, width);
+  int minY = Math::clamp(center.y - searchSize, 0, height);
+  int maxY = Math::clamp(center.y + searchSize, 0, height);
+
+  size_t goodPoints = 0;
   Pixel pixel;
   for(size_t i = 0; i < sampleSize; i++)
   {
-    int x = Math::clamp(Math::random(center.x - searchSize, center.y + searchSize), 0, width);
-    int y = Math::clamp(Math::random(center.x - searchSize, center.y + searchSize), 0, height);
+    int x = Math::random(minX, maxX);
+    int y = Math::random(minY, maxY);
     getImage().get(x, y, pixel);
-    yMean += pixel.y;
-    uMean += pixel.u;
-    vMean += pixel.v;
+    if(isOrange(pixel))
+    {
+      goodPoints++;
+      POINT_PX(ColorClasses::green, x, y);
+    } else
+    {
+      POINT_PX(ColorClasses::white, x, y);
+    }
   }
-  yMean /= static_cast<double>(sampleSize);
-  uMean /= static_cast<double>(sampleSize);
-  vMean /= static_cast<double>(sampleSize);
-  
-  pixel.y = static_cast<unsigned char>(yMean); 
-  pixel.u = static_cast<unsigned char>(uMean); 
-  pixel.v = static_cast<unsigned char>(vMean); 
-  
-  return isOrange(pixel);
+
+  return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > 0.5;
 }
