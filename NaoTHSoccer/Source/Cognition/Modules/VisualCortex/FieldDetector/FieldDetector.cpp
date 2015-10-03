@@ -136,8 +136,30 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     // sort points by x value
     sort(points.begin(), points.end(), this->myVecCompareX);
 
-    // check outliers but keep first and last point in any case
+    // remove points on the edge of the BodyContour
     std::vector<size_t> badPoints;
+    for(size_t i = 2; i+2 < points.size(); i++)
+    {
+      if(points[i].y > 0)
+      {
+        Vector2i dummyPoint = points[i];
+        dummyPoint.y += 6;
+        if(getBodyContour().isOccupied(dummyPoint))
+        {
+          badPoints.push_back(i);
+        }
+      }
+    }
+    if(badPoints.size() > 0)
+    {
+      for(size_t i = 0; i < badPoints.size(); i++)
+      {
+        // badPoints are ordered so the small indices are removed first
+        points.erase(points.begin()+badPoints[i] - i);
+      }
+    }
+    // check outliers but keep first and last point in any case
+    badPoints.clear();
     for(size_t i = 2; i+2 < points.size(); i++)
     {
       std::vector<Vector2i> pointsCheck = points;

@@ -14,6 +14,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/BodyContour.h"
 
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
@@ -33,6 +34,8 @@ BEGIN_DECLARE_MODULE(FieldDetector)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
+  REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
 
   PROVIDE(FieldPercept)
   PROVIDE(FieldPerceptTop)
@@ -65,6 +68,7 @@ private:
   DOUBLE_CAM_REQUIRE(FieldDetector, Image);
   DOUBLE_CAM_REQUIRE(FieldDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(FieldDetector, ScanLineEdgelPercept);
+  DOUBLE_CAM_REQUIRE(FieldDetector, BodyContour);
 
   DOUBLE_CAM_PROVIDE(FieldDetector, FieldPercept);
 };
