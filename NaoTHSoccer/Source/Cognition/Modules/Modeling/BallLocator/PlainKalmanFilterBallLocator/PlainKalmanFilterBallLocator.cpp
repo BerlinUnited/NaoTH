@@ -150,7 +150,7 @@ void PlainKalmanFilterBallLocator::execute()
     // delete some filter if they are to bad
     if(filter.size() > 1) {
         std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
-        while(iter != filter.end()){
+        while(iter != filter.end() && filter.size() > 1){
             if((*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
                 iter = filter.erase(iter);
             } else {
