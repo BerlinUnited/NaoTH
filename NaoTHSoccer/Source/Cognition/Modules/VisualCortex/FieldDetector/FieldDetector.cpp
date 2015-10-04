@@ -17,8 +17,10 @@ FieldDetector::FieldDetector()
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon", "mark polygonal boundary of the detected field cutted by horizon on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldDetector:setHoleImageAsField", "mark hole image as if field were detected", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_old", "mark old polygonal boundary of the detected field", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_corrected_field_polygon_new", "mark new polygonal boundary of the detected field", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_old", "mark polygonal boundary of the detected field before outlier detection", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldDetector:mark_field_polygon_new", "mark new polygonal boundary of the detected field after outlier detection", false);
+
+  getDebugParameterList().add(&theParameters);
 }
 
 
@@ -124,7 +126,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     {
       fieldPoly.add(result[i]);
     }
-    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_old",
+    DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_old",
       int idx = 0;
       for(int i = 1; i < fieldPoly.length; i++)
       {
@@ -136,42 +138,70 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     // sort points by x value
     sort(points.begin(), points.end(), this->myVecCompareX);
 
-    // check outliers but keep first and last point in any case
+    // remove points on the edge of the BodyContour
     std::vector<size_t> badPoints;
     for(size_t i = 2; i+2 < points.size(); i++)
     {
-      std::vector<Vector2i> pointsCheck = points;
-      pointsCheck.erase(pointsCheck.begin()+i);
-      
-      vector<Vector2i> resultCheck = ConvexHull::convexHull(pointsCheck);
-      
-      FieldPercept::FieldPoly fieldPolyCheck;
-      for(size_t j = 0; j < resultCheck.size(); j++)
+      if(points[i].y > 0)
       {
-        fieldPolyCheck.add(resultCheck[j]);
-      }
-      if(fieldPolyCheck.getArea() / fieldPoly.getArea() < 0.99)
-      {
-        badPoints.push_back(i);
+        Vector2i dummyPoint = points[i];
+        dummyPoint.y += 6;
+        if(getBodyContour().isOccupied(dummyPoint))
+        {
+          badPoints.push_back(i);
+        }
       }
     }
-    // remove outliers
     if(badPoints.size() > 0)
     {
       for(size_t i = 0; i < badPoints.size(); i++)
       {
         // badPoints are ordered so the small indices are removed first
-        points.erase(points.begin()+badPoints[i] - i);
-      }
-      result = ConvexHull::convexHull(points);
-      // clear old polygon
-      fieldPoly = FieldPercept::FieldPoly();
-      for(size_t i = 0; i < result.size(); i++)
-      {
-        fieldPoly.add(result[i]);
+        points.erase(points.begin() + badPoints[i] - i);
       }
     }
-    DEBUG_REQUEST("Vision:FieldDetector:mark_corrected_field_polygon_new",
+    // check outliers but keep first and last point in any case
+    for(size_t nLoop = 0; nLoop < 5; nLoop++)
+    {
+      badPoints.clear();
+      for(size_t i = 2; i+2 < points.size(); i++)
+      {
+        std::vector<Vector2i> pointsCheck = points;
+        pointsCheck.erase(pointsCheck.begin()+i);
+        
+        vector<Vector2i> resultCheck = ConvexHull::convexHull(pointsCheck);
+        
+        FieldPercept::FieldPoly fieldPolyCheck;
+        for(size_t j = 0; j < resultCheck.size(); j++)
+        {
+          fieldPolyCheck.add(resultCheck[j]);
+        }
+        if(fieldPolyCheck.getArea() / fieldPoly.getArea() < theParameters.pruneThresholdArea)
+        {
+          badPoints.push_back(i);
+        }
+      }
+      // remove outliers
+      if(badPoints.size() > 0)
+      {
+        for(size_t i = 0; i < badPoints.size(); i++)
+        {
+          // badPoints are ordered so the small indices are removed first
+          points.erase(points.begin() + badPoints[i] - i);
+        }
+        result = ConvexHull::convexHull(points);
+        // clear old polygon
+        fieldPoly = FieldPercept::FieldPoly();
+        for(size_t i = 0; i < result.size(); i++)
+        {
+          fieldPoly.add(result[i]);
+        }
+      } else
+      {
+        break;
+      }
+    }
+    DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_new",
       int idx = 0;
       for(int i = 1; i < fieldPoly.length; i++)
       {
