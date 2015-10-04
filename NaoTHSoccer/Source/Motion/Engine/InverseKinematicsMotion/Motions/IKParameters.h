@@ -25,6 +25,7 @@ public:
   {
     double speed;
     bool enableStabilization;
+    double stiffness;
   } stand;
 
 

@@ -48,6 +48,7 @@ void GameLogger::execute()
       LOGSTUFF(BallPerceptTop);
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
+      LOGSTUFF(BodyStatus);
 
       LOGSTUFF(TeamMessage);
 

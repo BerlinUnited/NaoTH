@@ -16,6 +16,7 @@
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/BodyStatus.h"
 
 using namespace naoth;
 
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallPerceptTop)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
+  REQUIRE(BodyStatus)
 
   REQUIRE(TeamMessage)
 END_DECLARE_MODULE(GameLogger)
