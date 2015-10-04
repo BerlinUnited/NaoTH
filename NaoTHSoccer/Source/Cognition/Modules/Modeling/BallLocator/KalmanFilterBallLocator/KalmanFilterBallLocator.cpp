@@ -396,11 +396,14 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
     getBallModel().speed.y = Sy[1];
 
     // estimate the line the ball will move along
+    const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
+    getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
+
     getBallModel().futurePosition[0] = getBallModel().position;
-    for(int i=1; i <= BALLMODEL_MAX_FUTURE_SECONDS; i++)
+    for(size_t i=1; i <= getBallModel().futurePosition.size(); i++)
     {
-      Vector2<double> futurePosition(getBallModel().position);
-      Vector2<double> futureSpeed(getBallModel().speed);
+      Vector2d futurePosition(getBallModel().position);
+      Vector2d futureSpeed(getBallModel().speed);
       predictByMotionModelContineously(futurePosition, futureSpeed, (double) i);
       getBallModel().futurePosition[i] = futurePosition;
     }
@@ -441,7 +444,7 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
     OVAL(getBallModel().position.x, getBallModel().position.y, Px[1][1], Py[1][1]);
 
     PEN("999999", 10);
-    for(int i=1; i <= BALLMODEL_MAX_FUTURE_SECONDS; i++)
+    for(size_t i=1; i <= getBallModel().futurePosition.size(); i++)
     {
       CIRCLE(getBallModel().futurePosition[i].x, getBallModel().futurePosition[i].y, getFieldInfo().ballRadius-5);
     }

@@ -203,6 +203,22 @@ void PlainKalmanFilterBallLocator::execute()
 
         valid = true;
         getBallModel().valid = valid;
+
+
+        // future
+        const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
+        getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
+
+        getBallModel().futurePosition[0] = getBallModel().position;
+        ExtendedKalmanFilter4d filter(*bestModel);
+        for(int i=1; i <= BALLMODEL_MAX_FUTURE_SECONDS; i++)
+        {
+          predict(filter, 1.0); // predict 1s in the future
+
+          const Eigen::Vector4d& x = (*bestModel).getState();
+          Vector2d futurePosition;
+          getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
+        }
     }
 
     doDebugRequest();
