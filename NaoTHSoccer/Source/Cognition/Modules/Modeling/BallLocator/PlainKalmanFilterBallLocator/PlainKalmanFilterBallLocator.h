@@ -87,7 +87,7 @@ private:
     //double ballMass;
     double c_RR;
 
-    unsigned int kickTime;
+    bool valid;
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 

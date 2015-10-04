@@ -3,7 +3,8 @@
 #include <Eigen/Eigenvalues>
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
-     epsilon(10e-6)
+     epsilon(10e-6),
+     valid(false)
 {
     // Modify number of models
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:remove_all_models",     "remove all models",                                                             false);
@@ -200,18 +201,8 @@ void PlainKalmanFilterBallLocator::execute()
             getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
         }
 
-        if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0
-           || (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor * M_PI > area95Threshold) // 10s
-        {
-            // model is not valid enymore after 10s or if the best model does not match the threshold
-            getBallModel().valid = false;
-        }
-        else
-        {
-            getBallModel().valid = true;
-        }
-    } else {
-        getBallModel().valid = false;
+        valid = true;
+        getBallModel().valid = valid;
     }
 
     doDebugRequest();
@@ -362,6 +353,8 @@ void PlainKalmanFilterBallLocator::doDebugRequestBeforUpdate()
 
 void PlainKalmanFilterBallLocator::doDebugRequest()
 {
+    PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
+
     if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
         //to check correctness of the prediction
         DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
