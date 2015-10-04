@@ -92,6 +92,7 @@ private:
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(thresholdGradientUV) = 6;
+      PARAMETER_REGISTER(thresholdSanityCheck) = 0.5;
       
       syncWithConfig();
     }
@@ -109,6 +110,7 @@ private:
     int mitUVDifference;
     
     int thresholdGradientUV;
+    double thresholdSanityCheck;
 
   } params;
 

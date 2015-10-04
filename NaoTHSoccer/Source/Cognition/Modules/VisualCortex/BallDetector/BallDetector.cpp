@@ -405,5 +405,5 @@ bool BallDetector::sanityCheck(const Vector2i& center, double radius)
     );
   }
 
-  return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > 0.5;
+  return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > params.thresholdSanityCheck;
 }
