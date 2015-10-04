@@ -6,6 +6,7 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
 #endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -14,6 +15,7 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic error "-Wconversion"
+#pragma GCC diagnostic error "-Wfloat-conversion"
 #endif
 
 #endif // NAOTH_OPENCV_H
