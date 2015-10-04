@@ -378,10 +378,10 @@ bool BallDetector::sanityCheck(const Vector2i& center, double radius)
   int width = static_cast<int>(getImage().width());
   int height = static_cast<int>(getImage().height());
 
-  int minX = Math::clamp(center.x - searchSize, 0, width);
-  int maxX = Math::clamp(center.x + searchSize, 0, width);
-  int minY = Math::clamp(center.y - searchSize, 0, height);
-  int maxY = Math::clamp(center.y + searchSize, 0, height);
+  int minX = Math::clamp(center.x - searchSize, 0, width-1);
+  int maxX = Math::clamp(center.x + searchSize, 0, width-1);
+  int minY = Math::clamp(center.y - searchSize, 0, height-1);
+  int maxY = Math::clamp(center.y + searchSize, 0, height-1);
 
   size_t goodPoints = 0;
   Pixel pixel;
