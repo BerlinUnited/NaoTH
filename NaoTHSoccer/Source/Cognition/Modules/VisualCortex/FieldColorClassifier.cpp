@@ -20,8 +20,11 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColorsGreen", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColorsRed", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramYChroma", "", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:show", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:removeGreenNoColor", "", true);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:removeRedNoColor", "", false);
 
   getDebugParameterList().add(&parameters);
 
@@ -81,7 +84,15 @@ void FieldColorClassifier::debug()
       histogramYCroma(value/SCALE, (255 - pixel.y)/SCALE) += (1.0 - alpha);
     }
 
-    if( !getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
+    bool collectUV = true;
+    DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:removeGreenNoColor", 
+      collectUV = collectUV && !getFieldColorPercept().greenHSISeparator.noColor(pixel);
+    );
+    DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:removeRedNoColor", 
+      collectUV = collectUV && !getFieldColorPercept().redHSISeparator.noColor(pixel);
+    );
+
+    if( collectUV ) {
       histogramUV(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
     }
   }
@@ -126,7 +137,7 @@ void FieldColorClassifier::debug()
     draw_YChromaSeparator(parameters.red.brightnesConeOffset, parameters.red.brightnesConeRadiusBlack, parameters.red.brightnesConeRadiusWhite);
   );
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:show",
     draw_histogramUV(histogramUV);
 
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
