@@ -54,7 +54,7 @@ void Simulation::execute()
   );
 
   //Proceed with Calculations only if ball is seen in the last 1 second
-  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds() + 1)
+  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().getFrameInfoWhenBallWasSeen().getTimeInSeconds() + 1)
   {
     return;
   }

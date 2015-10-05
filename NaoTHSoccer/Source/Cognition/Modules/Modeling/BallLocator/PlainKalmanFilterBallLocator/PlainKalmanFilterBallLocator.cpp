@@ -211,7 +211,7 @@ void PlainKalmanFilterBallLocator::execute()
 
         getBallModel().futurePosition[0] = getBallModel().position;
         ExtendedKalmanFilter4d filter(*bestModel);
-        for(int i=1; i <= BALLMODEL_MAX_FUTURE_SECONDS; i++)
+        for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
         {
           predict(filter, 1.0); // predict 1s in the future
 

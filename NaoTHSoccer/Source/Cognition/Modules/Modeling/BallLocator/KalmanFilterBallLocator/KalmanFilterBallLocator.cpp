@@ -288,12 +288,12 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
   {
 
     //TODO should be also reseted when ball wasnt seen!?
-    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) > 10000.0) // 10s
+    if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) > 10000.0) // 10s
     {
       reset(newPercept);
       modelIsValid = false; // model is not valid enymore after 10s
     }
-    else if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 500.0)
+    else if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 500.0)
     {
       //////////////////////////////////
       // observation
@@ -400,7 +400,7 @@ void KalmanFilterBallLocator::executeKalman(const BallPercept& newPercept)
     getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
 
     getBallModel().futurePosition[0] = getBallModel().position;
-    for(size_t i=1; i <= getBallModel().futurePosition.size(); i++)
+    for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
     {
       Vector2d futurePosition(getBallModel().position);
       Vector2d futureSpeed(getBallModel().speed);

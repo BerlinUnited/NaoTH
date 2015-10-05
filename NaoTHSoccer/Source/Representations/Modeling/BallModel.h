@@ -18,20 +18,9 @@
 
 class BallModel : public naoth::Printable
 {
-private:
-
-  unsigned int _timeBallIsSeen;
-  naoth::FrameInfo _frameInfoWhenBallWasSeen;
-
 public:
   BallModel()
     :
-      _timeBallIsSeen(0),
-
-      // accessors
-      frameInfoWhenBallWasSeen(_frameInfoWhenBallWasSeen),
-      timeBallIsSeen(_timeBallIsSeen),
-
       valid(false)
     {}
 
@@ -40,7 +29,10 @@ public:
 public:
   // The position of the ball relative to the robot (in mm)
   Vector2d position;
+  // The speed of the ball relative to the robot (in mm/s)
+  Vector2d speed;
 
+  // precalculated ball position in the coordinates of the planed motion (see motionStatus)
   Vector2d positionPreview;
   Vector2d positionPreviewInLFoot;
   Vector2d positionPreviewInRFoot;
@@ -48,37 +40,60 @@ public:
   /** The estimated position of the ball 0-10s in the future */
   std::vector<Vector2d> futurePosition;
 
-  // The speed of the ball relative to the robot (in mm/s)
-  Vector2d speed;
-
-  // Tells when the ball was seen the last time
-  const naoth::FrameInfo& frameInfoWhenBallWasSeen;
-  // time how long the ball is seen without interruption
-  const unsigned int& timeBallIsSeen;
+  // algorithmical calidity of the model: true => the ball locator was able to compute a ball model
   bool valid;
+
+private:
+
+  // time how long the ball is seen without interruption
+  unsigned int timeBallIsSeen;
+
+  // Tells when the ball was seen the last time (copied from ballPercept)
+  naoth::FrameInfo frameInfoWhenBallWasSeen;
 
 
 public:
+  
+  const naoth::FrameInfo& getFrameInfoWhenBallWasSeen() const {
+    return frameInfoWhenBallWasSeen;
+  }
+
+  const unsigned int getTimeBallIsSeen() const {
+    return timeBallIsSeen;
+  }
 
   void setFrameInfoWhenBallWasSeen(const naoth::FrameInfo& frameInfo)
   {
     if(frameInfo.getFrameNumber() != frameInfoWhenBallWasSeen.getFrameNumber()+1)
-      _timeBallIsSeen = 0;
+      timeBallIsSeen = 0;
     else
     {
       ASSERT(frameInfoWhenBallWasSeen.getTime() < frameInfo.getTime());
-      _timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
     }
 
-    _frameInfoWhenBallWasSeen = frameInfo;
-  }//end setFrameInfoWhenBallWasSeen
+    frameInfoWhenBallWasSeen = frameInfo;
+  }
+
+  const Vector2d& getFuturePosition(size_t t) const 
+  {
+    if(t < futurePosition.size()) {
+      return futurePosition[t];
+    }
+
+    if(futurePosition.empty()) {
+      return position;
+    }
+
+    return futurePosition.back();
+  }
 
   void reset() {
     valid = false;
   }
 
   void resetTimeBallIsSeen() {
-    _timeBallIsSeen = 0;
+    timeBallIsSeen = 0;
   }
 
   virtual void print(std::ostream& stream) const
