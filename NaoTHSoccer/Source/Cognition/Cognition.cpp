@@ -44,6 +44,7 @@
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
+#include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
@@ -73,7 +74,6 @@
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
-#include "Modules/Modeling/VoronoiBasedSituationMapProvider/VoronoiBasedSituationMapProvider.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
 
 // behavior
@@ -136,6 +136,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
@@ -163,7 +164,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
-  REGISTER_MODULE(VoronoiBasedSituationMapProvider);
   REGISTER_MODULE(Simulation);
   REGISTER_MODULE(StaticDebugModelProvider);
 

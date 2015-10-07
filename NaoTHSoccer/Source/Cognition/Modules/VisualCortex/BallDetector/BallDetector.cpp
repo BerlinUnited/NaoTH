@@ -28,7 +28,9 @@ BallDetector::BallDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:drawScanEndPoints", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_estimated","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball_radius_match", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_ball","..", false);  
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:draw_sanity_samples","draw samples used for ball sanity check", false);  
 
   getDebugParameterList().add(&params);
 }
@@ -54,7 +56,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
 
   bool ballFound = false;
 
-  // the points are sorted - the most red points are at the end
+  //NOTE: the points are sorted - the most red points are at the end
   double radius = -1;
   Vector2d center;
   //Liste von rotenPunkten durchgehen
@@ -76,15 +78,25 @@ void BallDetector::execute(CameraInfo::CameraID id)
         CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
       }
     );
-    ///***********///
+    
     ballEndPoints.clear();
     bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
-    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius) && radius > 0 && radius < 2*estimatedRadius) 
+    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius)) 
     {
-      ballFound = true;
-      calculateBallPercept(center, radius);
-      //break;
+      DEBUG_REQUEST("Vision:BallDetector:draw_ball_radius_match",
+        CIRCLE_PX(ColorClasses::yellow, (int)(center.x+0.5), (int)(center.y+0.5), (int)(radius+0.5));
+      );
+
+
+      if(radius > 0 && radius < 2*estimatedRadius) {
+        if(sanityCheck(center, radius))
+        {
+          ballFound = true;
+          calculateBallPercept(center, radius);
+          break;
+        }
+      }
     }
   }
 
@@ -141,7 +153,7 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
     stepSizeAdjusted *= 2;
   }
 
-  int maxRedPeak = getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
+  int maxRedPeak = 128;//getFieldColorPercept().range.getMax().v; // initialize with the maximal red croma of the field color
   Vector2i point;
   Pixel pixel;
   Vector2i redPeak;
@@ -192,7 +204,7 @@ bool BallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
   );
 
   // maxRedPeak is larger than its initial value
-  return maxRedPeak > getFieldColorPercept().range.getMax().v;
+  return maxRedPeak > 128;//getFieldColorPercept().range.getMax().v;
 }
 
 
@@ -220,7 +232,7 @@ bool BallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endP
       POINT_PX(col, endPoints[i].x, endPoints[i].y);
     }
   );
-  return goodBorderPointCount != 0;
+  return goodBorderPointCount > 0;
 }
 
 bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points) const
@@ -274,14 +286,8 @@ bool BallDetector::scanForEdges(const Vector2i& start, const Vector2d& direction
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      if(pixel.y < params.maxBorderBrightness)
-      {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+      //return pixel.y < params.maxBorderBrightness;
+      return !getFieldColorPercept().greenHSISeparator.noColor(pixel);
     }
   }//end while
 
@@ -362,4 +368,42 @@ void BallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoints, 
   }
 
   radius = sqrt(radiusBuffer.getAverage());
+}
+  
+bool BallDetector::sanityCheck(const Vector2i& center, double radius)
+{
+  size_t sampleSize = 21;
+  double maxSquareSize = sqrt(2.0*radius*2.0*radius/2.0);
+  int searchSize = int(maxSquareSize/2.0);
+  int width = static_cast<int>(getImage().width());
+  int height = static_cast<int>(getImage().height());
+
+  int minX = Math::clamp(center.x - searchSize, 0, width-1);
+  int maxX = Math::clamp(center.x + searchSize, 0, width-1);
+  int minY = Math::clamp(center.y - searchSize, 0, height-1);
+  int maxY = Math::clamp(center.y + searchSize, 0, height-1);
+
+  size_t goodPoints = 0;
+  Pixel pixel;
+  for(size_t i = 0; i < sampleSize; i++)
+  {
+    int x = Math::random(minX, maxX);
+    int y = Math::random(minY, maxY);
+    getImage().get(x, y, pixel);
+    if(isOrange(pixel))
+    {
+      goodPoints++;
+    }
+    DEBUG_REQUEST("Vision:BallDetector:draw_sanity_samples",
+      if(isOrange(pixel))
+      {
+        POINT_PX(ColorClasses::green, x, y);
+      } else
+      {
+        POINT_PX(ColorClasses::blue, x, y);
+      }
+    );
+  }
+
+  return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > params.thresholdSanityCheck;
 }

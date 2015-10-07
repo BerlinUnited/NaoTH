@@ -29,6 +29,7 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -105,6 +106,7 @@ public class FieldViewer extends AbstractDialog
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
+            new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing()
         }
@@ -483,7 +485,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                     Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
                     for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
                         SPLMessage spl = new SPLMessage(msg);
-                        spl.draw(drawings);
+                        spl.draw(drawings, Color.GRAY, false);
                     }
                     
                     TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);

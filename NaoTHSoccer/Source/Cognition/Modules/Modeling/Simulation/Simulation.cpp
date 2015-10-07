@@ -105,7 +105,7 @@ void Simulation::execute()
     }
   );
   
-  // now decide which action to execture given their consequences
+  // now decide which action to execute given their consequences
   STOPWATCH_START("Simulation:decide");
   size_t best_action = decide(actionsConsequences);
   STOPWATCH_STOP("Simulation:decide");
@@ -417,6 +417,87 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   return ball + noisyAction;
 }
 
+double Simulation::evaluateAction(const Vector2d& a) const{
+//  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
+//  Vector2d oppDiff = oppGoal - a;
+//
+//  double oppValueX = 0.1;
+//  double oppValueY = 1;
+//  MODIFY("Simulation:oppValueX", oppValueX);
+//  MODIFY("Simulation:oppValueY", oppValueY);
+  double x = a.x/1000.0;
+  double y = a.y/1000.0;
+  double own = getFieldInfo().xPosOwnGoal/1000.0;
+  double opp = (getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth)/1000;
+  double value = sqrt(1.5*y*1.5*y+(x-opp)*(x-opp)) - 1.5*sqrt(y*y+(x-own)*(x-own)) + 0.2*y*y;
+  return value;
+  
+  //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
+  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
+  //double value_opp = abs(oppDiff.y)+oppDiff.x;
+  //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
+  //Vector2d ownDiff = ownGoal - a;
+  
+  //double ownValueX = 0.01;
+  //double ownValueY = 0.1;
+  //MODIFY("Simulation:ownValueX", ownValueX);
+  //MODIFY("Simulation:ownValueY", ownValueY);
+  //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
+
+  //return value_opp - value_own;
+  //return value_opp;
+}
+
+void Simulation::draw_potential_field() const
+{
+  static const int ySize = 20;
+  static const int xSize = 30;
+  double yWidth = 0.5*getFieldInfo().yFieldLength/(double)ySize;
+  double xWidth = 0.5*getFieldInfo().xFieldLength/(double)xSize;
+
+  FIELD_DRAWING_CONTEXT;
+  Color white(0.0,0.0,1.0,0.5); // transparent
+  Color black(1.0,0.0,0.0,0.5);
+
+  // create new sample set
+  std::vector<double> potential(xSize*ySize);
+  int idx = 0;
+
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      potential[idx] = evaluateAction(point);
+      idx++;
+    }
+  }
+  
+  double maxValue = 0;
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      maxValue = max(maxValue, potential[idx++]);
+    }
+  }
+
+  if(maxValue == 0) return;
+
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      
+      double t = potential[idx++] / maxValue;
+      Color color = black*t + white*(1-t);
+      PEN(color, 20);
+      FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+    }
+  }
+}//end draw_closest_points
+
+/*
 //calcualte according to the rules, without the roboter position, the ball position
 //if it goes outside the field
 Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
@@ -486,77 +567,4 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
         return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
       }
   }
-}
-
-double Simulation::evaluateAction(const Vector2d& a) const{
-  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
-  Vector2d oppDiff = oppGoal - a;
-
-  double oppValueX = 0.1;
-  double oppValueY = 1;
-  MODIFY("Simulation:oppValueX", oppValueX);
-  MODIFY("Simulation:oppValueY", oppValueY);
-  double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
-  //double value_opp = abs(oppDiff.y)+oppDiff.x;
-  //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
-  //Vector2d ownDiff = ownGoal - a;
-  
-  //double ownValueX = 0.01;
-  //double ownValueY = 0.1;
-  //MODIFY("Simulation:ownValueX", ownValueX);
-  //MODIFY("Simulation:ownValueY", ownValueY);
-  //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
-
-  //return value_opp - value_own;
-  return value_opp;
-}
-
-void Simulation::draw_potential_field() const
-{
-  static const int ySize = 20;
-  static const int xSize = 30;
-  double yWidth = 0.5*getFieldInfo().yFieldLength/(double)ySize;
-  double xWidth = 0.5*getFieldInfo().xFieldLength/(double)xSize;
-
-  FIELD_DRAWING_CONTEXT;
-  Color white(0.0,0.0,1.0,0.5); // transparent
-  Color black(1.0,0.0,0.0,0.5);
-
-  // create new sample set
-  std::vector<double> potential(xSize*ySize);
-  int idx = 0;
-
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      potential[idx] = evaluateAction(point);
-      idx++;
-    }
-  }
-  
-  double maxValue = 0;
-  idx = 0;
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      maxValue = max(maxValue, potential[idx++]);
-    }
-  }
-
-  if(maxValue == 0) return;
-
-  idx = 0;
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      
-      double t = potential[idx++] / maxValue;
-      Color color = black*t + white*(1-t);
-      PEN(color, 20);
-      FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-    }
-  }
-}//end draw_closest_points
+}*/

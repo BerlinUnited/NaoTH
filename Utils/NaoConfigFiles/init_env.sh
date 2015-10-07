@@ -43,6 +43,11 @@ kernel_name=$(uname -r)
 video_driver_path=/lib/modules/$kernel_name/kernel/drivers/media/video/mt9m114.ko
 copy ./kernel/drivers/media/video/mt9m114.ko $video_driver_path root 644
 
+# ----------- make boot faster ---------
+
+# brainwashinit
+copy ./etc/init.d/checkpart-dummy /etc/init.d/checkpart-dummy root 755
+
 # -----------  set up the naoth running environment -----------
 
 # NaoTH init script
@@ -175,7 +180,7 @@ cp -r ./home/nao/lib/* /home/nao/lib
 # Check and Update Runlevel Configuration for Non-Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable proxydaemon=disable";
+./checkRC.sh "naoth=default netmount=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable proxydaemon=disable savecache=disable savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # disable the hal-prestarter that takes quite a long time on boot
 if [ -f /usr/libexec/hal-prestarter ] ; then
@@ -221,7 +226,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
 
 # ----------------------
 
@@ -232,7 +237,10 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-echo "initialization done, shutting down system";
+amixer sset 'PCM' 90%
 
+echo "initialization done, shutting down system";
 shutdown -h now
+
+echo "DONE"
 

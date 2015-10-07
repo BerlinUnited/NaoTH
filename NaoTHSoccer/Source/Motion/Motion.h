@@ -42,6 +42,7 @@
 // debug
 #include <Representations/Debug/Stopwatch.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Modeling/BodyStatus.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
@@ -49,6 +50,8 @@
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+
+#include <Tools/DataStructures/ParameterList.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
@@ -76,6 +79,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(KinematicChainMotor)
 
   // platform input
+  
   REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
@@ -93,6 +97,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(CameraInfoTop)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
+  PROVIDE(BodyStatus)
 END_DECLARE_MODULE(Motion)
 
 
@@ -113,10 +118,25 @@ public:
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
 private:
-  
   void processSensorData();
   
   void postProcess();
+
+private:
+  
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("Motion") 
+    {
+      PARAMETER_REGISTER(useGyroRotationOdometry) = true;
+
+      syncWithConfig();
+    }
+
+    bool useGyroRotationOdometry;
+
+  } parameter;
   
 
 private:
