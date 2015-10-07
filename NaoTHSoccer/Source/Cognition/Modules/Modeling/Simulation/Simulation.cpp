@@ -301,7 +301,7 @@ size_t Simulation::decide(
         ownGoal = true;
       }
     }
-    // if an own-goal is detected, ignore the action
+    // if one particle results in an own-goal, ignore the action
     if(ownGoal)
     {
       continue;
