@@ -291,6 +291,8 @@ size_t Simulation::decide(
     bool ownGoal = false;
     for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
     {
+      // this only checks for good actions, all other actions like OWNOUT or COLLISION
+      // are implicitly assumed to be bad as good is not incremented
       if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
       {
         good++;
