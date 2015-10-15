@@ -17,11 +17,9 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
-  DEBUG_REQUEST_REGISTER("Simulation:OppGoal","OppGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
   
-
   getDebugParameterList().add(&theParameters);
 
   //calculate the actions  
@@ -238,7 +236,11 @@ void Simulation::simulateConsequences(
       category = COLLISION;
     }
     // inside field
-    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
+    // small gap between this and the borders of the goalbox
+    //check y coordinates and 
+    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition) ||
+           (globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
+            && globalBallEndPosition.x > getFieldInfo().opponentGoalPostRight.x)
     {
       category = INFIELD;
     }
