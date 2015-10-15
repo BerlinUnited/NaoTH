@@ -66,6 +66,15 @@ public:
     }
   }//end print
 
+  //HACK
+  class TestSerializer : public naoth::Serializer<T> {
+    virtual void tmp() {}
+  } test;
+
+  bool serializable() const {
+    return dynamic_cast<const naoth::EmptySerializer*>(&test) == NULL;
+  }
+
   void serialize(MsgOut<Representation>::type& msg) const {
     naoth::Serializer<T>::serialize(data, msg);
   }

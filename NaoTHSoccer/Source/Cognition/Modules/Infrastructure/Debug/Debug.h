@@ -122,7 +122,9 @@ private:
     for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
     {
       const Representation& theRepresentation = iter->second->getRepresentation();
-      cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+      if(theRepresentation.serializable()) {
+        cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+      }
     }
   }
 
