@@ -6,7 +6,7 @@
 */
 
 #ifndef _FOOTSTEP_H
-#define  _FOOTSTEP_H
+#define _FOOTSTEP_H
 
 #include <Tools/Math/Pose2D.h>
 #include "../IKPose.h"

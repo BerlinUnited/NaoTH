@@ -2,38 +2,33 @@
 * @file Walk.h
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen, Kaden</a>
 *
 */
 
-#ifndef _IK_MOTION_H_
-#define _IK_MOTION_H_
+#ifndef _Walk_H_
+#define _Walk_H_
 
 #include "IKMotion.h"
-#include "Walk/FootStep.h"
-#include "Walk/FootStepPlanner.h"
-#include <list>
-
-#include "Tools/DataStructures/RingBufferWithSum.h"
-
 #include <ModuleFramework/Module.h>
 
 // representations
-#include <Representations/Infrastructure/RobotInfo.h>
-#include "Representations/Modeling/GroundContactModel.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include <Representations/Infrastructure/GyrometerData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
-#include "Representations/Modeling/InertialModel.h"
-#include "Representations/Modeling/SupportPolygon.h"
-#include <Representations/Infrastructure/JointData.h>
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include <Representations/Infrastructure/JointData.h>
 
 // debug
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
+
+// tools
+#include <queue>
+#include "Walk/FootStep.h"
+#include "Walk/FootStepPlanner.h"
+#include "IKPose.h"
 
 BEGIN_DECLARE_MODULE(Walk)
   PROVIDE(DebugModify)
@@ -41,21 +36,9 @@ BEGIN_DECLARE_MODULE(Walk)
   PROVIDE(DebugRequest)
 
   REQUIRE(FrameInfo)
-
-  REQUIRE(RobotInfo)
-  REQUIRE(GroundContactModel)
-  REQUIRE(MotionRequest)
-  REQUIRE(KinematicChainSensor)
-  REQUIRE(KinematicChainMotor)
-  REQUIRE(GyrometerData)
-  REQUIRE(InertialModel)
-  REQUIRE(InertialSensorData)
-  REQUIRE(SupportPolygon)
-  REQUIRE(SensorJointData)
-  REQUIRE(CalibrationData)
-
   REQUIRE(InverseKinematicsMotionEngineService)
-  
+  REQUIRE(MotionRequest)
+
   PROVIDE(MotionLock)
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)
@@ -66,137 +49,74 @@ class Walk: private WalkBase, public IKMotion
 public:
   Walk();
   
-  /** */
-  void execute();
+  virtual void execute();
 
 private:
   /** class describing a single step */
-  struct Step 
+  class Step 
   {
-    Step():
+  private:
+    unsigned int _id;
+
+  public:
+    Step(unsigned int _id)
+      :
+      _id(_id),
+
       planningCycle(0),
-      executingCycle(0),
-      lifted(false),
-      character(-1),
-      bodyPitchOffset(0.0),
-      samplesDoubleSupport(0),
-      samplesSingleSupport(0),
-      extendDoubleSupport(0),
-      numberOfCyclePerFootStep(0),
-      stepControlling(false),
-      speedDirection(0),
-      scale(1.0)
+      executingCycle(0)
     {}
 
+    FootStep footStep;
+
+    // step duration
+    int numberOfCycles;
+
+    // running parameters indicating how far the step is processed
     int planningCycle;
     int executingCycle;
-    bool lifted;
-    FootStep footStep;
-    double character;
-    
-    // parameters
-    // calcualted parameters of walk
-    double bodyPitchOffset;
-    int samplesDoubleSupport;
-    int samplesSingleSupport;
-    int extendDoubleSupport;
-    int numberOfCyclePerFootStep;
 
-    // only for step control
-    bool stepControlling;
-    double speedDirection;
-    double scale;
+    unsigned int id() const { return _id; }
+    bool isPlanned() const { return planningCycle >= numberOfCycles; }
+    bool isExecuted() const { return executingCycle >= numberOfCycles; }
   };
 
-  /** */
-  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
-
-  /** */
-  bool FSRProtection();
+  class StepBuffer
+  {
+  private:
+    unsigned int id;
+    std::queue<Step> steps;
   
-  /** */
-  bool waitLanding();
-  
-  /** */
-  void plan(const MotionRequest& motionRequest);
-  
-  /** */
-  void walk(const WalkRequest& req);
-  
-  /** */
-  void stopWalking();
+  public:
+    StepBuffer() : id(0) {}
 
-  /** */
-  void stopWalkingWithoutStand();
-  
-  /** */
-  bool canStop() const;
-  
-  /** */
-  void updateParameters(Step& step, double character) const;
+    inline Step& add() {
+      steps.push(Step(id++));
+      return steps.back();
+    }
 
-  /** calculate the COM error */
-  void calculateError();
-
-  /** */
-  void manageSteps(const WalkRequest& req);
-
-  /** */
-  void planStep();
-
-  /** */
-  InverseKinematic::CoMFeetPose executeStep();
-
-  /** */
-  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
-
-  /** */
-  void updateMotionStatus(MotionStatus& motionStatus);
-  
-  /** */
-  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
-
-  /** */
-  void addStep(const Step& step);
-
-  /** */
-  void adaptStepSize(FootStep& step) const;
-
+    // deligated accessors
+    inline const Step& first() const { return steps.front(); }
+    inline Step& first() { return steps.front(); }
+    inline const Step& last() const { return steps.back(); }
+    inline Step& last() { return steps.back(); }
+    inline bool empty() const { return steps.empty(); }
+    inline void pop() { return steps.pop(); }
+    inline unsigned int stepId() { return id; }
+  };
 
 private:
-  // TODO: does it have to be static?
-  static unsigned int theStepID; // use for step control
-
-  const IKParameters::Walk& theWalkParameters;
-  
-  InverseKinematic::CoMFeetPose theCoMFeetPose;
-  
-  int theWaitLandingCount;
-  int theUnsupportedCount;
-  
-  bool isStopping;
-  bool stoppingStepFinished;
-  WalkRequest stoppingRequest;
-  
-  std::list<Step> stepBuffer;
-  
+  StepBuffer stepBuffer;
   FootStepPlanner theFootStepPlanner;
 
+private:
 
-  // observe the com error
-  RingBufferWithSum<double, 100> com_errors;
-  Vector3d currentComError;
-  RingBufferWithSum<Vector3d, 100> currentComErrorBuffer;
-
-  //
-  RingBufferWithSum<Vector2<double>, 100> corrections;
-
-
-  // a buffer of CoMFeetPoses requested in the past
-  // needed by stabilization
-  RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
-  RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
+  void manageSteps(const MotionRequest& motionRequest);
+  // step creators
+  void newLastStep();
+  void newZeroStep();
+  void newStep(const WalkRequest& motionRequest);
 
 };
 
-#endif // _IK_MOTION_H_
+#endif // _Walk_H_
