@@ -136,7 +136,7 @@ FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkReques
   myReq.target = req.stepControl.target;//HACK
   Pose2D step = calculateStep(lastStep, myReq);
   //restrictStepSize(step, lastStep, req.character);
-  restrictStepSizeSimple(step, lastStep, req.character);
+  restrictStepSizeControlStep(step, lastStep, req.character);
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
@@ -147,7 +147,7 @@ FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkReques
   return newStep;
 }//end controlStep
 
-Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
+Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req) const
 {
   Pose2D step = req.target;
 
@@ -330,7 +330,7 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& /*lastStep*
 }//end restrictStepSize
 
 
-void FootStepPlanner::restrictStepSizeSimple(Pose2D& step, const FootStep& /*lastStep*/, double character) const
+void FootStepPlanner::restrictStepSizeControlStep(Pose2D& step, const FootStep& /*lastStep*/, double character) const
 {
   character = 0.5*character + 0.5;
 
@@ -362,7 +362,7 @@ void FootStepPlanner::restrictStepSizeSimple(Pose2D& step, const FootStep& /*las
     ASSERT( step.translation.x < maxStepLength + 1e-5 );
     ASSERT( fabs(step.translation.y) < maxStepWidth + 1e-5 );
   }
-}//end restrictStepSizeSimple
+}//end restrictStepSizeControlStep
 
 
 void FootStepPlanner::restrictStepChange(Pose2D& step, const Pose2D& lastStep) const
@@ -382,6 +382,7 @@ void FootStepPlanner::restrictStepChange(Pose2D& step, const Pose2D& lastStep) c
   step.rotation = Math::normalizeAngle(lastStep.rotation + change.rotation);
 }
 
+/*
 void FootStepPlanner::restrictStepChangeNew(Pose2D& step, const Pose2D& lastStep) const
 {
   Pose2D change;
@@ -423,3 +424,4 @@ void FootStepPlanner::restrictStepChangeNew(Pose2D& step, const Pose2D& lastStep
   step.translation = lastStep.translation + change.translation;
   step.rotation = Math::normalizeAngle(lastStep.rotation + change.rotation);
 }//end restrictStepChange
+*/
