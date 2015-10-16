@@ -133,6 +133,12 @@ public:
 
   void controlZMPclear();
 
+  bool controlZMPstationary() const {
+    //return thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
+    return thePreviewController.com_velocity().abs2() < 1 && 
+           thePreviewController.com_acceleration().abs2() < 1;
+  }
+
   /**
    * @param com return the result
    */

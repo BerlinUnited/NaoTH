@@ -20,7 +20,7 @@ PreviewController::PreviewController()
 {
   loadParameter();
 
-  double dt = timeStep; // 10ms
+  double dt = parameterTimeStep; // 10ms
 
   A.c[0] = Vector3d(1      , 0 , 0);
   A.c[1] = Vector3d(dt     , 1 , 0);
@@ -29,6 +29,8 @@ PreviewController::PreviewController()
   b = Vector3d(dt*dt*dt/6, dt*dt/2, dt);
 
   setHeight(200); // some initial height
+
+  initialized = false;
 }
 
 void PreviewController::setHeight(double height)
@@ -39,7 +41,7 @@ void PreviewController::setHeight(double height)
   
   if ( parameterHeight != newHeight )
   {
-    std::cout << "[PreviewController] change height from " << parameterHeight << " to " << newHeight << " (" << height << ")" << std::endl;
+    std::cout << "[PreviewController] change height from " << parameterHeight << " to " << newHeight << std::endl;
     parameterHeight = newHeight;
 
     double z = parameterHeight * 0.001; // height in m
@@ -69,7 +71,7 @@ void PreviewController::loadParameter()
       
   // read the header
   double length_f(0.0), number_of_entries(0.0);
-  ifs >> timeStep >> length_f >> number_of_entries;
+  ifs >> parameterTimeStep >> length_f >> number_of_entries;
 
   // read the parameters for each height step
   double height(0.0);
@@ -92,20 +94,28 @@ void PreviewController::loadParameter()
 
 void PreviewController::update(const std::list<double>& ref, Vector3d&x, double& err) const
 {
+  // u = -Ki*err - Ks*X - F*P;
+
+  if(initialized) {
+    double zmp = c*x;
+    err += (zmp - ref.front());
+  }
+
   double u = -parameters->Ki * err - parameters->K*x;
-  std::list<double>::const_iterator refi = ref.begin();
-  std::vector<double>::const_iterator fi = parameters->f.begin();
   
   // the preview length is limited by the nomber of parameters and
   // by the length of the reference zmp (ref)
+  std::list<double>::const_iterator refi = ref.begin();
+  std::vector<double>::const_iterator fi = parameters->f.begin();
   for (; refi != ref.end() && fi != parameters->f.end(); ++fi, ++refi)
   {
     u -= (*fi) * (*refi);
   }
 
   x = A * x + b*u;
-  double zmp = c*x;
-  err += (zmp - ref.front());
+
+  //double zmp = c*x;
+  //err += (zmp - ref.front());
 }
 
 void PreviewController::control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom)
@@ -114,42 +124,39 @@ void PreviewController::control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom)
 
   theZ = refZMPz.front();
   setHeight(theZ);
-
+  
   update(refZMPx, theX, theErr.x);
   update(refZMPy, theY, theErr.y);
   
-  refZMPx.pop_front();
-  refZMPy.pop_front();
-  refZMPz.pop_front();
+  initialized = true;
+
+  //refZMPx.pop_front();
+  //refZMPy.pop_front();
+  //refZMPz.pop_front();
 
   // copy results
   com.x = theX[0];
   dcom.x = theX[1];
   ddcom.x = theX[2];
+
   com.y = theY[0];
   dcom.y = theY[1];
   ddcom.y = theY[2];
+
   com.z = theZ;
 }
 
 
 void PreviewController::init(const Vector3d& com, const Vector2d& dcom, const Vector2d& ddcom)
 {
-  setHeight(com.z);
-
-  theX[0] = com.x;
-  theX[1] = dcom.x;
-  theX[2] = ddcom.x;
-
-  theY[0] = com.y;
-  theY[1] = dcom.y;
-  theY[2] = ddcom.y;
+  setState(com, dcom, ddcom);
 }
 
 bool PreviewController::ready() const
 {
-  if (parameters == NULL)
+  if (parameters == NULL) {
     return false;
+  }
     
   size_t size = previewSteps() - 1; // TODO: why -1?
   return refZMPx.size() >= size && refZMPy.size() >= size;
@@ -160,7 +167,7 @@ void PreviewController::clear()
   refZMPx.clear();
   refZMPy.clear();
   refZMPz.clear();
-
+  initialized = false;
   theErr = Vector2d(0, 0);
 }
 
@@ -169,6 +176,13 @@ void PreviewController::push(const Vector3d& zmp)
   refZMPx.push_back(zmp.x);
   refZMPy.push_back(zmp.y);
   refZMPz.push_back(zmp.z);
+}
+
+void PreviewController::pop()
+{
+  refZMPx.pop_front();
+  refZMPy.pop_front();
+  refZMPz.pop_front();
 }
 
 Vector3d PreviewController::front() const
@@ -180,21 +194,3 @@ Vector3d PreviewController::back() const
 {
   return Vector3d(refZMPx.back(), refZMPy.back(), refZMPz.back());
 }
-
-/*
-std::istream & operator >>(std::istream& ist, PreviewController::Parameters& p)
-{
-  //ist >> p.A >> p.b >> p.c >> p.Ki >> p.K >> p.length_f;
-  ist >> p.Ki >> p.K;
-  
-  double v;
-  for(int i = 0; i < PreviewController::Parameters::length_f; i++)
-  {
-    assert(!ist.eof());
-    ist >> v;
-    p.f.push_back(v);
-  }
-
-  return ist;
-}
-*/

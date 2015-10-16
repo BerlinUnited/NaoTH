@@ -666,6 +666,8 @@ bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
   if ( thePreviewController.ready() )
   {
     thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+    thePreviewController.pop();
+
     com = thePreviewControlCoM;
     return true;
   }

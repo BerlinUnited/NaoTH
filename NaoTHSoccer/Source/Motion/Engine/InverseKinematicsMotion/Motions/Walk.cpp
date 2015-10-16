@@ -42,7 +42,7 @@ void Walk::execute()
   FIELD_DRAWING_CONTEXT;
   stepBuffer.draw(getDebugDrawings());
 
-  if(getMotionRequest().id != getId()) {
+  if(getMotionRequest().id != getId() && getEngine().controlZMPstationary()) {
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
@@ -56,14 +56,14 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
   // add the initial step
   // NOTE: zmp for this step it already completely planed,
   //       so we add the actual first step right after
-  if(stepBuffer.empty()) 
+  if(stepBuffer.empty())
   {
     std::cout << "walk start" << std::endl;
 
     // TODO: for now it returns getCurrentCoMFeetPose()
     ZMPFeetPose currentZMPFeetPose = getEngine().getPlannedZMPFeetPose();
     currentZMPFeetPose.localInLeftFoot();
-    //currentZMPFeetPose.zmp.translation.z = parameters.hip.comHeight;
+    currentZMPFeetPose.zmp.translation.z = parameters().hip.comHeight;
     
     // new step (don't move the feet)
     Step& initialStep = stepBuffer.add();
@@ -169,7 +169,21 @@ void Walk::planZMP()
   Step& planningStep = stepBuffer.last();
   ASSERT(!planningStep.isPlanned());
 
-  //TODO: plan ZMP
+  Vector3d zmp;
+  if(planningStep.footStep.liftingFoot() == FootStep::NONE)
+  {
+    FeetPose feet(planningStep.footStep.end());
+    zmp = (feet.left.translation + feet.right.translation)*0.5;
+  } else {
+    zmp = planningStep.footStep.supFoot().translation;
+  }
+
+  zmp.z = parameters().hip.comHeight;
+  getEngine().controlZMPpush(zmp);
+
+  FIELD_DRAWING_CONTEXT;
+  getDebugDrawings().pen(Color::BLUE, 5.0);
+  getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
 
   planningStep.planningCycle++;
 }
@@ -180,7 +194,17 @@ void Walk::executeStep()
   Step& executingStep = stepBuffer.first();
   ASSERT(!executingStep.isExecuted());
 
+  Vector3d com;
+  if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() ) {
+    return;
+  }
+
+  FIELD_DRAWING_CONTEXT;
+  getDebugDrawings().pen(Color::BLUE, 1.0);
+  getDebugDrawings().fillOval(com.x, com.y, 10, 10);
+
   //TODO: plan step trajectory
 
+  theCoMFeetPose.com.translation = com;
   executingStep.executingCycle++;
 }

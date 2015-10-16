@@ -118,6 +118,11 @@ private:
 private:
   StepBuffer stepBuffer;
   FootStepPlanner theFootStepPlanner;
+  InverseKinematic::CoMFeetPose theCoMFeetPose;
+
+  const IKParameters::Walk& parameters() const {
+    return getEngine().getParameters().walk;
+  }
 
 private:
 
