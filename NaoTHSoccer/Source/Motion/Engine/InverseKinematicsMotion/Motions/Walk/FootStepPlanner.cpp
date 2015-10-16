@@ -53,10 +53,8 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 {
   footStep.offset() = offset;
 
-  Pose3D& footEnd = footStep.footEnd();
-  footEnd = footStep.supFoot();
-
-  Pose2D footEnd2D = reduceDimen(footEnd);
+  // calculate the new position for the moving foot based on the support foot
+  Pose2D footEnd2D = reduceDimen(footStep.supFoot());
 
   switch ( footStep.liftingFoot() )
   {
@@ -72,19 +70,6 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 
       footEnd2D.rotate(-offset.rotation);
       footEnd2D.translate(-offset.translation.x, -offset.translation.y);
-
-      /*
-      footEnd.rotateZ(-lastOffset.rotation);
-      footEnd.translate(-lastOffset.translation.x, -lastOffset.translation.y, 0);
-
-      // calculate footstep for the RIGHT foot
-      footEnd.translate(step.translation.x, -theFootOffsetY + min(0.0, step.translation.y), 0);
-      footEnd.rotateZ(min(theMaxTurnInner, step.rotation)); // TODO: restriction here
-      footEnd.translate(0, -theFootOffsetY, 0);
-
-      footEnd.rotateZ(-offset.rotation);
-      footEnd.translate(-offset.translation.x, -offset.translation.y, 0);
-      */
       break;
     }
     case FootStep::LEFT:
@@ -98,23 +83,12 @@ void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& las
 
       footEnd2D.rotate(offset.rotation);
       footEnd2D.translate(offset.translation.x, offset.translation.y);
-
-      /*
-      footEnd.rotateZ(lastOffset.rotation);
-      footEnd.translate(lastOffset.translation.x, lastOffset.translation.y, 0);
-
-      footEnd.translate(step.translation.x, theFootOffsetY + max(0.0, step.translation.y), 0);
-      footEnd.rotateZ(max(-theMaxTurnInner, step.rotation)); // TODO: restriction here
-      footEnd.translate(0, theFootOffsetY, 0);
-
-      footEnd.rotateZ(offset.rotation);
-      footEnd.translate(offset.translation.x, offset.translation.y, 0);
-      */
       break;
     }
-  default: ASSERT(false);
+    default: ASSERT(false);
   }//end switch
 
+  Pose3D& footEnd = footStep.footEnd();
   footEnd.translation = Vector3d(footEnd2D.translation.x, footEnd2D.translation.y, 0.0);
   footEnd.rotation = RotationMatrix::getRotationZ(footEnd2D.rotation);
 
@@ -151,8 +125,9 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
 {
   Pose2D step = req.target;
 
-  if ( req.coordinate == WalkRequest::Hip )
+  if ( req.coordinate == WalkRequest::Hip ) {
       return step;
+  }
 
   Pose3D supFoot = lastStep.footEnd();
   Pose2D stepCoord = reduceDimen(supFoot);
