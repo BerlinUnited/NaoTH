@@ -5,7 +5,7 @@
 
 #include <vector>
 
-class AllBallPercepts
+class AllBallPercepts : public naoth::Printable
 {
 private:
     std::vector<BallPercept> allBallPercepts;

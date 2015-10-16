@@ -29,6 +29,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/Histograms.h"
+#include "Representations/Perception/AllBallPercepts.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -59,6 +60,8 @@ BEGIN_DECLARE_MODULE(BallDetector)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
+  PROVIDE(AllBallPercepts)
+  PROVIDE(AllBallPerceptsTop)
 END_DECLARE_MODULE(BallDetector)
 
 
@@ -147,6 +150,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallDetector, FieldPercept);
  
   DOUBLE_CAM_PROVIDE(BallDetector, BallPercept);
+  DOUBLE_CAM_PROVIDE(BallDetector, AllBallPercepts);
           
 };//end class BallDetector
 
