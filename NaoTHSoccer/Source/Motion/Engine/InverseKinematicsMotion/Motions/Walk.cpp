@@ -83,6 +83,16 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
 
 }//end manageSteps
 
+void Walk::newZeroStep()
+{
+  const Step& lastStep = stepBuffer.last();
+  
+  // create a new step
+  Step& step = stepBuffer.add();
+  step.footStep = FootStep(lastStep.footStep.end(), FootStep::NONE);
+  step.numberOfCycles = 1;
+}
+
 void Walk::newLastStep()
 {
   // TODO: check if an actual step is necessary based on the last step
@@ -92,28 +102,16 @@ void Walk::newLastStep()
 
   // try to plan a real last step with an empty walk request
   FootStep footStep = theFootStepPlanner.nextStep(lastStep.footStep, WalkRequest());
-  
-  // last step almost didn't move the foot, i.e., is was almost a zero step
+  // how much did the foot move in this step
   Pose3D diff = footStep.footBegin().invert() * footStep.footEnd();
-  bool lastStepWasAlmostZero = diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1);
 
-  if(lastStepWasAlmostZero) {
+  // planed step almost didn't move the foot, i.e., is was almost a zero step
+  if(diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1)) {
     newZeroStep();
   } else {
     Step& step = stepBuffer.add();
     step.footStep = footStep;
-    //setParameters(step);
   }
-}
-
-void Walk::newZeroStep()
-{
-  const Step& lastStep = stepBuffer.last();
-  
-  // create a new step
-  Step& step = stepBuffer.add();
-  step.footStep = FootStep(lastStep.footStep.end(), FootStep::NONE);
-  step.numberOfCycles = 1;
 }
 
 void Walk::newStep(const WalkRequest& walkRequest)
@@ -135,22 +133,9 @@ void Walk::newStep(const WalkRequest& walkRequest)
   {
     // step control
     step.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
-    
-    /*
-    setParameters(step);
-
-    // HACK: override some parameters for the step control
-    step.samplesSingleSupport = std::max(1, (int) (walkRequest.stepControl.time / getRobotInfo().basicTimeStep));
-    step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
-    
-    step.stepControlling = true;
-    step.speedDirection = walkRequest.stepControl.speedDirection;
-    step.scale = walkRequest.stepControl.scale;
-    */
   }
   else
   {
     step.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
-    //setParameters(step);
   }
 }
