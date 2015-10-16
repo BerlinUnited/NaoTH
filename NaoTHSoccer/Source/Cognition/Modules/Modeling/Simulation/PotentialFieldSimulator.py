@@ -37,7 +37,7 @@ if __name__ == "__main__":
   sigmaX = xPosOpponentGoal/2.0
   sigmaY = yPosLeftSideline/2.5
 
-  f = slope(X, Y, -1.0/xPosOpponentGoal, 0.0) - gaussian(X, Y, xPosOpponentGoal, 0.0, 1.5*sigmaX, sigmaY) + gaussian(X, Y, xPosOwnGoal, 0.0, sigmaX, 1.5*sigmaY) 
+  f = slope(X, Y, -1.0/xPosOpponentGoal, 0.0) - gaussian(X, Y, xPosOpponentGoal, 0.0, sigmaX, sigmaY) + gaussian(X, Y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY) 
 
   f = np.reshape(f, (len(xRange), len(yRange)))
 
