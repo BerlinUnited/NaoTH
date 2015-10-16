@@ -1,5 +1,3 @@
-import sys
-import math
 import matplotlib
 from matplotlib import pyplot as plt 
 from matplotlib import rcParams

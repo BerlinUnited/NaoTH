@@ -1,10 +1,7 @@
-import sys
-import math
 import matplotlib
 matplotlib.use('Qt4Agg')
 #matplotlib.use('TkAgg')
 
-from matplotlib.backends import qt_compat
 from matplotlib import pyplot as plt
 
 import math2d as m2d

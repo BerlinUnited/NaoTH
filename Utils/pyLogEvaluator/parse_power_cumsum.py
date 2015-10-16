@@ -1,8 +1,5 @@
 import struct
-import math
 import sys
-import math3d as m3
-import math2d as m2
 
 # protobuf
 from CommonTypes_pb2 import *
@@ -17,54 +14,7 @@ import matplotlib
 #from matplotlib.backends import qt_compat
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-import sys
 import numpy as np
-import cPickle
-
-def getFocalLength():
-  resolutionWidth = 640
-  resolutionHeight = 480
-  openingAngleDiagonal = 72.6/180*math.pi
-  
-  d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight
-  halfDiagLength = 0.5 * math.sqrt(d2)
-  return halfDiagLength / math.tan(0.5 * openingAngleDiagonal)
-
-def project(x,y,cm):
-  v = m3.Vector3()
-  v.x = getFocalLength()
-  v.y = 320 - x
-  v.z = 240 - y
-  
-  v = cm.rotation*v
-  result = m2.Vector2()
-  result.x = v.x
-  result.y = v.y
-  result = result*(cm.translation.z/(-v.z))
-  result.x = result.x + cm.translation.x
-  result.y = result.y + cm.translation.y
-  return result
-  
-def parseVector3(msg):
-  return m3.Vector3(msg.x,msg.y,msg.z)
-
-def smooth(x,window_len=11,window='hanning'):
-  if x.ndim != 1:
-    raise ValueError, "smooth only accepts 1 dimension arrays."
-  if x.size < window_len:
-    return x
-#    raise ValueError, "Input vector needs to be bigger than window size."
-  if window_len<3:
-    return x
-  if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-    raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
-  s=np.r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
-  if window == 'flat': #moving average
-    w=np.ones(window_len,'d')
-  else:  
-    w=eval('np.'+window+'(window_len)')
-  y=np.convolve(w/w.sum(),s,mode='same')
-  return y[window_len:-window_len+1]
 
 if __name__ == "__main__":
     

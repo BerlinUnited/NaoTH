@@ -1,5 +1,3 @@
-import math
-import sys
 from math3d import * 
 
 if __name__ == "__main__":

@@ -1,6 +1,4 @@
 import struct
-import math
-import sys
 
 # protobuf
 from CommonTypes_pb2 import *

@@ -1,6 +1,4 @@
 import struct
-import math
-import sys
 import math3d as m3
 import math2d as m2
 
