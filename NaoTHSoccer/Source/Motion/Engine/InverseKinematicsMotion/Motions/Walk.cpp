@@ -18,10 +18,29 @@ Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk,
   
 void Walk::execute()
 {
-  // check if the request is valid (assert if not)
+  // check the integrity 
   getMotionRequest().walkRequest.assertValid();
   
+  // update the parameters in case they have changed
+  if ( stepBuffer.empty() || stepBuffer.last().isPlanned()) {
+    theFootStepPlanner.updateParameters(getEngine().getParameters());
+  }
+
+  // planing phase
+  // add new steps or delete executed ones if necessary
   manageSteps(getMotionRequest());
+
+  // NOTE: check the integrity of the step buffer
+  ASSERT(!stepBuffer.empty());
+  ASSERT(!stepBuffer.last().isPlanned());
+  ASSERT(!stepBuffer.first().isExecuted());
+
+  // running phase
+  planZMP();
+  executeStep();
+
+  FIELD_DRAWING_CONTEXT;
+  stepBuffer.draw(getDebugDrawings());
 
   if(getMotionRequest().id != getId()) {
     setCurrentState(motion::stopped);
@@ -39,10 +58,8 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
   //       so we add the actual first step right after
   if(stepBuffer.empty()) 
   {
-    std::cout << "neowalk start" << std::endl;
-    // TODO: is this initialization necessary here?
-    //theCoMFeetPose = getEngine().getCurrentCoMFeetPose();
-    
+    std::cout << "walk start" << std::endl;
+
     // TODO: for now it returns getCurrentCoMFeetPose()
     ZMPFeetPose currentZMPFeetPose = getEngine().getPlannedZMPFeetPose();
     currentZMPFeetPose.localInLeftFoot();
@@ -50,8 +67,11 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
     
     // new step (don't move the feet)
     Step& initialStep = stepBuffer.add();
-    //setParameters(initialStep);
     initialStep.footStep = FootStep(currentZMPFeetPose.feet, FootStep::NONE);
+
+    // plan the whole initial step
+    initialStep.numberOfCycles = getEngine().controlZMPstart(currentZMPFeetPose);
+    initialStep.planningCycle = initialStep.numberOfCycles;
   }
 
   // current step is executed, remove
@@ -72,7 +92,7 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
         newZeroStep();
       }
 
-      std::cout << "neowalk stopping ..." << std::endl;
+      std::cout << "walk stopping ..." << std::endl;
       return;
     }
     else {
@@ -111,6 +131,7 @@ void Walk::newLastStep()
   } else {
     Step& step = stepBuffer.add();
     step.footStep = footStep;
+    step.numberOfCycles = 250/getRobotInfo().basicTimeStep;
   }
 }
 
@@ -138,4 +159,28 @@ void Walk::newStep(const WalkRequest& walkRequest)
   {
     step.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
   }
+
+  step.numberOfCycles = 250/getRobotInfo().basicTimeStep;
+}
+
+
+void Walk::planZMP()
+{
+  Step& planningStep = stepBuffer.last();
+  ASSERT(!planningStep.isPlanned());
+
+  //TODO: plan ZMP
+
+  planningStep.planningCycle++;
+}
+
+
+void Walk::executeStep()
+{
+  Step& executingStep = stepBuffer.first();
+  ASSERT(!executingStep.isExecuted());
+
+  //TODO: plan step trajectory
+
+  executingStep.executingCycle++;
 }
