@@ -239,8 +239,11 @@ void Simulation::simulateConsequences(
     // small gap between this and the borders of the goalbox
     //check y coordinates and 
     else if(getFieldInfo().fieldRect.inside(globalBallEndPosition) ||
-           (globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
-            && globalBallEndPosition.x > getFieldInfo().opponentGoalPostRight.x)
+      (globalBallEndPosition.x <= getFieldInfo().opponentGoalPostRight.x 
+      && globalBallEndPosition.y > getFieldInfo().opponentGoalPostRight.y 
+      && globalBallEndPosition.y < getFieldInfo().opponentGoalPostLeft.y)
+      )
+      //(globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
     {
       category = INFIELD;
     }
