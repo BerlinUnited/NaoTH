@@ -105,7 +105,7 @@ private:
     inline Step& last() { return steps.back(); }
     inline bool empty() const { return steps.empty(); }
     inline void pop() { return steps.pop_front(); }
-    inline unsigned int stepId() { return id; }
+    inline unsigned int stepId() const { return id; }
 
     void draw(DrawingCanvas2D& canvas) const
     {
@@ -128,9 +128,9 @@ private:
 
   void manageSteps(const MotionRequest& motionRequest);
   // step creators
-  void newZeroStep();
-  void newLastStep();
-  void newStep(const WalkRequest& motionRequest);
+  void newZeroStep(const Step& lastStep, Step& step) const;
+  void newFinalStep(const Step& lastStep, Step& step); // const;
+  void newWalkStep(const Step& lastStep, Step& step, const WalkRequest& motionRequest);// const;
 
 
   void planZMP();

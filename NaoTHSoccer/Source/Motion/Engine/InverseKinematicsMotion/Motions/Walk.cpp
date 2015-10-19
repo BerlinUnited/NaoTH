@@ -82,43 +82,40 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
   // add a new step
   if(stepBuffer.last().isPlanned())
   {
+    const Step& lastStep = stepBuffer.last();
+    // create a new step
+    Step& step = stepBuffer.add();
+
     // stop walking
     if ( motionRequest.id != getId())
     {
       // try to make a last step to align the feet if it is required
       if ( motionRequest.standardStand ) {
-        newLastStep();
+        newFinalStep(lastStep, step);
       } else {
-        newZeroStep();
+        newZeroStep(lastStep, step);
       }
 
       std::cout << "walk stopping ..." << std::endl;
-      return;
     }
     else {
       // walk, add new step
-      newStep(motionRequest.walkRequest);
+      newWalkStep(lastStep, step, motionRequest.walkRequest);
     }
   }
 
 }//end manageSteps
 
-void Walk::newZeroStep()
+void Walk::newZeroStep(const Step& lastStep, Step& step) const
 {
-  const Step& lastStep = stepBuffer.last();
-  
-  // create a new step
-  Step& step = stepBuffer.add();
   step.footStep = FootStep(lastStep.footStep.end(), FootStep::NONE);
   step.numberOfCycles = 1;
 }
 
-void Walk::newLastStep()
+void Walk::newFinalStep(const Step& lastStep, Step& step)// const
 {
   // TODO: check if an actual step is necessary based on the last step
   //       => calculate an actual step only if necessary
-
-  const Step& lastStep = stepBuffer.last();
 
   // try to plan a real last step with an empty walk request
   FootStep footStep = theFootStepPlanner.nextStep(lastStep.footStep, WalkRequest());
@@ -127,21 +124,15 @@ void Walk::newLastStep()
 
   // planed step almost didn't move the foot, i.e., is was almost a zero step
   if(diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1)) {
-    newZeroStep();
+    newZeroStep(lastStep, step);
   } else {
-    Step& step = stepBuffer.add();
     step.footStep = footStep;
     step.numberOfCycles = 250/getRobotInfo().basicTimeStep;
   }
 }
 
-void Walk::newStep(const WalkRequest& walkRequest)
+void Walk::newWalkStep(const Step& lastStep, Step& step, const WalkRequest& walkRequest) //const
 {
-  const Step& lastStep = stepBuffer.last();
-
-  // create a new step
-  Step& step = stepBuffer.add();
-
   // indicates whether the requested foot is movable in this step
   // i.e., it was NOT moved in the last step
   bool stepControlPossible = 
