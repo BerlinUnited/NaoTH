@@ -343,8 +343,42 @@ void BallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoints, 
   radius = sqrt(radiusBuffer.getAverage());
 }
 */
+
+bool BallDetector::randomBallScan(const Vector2i& center, double radius) const
+{
+  size_t sampleSize = 21;
+
+  size_t goodPoints = 0;
+  Pixel pixel;
+  for(size_t i = 0; i < sampleSize; i++)
+  {
+    double a = Math::random()*Math::pi2;
+    double d = Math::random()*radius;
+
+    int x = center.x + (int)(cos(a)*d + 0.5);
+    int y = center.y + (int)(sin(a)*d + 0.5);
+
+    if(getImage().isInside(x,y))
+    {
+      getImage().get(x, y, pixel);
+      if(isOrange(pixel)) {
+        goodPoints++;
+      }
+
+      DEBUG_REQUEST("Vision:BallDetector:draw_sanity_samples",
+        if(isOrange(pixel)) {
+          POINT_PX(ColorClasses::green, x, y);
+        } else {
+          POINT_PX(ColorClasses::blue, x, y);
+        }
+      );
+    }
+  }
+
+  return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > params.thresholdSanityCheck;
+}
   
-bool BallDetector::sanityCheck(const Vector2i& center, double radius)
+bool BallDetector::sanityCheck(const Vector2i& center, double radius) const
 {
   size_t sampleSize = 21;
   double maxSquareSize = sqrt(2.0*radius*2.0*radius/2.0);

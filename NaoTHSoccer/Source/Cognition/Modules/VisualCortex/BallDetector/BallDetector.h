@@ -125,7 +125,9 @@ private:
   
   double estimatedBallRadius(const Vector2i& point) const;
   void calculateBallPercept(const Vector2i& center, double radius);
-  bool sanityCheck(const Vector2i& center, double radius);
+
+  bool randomBallScan(const Vector2i& center, double radius) const;
+  bool sanityCheck(const Vector2i& center, double radius) const;
   
   /*void estimateCircleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;*/
 
