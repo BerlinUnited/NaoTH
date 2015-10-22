@@ -187,7 +187,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         for(size_t i = 0; i < badPoints.size(); i++)
         {
           // badPoints are ordered so the small indices are removed first
-          points.erase(points.begin() + badPoints[i] - i);
+          points.erase(points.begin() + (badPoints[i] - i));
         }
         result = ConvexHull::convexHull(points);
         // clear old polygon
