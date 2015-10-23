@@ -422,35 +422,34 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   return ball + noisyAction;
 }
 
-double Simulation::evaluateAction(const Vector2d& a) const{
-//  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
-//  Vector2d oppDiff = oppGoal - a;
-//
-//  double oppValueX = 0.1;
-//  double oppValueY = 1;
-//  MODIFY("Simulation:oppValueX", oppValueX);
-//  MODIFY("Simulation:oppValueY", oppValueY);
-  double x = a.x/1000.0;
-  double y = a.y/1000.0;
-  double own = getFieldInfo().xPosOwnGoal/1000.0;
-  double opp = (getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth)/1000;
-  double value = sqrt(1.5*y*1.5*y+(x-opp)*(x-opp)) - 1.5*sqrt(y*y+(x-own)*(x-own)) + 0.2*y*y;
-  return value;
-  
-  //double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
-  //double value_opp = abs(oppDiff.y)+oppDiff.x;
-  //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
-  //Vector2d ownDiff = ownGoal - a;
-  
-  //double ownValueX = 0.01;
-  //double ownValueY = 0.1;
-  //MODIFY("Simulation:ownValueX", ownValueX);
-  //MODIFY("Simulation:ownValueY", ownValueY);
-  //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
+double Simulation::gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const
+{
+  double facX = (x - muX) * (x - muX) / (2.0 * sigmaX * sigmaX);
+  double facY = (y - muY) * (y - muY) / (2.0 * sigmaY * sigmaY);
+  return exp(-1.0 * (facX + facY));
+}
 
-  //return value_opp - value_own;
-  //return value_opp;
+double Simulation::slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const
+{
+  return slopeX * x + slopeY * y;
+}
+
+double Simulation::evaluateAction(const Vector2d& a) const
+{
+  double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
+  double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
+  double xPosOwnGoal = getFieldInfo().xPosOwnGoal;
+
+  double sigmaX = xPosOpponentGoal/2.0;
+  double sigmaY = yPosLeftSideline/2.5;
+  double slopeX = -1.0/xPosOpponentGoal;
+  
+  double f = 0.0;
+  f += slope(a.x, a.y, slopeX, 0.0);
+  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0, sigmaX, sigmaY);
+  f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
+  
+  return f;
 }
 
 void Simulation::draw_potential_field() const

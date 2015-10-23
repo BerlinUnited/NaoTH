@@ -187,6 +187,10 @@ private:
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;
 
+  double gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const;
+
+  double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
+
   double evaluateAction(const Vector2d& a) const;
 
   void draw_potential_field() const;
