@@ -133,9 +133,10 @@ public:
   {return !(*this == other);}
 
   /** Concatenation of this pose with another pose.
-   * \param other The other pose that will be concatenated to this one.
-   * \return A reference to this pose after concatenation.
-   */
+  * NOTE: actually just a matrix multiplication this = this*other
+  * \param other The other pose that will be concatenated to this one.
+  * \return A reference to this pose after concatenation.
+  */
   Pose2T& operator+=(const Pose2T& other)
   {
     translation = *this * other.translation;
@@ -151,10 +152,13 @@ public:
   Pose2T operator+(const Pose2T& other) const
   {return Pose2T(*this) += other;}
 
-  /** Subtracts a difference pose from this one to get the source pose. So if A+B=C is the addition/concatenation, this calculates C-B=A.
+  /**
+   * NOTE: deprecated
+   * Subtracts a difference pose from this one to get the source pose. So if A+B=C is the addition/concatenation, this calculates C-B=A.
    * \param diff The difference Pose2D that shall be subtracted.
    * \return The resulting source pose. Adding diff to it again would give the this pose back.
    */
+  /*
   Pose2T minusDiff(const Pose2T& diff) const
   {
     double rot=rotation-diff.rotation;
@@ -165,8 +169,10 @@ public:
       translation.x - c*diff.translation.x + s*diff.translation.y,
       translation.y - c*diff.translation.y - s*diff.translation.x);
   }
+  */
 
   /** Difference of this pose relative to another pose. So if A+B=C is the addition/concatenation, this calculates C-A=B.
+  * NOTE: actually just matrix multiplication: 'A+B=C' ~ A*B=C  <=>  'C-B=A' ~ C*B^{-1}=A  => this -= other => this = this - other => this = this*other.invert()
    * \param other The other pose that will be used as origin for the new pose.
    * \return A reference to this pose after calculating the difference.
    */
@@ -192,9 +198,10 @@ public:
   {return *this += other;}
 
   /** Translate this pose by a translation vector
-   * \param trans Vector to translate with
-   * \return A reference to this pose after translation
-   */
+  * NOTE: (R, t).translate(t') => (R, R*t' + t)
+  * \param trans Vector to translate with
+  * \return A reference to this pose after translation
+  */
   Pose2T& translate(const Vector2<T>& trans)
   {
     translation = *this * trans;
@@ -202,10 +209,12 @@ public:
   }
 
   /** Translate this pose by a translation vector
-   * \param x x component of vector to translate with
-   * \param y y component of vector to translate with
-   * \return A reference to this pose after translation
-   */
+  * NOTE: (R, t).translate(t') => (R, R*t' + t)
+  *       the same as: (R, t)*(I, t') = (R*I, R*t' + t) = (R, R*t' + t)
+  * \param x x component of vector to translate with
+  * \param y y component of vector to translate with
+  * \return A reference to this pose after translation
+  */
   Pose2T& translate(const T x, const T y)
   {
     translation = *this * Vector2<double>(x,y);
@@ -214,9 +223,9 @@ public:
 
 
   /** Rotate this pose by a rotation
-   * \param angle Angle to rotate.
-   * \return A reference to this pose after rotation
-   */
+  * \param angle Angle to rotate.
+  * \return A reference to this pose after rotation
+  */
   Pose2T& rotate(const T angle)
   {
     rotation += angle;
@@ -232,7 +241,7 @@ public:
   Pose2T invert() const
   {
     const T& invRotation = -rotation;
-    return Pose2T(invRotation, (Vector2<T>() - translation).rotate(invRotation));
+    return Pose2T(invRotation, -translation.rotate(invRotation));
   }
 
   /**
