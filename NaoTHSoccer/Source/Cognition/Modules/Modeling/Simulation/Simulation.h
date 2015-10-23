@@ -187,6 +187,8 @@ private:
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;
 
+  double exp256(const double& x) const;
+
   double gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const;
 
   double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
