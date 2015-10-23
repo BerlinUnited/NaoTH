@@ -19,25 +19,29 @@ public:
   
   void updateParameters(const IKParameters& parameters);
 
-  FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
+  FootStep nextStep(const FootStep& lastStep, const WalkRequest& req);
 
-  FootStep controlStep(const FootStep& lastStep,const WalkRequest& req);
+  FootStep controlStep(const FootStep& lastStep, const WalkRequest& req);
   
 private:
   /**
    * @param step: the step in WalkRequest::Hip
    */
-  FootStep nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req);
+  FootStep calculateNextWalkStep(const FootStep& lastStep, const WalkRequest& req);
+
   FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 
   void restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const;
   void restrictStepSizeControlStep(Pose2D& step, const FootStep& lastStep, double character) const;
   
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
-  //void restrictStepChangeNew(Pose2D& step, const Pose2D& lastStep) const;
   
-  Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req) const;
-  void addStep(FootStep& footStep, Pose2D step, const Pose2D& lastOffset, const Pose2D& offset) const;
+
+private: // low level calculations
+  /** transform the requested target pose to the hip coordinates */
+  Pose2D calculateStepRequestInHip(const FootStep& lastStep, const WalkRequest& req) const;
+
+  void calculateFootStep(FootStep& footStep, Pose2D step, const Pose2D& lastOffset, const Pose2D& offset) const;
   
 
 private:
