@@ -53,43 +53,31 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
   if ( lastStep.liftingFoot() == FootStep::NONE ) {
-    return firstStep(lastStep.end(), req);
+    return firstStep(lastStep.end(), lastStep.offset(), req);
   } else {
-    return calculateNextWalkStep(lastStep, req);
+    FootStep::Foot liftingFoot = (lastStep.liftingFoot()==FootStep::LEFT)?FootStep::RIGHT:FootStep::LEFT;
+    return calculateNextWalkStep(lastStep.end(), lastStep.offset(), liftingFoot, req);
   }
-}//end nextStep
+}
 
 
 FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkRequest& req)
 {
   WalkRequest myReq = req;
   myReq.target = req.stepControl.target;//HACK
-  Pose2D step = calculateStepRequestInHip(lastStep, myReq);
-  restrictStepSizeControlStep(step, lastStep, req.character);
 
-  FeetPose newFeetStepBegin = lastStep.end();
-  FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
-  calculateFootStep(newStep, step, lastStep.offset(), req.offset);
-  theLastStepSize = step;
-
-  ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
-  return newStep;
-}//end controlStep
+  FootStep::Foot liftingFoot = req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT;
+  return calculateNextWalkStep(lastStep.end(), lastStep.offset(), liftingFoot, myReq, true);
+}
 
 
-FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, const WalkRequest& req)
+FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const WalkRequest& req)
 {
-  FootStep zeroStepLeft(pose, FootStep::LEFT );
-  FootStep firstStepRight = calculateNextWalkStep(zeroStepLeft, req);
-
-
-  FootStep zeroStepRight(pose, FootStep::RIGHT);
-  FootStep firstStepLeft = calculateNextWalkStep(zeroStepRight, req);
-
+  FootStep firstStepRight = calculateNextWalkStep(pose, offset, FootStep::RIGHT, req);
+  FootStep firstStepLeft = calculateNextWalkStep(pose, offset, FootStep::LEFT, req);
 
   Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
-
 
   if ( fabs(req.target.rotation) > theMaxTurnInner )
   {
@@ -114,35 +102,51 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, cons
 }//end firstStep
 
 // TODO: parameter for the foot to move
-FootStep FootStepPlanner::calculateNextWalkStep(const FootStep& lastStep, const WalkRequest& req)
+FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl)
 {
-  Pose2D stepRequest = calculateStepRequestInHip(lastStep, req);
-  ASSERT(stepRequest.rotation <= Math::pi);
-  ASSERT(stepRequest.rotation >= -Math::pi);
+  const Pose2D supportOriginOffset = offset * Pose2D(0, theFootOffsetY);
+  const Pose2D targetOriginOffset = req.offset * Pose2D(0, theFootOffsetY);
+
+  const Pose2D supportOrigin = (movingFoot == FootStep::RIGHT)?
+    pose.left.projectXY() * supportOriginOffset.invert() :
+    pose.right.projectXY() * supportOriginOffset;
+
+
+  Pose2D stepRequest = req.target;
+  if (req.coordinate == WalkRequest::LFoot) {
+    stepRequest = supportOrigin.invert() * pose.left.projectXY() * stepRequest * targetOriginOffset.invert();
+  } else if(req.coordinate == WalkRequest::RFoot) {
+    stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
+  }
   
-  // TODO: correct restriction
-  restrictStepSize(stepRequest, lastStep, req.character);
-  restrictStepChange(stepRequest, theLastStepSize);
-  
-  theLastStepSize = stepRequest;
+  // do planing :)
+  if(stepControl) {
+    restrictStepSizeControlStep(stepRequest, req.character);
+  } else {
+    restrictStepSize(stepRequest, req.character);
+    restrictStepChange(stepRequest, theLastStepSize);
+  }
+  theLastStepSize = stepRequest; //HACK
 
 
-  FeetPose newFeetStepBegin = lastStep.end();
-  FootStep::Foot liftingFoot = static_cast<FootStep::Foot>(-lastStep.liftingFoot());
-  FootStep newStep(newFeetStepBegin, liftingFoot );
+  if(movingFoot == FootStep::RIGHT) {
+    stepRequest = Pose2D(min(theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, min(0.0, stepRequest.translation.y));
+  } else {
+    stepRequest = Pose2D(max(-theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, max(0.0, stepRequest.translation.y));
+  }
 
-  calculateFootStep(newStep, stepRequest, lastStep.offset(), req.offset);
-  ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
+  Pose2D footStepTarget = supportOrigin * stepRequest * ((movingFoot == FootStep::RIGHT) ? targetOriginOffset.invert() : targetOriginOffset);
+
+  FootStep newStep(pose, movingFoot);
+  newStep.offset() = req.offset;
+  newStep.footEnd() = Pose3D::embedXY(footStepTarget);
 
   return newStep;
 }//end calculateNextWalkStep
 
 
-void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& /*lastStep*/, double character) const
+void FootStepPlanner::restrictStepSize(Pose2D& step, double character) const
 {
-  //restrictStepSizeSimple(step, lastStep, character);
-  //return;
-
   // scale the character: [0, 1] --> [0.5, 1]
   character = 0.5*character + 0.5;
 
@@ -215,7 +219,7 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& /*lastStep*
 }//end restrictStepSize
 
 
-void FootStepPlanner::restrictStepSizeControlStep(Pose2D& step, const FootStep& /*lastStep*/, double character) const
+void FootStepPlanner::restrictStepSizeControlStep(Pose2D& step, double character) const
 {
   character = 0.5*character + 0.5;
 
@@ -267,8 +271,8 @@ void FootStepPlanner::restrictStepChange(Pose2D& step, const Pose2D& lastStep) c
   step.rotation = Math::normalizeAngle(lastStep.rotation + change.rotation);
 }
 
-
-Pose2D FootStepPlanner::calculateStepRequestInHip(const FootStep& lastStep, const WalkRequest& req) const
+/*
+Pose2D FootStepPlanner::calculateStepRequestInSupportOrigin(const FootStep& lastStep, const WalkRequest& req) const
 {
   Pose2D stepRequest = req.target;
 
@@ -283,14 +287,13 @@ Pose2D FootStepPlanner::calculateStepRequestInHip(const FootStep& lastStep, cons
   {
     case FootStep::LEFT:
     {
-      originCoordinates -= lastStep.offset(); // stepCoord = stepCoord + lastStep.offset().invert()
-      originCoordinates.translate(0, -theFootOffsetY); // stepCoord = stepCoord + Rose2D(0, -theFootOffsetY);
-      // stepCoord = stepCoord+lastStep.offset().invert()+Rose2D(0, -theFootOffsetY);
+      //originCoordinates -= lastStep.offset(); // originCoordinates = originCoordinates - lastStep.offset() = lastStep.offset().invert() * originCoordinates
+      originCoordinates.translate(0, -theFootOffsetY);
       break;
     }
     case FootStep::RIGHT:
     {
-      originCoordinates += lastStep.offset();
+      //originCoordinates += lastStep.offset();
       originCoordinates.translate(0, theFootOffsetY);
       break;
     }
@@ -321,60 +324,53 @@ Pose2D FootStepPlanner::calculateStepRequestInHip(const FootStep& lastStep, cons
       break;
   }//end switch
 
-  return targetCoordinates - originCoordinates;
+  return targetCoordinates - originCoordinates; // originCoordinates.invert() * targetCoordinates
 }//end calculateStepRequestInHip
 
 
-void FootStepPlanner::calculateFootStep(FootStep& footStep, Pose2D step, const Pose2D& supportOffset, const Pose2D& targetOffset) const
+void FootStepPlanner::calculateFootStep(FootStep& footStep, const Pose2D& stepRequest, const Pose2D& supportOffset, const Pose2D& targetOffset) const
 {
   // calculate the new position for the moving foot based on the support foot
-  Pose2D supFootCoordinates = footStep.supFoot().projectXY();
+  Pose2D footStepTarget2D = footStep.supFoot().projectXY();
+
+  // transform to the left foot from it's origin
+  const Pose2D originFootOffset(0, theFootOffsetY);
 
   switch ( footStep.liftingFoot() )
   {
     case FootStep::RIGHT:
     {
-      // transform to support origin coordinates
-      // supFootCoordinates = supFootCoordinates * lastOffset.invert();
-      supFootCoordinates.rotate(-supportOffset.rotation);
-      supFootCoordinates.translate(-supportOffset.translation.x, -supportOffset.translation.y);
-
-      // supFootCoordinates = supFootCoordinates * Rose2D(0, -theFootOffsetY)
-      supFootCoordinates.translate(0, -theFootOffsetY);
+      // transform from left (support) foot coordinates to left (support) origin coordinates
+      footStepTarget2D *= supportOffset.invert() * originFootOffset.invert();
 
       // TODO: no restriction here
-      // transform support origin to target origin
-      // supFootCoordinates = supFootCoordinates *  Rose2D(min(theMaxTurnInner, step.rotation), step.translation.x, min(0.0, step.translation.y))
-      supFootCoordinates.translate(step.translation.x, min(0.0, step.translation.y));
-      supFootCoordinates.rotate(min(theMaxTurnInner, step.rotation)); 
-
-
-      // supFootCoordinates = supFootCoordinates * Rose2D(0, -theFootOffsetY)
-      supFootCoordinates.translate(0, -theFootOffsetY);
+      // apply geometric restrictions to the step request
+      // transform left (support) origin to right (target) origin
+      footStepTarget2D *= Pose2D(min(theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, min(0.0, stepRequest.translation.y));
       
-      // supFootCoordinates = supFootCoordinates * targetOffset.invert();
-      supFootCoordinates.rotate(-targetOffset.rotation);
-      supFootCoordinates.translate(-targetOffset.translation.x, -targetOffset.translation.y);
+      // transform from right (target) origin to right foot coordinates
+      footStepTarget2D *= originFootOffset.invert() * targetOffset.invert();
       break;
     }
     case FootStep::LEFT:
     {
-      supFootCoordinates.rotate(supportOffset.rotation);
-      supFootCoordinates.translate(supportOffset.translation.x, supportOffset.translation.y);
-      supFootCoordinates.translate(0, theFootOffsetY);
+      // transform from right (support) foot coordinates to right (support) origin coordinates
+      footStepTarget2D *= supportOffset * originFootOffset;
 
       // TODO: no restriction here
-      supFootCoordinates.translate(step.translation.x, max(0.0, step.translation.y));
-      supFootCoordinates.rotate(max(-theMaxTurnInner, step.rotation)); 
+      // apply geometric restrictions to the step request
+      // transform right (support) origin to left (target) origin
+      footStepTarget2D *= Pose2D(max(-theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, max(0.0, stepRequest.translation.y));
       
-      supFootCoordinates.translate(0, theFootOffsetY);
-      supFootCoordinates.rotate(targetOffset.rotation);
-      supFootCoordinates.translate(targetOffset.translation.x, targetOffset.translation.y);
+      // transform from left (target) origin to left foot coordinates
+      footStepTarget2D *= originFootOffset * targetOffset;
+
       break;
     }
     default: ASSERT(false);
-  }//end switch
+  }
 
   footStep.offset() = targetOffset;
-  footStep.footEnd() = Pose3D::embedXY(supFootCoordinates);
+  footStep.footEnd() = Pose3D::embedXY(footStepTarget2D);
 }//end calculateFootStep
+*/
