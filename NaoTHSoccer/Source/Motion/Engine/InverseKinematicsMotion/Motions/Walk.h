@@ -128,9 +128,7 @@ private:
 
   void manageSteps(const MotionRequest& motionRequest);
   // step creators
-  void newZeroStep(const Step& lastStep, Step& step) const;
-  void newFinalStep(const Step& lastStep, Step& step); // const;
-  void newWalkStep(const Step& lastStep, Step& step, const WalkRequest& motionRequest);// const;
+  void calculateNewStep(const Step& lastStep, Step& step, const WalkRequest& motionRequest);// const;
 
 
   void planZMP();

@@ -23,6 +23,10 @@ public:
 
   FootStep controlStep(const FootStep& lastStep, const WalkRequest& req);
   
+  FootStep finalStep(const FootStep& lastStep, const WalkRequest& req);
+
+  FootStep zeroStep(const FootStep& lastStep) const;
+
 private:
   /**
    * @param step: the step in WalkRequest::Hip

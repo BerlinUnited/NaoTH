@@ -83,56 +83,32 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
   if(stepBuffer.last().isPlanned())
   {
     const Step& lastStep = stepBuffer.last();
-    // create a new step
+    // add a new step
     Step& step = stepBuffer.add();
 
-    // stop walking
-    if ( motionRequest.id != getId())
-    {
-      // try to make a last step to align the feet if it is required
-      if ( motionRequest.standardStand ) {
-        newFinalStep(lastStep, step);
-      } else {
-        newZeroStep(lastStep, step);
-      }
-
-      std::cout << "walk stopping ..." << std::endl;
-    }
-    else {
-      // walk, add new step
-      newWalkStep(lastStep, step, motionRequest.walkRequest);
-    }
+    calculateNewStep(lastStep, step, motionRequest.walkRequest);
   }
 
 }//end manageSteps
 
-void Walk::newZeroStep(const Step& lastStep, Step& step) const
+
+void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest) //const
 {
-  step.footStep = FootStep(lastStep.footStep.end(), FootStep::NONE);
-  step.numberOfCycles = 1;
-}
 
-void Walk::newFinalStep(const Step& lastStep, Step& step)// const
-{
-  // TODO: check if an actual step is necessary based on the last step
-  //       => calculate an actual step only if necessary
+  if ( getMotionRequest().id != getId() )
+  {
+    // try to make a last step to align the feet if it is required
+    if ( getMotionRequest().standardStand ) {
+      newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
+    } else {
+      newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
+    }
 
-  // try to plan a real last step with an empty walk request
-  FootStep footStep = theFootStepPlanner.nextStep(lastStep.footStep, WalkRequest());
-  // how much did the foot move in this step
-  Pose3D diff = footStep.footBegin().invert() * footStep.footEnd();
-
-  // planed step almost didn't move the foot, i.e., is was almost a zero step
-  if(diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1)) {
-    newZeroStep(lastStep, step);
-  } else {
-    step.footStep = footStep;
-    step.numberOfCycles = 250/getRobotInfo().basicTimeStep;
+    newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:250/getRobotInfo().basicTimeStep;
+    std::cout << "walk stopping ..." << std::endl;
+    return;
   }
-}
 
-void Walk::newWalkStep(const Step& lastStep, Step& step, const WalkRequest& walkRequest) //const
-{
   // indicates whether the requested foot is movable in this step
   // i.e., it was NOT moved in the last step
   bool stepControlPossible = 
@@ -144,14 +120,14 @@ void Walk::newWalkStep(const Step& lastStep, Step& step, const WalkRequest& walk
   if ( stepControlPossible && walkRequest.stepControl.stepID == stepBuffer.stepId() )
   {
     // step control
-    step.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+    newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
   }
   else
   {
-    step.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
+    newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
   }
 
-  step.numberOfCycles = 250/getRobotInfo().basicTimeStep;
+  newStep.numberOfCycles = 250/getRobotInfo().basicTimeStep;
 }
 
 

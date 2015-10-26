@@ -49,6 +49,23 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
   theMaxChangeY = theMaxStepWidth * parameters.walk.limits.maxStepChange;
 }
 
+FootStep FootStepPlanner::finalStep(const FootStep& lastStep, const WalkRequest& req)
+{
+  // TODO: check if an actual step is necessary based on the last step
+  //       => calculate an actual step only if necessary
+
+  // try to plan a real last step with an empty walk request
+  FootStep footStep = nextStep(lastStep, WalkRequest());
+  // how much did the foot move in this step
+  Pose3D diff = footStep.footBegin().invert() * footStep.footEnd();
+
+  // planed step almost didn't move the foot, i.e., is was almost a zero step
+  if(diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1)) {
+    return zeroStep(lastStep);
+  } else {
+    return footStep;
+  }
+}
 
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
@@ -70,6 +87,10 @@ FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkReques
   return calculateNextWalkStep(lastStep.end(), lastStep.offset(), liftingFoot, myReq, true);
 }
 
+FootStep FootStepPlanner::zeroStep(const FootStep& lastStep) const
+{
+  return FootStep(lastStep.end(), FootStep::NONE);
+}
 
 FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const WalkRequest& req)
 {
