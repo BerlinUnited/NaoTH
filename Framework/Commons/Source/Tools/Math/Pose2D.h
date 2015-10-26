@@ -4,10 +4,11 @@
  *
  * @author <a href="mailto:martin.kallnik@gmx.de">Martin Kallnik</a>
  * @author Max Risler
+ * @author Heinrich Mellmann
  */
 
-#ifndef __Pose2D_h__
-#define __Pose2D_h__
+#ifndef _Pose2D_h_
+#define _Pose2D_h_
 
 #include "Common.h"
 #include "Vector2.h"
@@ -22,95 +23,98 @@ public:
   /** Rotation as an angle*/
   T rotation;
 
-  /** translation as an vector2*/
+  /** translation as an Vector2*/
   Vector2<T> translation;
 
   /** noargs-constructor*/
   Pose2T():rotation(0),translation(0,0) {}
 
   /** constructor from rotation and translation
-   * \param rotation rotation (double)
-   * \param translation translation (Vector2)
-   */
+  * \param rotation rotation (double)
+  * \param translation translation (Vector2)
+  */
   Pose2T(const T rotation, const Vector2<T>& translation):rotation(rotation),translation(translation) {}
 
   /** constructor from rotation and translation
-   * \param rot rotation (double)
-   * \param x translation.x (double)
-   * \param y translation.y (double)
-   */
-  Pose2T(const T rot, const T x, const T y):rotation(rot),translation(x,y)
-  {}
+  * \param rot rotation (double)
+  * \param x translation.x (double)
+  * \param y translation.y (double)
+  */
+  Pose2T(const T rot, const T x, const T y):rotation(rot),translation(x,y) {}
 
   /** constructor from rotation
-   * \param rotation rotation (double)
-   */
+  * \param rotation rotation (double)
+  */
   Pose2T(const T rotation):rotation(rotation),translation(0,0) {}
   
   /** constructor from translation
-   * \param translation translation (Vector2)
-   */
+  * \param translation translation (Vector2)
+  */
   Pose2T(const Vector2<T>& translation):rotation(0),translation(translation) {}
 
-   /** constructor from translation
-   * \param translation translation (Vector2)
-   */
+  /** constructor from translation
+  * \param translation translation (Vector2)
+  */
   template<class T2>
   Pose2T(const Vector2<T2>& translation):rotation(0),translation(translation.x,translation.y) {}
 
   /** constructor from two translation values
-   * \param x translation x component
-   * \param y translation y component
-   */
+  * \param x translation x component
+  * \param y translation y component
+  */
   Pose2T(const T x, const T y):rotation(0),translation(x,y) {}
+
 
   /** get the Angle
    * @return Angle the Angle which defines the rotation
    */
-  inline T getAngle() const {return rotation;}
-
+  inline T getAngle() const { return rotation; }
 
   /** set rotation from Angle
    * @return the new Pose2D
    */
-  inline T fromAngle(const T a) {rotation=a; return *this;}
+  // deprecated
+  //inline T fromAngle(const T a) {rotation=a; return *this;}
 
   /** get the cos of the angle
    * @return the cos of the angle
    */
-  inline double getCos() const {return cos(rotation);}
+  // deprecated
+  //inline double getCos() const {return cos(rotation);}
 
  /** get the sin of the angle
   * @return the sin of the angle
   */
-  inline double getSin() const {return sin(rotation);}
+  // deprecated
+  //inline double getSin() const {return sin(rotation);}
   
   /** 
-   * Multiplication of a Vector2 with this Pose2D
-   * In fact we transform the point from the global coordinates to the local coordinates
-   * represented by this pose (A*x = y), it holds
-   * pose/(pose*x) = pose*(pose/x) = x
-   *
-   * \param point The Vector2 that will be multiplicated with this Pose2D
-   * \return The resulting Vector2
-   */
+  * Multiplication of a Vector2 with this Pose2D
+  * In fact we transform the point from the global coordinates to the local coordinates
+  * represented by this pose (A*x = y), it holds
+  * pose/(pose*x) = pose*(pose/x) = x
+  *
+  * \param point The Vector2 that will be multiplicated with this Pose2D
+  * \return The resulting Vector2
+  */
   Vector2<T> operator*(const Vector2<T>& point) const
   {  
     double s=sin(rotation);
     double c=cos(rotation);
-    return (Vector2<T>(point.x*c-point.y*s , point.x*s+point.y*c) + translation);
+    return Vector2<T>(point.x*c-point.y*s , point.x*s+point.y*c) + translation;
+    //return Vector2<T>(point).rotate(rotation) + translation;
   }
 
   /** 
-   * Division of a Vector2 with this Pose2D
-   * In fact we transform the point from the local coordinates represented by this pose
-   * to the global coordinates to, i.e. we solve the equation A*x = y (see * Operator).
-   * The Operation pose/x is equivalent to pose.invert()*x, i.e., it holds
-   * pose/(pose*x) = pose*(pose/x) = x
-   *
-   * \param point The Vector2 that will be divided with this Pose2D
-   * \return The resulting Vector2
-   */
+  * Division of a Vector2 with this Pose2D
+  * In fact we transform the point from the local coordinates represented by this pose
+  * to the global coordinates to, i.e. we solve the equation A*x = y (see * Operator).
+  * The Operation pose/x is equivalent to pose.invert()*x, i.e., it holds
+  * pose/(pose*x) = pose*(pose/x) = x
+  *
+  * \param point The Vector2 that will be divided with this Pose2D
+  * \return The resulting Vector2
+  */
   Vector2<T> operator/(const Vector2<T>& point) const
   {
     return ((point - translation).rotate(-rotation));
@@ -126,11 +130,34 @@ public:
   }
 
   /** Comparison of another pose with this one.
-   * \param other The other pose that will be compared to this one
-   * \return Whether the two poses are unequal.
-   */
+  * \param other The other pose that will be compared to this one
+  * \return Whether the two poses are unequal.
+  */
   bool operator!=(const Pose2T& other) const
-  {return !(*this == other);}
+  {
+    return !(*this == other);
+  }
+
+  /**
+  * multiply the pose with another one
+  * A *= B <=> A = A*B => this = this*other
+  */
+  Pose2T& operator*=(const Pose2T& other)
+  {
+    //translate(other.translation).rotate(other.rotation);
+    translation = *this * other.translation;
+    rotation = Math::normalize(rotation + other.rotation);
+    return *this;
+  }
+
+  /**
+  * multiply the pose with another one
+  * return this*other
+  */
+  Pose2T operator*(const Pose2T& other) const
+  {
+    return Pose2T(*this) *= other;
+  }
 
   /** Concatenation of this pose with another pose.
   * NOTE: actually just a matrix multiplication this = this*other
@@ -139,25 +166,24 @@ public:
   */
   Pose2T& operator+=(const Pose2T& other)
   {
-    translation = *this * other.translation;
-    rotation += other.rotation;
-    rotation = Math::normalize(rotation);
-    return *this;
+    return *this *= other;
   }
 
   /** A concatenation of this pose and another pose.
-   * \param other The other pose that will be concatenated to this one.
-   * \return The resulting pose.
-   */
+  * \param other The other pose that will be concatenated to this one.
+  * \return The resulting pose.
+  */
   Pose2T operator+(const Pose2T& other) const
-  {return Pose2T(*this) += other;}
+  {
+    return Pose2T(*this) *= other;
+  }
 
   /**
-   * NOTE: deprecated
-   * Subtracts a difference pose from this one to get the source pose. So if A+B=C is the addition/concatenation, this calculates C-B=A.
-   * \param diff The difference Pose2D that shall be subtracted.
-   * \return The resulting source pose. Adding diff to it again would give the this pose back.
-   */
+  * NOTE: deprecated
+  * Subtracts a difference pose from this one to get the source pose. So if A+B=C is the addition/concatenation, this calculates C-B=A.
+  * \param diff The difference Pose2D that shall be subtracted.
+  * \return The resulting source pose. Adding diff to it again would give the this pose back.
+  */
   /*
   Pose2T minusDiff(const Pose2T& diff) const
   {
@@ -172,30 +198,39 @@ public:
   */
 
   /** Difference of this pose relative to another pose. So if A+B=C is the addition/concatenation, this calculates C-A=B.
-  * NOTE: actually just matrix multiplication: 'A+B=C' ~ A*B=C  <=>  'C-B=A' ~ C*B^{-1}=A  => this -= other => this = this - other => this = this*other.invert()
-   * \param other The other pose that will be used as origin for the new pose.
-   * \return A reference to this pose after calculating the difference.
-   */
+  * NOTE: actually just matrix multiplication: 'A+B=C' ~ A*B=C <=> B=A^{-1}*C  <=>  'B=C-A' ~ B=A^{-1}*C  => this -= other => this = this - other => this = other.invert()*this
+  * \param other The other pose that will be used as origin for the new pose.
+  * \return A reference to this pose after calculating the difference.
+  */
   Pose2T& operator-=(const Pose2T& other)
   {
+    return *this = other.invert()*(*this);
+    /*
     translation -= other.translation;
     Pose2T p(-other.rotation);
     return *this = p + *this;
+    */
   }
 
   /** Difference of this pose relative to another pose.
-   * \param other The other pose that will be used as origin for the new pose.
-   * \return The resulting pose.
-   */
+  * \param other The other pose that will be used as origin for the new pose.
+  * \return The resulting pose.
+  */
   Pose2T operator-(const Pose2T& other) const
-  {return Pose2T(*this) -= other;}
+  {
+    return Pose2T(*this) -= other;
+  }
 
   /** Concatenation of this pose with another pose
    * \param other The other pose that will be concatenated to this one.
    * \return A reference to this pose after concatenation
    */
+  /*
   Pose2T& conc(const Pose2T& other)
-  {return *this += other;}
+  {
+    return *this += other;
+  }
+  */
 
   /** Translate this pose by a translation vector
   * NOTE: (R, t).translate(t') => (R, R*t' + t)
@@ -217,7 +252,7 @@ public:
   */
   Pose2T& translate(const T x, const T y)
   {
-    translation = *this * Vector2<double>(x,y);
+    translation = *this * Vector2<T>(x,y);
     return *this;
   }
 
@@ -228,20 +263,19 @@ public:
   */
   Pose2T& rotate(const T angle)
   {
-    rotation += angle;
-    rotation = Math::normalizeAngle(rotation);
+    rotation = Math::normalizeAngle(rotation+angle);
     return *this;
   }
 
 
   /** 
-   * Calculates the inverse transformation from the current pose
-   * @return The inverse transformation pose.
-   */
+  * Calculates the inverse transformation from the current pose
+  * @return The inverse transformation pose.
+  */
   Pose2T invert() const
   {
     const T& invRotation = -rotation;
-    return Pose2T(invRotation, -translation.rotate(invRotation));
+    return Pose2T(invRotation, (-translation).rotate(invRotation));
   }
 
   /**
