@@ -125,14 +125,19 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, cons
 // TODO: parameter for the foot to move
 FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl)
 {
+  // TODO: how to deal with zero steps properly
+  ASSERT(movingFoot != FootStep::NONE);
+
+  // transform between the foot coordinates and the corresponding origin
   const Pose2D supportOriginOffset = offset * Pose2D(0, theFootOffsetY);
   const Pose2D targetOriginOffset = req.offset * Pose2D(0, theFootOffsetY);
 
+  // transform between the global odometry coordinates and the origin of the support foot
   const Pose2D supportOrigin = (movingFoot == FootStep::RIGHT)?
     pose.left.projectXY() * supportOriginOffset.invert() :
     pose.right.projectXY() * supportOriginOffset;
 
-
+  // transform the request in the coordinates of the support origin
   Pose2D stepRequest = req.target;
   if (req.coordinate == WalkRequest::LFoot) {
     stepRequest = supportOrigin.invert() * pose.left.projectXY() * stepRequest * targetOriginOffset.invert();
@@ -140,7 +145,8 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
     stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
   }
   
-  // do planing :)
+
+  // do "path planing" :)
   if(stepControl) {
     restrictStepSizeControlStep(stepRequest, req.character);
   } else {
@@ -150,14 +156,17 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
   theLastStepSize = stepRequest; //HACK
 
 
+  // apply geometric restrictions to the step request
   if(movingFoot == FootStep::RIGHT) {
     stepRequest = Pose2D(min(theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, min(0.0, stepRequest.translation.y));
   } else {
     stepRequest = Pose2D(max(-theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, max(0.0, stepRequest.translation.y));
   }
 
+  // apply the planed motion and calculate the coordinates of the moving foot
   Pose2D footStepTarget = supportOrigin * stepRequest * ((movingFoot == FootStep::RIGHT) ? targetOriginOffset.invert() : targetOriginOffset);
 
+  // create a new step
   FootStep newStep(pose, movingFoot);
   newStep.offset() = req.offset;
   newStep.footEnd() = Pose3D::embedXY(footStepTarget);
