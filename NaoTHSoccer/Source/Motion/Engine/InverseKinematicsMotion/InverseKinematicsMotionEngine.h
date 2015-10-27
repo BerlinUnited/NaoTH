@@ -119,30 +119,59 @@ public:
     bool& sloved,
     bool fix_height);
 
-  unsigned int contorlZMPlength() const { return static_cast<unsigned int> (thePreviewController.previewSteps()); }
 
-  int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
+  class ZMPControlBuffer {
+    public:
 
-  void controlZMPpush(const Vector3d& zmp);
+      size_t size() const { return thePreviewController.previewSteps(); }
+      Vector3d back() const { return thePreviewController.back(); }
+      Vector3d front() const { return thePreviewController.front(); }
 
-  Vector3d controlZMPback() const;
+      void clear() { thePreviewController.clear(); }
+      void push(const Vector3d& zmp) { thePreviewController.push(zmp); }
+      
 
-  Vector3d controlZMPfront() const;
+      bool is_stationary() const {
+        return thePreviewController.com_velocity().abs2() < 1 && 
+               thePreviewController.com_acceleration().abs2() < 1;
+      }
 
-  bool controlZMPstop(const Vector3d& finalZmp);
+      bool pop(Vector3d& com)
+      {
+        if ( !thePreviewController.ready() ) {
+          return false;
+        }
 
-  void controlZMPclear();
+        // dummy, not used
+        Vector2d dcom, ddcom;
+        thePreviewController.control(com, dcom, ddcom);
+        thePreviewController.pop();
 
-  bool controlZMPstationary() const {
-    //return thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
-    return thePreviewController.com_velocity().abs2() < 1 && 
-           thePreviewController.com_acceleration().abs2() < 1;
-  }
+        return true;
+      }
 
-  /**
-   * @param com return the result
-   */
-  bool controlZMPpop(Vector3d& com);
+
+      int init(const Vector3d& com, const Vector3d& targetZMP)
+      {
+        // TODO: clear it because of the motion can be forced to finish immediately...
+        // the idea of keep buffer is to switch zmp control between different motions,
+        // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
+        thePreviewController.clear();
+
+        thePreviewController.init(com, Vector2d(0,0), Vector2d(0,0));
+  
+        for (size_t i = 0; i < thePreviewController.previewSteps(); i++) {
+          thePreviewController.push(targetZMP);
+        }
+
+        return thePreviewController.previewSteps();
+      }
+
+    private:
+      PreviewController thePreviewController;
+
+  } zmpControl;
+
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   

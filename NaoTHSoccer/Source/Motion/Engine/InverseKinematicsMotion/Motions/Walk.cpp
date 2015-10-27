@@ -42,7 +42,7 @@ void Walk::execute()
   FIELD_DRAWING_CONTEXT;
   stepBuffer.draw(getDebugDrawings());
 
-  if(getMotionRequest().id != getId() && getEngine().controlZMPstationary()) {
+  if(getMotionRequest().id != getId() && getEngine().zmpControl.is_stationary()) {
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
@@ -60,32 +60,29 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
   {
     std::cout << "walk start" << std::endl;
 
-    // TODO: for now it returns getCurrentCoMFeetPose()
-    ZMPFeetPose currentZMPFeetPose = getEngine().getPlannedZMPFeetPose();
-    currentZMPFeetPose.localInLeftFoot();
-    currentZMPFeetPose.zmp.translation.z = parameters().hip.comHeight;
+    // use the current com pose as a basis for start
+    CoMFeetPose currentCOMFeetPose = getEngine().getCurrentCoMFeetPose();
+    currentCOMFeetPose.localInLeftFoot();
+    currentCOMFeetPose.com.translation.z = parameters().hip.comHeight;
     
     // new step (don't move the feet)
     Step& initialStep = stepBuffer.add();
-    initialStep.footStep = FootStep(currentZMPFeetPose.feet, FootStep::NONE);
+    initialStep.footStep = FootStep(currentCOMFeetPose.feet, FootStep::NONE);
 
-    // plan the whole initial step
-    initialStep.numberOfCycles = getEngine().controlZMPstart(currentZMPFeetPose);
+    // initialize the zmp buffer with the current com pose
+    initialStep.numberOfCycles = getEngine().zmpControl.init(currentCOMFeetPose.com.translation, currentCOMFeetPose.com.translation);
     initialStep.planningCycle = initialStep.numberOfCycles;
   }
 
-  // current step is executed, remove
+  // current step has been executed, remove
   if ( stepBuffer.first().isExecuted() ) {
     stepBuffer.pop();
   }
 
   // add a new step
-  if(stepBuffer.last().isPlanned())
-  {
+  if(stepBuffer.last().isPlanned()) {
     const Step& lastStep = stepBuffer.last();
-    // add a new step
     Step& step = stepBuffer.add();
-
     calculateNewStep(lastStep, step, motionRequest.walkRequest);
   }
 
@@ -133,6 +130,8 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
 void Walk::planZMP()
 {
+  ASSERT(!stepBuffer.empty());
+
   Step& planningStep = stepBuffer.last();
   ASSERT(!planningStep.isPlanned());
 
@@ -146,7 +145,7 @@ void Walk::planZMP()
   }
 
   zmp.z = parameters().hip.comHeight;
-  getEngine().controlZMPpush(zmp);
+  getEngine().zmpControl.push(zmp);
 
   FIELD_DRAWING_CONTEXT;
   getDebugDrawings().pen(Color::BLUE, 5.0);
@@ -158,11 +157,13 @@ void Walk::planZMP()
 
 void Walk::executeStep()
 {
+  ASSERT(!stepBuffer.empty());
+
   Step& executingStep = stepBuffer.first();
   ASSERT(!executingStep.isExecuted());
 
   Vector3d com;
-  if ( !getEngine().controlZMPpop(com) || stepBuffer.empty() ) {
+  if( !getEngine().zmpControl.pop(com) ) {
     return;
   }
 
