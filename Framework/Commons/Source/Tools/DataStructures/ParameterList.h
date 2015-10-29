@@ -79,8 +79,8 @@ protected:
 
 protected:
   // ACHTUNG: never copy the content of the parameter list
-  ParameterList(const ParameterList &obj) {}
-  ParameterList& operator=( const ParameterList& other ) { return *this; }
+  ParameterList(const ParameterList& /*&obj*/) {}
+  ParameterList& operator=( const ParameterList& /*other*/ ) { return *this; }
 
   ParameterList(const std::string& name) : name(name) {}
   virtual ~ParameterList() 

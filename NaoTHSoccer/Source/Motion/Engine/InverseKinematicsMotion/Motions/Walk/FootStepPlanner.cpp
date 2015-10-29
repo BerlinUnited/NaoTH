@@ -49,7 +49,7 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
   theMaxChangeY = theMaxStepWidth * parameters.walk.limits.maxStepChange;
 }
 
-FootStep FootStepPlanner::finalStep(const FootStep& lastStep, const WalkRequest& req)
+FootStep FootStepPlanner::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/)
 {
   // TODO: check if an actual step is necessary based on the last step
   //       => calculate an actual step only if necessary
