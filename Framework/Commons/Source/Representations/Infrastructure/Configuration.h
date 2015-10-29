@@ -81,8 +81,12 @@ public:
     */
   std::string getString(const std::string& group, const std::string& key) const;
   
-  void get(const std::string& group, const std::string& key, std::string& result) const {
-    result = getString(group, key);
+  bool get(const std::string& group, const std::string& key, std::string& result) const {
+    if(hasKey(group,key)) { 
+      result = getString(group, key);
+      return true; 
+    }
+    return false;
   }
 
   void setString(const std::string& group, const std::string& key, const std::string& value);
@@ -98,8 +102,12 @@ public:
     * @return
     */
   double getDouble(const std::string& group, const std::string& key) const;
-  void get(const std::string& group, const std::string& key, double& result) const {
-    result = getDouble(group, key);
+  bool get(const std::string& group, const std::string& key, double& result) const {
+    if(hasKey(group,key)) { 
+      result = getDouble(group, key);
+      return true; 
+    }
+    return false;
   }
 
   void setDouble(const std::string& group, const std::string& key, double value);
@@ -116,11 +124,19 @@ public:
     * @return
     */
   int getInt(const std::string& group, const std::string& key) const;
-  void get(const std::string& group, const std::string& key, int& result) const {
-    result = getInt(group, key);
+  bool get(const std::string& group, const std::string& key, int& result) const {
+    if(hasKey(group,key)) { 
+      result = getInt(group, key);
+      return true; 
+    }
+    return false;
   }
-  void get(const std::string& group, const std::string& key, unsigned int& result) const {
-    result = getInt(group, key);
+  bool get(const std::string& group, const std::string& key, unsigned int& result) const {
+    if(hasKey(group,key)) { 
+      result = getInt(group, key);
+      return true; 
+    }
+    return false;
   }
 
   void setInt(const std::string& group, const std::string& key, int value);
@@ -141,8 +157,12 @@ public:
     * @return
     */
   bool getBool(const std::string& group, const std::string& key) const;
-  void get(const std::string& group, const std::string& key, bool& result) const {
-    result = getBool(group, key);
+  bool get(const std::string& group, const std::string& key, bool& result) const {
+    if(hasKey(group,key)) { 
+      result = getBool(group, key);
+      return true; 
+    }
+    return false;
   }
 
   void setBool(const std::string& group, const std::string& key, bool value);
