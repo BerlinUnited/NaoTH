@@ -37,9 +37,8 @@ protected:
     virtual ~Parameter() {}
 
     virtual void syncWithConfig(naoth::Configuration& config, const std::string& group) {
-      if (config.hasKey(group, name)) {
-        T v;
-        config.get(group, name, v);
+      T v;
+      if (config.get(group, name, v)) {
         set(v);
       } else {
         config.setDefault(group, name, get());
