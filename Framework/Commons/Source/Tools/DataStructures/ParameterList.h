@@ -11,23 +11,100 @@
 #define _ParameterList_h_
 
 #include <map>
+#include <list>
 #include <sstream>
+#include <Tools/Debug/NaoTHAssert.h>
+#include <Tools/Math/Common.h>
+#include <Representations/Infrastructure/Configuration.h>
 
 class ParameterList
 {
-public:
-  ParameterList(const std::string& name) : name(name) {}
-  virtual ~ParameterList() {}
+protected:
 
-  bool& registerParameter(const std::string& name, bool& parameter);
-  unsigned int& registerParameter(const std::string& name, unsigned int& parameter);
-  int& registerParameter(const std::string& name, int& parameter);
-  double& registerParameter(const std::string& name, double& parameter);
-  std::string& registerParameter(const std::string& name, std::string& parameter);
+  class ConfigParameter {
+  public:
+    virtual ~ConfigParameter() {}
+    virtual void syncWithConfig(naoth::Configuration& config, const std::string& group) = 0;
+    virtual void writeToConfig(naoth::Configuration& config, const std::string& group) const = 0;
+  };
+
+  template<class T>
+  class Parameter : public ConfigParameter {
+  private:
+    const std::string name;
+  public:
+    Parameter(const std::string& name) : name(name) {}
+    virtual ~Parameter() {}
+
+    virtual void syncWithConfig(naoth::Configuration& config, const std::string& group) {
+      if (config.hasKey(group, name)) {
+        T v;
+        config.get(group, name, v);
+        set(v);
+      } else {
+        config.setDefault(group, name, get());
+      }
+    }
+    virtual void writeToConfig(naoth::Configuration& config, const std::string& group) const {
+      config.set(group, name, get());
+    }
+
+    virtual void set(T v) = 0;
+    virtual T get() const = 0;
+  };
+
+  template<class T>
+  class DefaultParameter : public Parameter<T> {
+  protected:
+    T* value;
+
+  public:
+    DefaultParameter(const std::string& name, T* value) : Parameter(name), value(value) {}
+    ~DefaultParameter(){}
+    virtual void set(T v) { *value = v; }
+    virtual T get() const { ASSERT(value != NULL); return *value; }
+  };
+
+  template<class T>
+  class ParameterAngleDegrees : public Parameter<T> {
+    protected:
+      T* value;
+    public:
+      ParameterAngleDegrees(const std::string& name, T* value) : Parameter(name), value(value) {}
+      ~ParameterAngleDegrees(){}
+      virtual void set(T v) { *value = Math::fromDegrees(v); }
+      virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
+  };
+
+protected:
+  // ACHTUNG: never copy the content of the parameter list
+  ParameterList(const ParameterList &obj) {}
+  ParameterList& operator=( const ParameterList& other ) { return *this; }
+
+  ParameterList(const std::string& name) : name(name) {}
+  virtual ~ParameterList() 
+  {
+    for (std::list<ConfigParameter*>::iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
+      delete *iter;
+    }
+  }
+
+  template<template<typename N> class T, typename N>
+  N& registerParameterT(const std::string& parameterName, N& parameter)
+  {
+    parameters.push_back(new T<N>(parameterName, &parameter));
+    return parameter;
+  }
+
+  template<typename N>
+  N& registerParameter(const std::string& parameterName, N& parameter) {
+    return registerParameterT<DefaultParameter,N>(parameterName, parameter);
+  }
 
   // change some key characters, e.g. []
   static std::string convertName(std::string name);
 
+public:
   void syncWithConfig();
   void saveToConfig();
 
@@ -35,15 +112,11 @@ public:
 
 private:
   std::string name;
-
-  std::map<std::string, unsigned int*> unsignedIntParameters;
-  std::map<std::string, int*> intParameters;
-  std::map<std::string, double*> doubleParameters;
-  std::map<std::string, std::string*> stringParameters;
-  std::map<std::string, bool*> boolParameters;
-
+  std::list<ConfigParameter*> parameters;
 };
 
-#define PARAMETER_REGISTER(parameter) registerParameter(convertName(#parameter), parameter)
+
+#define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
+#define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
 
 #endif // _ParameterList_h_

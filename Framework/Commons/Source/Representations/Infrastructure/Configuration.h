@@ -62,10 +62,10 @@ public:
   * @param key
   * @return
   */
-  bool get(const std::string& group, const std::string& key, int& value)
+  // EXPERIMENTAL
+  bool getT(const std::string& group, const std::string& key, int& value)
   {
-    if(hasKey(group,key)) 
-    { 
+    if(hasKey(group,key)) { 
       value = getInt(group,key); 
       return true; 
     }
@@ -80,8 +80,15 @@ public:
     * @return
     */
   std::string getString(const std::string& group, const std::string& key) const;
+  
+  void get(const std::string& group, const std::string& key, std::string& result) const {
+    result = getString(group, key);
+  }
 
   void setString(const std::string& group, const std::string& key, const std::string& value);
+  void set(const std::string& group, const std::string& key, const std::string& value) {
+    setString(group, key, value);
+  }
   void setDefault(const std::string& group, const std::string& key, const std::string& value);
 
   /**
@@ -91,8 +98,15 @@ public:
     * @return
     */
   double getDouble(const std::string& group, const std::string& key) const;
+  void get(const std::string& group, const std::string& key, double& result) const {
+    result = getDouble(group, key);
+  }
 
   void setDouble(const std::string& group, const std::string& key, double value);
+  void set(const std::string& group, const std::string& key, double value) {
+    setDouble(group, key, value);
+  }
+
   void setDefault(const std::string& group, const std::string& key, double value);
 
   /**
@@ -102,8 +116,21 @@ public:
     * @return
     */
   int getInt(const std::string& group, const std::string& key) const;
+  void get(const std::string& group, const std::string& key, int& result) const {
+    result = getInt(group, key);
+  }
+  void get(const std::string& group, const std::string& key, unsigned int& result) const {
+    result = getInt(group, key);
+  }
 
   void setInt(const std::string& group, const std::string& key, int value);
+  void set(const std::string& group, const std::string& key, int value) {
+    setInt(group, key, value);
+  }
+  void set(const std::string& group, const std::string& key, unsigned int value) {
+    setInt(group, key, value);
+  }
+
   void setDefault(const std::string& group, const std::string& key, int value);
   void setDefault(const std::string& group, const std::string& key, unsigned int value);
 
@@ -114,8 +141,14 @@ public:
     * @return
     */
   bool getBool(const std::string& group, const std::string& key) const;
+  void get(const std::string& group, const std::string& key, bool& result) const {
+    result = getBool(group, key);
+  }
 
   void setBool(const std::string& group, const std::string& key, bool value);
+  void set(const std::string& group, const std::string& key, bool value) {
+    setBool(group, key, value);
+  }
   void setDefault(const std::string& group, const std::string& key, bool value);
 
   /**
