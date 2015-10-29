@@ -54,6 +54,11 @@ public:
   
   virtual void execute();
 
+  enum StepType {
+    STEP_WALK,
+    STEP_CONTROL
+  };
+
 private:
   /** class describing a single step */
   class Step 
@@ -67,7 +72,9 @@ private:
       _id(_id),
 
       planningCycle(0),
-      executingCycle(0)
+      executingCycle(0),
+
+      type(STEP_WALK)
     {}
 
     FootStep footStep;
@@ -78,6 +85,10 @@ private:
     // running parameters indicating how far the step is processed
     int planningCycle;
     int executingCycle;
+
+    StepType type;
+    // store the request which has been used to create this step
+    WalkRequest walkRequest;
 
     unsigned int id() const { return _id; }
     bool isPlanned() const { return planningCycle >= numberOfCycles; }
@@ -133,6 +144,12 @@ private:
 
   void planZMP();
   void executeStep();
+
+  Pose3D calculateLiftingFootPos(const Step& step) const;
+  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
+  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
+
+  void updateMotionStatus(MotionStatus& motionStatus) const;
 };
 
 #endif // _Walk_H_
