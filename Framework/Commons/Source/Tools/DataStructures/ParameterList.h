@@ -49,6 +49,8 @@ protected:
       config.set(group, name, get());
     }
 
+    void operator=( const T& v ) { set(v); }
+
     virtual void set(T v) = 0;
     virtual T get() const = 0;
   };
@@ -90,14 +92,15 @@ protected:
   }
 
   template<template<typename N> class T, typename N>
-  N& registerParameterT(const std::string& parameterName, N& parameter)
+  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter)
   {
-    parameters.push_back(new T<N>(parameterName, &parameter));
-    return parameter;
+    T<N>* parameterWrapper = new T<N>(parameterName, &parameter);
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
   }
 
   template<typename N>
-  N& registerParameter(const std::string& parameterName, N& parameter) {
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter) {
     return registerParameterT<DefaultParameter,N>(parameterName, parameter);
   }
 
