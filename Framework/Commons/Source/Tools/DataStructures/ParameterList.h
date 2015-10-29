@@ -61,7 +61,7 @@ protected:
     T* value;
 
   public:
-    DefaultParameter(const std::string& name, T* value) : Parameter(name), value(value) {}
+    DefaultParameter(const std::string& name, T* value) : Parameter<T>(name), value(value) {}
     ~DefaultParameter(){}
     virtual void set(T v) { *value = v; }
     virtual T get() const { ASSERT(value != NULL); return *value; }
@@ -72,7 +72,7 @@ protected:
     protected:
       T* value;
     public:
-      ParameterAngleDegrees(const std::string& name, T* value) : Parameter(name), value(value) {}
+      ParameterAngleDegrees(const std::string& name, T* value) : Parameter<T>(name), value(value) {}
       ~ParameterAngleDegrees(){}
       virtual void set(T v) { *value = Math::fromDegrees(v); }
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
