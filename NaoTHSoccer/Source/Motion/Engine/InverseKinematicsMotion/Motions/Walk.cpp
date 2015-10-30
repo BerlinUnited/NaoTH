@@ -297,7 +297,7 @@ void Walk::executeStep()
 
 Pose3D Walk::calculateLiftingFootPos(const Step& step) const
 {
-  int samplesDoubleSupport = std::max(1, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+  int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
   int samplesSingleSupport = step.numberOfCycles - samplesDoubleSupport;
   ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
@@ -402,8 +402,8 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
 
 void Walk::adaptStepSize(FootStep& step) const
 {
-  // only do something when the buffer is full
-  if(currentComErrorBuffer.size() == currentComErrorBuffer.getMaxEntries()) 
+  // only do something when the buffer is not empty
+  if(currentComErrorBuffer.size() > 0)
   {
     Vector3d errorCoM = currentComErrorBuffer.getAverage();
     static Vector3d lastCoMError = errorCoM;
@@ -480,7 +480,8 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 
   const Step& executingStep = stepBuffer.first();
   
-  double samplesDoubleSupport = std::max(1, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+  // TODO: remove dupication 
+  double samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
   double samplesSingleSupport = executingStep.numberOfCycles - samplesDoubleSupport;
   ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
