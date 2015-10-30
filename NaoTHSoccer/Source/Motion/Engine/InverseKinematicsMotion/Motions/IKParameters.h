@@ -81,12 +81,14 @@ public:
     struct Stabilization
     {
       // FSR stabilizators
-      bool enableFSRProtection;
-      bool enableWaitLanding;
-      unsigned int minFSRProtectionCount;
+      //bool enableFSRProtection;
+      //bool enableWaitLanding;
+      //unsigned int minFSRProtectionCount;
     
-      int maxUnsupportedCount;
-      int maxWaitLandingCount; // <0 means wait for ever until landing
+      //int maxUnsupportedCount;
+      //int maxWaitLandingCount; // <0 means wait for ever until landing
+
+      double emergencyStopError;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;

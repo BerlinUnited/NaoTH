@@ -19,6 +19,10 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
 
+#include "Representations/Infrastructure/CalibrationData.h"
+#include <Representations/Infrastructure/GyrometerData.h>
+#include "Representations/Modeling/InertialModel.h"
+
 // debug
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -30,6 +34,7 @@
 #include "Walk/FootStep.h"
 #include "Walk/FootStepPlanner.h"
 #include "IKPose.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 
 BEGIN_DECLARE_MODULE(Walk)
   PROVIDE(DebugModify)
@@ -41,6 +46,11 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(RobotInfo)
   REQUIRE(InverseKinematicsMotionEngineService)
   REQUIRE(MotionRequest)
+
+  REQUIRE(CalibrationData)
+  REQUIRE(InertialModel)
+  REQUIRE(GyrometerData)
+  REQUIRE(KinematicChainSensor)
 
   PROVIDE(MotionLock)
   PROVIDE(MotionStatus)
@@ -150,6 +160,22 @@ private:
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
 
   void updateMotionStatus(MotionStatus& motionStatus) const;
+
+
+private: // stabilization
+  // observe the com error
+  RingBufferWithSum<double, 100> com_errors;
+  Vector3d currentComError;
+  RingBufferWithSum<Vector3d, 100> currentComErrorBuffer;
+
+  // a buffer of CoMFeetPoses requested in the past
+  // needed by stabilization
+  RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
+  RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
+
+  void adaptStepSize(FootStep& step) const;
+  void calculateError();
+  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
 };
 
 #endif // _Walk_H_

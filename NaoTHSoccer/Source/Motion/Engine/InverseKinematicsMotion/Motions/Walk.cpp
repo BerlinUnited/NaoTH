@@ -23,6 +23,9 @@ void Walk::execute()
   // check the integrity 
   getMotionRequest().walkRequest.assertValid();
 
+  // STABILIZATION
+  calculateError();
+
   // planing phase
   // add new steps or delete executed ones if necessary
   manageSteps(getMotionRequest());
@@ -39,12 +42,57 @@ void Walk::execute()
   FIELD_DRAWING_CONTEXT;
   stepBuffer.draw(getDebugDrawings());
 
+  {
+    // STABILIZATION
+    // HACK: compensate the foot lift movement
+    CoMFeetPose tmp(theCoMFeetPose);
+    if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) 
+    {
+      tmp.localInRightFoot();
+      theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.left.translation.z;
+      theCoMFeetPose.com.rotateX( parameters().hip.comRotationOffsetX *tmp.feet.left.translation.z );
 
-  // TODO: apply online stabilization
-    
+      PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
+    } 
+    else if(stepBuffer.first().footStep.liftingFoot() == FootStep::RIGHT) 
+    {
+      tmp.localInLeftFoot();
+      theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.right.translation.z;
+      theCoMFeetPose.com.rotateX( -parameters().hip.comRotationOffsetX*tmp.feet.right.translation.z );
+
+      PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
+    }
+
+    // buffer the pose
+    commandFootIdBuffer.add(stepBuffer.first().footStep.liftingFoot());
+    commandPoseBuffer.add(theCoMFeetPose);
+  }
+
+
   // apply inverse kinematic
   bool solved = false;
   HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), theCoMFeetPose, solved, false);
+
+
+  // STABILIZATION
+  // apply online stabilization
+  if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilize)
+  {
+    if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
+      c.localInRightFoot();
+    } else if(stepBuffer.first().footStep.liftingFoot() == FootStep::RIGHT) {
+      c.localInLeftFoot();
+    } else {
+      c.localInHip();
+    }
+      
+    getEngine().rotationStabilize(
+      getInertialModel(),
+      getGyrometerData(),
+      getRobotInfo().getBasicTimeStepInSecond(),
+      c);
+  }
+
   getEngine().solveHipFeetIK(c);
   getEngine().copyLegJoints(getMotorJointData().position);
 
@@ -61,6 +109,10 @@ void Walk::execute()
     getMotorJointData().position[JointData::RHipRoll] *= parameters().general.hipRollSingleSupFactorRight;
   }
 
+  // STABILIZATION
+  if(parameters().stabilization.stabilizeFeet) {
+    feetStabilize(getMotorJointData().position);
+  }
 
   updateMotionStatus(getMotionStatus());
 
@@ -118,7 +170,9 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   
   newStep.walkRequest = walkRequest;
 
-  if ( getMotionRequest().id != getId() )
+  // STABILIZATION
+  bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
+  if ( getMotionRequest().id != getId() || do_emergency_stop)
   {
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand ) {
@@ -154,6 +208,12 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
+
+    // STABILIZATION
+    if ( parameters().stabilization.dynamicStepsize ) {
+      adaptStepSize(newStep.footStep);
+      currentComErrorBuffer.clear();
+    }
   }
 }
 
@@ -338,3 +398,153 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     }
   }
 }//end updateMotionStatus
+
+
+void Walk::adaptStepSize(FootStep& step) const
+{
+  // only do something when the buffer is full
+  if(currentComErrorBuffer.size() == currentComErrorBuffer.getMaxEntries()) 
+  {
+    Vector3d errorCoM = currentComErrorBuffer.getAverage();
+    static Vector3d lastCoMError = errorCoM;
+    
+    Vector3d comCorrection = errorCoM*parameters().stabilization.dynamicStepsizeP + 
+                          (errorCoM - lastCoMError)*parameters().stabilization.dynamicStepsizeD;
+
+    Vector3d stepCorrection = step.supFoot().rotation * comCorrection;
+    step.footEnd().translation.x += stepCorrection.x;
+    step.footEnd().translation.y += stepCorrection.y;
+
+    lastCoMError = errorCoM;
+  }
+}//end adaptStepSize
+
+
+void Walk::calculateError()
+{
+  int observerMeasurementDelay = 40;
+  int index = int(observerMeasurementDelay / 10 - 0.5);
+  ASSERT(index >= 0);
+
+  // we need enough history
+  if(commandPoseBuffer.size() == 0 || commandPoseBuffer.size() <= index ) {
+    return;
+  }
+
+  InverseKinematic::CoMFeetPose expectedCoMFeetPose = commandPoseBuffer[index];
+
+  Vector3d requested_com;
+  Vector3d observed_com;
+
+  // if right support
+  if(commandFootIdBuffer[index] == FootStep::LEFT)
+  {
+    //const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
+    //requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInRightFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
+
+    Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+    footObs.translate(0, 0, -NaoInfo::FootHeight);
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
+    observed_com = footObs.invert() * getKinematicChainSensor().CoM;
+  }
+  else
+  {
+    //const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
+    //requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
+    expectedCoMFeetPose.localInLeftFoot();
+    requested_com = expectedCoMFeetPose.com.translation;
+
+    Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
+    footObs.translate(0, 0, -NaoInfo::FootHeight);
+    footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
+    observed_com = footObs.invert() * getKinematicChainSensor().CoM;
+  }
+  
+  currentComError = requested_com - observed_com;
+  com_errors.add(currentComError.abs2());
+  currentComErrorBuffer.add(currentComError);
+}//end calculateError
+
+
+void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
+{
+  // calculate the cycle
+  // the same as in "FootTrajectorGenerator::genTrajectory"
+  
+  // no stabilization if there are no steps planned
+  if(stepBuffer.empty()) { 
+    return;
+  }
+
+  const Step& executingStep = stepBuffer.first();
+  
+  double samplesDoubleSupport = std::max(1, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+  double samplesSingleSupport = executingStep.numberOfCycles - samplesDoubleSupport;
+  ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+
+  double doubleSupportEnd = samplesDoubleSupport / 2;
+  double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
+
+  double cycle = executingStep.executingCycle;
+  double z = 0;
+
+  if (cycle <= doubleSupportEnd)
+  {
+    z = 0;
+  }
+  else if (cycle <= doubleSupportBegin)
+  {
+    double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
+    t = t * Math::pi - Math::pi_2; // scale t
+    z = (1 + cos(t * 2))*0.5;
+  }
+  else
+  {
+    z = 0;
+  }
+
+  const Vector2d& inertial = getInertialModel().orientation;
+  const Vector3d& gyro = getGyrometerData().data;
+
+  // HACK: small filter...
+  static Vector3d lastGyro = gyro;
+  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
+
+  Vector2d weight;
+  weight.x = 
+      parameters().stabilization.stabilizeFeetP.x * inertial.x
+    + parameters().stabilization.stabilizeFeetD.x * filteredGyro.x;
+
+  weight.y = 
+      parameters().stabilization.stabilizeFeetP.y * inertial.y
+    + parameters().stabilization.stabilizeFeetD.y * filteredGyro.y;
+
+
+  switch(executingStep.footStep.liftingFoot())
+  {
+  case FootStep::LEFT: 
+    // adjust left
+    position[JointData::LAnkleRoll] -= inertial.x*z;
+    position[JointData::LAnklePitch] -= inertial.y*z;
+
+    // stabilize right
+    position[JointData::RAnkleRoll] += weight.x*z;
+    position[JointData::RAnklePitch] += weight.y*z;
+    break;
+
+  case FootStep::RIGHT:
+    // adjust right
+    position[JointData::RAnkleRoll] -= inertial.x*z;
+    position[JointData::RAnklePitch] -= inertial.y*z;
+
+    // stabilize left
+    position[JointData::LAnkleRoll] += weight.x*z;
+    position[JointData::LAnklePitch] += weight.y*z;
+    break;
+  default: break; // don't stabilize in double support mode
+  };
+
+  lastGyro = gyro;
+}//end feetStabilize

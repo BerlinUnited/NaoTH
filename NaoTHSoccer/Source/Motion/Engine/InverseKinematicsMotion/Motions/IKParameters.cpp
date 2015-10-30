@@ -54,11 +54,13 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.limits.maxCtrlWidth) = 50;
 
   // Stabilization
-  PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
-  PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
-  PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
-  PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
-  PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
+  //PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
+  //PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
+  //PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
+  //PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
+  //PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
+
+  PARAMETER_REGISTER(walk.stabilization.emergencyStopError) = 500;
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
